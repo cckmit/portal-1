@@ -7,10 +7,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
@@ -20,7 +17,10 @@ import ru.protei.portal.ui.common.client.widget.selector.rangetype.RangeTypeButt
 import java.util.List;
 import java.util.Objects;
 
-public class TypedSelectorRangePicker extends Composite implements HasValue<DateIntervalWithType> {
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
+
+public class TypedSelectorRangePicker extends Composite
+        implements HasValue<DateIntervalWithType>, HasEnabled {
 
     @Inject
     public void onInit() {
@@ -28,7 +28,7 @@ public class TypedSelectorRangePicker extends Composite implements HasValue<Date
     }
 
     public void setHeader( String label ) {
-        this.label.removeStyleName( "hide" );
+        this.label.removeStyleName( HIDE );
         this.label.getElement().setInnerText( label == null ? "" : label );
     }
 
@@ -59,6 +59,17 @@ public class TypedSelectorRangePicker extends Composite implements HasValue<Date
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<DateIntervalWithType> valueChangeHandler) {
         return addHandler( valueChangeHandler, ValueChangeEvent.getType() );
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return rangeType.isEnabled() && range.isEnabled();
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        rangeType.setEnabled(enabled);
+        range.setEnabled(enabled);
     }
 
     @UiHandler("rangeType")

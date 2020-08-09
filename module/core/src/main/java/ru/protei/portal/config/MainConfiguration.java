@@ -55,6 +55,8 @@ import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsedImpl;
 import ru.protei.portal.core.service.events.*;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
+import ru.protei.portal.core.service.pushevent.ClientEventService;
+import ru.protei.portal.core.service.pushevent.ClientEventServiceImpl;
 import ru.protei.portal.core.service.template.TemplateService;
 import ru.protei.portal.core.service.template.TemplateServiceImpl;
 import ru.protei.portal.core.service.auth.AuthService;
@@ -133,6 +135,11 @@ public class MainConfiguration {
         executor.setCorePoolSize(config.data().reportConfig().getThreadsNumber());
         executor.setMaxPoolSize(config.data().reportConfig().getThreadsNumber());
         return executor;
+    }
+
+    @Bean
+    public ClientEventService getClientEventService() {
+        return new ClientEventServiceImpl();
     }
 
     @Bean
@@ -540,6 +547,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public ProjectDAO getProjectEntityDAO() {
+        return new ProjectEntityDAO_Impl();
+    }
+
+    @Bean
     public ContractDateDAO getContractDateDAO() {
         return new ContractDateDAO_Impl();
     }
@@ -652,6 +664,16 @@ public class MainConfiguration {
     @Bean
     public PersonNotifierDAO getPersonNotifierDAO() {
         return new PersonNotifierDAO_Impl();
+    }
+
+    @Bean
+    public AbsenceFilterDAO getAbsenceFilterDAO() {
+        return new AbsenceFilterDAO_Impl();
+    }
+
+    @Bean
+    public PersonFavoriteIssuesDAO getPersonFavoritesIssuesDAO() {
+        return new PersonFavoriteIssuesDAO_Impl();
     }
 
     /* SERVICES */
@@ -954,6 +976,11 @@ public class MainConfiguration {
     @Bean
     public AbsenceService getAbsenceService() {
         return new AbsenceServiceImpl();
+    }
+
+    @Bean
+    public AbsenceFilterService getAbsenceFilterService() {
+        return new AbsenceFilterServiceImpl();
     }
 
     @Bean

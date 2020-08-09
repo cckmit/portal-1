@@ -18,6 +18,8 @@ import ru.protei.portal.ui.common.client.events.HasInputHandlers;
 import ru.protei.portal.ui.common.client.events.InputEvent;
 import ru.protei.portal.ui.common.client.events.InputHandler;
 
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
+
 public class CleanableSearchBox extends Composite implements HasValue<String>, HasEnabled, HasInputHandlers {
 
     public CleanableSearchBox() {
@@ -131,13 +133,13 @@ public class CleanableSearchBox extends Composite implements HasValue<String>, H
 
     public void setAddon(String addon) {
         this.addonText.setInnerText(addon);
-        this.addon.removeClassName("hide");
+        this.addon.removeClassName(HIDE);
         this.textBox.removeStyleName("rounded-left-3");
     }
 
     public void setAddonIcon(String icon) {
         this.addonIcon.setClassName(icon);
-        this.addon.removeClassName("hide");
+        this.addon.removeClassName(HIDE);
         this.textBox.removeStyleName("rounded-left-3");
     }
 

@@ -186,6 +186,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         }
 
         CaseObject caseObject = makePlatformCaseObject(id, platform.getName());
+        caseObject.setCreatorId(token.getPersonId());
         Long caseId = caseObjectDAO.persist(caseObject);
         if (caseId == null) {
             throw new ResultStatusException(En_ResultStatus.NOT_CREATED);

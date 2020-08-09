@@ -292,6 +292,11 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
+    public ProjectDAO getProjectEntityDAO() {
+        return new ProjectEntityDAO_Impl();
+    }
+
+    @Bean
     public ContractDateDAO getContractDateDAO() {
         return new ContractDateDAO_Impl();
     }
@@ -400,5 +405,10 @@ public class DaoTestsConfiguration {
     @Bean
     public PersonNotifierDAO getPersonNotifierDAO() {
         return new PersonNotifierDAO_Impl();
+    }
+
+    @Bean
+    public PersonFavoriteIssuesDAO getPersonFavoritesIssuesDAO() {
+        return new PersonFavoriteIssuesDAO_Impl();
     }
 }

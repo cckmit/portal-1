@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.util.documentvalidators;
 
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
+import ru.protei.portal.core.model.util.Validator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +56,7 @@ public class DocumentDecimalNumberValidator {
     }
 
     static boolean processValidationIsValid(String value, List<Validator> validateProcessList) {
-        return processValidation(value, validateProcessList).isValid;
+        return processValidation(value, validateProcessList).isValid();
     }
 
     static public boolean isValid(String value, En_DocumentCategory enDocumentCategory) {

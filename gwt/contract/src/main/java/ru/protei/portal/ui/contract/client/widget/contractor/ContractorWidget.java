@@ -28,6 +28,8 @@ import java.util.List;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.WIDE_MODAL;
 
 abstract public class ContractorWidget extends Composite implements HasValue<Contractor>, HasEnabled, HasValidable, Activity {
 
@@ -83,9 +85,9 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
     @Override
     public void setValid(boolean isValid) {
         if (isValid) {
-            name.removeStyleName(REQUIRED_STYLE_NAME);
+            name.removeStyleName(REQUIRED);
         } else {
-            name.addStyleName(REQUIRED_STYLE_NAME);
+            name.addStyleName(REQUIRED);
         }
     }
 
@@ -105,13 +107,13 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
         this.organization = organization;
     }
 
+    public void setEnsureDebugId( String debugId ) {
+        button.ensureDebugId(debugId);
+    }
+
     private void ensureDebugIds() {
         name.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.CONTRACTOR.NAME);
         button.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.CONTRACTOR.SEARCH_BUTTON);
-    }
-
-    public void setEnsureDebugId( String debugId ) {
-        button.ensureDebugId(debugId);
     }
 
     private void prepareSearchDialog(AbstractDialogDetailsView dialog) {
@@ -126,6 +128,7 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
 
     private void prepareCreateDialog(AbstractDialogDetailsView dialog) {
         dialog.setActivity(makeCreateDialogActivity());
+        dialog.addStyleName(WIDE_MODAL);
         dialog.getBodyContainer().add(createView.asWidget());
         dialog.removeButtonVisibility().setVisible(false);
         dialog.setHeader(lang.createContractorTitle());
@@ -252,8 +255,6 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
     private Contractor value;
     private String organization;
     private boolean isValidable;
-
-    private static final String REQUIRED_STYLE_NAME = "required";
 
     interface ContractorWidgetUiBinder extends UiBinder<HTMLPanel, ContractorWidget> {}
     private static ContractorWidgetUiBinder ourUiBinder = GWT.create( ContractorWidgetUiBinder.class );

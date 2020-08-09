@@ -6,12 +6,15 @@ import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.Identifiable;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+
+import static ru.protei.portal.core.model.ent.CaseObject.Columns.*;
 
 /**
  * Created by michael on 19.05.16.
@@ -22,38 +25,38 @@ public class CaseObject extends AuditableObject {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
-    @JdbcColumn(name = "case_type")
+    @JdbcColumn(name = CASE_TYPE)
     @JdbcEnumerated( EnumType.ID )
     private En_CaseType type;
 
     @JdbcColumn(name = "CASENO")
     private Long caseNumber;
 
-    @JdbcColumn(name = "CREATED")
+    @JdbcColumn(name = CREATED)
     private Date created;
 
     @JdbcColumn(name = "MODIFIED")
     private Date modified;
 
-    @JdbcColumn(name = "CASE_NAME")
+    @JdbcColumn(name = CASE_NAME)
     private String name;
 
     @JdbcColumn(name = "EXT_ID")
     private String extId;
 
-    @JdbcColumn(name = "INFO")
+    @JdbcColumn(name = INFO)
     private String info;
 
-    @JdbcColumn(name = "STATE")
+    @JdbcColumn(name = STATE)
     private long stateId;
 
-    @JdbcJoinedColumn(localColumn = "STATE", table = "case_state", remoteColumn = "id", mappedColumn = "STATE")
+    @JdbcJoinedColumn(localColumn = STATE, table = "case_state", remoteColumn = "id", mappedColumn = "STATE")
     private String stateName;
 
     @JdbcColumn(name = "IMPORTANCE")
     private Integer impLevel;
 
-    @JdbcColumn(name = "CREATOR")
+    @JdbcColumn(name = CREATOR)
     private Long creatorId;
 
     @JdbcJoinedObject( localColumn = "CREATOR", remoteColumn = "id", updateLocalColumn = false )
@@ -89,7 +92,7 @@ public class CaseObject extends AuditableObject {
     @JdbcColumn(name = "KEYWORDS")
     private String keywords;
 
-    @JdbcColumn(name = "ISLOCAL")
+    @JdbcColumn(name = ISLOCAL)
     private int local;
 
     @JdbcColumn(name = "EMAILS")
@@ -98,7 +101,7 @@ public class CaseObject extends AuditableObject {
     @JdbcColumn(name = "creator_info")
     private String creatorInfo;
 
-    @JdbcColumn(name = "deleted")
+    @JdbcColumn(name = DELETED)
     private boolean deleted;
 
     @JdbcColumn(name = "private_flag")
@@ -116,7 +119,7 @@ public class CaseObject extends AuditableObject {
     @JdbcOneToMany( table = "case_member", localColumn = "id", remoteColumn = "CASE_ID" )
     private List<CaseMember> members;
 
-    @JdbcColumn(name = Columns.EXT_APP)
+    @JdbcColumn(name = EXT_APP)
     private String extAppType;
 
     @JdbcManyToMany(linkTable = "case_notifier", localLinkColumn = "case_id", remoteLinkColumn = "person_id")
@@ -146,7 +149,7 @@ public class CaseObject extends AuditableObject {
     }, mappedColumn = "name")
     private String regionName;
 
-    @JdbcColumn(name = "pause_date")
+    @JdbcColumn(name = PAUSE_DATE)
     private Long pauseDate;
 
     @JdbcColumn(name = "manager_company_id")
@@ -169,6 +172,9 @@ public class CaseObject extends AuditableObject {
 
     // not db column
     private String jiraUrl;
+
+//    Проставляется относительно авторизованного пользователя
+    private boolean isFavorite;
 
     public CaseObject() {
 
@@ -594,6 +600,14 @@ public class CaseObject extends AuditableObject {
         this.plans = plans;
     }
 
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
+    }
+
     @Override
     public String getAuditType() {
         return "CaseObject";
@@ -601,7 +615,18 @@ public class CaseObject extends AuditableObject {
 
     public interface Columns {
         String EXT_APP = "EXT_APP";
+        String CASE_TYPE = "case_type";
+        String PAUSE_DATE = "pause_date";
+        String DELETED = "deleted";
+        String INFO = "INFO";
+        String ISLOCAL = "ISLOCAL";
+        String CREATED = "CREATED";
+        String CREATOR = "CREATOR";
+        String STATE = "STATE";
+        String CASE_NAME = "CASE_NAME";
     }
+
+    public static final int NOT_DELETED = 0;
 
     @Override
     public String toString() {
@@ -655,6 +680,7 @@ public class CaseObject extends AuditableObject {
                 ", timeElapsedType=" + timeElapsedType +
                 ", caseObjectMetaJira=" + caseObjectMetaJira +
                 ", jiraUrl='" + jiraUrl + '\'' +
+                ", isFavorite=" + isFavorite +
                 '}';
     }
 }

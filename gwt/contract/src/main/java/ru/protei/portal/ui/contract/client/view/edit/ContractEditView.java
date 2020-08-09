@@ -14,6 +14,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
+import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.ent.ContractSpecification;
 import ru.protei.portal.core.model.ent.Contractor;
@@ -28,11 +29,11 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.ValiableAutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyButtonSelector;
 import ru.protei.portal.ui.common.client.widget.money.CostCurrencyVatWidget;
+import ru.protei.portal.ui.common.client.widget.project.ProjectWidget;
 import ru.protei.portal.ui.common.client.widget.selector.contract.ContractButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeCustomButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
-import ru.protei.portal.ui.common.client.widget.selector.project.ProjectButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.contract.client.activity.edit.AbstractContractEditActivity;
@@ -144,8 +145,8 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
-    public HasValue<EntityOption> project() {
-        return project;
+    public HasValue<ProjectInfo> project() {
+        return projectWidget;
     }
 
     @Override
@@ -163,18 +164,13 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         return direction;
     }
 
-    public HasEnabled managerEnabled() {
-        return manager;
-    }
-
-    public HasEnabled directionEnabled() {
-        return direction;
-    }
-
     @Override
     public HasEnabled contractorEnabled() {
         return contractorWidget;
     }
+
+    @Override
+    public HasEnabled organizationEnabled() { return organization; }
 
     @Override
     public void setOrganization(String organization) {
@@ -242,10 +238,10 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         }
     }
 
-    @UiHandler("project")
-    public void onValueChanged(ValueChangeEvent<EntityOption> event) {
+    @UiHandler("projectWidget")
+    public void onProjectWidgetChanged(ValueChangeEvent<ProjectInfo> event) {
         if (activity != null) {
-            activity.refreshProjectSpecificFields();
+            activity.onProjectChanged();
         }
     }
 
@@ -315,7 +311,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         costWithCurrency.setEnsureDebugId(DebugIds.CONTRACT.COST_WITH_CURRENCY_CONTAINER);
 
         projectLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.PROJECT);
-        project.setEnsureDebugId(DebugIds.CONTRACT.PROJECT_SELECTOR);
+        projectWidget.setEnsureDebugId(DebugIds.CONTRACT.PROJECT_SELECTOR);
 
         directionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.DIRECTION);
         direction.setEnsureDebugId(DebugIds.CONTRACT.DIRECTION_SELECTOR);
@@ -384,7 +380,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     ContractButtonSelector contractParent;
     @Inject
     @UiField(provided = true)
-    ProjectButtonSelector project;
+    ProjectWidget projectWidget;
     @Inject
     @UiField(provided = true)
     ProductDirectionButtonSelector direction;

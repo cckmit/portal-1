@@ -17,6 +17,7 @@ public class CaseCommentQuery extends BaseQuery {
     private List<Long> authorIds;
     private Boolean viewPrivate = null;
     private Boolean textNotNull;
+    private String remoteId;
 
     public CaseCommentQuery() {
         this(null, null, En_SortField.creation_date, En_SortDir.ASC);
@@ -118,5 +119,13 @@ public class CaseCommentQuery extends BaseQuery {
 
     public void setTextNotNull(Boolean textNotNull) {
         this.textNotNull = textNotNull;
+    }
+
+    public String getRemoteId() {
+        return remoteId;
+    }
+
+    public void setRemoteId(String remoteId) {
+        this.remoteId = remoteId;
     }
 }

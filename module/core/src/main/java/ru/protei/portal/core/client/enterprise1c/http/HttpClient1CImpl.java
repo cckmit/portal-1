@@ -1,9 +1,12 @@
 package ru.protei.portal.core.client.enterprise1c.http;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -47,6 +50,12 @@ public class HttpClient1CImpl implements HttpClient1C{
                 .map(ResponseEntity::getBody);
     }
 
+    @Override
+    public <T> Result<T> update(String url, String body, Class<T> clazz) {
+        return execute((client, headers) -> client.exchange(url, HttpMethod.PATCH, new HttpEntity<>(body, headers), clazz))
+                .map(ResponseEntity::getBody);
+    }
+
     private <RES> Result<ResponseEntity<RES>> execute(BiFunction<RestTemplate, HttpHeaders, ResponseEntity<RES>> handler) {
         RestTemplate client1C = makeClient();
         ResponseEntity<RES> response;
@@ -55,11 +64,11 @@ public class HttpClient1CImpl implements HttpClient1C{
             response = handler.apply(client1C, headers);
         } catch (Exception e) {
             log.warn("execute(): Can't execute 1c request, unexpected exception", e);
-            return error(En_ResultStatus.GET_DATA_ERROR);
+            return error(En_ResultStatus.REQUEST_1C_FAILED);
         }
         if (response == null) {
             log.warn("execute(): Can't execute 1c request, response is null");
-            return error(En_ResultStatus.GET_DATA_ERROR);
+            return error(En_ResultStatus.REQUEST_1C_FAILED);
         }
         if (HttpStatus.NOT_FOUND.equals(response.getStatusCode())) {
             log.warn("execute(): Can't get data from 1c, NOT_FOUND");
@@ -78,6 +87,10 @@ public class HttpClient1CImpl implements HttpClient1C{
                 new AllEncompassingFormHttpMessageConverter(),
                 new MappingJackson2HttpMessageConverter()
         ));
+
+        HttpClient client = HttpClients.createDefault();
+        template.setRequestFactory(new HttpComponentsClientHttpRequestFactory(client));
+
         ((DefaultUriTemplateHandler) template.getUriTemplateHandler()).setStrictEncoding(true);
         return template;
     }

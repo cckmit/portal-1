@@ -403,6 +403,7 @@ public class PortalConfigData {
         private final boolean youtrackCompanySyncEnabled;
         private final boolean youtrackEmployeeSyncEnabled;
         private final boolean youtrackLinksMigrationEnabled;
+        private final boolean youtrackProjectLinksMigrationEnabled;
         private final boolean jiraEnabled;
         private final boolean jiraBackchannelEnabled;
 
@@ -415,6 +416,7 @@ public class PortalConfigData {
             youtrackCompanySyncEnabled = properties.getProperty("integration.youtrack.companies", Boolean.class, false);
             youtrackEmployeeSyncEnabled = properties.getProperty("integration.youtrack.employees", Boolean.class, false);
             youtrackLinksMigrationEnabled = properties.getProperty("migration.youtrack.links", Boolean.class, false);
+            youtrackProjectLinksMigrationEnabled = properties.getProperty("project.migration.youtrack.links", Boolean.class, false);
             jiraEnabled = properties.getProperty("integration.jira", Boolean.class, false);
             jiraBackchannelEnabled = properties.getProperty("integration.jira.backchannel", Boolean.class, false);
 
@@ -441,6 +443,10 @@ public class PortalConfigData {
         }
         public boolean isYoutrackLinksMigrationEnabled() {
             return youtrackLinksMigrationEnabled;
+        }
+
+        public boolean isYoutrackProjectLinksMigrationEnabled() {
+            return youtrackProjectLinksMigrationEnabled;
         }
 
         public boolean isJiraEnabled() {
@@ -548,12 +554,14 @@ public class PortalConfigData {
     public static class CaseLinkConfig {
         private final String linkCrm;
         private final String linkYouTrack;
-        private final String crosslinkYoutrack;
+        private final String crossCrmLinkYoutrack;
+        private final String crossProjectLinkYoutrack;
 
         public CaseLinkConfig(PropertiesWrapper properties) throws ConfigException {
             this.linkCrm = properties.getProperty("case.link.internal", "http://newportal/crm/#issues/issue_preview:id=%id%");
             this.linkYouTrack = properties.getProperty("case.link.youtrack", "https://youtrack.protei.ru/issue/%id%");
-            this.crosslinkYoutrack = properties.getProperty("case.crosslink.youtrack", "http://newportal/crm/#issues/issue:id=%id%");
+            this.crossCrmLinkYoutrack = properties.getProperty("case.crm.crosslink.youtrack", "http://newportal/crm/#issues/issue:id=%id%");
+            this.crossProjectLinkYoutrack = properties.getProperty("case.project.crosslink.youtrack", "http://newportal/crm/#project_preview:id=%id%");
         }
 
         public String getLinkCrm() {
@@ -564,8 +572,12 @@ public class PortalConfigData {
             return linkYouTrack;
         }
 
-        public String getCrosslinkYoutrack() {
-            return crosslinkYoutrack;
+        public String getCrossCrmLinkYoutrack() {
+            return crossCrmLinkYoutrack;
+        }
+
+        public String getCrossProjectLinkYoutrack() {
+            return crossProjectLinkYoutrack;
         }
     }
 
@@ -637,6 +649,7 @@ public class PortalConfigData {
         private final String parentKeyST;
         private final String parentKeyResident;
         private final String parentKeyNotResident;
+        private final boolean contractSyncEnabled;
 
         public Enterprise1CConfig(PropertiesWrapper properties) {
             apiBaseProteiUrl = properties.getProperty("enterprise1c.api.base_protei_url");
@@ -646,6 +659,7 @@ public class PortalConfigData {
             parentKeyST = properties.getProperty("enterprise1c.api.parent_key_st");
             parentKeyResident = properties.getProperty("enterprise1c.api.parent_key_resident");
             parentKeyNotResident = properties.getProperty("enterprise1c.api.parent_key_not_resident");
+            contractSyncEnabled = properties.getProperty("enterprise1c.api.contract.sync.enabled", Boolean.class, false);
         }
 
         public String getApiBaseProteiUrl() {
@@ -675,6 +689,8 @@ public class PortalConfigData {
         public String getParentKeyNotResident() {
             return parentKeyNotResident;
         }
+
+        public boolean isContractSyncEnabled() { return contractSyncEnabled; }
     }
 
     public static class JiraConfig {

@@ -39,6 +39,7 @@ public abstract class CaseStateTableActivity implements Activity,
 
         init.parent.clear();
         init.parent.add(view.asWidget());
+        view.clearSelection();
 
         requestRecords();
     }
@@ -64,6 +65,9 @@ public abstract class CaseStateTableActivity implements Activity,
     }
 
     private void requestRecords() {
+        view.clearRecords();
+        animation.closeDetails();
+
         caseStateService.getCaseStates(En_CaseType.CRM_SUPPORT, new RequestCallback<List<CaseState>>() {
             @Override
             public void onError(Throwable throwable) {

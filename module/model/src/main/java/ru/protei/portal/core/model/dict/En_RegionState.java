@@ -50,7 +50,13 @@ public enum En_RegionState {
      */
     FINISHED(32),
 
-    CANCELED(33);
+    CANCELED(33),
+    /**
+     * Приостановлена пользователем до даты
+     */
+    PAUSED(34)
+    ;
+
 
     private En_RegionState( long id ) {
         this.id = id;

@@ -41,7 +41,10 @@ public class UiConstants {
         String DOWNLOAD = "fa-cloud-download-alt";
         String REFRESH = "fa-redo";
         String CANCEL = "fa-window-close";
+        String FAVORITE_ACTIVE = "fas fa-star";
+        String FAVORITE_NOT_ACTIVE = "far fa-star";
 
+        String BIG_ICON = "fa-lg";
     }
 
     public interface ActionBarIcons {
@@ -88,6 +91,8 @@ public class UiConstants {
 
     public interface Styles {
         String HIDE = "hide";
+        String HAS_ERROR = "has-error";
+        String INACTIVE = "inactive";
         String REQUIRED = "required";
         String TEXT_CENTER = "text-center";
         String SEARCH_NO_RESULT = "search-no-result";
@@ -95,6 +100,10 @@ public class UiConstants {
         String SHORT_VIEW = "col-md-6";
         String FULL_VIEW = "col-md-12";
         String LINK_DISABLE = "link-disabled";
+        String WIDE_MODAL = "modal-lg";
+        String XL_MODAL = "modal-xl";
+        String FAVORITES = "favorites";
+        String FAVORITE_ICON = "favorite-icon";
     }
 
     public interface ColumnClassName {

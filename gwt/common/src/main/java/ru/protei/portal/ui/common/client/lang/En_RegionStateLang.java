@@ -23,6 +23,7 @@ public class En_RegionStateLang {
             case FINISHED: return lang.regionStateFinished();
             case TESTING: return lang.regionStateTesting();
             case CANCELED: return lang.regionStateCanceled();
+            case PAUSED: return lang.regionStatePaused();
             default:
                 return lang.errUnknownResult();
         }
@@ -43,6 +44,7 @@ public class En_RegionStateLang {
             case FINISHED: return "region-state support-finished";
             case TESTING: return "region-state testing";
             case CANCELED: return "region-state canceled";
+            case PAUSED: return "region-state paused";
 
             default:
                 return "fa fa-unknown";

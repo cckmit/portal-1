@@ -324,6 +324,28 @@ blockquote {
   }
 }
 
+.chats {
+
+  li .message {
+    transition: background-color 4s ease-out;
+    -webkit-transition: background-color 4s ease-out;
+    -moz-transition: background-color 4s ease-out;
+    -o-transition: background-color 4s ease-out;
+  }
+
+  li.updated .message {
+    border: 1px solid #4abc96;
+    border-radius: 5px;
+    background-color: #ecf8f4;
+  }
+
+  li.added .message {
+    border: 1px solid #48b0f7;
+    border-radius: 5px;
+    background-color: #e7f5fe;
+  }
+}
+
 .message-preview {
   .show-preview-btn {
     padding-left: 0;

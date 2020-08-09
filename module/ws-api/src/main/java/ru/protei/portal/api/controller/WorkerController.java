@@ -55,8 +55,6 @@ import static ru.protei.portal.core.model.helper.PhoneUtils.normalizePhoneNumber
 public class WorkerController {
 
     private static Logger logger = LoggerFactory.getLogger(WorkerController.class);
-    private String ADMIN_PROJECT_NAME, PORTAL_URL;
-    private boolean YOUTRACK_INTEGRATION_ENABLED;
 
     @Autowired
     private AuthService authService;
@@ -108,13 +106,6 @@ public class WorkerController {
 
     @Autowired
     YoutrackService youtrackService;
-
-    @PostConstruct
-    public void setYoutrackConst() {
-        YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEmployeeSyncEnabled();
-        ADMIN_PROJECT_NAME = portalConfig.data().youtrack().getAdminProject();
-        PORTAL_URL = portalConfig.data().getCommonConfig().getCrmUrlInternal();
-    }
 
     /**
      * Получить данные о физическом лице
@@ -1542,7 +1533,8 @@ public class WorkerController {
 
                     mergePerson(person);
 
-                    /*if (YOUTRACK_INTEGRATION_ENABLED) {
+                    /* final boolean YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEmployeeSyncEnabled();
+                    if (YOUTRACK_INTEGRATION_ENABLED) {
                         createAdminYoutrackIssueIfNeeded(person.getId(), person.getFirstName(), person.getLastName(), person.getSecondName(), personLastName);
                     }*/
 
@@ -1681,6 +1673,8 @@ public class WorkerController {
         if (Objects.equals(lastName, oldLastName)) {
             return;
         }
+        final String ADMIN_PROJECT_NAME = portalConfig.data().youtrack().getAdminProject();
+        final String PORTAL_URL = portalConfig.data().getCommonConfig().getCrmUrlInternal();
 
         String employeeOldFullName = oldLastName + " " + firstName + " " + (secondName != null ? secondName : "");
         String employeeNewFullName = lastName + " " + firstName + " " + (secondName != null ? secondName : "");

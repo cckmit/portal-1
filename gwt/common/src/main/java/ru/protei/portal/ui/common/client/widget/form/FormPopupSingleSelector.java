@@ -28,6 +28,8 @@ import ru.protei.portal.ui.common.client.selector.SelectorPopup;
 import ru.protei.portal.ui.common.client.selector.popup.SelectorPopupWithSearch;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
+
 /**
  * Вид селектора
  */
@@ -135,7 +137,7 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
     }
 
     public void setHeader( String header ) {
-        label.removeClassName("hide");
+        label.removeClassName(HIDE);
         label.setInnerText( header );
     }
 

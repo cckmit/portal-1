@@ -1,6 +1,10 @@
 package ru.protei.portal.core.service;
 
+import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.event.SchedulePauseTimeOnStartupEvent;
+import ru.protei.portal.core.event.ProjectPauseTimeHasComeEvent;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
@@ -11,10 +15,13 @@ import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.dto.RegionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 import java.util.Map;
+
+import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
 
 /**
  * Сервис управления проектами
@@ -74,4 +81,14 @@ public interface ProjectService {
     @Privileged(En_Privilege.PROJECT_REMOVE)
     @Auditable(En_AuditType.PROJECT_REMOVE)
     Result<Boolean> removeProject(AuthToken token, Long projectId);
+
+    @EventListener
+    @Async(BACKGROUND_TASKS)
+    void schedulePauseTimeNotificationsOnPortalStartup( SchedulePauseTimeOnStartupEvent event );
+
+    @EventListener
+    @Async(BACKGROUND_TASKS)
+    void onPauseTimeNotification( ProjectPauseTimeHasComeEvent event );
+
+    Result<PersonProjectMemberView> getProjectLeader(AuthToken authToken, Long projectId);
 }

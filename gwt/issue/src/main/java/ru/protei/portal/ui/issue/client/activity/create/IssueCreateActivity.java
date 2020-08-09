@@ -1,6 +1,8 @@
 package ru.protei.portal.ui.issue.client.activity.create;
 
 import com.google.gwt.i18n.client.LocaleInfo;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
@@ -91,8 +93,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
             return;
         }
 
-        init.parent.clear();
-        init.parent.add(view.asWidget());
+        placeView(init.parent, view);
 
         subscriptionsList = null;
         subscriptionsListEmptyMessage = null;
@@ -308,6 +309,17 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         createRequest.setPlans(issueMetaView.ownerPlans().getValue());
     }
 
+    @Override
+    public void onFavoriteStateChanged() {
+        view.setFavoriteButtonActive(!view.isFavoriteButtonActive());
+    }
+
+    private void placeView(HasWidgets parent, AbstractIssueCreateView view) {
+        parent.clear();
+        parent.add(view.asWidget());
+        Window.scrollTo(0, 0);
+    }
+
     private void updateSubscriptions(Long... companyIds) {
         companyService.getCompanyWithParentCompanySubscriptions(
                 new HashSet<>(Arrays.asList(companyIds)),
@@ -348,6 +360,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         view.name().setValue(caseObject.getName());
         view.description().setValue(caseObject.getInfo());
         view.setDescriptionPreviewAllowed(makePreviewDisplaying(AbstractIssueEditView.DESCRIPTION));
+        view.setFavoriteButtonActive(Boolean.TRUE.equals(caseObject.isFavorite()));
 
         fillMetaView(new CaseObjectMeta(caseObject), caseObject.getNotifiers(), caseObject.getTimeElapsedType(), createRequest.getPlans());
 
@@ -638,6 +651,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         caseObject.setAttachments(new ArrayList<>(view.attachmentsContainer().getAll()));
         caseObject.setManagerCompanyId(issueMetaView.getManagerCompany().getId());
         caseObject.setManagerCompanyName(issueMetaView.getManagerCompany().getDisplayText());
+        caseObject.setFavorite(view.isFavoriteButtonActive());
 
         if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW) && policyService.personBelongsToHomeCompany()) {
             caseObject.setTimeElapsed(issueMetaView.getTimeElapsed());

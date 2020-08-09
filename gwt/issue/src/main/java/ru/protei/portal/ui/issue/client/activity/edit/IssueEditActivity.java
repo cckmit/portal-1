@@ -43,6 +43,7 @@ import java.util.logging.Logger;
 
 import static ru.protei.portal.core.model.helper.CaseCommentUtils.addImageInMessage;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.util.CaseStateUtil.isTerminalState;
 
 public abstract class IssueEditActivity implements
@@ -192,6 +193,20 @@ public abstract class IssueEditActivity implements
         }
     }
 
+    @Event
+    public void onFavoriteStateChanged(IssueEvents.IssueFavoriteStateChanged event) {
+        if (issue == null) {
+            return;
+        }
+
+        if (!Objects.equals(issue.getId(), event.issueId)) {
+            return;
+        }
+
+        issue.setFavorite(event.isFavorite);
+        view.setFavoriteButtonActive(event.isFavorite);
+    }
+
     @Override
     public void removeAttachment(Attachment attachment) {
         if (isReadOnly()) return;
@@ -264,11 +279,37 @@ public abstract class IssueEditActivity implements
         copyToClipboardNotify(ClipboardUtils.copyToClipboard( lang.crmPrefix() + issue.getCaseNumber() + " " + issue.getName() ));
     }
 
-    public void fireSuccessCopyNotify() {
+    @Override
+    public void onFavoriteStateChanged() {
+        if (issue == null) {
+            return;
+        }
+
+        if (issue.isFavorite()) {
+            issueController.removeFavoriteState(policyService.getProfileId(), issue.getId(), new FluentCallback<Boolean>()
+                    .withSuccess(result -> onSuccessChangeFavoriteState(issue, view))
+            );
+        } else {
+            issueController.addFavoriteState(policyService.getProfileId(), issue.getId(), new FluentCallback<Long>()
+                    .withSuccess(result -> onSuccessChangeFavoriteState(issue, view))
+            );
+        }
+    }
+
+    private void onSuccessChangeFavoriteState(CaseObject issue, AbstractIssueEditView view) {
+        issue.setFavorite(!issue.isFavorite());
+
+        view.setFavoriteButtonActive(issue.isFavorite());
+
+        fireEvent(new IssueEvents.ChangeIssue(issue.getId()));
+        fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+    }
+
+    private void fireSuccessCopyNotify() {
         fireEvent(new NotifyEvents.Show(lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS));
     }
 
-    public void fireErrorCopyNotify() {
+    private void fireErrorCopyNotify() {
         fireEvent( new NotifyEvents.Show( lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR ) );
     }
 
@@ -321,15 +362,15 @@ public abstract class IssueEditActivity implements
     }
 
     private void showComments(CaseObject issue) {
-        fireEvent( new CaseCommentEvents.Show( issueInfoWidget.getCommentsContainer() )
-                .withCaseType( En_CaseType.CRM_SUPPORT )
-                .withCaseId( issue.getId() )
-                .withModifyEnabled( hasAccess() && !isReadOnly() )
-                .withElapsedTimeEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_WORK_TIME_VIEW ) )
-                .withPrivateVisible( !issue.isPrivateCase() && policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) )
-                .withPrivateCase( issue.isPrivateCase() )
-                .withNewCommentEnabled( !isTerminalState(issue.getStateId()) )
-                .withTextMarkup( CaseTextMarkupUtil.recognizeTextMarkup( issue ) ) );
+        CaseCommentEvents.Show show = new CaseCommentEvents.Show( issueInfoWidget.getCommentsContainer(),
+                issue.getId(), En_CaseType.CRM_SUPPORT, hasAccess() && !isReadOnly() );
+        show.isElapsedTimeEnabled = policyService.hasPrivilegeFor( En_Privilege.ISSUE_WORK_TIME_VIEW );
+        show.isPrivateVisible = !issue.isPrivateCase() && policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW );
+        show.isPrivateCase = issue.isPrivateCase();
+        show.isNewCommentEnabled = !isTerminalState(issue.getStateId());
+        show.textMarkup =  CaseTextMarkupUtil.recognizeTextMarkup( issue );
+        fireEvent( show );
+
     }
 
     private void showPlansHistory(CaseObject issue) {
@@ -370,6 +411,7 @@ public abstract class IssueEditActivity implements
         view.setCreatedBy(lang.createBy(transliteration(issue.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(issue.getCreated())));
         view.nameVisibility().setVisible(true);
         view.setName(makeName(issue.getName(), issue.getJiraUrl(), issue.getExtAppType()));
+        view.setIntegration(makeIntegrationName(issue));
 
         issueInfoWidget.setCaseNumber( issue.getCaseNumber() );
         issueInfoWidget.setDescription(issue.getInfo(), CaseTextMarkupUtil.recognizeTextMarkup(issue));
@@ -380,7 +422,7 @@ public abstract class IssueEditActivity implements
         view.getInfoContainer().add(issueInfoWidget);
 
         view.nameAndDescriptionEditButtonVisibility().setVisible(!readOnly && selfIssue);
-
+        view.setFavoriteButtonActive(issue.isFavorite());
     }
 
     private void viewModeIsPreview( boolean isPreviewMode){
@@ -443,6 +485,18 @@ public abstract class IssueEditActivity implements
         } else {
             fireErrorCopyNotify();
         }
+    }
+
+    private String makeIntegrationName(CaseObject issue) {
+        En_ExtAppType extAppType = En_ExtAppType.forCode(issue.getExtAppType());
+        if (extAppType == null) {
+            return null;
+        }
+        String name = extAppType.getCode();
+        if (isBlank(name)) {
+            return null;
+        }
+        return name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
     }
 
     @Inject

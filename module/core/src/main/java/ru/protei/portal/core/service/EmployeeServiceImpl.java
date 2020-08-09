@@ -16,10 +16,7 @@ import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.WorkerEntryQuery;
-import ru.protei.portal.core.model.struct.AuditObject;
-import ru.protei.portal.core.model.struct.AuditableObject;
-import ru.protei.portal.core.model.struct.ContactItem;
-import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.model.struct.*;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -47,8 +44,6 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 public class EmployeeServiceImpl implements EmployeeService {
 
     private static Logger log = LoggerFactory.getLogger(CompanyServiceImpl.class);
-    private static String ADMIN_PROJECT_NAME, PORTAL_URL;
-    private static boolean YOUTRACK_INTEGRATION_ENABLED;
 
     @Autowired
     CompanyGroupHomeDAO groupHomeDAO;
@@ -97,13 +92,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     AuditObjectDAO auditObjectDAO;
-
-    @PostConstruct
-    public void setYoutrackConst() {
-        YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEmployeeSyncEnabled();
-        ADMIN_PROJECT_NAME = portalConfig.data().youtrack().getAdminProject();
-        PORTAL_URL = portalConfig.data().getCommonConfig().getCrmUrlInternal();
-    }
 
     @Override
     public Result<List<PersonShortView>> shortViewList( EmployeeQuery query) {
@@ -268,6 +256,8 @@ public class EmployeeServiceImpl implements EmployeeService {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
+        final boolean YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEmployeeSyncEnabled();
+
         if (needToChangeAccount && YOUTRACK_INTEGRATION_ENABLED) {
             createChangeLastNameYoutrackIssueIfNeeded(person.getId(), person.getFirstName(), person.getLastName(), person.getSecondName(), oldPerson.getLastName());
         }
@@ -364,6 +354,8 @@ public class EmployeeServiceImpl implements EmployeeService {
                 return error(En_ResultStatus.EMPLOYEE_MIGRATION_FAILED);
             }
         }
+
+        final boolean YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEmployeeSyncEnabled();
 
         if (YOUTRACK_INTEGRATION_ENABLED) {
             createFireEmployeeYoutrackIssue(personFromDb);
@@ -539,11 +531,15 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         String summary = "Смена фамилии сотрудника " + employeeOldFullName;
 
+        final String PORTAL_URL = portalConfig.data().getCommonConfig().getCrmUrlInternal();
+
         String description = "Карточка сотрудника: " + "[" + employeeNewFullName + "](" + PORTAL_URL + "#employee_preview:id=" + employeeId + ")" + "\n" +
                 "Старое ФИО: " + employeeOldFullName + "\n" +
                 "Новое ФИО: " + employeeNewFullName + "\n" +
                 "\n" +
                 "Необходимо изменение учетной записи, почты.";
+
+        final String ADMIN_PROJECT_NAME = portalConfig.data().youtrack().getAdminProject();
 
         youtrackService.createIssue( ADMIN_PROJECT_NAME, summary, description );
     }
@@ -553,6 +549,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         String employeeFullName = person.getLastName() + " " + person.getFirstName() + " " + (person.getSecondName() != null ? person.getSecondName() : "");
 
         String summary = "Увольнение сотрудника " + employeeFullName;
+
+        final String PORTAL_URL = portalConfig.data().getCommonConfig().getCrmUrlInternal();
 
         String description = "Карточка сотрудника: " + "[" + employeeFullName + "](" + PORTAL_URL + "#employee_preview:id=" + person.getId() + ")";
 
@@ -701,9 +699,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     AbsenceQuery makeAbsenceQuery(Set<Long> employeeIds) {
+        Date startOfToday = DateUtils.resetSeconds(new Date());
         return new AbsenceQuery(
-                DateUtils.resetSeconds(new Date()),
-                DateUtils.resetSeconds(new Date()),
+                new DateRange(En_DateIntervalType.FIXED, startOfToday, startOfToday),
                 employeeIds,
                 Arrays.asList(En_AbsenceReason.values()).stream()
                         .filter(En_AbsenceReason::isActual)

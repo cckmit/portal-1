@@ -1,5 +1,8 @@
 package ru.protei.portal.core.model.util.documentvalidators;
 
+import ru.protei.portal.core.model.util.ValidationResult;
+import ru.protei.portal.core.model.util.Validator;
+
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -25,7 +28,7 @@ public class Validators {
     static Validator TDtypeProcessWorkCodeValidator = getSetContainsIntegerValidator(2, typeProcessWorkCode);
     static Validator TDfixCodeValidator = new Validator(true, getStringCheckWithLength(1, "Р"::equals));
     static Validator lengthTwoRussianLetterValidator = new Validator(getStringCheckWithLength(2, value ->  value.matches("[А-Я][А-Я]")));
-    static Validator endValidator = new Validator(value -> new ValidationResult(value.length() == 0));
+    static Validator endValidator = new Validator(value -> value.length() == 0 ? ValidationResult.ok() : ValidationResult.error());
 
     static Validator PDdocNumberPartValidator = getPDdocNumberPartValidator();
     static Validator getPDdocNumberPartValidator() {
@@ -67,12 +70,12 @@ public class Validators {
     static Function<String, ValidationResult> getStringCheckWithLength(Integer valueLength, Predicate<String> validationFunction) {
         return value -> {
             if (value.length() < valueLength) {
-                return new ValidationResult(false);
+                return ValidationResult.error();
             }
             if (validationFunction.test(value.substring(0, valueLength))) {
-                return new ValidationResult(true, value.substring(valueLength));
+                return ValidationResult.ok().withMessage(value.substring(valueLength));
             } else {
-                return new ValidationResult(false);
+                return ValidationResult.error();
             }
         };
     }
@@ -89,7 +92,7 @@ public class Validators {
     }
 
     static ValidationResult processValidation(String value, List<Validator> validateProcessList) {
-        ValidationResult validateString = new ValidationResult(value);
+        ValidationResult validateString = ValidationResult.ok().withMessage(value);
         for (Validator stringOptionalFunction : validateProcessList) {
             validateString = validateString.map(stringOptionalFunction);
         }

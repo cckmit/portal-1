@@ -5,6 +5,7 @@ import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @JdbcEntity(table = "case_comment", selectSql = "" +
         "case_comment.case_id case_id, case_comment.author_id author_id, " +
@@ -216,15 +217,28 @@ public class CaseCommentTimeElapsedSum implements Serializable {
         return "CaseCommentTimeElapsedSum{" +
                 "caseId=" + caseId +
                 ", authorId=" + authorId +
+                ", productName='" + productName + '\'' +
                 ", authorDisplayName='" + authorDisplayName + '\'' +
                 ", timeElapsedSum=" + timeElapsedSum +
+                ", timeElapsedNone=" + timeElapsedNone +
+                ", timeElapsedWatch=" + timeElapsedWatch +
+                ", timeElapsedNightWork=" + timeElapsedNightWork +
+                ", timeElapsedTypeSoftInstall=" + timeElapsedTypeSoftInstall +
+                ", timeElapsedTypeSoftUpdate=" + timeElapsedTypeSoftUpdate +
+                ", timeElapsedTypeSoftConfig=" + timeElapsedTypeSoftConfig +
+                ", timeElapsedTypeTesting=" + timeElapsedTypeTesting +
+                ", timeElapsedTypeConsultation=" + timeElapsedTypeConsultation +
+                ", timeElapsedTypeMeeting=" + timeElapsedTypeMeeting +
+                ", timeElapsedTypeDiscussionOfImprovements=" + timeElapsedTypeDiscussionOfImprovements +
+                ", timeElapsedTypeLogAnalysis=" + timeElapsedTypeLogAnalysis +
+                ", timeElapsedTypeSolveProblems=" + timeElapsedTypeSolveProblems +
                 ", caseNumber=" + caseNumber +
                 ", casePrivateCase=" + casePrivateCase +
                 ", caseName='" + caseName + '\'' +
                 ", caseCompanyName='" + caseCompanyName + '\'' +
                 ", caseManagerDisplayName='" + caseManagerDisplayName + '\'' +
                 ", caseImpLevel=" + caseImpLevel +
-                ", caseStateName=" + caseStateName +
+                ", caseStateName='" + caseStateName + '\'' +
                 ", caseCreated=" + caseCreated +
                 '}';
     }

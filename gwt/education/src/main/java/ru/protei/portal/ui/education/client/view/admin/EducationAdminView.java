@@ -73,7 +73,7 @@ public class EducationAdminView extends Composite implements AbstractEducationAd
 
     @Override
     public void clearSelection() {
-        columnProvider.setSelectedValue(null);
+        columnProvider.removeSelection();
     }
 
     private void initTable() {

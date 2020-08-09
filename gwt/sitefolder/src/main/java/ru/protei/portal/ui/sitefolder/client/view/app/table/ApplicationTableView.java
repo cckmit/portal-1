@@ -100,7 +100,7 @@ public class ApplicationTableView extends Composite implements AbstractApplicati
 
     @Override
     public void clearSelection() {
-        columnProvider.setSelectedValue(null);
+        columnProvider.removeSelection();
     }
 
     private void initTable() {

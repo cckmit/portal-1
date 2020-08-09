@@ -459,6 +459,29 @@ public class MailNotificationProcessor {
     }
 
     // -----------------------
+    // Pause time notifications
+    // -----------------------
+
+    @EventListener
+    public void onProjectPauseTimeNotificationEvent( ProjectPauseTimeNotificationEvent event) {
+        log.info( "onProjectPauseTimeNotificationEvent(): {}", event );
+
+        try {
+            String subject = templateService.getProjectPauseTimeNotificationSubject( event.getProjectId(), event.getProjectName() );
+
+            String body = templateService.getProjectPauseTimeNotificationBody( event.getSubscriber().getDisplayName(),
+                    event.getProjectId(), event.getProjectName(),
+                    makeCrmProjectUrl( config.data().getMailNotificationConfig().getCrmUrlInternal(), event.getProjectId() ),
+                    event.getPauseDate()
+            );
+
+            sendMail( new PlainContactInfoFacade( event.getSubscriber().getContactInfo() ).getEmail(), subject, body );
+        } catch (Exception e) {
+            log.warn( "Failed to sent PauseTime notification: {}", event, e );
+        }
+    }
+
+    // -----------------------
     // Contract notifications
     // -----------------------
 
@@ -642,7 +665,7 @@ public class MailNotificationProcessor {
 
         List<PersonProjectMemberView> team = event.getNewProjectState().getTeam();
 
-        List<Long> recipientsIds = CollectionUtils.emptyIfNull(team).stream().map(PersonShortView::getId).collect(Collectors.toList());
+        List<Long> recipientsIds = CollectionUtils.stream(team).map(PersonShortView::getId).collect(Collectors.toList());
         recipientsIds.add(event.getInitiatorId());
         recipientsIds.add(event.getCreator().getId());
 
@@ -655,7 +678,7 @@ public class MailNotificationProcessor {
                 event,
                 addresses,
                 links,
-                getCrmProjectUrl(),
+                makeCrmProjectUrl(config.data().getMailNotificationConfig().getCrmUrlInternal(), event.getProjectId())                ,
                 new EnumLangUtil(lang)
         );
 
@@ -1053,8 +1076,9 @@ public class MailNotificationProcessor {
         return false;
     }
 
-    private String getCrmProjectUrl() {
-        return config.data().getMailNotificationConfig().getCrmUrlInternal() + config.data().getMailNotificationConfig().getCrmProjectUrl();
+    private String makeCrmProjectUrl( String crmUrl, Long projectId ) {
+        String crmProjectUrl = crmUrl + config.data().getMailNotificationConfig().getCrmProjectUrl();
+        return String.format( crmProjectUrl, projectId );
     }
 
     private class MimeMessageHeadersFacade {

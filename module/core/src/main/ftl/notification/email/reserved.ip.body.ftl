@@ -9,7 +9,6 @@
 <@set name="_reservedIpUsePeriod" value="${reservedIpUsePeriod}"/>
 <@set name="_reservedIpForever" value="${reservedIpForever}"/>
 <@set name="_reservedIpComment" value="${reservedIpComment}"/>
-
 <#noparse>
 <html>
 <head>
@@ -55,7 +54,7 @@
             -
             ${(reservedIp.releaseDate?string["dd.MM.yyyy"])!_reservedIpForever}
         </td>
-        <td class="field">${reservedIp.comment!''}</td>
+        <td class="field">${HtmlUtils.htmlEscape(reservedIp.comment!'')}</td>
     </tr>
     </#list>
     </tbody>

@@ -722,6 +722,13 @@ label.bordered:after {
   table {
     tbody {
       tr {
+        &:hover {
+          .favorites {
+            .far.fa-star {
+              opacity: 1;
+            }
+          }
+        }
         td {
           height: 70px;
 
@@ -753,8 +760,17 @@ label.bordered:after {
         }
       }
     }
+    .favorites {
+      text-align: right;
+
+      .far.fa-star {
+        opacity: 0;
+      }
+
+      width: 4%;
+    }
     .number {
-      width: 14%;
+      width: 10%;
       text-align: center;
       .number-size {
         font-size: 22px;
@@ -2295,6 +2311,10 @@ a {
 
 .text-purple {
   color: $purple_color;
+}
+
+.text-gold {
+  color: gold;
 }
 
 .dn {
@@ -4718,6 +4738,11 @@ table {
   margin-right: 10px;
 }
 
+.history-item-initiator {
+  float: left;
+  margin-right: 10px;
+}
+
 .history-item-added-value, .history-item-removed-value {
   white-space: nowrap;
   float: left;
@@ -4801,5 +4826,47 @@ table {
     height: 100%;
     color: white;
     font-size: 24px !important;
+  }
+}
+
+@media (min-width: 768px) {
+
+  .modal {
+    .modal-dialog {
+      max-width: 700px !important;
+    }
+
+    .modal-xl {
+      width: 700px !important;
+
+      .resize-md-12 {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+      }
+    }
+  }
+}
+
+@media (min-width: 992px) {
+
+  .modal {
+    .modal-dialog {
+      max-width: 900px !important;
+    }
+
+    .modal-xl {
+      width: 900px !important;
+
+      .resize-lg-6 {
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+      }
+    }
+  }
+}
+
+.favorite-icon {
+  &.fas {
+    color: gold;
   }
 }

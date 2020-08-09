@@ -75,7 +75,7 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
 
     @Override
     public void clearSelection() {
-        columnProvider.setSelectedValue(null);
+        columnProvider.removeSelection();
     }
 
     @Override

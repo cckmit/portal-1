@@ -55,6 +55,7 @@ public abstract class RoleTableActivity
 
         init.parent.clear();
         init.parent.add( view.asWidget() );
+        view.clearSelection();
 
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.ROLE_CREATE ) ?
                 new ActionBarEvents.Add( CREATE_ACTION, null, UiConstants.ActionBarIdentity.ROLE ) :

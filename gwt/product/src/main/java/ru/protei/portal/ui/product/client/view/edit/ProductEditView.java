@@ -39,6 +39,8 @@ import ru.protei.portal.ui.product.client.widget.type.ProductTypeBtnGroup;
 
 import java.util.*;
 
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
+
 /**
  * Вид карточки создания/редактирования продукта
  */
@@ -89,9 +91,9 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @Override
     public void setTypeImageVisibility(boolean isVisible) {
         if (isVisible) {
-            typeImageContainer.removeClassName("hide");
+            typeImageContainer.removeClassName(HIDE);
         } else {
-            typeImageContainer.addClassName("hide");
+            typeImageContainer.addClassName(HIDE);
         }
     }
 

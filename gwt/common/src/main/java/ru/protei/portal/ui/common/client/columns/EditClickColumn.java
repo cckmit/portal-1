@@ -11,7 +11,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
 /**
- * Колонка редактирования контакта.
+ * Колонка редактирования.
  */
 public class EditClickColumn< T > extends ru.protei.portal.ui.common.client.columns.ClickColumn< T > {
 

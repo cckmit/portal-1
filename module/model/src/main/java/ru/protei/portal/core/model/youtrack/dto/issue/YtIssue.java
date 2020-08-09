@@ -38,6 +38,11 @@ public class YtIssue extends YtDto {
     }
 
     @JsonIgnore
+    public YtIssueCustomField getProjectNumberField() {
+        return getField(CustomFieldNames.projectNumbers);
+    }
+
+    @JsonIgnore
     public YtIssueCustomField getPriorityField() {
         return getField(CustomFieldNames.priority);
     }
@@ -70,6 +75,7 @@ public class YtIssue extends YtDto {
     public interface CustomFieldNames {
         String crmNumber = "Номер обращения в CRM";
         String crmNumbers = "Обращения в CRM";
+        String projectNumbers = "Проекты CRM";
         String priority = "Priority";
         String stateEng = "State";
         String stateRus = "Состояние";

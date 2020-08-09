@@ -3,6 +3,8 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.dict.En_Currency;
+import ru.protei.portal.core.model.dict.En_CustomerType;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EntityOptionSupport;
@@ -21,8 +23,11 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     @JdbcId(name = "id", idInsertMode = IdInsertMode.EXPLICIT)
     private Long id;
 
+    @JdbcColumn(name = "ref_key")
+    private String refKey;
+
     /**
-     * Создатель анкеты
+     * Создатель договора
      */
     @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = "CREATOR", table = "case_object", sqlTableAlias = "CO")
     private Long creatorId;
@@ -170,6 +175,10 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "CASE_NAME", sqlTableAlias = "case_object")
     private String projectName;
 
+    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = Project.Columns.CUSTOMER_TYPE, sqlTableAlias = "case_object")
+    @JdbcEnumerated(EnumType.ID)
+    private En_CustomerType projectCustomerType;
+
     @JdbcColumn(name = "contractor_id")
     private Long contractorId;
 
@@ -189,6 +198,14 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getRefKey() {
+        return refKey;
+    }
+
+    public void setRefKey(String refKey) {
+        this.refKey = refKey;
     }
 
     public En_ContractState getState () {
@@ -359,6 +376,10 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
         return organizationName;
     }
 
+    public void setOrganizationName(String organizationName) {
+        this.organizationName = organizationName;
+    }
+
     public Long getParentContractId() {
         return parentContractId;
     }
@@ -393,6 +414,14 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
 
     public void setProjectName(String projectName) {
         this.projectName = projectName;
+    }
+
+    public En_CustomerType getProjectCustomerType() {
+        return projectCustomerType;
+    }
+
+    public void setProjectCustomerType(En_CustomerType projectCustomerType) {
+        this.projectCustomerType = projectCustomerType;
     }
 
     public Long getCaseDirectionId() {
@@ -452,6 +481,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     public String toString() {
         return "Contract{" +
                 "id=" + id +
+                ", refKey='" + refKey + '\'' +
                 ", creatorId=" + creatorId +
                 ", created=" + created +
                 ", modified=" + modified +
@@ -483,6 +513,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
                 ", childContracts=" + childContracts +
                 ", projectId=" + projectId +
                 ", projectName='" + projectName + '\'' +
+                ", projectCustomerType=" + projectCustomerType +
                 ", contractorId=" + contractorId +
                 ", contractor=" + contractor +
                 '}';

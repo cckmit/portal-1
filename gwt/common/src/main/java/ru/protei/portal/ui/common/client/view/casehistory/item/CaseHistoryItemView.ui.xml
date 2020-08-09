@@ -6,6 +6,7 @@
 
     <g:HTMLPanel tag="li" styleName="row">
         <div class="col-md-9">
+            <span ui:field="initiator" class="history-item-initiator"/>
             <span ui:field="historyType" class="history-item-history-type"/>
             <g:HTMLPanel ui:field="addedValueContainer" tag="span" styleName="history-item-added-value">
                 <span ui:field="addedValue"/>

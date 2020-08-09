@@ -13,6 +13,7 @@ import ru.protei.portal.config.ServiceTestsConfiguration;
 import ru.protei.portal.config.TestEventConfiguration;
 import ru.protei.portal.core.model.dao.CaseLinkDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
@@ -23,7 +24,6 @@ import ru.protei.portal.mock.AuthServiceMock;
 
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -59,7 +59,7 @@ public class CaseLinkServiceImplTest {
     @Test
     public void sendMailNotificationOnSetLinks() {
 
-        when( caseObjectDAO.getCaseIdByNumber( eq( CASE_NUMBER ) ) ).thenReturn( CASE_ID );
+        when( caseObjectDAO.getCaseId( eq(En_CaseType.CRM_SUPPORT), eq(CASE_NUMBER ) ) ).thenReturn( CASE_ID );
         when( caseObjectDAO.getCaseByCaseno( eq( CASE_NUMBER ) ) ).thenReturn( new CaseObject() );
         when( caseLinkDAO.getListByQuery( any( CaseLinkQuery.class ) ) ).thenReturn( Collections.EMPTY_LIST );
         when( caseLinkDAO.persist( any( CaseLink.class ) ) ).thenReturn( CASELINK_ID );

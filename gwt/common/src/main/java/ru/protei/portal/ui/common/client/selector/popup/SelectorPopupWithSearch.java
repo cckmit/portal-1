@@ -24,6 +24,9 @@ import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSear
 
 import java.util.logging.Logger;
 
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
+
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 
 /**
  * Вид попапа
@@ -110,9 +113,9 @@ public class SelectorPopupWithSearch extends BasePopupView
 
     public void setAddButton(boolean addVisible) {
         if (addVisible) {
-            addContainer.removeClassName("hide");
+            addContainer.removeClassName(HIDE);
         } else {
-            addContainer.addClassName("hide");
+            addContainer.addClassName(HIDE);
         }
     }
 

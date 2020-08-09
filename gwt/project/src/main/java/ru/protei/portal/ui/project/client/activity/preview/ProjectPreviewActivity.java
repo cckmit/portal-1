@@ -151,10 +151,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
             view.getLinksContainer().clear();
         }
 
-        fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
-                .withCaseType(En_CaseType.PROJECT)
-                .withCaseId(value.getId())
-                .withModifyEnabled(policyService.hasPrivilegeFor(En_Privilege.PROJECT_EDIT)));
+        fireEvent(new CaseCommentEvents.Show( view.getCommentsContainer(), value.getId(), En_CaseType.PROJECT, policyService.hasPrivilegeFor( En_Privilege.PROJECT_EDIT ) ) );
         fireEvent(new ProjectEvents.ShowProjectDocuments(view.getDocumentsContainer(), project.getId(), false));
     }
 

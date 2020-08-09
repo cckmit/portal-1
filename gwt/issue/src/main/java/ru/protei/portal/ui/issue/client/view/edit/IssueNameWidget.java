@@ -31,7 +31,7 @@ public class IssueNameWidget extends Composite  {
     }
 
     public void setName( String issueName ) {
-        nameRO.setInnerHTML( issueName );
+        nameRO.setInnerText(issueName);
     }
 
     private void ensureDebugIds() {

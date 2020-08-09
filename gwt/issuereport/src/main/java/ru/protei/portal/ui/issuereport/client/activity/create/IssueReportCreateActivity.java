@@ -38,7 +38,7 @@ public abstract class IssueReportCreateActivity implements Activity,
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
-        issueFilterWidget.addAdditionalFilterValidate(
+        issueFilterWidget.setFilterValidator(
                 caseFilter -> validateQuery(caseFilter.getType(), caseFilter.getParams()));
         issueFilterWidget.getIssueFilterParams().setModel(this);
         issueFilterWidget.clearFooterStyle();
@@ -277,6 +277,9 @@ public abstract class IssueReportCreateActivity implements Activity,
         }
         if (issueFilterParams.searchPrivateVisibility().isVisible()) {
             issueFilterParams.searchPrivateVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW));
+        }
+        if (issueFilterParams.creatorsVisibility().isVisible()) {
+            issueFilterParams.creatorsVisibility().setVisible(policyService.personBelongsToHomeCompany());
         }
     }
 

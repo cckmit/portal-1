@@ -7,6 +7,8 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasEnabled;
+import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -58,15 +60,23 @@ public class TeamSelectorItem extends Composite implements AbstractTeamSelectorI
     }
 
     @Override
-    public boolean isEnabled() {
-        return isEnabled;
+    public HasEnabled roleEnabled() {
+        return role;
     }
 
     @Override
-    public void setEnabled(boolean enabled) {
-        isEnabled = enabled;
-        role.setEnabled(enabled);
-        members.setEnabled(enabled);
+    public HasEnabled membersEnabled() {
+        return members;
+    }
+
+    @Override
+    public void setRoleMandatory(boolean isMandatory) {
+        role.setMandatory(isMandatory);
+    }
+
+    @Override
+    public HasValue<En_DevUnitPersonRoleType> role() {
+        return role;
     }
 
     @UiHandler("role")
@@ -115,7 +125,6 @@ public class TeamSelectorItem extends Composite implements AbstractTeamSelectorI
     private TeamSelectorItemModel model = null;
     private AbstractTeamSelector teamSelector = null;
     private List<En_DevUnitPersonRoleType> availableRoles = null;
-    private boolean isEnabled = true;
 
     interface TeamSelectorItemUiBinder extends UiBinder<HTMLPanel, TeamSelectorItem> {}
     private static TeamSelectorItemUiBinder ourUiBinder = GWT.create(TeamSelectorItemUiBinder.class);

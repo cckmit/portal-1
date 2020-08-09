@@ -312,6 +312,20 @@ public class CaseObjectSqlBuilder {
                 condition.append(" and case_object.id IN (SELECT case_object_id FROM plan_to_case_object WHERE plan_id = ?)");
                 args.add(query.getPlanId());
             }
+
+            if (query.getPersonIdToIsFavorite() != null &&
+                    query.getPersonIdToIsFavorite().getA() != null &&
+                    query.getPersonIdToIsFavorite().getB() != null) {
+
+                String inCondition = query.getPersonIdToIsFavorite().getB() ? "IN" : "NOT IN";
+
+                condition
+                        .append(" and case_object.id ")
+                        .append(inCondition)
+                        .append(" (SELECT case_object_id FROM person_favorite_issues WHERE person_id = ?)");
+
+                args.add(query.getPersonIdToIsFavorite().getA());
+            }
         });
     }
 }

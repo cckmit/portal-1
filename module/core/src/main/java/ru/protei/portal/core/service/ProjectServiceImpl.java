@@ -3,16 +3,18 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.event.ProjectCreateEvent;
-import ru.protei.portal.core.event.ProjectUpdateEvent;
+import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.LocationQuery;
+import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.dto.ProjectInfo;
@@ -21,17 +23,23 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
-import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.service.events.EventPublisherService;
+import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.portal.schedule.PortalScheduleTasks;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.*;
-import static ru.protei.portal.api.struct.Result.*;
+import static java.util.stream.Collectors.toList;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 
 /**
@@ -79,6 +87,79 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     CaseLinkService caseLinkService;
+
+    @Autowired
+    ProjectDAO projectDAO;
+    @Autowired
+    PortalScheduleTasks scheduledTasksService;
+    @Autowired
+    EventPublisherService publisherService;
+
+
+    @EventListener
+    @Async(BACKGROUND_TASKS)
+    @Override
+    public void schedulePauseTimeNotificationsOnPortalStartup( SchedulePauseTimeOnStartupEvent event ) {
+        Collection<Project> projects = projectDAO.selectScheduledPauseTime( System.currentTimeMillis() );
+
+        if (isEmpty( projects )) {
+            log.info( "schedulePauseTimeNotificationsOnPortalStartup(): No planned pause time notifications found." );
+            return;
+        }
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat( "YYYY.MM.dd HH:mm:ss" );
+        for (Project project : projects) {
+            log.info( "schedulePauseTimeNotificationsOnPortalStartup(): projectId={} date={}", project.getId(), simpleDateFormat.format( project.getPauseDate() ) );
+
+            ProjectPauseTimeHasComeEvent projectPauseTimeEvent = new ProjectPauseTimeHasComeEvent( this, project.getId(), project.getPauseDate() );
+            scheduledTasksService.scheduleEvent( projectPauseTimeEvent, new Date( project.getPauseDate() ) );
+        }
+    }
+
+    @EventListener
+    @Async(BACKGROUND_TASKS)
+    @Override
+    public void onPauseTimeNotification( ProjectPauseTimeHasComeEvent event ) {
+        Long projectId = event.getProjectId();
+        Long pauseDate = event.getPauseDate();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat( "YYYY.MM.dd HH:mm:ss" );
+        log.info( "onPauseTimeNotification(): {} {}", projectId, simpleDateFormat.format( pauseDate ) );
+
+        Project project = projectDAO.get( projectId );
+        if (!Objects.equals( pauseDate, project.getPauseDate() )) {
+            log.info( "onPauseTimeNotification(): Ignore notification: pause date was changed: old {} new {}", simpleDateFormat.format( pauseDate ), simpleDateFormat.format( project.getPauseDate() ) );
+            return;
+        }
+
+        jdbcManyRelationsHelper.fill( project, "members" );
+
+        Collection<Long> subscribersIds = toSet( project.getMembers(), caseMember -> caseMember.getMemberId() );
+        if (project.getCreatorId() != null) {
+            subscribersIds.add( project.getCreatorId() );
+        }
+
+        if (isEmpty( subscribersIds )) {
+            log.info( "onPauseTimeNotification(): Ignore notification: No subscribers found for pause time notification {}", simpleDateFormat.format( pauseDate ) );
+            return;
+        }
+
+        PersonQuery personQuery = new PersonQuery();
+        personQuery.setDeleted( false );
+        personQuery.setFired( false );
+        personQuery.setPeople( true );
+        personQuery.setPersonIds( subscribersIds );
+        List<Person> persons = personDAO.getPersons( personQuery );
+
+        if (isEmpty( persons )) {
+            log.info( "onPauseTimeNotification(): Ignore notification: No available subscribers found for pause time notification {}", simpleDateFormat.format( pauseDate ) );
+            return;
+        }
+
+        log.info( "onPauseTimeNotification(): Do notification: pause date {} subscribers: {}", simpleDateFormat.format( pauseDate ), persons);
+        for (Person person : persons) {
+            publisherService.publishEvent( new ProjectPauseTimeNotificationEvent( this, person, project.getId(), project.getName(), new Date(pauseDate) ) );
+        }
+    }
 
     @Override
     public Result< List< RegionInfo > > listRegions( AuthToken token, ProjectQuery query ) {
@@ -147,6 +228,9 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     @Transactional
     public Result<Project> saveProject(AuthToken token, Project project ) {
+        if (!validateFields(project)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
 
         CaseObject caseObject = caseObjectDAO.get( project.getId() );
         jdbcManyRelationsHelper.fillAll( caseObject );
@@ -160,13 +244,13 @@ public class ProjectServiceImpl implements ProjectService {
         caseObject.setName( project.getName() );
         caseObject.setInfo( project.getDescription() );
         caseObject.setStateId( project.getState().getId() );
-        caseObject.setManagerId(project.getTeam()
-                .stream()
+        caseObject.setManagerId( CollectionUtils.stream( project.getTeam() )
                 .filter(personProjectMemberView -> personProjectMemberView.getRole().getId() == En_DevUnitPersonRoleType.HEAD_MANAGER.getId())
                 .map(PersonShortView::getId)
                 .findFirst()
                 .orElse(null)
         );
+        caseObject.setPauseDate( project.getPauseDate() );
 
         caseObject.setTechnicalSupportValidity(project.getTechnicalSupportValidity());
 
@@ -212,9 +296,9 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     @Transactional
     public Result<Project> createProject(AuthToken token, Project project) {
-
-        if (project == null)
-            return error(En_ResultStatus.INCORRECT_PARAMS);
+        if (!validateFields(project)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
 
         CaseObject caseObject = createCaseObjectFromProjectInfo(project);
 
@@ -240,7 +324,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         for (CaseLink caseLink : CollectionUtils.emptyIfNull(project.getLinks())) {
             caseLink.setCaseId(caseObject.getId());
-            Result currentResult = caseLinkService.createLink(token, caseLink, false);
+            Result currentResult = caseLinkService.createLink(token, caseLink, caseObject.getType());
             if (currentResult.isError()) addLinksResult = currentResult;
         }
 
@@ -249,31 +333,6 @@ public class ProjectServiceImpl implements ProjectService {
         ProjectCreateEvent projectCreateEvent = new ProjectCreateEvent(this, token.getPersonId(), project.getId());
 
         return new Result<>(En_ResultStatus.OK, project, (addLinksResult.isOk() ? null : SOME_LINKS_NOT_SAVED), Collections.singletonList(projectCreateEvent));
-    }
-
-    private CaseObject createCaseObjectFromProjectInfo(Project project) {
-        CaseObject caseObject = new CaseObject();
-        caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.PROJECT));
-        caseObject.setType(En_CaseType.PROJECT);
-        caseObject.setCreated(project.getCreated() == null ? new Date() : project.getCreated());
-        caseObject.setStateId(project.getState().getId());
-        caseObject.setCreatorId(project.getCreatorId());
-        caseObject.setName(project.getName());
-        caseObject.setInfo(project.getDescription());
-        caseObject.setManagerId(project.getLeader() == null ? null : project.getLeader().getId());
-        caseObject.setTechnicalSupportValidity(project.getTechnicalSupportValidity());
-        caseObject.setProjectSlas(project.getProjectSlas());
-
-        if (project.getProductDirection() != null)
-            caseObject.setProductId(project.getProductDirection().getId());
-
-        if (project.getCustomer().getId() != null) {
-            caseObject.setInitiatorCompanyId(project.getCustomer().getId());
-        }
-        if (project.getCustomerType() != null) {
-            caseObject.setLocal(project.getCustomerType().getId());
-        }
-        return caseObject;
     }
 
     @Override
@@ -294,6 +353,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         return ok(result);
     }
+
 
     @Override
     public Result<SearchResult<Project>> projects(AuthToken token, ProjectQuery query) {
@@ -335,9 +395,58 @@ public class ProjectServiceImpl implements ProjectService {
         return ok(result);
     }
 
+    @Override
+    public Result<PersonProjectMemberView> getProjectLeader(AuthToken authToken, Long projectId) {
+        Result<Project> projectResult = getProject(authToken, projectId);
+
+        if (projectResult.isError()) {
+            return error(projectResult.getStatus());
+        }
+
+        return projectResult.map(Project::getLeader);
+    }
+
+    private boolean validateFields(Project project) {
+        if (project == null) {
+            return false;
+        }
+
+        if (project.getLeader() == null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private CaseObject createCaseObjectFromProjectInfo(Project project) {
+        CaseObject caseObject = new CaseObject();
+        caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.PROJECT));
+        caseObject.setType(En_CaseType.PROJECT);
+        caseObject.setCreated(project.getCreated() == null ? new Date() : project.getCreated());
+        caseObject.setStateId(project.getState().getId());
+        caseObject.setCreatorId(project.getCreatorId());
+        caseObject.setName(project.getName());
+        caseObject.setInfo(project.getDescription());
+        caseObject.setManagerId(project.getLeader() == null ? null : project.getLeader().getId());
+        caseObject.setTechnicalSupportValidity(project.getTechnicalSupportValidity());
+        caseObject.setProjectSlas(project.getProjectSlas());
+        caseObject.setPauseDate( project.getPauseDate() );
+
+        if (project.getProductDirection() != null)
+            caseObject.setProductId(project.getProductDirection().getId());
+
+        if (project.getCustomer().getId() != null) {
+            caseObject.setInitiatorCompanyId(project.getCustomer().getId());
+        }
+        if (project.getCustomerType() != null) {
+            caseObject.setLocal(project.getCustomerType().getId());
+        }
+        return caseObject;
+    }
+
     private void updateTeam(CaseObject caseObject, List<PersonProjectMemberView> team) {
 
-        List<PersonProjectMemberView> toAdd = new ArrayList<>(team);
+        List<PersonProjectMemberView> toAdd = listOf(team);
         List<Long> toRemove = new ArrayList<>();
         List<En_DevUnitPersonRoleType> projectRoles = En_DevUnitPersonRoleType.getProjectRoles();
 

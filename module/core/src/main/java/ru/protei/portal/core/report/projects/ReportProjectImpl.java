@@ -19,6 +19,7 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -45,7 +46,7 @@ public class ReportProjectImpl implements ReportProject {
     ReportDAO reportDAO;
 
     @Override
-    public boolean writeReport(OutputStream buffer, Report report, Predicate<Long> isCancel) throws IOException {
+    public boolean writeReport(OutputStream buffer, Report report, DateFormat dateFormat, Predicate<Long> isCancel) throws IOException {
 
         int count = caseObjectDAO.countByQuery(report.getCaseQuery());
 
@@ -53,7 +54,7 @@ public class ReportProjectImpl implements ReportProject {
 
         if (count < 1) {
             log.debug("writeReport : reportId={} has no corresponding case objects", report.getId());
-            ReportWriter<ReportProjectWithLastComment> writer = new ExcelReportWriter(localizedLang);
+            ReportWriter<ReportProjectWithLastComment> writer = new ExcelReportWriter(localizedLang, dateFormat);
             writer.createSheet();
             writer.collect(buffer);
             return true;
@@ -61,7 +62,7 @@ public class ReportProjectImpl implements ReportProject {
 
         log.debug("writeReport : reportId={} has {} case objects to process", report.getId(), count);
 
-        try (ReportWriter<ReportProjectWithLastComment> writer = new ExcelReportWriter(localizedLang)) {
+        try (ReportWriter<ReportProjectWithLastComment> writer = new ExcelReportWriter(localizedLang, dateFormat)) {
             int sheetNumber = writer.createSheet();
             if (writeReport(writer, sheetNumber, report, count, isCancel)) {
                 writer.collect(buffer);

@@ -23,6 +23,7 @@ import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
 import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
+import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueNameDescriptionEditWidgetActivity;
@@ -32,6 +33,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import static ru.protei.portal.core.model.dict.En_Privilege.ISSUE_EDIT;
+import static ru.protei.portal.core.model.util.CrmConstants.NAME_MAX_SIZE;
 
 public class IssueNameDescriptionEditWidget extends Composite {
 
@@ -41,6 +43,8 @@ public class IssueNameDescriptionEditWidget extends Composite {
         ensureDebugIds();
         description.setDisplayPreviewHandler( isDisplay -> onDisplayPreviewChanged( AbstractIssueEditView.DESCRIPTION, isDisplay ) );
         description.setDropZonePanel(dropPanel);
+
+        name.setMaxLength(NAME_MAX_SIZE);
     }
 
     public void setFileUploader(AttachmentUploader pasteHandler) {
@@ -131,7 +135,7 @@ public class IssueNameDescriptionEditWidget extends Composite {
 
         @Override
         public boolean isValid() {
-            return HelperFunc.isNotEmpty( name.getValue() );
+            return HelperFunc.isNotEmpty( name.getValue() ) && name.isValid();
         }
     };
 
@@ -151,7 +155,7 @@ public class IssueNameDescriptionEditWidget extends Composite {
     Lang lang;
 
     @UiField
-    TextBox name;
+    ValidableTextBox name;
     @UiField
     MarkdownAreaWithPreview description;
     @UiField

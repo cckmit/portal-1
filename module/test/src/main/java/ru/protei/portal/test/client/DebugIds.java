@@ -158,6 +158,9 @@ public class DebugIds {
         String PRIVACY_YES_BUTTON = "filter-privacy-yes-button";
         String PRIVACY_NO_BUTTON = "filter-privacy-no-button";
         String PRIVACY_NOT_DEFINED_BUTTON = "filter-privacy-not-defined-button";
+        String FAVORITE_YES_BUTTON = "filter-favorite-yes-button";
+        String FAVORITE_NO_BUTTON = "filter-favorite-no-button";
+        String FAVORITE_NOT_DEFINED_BUTTON = "filter-favorite-not-defined-button";
         String PRIVACY_LABEL = "filter-privacy-label";
         String ISSUE_IMPORTANCE_LABEL = "filter-issue-importance-label";
         String ISSUE_STATE_LABEL = "filter-issue-state-label";
@@ -257,6 +260,7 @@ public class DebugIds {
         String SHOW_EDIT_BUTTON = "issue-show-edit-button";
         String LINKS_BUTTON = "issue-links-button";
         String TAGS_BUTTON = "issue-tags-button";
+        String FAVORITES_BUTTON = "issue-favorites-button";
         String EDIT_NAME_AND_DESC_BUTTON = "issue-edit-name-and-desc-button";
         String PRIVACY_BUTTON = "issue-privacy-button";
         String PRIVACY_ICON = "issue-privacy-icon";
@@ -369,6 +373,7 @@ public class DebugIds {
             String OLD_VALUE = "issue-case-history-item-old-value";
             String NEW_VALUE = "issue-case-history-item-new-value";
             String HISTORY_TYPE = "issue-case-history-item-history-type";
+            String INITIATOR = "issue-case-history-item-initiator";
         }
     }
 
@@ -664,6 +669,9 @@ public class DebugIds {
             String CUSTOMER_TYPE_SELECTOR = "document-project-search-customer-type-selector";
             String PRODUCT_LABEL = "document-project-search-product-label";
             String PRODUCT_SELECTOR = "document-project-search-product-selector";
+            String PRODUCTS_CONTAINER = "document-project-search-product-container";
+            String MANAGER_SELECTOR = "document-project-search-manager-selector";
+            String MANAGERS_CONTAINER = "document-project-search-manager-container";
             String FIND_BUTTON = "document-project-search-find-button";
             String RESET_BUTTON = "document-project-search-reset-button";
             String SHOW_FIRST_RECORDS_LABEL = "document-project-search-show-first-records-label";
@@ -713,6 +721,7 @@ public class DebugIds {
     public interface TABLE {
 
         interface BUTTON {
+            String FAVORITES = "table-favorites-button";
             String EDIT = "table-edit-button";
             String DOWNLOAD = "table-download-button";
             String REMOVE = "table-remove-button";
@@ -809,6 +818,11 @@ public class DebugIds {
         interface CONTRACTOR {
             String NAME = "contract-contractor-name";
             String SEARCH_BUTTON = "contract-contractor-search-button";
+        }
+
+        interface PROJECT {
+            String NAME = "contract-project-name";
+            String SEARCH_BUTTON = "contract-project-search-button";
         }
     }
 

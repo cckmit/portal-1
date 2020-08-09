@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module rename-to='skinClassic'>
     <stylesheet src="css/bootstrap.min.css"/>
-    <stylesheet src="dataTables.bootstrap.min.css"/>
 
     <stylesheet src="css/pages.css"/>
 

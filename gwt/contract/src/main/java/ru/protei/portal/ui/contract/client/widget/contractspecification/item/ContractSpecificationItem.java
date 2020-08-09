@@ -28,6 +28,8 @@ import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
+
 public class ContractSpecificationItem
         extends Composite
         implements TakesValue<ContractSpecification>,
@@ -111,12 +113,12 @@ public class ContractSpecificationItem
         markBoxAsError(isError);
 
         if (isError) {
-            msg.removeClassName("hide");
+            msg.removeClassName(HIDE);
             msg.setInnerText(error);
             return;
         }
 
-        msg.addClassName("hide");
+        msg.addClassName(HIDE);
         msg.setInnerText(null);
     }
 

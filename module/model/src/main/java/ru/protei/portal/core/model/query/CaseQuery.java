@@ -2,10 +2,14 @@ package ru.protei.portal.core.model.query;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.DateRange;
+import ru.protei.portal.core.model.struct.Pair;
 
 import java.util.*;
 
@@ -52,6 +56,8 @@ public class CaseQuery extends BaseQuery {
     private List<Long> caseMemberIds;
 
     private List<Long> productDirectionIds;
+
+    private Pair<Long, Boolean> personIdToIsFavorite;
 
     /**
      * if true then both states otherwise only non-private state
@@ -159,6 +165,7 @@ public class CaseQuery extends BaseQuery {
         setCaseMemberIds(query.getCaseMemberIds());
         setManagerOrInitiatorCondition(query.getManagerOrInitiatorCondition());
         setPlanId(query.getPlanId());
+        setPersonIdToIsFavorite(query.getPersonIdToIsFavorite());
     }
 
     public Long getId() {
@@ -434,6 +441,14 @@ public class CaseQuery extends BaseQuery {
         this.planId = planId;
     }
 
+    public Pair<Long, Boolean> getPersonIdToIsFavorite() {
+        return personIdToIsFavorite;
+    }
+
+    public void setPersonIdToIsFavorite(Pair<Long, Boolean> personIdToIsFavorite) {
+        this.personIdToIsFavorite = personIdToIsFavorite;
+    }
+
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
                 id != null ||
@@ -463,7 +478,8 @@ public class CaseQuery extends BaseQuery {
                 isCheckImportanceHistory != null ||
                 platformIndependentProject != null ||
                 managerOrInitiatorCondition != null ||
-                planId != null;
+                planId != null ||
+                personIdToIsFavorite != null;
     }
 
     @Override
@@ -486,8 +502,13 @@ public class CaseQuery extends BaseQuery {
                 ", headManagerIds=" + headManagerIds +
                 ", caseMemberIds=" + caseMemberIds +
                 ", productDirectionIds=" + productDirectionIds +
+                ", personToFavorite=" + personIdToIsFavorite +
                 ", allowViewPrivate=" + allowViewPrivate +
                 ", viewPrivate=" + viewPrivate +
+                ", createdFrom=" + createdFrom +
+                ", createdTo=" + createdTo +
+                ", modifiedFrom=" + modifiedFrom +
+                ", modifiedTo=" + modifiedTo +
                 ", createdRange=" + createdRange +
                 ", modifiedRange=" + modifiedRange +
                 ", searchStringAtComments=" + searchStringAtComments +
@@ -543,7 +564,8 @@ public class CaseQuery extends BaseQuery {
                 Objects.equals(productDirectionIds, caseQuery.productDirectionIds) &&
                 Objects.equals(creatorIds, caseQuery.creatorIds) &&
                 Objects.equals(managerOrInitiatorCondition, caseQuery.managerOrInitiatorCondition) &&
-                Objects.equals(planId, caseQuery.planId);
+                Objects.equals(planId, caseQuery.planId) &&
+                Objects.equals(personIdToIsFavorite, caseQuery.personIdToIsFavorite);
     }
 
     @Override
@@ -552,6 +574,6 @@ public class CaseQuery extends BaseQuery {
                 type, stateIds, importanceIds, allowViewPrivate, viewPrivate, createdRange, modifiedRange,
                 searchStringAtComments, searchCasenoString, memberId, commentAuthorIds, caseTagsIds,
                 customerSearch, findRecordByCaseComments, local, platformIndependentProject, productDirectionIds,
-                creatorIds, regionIds, headManagerIds, caseMemberIds, managerOrInitiatorCondition, planId);
+                creatorIds, regionIds, headManagerIds, caseMemberIds, managerOrInitiatorCondition, planId, personIdToIsFavorite);
     }
 }

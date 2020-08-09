@@ -12,7 +12,7 @@ public interface AbstractContractEditActivity {
 
     void onContractParentChanged();
 
-    void refreshProjectSpecificFields();
+    void onProjectChanged();
 
     void onCreateSecondContractToggle(boolean enabled);
 

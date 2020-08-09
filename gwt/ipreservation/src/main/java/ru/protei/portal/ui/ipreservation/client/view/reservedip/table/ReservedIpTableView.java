@@ -65,7 +65,7 @@ public class ReservedIpTableView extends Composite implements AbstractReservedIp
 
     @Override
     public void clearSelection() {
-        columnProvider.setSelectedValue(null);
+        columnProvider.removeSelection();
     }
 
     @Override

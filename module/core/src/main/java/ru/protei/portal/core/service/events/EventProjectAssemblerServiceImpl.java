@@ -22,7 +22,8 @@ public class EventProjectAssemblerServiceImpl implements EventProjectAssemblerSe
     @Override
     @EventListener
     public void onProjectCreateEvent(ProjectCreateEvent event) {
-        publishCreateEvent(new AssembledProjectEvent(event));
+        log.info("onProjectCreateEvent(): projectId:{}", event.getProjectId());
+        assemblerService.proceed(new AssembledProjectEvent(event));
     }
 
     @Override
@@ -60,11 +61,6 @@ public class EventProjectAssemblerServiceImpl implements EventProjectAssemblerSe
             log.debug("publish set of events, initiators : {}", eventKeys.size());
             eventKeys.forEach(this::publishAndClear);
         }
-    }
-
-    private void publishCreateEvent(AssembledProjectEvent event) {
-        assemblerService.proceed(event);
-        log.info("publishCreate event, projectId:{}", event.getProjectId());
     }
 
     private void publishAndClear(Tuple<Long, Long> key) {

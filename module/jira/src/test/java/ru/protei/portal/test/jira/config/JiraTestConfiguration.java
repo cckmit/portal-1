@@ -24,13 +24,14 @@ import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.auth.AuthServiceImpl;
 import ru.protei.portal.core.service.auth.LDAPAuthProvider;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
-import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceImpl;
 import ru.protei.portal.core.service.events.AsyncEventPublisherService;
 import ru.protei.portal.core.service.events.EventAssemblerService;
 import ru.protei.portal.core.service.events.EventAssemblerServiceImpl;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
+import ru.protei.portal.core.service.pushevent.ClientEventService;
+import ru.protei.portal.core.service.pushevent.ClientEventServiceImpl;
 import ru.protei.portal.jira.aspect.JiraServiceLayerInterceptorLogging;
 import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.jira.factory.JiraClientFactoryImpl;
@@ -304,6 +305,11 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public ClientEventService getClientEventService() {
+        return new ClientEventServiceImpl();
+    }
+
+    @Bean
     public CaseStateWorkflowService getCaseStateWorkflowService() {
         return new CaseStateWorkflowServiceImpl();
     }
@@ -446,5 +452,10 @@ public class JiraTestConfiguration {
     @Bean
     public PlanToCaseObjectDAO getPlanToCaseObjectDAO() {
         return new PlanToCaseObjectDAO_Impl();
+    }
+
+    @Bean
+    public PersonFavoriteIssuesDAO getPersonFavoritesIssuesDAO() {
+        return new PersonFavoriteIssuesDAO_Impl();
     }
 }

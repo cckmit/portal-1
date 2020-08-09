@@ -612,6 +612,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String caseLinkYouTrackShort();
 
+    String errYoutrackSynchronizationFailed();
+
     String caseLinkSuccessfulCreated();
 
     String caseLinkSuccessfulRemoved();
@@ -844,8 +846,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueCommentChangeManagerTo();
 
-    String errEditIssueCommentEmpty();
-
     String commentEmpty();
 
     String textMarkdownSupport();
@@ -881,6 +881,8 @@ public interface Lang extends Messages, ContactItemLang {
     String regionStateCanceled();
 
     String regionNotSpecified();
+
+    String regionStatePaused();
 
     String projects();
 
@@ -971,6 +973,8 @@ public interface Lang extends Messages, ContactItemLang {
     String errSaveProjectNeedSelectCompany();
 
     String errSaveProjectCannotChangeCompany();
+
+    String errSaveProjectPauseDate();
 
     String classifier();
 
@@ -1982,7 +1986,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractTypeExportOfServiceContract();
 
-    String contractTypeGovermentContract();
+    String contractTypeGovernmentContract();
 
     String contractTypeLeaseContract();
 
@@ -2128,7 +2132,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractValidationEmptyType();
 
-    String contractValidationEmptyDirection();
+    String contractValidationEmptyProject();
 
     String contractValidationEmptyState();
 
@@ -2919,4 +2923,34 @@ public interface Lang extends Messages, ContactItemLang {
     String contractSecondExpenditureHint();
 
     String contractSecondExpenditureToggle();
+
+    String savedFilter();
+
+    String filterName();
+
+    String filterRemoveConfirmMessage();
+
+    String filterRemoveSuccessed();
+
+    String filterNotDefined();
+
+    String errorNeedFeelTimeElapsed();
+
+    String errSaveProjectHeadManager();
+
+    String searchProjectTitle();
+
+    String selectContractProject();
+
+    String contractProjectFindNotChosenError();
+
+    String errContractProjectRequired();
+
+    String issueAddToFavorites();
+
+    String issueRemoveFromFavorites();
+
+    String issueFavorites();
+
+    String issueSyncedWith();
 }

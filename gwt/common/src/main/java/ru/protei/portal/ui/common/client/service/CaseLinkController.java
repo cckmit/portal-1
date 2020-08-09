@@ -20,9 +20,9 @@ public interface CaseLinkController extends RemoteService {
 
     List<CaseLink> getCaseLinks( Long caseId ) throws RequestFailedException;
 
-    CaseLink createLink(CaseLink value, boolean createCrossLinks) throws RequestFailedException;
+    CaseLink createLink(CaseLink value, En_CaseType caseType) throws RequestFailedException;
 
-    CaseLink createLinkWithPublish(CaseLink value, En_CaseType caseType, boolean createCrossLinks) throws RequestFailedException;
+    CaseLink createLinkWithPublish(CaseLink value, En_CaseType caseType) throws RequestFailedException;
 
     void deleteLink(Long id) throws RequestFailedException;
 

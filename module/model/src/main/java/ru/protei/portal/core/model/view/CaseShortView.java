@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.view;
 
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -17,7 +18,7 @@ public class CaseShortView implements Serializable, Identifiable {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
-    @JdbcColumn(name = "case_type")
+    @JdbcColumn(name = CaseObject.Columns.CASE_TYPE)
     private int typeId;
 
     @JdbcColumn(name = "CASENO")
@@ -80,7 +81,7 @@ public class CaseShortView implements Serializable, Identifiable {
     @JdbcColumn(name = "ATTACHMENT_EXISTS")
     private boolean isAttachmentExists;
 
-    @JdbcColumn(name = "pause_date")
+    @JdbcColumn(name = CaseObject.Columns.PAUSE_DATE)
     private Long pauseDate;
 
     @JdbcColumn(name = "manager_company_id")
@@ -91,6 +92,9 @@ public class CaseShortView implements Serializable, Identifiable {
 
     // ManyToMany via CaseTagService
     private List<CaseTag> tags;
+
+//    Проставляется относительно авторизованного пользователя
+    private boolean isFavorite;
 
     public CaseShortView() {
 
@@ -297,6 +301,14 @@ public class CaseShortView implements Serializable, Identifiable {
         this.managerCompanyId = managerCompanyId;
     }
 
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (id != null) {
@@ -316,7 +328,7 @@ public class CaseShortView implements Serializable, Identifiable {
                 ", name='" + name + '\'' +
                 ", info='" + info + '\'' +
                 ", stateId=" + stateId +
-                ", stateName=" + stateName +
+                ", stateName='" + stateName + '\'' +
                 ", impLevel=" + impLevel +
                 ", privateCase=" + privateCase +
                 ", initiatorId=" + initiatorId +
@@ -334,6 +346,7 @@ public class CaseShortView implements Serializable, Identifiable {
                 ", managerCompanyId=" + managerCompanyId +
                 ", managerCompanyName='" + managerCompanyName + '\'' +
                 ", tags=" + tags +
+                ", isFavorite=" + isFavorite +
                 '}';
     }
 }

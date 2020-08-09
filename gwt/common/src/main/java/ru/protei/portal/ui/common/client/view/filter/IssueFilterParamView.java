@@ -11,13 +11,13 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.struct.Pair;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -43,7 +43,6 @@ import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnit
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
-import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedSelectorRangePicker;
 
 import java.util.*;
@@ -55,6 +54,7 @@ import static ru.protei.portal.core.model.util.AlternativeKeyboardLayoutTextServ
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
 import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.searchCaseNumber;
+import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.*;
 
 public class IssueFilterParamView extends Composite implements AbstractIssueFilterParamView {
 
@@ -214,6 +214,12 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
+    public HasVisibility creatorsVisibility() {
+        return creators;
+    }
+
+
+    @Override
     public HasVisibility managersVisibility() {
         return managers;
     }
@@ -252,6 +258,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         searchByComments.setValue(false);
         toggleMsgSearchThreshold();
         searchPrivate.setValue(null);
+        searchFavorite.setValue(null);
         tags.setValue(null);
         tags.isProteiUser( policyService.hasSystemScopeForPrivilege( En_Privilege.ISSUE_VIEW ) );
         plan.setValue(null);
@@ -296,10 +303,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         search.setValue(caseQuery.getSearchString());
         searchByComments.setValue(caseQuery.isSearchStringAtComments());
         searchPrivate.setValue(caseQuery.isViewPrivate());
+        searchFavorite.setValue(caseQuery.getPersonIdToIsFavorite() == null ? null : caseQuery.getPersonIdToIsFavorite().getB());
         sortDir.setValue(caseQuery.getSortDir() == null ? null : caseQuery.getSortDir().equals(En_SortDir.ASC));
         sortField.setValue(caseQuery.getSortField() == null ? En_SortField.creation_date : caseQuery.getSortField());
-        dateCreatedRange.setValue(createDateIntervalWithType(caseQuery.getCreatedRange(), false));
-        dateModifiedRange.setValue(createDateIntervalWithType(caseQuery.getModifiedRange(), false));
+        dateCreatedRange.setValue(fromDateRange(caseQuery.getCreatedRange(), false));
+        dateModifiedRange.setValue(fromDateRange(caseQuery.getModifiedRange(), false));
         importance.setValue(caseQuery.getImportances());
         state.setValue(toSet(caseQuery.getStateIds(), id -> new CaseState(id)));
 
@@ -349,6 +357,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                     query.setAlternativeSearchString( makeAlternativeSearchString( searchString));
                 }
                 query.setViewPrivate(searchPrivate.getValue());
+                query.setPersonIdToIsFavorite(searchFavorite.getValue() == null ? null : new Pair<>(policyService.getProfileId(), searchFavorite.getValue()));
                 query.setSortField(sortField.getValue());
                 query.setSortDir(sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
                 query.setCompanyIds(getCompaniesIdList(companies.getValue()));
@@ -363,15 +372,15 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 query.setManagerCompanyIds(getCompaniesIdList(managerCompanies.getValue()));
                 query.setPlanId(plan.getValue() == null ? null : plan.getValue().getId());
 
-                query.setCreatedRange(createDateRange(dateCreatedRange.getValue()));
-                query.setModifiedRange(createDateRange(dateModifiedRange.getValue()));
+                query.setCreatedRange(toDateRange(dateCreatedRange.getValue()));
+                query.setModifiedRange(toDateRange(dateModifiedRange.getValue()));
                 break;
             }
             case CASE_TIME_ELAPSED: {
                 query.setCompanyIds(getCompaniesIdList(companies.getValue()));
                 query.setProductIds(getProductsIdList(products.getValue()));
                 query.setCommentAuthorIds(getManagersIdList(commentAuthors.getValue()));
-                query.setCreatedRange(createDateRange(dateCreatedRange.getValue()));
+                query.setCreatedRange(toDateRange(dateCreatedRange.getValue()));
                 break;
             }
             case CASE_RESOLUTION_TIME:
@@ -380,7 +389,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 query.setCaseTagsIds(nullIfEmpty(toList(tags.getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId())));
                 query.setImportances(nullIfEmpty(importance.getValue()));
                 query.setStateIds(nullIfEmpty(toList(state.getValue(), state -> state.getId())));
-                query.setCreatedRange(createDateRange(dateCreatedRange.getValue()));
+                query.setCreatedRange(toDateRange(dateCreatedRange.getValue()));
                 break;
         }
         return query;
@@ -398,34 +407,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
     private void fillDateRanges (TypedSelectorRangePicker rangePicker) {
         rangePicker.fillSelector(En_DateIntervalType.issueTypes());
-    }
-
-    public static DateRange createDateRange(DateIntervalWithType dateInterval) {
-        En_DateIntervalType intervalType = dateInterval.getIntervalType();
-
-        if (intervalType != null) {
-
-            if (Objects.equals(intervalType, En_DateIntervalType.FIXED)) {
-                DateInterval interval = dateInterval.getInterval();
-                return new DateRange(intervalType, interval.from, interval.to);
-            }
-
-            return new DateRange(intervalType, null, null);
-        }
-
-        return null;
-    }
-
-    public DateIntervalWithType createDateIntervalWithType(DateRange range, boolean isMandatory) {
-        if(range != null) {
-            if(range.getFrom() != null || range.getTo() != null) {
-                return new DateIntervalWithType(new DateInterval(range.getFrom(), range.getTo()), En_DateIntervalType.FIXED);
-            } else {
-                return new DateIntervalWithType(isMandatory ? new DateInterval() : null, range.getIntervalType());
-            }
-        } else {
-            return null;
-        }
     }
 
     @UiHandler("search")
@@ -495,6 +476,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         onFilterChanged();
     }
 
+    @UiHandler("searchFavorite")
+    public void onSearchFavoriteChanged(ValueChangeEvent<Boolean> event) {
+        onFilterChanged();
+    }
+
     @UiHandler("importance")
     public void onImportanceSelected(ValueChangeEvent<Set<En_ImportanceLevel>> event) {
         onFilterChanged();
@@ -529,6 +515,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         }
 
         search.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        searchFavoriteContainer.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         searchByComments.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         if (filterType.equals(En_CaseFilterType.CASE_OBJECTS)) {
             dateCreatedRange.setHeader(lang.created());
@@ -663,6 +650,9 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         searchPrivate.setYesEnsureDebugId(DebugIds.FILTER.PRIVACY_YES_BUTTON);
         searchPrivate.setNotDefinedEnsureDebugId(DebugIds.FILTER.PRIVACY_NOT_DEFINED_BUTTON);
         searchPrivate.setNoEnsureDebugId(DebugIds.FILTER.PRIVACY_NO_BUTTON);
+        searchFavorite.setYesEnsureDebugId(DebugIds.FILTER.FAVORITE_YES_BUTTON);
+        searchFavorite.setNotDefinedEnsureDebugId(DebugIds.FILTER.FAVORITE_NOT_DEFINED_BUTTON);
+        searchFavorite.setNoEnsureDebugId(DebugIds.FILTER.FAVORITE_NO_BUTTON);
         tags.setAddEnsureDebugId(DebugIds.FILTER.TAG_SELECTOR_ADD_BUTTON);
         tags.setClearEnsureDebugId(DebugIds.FILTER.TAG_SELECTOR_CLEAR_BUTTON);
         tags.setItemContainerEnsureDebugId(DebugIds.FILTER.TAG_SELECTOR_ITEM_CONTAINER);
@@ -843,7 +833,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @UiField
     HTMLPanel searchPrivateContainer;
     @UiField
+    HTMLPanel searchFavoriteContainer;
+    @UiField
     ThreeStateButton searchPrivate;
+    @UiField
+    ThreeStateButton searchFavorite;
     @UiField
     LabelElement labelSortBy;
     @UiField

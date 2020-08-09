@@ -21,6 +21,8 @@ public interface AbstractIssueEditView extends IsWidget {
 
     void setName(String issueName);
 
+    void setIntegration(String name);
+
     HasWidgets getTagsContainer();
 
     HasWidgets getInfoContainer();
@@ -44,4 +46,6 @@ public interface AbstractIssueEditView extends IsWidget {
     boolean isAttached();
 
     String DESCRIPTION = "description";
+
+    void setFavoriteButtonActive(boolean isActive);
 }

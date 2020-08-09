@@ -36,4 +36,8 @@ public interface AbstractIssueCreateView extends IsWidget {
     String DESCRIPTION = "description";
 
     HasWidgets getIssueMetaViewContainer();
+
+    boolean isFavoriteButtonActive();
+
+    void setFavoriteButtonActive(boolean isActive);
 }
