@@ -100,9 +100,8 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
             pwd = decrypt(pwd);
         }
         if (login == null || pwd == null) {
-            resetRememberMe();
-            placeView();
-            return;
+           login = null;
+           pwd = null;
         }
         authService.authenticate(login, pwd, new FluentCallback<Profile>()
                 .withError(throwable -> {
