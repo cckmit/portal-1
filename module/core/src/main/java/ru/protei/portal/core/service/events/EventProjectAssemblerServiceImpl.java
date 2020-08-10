@@ -48,6 +48,13 @@ public class EventProjectAssemblerServiceImpl implements EventProjectAssemblerSe
         assembledProjectEvent.attachLinkEvent(event);
     }
 
+    @Override
+    @EventListener
+    public void onProjectAttachmentEvent(ProjectAttachmentEvent event) {
+        AssembledProjectEvent assembledProjectEvent = getAssembledProjectEvent(event);
+        assembledProjectEvent.attachAttachmentEvent(event);
+    }
+
     @Scheduled(fixedRate = 1 * SEC)
     public void checkEventsMap() {
         //Measured in ms

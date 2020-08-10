@@ -678,7 +678,7 @@ public class MailNotificationProcessor {
                 event,
                 addresses,
                 links,
-                makeCrmProjectUrl(config.data().getMailNotificationConfig().getCrmUrlInternal(), event.getProjectId())                ,
+                makeCrmProjectUrl(config.data().getMailNotificationConfig().getCrmUrlInternal(), event.getProjectId()),
                 new EnumLangUtil(lang)
         );
 
@@ -1049,6 +1049,7 @@ public class MailNotificationProcessor {
                 || event.isTeamChanged()
                 || event.isSlaChanged()
                 || event.isCommentsChanged()
+                || event.isAttachmentChanged()
                 || event.isLinksChanged();
     }
 

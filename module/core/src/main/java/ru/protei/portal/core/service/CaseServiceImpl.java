@@ -567,6 +567,15 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
+    public Result<Boolean> isExistAnyAttachments(List<Long> attachmentIds) {
+        if (isEmpty(attachmentIds)) {
+            return ok(false);
+        }
+
+        return ok(caseAttachmentDAO.checkExistAnyAttachments(attachmentIds));
+    }
+
+    @Override
     public Result<List<CaseLink>> getCaseLinks( AuthToken token, Long caseId ) {
         return caseLinkService.getLinks( token, caseId)
                 .map( this::fillYouTrackInfo );

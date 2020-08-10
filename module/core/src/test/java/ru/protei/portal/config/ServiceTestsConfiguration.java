@@ -41,10 +41,7 @@ import ru.protei.portal.core.report.projects.ReportProjectImpl;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
-import ru.protei.portal.core.service.events.CaseSubscriptionService;
-import ru.protei.portal.core.service.events.CaseSubscriptionServiceImpl;
-import ru.protei.portal.core.service.events.EventAssemblerService;
-import ru.protei.portal.core.service.events.EventAssemblerServiceImpl;
+import ru.protei.portal.core.service.events.*;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
 import ru.protei.portal.core.service.pushevent.ClientEventService;
@@ -225,8 +222,18 @@ public class ServiceTestsConfiguration {
     }
 
     @Bean
+    public EventProjectAssemblerService getProjectPublisherService() {
+        return new EventProjectAssemblerServiceImpl();
+    }
+
+    @Bean
     public AssemblerService getAssemblerService() {
         return new AssemblerServiceImpl();
+    }
+
+    @Bean
+    public AssemblerProjectService getAssemblerProjectService() {
+        return new AssemblerProjectServiceImpl();
     }
 
     @Bean
