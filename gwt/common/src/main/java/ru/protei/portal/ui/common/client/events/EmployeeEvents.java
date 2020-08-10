@@ -5,11 +5,8 @@ import com.google.gwt.user.client.ui.Widget;
 import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeShortView;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 
 public class EmployeeEvents {

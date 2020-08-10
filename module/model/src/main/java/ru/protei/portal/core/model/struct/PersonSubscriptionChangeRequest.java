@@ -31,4 +31,12 @@ public class PersonSubscriptionChangeRequest extends AuditableObject {
     public Set<PersonShortView> getPersons() {
         return persons;
     }
+
+    @Override
+    public String toString() {
+        return "PersonSubscriptionChangeRequest{" +
+                "notifierId=" + notifierId +
+                ", persons=" + persons +
+                '}';
+    }
 }

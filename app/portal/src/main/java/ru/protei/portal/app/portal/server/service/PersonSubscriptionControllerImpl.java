@@ -1,7 +1,10 @@
 package ru.protei.portal.app.portal.server.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.app.portal.client.service.PersonSubscriptionController;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.struct.PersonSubscriptionChangeRequest;
@@ -21,14 +24,20 @@ public class PersonSubscriptionControllerImpl implements PersonSubscriptionContr
 
     @Override
     public Set<PersonShortView> getPersonSubscriptions() throws RequestFailedException {
+        log.info("getPersonSubscriptions()");
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
-        return checkResultAndGetData(personSubscriptionService.getPersonSubscriptions(token));
+        Result<Set<PersonShortView>> result = personSubscriptionService.getPersonSubscriptions(token);
+        log.info("getPersonSubscriptions(): result={}", result.isOk() ? "ok" : result.getStatus());
+        return checkResultAndGetData(result);
     }
 
     @Override
     public Set<PersonShortView> updatePersonSubscriptions(PersonSubscriptionChangeRequest changeRequest) throws RequestFailedException {
+        log.info("updatePersonSubscriptions(): changeRequest={}", changeRequest);
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
-        return checkResultAndGetData(personSubscriptionService.updatePersonSubscriptions(token, changeRequest));
+        Result<Set<PersonShortView>> result = personSubscriptionService.updatePersonSubscriptions(token, changeRequest);
+        log.info("updatePersonSubscriptions(): result={}", result.isOk() ? "ok" : result.getStatus());
+        return checkResultAndGetData(result);
     }
 
     @Autowired
@@ -39,4 +48,6 @@ public class PersonSubscriptionControllerImpl implements PersonSubscriptionContr
 
     @Autowired
     HttpServletRequest httpServletRequest;
+
+    private static final Logger log = LoggerFactory.getLogger(PersonSubscriptionControllerImpl.class);
 }
