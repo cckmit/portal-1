@@ -54,7 +54,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
-        fillView(employee);
+        fillView(event.employeeId);
         view.showFullScreen(true);
     }
 
@@ -164,7 +164,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
             itemView.departmentContainerVisibility().setVisible(true);
         }
 
-        if (head != null && !head.getId().equals(employee)) {
+        if (head != null && !head.getId().equals(employee.getId())) {
             itemView.setDepartmentHead(head.getName(), LinkUtils.makePreviewLink(EmployeeShortView.class, head.getId()));
             itemView.departmentHeadContainerVisibility().setVisible(true);
         }
