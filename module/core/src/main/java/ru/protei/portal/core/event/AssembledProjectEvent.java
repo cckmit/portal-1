@@ -173,11 +173,7 @@ public class AssembledProjectEvent extends ApplicationEvent {
     }
 
     public boolean isAttachmentChanged() {
-        if (!commentToAttachmentDiffs.isEmpty()) {
-            return true;
-        }
-
-        return false;
+        return !commentToAttachmentDiffs.isEmpty();
     }
 
     public boolean isLinksChanged() {
