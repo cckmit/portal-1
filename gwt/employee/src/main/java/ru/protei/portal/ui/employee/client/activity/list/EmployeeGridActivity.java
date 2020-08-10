@@ -41,15 +41,6 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
         fireEvent(new EmployeeEvents.ShowDefinite(currentViewType, filterView.asWidget(), query, event.preScroll));
     }
 
-    @Event(Type.FILL_CONTENT)
-    public void onShow(EmployeeEvents.ShowAbsent event) {
-        show();
-        query.setAbsent(true);
-        filterView.showAbsent().setValue(true);
-
-        fireEvent(new EmployeeEvents.ShowDefinite(currentViewType, filterView.asWidget(), query, false));
-    }
-
     @Event
     public void onChangeViewClicked(ActionBarEvents.Clicked event) {
         if (!(UiConstants.ActionBarIdentity.EMPLOYEE_TYPE_VIEW.equals(event.identity))) {

@@ -28,14 +28,6 @@ public class EmployeeEvents {
     }
 
     /**
-     * Показать отсутствующих сотрудников
-     */
-    @Url( value = "employees_absent", primary = true )
-    public static class ShowAbsent {
-        public ShowAbsent () {}
-    }
-
-    /**
      * Показать карточку сотрудника
      */
     public static class ShowPreview {
