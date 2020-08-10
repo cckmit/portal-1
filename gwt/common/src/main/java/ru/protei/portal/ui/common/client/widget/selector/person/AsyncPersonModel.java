@@ -19,6 +19,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Асинхронная модель Person
@@ -68,18 +69,24 @@ public abstract class AsyncPersonModel implements AsyncSearchSelectorModel<Perso
         }
 
         currentPerson = null;
-        personService.getPersonShortView(myId, new FluentCallback<PersonShortView>().withSuccess(r->currentPerson=r)
-        );
+        personService.getPersonShortView(myId, new FluentCallback<PersonShortView>().withSuccess(r->currentPerson=r));
     }
 
-    private void savePerson(Person person) {
-        currentPerson = person.toFullNameShortView();
+    public void updateCompanies(Set<Long> companyIds) {
+        cache.clearCache();
+        cache.setLoadHandler(makeLoadHandler(makeQuery(searchString, companyIds)));
     }
 
     private PersonQuery makeQuery(String searchString) {
+        return makeQuery(searchString, null);
+    }
+
+    private PersonQuery makeQuery(String searchString, Set<Long> companyIds) {
         PersonQuery personQuery = new PersonQuery();
         personQuery.setDeleted(false);
+        personQuery.setPeople(true);
         personQuery.setSearchString(searchString);
+        personQuery.setCompanyIds(companyIds);
 
         return personQuery;
     }

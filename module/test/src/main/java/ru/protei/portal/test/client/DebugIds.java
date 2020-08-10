@@ -695,6 +695,7 @@ public class DebugIds {
             String PRODUCT_SELECTOR = "document-project-create-product-selector";
             String SAVE_BUTTON = "document-project-create-save-button";
             String RESET_BUTTON = "document-project-create-reset-button";
+            String MANAGER_SELECTOR = "document-project-manager-selector";
         }
     }
 
