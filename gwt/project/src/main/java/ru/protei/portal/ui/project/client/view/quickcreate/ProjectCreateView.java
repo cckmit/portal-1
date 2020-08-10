@@ -124,7 +124,7 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
 
     @Override
     public void setManagersModel(AsyncPersonModel model) {
-        headManagers.setAsyncSearchModel(model);
+        headManagers.setAsyncPersonModel(model);
     }
 
     @Override

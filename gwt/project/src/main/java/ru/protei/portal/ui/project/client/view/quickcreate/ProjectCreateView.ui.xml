@@ -60,6 +60,7 @@
                                         selectCompanyMessage="{lang.managerSelectACompany}"
                                         addStyleNames="form-group col-md-6"
                                         validation="true"
+                                        firedVisible="false"
                                         hasNullValue="false"/>
 
             <div class="form-group col-md-6">

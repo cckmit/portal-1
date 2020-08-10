@@ -38,6 +38,7 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
+        view.setManagersModel(asyncPersonModel);
     }
 
     @Event
@@ -96,7 +97,6 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
         view.product().setValue(project.getSingleProduct());
         view.updateProductDirection(project.getProductDirection() == null ? null : project.getProductDirection().getId());
         view.headManagers().setValue(new HashSet<>(emptyIfNull(project.getTeam())));
-        view.setManagersModel(asyncPersonModel);
         homeCompanyService.getAllHomeCompanies(homeCompanies -> view.setCompaniesSupplier(() -> new HashSet<>(homeCompanies)));
     }
 
