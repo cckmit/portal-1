@@ -106,9 +106,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
                         return;
                     }
 
-                    itemView.setAbsenceReason(
-                            employee.getCurrentAbsence() == null ? null : employee.getCurrentAbsence().getReason());
-
+                    itemView.setCurrentAbsence(employee.getCurrentAbsence());
                 }));
     }
 
@@ -177,8 +175,8 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         if(employee.isFired()) {
             itemView.setFireDate(DateFormatter.formatDateOnly(employee.getFireDate()));
         }
-        if(employee.getCurrentAbsence() != null && policyService.hasPrivilegeFor(En_Privilege.ABSENCE_VIEW)) {
-            itemView.setAbsenceReason(employee.getCurrentAbsence().getReason());
+        if(policyService.hasPrivilegeFor(En_Privilege.ABSENCE_VIEW)) {
+            itemView.setCurrentAbsence(employee.getCurrentAbsence());
         }
         return itemView;
     }

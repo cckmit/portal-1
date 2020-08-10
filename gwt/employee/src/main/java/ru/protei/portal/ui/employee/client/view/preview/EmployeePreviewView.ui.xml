@@ -40,8 +40,15 @@
                 <span ui:field="ip"/>
             </div>
 
-            <h5 ui:field="absencesLabel" class="m-b-0 hide"><ui:text from="{lang.absences}"/></h5>
-            <g:HTMLPanel ui:field="absencesContainer"/>
+            <div ui:field="absencesPanel" class="row hide">
+                <div class="col-md-6">
+                    <h5><ui:text from="{lang.absences}"/></h5>
+                </div>
+                <div class="col-md-6 text-right">
+                    <g:Button styleName="btn btn-xs btn-info" ui:field="createAbsenceButton" text="{lang.absenceButtonCreate}"/>
+                </div>
+                <g:HTMLPanel ui:field="absencesContainer" styleName="col-md-12"/>
+            </div>
         </div>
 
         <g:HTMLPanel ui:field="backButtonPanel" styleName="card-footer">

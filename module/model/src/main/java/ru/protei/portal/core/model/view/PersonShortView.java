@@ -78,4 +78,13 @@ public class PersonShortView implements Serializable {
             return null;
         return new PersonShortView( person.getDisplayShortName(), person.getId(), person.isFired() );
     }
+
+    @Override
+    public String toString() {
+        return "PersonShortView{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", isFired=" + isFired +
+                '}';
+    }
 }

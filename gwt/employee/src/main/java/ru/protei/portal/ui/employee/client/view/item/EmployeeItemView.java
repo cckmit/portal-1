@@ -8,7 +8,8 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_AbsenceReason;
+import ru.protei.portal.core.model.ent.PersonAbsence;
+import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.En_AbsenceReasonLang;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemView;
@@ -101,8 +102,8 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
         editIcon.setVisible(link != null && !link.isEmpty());
     }
 
-    public void setAbsenceReason(En_AbsenceReason reason) {
-        if (reason == null) {
+    public void setCurrentAbsence(PersonAbsence absence) {
+        if (absence == null) {
             removeStyleName("absent");
             absenceReason.addClassName("hide");
             absenceReason.setTitle("");
@@ -110,8 +111,12 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
         } else {
             addStyleName("absent");
             absenceReason.removeClassName("hide");
-            absenceReason.setTitle(reasonLang.getName(reason));
-            absenceIcon.addClassName(reasonLang.getIcon(reason));
+            absenceReason.setTitle(reasonLang.getName(absence.getReason()) +
+                    "\n" +
+                    DateFormatter.formatDateTime(absence.getFromTime()) +
+                    " - " +
+                    DateFormatter.formatDateTime(absence.getTillTime()));
+            absenceIcon.addClassName(reasonLang.getIcon(absence.getReason()));
         }
     }
 
