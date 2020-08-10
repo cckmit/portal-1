@@ -96,6 +96,7 @@ public class PersonMultiSelector extends InputPopupMultiSelector<PersonShortView
 
         if (personModel != null) {
             personModel.updateCompanies(this, null, companyIds, null);
+            return;
         }
 
         if (asyncPersonModel != null) {
