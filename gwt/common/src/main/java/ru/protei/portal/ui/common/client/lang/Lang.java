@@ -2902,6 +2902,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String absenceReportHint();
 
+    String absenceButtonSummaryTable();
+
     String buttonSend();
 
     String absenceReportValidationDateRange();

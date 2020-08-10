@@ -4,6 +4,11 @@ import com.google.gwt.user.client.ui.HasWidgets;
 
 public class AbsenceEvents {
 
+    public static class ShowSummaryTable {
+        public ShowSummaryTable() {
+        }
+    }
+
     public static class Show {
 
         public HasWidgets parent;
