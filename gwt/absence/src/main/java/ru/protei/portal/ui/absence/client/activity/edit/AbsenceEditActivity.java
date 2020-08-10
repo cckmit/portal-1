@@ -17,9 +17,11 @@ import ru.protei.portal.ui.common.client.events.EmployeeEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AbsenceControllerAsync;
+import ru.protei.portal.ui.common.client.util.DateUtils;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
+import java.util.Date;
 import java.util.function.Consumer;
 
 import static com.google.gwt.user.datepicker.client.CalendarUtil.copyDate;
@@ -46,7 +48,11 @@ public abstract class AbsenceEditActivity implements AbstractAbsenceEditActivity
         dialogView.showPopup();
 
         if (event.id == null) {
-            showForm(new PersonAbsence(event.employee.getId(), event.employee.getDisplayName()));
+            showForm(new PersonAbsence(
+                    event.employee == null ? null : event.employee.getId(),
+                    event.employee == null ? null : event.employee.getDisplayName(),
+                    DateUtils.setBeginOfDay(new Date()),
+                    DateUtils.setEndOfDay(new Date())));
         } else {
             loadAbsence(event.id, this::showForm);
         }

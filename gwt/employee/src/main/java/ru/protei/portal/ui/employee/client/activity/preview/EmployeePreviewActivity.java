@@ -135,7 +135,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
 
     @Event
     public void onUpdate(EmployeeEvents.Update event) {
-        if(event.id == null || !Objects.equals(event.id, employee))
+        if(event.id == null || !Objects.equals(event.id, employee.getId()))
             return;
 
         showAbsences(event.id);
