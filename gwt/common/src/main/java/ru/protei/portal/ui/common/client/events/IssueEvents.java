@@ -42,14 +42,19 @@ public class IssueEvents {
      * Показать превью обращения
      */
     public static class ShowPreview {
-
         public ShowPreview ( HasWidgets parent, Long issueCaseNumber ) {
             this.parent = parent;
             this.issueCaseNumber = issueCaseNumber;
         }
 
+        public ShowPreview withBackHandler(Runnable backHandler) {
+            this.backHandler = backHandler;
+            return this;
+        }
+
         public HasWidgets parent;
         public Long issueCaseNumber;
+        public Runnable backHandler;
     }
 
     /**
@@ -69,15 +74,15 @@ public class IssueEvents {
         @Name( "id" )
         public Long caseNumber;
         @Omit
-        public Runnable backEvent;
+        public Runnable backHandler;
 
         public Edit() { this.caseNumber = null; }
         public Edit (Long caseNumber) {
             this.caseNumber = caseNumber;
         }
 
-        public Edit withBackEvent(Runnable backEvent) {
-            this.backEvent = backEvent;
+        public Edit withBackHandler(Runnable backHandler) {
+            this.backHandler = backHandler;
             return this;
         }
     }
