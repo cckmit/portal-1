@@ -165,6 +165,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         AbstractDashboardTableView table = tableProvider.get();
         table.setEnsureDebugId(DebugIds.DASHBOARD.TABLE + order);
         table.setName(name);
+        table.setCollapsed(dashboard.getCollapsed() == null ? false : dashboard.getCollapsed());
         table.setActivity(new AbstractDashboardTableActivity() {
             @Override
             public void onItemClicked(CaseShortView value) {
@@ -181,6 +182,11 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
             @Override
             public void onRemoveClicked() {
                 removeTable(dashboard);
+            }
+            @Override
+            public void onCollapseClicked(boolean isCollapsed){
+                dashboard.setCollapsed(isCollapsed);
+                userLoginController.saveUserDashboard(dashboard, new FluentCallback<Long>());
             }
             @Override
             public void onReloadClicked() {

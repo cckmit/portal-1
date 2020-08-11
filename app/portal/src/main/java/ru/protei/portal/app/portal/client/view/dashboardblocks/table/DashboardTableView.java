@@ -56,6 +56,17 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     }
 
     @Override
+    public void setCollapsed(boolean isCollapsed) {
+        if (isCollapsed){
+            tableContainer.addClassName("table-container-collapsed");
+            collapseIcon.replaceClassName("fa-caret-down", "fa-caret-right");
+        } else {
+            tableContainer.removeClassName("table-container-collapsed");
+            collapseIcon.replaceClassName("fa-caret-right", "fa-caret-down");
+        }
+    }
+
+    @Override
     public void setTotalRecords(int totalRecords) {
         count.setInnerText("(" + totalRecords + ")");
     }
@@ -118,13 +129,10 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
 
     @UiHandler("collapse")
     public void onCollapseClicked(ClickEvent event) {
-       if(tableContainer.getClassName().contains("table-container-collapsed")){
-           tableContainer.removeClassName("table-container-collapsed");
-           collapseIcon.replaceClassName("fa-caret-right", "fa-caret-down");
-       } else {
-           tableContainer.addClassName("table-container-collapsed");
-           collapseIcon.replaceClassName("fa-caret-down", "fa-caret-right");
-       }
+        boolean isCollapsed = tableContainer.getClassName().contains("table-container-collapsed");
+
+        activity.onCollapseClicked(!isCollapsed);
+        setCollapsed(!isCollapsed);
     }
 
     private void initTable() {

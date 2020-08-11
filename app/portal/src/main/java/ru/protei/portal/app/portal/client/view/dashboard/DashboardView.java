@@ -32,8 +32,6 @@ public class DashboardView extends Composite implements AbstractDashboardView{
         containerRight.clear();
     }
 
-
-
     @Override
     public HasVisibility loadingViewVisibility() {
         return loadingView;
