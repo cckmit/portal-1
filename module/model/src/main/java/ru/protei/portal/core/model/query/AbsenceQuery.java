@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.view.filterwidget.FilterQuery;
 
+import java.util.Objects;
 import java.util.Set;
 
 public class AbsenceQuery extends BaseQuery implements FilterQuery {
@@ -77,5 +78,20 @@ public class AbsenceQuery extends BaseQuery implements FilterQuery {
                 ", limit=" + limit +
                 ", offset=" + offset +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AbsenceQuery)) return false;
+        AbsenceQuery that = (AbsenceQuery) o;
+        return Objects.equals(dateRange, that.dateRange) &&
+                Objects.equals(employeeIds, that.employeeIds) &&
+                Objects.equals(reasonIds, that.reasonIds);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(dateRange, employeeIds, reasonIds);
     }
 }

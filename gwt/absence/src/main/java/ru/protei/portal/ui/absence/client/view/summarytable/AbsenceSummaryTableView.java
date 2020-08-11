@@ -6,8 +6,9 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
-import ru.brainworm.factory.widget.table.client.TableWidget;
+import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.ent.PersonAbsence;
 import ru.protei.portal.ui.absence.client.activity.summarytable.AbstractAbsenceSummaryTableActivity;
 import ru.protei.portal.ui.absence.client.activity.summarytable.AbstractAbsenceSummaryTableView;
@@ -61,6 +62,9 @@ public class AbsenceSummaryTableView extends Composite implements AbstractAbsenc
             clickColumn.setHandler(activity);
             clickColumn.setColumnProvider(columnProvider);
         });
+
+        table.setLoadHandler( activity );
+        table.setPagerListener( activity );
     }
 
     @Override
@@ -70,12 +74,33 @@ public class AbsenceSummaryTableView extends Composite implements AbstractAbsenc
 
     @Override
     public void clearRecords() {
+        table.clearCache();
         table.clearRows();
     }
 
     @Override
-    public void addRecords(List<PersonAbsence> absences) {
-        absences.forEach(absence -> table.addRow(absence));
+    public HasWidgets getPagerContainer() {
+        return pagerContainer;
+    }
+
+    @Override
+    public void setTotalRecords(int totalRecords) {
+        table.setTotalRecords(totalRecords);
+    }
+
+    @Override
+    public int getPageCount() {
+        return table.getPageCount();
+    }
+
+    @Override
+    public void scrollTo( int page ) {
+        table.scrollToPage( page );
+    }
+
+    @Override
+    public void triggerTableLoad() {
+        table.setTotalRecords(table.getPageSize());
     }
 
     private void initTable() {
@@ -91,6 +116,7 @@ public class AbsenceSummaryTableView extends Composite implements AbstractAbsenc
         columns.add(tillTime);
         columns.add(comment);
 
+        table.addColumn(person.header, person.values);
         table.addColumn(fromTime.header, fromTime.values);
         table.addColumn(tillTime.header, tillTime.values);
         table.addColumn(reason.header, reason.values);
@@ -100,6 +126,18 @@ public class AbsenceSummaryTableView extends Composite implements AbstractAbsenc
         table.addColumn(removeClickColumn.header, removeClickColumn.values);
 
     }
+
+    ClickColumn<PersonAbsence> person = new ClickColumn<PersonAbsence>() {
+        @Override
+        protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setInnerText(lang.accountPerson());
+        }
+
+        @Override
+        public void fillColumnValue(Element cell, PersonAbsence value) {
+            cell.setInnerHTML(value.getPerson().getName());
+        }
+    };
 
     ClickColumn<PersonAbsence> reason = new ClickColumn<PersonAbsence>() {
         @Override
@@ -150,7 +188,9 @@ public class AbsenceSummaryTableView extends Composite implements AbstractAbsenc
     };
 
     @UiField
-    TableWidget<PersonAbsence> table;
+    InfiniteTableWidget<PersonAbsence> table;
+    @UiField
+    HTMLPanel pagerContainer;
 
     @Inject
     @UiField(provided = true)

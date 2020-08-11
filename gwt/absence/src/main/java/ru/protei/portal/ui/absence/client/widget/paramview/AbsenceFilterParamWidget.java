@@ -77,7 +77,7 @@ public class AbsenceFilterParamWidget extends Composite implements AbstractAbsen
     @Override
     public void resetFilter() {
         employees.setValue(null);
-        dateRange.setValue(null);
+        dateRange.setValue(new DateIntervalWithType(null, En_DateIntervalType.TODAY));
         reasons.setValue(null);
         sortField.setValue(En_SortField.absence_person);
         sortDir.setValue(true);

@@ -12,9 +12,9 @@ import ru.protei.portal.core.service.AbsenceService;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.AbsenceController;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 import static ru.protei.portal.ui.common.server.ServiceUtils.*;
 
@@ -25,12 +25,12 @@ import static ru.protei.portal.ui.common.server.ServiceUtils.*;
 public class AbsenceControllerImpl implements AbsenceController {
 
     @Override
-    public List<PersonAbsence> getAbsences(AbsenceQuery query) throws RequestFailedException {
+    public SearchResult<PersonAbsence> getAbsences(AbsenceQuery query) throws RequestFailedException {
         log.info("getAbsences(): query={}", query);
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
-        Result<List<PersonAbsence>> result = absenceService.getAbsences(token, query);
-        log.info("getAbsence(): result={}", result.isOk() ? "ok" : result.getStatus());
-        return checkResultAndGetData(result);
+        Result<SearchResult<PersonAbsence>> result = absenceService.getAbsences(token, query);
+        log.info("getAbsence(): result={}", result);
+        return result.getData();
     }
 
     @Override
