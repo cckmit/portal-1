@@ -96,7 +96,7 @@ public abstract class IssueEditActivity implements
             return;
         }
 
-        fireBackEvent = event.backEvent != null ? event.backEvent : () -> fireEvent(new Back());
+        backHandler = event.backHandler != null ? event.backHandler : () -> fireEvent(new Back());
 
         viewModeIsPreview(false);
         container.clear();
@@ -112,7 +112,7 @@ public abstract class IssueEditActivity implements
             return;
         }
 
-        fireBackEvent = event.backEvent != null ? event.backEvent : () -> fireEvent(new Back());
+        backHandler = event.backHandler != null ? event.backHandler : () -> fireEvent(new Back());
 
         viewModeIsPreview(true);
         container.clear();
@@ -127,7 +127,7 @@ public abstract class IssueEditActivity implements
             return;
         }
 
-        fireBackEvent = () -> fireEvent(new IssueEvents.Show(false));
+        backHandler = () -> fireEvent(new IssueEvents.Show(false));
 
         viewModeIsPreview(false);
         container.clear();
@@ -249,7 +249,7 @@ public abstract class IssueEditActivity implements
 
     @Override
     public void onOpenEditViewClicked() {
-        fireEvent(new IssueEvents.Edit(issue.getCaseNumber()).withBackEvent(fireBackEvent));
+        fireEvent(new IssueEvents.Edit(issue.getCaseNumber()).withBackHandler(backHandler));
     }
 
     @Override
@@ -265,7 +265,7 @@ public abstract class IssueEditActivity implements
 
     @Override
     public void onBackClicked() {
-        fireBackEvent.run();
+        backHandler.run();
     }
 
     @Override
@@ -522,7 +522,7 @@ public abstract class IssueEditActivity implements
     private Profile authProfile;
     private AppEvents.InitDetails initDetails;
     private AbstractCaseTagListActivity tagListActivity;
-    private Runnable fireBackEvent = () -> fireEvent(new Back());
+    private Runnable backHandler = () -> fireEvent(new Back());
     private static final En_CaseType ISSUE_CASE_TYPE = En_CaseType.CRM_SUPPORT;
 
     private static final Logger log = Logger.getLogger(IssueEditActivity.class.getName());
