@@ -9,7 +9,7 @@
         <div class="card card-default widget-11 widget-loader-bar dashboard no-margin">
             <div class="card-header">
                 <div class="card-title">
-                    <g:Button ui:field="collapse" title="{lang.dashboardActionRemove}" styleName="btn btn-default padding-0 no-border bg-transparent">
+                    <g:Button ui:field="collapse" styleName="btn btn-default padding-0 no-border bg-transparent">
                         <i ui:field="collapseIcon" class="fas fa-caret-down font-large m-r-5 collapse-icon"/>
                         <span ui:field="name"/>
                         <span ui:field="count"/>

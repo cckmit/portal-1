@@ -60,9 +60,11 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
         if (isCollapsed){
             tableContainer.addClassName("table-container-collapsed");
             collapseIcon.replaceClassName("fa-caret-down", "fa-caret-right");
+            collapse.setTitle(lang.dashboardActionExpand());
         } else {
             tableContainer.removeClassName("table-container-collapsed");
             collapseIcon.replaceClassName("fa-caret-right", "fa-caret-down");
+            collapse.setTitle(lang.dashboardActionCollapse());
         }
     }
 
