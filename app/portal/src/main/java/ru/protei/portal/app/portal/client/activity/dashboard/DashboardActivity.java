@@ -88,7 +88,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         hideLoader();
         hideError();
         hideEmpty();
-        view.container().clear();
+        view.clearContainers();
         view.loadingViewVisibility().setVisible(true);
     }
 
@@ -96,7 +96,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         hideLoader();
         hideError();
         hideEmpty();
-        view.container().clear();
+        view.clearContainers();
         view.failedViewVisibility().setVisible(true);
         view.setFailedViewText(text);
     }
@@ -105,7 +105,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         hideLoader();
         hideError();
         hideEmpty();
-        view.container().clear();
+        view.clearContainers();
         view.emptyViewVisibility().setVisible(true);
     }
 
@@ -156,7 +156,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
             String name = dashboard.getName();
             CaseQuery query = new CaseQuery(filter.getParams());
             AbstractDashboardTableView table = createIssueTable(dashboard, i, name, query);
-            view.container().add(table.asWidget());
+            view.addTableToContainer(table.asWidget());
             loadTable(table, query);
         }
     }

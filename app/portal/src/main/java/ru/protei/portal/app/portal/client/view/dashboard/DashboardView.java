@@ -18,9 +18,21 @@ public class DashboardView extends Composite implements AbstractDashboardView{
     }
 
     @Override
-    public HasWidgets container() {
-        return container;
+    public void addTableToContainer (Widget widget){
+        if (containerRight.getWidgetCount() < containerLeft.getWidgetCount()) {
+            containerRight.add(widget);
+        } else {
+            containerLeft.add(widget);
+        }
     }
+
+    @Override
+    public void clearContainers(){
+        containerLeft.clear();
+        containerRight.clear();
+    }
+
+
 
     @Override
     public HasVisibility loadingViewVisibility() {
@@ -53,7 +65,9 @@ public class DashboardView extends Composite implements AbstractDashboardView{
     }
 
     @UiField
-    HTMLPanel container;
+    HTMLPanel containerLeft;
+    @UiField
+    HTMLPanel containerRight;
     @UiField
     QuickView quickview;
     @UiField

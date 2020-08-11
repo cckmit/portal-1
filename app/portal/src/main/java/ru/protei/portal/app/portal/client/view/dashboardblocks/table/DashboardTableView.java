@@ -1,6 +1,8 @@
 package ru.protei.portal.app.portal.client.view.dashboardblocks.table;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -114,6 +116,17 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
         }
     }
 
+    @UiHandler("collapse")
+    public void onCollapseClicked(ClickEvent event) {
+       if(tableContainer.getClassName().contains("table-container-collapsed")){
+           tableContainer.removeClassName("table-container-collapsed");
+           collapseIcon.replaceClassName("fa-caret-right", "fa-caret-down");
+       } else {
+           tableContainer.addClassName("table-container-collapsed");
+           collapseIcon.replaceClassName("fa-caret-down", "fa-caret-right");
+       }
+    }
+
     private void initTable() {
 
         ClickColumnProvider<CaseShortView> columnProvider = new ClickColumnProvider<>();
@@ -154,15 +167,21 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     @UiField
     Button remove;
     @UiField
+    Button collapse;
+    @UiField
     Button reload;
     @UiField
     IndeterminateCircleLoading loading;
     @UiField
     TableWidget<CaseShortView> table;
     @UiField
+    DivElement tableContainer;
+    @UiField
     HTMLPanel tableOverflow;
     @UiField
     SpanElement tableOverflowText;
+    @UiField
+    Element collapseIcon;
 
     private AbstractDashboardTableActivity activity;
 
