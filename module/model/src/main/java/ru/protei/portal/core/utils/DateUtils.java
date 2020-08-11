@@ -26,4 +26,11 @@ public class DateUtils {
         calendar.set(Calendar.MILLISECOND, 0);
         return calendar.getTime();
     }
+
+    public static Date resetYear(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.YEAR, 0);
+        return calendar.getTime();
+    }
 }

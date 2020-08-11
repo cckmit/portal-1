@@ -23,7 +23,7 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
 
     @EventListener
     @Override
-    public void onApplicationStartOrRefreshContext( ContextRefreshedEvent event) {
+    public void onApplicationStartOrRefreshContext(ContextRefreshedEvent event) {
         log.info("onApplicationStartOrRefresh() Context refresh counter={} refresh source: {}",  contextRefreshedEventCounter.getAndIncrement(), event.getSource());
         if (isPortalStarted.getAndSet( true )) return;
 
