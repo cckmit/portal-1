@@ -51,7 +51,7 @@ public class EmployeeSqlBuilder {
                 } else {
                     condition.append(" and person.birthday is not null")
                             .append(" and date_format(person.birthday, '%m%d') between")
-                            .append(" date_format(?, '%m%d 00:00:00') and date_format(?, '%m%d 23:59:59')");
+                            .append(" date_format(?, '%m%d') and date_format(?, '%m%d')");
                     args.add(interval.from);
                     args.add(interval.to);
                 }
