@@ -27,16 +27,16 @@ import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import javax.annotation.PostConstruct;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.nonNull;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
-
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 /**
  * Реализация сервиса управления сотрудниками
@@ -412,6 +412,29 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
        return ok(true);
+    }
+
+    @Override
+    public Result<EmployeesBirthdays> getEmployeesBirthdays(AuthToken token, Date dateFrom, Date dateUntil) {
+        EmployeeQuery query = new EmployeeQuery();
+        query.setFired(false);
+        query.setBirthdayRange(new DateRange(En_DateIntervalType.FIXED, dateFrom, dateUntil));
+        List<EmployeeShortView> employees = employeeShortViewDAO.getEmployees(query);
+        EmployeesBirthdays birthdays = new EmployeesBirthdays();
+        birthdays.setDateFrom(dateFrom);
+        birthdays.setDateUntil(dateUntil);
+        birthdays.setBirthdays(stream(employees)
+                .filter(employee -> nonNull(employee.getBirthday()))
+                .map(employee -> {
+                    EmployeeBirthday birthday = new EmployeeBirthday();
+                    birthday.setId(employee.getId());
+                    birthday.setName(employee.getDisplayShortName());
+                    birthday.setBirthdayMonth(employee.getBirthday().getMonth() + 1);
+                    birthday.setBirthdayDayOfMonth(employee.getBirthday().getDate());
+                    return birthday;
+                })
+                .collect(Collectors.toList()));
+        return ok(birthdays);
     }
 
     private void updateAccount(UserLogin userLogin, AuthToken token) {

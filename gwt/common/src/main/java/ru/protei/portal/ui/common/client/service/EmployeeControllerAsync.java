@@ -4,11 +4,13 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.WorkerEntry;
 import ru.protei.portal.core.model.query.EmployeeQuery;
+import ru.protei.portal.core.model.struct.EmployeesBirthdays;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -55,4 +57,6 @@ public interface EmployeeControllerAsync {
     void fireEmployee(Person person, AsyncCallback<Boolean> async);
 
     void updateEmployeePerson(Person person, boolean needToChangeAccount, AsyncCallback<Boolean> async);
+
+    void getEmployeesBirthdays(Date dateFrom, Date dateUntil, AsyncCallback<EmployeesBirthdays> async);
 }

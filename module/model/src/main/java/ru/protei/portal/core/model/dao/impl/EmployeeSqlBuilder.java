@@ -3,9 +3,11 @@ package ru.protei.portal.core.model.dao.impl;
 import ru.protei.portal.core.model.dict.En_AbsenceReason;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.DateRangeUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.utils.DateUtils;
 
 import java.util.ArrayList;
@@ -46,6 +48,21 @@ public class EmployeeSqlBuilder {
             if (query.getBirthday() != null) {
                 condition.append(" and person.birthday=?");
                 args.add(query.getBirthday());
+            }
+
+            if (query.getBirthdayRange() != null) {
+                Interval interval = DateRangeUtils.makeInterval(query.getBirthdayRange());
+
+                if (interval.from.equals(interval.to)) {
+                    condition.append(" and person.birthday = ?");
+                    args.add(interval.from);
+                } else {
+                    condition.append(" and person.birthday is not null")
+                            .append(" and date_format(person.birthday, '%m%d') between")
+                            .append(" date_format(?, '%m%d 00:00:00') and date_format(?, '%m%d 23:59:59')");
+                    args.add(interval.from);
+                    args.add(interval.to);
+                }
             }
 
             if (query.getSecondName() != null) {
