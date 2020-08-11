@@ -109,4 +109,9 @@ public class EmployeeEvents {
         }
     }
 
+    @Url(value = "birthdays")
+    public static class ShowBirthdays {
+        public ShowBirthdays() {}
+    }
+
 }

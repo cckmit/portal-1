@@ -1,11 +1,14 @@
 package ru.protei.portal.core.model.struct;
 
+import ru.protei.portal.core.model.dict.En_Gender;
+
 import java.io.Serializable;
 
 public class EmployeeBirthday implements Serializable {
 
     private Long id;
     private String name;
+    private En_Gender gender;
     /**
      * 1-based month (1-12)
      */
@@ -34,6 +37,14 @@ public class EmployeeBirthday implements Serializable {
         this.name = name;
     }
 
+    public En_Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(En_Gender gender) {
+        this.gender = gender;
+    }
+
     public Integer getBirthdayMonth() {
         return birthdayMonth;
     }
@@ -55,6 +66,7 @@ public class EmployeeBirthday implements Serializable {
         return "EmployeeBirthday{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", gender=" + gender +
                 ", birthdayMonth=" + birthdayMonth +
                 ", birthdayDayOfMonth=" + birthdayDayOfMonth +
                 '}';

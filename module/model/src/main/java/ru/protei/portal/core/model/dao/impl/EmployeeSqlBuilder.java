@@ -10,11 +10,12 @@ import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.utils.DateUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.time.temporal.TemporalAdjusters.firstDayOfYear;
+import static java.time.temporal.TemporalAdjusters.lastDayOfYear;
 
 public class EmployeeSqlBuilder {
     public SqlCondition createSqlCondition(EmployeeQuery query) {
@@ -53,15 +54,44 @@ public class EmployeeSqlBuilder {
             if (query.getBirthdayRange() != null) {
                 Interval interval = DateRangeUtils.makeInterval(query.getBirthdayRange());
 
-                if (interval.from.equals(interval.to)) {
+                boolean isOneDay = Objects.equals(interval.from, interval.to);
+                boolean isSameYear = Objects.equals(interval.from.getYear(), interval.to.getYear());
+                if (isOneDay) {
                     condition.append(" and person.birthday = ?");
                     args.add(interval.from);
-                } else {
+                } else if (isSameYear) {
                     condition.append(" and person.birthday is not null")
-                            .append(" and date_format(person.birthday, '%m%d') between")
-                            .append(" date_format(?, '%m%d 00:00:00') and date_format(?, '%m%d 23:59:59')");
+                            .append(" and ")
+                            .append("date_format(person.birthday, '%m%d') between date_format(?, '%m%d') and date_format(?, '%m%d')");
                     args.add(interval.from);
                     args.add(interval.to);
+                } else {
+                    condition.append(" and person.birthday is not null")
+                            .append(" and ((")
+                            .append("date_format(person.birthday, '%m%d') between date_format(?, '%m%d') and date_format(?, '%m%d')")
+                            .append(") or (")
+                            .append("date_format(person.birthday, '%m%d') between date_format(?, '%m%d') and date_format(?, '%m%d')")
+                            .append("))");
+                    Date from1 = interval.from;
+                    Date until1 = Date.from(interval.from
+                            .toInstant()
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDateTime()
+                            .with(lastDayOfYear())
+                            .atZone(ZoneId.systemDefault())
+                            .toInstant());
+                    args.add(from1);
+                    args.add(until1);
+                    Date from2 = Date.from(interval.to
+                            .toInstant()
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDateTime()
+                            .with(firstDayOfYear())
+                            .atZone(ZoneId.systemDefault())
+                            .toInstant());
+                    Date until2 = interval.to;
+                    args.add(from2);
+                    args.add(until2);
                 }
             }
 

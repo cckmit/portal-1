@@ -429,6 +429,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                     EmployeeBirthday birthday = new EmployeeBirthday();
                     birthday.setId(employee.getId());
                     birthday.setName(employee.getDisplayShortName());
+                    birthday.setGender(employee.getGender());
                     birthday.setBirthdayMonth(employee.getBirthday().getMonth() + 1);
                     birthday.setBirthdayDayOfMonth(employee.getBirthday().getDate());
                     return birthday;
