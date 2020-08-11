@@ -48,8 +48,14 @@ public class IssueEvents {
             this.issueCaseNumber = issueCaseNumber;
         }
 
+        public ShowPreview withBackEvent(Runnable backEvent) {
+            this.backEvent = backEvent;
+            return this;
+        }
+
         public HasWidgets parent;
         public Long issueCaseNumber;
+        public Runnable backEvent;
     }
 
     /**

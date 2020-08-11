@@ -329,7 +329,7 @@ public abstract class IssueTableFilterActivity
             animation.closeDetails();
         } else {
             animation.showDetails();
-            fireEvent( new IssueEvents.ShowPreview( view.getPreviewContainer(), value.getCaseNumber() ) );
+            fireEvent( new IssueEvents.ShowPreview( view.getPreviewContainer(), value.getCaseNumber() ).withBackEvent(() -> fireEvent(new IssueEvents.Show(true))) );
         }
     }
 

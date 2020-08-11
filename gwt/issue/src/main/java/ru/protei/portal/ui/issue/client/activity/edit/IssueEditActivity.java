@@ -96,10 +96,7 @@ public abstract class IssueEditActivity implements
             return;
         }
 
-        fireBackEvent =
-                event.backEvent == null ?
-                () -> fireEvent(new Back()) :
-                event.backEvent;
+        fireBackEvent = event.backEvent != null ? event.backEvent : () -> fireEvent(new Back());
 
         viewModeIsPreview(false);
         container.clear();
@@ -114,6 +111,8 @@ public abstract class IssueEditActivity implements
             fireEvent(new ErrorPageEvents.ShowForbidden(container));
             return;
         }
+
+        fireBackEvent = event.backEvent != null ? event.backEvent : () -> fireEvent(new Back());
 
         viewModeIsPreview(true);
         container.clear();
@@ -250,7 +249,7 @@ public abstract class IssueEditActivity implements
 
     @Override
     public void onOpenEditViewClicked() {
-        fireEvent(new IssueEvents.Edit(issue.getCaseNumber()).withBackEvent(() -> fireEvent(new IssueEvents.Show(true))));
+        fireEvent(new IssueEvents.Edit(issue.getCaseNumber()).withBackEvent(fireBackEvent));
     }
 
     @Override
