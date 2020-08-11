@@ -45,6 +45,10 @@ public abstract class FilterWidget<F extends Filter<FSV, Q>, Q extends FilterQue
         filterParamView.stopWatchForScrollOf(root);
     }
 
+    public void setOnFilterChangeCallback(Runnable callback) {
+        filterParamView.setOnFilterChangeCallback(callback);
+    }
+
     public void resetFilter() {
         filterParamView.resetFilter();
         filterSelector.setValue(null);

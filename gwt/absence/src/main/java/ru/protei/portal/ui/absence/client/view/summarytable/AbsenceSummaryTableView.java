@@ -41,6 +41,8 @@ public class AbsenceSummaryTableView extends Composite implements AbstractAbsenc
     public void setActivity(AbstractAbsenceSummaryTableActivity activity) {
         this.activity = activity;
 
+        filterWidget.setOnFilterChangeCallback(activity::onFilterChange);
+
         completeClickColumn.setHandler(activity);
         completeClickColumn.setActionHandler(new ClickColumn.Handler<PersonAbsence>() {
             public void onItemClicked(PersonAbsence value) {

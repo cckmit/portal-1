@@ -13,4 +13,5 @@ public interface AbstractAbsenceSummaryTableActivity extends ClickColumn.Handler
         InfiniteLoadHandler<PersonAbsence>, InfiniteTableWidget.PagerListener {
 
     void onCompleteAbsence(PersonAbsence absence);
+    void onFilterChange();
 }

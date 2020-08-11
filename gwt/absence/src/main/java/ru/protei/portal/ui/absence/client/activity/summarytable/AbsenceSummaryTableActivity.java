@@ -34,15 +34,13 @@ public abstract class AbsenceSummaryTableActivity implements AbstractAbsenceSumm
 
     @Event
     public void onShow(AbsenceEvents.ShowSummaryTable event) {
-        view.clearRecords();
-
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
         view.getFilterWidget().resetFilter();
         view.getPagerContainer().add( pagerView.asWidget() );
 
-        view.triggerTableLoad();
+        loadTable();
     }
 
     @Override
@@ -105,6 +103,11 @@ public abstract class AbsenceSummaryTableActivity implements AbstractAbsenceSumm
         view.scrollTo(page);
     }
 
+    @Override
+    public void onFilterChange() {
+        loadTable();
+    }
+
     private Runnable removeAction(PersonAbsence value) {
         return () -> absenceController.removeAbsence(value, new FluentCallback<Boolean>()
                 .withSuccess(result -> {
@@ -115,6 +118,11 @@ public abstract class AbsenceSummaryTableActivity implements AbstractAbsenceSumm
 
     private AbsenceQuery getQuery() {
         return view.getFilterWidget().getFilterParamView().getQuery();
+    }
+
+    private void loadTable() {
+        view.clearRecords();
+        view.triggerTableLoad();
     }
 
     private void restoreScroll() {
