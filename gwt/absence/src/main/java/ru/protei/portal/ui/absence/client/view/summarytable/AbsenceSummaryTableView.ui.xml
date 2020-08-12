@@ -16,8 +16,8 @@
                     </div>
                 </div>
             </g:HTMLPanel>
-            <div class="filter-container col-md-3 table-absence-filter-widget" >
-                <widget:AbsenceFilterWidget ui:field="filterWidget"/>
+            <div class="filter-container col-md-3" >
+                <widget:AbsenceFilterWidget ui:field="filterWidget" styleName="card card-default no-border card-fixed absence-filter"/>
             </div>
         </div>
     </g:HTMLPanel>

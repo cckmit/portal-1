@@ -1112,7 +1112,7 @@ label.bordered:after {
 
 /**** Collapsable filter ****/
 
-.filter-collapsable {
+.filter-collapsable, .absence-filter {
 
   .filter-header {
     border-bottom: 2px solid #ddd;
@@ -2813,12 +2813,12 @@ div.select2-container {
   }
 }
 
-.issue-filter {
+.issue-filter, .absence-filter {
   padding-top: 0px !important;
 
   .user-filter {
     background: #f5f5f51a;
-    border-bottom: 2px solid #dee4e5;
+    border-bottom: 2px solid #ddd;
     padding: 15px;
   }
 
@@ -4834,25 +4834,10 @@ table {
   }
 }
 
-.report-absence-filter-widget {
-  .filter-widget {
-    padding: 0;
-  }
-}
-
-.table-absence-filter-widget {
-  .filter-widget {
-    .filter-selector{
-      border-bottom: 2px solid #dee4e5;
-    }
-    .filter-content{
-      padding-top: 15px;
-      border: none;
-      overflow-y: unset;
-      .filter-content-body{
-        padding: 0;
-      }
-    }
+.absence-filter {
+  .filter-content {
+    border: none;
+    padding-top: 0 !important;
   }
 }
 
