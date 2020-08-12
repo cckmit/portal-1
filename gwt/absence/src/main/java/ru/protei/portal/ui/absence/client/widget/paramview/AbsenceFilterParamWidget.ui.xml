@@ -8,8 +8,8 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="card no-margin">
-        <g:HTMLPanel ui:field="content" styleName="card-body">
+    <g:HTMLPanel styleName="card no-margin filter-content">
+        <g:HTMLPanel styleName="card-body filter-content-body">
             <div class="row">
                 <div class="form-group col-md-12">
                     <range:TypedSelectorRangePicker ui:field="dateRange" formatValue="dd.MM.yyyy HH:mm"

@@ -4840,6 +4840,22 @@ table {
   }
 }
 
+.table-absence-filter-widget {
+  .filter-widget {
+    .filter-selector{
+      border-bottom: 2px solid #dee4e5;
+    }
+    .filter-content{
+      padding-top: 15px;
+      border: none;
+      overflow-y: unset;
+      .filter-content-body{
+        padding: 0;
+      }
+    }
+  }
+}
+
 .absence-reason {
   position: absolute;
   top: -25px;
