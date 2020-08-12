@@ -23,6 +23,9 @@ public class UserDashboard implements Serializable {
     @JdbcColumn(name = "name")
     private String name;
 
+    @JdbcColumn(name = "is_collapsed")
+    private Boolean isCollapsed;
+
     public UserDashboard() {}
 
     public Long getId() {
@@ -70,6 +73,14 @@ public class UserDashboard implements Serializable {
         this.name = name;
     }
 
+    public Boolean getCollapsed() {
+        return isCollapsed;
+    }
+
+    public void setCollapsed(Boolean isCollapsed) {
+        this.isCollapsed = isCollapsed;
+    }
+
     @Override
     public String toString() {
         return "UserDashboard{" +
@@ -77,7 +88,8 @@ public class UserDashboard implements Serializable {
                 ", loginId=" + loginId +
                 ", caseFilterId=" + caseFilterId +
                 ", caseFilter=" + caseFilter +
-                ", name=" + name +
+                ", name='" + name + '\'' +
+                ", isCollapsed=" + isCollapsed +
                 '}';
     }
 }

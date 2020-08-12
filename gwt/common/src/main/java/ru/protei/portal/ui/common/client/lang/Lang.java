@@ -836,6 +836,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String dashboardActionRemove();
 
+    String dashboardActionCollapse();
+
+    String dashboardActionExpand();
+
     String commentSendMessage();
 
     String commentAddMessagePlaceholder();

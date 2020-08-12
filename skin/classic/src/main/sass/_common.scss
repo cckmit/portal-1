@@ -1699,6 +1699,21 @@ a {
   }
 }
 
+.collapse-icon {
+  width: 20px;
+}
+
+.table-container-collapsed {
+  height: 0 !important;
+}
+
+.transition-05 {
+  -webkit-transition: all 0.5s;
+  -moz-transition: all 0.5s;
+  -o-transition: all 0.5s;
+  transition: all 0.5s;
+}
+
 
 /**** case tag ****/
 .case-tags-container {
@@ -4869,4 +4884,8 @@ table {
   &.fas {
     color: gold;
   }
+}
+
+.font-large {
+  font-size: large !important;
 }

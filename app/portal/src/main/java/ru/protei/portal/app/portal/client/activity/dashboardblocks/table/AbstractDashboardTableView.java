@@ -15,6 +15,8 @@ public interface AbstractDashboardTableView extends IsWidget {
 
     void setName(String name);
 
+    void setCollapsed(boolean isCollapsed);
+
     void setTotalRecords(int totalRecords);
 
     void showLoader(boolean isShow);

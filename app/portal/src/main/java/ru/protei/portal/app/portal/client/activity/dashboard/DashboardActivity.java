@@ -88,7 +88,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         hideLoader();
         hideError();
         hideEmpty();
-        view.container().clear();
+        view.clearContainers();
         view.loadingViewVisibility().setVisible(true);
     }
 
@@ -96,7 +96,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         hideLoader();
         hideError();
         hideEmpty();
-        view.container().clear();
+        view.clearContainers();
         view.failedViewVisibility().setVisible(true);
         view.setFailedViewText(text);
     }
@@ -105,7 +105,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         hideLoader();
         hideError();
         hideEmpty();
-        view.container().clear();
+        view.clearContainers();
         view.emptyViewVisibility().setVisible(true);
     }
 
@@ -156,7 +156,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
             String name = dashboard.getName();
             CaseQuery query = new CaseQuery(filter.getParams());
             AbstractDashboardTableView table = createIssueTable(dashboard, i, name, query);
-            view.container().add(table.asWidget());
+            view.addTableToContainer(table.asWidget());
             loadTable(table, query);
         }
     }
@@ -165,6 +165,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         AbstractDashboardTableView table = tableProvider.get();
         table.setEnsureDebugId(DebugIds.DASHBOARD.TABLE + order);
         table.setName(name);
+        table.setCollapsed(dashboard.getCollapsed() == null ? false : dashboard.getCollapsed());
         table.setActivity(new AbstractDashboardTableActivity() {
             @Override
             public void onItemClicked(CaseShortView value) {
@@ -181,6 +182,11 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
             @Override
             public void onRemoveClicked() {
                 removeTable(dashboard);
+            }
+            @Override
+            public void onCollapseClicked(boolean isCollapsed){
+                dashboard.setCollapsed(isCollapsed);
+                userLoginController.saveUserDashboard(dashboard, new FluentCallback<Long>());
             }
             @Override
             public void onReloadClicked() {
