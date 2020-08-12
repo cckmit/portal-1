@@ -15,10 +15,12 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseAttachment;
+import ru.protei.portal.core.model.event.CaseCommentSavedClientEvent;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventAssemblerService;
 import ru.protei.portal.core.service.events.EventProjectAssemblerService;
 import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.portal.core.service.pushevent.ClientEventService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.Collection;
@@ -65,6 +67,9 @@ public class AttachmentServiceImpl implements AttachmentService {
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
+    @Autowired
+    private ClientEventService clientEventService;
+
     /**
      * remove attachment from fileStorage, DataBase (item and relations)
      */
@@ -90,6 +95,10 @@ public class AttachmentServiceImpl implements AttachmentService {
             Result<Boolean> result = removeAttachment( token, caseType, id);
 
             if(result.isOk() && token != null) {
+
+                if (caseAttachment.getCommentId() != null) {
+                    clientEventService.fireEvent( new CaseCommentSavedClientEvent( token.getPersonId(), caseAttachment.getCaseId(), caseAttachment.getCommentId() ) );
+                }
 
                 if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
                     publisherService.onCaseAttachmentEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL,
