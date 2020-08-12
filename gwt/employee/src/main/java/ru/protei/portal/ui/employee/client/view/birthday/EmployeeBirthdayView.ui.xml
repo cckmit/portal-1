@@ -11,13 +11,13 @@
                 <h5 ui:field="yearAndMonth" class="semi-bold inline-block align-middle m-t-0 m-b-0"/>
                 <div class="btn-toolbar pull-right">
                     <div class="btn-group form-group">
-                        <g:Button styleName="btn btn-default btn-xs btn-cons-toolbar" ui:field="oneMonthBackButton" title="{lang.roomReservationShowTodayButton}">
+                        <g:Button styleName="btn btn-default btn-xs btn-cons-toolbar" ui:field="oneMonthBackButton" title="{lang.employeeBirthdayPrevMonth}">
                             <i class="fas fa-chevron-left"/>
                         </g:Button>
-                        <g:Button styleName="btn btn-default btn-xs btn-cons-toolbar" ui:field="showTodayButton" title="{lang.roomReservationShowTodayButton}">
+                        <g:Button styleName="btn btn-default btn-xs btn-cons-toolbar" ui:field="showTodayButton" title="{lang.employeeBirthdayResetMonth}">
                             <i class="fas fa-calendar-day"/>
                         </g:Button>
-                        <g:Button styleName="btn btn-default btn-xs btn-cons-toolbar" ui:field="oneMonthForwardButton" title="{lang.roomReservationShowTodayButton}">
+                        <g:Button styleName="btn btn-default btn-xs btn-cons-toolbar" ui:field="oneMonthForwardButton" title="{lang.employeeBirthdayNextMonth}">
                             <i class="fas fa-chevron-right"/>
                         </g:Button>
                         <g:Button styleName="btn btn-default btn-xs btn-cons-toolbar" ui:field="reloadButton" title="{lang.buttonReload}">

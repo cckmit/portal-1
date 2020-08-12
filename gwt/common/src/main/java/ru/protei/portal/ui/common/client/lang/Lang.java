@@ -2959,4 +2959,10 @@ public interface Lang extends Messages, ContactItemLang {
     String issueSyncedWith();
 
     String employeeBirthdays();
+
+    String employeeBirthdayPrevMonth();
+
+    String employeeBirthdayResetMonth();
+
+    String employeeBirthdayNextMonth();
 }
