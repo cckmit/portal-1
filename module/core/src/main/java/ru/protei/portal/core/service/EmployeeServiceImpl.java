@@ -418,6 +418,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public Result<EmployeesBirthdays> getEmployeesBirthdays(AuthToken token, Date dateFrom, Date dateUntil) {
         EmployeeQuery query = new EmployeeQuery();
         query.setFired(false);
+        query.setDeleted(false);
         query.setBirthdayRange(new DateRange(En_DateIntervalType.FIXED, dateFrom, dateUntil));
         List<EmployeeShortView> employees = employeeShortViewDAO.getEmployees(query);
         EmployeesBirthdays birthdays = new EmployeesBirthdays();
