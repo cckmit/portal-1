@@ -1,11 +1,18 @@
 package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
+import ru.brainworm.factory.context.client.annotation.Url;
 
 public class AbsenceEvents {
 
+    @Url(value = "summarytable")
     public static class ShowSummaryTable {
         public ShowSummaryTable() {
+        }
+    }
+
+    public static class Update {
+        public Update() {
         }
     }
 

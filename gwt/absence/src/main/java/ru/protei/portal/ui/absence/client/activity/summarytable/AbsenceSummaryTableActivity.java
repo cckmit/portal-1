@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.ent.PersonAbsence;
 import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
+import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AbsenceControllerAsync;
@@ -34,6 +35,8 @@ public abstract class AbsenceSummaryTableActivity implements AbstractAbsenceSumm
 
     @Event
     public void onShow(AbsenceEvents.ShowSummaryTable event) {
+        fireEvent(new ActionBarEvents.Add(lang.backToEmployees(), "", UiConstants.ActionBarIdentity.EMPLOYEE_VIEW));
+
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
@@ -43,16 +46,22 @@ public abstract class AbsenceSummaryTableActivity implements AbstractAbsenceSumm
         loadTable();
     }
 
+    @Event
+    public void onUpdate(AbsenceEvents.Update event) {
+        if (view.asWidget().isAttached()) {
+            loadTable();
+        }
+    }
+
     @Override
-    public void onItemClicked(PersonAbsence value) {}
+    public void onItemClicked(PersonAbsence value) {
+        // do nothing
+    }
 
     @Override
     public void onCompleteAbsence(PersonAbsence value) {
         absenceController.completeAbsence(value, new FluentCallback<Boolean>()
-                .withSuccess(result -> {
-                    fireEvent(new NotifyEvents.Show(lang.absenceCompletedSuccessfully(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new EmployeeEvents.Update(value.getPersonId()));
-                }));
+                .withSuccess(result -> fireSuccessNotify(lang.absenceCompletedSuccessfully(), value.getPersonId())));
     }
 
     @Override
@@ -110,10 +119,7 @@ public abstract class AbsenceSummaryTableActivity implements AbstractAbsenceSumm
 
     private Runnable removeAction(PersonAbsence value) {
         return () -> absenceController.removeAbsence(value, new FluentCallback<Boolean>()
-                .withSuccess(result -> {
-                    fireEvent(new NotifyEvents.Show(lang.absenceRemovedSuccessfully(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new EmployeeEvents.Update(value.getPersonId()));
-                }));
+                .withSuccess(result -> fireSuccessNotify(lang.absenceRemovedSuccessfully(), value.getPersonId())));
     }
 
     private AbsenceQuery getQuery() {
@@ -127,6 +133,12 @@ public abstract class AbsenceSummaryTableActivity implements AbstractAbsenceSumm
 
     private void restoreScroll() {
         Window.scrollTo(0, 0);
+    }
+
+    private void fireSuccessNotify(String message, Long personId) {
+        fireEvent(new NotifyEvents.Show(message, NotifyEvents.NotifyType.SUCCESS));
+        fireEvent(new EmployeeEvents.Update(personId));
+        fireEvent(new AbsenceEvents.Update());
     }
 
     @Inject
