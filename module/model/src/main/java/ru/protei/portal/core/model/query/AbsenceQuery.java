@@ -15,21 +15,21 @@ public class AbsenceQuery extends BaseQuery implements FilterQuery {
     private Set<Integer> reasonIds;
 
     public AbsenceQuery() {
-        super (null, En_SortField.absence_date, En_SortDir.ASC);
+        super (null, En_SortField.absence_date_from, En_SortDir.ASC);
     }
 
     public AbsenceQuery(Set<Long> employeeIds) {
-        super (null, En_SortField.absence_date, En_SortDir.ASC);
+        super (null, En_SortField.absence_date_from, En_SortDir.ASC);
         this.employeeIds = employeeIds;
     }
 
     public AbsenceQuery(DateRange dateRange) {
-        super (null, En_SortField.absence_date, En_SortDir.ASC);
+        super (null, En_SortField.absence_date_from, En_SortDir.ASC);
         this.dateRange = dateRange;
     }
 
     public AbsenceQuery(DateRange dateRange, Set<Long> employeeIds, Set<Integer> reasonIds) {
-        super (null, En_SortField.absence_date, En_SortDir.ASC);
+        super (null, En_SortField.absence_date_from, En_SortDir.ASC);
         this.dateRange = dateRange;
         this.employeeIds = employeeIds;
         this.reasonIds = reasonIds;

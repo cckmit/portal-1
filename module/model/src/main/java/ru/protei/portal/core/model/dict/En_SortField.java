@@ -161,9 +161,14 @@ public enum En_SortField {
     finish_date("finish_date"),
 
     /**
-     * absence date
+     * absence date from
      */
-    absence_date("from_time"),
+    absence_date_from("from_time"),
+
+    /**
+     * absence date till
+     */
+    absence_date_till("till_time"),
 
     /**
      * absence person

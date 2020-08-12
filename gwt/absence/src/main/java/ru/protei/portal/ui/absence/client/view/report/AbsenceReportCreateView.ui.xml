@@ -18,7 +18,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="form-group col-md-12">
+                <div class="form-group col-md-12 report-absence-filter-widget">
                     <widget:AbsenceFilterWidget ui:field="filterWidget"/>
                 </div>
             </div>

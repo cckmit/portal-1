@@ -88,6 +88,7 @@ public class AbsenceFilterParamWidget extends Composite implements AbstractAbsen
         sortField.setValue(En_SortField.absence_person);
         sortDir.setValue(true);
         validate();
+        onFilterChanged();
     }
 
     @Override
@@ -110,6 +111,7 @@ public class AbsenceFilterParamWidget extends Composite implements AbstractAbsen
         sortField.setValue(query.getSortField());
         sortDir.setValue(query.getSortDir() == En_SortDir.ASC);
         validate();
+        onFilterChanged();
     }
 
     @Override

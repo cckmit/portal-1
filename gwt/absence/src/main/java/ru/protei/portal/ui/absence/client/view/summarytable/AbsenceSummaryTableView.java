@@ -7,6 +7,7 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.ent.PersonAbsence;
@@ -18,6 +19,7 @@ import ru.protei.portal.ui.absence.client.widget.AbsenceFilterWidgetModel;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
+import ru.protei.portal.ui.common.client.common.LabelValuePairBuilder;
 import ru.protei.portal.ui.common.client.lang.En_AbsenceReasonLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
@@ -44,12 +46,7 @@ public class AbsenceSummaryTableView extends Composite implements AbstractAbsenc
         filterWidget.setOnFilterChangeCallback(activity::onFilterChange);
 
         completeClickColumn.setHandler(activity);
-        completeClickColumn.setActionHandler(new ClickColumn.Handler<PersonAbsence>() {
-            public void onItemClicked(PersonAbsence value) {
-                activity.onCompleteAbsence(value);
-            }
-            public void onItemClicked(PersonAbsence value, com.google.gwt.dom.client.Element target) {}
-        });
+        completeClickColumn.setActionHandler(value -> activity.onCompleteAbsence(value));
         completeClickColumn.setColumnProvider(columnProvider);
 
         editClickColumn.setHandler(activity);
@@ -118,10 +115,10 @@ public class AbsenceSummaryTableView extends Composite implements AbstractAbsenc
         columns.add(tillTime);
         columns.add(comment);
 
+        table.addColumn(reason.header, reason.values);
         table.addColumn(person.header, person.values);
         table.addColumn(fromTime.header, fromTime.values);
         table.addColumn(tillTime.header, tillTime.values);
-        table.addColumn(reason.header, reason.values);
         table.addColumn(comment.header, comment.values);
         table.addColumn(completeClickColumn.header, completeClickColumn.values);
         table.addColumn(editClickColumn.header, editClickColumn.values);
@@ -149,7 +146,19 @@ public class AbsenceSummaryTableView extends Composite implements AbstractAbsenc
 
         @Override
         public void fillColumnValue(Element cell, PersonAbsence value) {
-            cell.setInnerHTML(reasonLang.getName(value.getReason()));
+            com.google.gwt.dom.client.Element reason = LabelValuePairBuilder.make()
+                    .addIconPair(reasonLang.getIcon(value.getReason()), "absence-icon")
+                    .toElement();
+
+            InlineLabel label = new InlineLabel(reasonLang.getName(value.getReason()));
+            label.setStyleName("absence-label");
+
+            HTMLPanel root = new HTMLPanel("");
+            root.setStyleName("summary-table-absence-column");
+            root.getElement().appendChild(reason);
+            root.add(label);
+
+            cell.appendChild(root.getElement());
         }
     };
 

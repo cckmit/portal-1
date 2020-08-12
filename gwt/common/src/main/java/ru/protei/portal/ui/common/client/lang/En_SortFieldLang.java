@@ -60,8 +60,10 @@ public class En_SortFieldLang {
                 return lang.planFinishDate();
             case author_id:
                 return lang.issueCommentAuthor();
-            case absence_date:
-                return lang.absenceStartDateRange();
+            case absence_date_from:
+                return lang.absenceFromTime();
+            case absence_date_till:
+                return lang.absenceTillTime();
             case absence_person:
                 return lang.contactFullName();
             case absence_reason:

@@ -6,9 +6,9 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel>
+    <g:HTMLPanel styleName="p-3">
         <div class="row">
-            <g:HTMLPanel ui:field="tableContainer" styleName="col-md-9">
+            <g:HTMLPanel styleName="global-table-container col-md-9">
                 <div class="card card-default no-border">
                     <div class="card-body no-padding">
                         <table:InfiniteTableWidget ui:field="table" styleName="table table-hover"/>
@@ -16,7 +16,7 @@
                     </div>
                 </div>
             </g:HTMLPanel>
-            <div class="form-group col-md-3">
+            <div class="filter-container col-md-3 table-absence-filter-widget" >
                 <widget:AbsenceFilterWidget ui:field="filterWidget"/>
             </div>
         </div>
