@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.attachment.list;
+package ru.protei.portal.ui.common.client.widget.attachment.list.fullview;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -12,26 +12,31 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.AttachmentType;
 import ru.protei.portal.core.model.ent.Attachment;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentActivity;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentView;
+import ru.protei.portal.ui.common.client.activity.attachment.fullview.AbstractAttachmentFullView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PersonControllerAsync;
-import ru.protei.portal.ui.common.client.view.attachment.AttachmentView;
+import ru.protei.portal.ui.common.client.util.AvatarUtils;
+import ru.protei.portal.ui.common.client.view.attachment.fullview.document.DocumentAttachmentView;
+import ru.protei.portal.ui.common.client.view.attachment.fullview.image.ImageAttachmentView;
+import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.HasAttachmentListHandlers;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveHandler;
 import ru.protei.portal.ui.common.client.widget.attachment.preview.AttachmentPreview;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * Created by bondarenko on 17.01.17.
- */
-public class AttachmentList extends Composite implements HasAttachments, HasAttachmentListHandlers, AbstractAttachmentActivity {
-    public AttachmentList() {
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+
+public class FullViewAttachmentList extends Composite implements HasAttachments, HasAttachmentListHandlers, AbstractAttachmentActivity {
+    public FullViewAttachmentList() {
         initWidget(ourUiBinder.createAndBindUi(this));
         viewToAttachment = new HashMap<>();
     }
@@ -43,16 +48,12 @@ public class AttachmentList extends Composite implements HasAttachments, HasAtta
         }
 
         AbstractAttachmentView view = createView(attachment);
-        personService.getPersonNames(Collections.singletonList(attachment.getCreatorId()), new RequestCallback<Map<Long, String>>() {
-            @Override
-            public void onError(Throwable throwable) {}
 
-            @Override
-            public void onSuccess(Map<Long, String> names) {
-                view.setCreationInfo(names.get(attachment.getCreatorId()), attachment.getCreated());
-            }
-        });
+        personService.getPersonsByIds(Collections.singletonList(attachment.getCreatorId()), new FluentCallback<List<Person>>()
+                .withSuccess(persons -> fillPersonDependentFields(view, attachment, persons.iterator().next()))
+        );
     }
+
 
     @Override
     public void add(Collection<Attachment> attachments) {
@@ -61,21 +62,12 @@ public class AttachmentList extends Composite implements HasAttachments, HasAtta
         }
 
         attachments.forEach(this::createView);
-        Set<Long> attachCreatorIds = attachments.stream().map(Attachment::getCreatorId).collect(Collectors.toSet());
 
-        personService.getPersonNames(attachCreatorIds, new RequestCallback<Map<Long, String>>() {
-            @Override
-            public void onError(Throwable throwable) {}
+        Set<Long> attachmentCreatorIds = attachments.stream().map(Attachment::getCreatorId).collect(Collectors.toSet());
 
-            @Override
-            public void onSuccess(Map<Long, String> names) {
-                viewToAttachment.forEach((view, attachment) -> {
-                    if (attachments.contains(attachment)) {
-                        view.setCreationInfo(names.get(attachment.getCreatorId()), attachment.getCreated());
-                    }
-                });
-            }
-        });
+        personService.getPersonsByIds(attachmentCreatorIds, new FluentCallback<List<Person>>()
+                .withSuccess(persons -> fillPersonDependentFields(attachments, persons))
+        );
     }
 
     @Override
@@ -91,7 +83,8 @@ public class AttachmentList extends Composite implements HasAttachments, HasAtta
 
     @Override
     public void clear() {
-        attachmentList.clear();
+        documentsContainer.clear();
+        imagesContainer.clear();
         viewToAttachment.clear();
     }
 
@@ -112,7 +105,7 @@ public class AttachmentList extends Composite implements HasAttachments, HasAtta
 
     @Override
     public void onAttachmentRemove(AbstractAttachmentView attachment) {
-        if(Window.confirm(lang.attachmentRemoveConfirmMessage())) {
+        if (Window.confirm(lang.attachmentRemoveConfirmMessage())) {
             RemoveEvent.fire(this, viewToAttachment.get(attachment));
         }
     }
@@ -120,10 +113,6 @@ public class AttachmentList extends Composite implements HasAttachments, HasAtta
     @Override
     public void onShowPreview(Image attachment) {
         attachmentPreview.show(attachment);
-    }
-
-    public void setSimpleMode(boolean isSimpleMode){
-        this.isSimpleMode = isSimpleMode;
     }
 
     public void setHiddenControls(boolean hideControls){
@@ -135,36 +124,57 @@ public class AttachmentList extends Composite implements HasAttachments, HasAtta
     }
 
     private AbstractAttachmentView createView(Attachment attachment) {
-        AbstractAttachmentView view = attachmentViewFactory.get();
+        AttachmentType.AttachmentCategory category = AttachmentType.getCategory(attachment.getMimeType());
+        boolean isImage = category == AttachmentType.AttachmentCategory.IMAGE;
+        String attachmentUrl = DOWNLOAD_PATH + attachment.getExtLink();
+
+        AbstractAttachmentView view = isImage ? imageAttachmentViewFactory.get() : documentAttachmentViewFactory.get();
+
         view.setActivity(this);
         view.setFileName(attachment.getFileName());
         view.setFileSize(attachment.getDataSize());
-        view.setDownloadUrl(DOWNLOAD_PATH + attachment.getExtLink());
+
+        view.setDownloadUrl(attachmentUrl);
+        view.setPicture(attachmentUrl);
+
         view.removeButtonVisibility().setVisible(!isHiddenControls);
 
-        if (isSimpleMode) {
-            view.asWidget().addStyleName("attach-minimize");
-        } else {
-            AttachmentType.AttachmentCategory category = AttachmentType.getCategory(attachment.getMimeType());
-            if (category == AttachmentType.AttachmentCategory.IMAGE) {
-                view.setPicture(DOWNLOAD_PATH + attachment.getExtLink());
-                view.asWidget().addStyleName("attach-image");
-            } else {
-                view.setPicture(category.picture);
-                view.asWidget().addStyleName("attach-file");
-            }
-        }
-
         viewToAttachment.put(view, attachment);
-        attachmentList.add(view.asWidget());
+
+        if (isImage) {
+            imagesContainer.add(view.asWidget());
+        } else {
+            documentsContainer.add(view.asWidget());
+        }
 
         return view;
     }
 
+    private void fillPersonDependentFields(Collection<Attachment> attachments, List<Person> persons) {
+        viewToAttachment.forEach((view, attachment) -> {
+            if (attachments.contains(attachment)) {
+                stream(persons).filter(person -> person.getId().equals(attachment.getCreatorId())).findFirst().ifPresent(person -> {
+                    fillPersonDependentFields(view, attachment, person);
+                });
+            }
+        });
+    }
+
+    private void fillPersonDependentFields(AbstractAttachmentView view, Attachment attachment, Person person) {
+        view.setCreationInfo(person.getDisplayShortName(), attachment.getCreated());
+        ((AbstractAttachmentFullView) view).setAuthorAvatarUrl(AvatarUtils.getAvatarUrl(person));
+    }
+
     @Inject
-    Provider<AttachmentView> attachmentViewFactory;
+    Provider<DocumentAttachmentView> documentAttachmentViewFactory;
+    @Inject
+    Provider<ImageAttachmentView> imageAttachmentViewFactory;
     @UiField
     HTMLPanel attachmentList;
+    @UiField
+    HTMLPanel documentsContainer;
+    @UiField
+    HTMLPanel imagesContainer;
     @Inject
     Lang lang;
     @Inject
@@ -173,11 +183,10 @@ public class AttachmentList extends Composite implements HasAttachments, HasAtta
     PersonControllerAsync personService;
 
 
-    private boolean isSimpleMode;
     private boolean isHiddenControls;
     private Map<AbstractAttachmentView, Attachment> viewToAttachment;
     private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/files/";
 
-    interface AttachmentListUiBinder extends UiBinder<HTMLPanel, AttachmentList> {}
+    interface AttachmentListUiBinder extends UiBinder<HTMLPanel, FullViewAttachmentList> {}
     private static AttachmentListUiBinder ourUiBinder = GWT.create(AttachmentListUiBinder.class);
 }

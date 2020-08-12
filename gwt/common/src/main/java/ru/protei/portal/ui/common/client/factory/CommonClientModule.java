@@ -127,8 +127,6 @@ public class CommonClientModule extends AbstractGinModule {
 
         bind( AbstractPagerView.class ).to( PagerView.class );
 
-        bind( AbstractAttachmentView.class ).to( AttachmentView.class );
-
         bind( ConfirmDialogActivity.class ).asEagerSingleton();
         bind( AbstractConfirmDialogView.class ).to( ConfirmDialogView.class ).in( Singleton.class );
 

@@ -16,6 +16,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
+import ru.protei.portal.ui.common.client.widget.attachment.list.fullview.FullViewAttachmentList;
 import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -223,7 +224,7 @@ public class IssueCreateView extends Composite implements AbstractIssueCreateVie
     AttachmentUploader fileUploader;
     @Inject
     @UiField(provided = true)
-    AttachmentList attachmentContainer;
+    FullViewAttachmentList attachmentContainer;
     @UiField
     LabelElement descriptionLabel;
     @UiField

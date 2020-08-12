@@ -18,6 +18,7 @@ import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
+import ru.protei.portal.ui.common.client.widget.attachment.list.fullview.FullViewAttachmentList;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
@@ -108,7 +109,7 @@ public class IssueInfoWidget extends Composite {
     HTMLPanel attachmentUploaderContainer;
     @Inject
     @UiField(provided = true)
-    AttachmentList attachmentContainer;
+    FullViewAttachmentList attachmentContainer;
     @UiField
     LabelElement attachmentsLabel;
     @UiField

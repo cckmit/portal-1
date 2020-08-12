@@ -1,0 +1,9 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <g:HTMLPanel ui:field="attachmentList" styleName="attachment-list full-view-attachment-list p-0">
+        <g:HTMLPanel ui:field="documentsContainer" styleName="document-attachments gallery d-flex flex-wrap m-t-0"/>
+        <g:HTMLPanel ui:field="imagesContainer" styleName="image-attachments gallery d-flex flex-wrap m-t-0"/>
+    </g:HTMLPanel>
+
+</ui:UiBinder>

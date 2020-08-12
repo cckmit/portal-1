@@ -347,3 +347,45 @@
     box-shadow: #{$shadow};
   }
 }
+
+/* Full attachment view */
+
+.full-view-attachment-list {
+  .document-attachments {
+    .full-view-attach {
+      height: unset;
+      background: rgb(43,106,148);
+      background: linear-gradient(150deg, rgba(43,106,148,1) 0%, rgba(60,147,206,1) 35%, rgba(72,176,247,1) 100%);
+    }
+  }
+
+  .image-attachments {
+    .full-view-attach {
+      background: linear-gradient(150deg, #c0bebe 0%, #c0bfbf 35%, #827f7f 100%);
+    }
+  }
+
+  .full-view-attach {
+    text-shadow: 1px 1px 0 #000000;
+  }
+
+  .attachment-author-name {
+    line-height: 16px;
+  }
+
+  .attachment-file-info {
+    line-height: 14px;
+  }
+
+  .attach-hide-remove-btn {
+    .attach-remove-btn {
+      display: none !important;
+    }
+  }
+
+  .gallery-item {
+    height: auto;
+    max-height: 240px;
+    min-height: 75px;
+  }
+}

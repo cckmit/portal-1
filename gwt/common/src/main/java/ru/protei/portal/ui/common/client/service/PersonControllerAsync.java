@@ -24,4 +24,6 @@ public interface PersonControllerAsync {
     void getPersonNames(Collection<Long> ids, AsyncCallback<Map<Long, String>> async);
 
     void getPersonShortView(Long id, AsyncCallback<PersonShortView> async);
+
+    void getPersonsByIds(Collection<Long> ids, AsyncCallback<List<Person>> async);
 }

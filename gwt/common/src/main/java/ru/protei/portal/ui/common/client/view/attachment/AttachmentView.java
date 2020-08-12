@@ -67,6 +67,11 @@ public class AttachmentView extends Composite implements AbstractAttachmentView 
         picture.setUrl(url);
     }
 
+    @Override
+    public HasVisibility removeButtonVisibility() {
+        return deleteButton;
+    }
+
     @UiHandler("deleteButton")
     public void onRemove(ClickEvent event){
         if(activity != null)

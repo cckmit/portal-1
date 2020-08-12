@@ -25,7 +25,7 @@
                             </div>
                         </fileuploader:AttachmentUploader>
                     </g:HTMLPanel>
-                    <attachment:AttachmentList ui:field="attachmentContainer"/>
+                    <attachment:fullview.FullViewAttachmentList ui:field="attachmentContainer"/>
                 </div>
             </div>
         </div>
