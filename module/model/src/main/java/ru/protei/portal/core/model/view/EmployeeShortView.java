@@ -25,6 +25,9 @@ public class EmployeeShortView implements Serializable {
     @JdbcColumn(name="displayname")
     private String displayName;
 
+    @JdbcColumn(name="displayShortName")
+    private String displayShortName;
+
     @JdbcColumn(name="firstname")
     private String firstName;
 
@@ -79,6 +82,14 @@ public class EmployeeShortView implements Serializable {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    public String getDisplayShortName() {
+        return displayShortName;
+    }
+
+    public void setDisplayShortName(String displayShortName) {
+        this.displayShortName = displayShortName;
     }
 
     public Date getBirthday() {

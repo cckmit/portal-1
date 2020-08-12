@@ -65,6 +65,10 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
             fireEvent(new ActionBarEvents.Add(lang.absenceButtonReport(), "", UiConstants.ActionBarIdentity.ABSENCE_REPORT));
         }
 
+        if (policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_VIEW)) {
+            fireEvent(new ActionBarEvents.Add(lang.employeeBirthdays(), "", UiConstants.ActionBarIdentity.EMPLOYEE_BIRTHDAYS));
+        }
+
         fireEvent(new EmployeeEvents.ShowDefinite(currentViewType, filterView.asWidget(), query, event.preScroll));
     }
 
@@ -136,6 +140,20 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
         }
 
         fireEvent(new AbsenceEvents.CreateReport());
+    }
+
+    @Event
+    public void onEmployeeBirthdaysClicked(ActionBarEvents.Clicked event) {
+        if (!UiConstants.ActionBarIdentity.EMPLOYEE_BIRTHDAYS.equals(event.identity)) {
+            return;
+        }
+
+        if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_VIEW)) {
+            fireEvent(new ErrorPageEvents.ShowForbidden());
+            return;
+        }
+
+        fireEvent(new EmployeeEvents.ShowBirthdays());
     }
 
     @Event

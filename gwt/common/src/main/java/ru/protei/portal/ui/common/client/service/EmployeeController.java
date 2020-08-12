@@ -5,12 +5,14 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.WorkerEntry;
 import ru.protei.portal.core.model.query.EmployeeQuery;
+import ru.protei.portal.core.model.struct.EmployeesBirthdays;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -62,4 +64,6 @@ public interface EmployeeController extends RemoteService {
     boolean fireEmployee(Person person) throws RequestFailedException;
 
     boolean updateEmployeeWorkers(List<WorkerEntry> workerEntryList) throws RequestFailedException;
+
+    EmployeesBirthdays getEmployeesBirthdays(Date dateFrom, Date dateUntil) throws RequestFailedException;
 }

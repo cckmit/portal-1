@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 import static com.google.gwt.user.datepicker.client.CalendarUtil.copyDate;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.ui.common.client.util.DateUtils.*;
-import static ru.protei.portal.ui.roomreservation.client.util.WidgetUtils.*;
+import static ru.protei.portal.ui.common.client.util.WidgetUtils.*;
 
 public class CalendarContainer extends Composite implements HasValue<RoomReservationCalendar>, HasVisibility {
 

@@ -17,8 +17,8 @@ import java.util.Date;
 import java.util.List;
 
 import static ru.protei.portal.ui.common.client.util.DateUtils.*;
-import static ru.protei.portal.ui.roomreservation.client.util.WidgetUtils.makeDiv;
-import static ru.protei.portal.ui.roomreservation.client.util.WidgetUtils.makeStyledDiv;
+import static ru.protei.portal.ui.common.client.util.WidgetUtils.makeDiv;
+import static ru.protei.portal.ui.common.client.util.WidgetUtils.makeStyledDiv;
 
 public class CalendarDayOfMonth extends Composite implements HasValue<YearMonthDay> {
 
