@@ -1,5 +1,7 @@
 package ru.protei.portal.ui.common.server.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.core.model.ent.AuthToken;
@@ -20,24 +22,28 @@ public class WorkerPositionControllerImpl implements WorkerPositionController {
 
     @Override
     public List<WorkerPosition> getWorkerPositions(Long companyId) throws RequestFailedException {
+        log.info("getWorkerPositions(): companyId={}", companyId);
         AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         return checkResultAndGetData(workerPositionService.getWorkerPositions(authToken, companyId));
     }
 
     @Override
     public Long removeWorkerPosition(WorkerPosition workerPosition) throws RequestFailedException {
+        log.info("removeWorkerPosition(): workerPosition={}", workerPosition);
         AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         return checkResultAndGetData(workerPositionService.removeWorkerPosition(authToken, workerPosition));
     }
 
     @Override
     public Long createWorkerPosition(WorkerPosition workerPosition) throws RequestFailedException {
+        log.info("createWorkerPosition(): workerPosition={}", workerPosition);
         AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         return checkResultAndGetData(workerPositionService.createWorkerPosition(authToken, workerPosition));
     }
 
     @Override
     public Long updateWorkerPosition(WorkerPosition workerPosition) throws RequestFailedException {
+        log.info("updateWorkerPosition(): workerPosition={}", workerPosition);
         AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         return checkResultAndGetData(workerPositionService.updateWorkerPosition(authToken, workerPosition));
     }
@@ -48,4 +54,6 @@ public class WorkerPositionControllerImpl implements WorkerPositionController {
     HttpServletRequest httpServletRequest;
     @Autowired
     WorkerPositionService workerPositionService;
+
+    private static final Logger log = LoggerFactory.getLogger(WorkerPositionControllerImpl.class);
 }

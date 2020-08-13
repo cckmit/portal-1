@@ -431,7 +431,10 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             return error( En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        return ok(caseCommentDAO.get(commentId));
+        CaseComment caseComment = caseCommentDAO.get(commentId);
+        jdbcManyRelationsHelper.fill(caseComment, "caseAttachments");
+
+        return ok(caseComment);
     }
 
     @Transactional
