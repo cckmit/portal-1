@@ -129,32 +129,36 @@ public class AbsenceSummaryTableView extends Composite implements AbstractAbsenc
     ClickColumn<PersonAbsence> person = new ClickColumn<PersonAbsence>() {
         @Override
         protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setClassName("summary-table-absence-person-column");
             columnHeader.setInnerText(lang.accountPerson());
         }
 
         @Override
         public void fillColumnValue(Element cell, PersonAbsence value) {
-            cell.setInnerHTML(value.getPerson().getName());
+            InlineLabel label = new InlineLabel(value.getPerson().getName());
+            label.setStyleName("summary-table-height");
+            cell.appendChild(label.getElement());
         }
     };
 
     ClickColumn<PersonAbsence> reason = new ClickColumn<PersonAbsence>() {
         @Override
         protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setClassName("summary-table-absence-reason-column");
             columnHeader.setInnerText(lang.absenceReason());
         }
 
         @Override
         public void fillColumnValue(Element cell, PersonAbsence value) {
             com.google.gwt.dom.client.Element reason = LabelValuePairBuilder.make()
-                    .addIconPair(reasonLang.getIcon(value.getReason()), "absence-icon")
+                    .addIconPair(reasonLang.getIcon(value.getReason()), "absence-reason")
                     .toElement();
 
             InlineLabel label = new InlineLabel(reasonLang.getName(value.getReason()));
             label.setStyleName("absence-label");
 
             HTMLPanel root = new HTMLPanel("");
-            root.setStyleName("summary-table-absence-column");
+            root.setStyleName("summary-table-absence-reason-column-value summary-table-height");
             root.getElement().appendChild(reason);
             root.add(label);
 
@@ -166,11 +170,14 @@ public class AbsenceSummaryTableView extends Composite implements AbstractAbsenc
         @Override
         protected void fillColumnHeader(Element columnHeader) {
             columnHeader.setInnerText(lang.absenceFromTime());
+            columnHeader.setClassName("summary-table-absence-fromTime-column");
         }
 
         @Override
         public void fillColumnValue(Element cell, PersonAbsence value) {
-            cell.setInnerHTML(DateFormatter.formatDateTime(value.getFromTime()));
+            InlineLabel label = new InlineLabel(DateFormatter.formatDateTime(value.getFromTime()));
+            label.setStyleName("summary-table-height");
+            cell.appendChild(label.getElement());
         }
     };
 
@@ -178,11 +185,14 @@ public class AbsenceSummaryTableView extends Composite implements AbstractAbsenc
         @Override
         protected void fillColumnHeader(Element columnHeader) {
             columnHeader.setInnerText(lang.absenceTillTime());
+            columnHeader.setClassName("summary-table-absence-tillTime-column");
         }
 
         @Override
         public void fillColumnValue(Element cell, PersonAbsence value) {
-            cell.setInnerHTML(DateFormatter.formatDateTime(value.getTillTime()));
+            InlineLabel label = new InlineLabel(DateFormatter.formatDateTime(value.getTillTime()));
+            label.setStyleName("summary-table-height");
+            cell.appendChild(label.getElement());
         }
     };
 
@@ -190,11 +200,14 @@ public class AbsenceSummaryTableView extends Composite implements AbstractAbsenc
         @Override
         protected void fillColumnHeader(Element columnHeader) {
             columnHeader.setInnerText(lang.absenceComment());
+            columnHeader.setClassName("summary-table-absence-comment-column");
         }
 
         @Override
         public void fillColumnValue(Element cell, PersonAbsence value) {
-            cell.setInnerHTML(value.getUserComment());
+            InlineLabel label = new InlineLabel(value.getUserComment());
+            label.setStyleName("summary-table-height");
+            cell.appendChild(label.getElement());
         }
     };
 

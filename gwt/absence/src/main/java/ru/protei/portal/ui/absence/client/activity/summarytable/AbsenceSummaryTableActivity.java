@@ -40,7 +40,6 @@ public abstract class AbsenceSummaryTableActivity implements AbstractAbsenceSumm
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
-        view.getFilterWidget().resetFilter();
         view.getPagerContainer().add( pagerView.asWidget() );
 
         loadTable();

@@ -6,7 +6,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="p-3">
+    <g:HTMLPanel styleName="p-3 absence">
         <div class="row">
             <g:HTMLPanel styleName="global-table-container col-md-9">
                 <div class="card card-default no-border">

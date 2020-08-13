@@ -30,7 +30,7 @@ public class AbsenceControllerImpl implements AbsenceController {
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
         Result<SearchResult<PersonAbsence>> result = absenceService.getAbsences(token, query);
         log.info("getAbsence(): result={}", result);
-        return result.getData();
+        return checkResultAndGetData(result);
     }
 
     @Override
