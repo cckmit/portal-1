@@ -22,7 +22,10 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.util.ContractorUtils;
 import ru.protei.portal.core.model.util.CrmConstants;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -238,12 +241,12 @@ public class Api1CImpl implements Api1C{
 
     private String buildGetContractorUrl(Contractor1C contractor, String homeCompanyName){
         String url = buildCommonUrl(contractor.getClass(), homeCompanyName);
-        url += "&" + URL_PARAM_SELECT + String.join(",", fieldsMapper.getFields(Contractor1C.class));
-        url += "&" + URL_PARAM_FILTER + fillFilter(contractor.getClass(), contractor);
+        url += "&" + URL_PARAM_SELECT + urlEncode(String.join(",", fieldsMapper.getFields(Contractor1C.class)));
+        url += "&" + URL_PARAM_FILTER + urlEncode(fillFilter(contractor.getClass(), contractor));
 
-        log.debug("buildGetContractorUrl(): url={}", replaceSpaces(url));
+        log.debug("buildGetContractorUrl(): url={}", url);
 
-        return replaceSpaces(url);
+        return url;
     }
 
     private String buildSaveContractorUrl(String homeCompanyName){
@@ -254,12 +257,12 @@ public class Api1CImpl implements Api1C{
 
     private String buildGetCountryUrl(Country1C country1C, String homeCompanyName){
         String url = buildCommonUrl(country1C.getClass(), homeCompanyName);
-        url += "&" + URL_PARAM_SELECT + String.join(",", fieldsMapper.getFields(Country1C.class));
-        url += "&" + URL_PARAM_FILTER + fillFilter(country1C.getClass(), country1C);
+        url += "&" + URL_PARAM_SELECT + urlEncode(String.join(",", fieldsMapper.getFields(Country1C.class)));
+        url += "&" + URL_PARAM_FILTER + urlEncode(fillFilter(country1C.getClass(), country1C));
 
-        log.debug("buildGetCountryUrl(): url={}", replaceSpaces(url));
+        log.debug("buildGetCountryUrl(): url={}", url);
 
-        return replaceSpaces(url);
+        return url;
     }
 
     private String buildCreateContractUrl(String homeCompanyName){
@@ -276,8 +279,8 @@ public class Api1CImpl implements Api1C{
 
     private String buildGetContractByKeyUrl(Contract1C contract, String homeCompanyName){
         String url = buildCommonUrl(contract.getClass(), homeCompanyName, contract.getRefKey());
-        log.debug("buildGetContractByKeyUrl(): url={}", replaceSpaces(url));
-        return replaceSpaces(url);
+        log.debug("buildGetContractByKeyUrl(): url={}", url);
+        return url;
     }
 
     private String buildCommonUrl (Class<?> clazz, String homeCompanyName){
@@ -289,7 +292,7 @@ public class Api1CImpl implements Api1C{
             return "";
         }
 
-        url += "/" + annotation.value() + "?" + URL_PARAM_FORMAT;
+        url += "/" + urlEncode(annotation.value()) + "?" + URL_PARAM_FORMAT;
         return url;
     }
 
@@ -307,10 +310,10 @@ public class Api1CImpl implements Api1C{
             return "";
         }
 
-        url += "/" + annotation.value() ;
+        url += "/" + urlEncode(annotation.value()) ;
 
         if (StringUtils.isNotBlank(refKey)){
-            url += "(guid'" + refKey + "')";
+            url += urlEncode("(guid'" + refKey + "')");
         }
 
         url += "?" + URL_PARAM_FORMAT;
@@ -362,8 +365,19 @@ public class Api1CImpl implements Api1C{
         return String.join(" and ", params);
     }
 
-    private String replaceSpaces(String s){
-        return s.replaceAll(" ", "%20");
+    private String urlEncode(String text) {
+        try {
+            return URLEncoder.encode(text, StandardCharsets.UTF_8.name())
+                    .replace("+", "%20")
+                    .replace("%21", "!")
+                    .replace("%27", "'")
+                    .replace("%28", "(")
+                    .replace("%29", ")")
+                    .replace("%7E", "~");
+        } catch (UnsupportedEncodingException e) {
+            log.error("urlEncode(): failed to url encode | text={}", text, e);
+            return text;
+        }
     }
 
     private String getBaseUrl(String homeCompanyName) {
