@@ -46,4 +46,10 @@ public class WidgetUtils {
         img.setUrl(src);
         return img;
     }
+
+    public static Image makeStyledImg(String styleName, String src) {
+        Image img = makeImg(src);
+        img.addStyleName(styleName);
+        return img;
+    }
 }
