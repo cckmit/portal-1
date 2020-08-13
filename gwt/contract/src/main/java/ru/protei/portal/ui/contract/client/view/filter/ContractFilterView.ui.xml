@@ -26,13 +26,11 @@
                     </div>
                 </div>
 
-                <selector:ContractTypeSelector ui:field="type"
-                                               header="{lang.contractType}" addStyleNames="form-group col-md-12"
-                                               hasNullValue="true" defaultValue="{lang.selectorAny}"/>
+                <selector:multi.ContractTypeMultiSelector ui:field="types"
+                                             header="{lang.contractType}" addStyleNames="form-group col-md-12"/>
 
-                <selector:ContractStateSelector ui:field="state"
-                                                header="{lang.contractState}" addStyleNames="form-group col-md-12"
-                                                hasNullValue="true" defaultValue="{lang.selectorAny}"/>
+                <selector:multi.ContractStateMultiSelector ui:field="states"
+                                              header="{lang.contractState}" addStyleNames="form-group col-md-12"/>
 
                 <productdirection:ProductDirectionButtonSelector ui:field="direction"
                                                                  header="{lang.productDirection}"

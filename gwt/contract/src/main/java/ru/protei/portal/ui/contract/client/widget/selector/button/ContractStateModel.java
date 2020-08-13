@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.contract.client.widget.selector.model;
+package ru.protei.portal.ui.contract.client.widget.selector.button;
 
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;

@@ -18,8 +18,8 @@ import ru.protei.portal.ui.contract.client.widget.contractor.create.AbstractCont
 import ru.protei.portal.ui.contract.client.widget.contractor.create.ContractorCreateView;
 import ru.protei.portal.ui.contract.client.widget.contractor.search.AbstractContractorSearchView;
 import ru.protei.portal.ui.contract.client.widget.contractor.search.ContractorSearchView;
-import ru.protei.portal.ui.contract.client.widget.selector.model.ContractStateModel;
-import ru.protei.portal.ui.contract.client.widget.selector.model.ContractTypeModel;
+import ru.protei.portal.ui.contract.client.widget.selector.button.ContractStateModel;
+import ru.protei.portal.ui.contract.client.widget.selector.button.ContractTypeModel;
 
 public class ContractClientModule extends AbstractGinModule {
     @Override

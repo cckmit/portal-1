@@ -27,7 +27,13 @@ public enum En_ContractState {
     /**
      * ожидание оригинала от заказчика
      */
-    WAIT_ORIGINAL(5);
+    WAIT_ORIGINAL(5),
+
+    /**
+     * отменен
+     */
+    CANCELLED(6),
+    ;
 
     public static En_ContractState getById(Integer id) {
         if(id == null)

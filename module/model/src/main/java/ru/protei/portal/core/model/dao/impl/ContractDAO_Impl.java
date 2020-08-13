@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.dao.impl;
 import org.apache.commons.lang3.StringUtils;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.ContractDAO;
+import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContractQuery;
@@ -76,14 +77,17 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
                 args.add(likeArg);
             }
 
-            if (query.getState() != null) {
-                condition.append(" and CO.state = ?");
-                args.add(query.getState().getId());
+            if (CollectionUtils.isNotEmpty(query.getStates())) {
+                String inArg = HelperFunc.makeInArg(query.getStates(), state -> String.valueOf(state.getId()));
+                condition.append(" and CO.state in ").append(inArg);
+            } else {
+                condition.append(" and CO.state != ?");
+                args.add(En_ContractState.CANCELLED.getId());
             }
 
-            if (query.getType() != null) {
-                condition.append(" and contract.contract_type = ?");
-                args.add(query.getType().ordinal());
+            if (CollectionUtils.isNotEmpty(query.getTypes())) {
+                String inArg = HelperFunc.makeInArg(query.getTypes(), type -> String.valueOf(type.ordinal()));
+                condition.append(" and contract.contract_type in ").append(inArg);
             }
 
             if (query.getDirectionId() != null) {

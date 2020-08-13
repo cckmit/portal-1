@@ -41,8 +41,8 @@ import ru.protei.portal.ui.contract.client.activity.edit.AbstractContractEditVie
 import ru.protei.portal.ui.contract.client.widget.contractdates.list.ContractDatesList;
 import ru.protei.portal.ui.contract.client.widget.contractor.ContractorWidget;
 import ru.protei.portal.ui.contract.client.widget.contractspecification.list.ContractSpecificationList;
-import ru.protei.portal.ui.contract.client.widget.selector.ContractStateSelector;
-import ru.protei.portal.ui.contract.client.widget.selector.ContractTypeSelector;
+import ru.protei.portal.ui.contract.client.widget.selector.button.ContractStateSelector;
+import ru.protei.portal.ui.contract.client.widget.selector.button.ContractTypeSelector;
 
 import java.util.Collections;
 import java.util.Date;

@@ -2028,6 +2028,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractWaitingCopiesFromCustomer();
 
+    String contractCancelled();
+
     String contractDescription();
 
     String contractContractor();
