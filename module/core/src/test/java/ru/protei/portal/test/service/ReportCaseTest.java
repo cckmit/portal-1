@@ -11,7 +11,7 @@ import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.struct.CaseObjectComments;
+import ru.protei.portal.core.model.struct.CaseObjectReportRequest;
 import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.report.caseobjects.ReportCase;
 import ru.protei.portal.core.report.caseobjects.ReportCaseImpl;
@@ -69,10 +69,10 @@ public class ReportCaseTest extends BaseServiceTest {
         CaseQuery caseQuery = makeCaseQuery();
         caseQuery.setCheckImportanceHistory(false);
 
-        List<CaseObjectComments> caseObjectComments = ((ReportCaseImpl) reportCase).processChunk( caseQuery );
+        List<CaseObjectReportRequest> caseObjectComments = ((ReportCaseImpl) reportCase).processChunk( caseQuery );
 
         assertTrue(  "Expected not empty report data", !isEmpty(caseObjectComments)  );
-        List<CaseObject> reportCases = toList( caseObjectComments, CaseObjectComments::getCaseObject );
+        List<CaseObject> reportCases = toList( caseObjectComments, CaseObjectReportRequest::getCaseObject );
         for (CaseObject aCase : cases) {
             assertTrue(  "Missing case: " + aCase, find(  reportCases, caseObject -> Objects.equals( caseObject.getId(), aCase.getId() ) ).isPresent() );
         }
@@ -85,10 +85,10 @@ public class ReportCaseTest extends BaseServiceTest {
         CaseQuery caseQuery = makeCaseQuery();
         caseQuery.setCheckImportanceHistory(true);
 
-        List<CaseObjectComments> caseObjectComments = ((ReportCaseImpl) reportCase).processChunk( caseQuery );
+        List<CaseObjectReportRequest> caseObjectComments = ((ReportCaseImpl) reportCase).processChunk( caseQuery );
 
         assertTrue(  "Expected not empty report data", !isEmpty(caseObjectComments)  );
-        List<CaseObject> reportCases = toList( caseObjectComments, CaseObjectComments::getCaseObject );
+        List<CaseObject> reportCases = toList( caseObjectComments, CaseObjectReportRequest::getCaseObject );
         for (CaseObject aCase : cases) {
             assertTrue(  "Missing case: " + aCase, find(  reportCases, caseObject -> Objects.equals( caseObject.getId(), aCase.getId() ) ).isPresent() );
         }

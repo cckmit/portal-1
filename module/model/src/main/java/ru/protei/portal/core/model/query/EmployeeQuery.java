@@ -181,12 +181,6 @@ public class EmployeeQuery extends BaseQuery {
         this.secondName = secondName;
     }
 
-    public DateRange getBirthdayRange() {
-        return birthdayRange;
-    }
-
-    public void setBirthdayRange(DateRange birthdayRange) { this.birthdayRange = birthdayRange; }
-
     public Boolean getAbsent() {
         return absent;
     }
@@ -201,6 +195,14 @@ public class EmployeeQuery extends BaseQuery {
 
     public void setDepartmentIds(Set<Long> departmentIds) {
         this.departmentIds = departmentIds;
+    }
+
+    public DateRange getBirthdayRange() {
+        return birthdayRange;
+    }
+
+    public void setBirthdayRange(DateRange birthdayRange) {
+        this.birthdayRange = birthdayRange;
     }
 
     @Override

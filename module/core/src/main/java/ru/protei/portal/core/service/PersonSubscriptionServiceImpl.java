@@ -7,9 +7,11 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.PersonNotifier;
+import ru.protei.portal.core.model.struct.PersonSubscriptionChangeRequest;
 import ru.protei.portal.core.model.view.PersonShortView;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -32,13 +34,16 @@ public class PersonSubscriptionServiceImpl implements PersonSubscriptionService 
     }
 
     @Override
-    public Result<Set<PersonShortView>> updatePersonSubscriptions(AuthToken token, Set<PersonShortView> persons) {
+    public Result<Set<PersonShortView>> updatePersonSubscriptions(AuthToken token, PersonSubscriptionChangeRequest changeRequest) {
 
-        if (persons == null)
+        if (changeRequest == null || changeRequest.getId() == null || changeRequest.getPersons() == null)
             return error(En_ResultStatus.INCORRECT_PARAMS);
 
+        if (!Objects.equals(changeRequest.getId(), token.getPersonId()))
+            return error(En_ResultStatus.PERMISSION_DENIED);
+
         personNotifierDAO.removeByNotifierId(token.getPersonId());
-        personNotifierDAO.persistBatch(persons
+        personNotifierDAO.persistBatch(changeRequest.getPersons()
                 .stream()
                 .map(person -> new PersonNotifier(person.getId(), token.getPersonId()))
                 .collect(Collectors.toList()));

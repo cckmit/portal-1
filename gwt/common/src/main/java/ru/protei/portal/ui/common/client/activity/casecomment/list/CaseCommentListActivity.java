@@ -136,6 +136,10 @@ public abstract class CaseCommentListActivity
 
         AbstractCaseCommentItemView oldView = findItemViewByCommentId( event.getCaseCommentID() );
         if (oldView != null) {
+            Collection<Attachment> commentAttachments = oldView.attachmentContainer().getAll();
+            if (CollectionUtils.isNotEmpty(commentAttachments)) {
+                fireEvent(new AttachmentEvents.Remove(caseId, commentAttachments));
+            }
             view.removeComment( oldView );
             itemViewToModel.remove( oldView );
         }
@@ -152,20 +156,28 @@ public abstract class CaseCommentListActivity
                     if (comment == null) return;
                     if (!view.isAttached()) return;
 
-                    AbstractCaseCommentItemView newView = makeCommentView( comment );
-                    AbstractCaseCommentItemView oldView = findItemViewByCommentId( comment.getId() );
-                    if (oldView != null) {
-                        view.replaceCommentView( oldView, newView );
-                        newView.displayUpdatedAnimation();
-                        itemViewToModel.remove( oldView );
+                    renderTextAsync(comment.getText(), textMarkup, converted -> {
+                        comment.setText(converted);
+                        AbstractCaseCommentItemView newView = makeCommentView( comment );
+                        AbstractCaseCommentItemView oldView = findItemViewByCommentId( comment.getId() );
+                        if (oldView != null) {
+                            view.replaceCommentView( oldView, newView );
+                            newView.displayUpdatedAnimation();
+                            itemViewToModel.remove( oldView );
+                            itemViewToModel.put( newView, comment );
+                            if (CollectionUtils.isEmpty(oldView.attachmentContainer())){
+                                updateCaseAttachment(Collections.emptyList(), comment.getCaseAttachments());
+                            } else {
+                                updateCaseAttachment(new ArrayList<>(oldView.attachmentContainer().getAll()), comment.getCaseAttachments());
+                            }
+                            return;
+                        }
+
                         itemViewToModel.put( newView, comment );
-                        return;
-                    }
-
-                    itemViewToModel.put( newView, comment );
-                    view.addCommentToFront( newView );
-                    newView.displayAddedAnimation();
-
+                        view.addCommentToFront( newView );
+                        newView.displayAddedAnimation();
+                        updateCaseAttachment(Collections.emptyList(), comment.getCaseAttachments());
+                    });
                 } ) );
     }
 
@@ -732,6 +744,39 @@ public abstract class CaseCommentListActivity
         }
 
         return null;
+    }
+
+    private void updateCaseAttachment (List<Attachment> currentAttachments, List<CaseAttachment> newCommentAttachments){
+        if (CollectionUtils.isNotEmpty(newCommentAttachments)) {
+            requestAttachments(extractIds(newCommentAttachments), attachmentsFromDb -> {
+                List<Attachment> attachmentsToAdd = makeListAttachmentsToAdd(currentAttachments, new ArrayList<>(attachmentsFromDb));
+                List<Attachment> attachmentsToRemove = makeListAttachmentsToRemove(currentAttachments, new ArrayList<>(attachmentsFromDb));
+
+                if (!attachmentsToAdd.isEmpty()) {
+                    fireEvent(new AttachmentEvents.Add(caseId, attachmentsToAdd));
+                }
+
+                if (!attachmentsToRemove.isEmpty()) {
+                    fireEvent(new AttachmentEvents.Remove(caseId, attachmentsToRemove));
+                }
+            });
+        } else {
+            if (CollectionUtils.isNotEmpty(currentAttachments)){
+                fireEvent(new AttachmentEvents.Remove(caseId, currentAttachments));
+            }
+        }
+    }
+
+    private List<Attachment> makeListAttachmentsToRemove(List<Attachment> currentAttachments, List<Attachment> newAttachments) {
+        List<Attachment> removeList = new ArrayList<>(currentAttachments);
+        removeList.removeIf(currentAttachment -> newAttachments.contains(currentAttachment));
+        return removeList;
+    }
+
+    private List<Attachment> makeListAttachmentsToAdd(List<Attachment> currentAttachments, List<Attachment> newAttachments) {
+        List<Attachment> addList = new ArrayList<>(newAttachments);
+        addList.removeIf(newAttachment -> currentAttachments.contains(newAttachment));
+        return addList;
     }
 
     private final Timer changedPreviewTimer = new Timer() {

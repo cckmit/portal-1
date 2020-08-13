@@ -1,7 +1,8 @@
-package ru.protei.portal.ui.roomreservation.client.util;
+package ru.protei.portal.ui.common.client.util;
 
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
 
 public class WidgetUtils {
@@ -38,5 +39,17 @@ public class WidgetUtils {
         FocusPanel div = makeFocusDiv();
         div.addStyleName(styleName);
         return div;
+    }
+
+    public static Image makeImg(String src) {
+        Image img = new Image();
+        img.setUrl(src);
+        return img;
+    }
+
+    public static Image makeStyledImg(String styleName, String src) {
+        Image img = makeImg(src);
+        img.addStyleName(styleName);
+        return img;
     }
 }

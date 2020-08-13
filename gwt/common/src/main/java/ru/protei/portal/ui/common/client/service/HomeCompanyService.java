@@ -49,6 +49,19 @@ public abstract class HomeCompanyService implements Activity {
         }
     }
 
+    public void getAllHomeCompanies(Consumer<List<EntityOption>> successConsumer) {
+        if (homeCompanies != null) {
+            successConsumer.accept(homeCompanies);
+        } else {
+            companyService.getAllHomeCompanies(new FluentCallback<List<EntityOption>>()
+                    .withSuccess(companies -> {
+                        setHomeCompanies(companies);
+                        successConsumer.accept(companies);
+                    })
+            );
+        }
+    }
+
     private void setHomeCompanies(List<EntityOption> homeCompanies) {
         this.homeCompanies = homeCompanies;
     }

@@ -7,12 +7,11 @@ import org.springframework.scheduling.annotation.Async;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.AssembledProjectEvent;
 import ru.protei.portal.core.event.ProjectPauseTimeHasComeEvent;
-import ru.protei.portal.core.model.dao.CaseCommentDAO;
-import ru.protei.portal.core.model.dao.CaseLinkDAO;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
-import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dto.Project;
+import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.service.events.EventPublisherService;
@@ -21,6 +20,7 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
@@ -39,6 +39,7 @@ public class AssemblerProjectServiceImpl implements AssemblerProjectService {
                 .flatMap(this::fillComments)
                 .flatMap(this::fillLinks)
                 .flatMap(this::schedulePauseTime)
+                .flatMap(this::fillAttachments)
                 .ifOk(filledEvent -> publisherService.publishEvent(filledEvent));
     }
 
@@ -107,8 +108,23 @@ public class AssemblerProjectServiceImpl implements AssemblerProjectService {
         Date upperBoundDate = addSeconds(new Date(), 1);
 
         log.info("fillComments(): projectId={} Try to fill comments.", event.getProjectId());
-        event.setExistingComments(caseCommentDAO.getCaseComments(new CaseCommentQuery(event.getProjectId(), upperBoundDate)));
+        List<CaseComment> caseComments = caseCommentDAO.getCaseComments(new CaseCommentQuery(event.getProjectId(), upperBoundDate));
+        jdbcManyRelationsHelper.fill(CollectionUtils.emptyIfNull(caseComments), "caseAttachments");
+
+        event.setExistingComments(caseComments);
         log.info("fillComments(): projectId={} Comments are successfully filled.", event.getProjectId());
+
+        return ok(event);
+    }
+
+    private Result<AssembledProjectEvent> fillAttachments(AssembledProjectEvent event) {
+        if (event.isAttachmentsFilled()) {
+            log.info("fillAttachments(): projectId={} Attachments are already filled.", event.getProjectId());
+            return ok(event);
+        }
+        log.info("fillAttachments(): CaseObjectID={} Try to fill attachments.", event.getProjectId());
+        event.setExistingAttachments(attachmentDAO.getListByCaseId(event.getProjectId()));
+        log.info("fillAttachments(): CaseObjectID={} Attachments are successfully filled.", event.getProjectId());
 
         return ok(event);
     }
@@ -128,6 +144,8 @@ public class AssemblerProjectServiceImpl implements AssemblerProjectService {
     CaseCommentDAO caseCommentDAO;
     @Autowired
     CaseLinkDAO caseLinkDAO;
+    @Autowired
+    AttachmentDAO attachmentDAO;
     @Autowired
     PortalScheduleTasks scheduledTasksService;
 

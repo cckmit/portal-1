@@ -32,9 +32,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Objects.nonNull;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.CollectionUtils.not;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeDateWithOffset;
 
@@ -416,6 +418,31 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
        return ok(true);
+    }
+
+    @Override
+    public Result<EmployeesBirthdays> getEmployeesBirthdays(AuthToken token, Date dateFrom, Date dateUntil) {
+        EmployeeQuery query = new EmployeeQuery();
+        query.setFired(false);
+        query.setDeleted(false);
+        query.setBirthdayRange(new DateRange(En_DateIntervalType.FIXED, dateFrom, dateUntil));
+        List<EmployeeShortView> employees = employeeShortViewDAO.getEmployees(query);
+        EmployeesBirthdays birthdays = new EmployeesBirthdays();
+        birthdays.setDateFrom(dateFrom);
+        birthdays.setDateUntil(dateUntil);
+        birthdays.setBirthdays(stream(employees)
+                .filter(employee -> nonNull(employee.getBirthday()))
+                .map(employee -> {
+                    EmployeeBirthday birthday = new EmployeeBirthday();
+                    birthday.setId(employee.getId());
+                    birthday.setName(employee.getDisplayShortName());
+                    birthday.setGender(employee.getGender());
+                    birthday.setBirthdayMonth(employee.getBirthday().getMonth() + 1);
+                    birthday.setBirthdayDayOfMonth(employee.getBirthday().getDate());
+                    return birthday;
+                })
+                .collect(Collectors.toList()));
+        return ok(birthdays);
     }
 
     /**

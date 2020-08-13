@@ -1,0 +1,62 @@
+
+.bday-calendar.calendar {
+
+  .calendar-container {
+
+    .view.month-view  {
+
+      .tble {
+        .trow .tcell {
+          height: unset;
+        }
+      }
+
+      .grid {
+        overflow-x: auto;
+      }
+    }
+
+    .bday-cell {
+      float: left;
+      width: 100%;
+      height: calc(100% - 37px);
+      clear: both;
+      white-space: normal;
+      border-bottom: 1px solid #e6e6e6;
+
+      .bday-wrapper {
+        border-radius: 3px;
+        margin-bottom: 2px;
+
+        .bday-container {
+          padding: 3px 2px;
+          cursor: pointer;
+
+          .bday-container-text {
+            margin-left: 4px;
+
+            .bday-container-text-1 {
+              font-size: 12px;
+              line-height: 14px;
+            }
+
+            .bday-container-text-2 {
+              font-size: 11px;
+              line-height: 12px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 700px) {
+  .bday-cell .bday-wrapper {
+    display: inline-block;
+    background: transparent;
+  }
+  .bday-cell .bday-wrapper .bday-container .bday-container-text {
+    display: none;
+  }
+}

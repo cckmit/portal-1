@@ -81,6 +81,7 @@ public class UiConstants {
         String CONTRACT = "contract";
         String EMPLOYEE_TYPE_VIEW = "employeeTypeView";
         String TOP_BRASS = "top_brass";
+        String EMPLOYEE_VIEW = "employee_view";
         String EMPLOYEE_CREATE = "employee_create";
         String SUBNET = "subnet";
         String SUBNET_CREATE = "subnet_create";
@@ -89,6 +90,8 @@ public class UiConstants {
         String PLAN_CREATE = "plan_create";
         String ABSENCE = "absence";
         String ABSENCE_REPORT = "absence_report";
+        String EMPLOYEE_BIRTHDAYS = "employee_birthdays";
+        String ABSENCE_SUMMARY_TABLE = "absence_summary_table";
     }
 
     public interface Styles {

@@ -5,10 +5,8 @@ import com.google.gwt.user.client.ui.Widget;
 import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
-import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeShortView;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 
 public class EmployeeEvents {
@@ -18,14 +16,12 @@ public class EmployeeEvents {
      */
     @Url( value = "employees", primary = true )
     public static class Show {
-
         @Omit
         public Boolean preScroll = false;
         public Show () {}
         public Show(Boolean preScroll) {
             this.preScroll = preScroll;
         }
-
     }
 
     /**
@@ -111,6 +107,11 @@ public class EmployeeEvents {
             this.viewType = type;
             this.id = id;
         }
+    }
+
+    @Url(value = "birthdays")
+    public static class ShowBirthdays {
+        public ShowBirthdays() {}
     }
 
 }

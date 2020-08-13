@@ -1,5 +1,7 @@
 package ru.protei.portal.ui.common.server.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
@@ -23,6 +25,7 @@ public class AttachmentServiceImpl implements AttachmentService{
 
     @Override
     public List<Attachment> getAttachmentsByCaseId(En_CaseType caseType, Long caseId) throws RequestFailedException {
+        log.info("getAttachmentsByCaseId(): caseType={}, caseId={}", caseType, caseId);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         Result<List<Attachment>> response =  attachmentService.getAttachmentsByCaseId( token, caseType, caseId);
 
@@ -34,6 +37,7 @@ public class AttachmentServiceImpl implements AttachmentService{
 
     @Override
     public List<Attachment> getAttachments(En_CaseType caseType, List<Long> attachmentIds) throws RequestFailedException {
+        log.info("getAttachments(): caseType={}, attachmentIds={}", caseType, attachmentIds);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         Result<List<Attachment>> response =  attachmentService.getAttachments( token, caseType, attachmentIds);
 
@@ -45,6 +49,7 @@ public class AttachmentServiceImpl implements AttachmentService{
 
     @Override
     public boolean removeAttachmentEverywhere(En_CaseType caseType, Long attachmentId) throws RequestFailedException{
+        log.info("removeAttachmentEverywhere(): caseType={}, attachmentId={}", caseType, attachmentId);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         Result<Boolean> response =  attachmentService.removeAttachmentEverywhere( token, caseType, attachmentId);
 
@@ -56,6 +61,7 @@ public class AttachmentServiceImpl implements AttachmentService{
 
     @Override
     public void clearUploadedAttachmentsCache() {
+        log.info("clearUploadedAttachmentsCache():");
         sessionService.clearAllFiles(httpServletRequest);
     }
 
@@ -67,5 +73,7 @@ public class AttachmentServiceImpl implements AttachmentService{
 
     @Autowired
     ru.protei.portal.core.service.AttachmentService attachmentService;
+
+    private static final Logger log = LoggerFactory.getLogger(AttachmentServiceImpl.class);
 
 }

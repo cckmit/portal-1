@@ -18,10 +18,7 @@ import ru.protei.portal.core.controller.cloud.FileController;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
-import ru.protei.portal.core.service.events.AsyncEventPublisherService;
-import ru.protei.portal.core.service.events.EventAssemblerService;
-import ru.protei.portal.core.service.events.EventAssemblerServiceImpl;
-import ru.protei.portal.core.service.events.EventPublisherService;
+import ru.protei.portal.core.service.events.*;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
 import ru.protei.portal.core.service.pushevent.ClientEventService;
@@ -33,6 +30,7 @@ import ru.protei.portal.redmine.handlers.ForwardChannelEventHandler;
 import ru.protei.portal.redmine.handlers.RedmineBackChannelHandler;
 import ru.protei.portal.redmine.handlers.RedmineForwardChannel;
 import ru.protei.portal.redmine.service.*;
+import ru.protei.portal.schedule.PortalScheduleTasks;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
 
@@ -151,8 +149,18 @@ public class RedmineTestConfiguration {
     }
 
     @Bean
+    public EventProjectAssemblerService getProjectPublisherService() {
+        return new EventProjectAssemblerServiceImpl();
+    }
+
+    @Bean
     public AssemblerService getAssemblerService() {
         return new AssemblerServiceImpl();
+    }
+
+    @Bean
+    public AssemblerProjectService getAssemblerProjectService() {
+        return new AssemblerProjectServiceImpl();
     }
 
     @Bean
@@ -198,6 +206,11 @@ public class RedmineTestConfiguration {
     @Bean
     public PlanService getPlanService() {
         return mock(PlanService.class);
+    }
+
+    @Bean
+    public PortalScheduleTasks getPortalScheduleTasks() {
+        return mock(PortalScheduleTasks.class);
     }
 
     @Bean

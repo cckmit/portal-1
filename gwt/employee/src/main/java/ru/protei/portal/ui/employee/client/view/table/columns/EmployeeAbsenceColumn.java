@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
+import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.LabelValuePairBuilder;
 import ru.protei.portal.ui.common.client.lang.En_AbsenceReasonLang;
 
@@ -34,7 +35,11 @@ public class EmployeeAbsenceColumn extends ClickColumn<EmployeeShortView> {
         com.google.gwt.dom.client.Element reason = LabelValuePairBuilder.make()
                 .addIconPair(reasonLang.getIcon(value.getCurrentAbsence().getReason()), "absence-reason")
                 .toElement();
-        reason.setTitle(reasonLang.getName(value.getCurrentAbsence().getReason()));
+        reason.setTitle(reasonLang.getName(value.getCurrentAbsence().getReason()) +
+                "\n" +
+                DateFormatter.formatDateTime(value.getCurrentAbsence().getFromTime()) +
+                " - " +
+                DateFormatter.formatDateTime(value.getCurrentAbsence().getTillTime()));
 
         employeeAbsence.appendChild(reason);
         cell.appendChild(employeeAbsence);

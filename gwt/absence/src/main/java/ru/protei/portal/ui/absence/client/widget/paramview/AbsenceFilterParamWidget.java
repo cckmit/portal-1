@@ -3,6 +3,7 @@ package ru.protei.portal.ui.absence.client.widget.paramview;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.LabelElement;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -53,6 +54,11 @@ public class AbsenceFilterParamWidget extends Composite implements AbstractAbsen
         return validate();
     }
 
+    @Override
+    public void setOnFilterChangeCallback(Runnable onFilterChangeCallback) {
+        this.onFilterChangeCallback = onFilterChangeCallback;
+    }
+
     private boolean validate() {
         boolean dataRangeTypeValid = isDataRangeTypeValid(dateRange);
         boolean dataRangeValid = isDataRangeValid(dateRange.getValue());
@@ -77,11 +83,11 @@ public class AbsenceFilterParamWidget extends Composite implements AbstractAbsen
     @Override
     public void resetFilter() {
         employees.setValue(null);
-        dateRange.setValue(null);
+        dateRange.setValue(new DateIntervalWithType(null, En_DateIntervalType.TODAY));
         reasons.setValue(null);
         sortField.setValue(En_SortField.absence_person);
         sortDir.setValue(true);
-        validate();
+        onFilterChanged();
     }
 
     @Override
@@ -103,7 +109,9 @@ public class AbsenceFilterParamWidget extends Composite implements AbstractAbsen
         reasons.setValue(applyReason(query.getReasonIds()));
         sortField.setValue(query.getSortField());
         sortDir.setValue(query.getSortDir() == En_SortDir.ASC);
-        validate();
+        if (validate()) {
+            onFilterChanged();
+        }
     }
 
     @Override
@@ -126,7 +134,29 @@ public class AbsenceFilterParamWidget extends Composite implements AbstractAbsen
 
     @UiHandler("dateRange")
     public void onDateRangeChanged(ValueChangeEvent<DateIntervalWithType> event) {
-        validate();
+        if (validate()) {
+            onFilterChanged();
+        }
+    }
+
+    @UiHandler("employees")
+    public void onEmployeeSelected(ValueChangeEvent<Set<PersonShortView>> event) {
+        onFilterChanged();
+    }
+
+    @UiHandler("reasons")
+    public void onReasonSelected(ValueChangeEvent<Set<En_AbsenceReason>> event) {
+        onFilterChanged();
+    }
+
+    @UiHandler("sortField")
+    public void onSortFieldSelected(ValueChangeEvent<En_SortField> event) {
+        onFilterChanged();
+    }
+
+    @UiHandler("sortDir")
+    public void onSortDirClicked(ClickEvent event) {
+        onFilterChanged();
     }
 
     private void ensureDebugIds() {
@@ -166,6 +196,12 @@ public class AbsenceFilterParamWidget extends Composite implements AbstractAbsen
                 || dateRange.getInterval().isValid();
     }
 
+    private void onFilterChanged() {
+        if (onFilterChangeCallback != null) {
+            onFilterChangeCallback.run();
+        }
+    }
+
     @Inject
     @UiField(provided = true)
     TypedSelectorRangePicker dateRange;
@@ -187,6 +223,7 @@ public class AbsenceFilterParamWidget extends Composite implements AbstractAbsen
     Lang lang;
 
     private Consumer<Boolean> validateCallback;
+    private Runnable onFilterChangeCallback;
 
     private static AbsenceFilterParamViewUiBinder ourUiBinder = GWT.create(AbsenceFilterParamViewUiBinder.class);
     interface AbsenceFilterParamViewUiBinder extends UiBinder<HTMLPanel, AbsenceFilterParamWidget> {}

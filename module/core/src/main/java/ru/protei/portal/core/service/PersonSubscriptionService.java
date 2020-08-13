@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.struct.PersonSubscriptionChangeRequest;
 import ru.protei.portal.core.model.view.PersonShortView;
 
 import java.util.Set;
@@ -16,6 +17,6 @@ public interface PersonSubscriptionService {
     Result<Set<PersonShortView>> getPersonSubscriptions(AuthToken token);
 
     @Privileged({ En_Privilege.COMMON_PROFILE_EDIT })
-    @Auditable( En_AuditType.SUBSCRIPTION_MODIFY )
-    Result<Set<PersonShortView>> updatePersonSubscriptions(AuthToken token, Set<PersonShortView> persons);
+    @Auditable(En_AuditType.SUBSCRIPTION_MODIFY)
+    Result<Set<PersonShortView>> updatePersonSubscriptions(AuthToken token, PersonSubscriptionChangeRequest changeRequest);
 }

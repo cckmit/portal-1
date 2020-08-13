@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
+import ru.protei.portal.core.event.ProjectAttachmentEvent;
 import ru.protei.portal.core.model.event.CaseCommentSavedClientEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.ProjectCommentEvent;
@@ -33,13 +34,13 @@ import ru.protei.portal.core.service.pushevent.ClientEventService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import javax.inject.Inject;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
 
 public class CaseCommentServiceImpl implements CaseCommentService {
 
@@ -91,7 +92,14 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
 
         if (En_CaseType.PROJECT.equals(caseType)) {
-            okResult.publishEvent(new ProjectCommentEvent(this, null, resultData.getCaseComment(), null, token.getPersonId(), comment.getCaseId()));
+            okResult.publishEvent(new ProjectCommentEvent(
+                    this, null, resultData.getCaseComment(), null,
+                    token.getPersonId(), comment.getCaseId())
+            );
+
+            okResult.publishEvent(new ProjectAttachmentEvent(this, resultData.getAddedAttachments(), resultData.getRemovedAttachments(), comment.getId(),
+                    token.getPersonId(), comment.getCaseId())
+            );
         }
 
         if (resultData.getCaseComment() != null) {
@@ -189,7 +197,12 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
         if (En_CaseType.PROJECT.equals(caseType)) {
             okResult.publishEvent(new ProjectCommentEvent(this,
-                    resultData.getOldCaseComment(), resultData.getCaseComment(), null, token.getPersonId(), comment.getCaseId())
+                    resultData.getOldCaseComment(), resultData.getCaseComment(), null,
+                    token.getPersonId(), comment.getCaseId())
+            );
+
+            okResult.publishEvent(new ProjectAttachmentEvent(this, resultData.getAddedAttachments(), resultData.getRemovedAttachments(), comment.getId(),
+                    token.getPersonId(), comment.getCaseId())
             );
         }
 
@@ -305,7 +318,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         if (CollectionUtils.isNotEmpty(removedComment.getCaseAttachments())) {
             caseAttachmentDAO.removeByCommentId(caseId);
             removedComment.getCaseAttachments().forEach(ca -> attachmentService.removeAttachment(token, caseType, ca.getAttachmentId()));
-            isCaseChanged = caseService.isExistsAttachments( removedComment.getCaseId() ).flatMap( isExists -> {
+            isCaseChanged = caseService.isExistAnyAttachments( toList(removedComment.getCaseAttachments(), CaseAttachment::getAttachmentId) ).flatMap(isExists -> {
                 if (isExists) {
                     return ok( false );
                 }
@@ -329,16 +342,25 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             okResult.publishEvent(new ProjectCommentEvent(this,
                     null, null, removedComment, token.getPersonId(), caseId)
             );
+
+            okResult.publishEvent(new ProjectAttachmentEvent(this, Collections.emptyList(), removedAttachments, removedComment.getId(),
+                    token.getPersonId(), caseId)
+            );
+        }
+
+        if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
+            boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals(caseObjectDAO.getExternalAppName(caseId));
+
+            okResult
+                    .publishEvent(new CaseAttachmentEvent(this, ServiceModule.GENERAL, token.getPersonId(), caseId, null, removedAttachments))
+                    .publishEvent(new CaseCommentEvent(this, ServiceModule.GENERAL, token.getPersonId(), caseId, isEagerEvent, null, null, removedComment));
         }
 
         if(isRemoved) {
             clientEventService.fireEvent( new CaseCommentRemovedClientEvent( token.getPersonId(), caseId, removedComment.getId() ));
         }
 
-        boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( caseId ) );
-        return okResult
-                .publishEvent( new CaseAttachmentEvent( this, ServiceModule.GENERAL, token.getPersonId(), caseId, null, removedAttachments ) )
-                .publishEvent( new CaseCommentEvent( this, ServiceModule.GENERAL, token.getPersonId(), caseId, isEagerEvent, null, null, removedComment ) );
+        return okResult;
     }
 
     @Override
@@ -409,7 +431,10 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             return error( En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        return ok(caseCommentDAO.get(commentId));
+        CaseComment caseComment = caseCommentDAO.get(commentId);
+        jdbcManyRelationsHelper.fill(caseComment, "caseAttachments");
+
+        return ok(caseComment);
     }
 
     @Transactional

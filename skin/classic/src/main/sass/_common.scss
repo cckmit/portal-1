@@ -1112,7 +1112,7 @@ label.bordered:after {
 
 /**** Collapsable filter ****/
 
-.filter-collapsable {
+.filter-collapsable, .absence-filter {
 
   .filter-header {
     border-bottom: 2px solid #ddd;
@@ -1699,6 +1699,21 @@ a {
   }
 }
 
+.collapse-icon {
+  width: 20px;
+}
+
+.table-container-collapsed {
+  height: 0 !important;
+}
+
+.transition-05 {
+  -webkit-transition: all 0.5s;
+  -moz-transition: all 0.5s;
+  -o-transition: all 0.5s;
+  transition: all 0.5s;
+}
+
 
 /**** case tag ****/
 .case-tags-container {
@@ -2265,7 +2280,6 @@ a {
   }
 }
 
-
 .project-main-info {
   display: flex;
 
@@ -2813,12 +2827,12 @@ div.select2-container {
   }
 }
 
-.issue-filter {
+.issue-filter, .absence-filter {
   padding-top: 0px !important;
 
   .user-filter {
     background: #f5f5f51a;
-    border-bottom: 2px solid #dee4e5;
+    border-bottom: 2px solid #ddd;
     padding: 15px;
   }
 
@@ -4801,6 +4815,72 @@ table {
   border-top: 2px solid #00808085 !important;
 }
 
+/**** ABSENCES ****/
+.absences {
+  table {
+    tbody {
+      tr {
+        td {
+          height: 40px;
+
+          div {
+            height: 40px;
+            max-height: 40px;
+            white-space: pre-line;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+    }
+    .reason {
+      width: 20%;
+
+      > div {
+        display: inline-flex;
+        align-items: center;
+
+        .absence-reason {
+          position: static;
+          height: 35px;
+          width: 35px;
+          min-width: 35px;
+          min-height: 35px;
+          > i {
+            font-size: 1.33333em !important;
+          }
+        }
+        .absence-label {
+          padding: 10px;
+        }
+      }
+    }
+
+    .person {
+      width: 25%;
+    }
+
+    .from-time, .till-time {
+      width: 15%;
+      > div {
+        white-space: nowrap;
+      }
+
+    }
+
+    .comment {
+      width: 25%;
+    }
+  }
+}
+
+.absence-filter {
+  .filter-content {
+    border: none;
+    padding-top: 0 !important;
+  }
+}
+
 .absence-reason {
   position: absolute;
   top: -25px;
@@ -4869,4 +4949,8 @@ table {
   &.fas {
     color: gold;
   }
+}
+
+.font-large {
+  font-size: large !important;
 }

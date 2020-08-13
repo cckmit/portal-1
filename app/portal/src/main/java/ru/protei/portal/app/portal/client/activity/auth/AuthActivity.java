@@ -15,12 +15,14 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.util.LocaleUtils;
 import ru.protei.portal.ui.common.client.util.PasswordUtils;
+import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 
 import java.util.Date;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 import static ru.protei.portal.ui.common.client.common.UiConstants.REMEMBER_ME_PREFIX;
@@ -80,6 +82,14 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
                         storage.set(REMEMBER_ME_PREFIX + "login", login);
                         storage.set(REMEMBER_ME_PREFIX + "pwd", pwdCrypt);
                     }
+                    else {
+                        String loginFromStorage = storage.getOrDefault(REMEMBER_ME_PREFIX + "login", null);
+                        String pwdFromStorage = storage.getOrDefault(REMEMBER_ME_PREFIX + "pwd", null);
+
+                        if (!Objects.equals(login, loginFromStorage) || !Objects.equals(encrypt(pwd), pwdFromStorage)) {
+                            resetRememberMe();
+                        }
+                    }
                 }));
     }
 
@@ -90,12 +100,14 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
             pwd = decrypt(pwd);
         }
         if (login == null || pwd == null) {
-            login = null;
-            pwd = null;
+           login = null;
+           pwd = null;
         }
         authService.authenticate(login, pwd, new FluentCallback<Profile>()
                 .withError(throwable -> {
-                    resetRememberMe();
+                    if(throwable instanceof RequestFailedException) {
+                        resetRememberMe();
+                    }
                     placeView();
                 })
                 .withSuccess(profile -> {

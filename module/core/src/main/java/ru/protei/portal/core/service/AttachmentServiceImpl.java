@@ -6,6 +6,7 @@ import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
+import ru.protei.portal.core.event.ProjectAttachmentEvent;
 import ru.protei.portal.core.model.dao.AttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
@@ -14,9 +15,12 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseAttachment;
+import ru.protei.portal.core.model.event.CaseCommentSavedClientEvent;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventAssemblerService;
+import ru.protei.portal.core.service.events.EventProjectAssemblerService;
 import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.portal.core.service.pushevent.ClientEventService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.Collection;
@@ -52,6 +56,9 @@ public class AttachmentServiceImpl implements AttachmentService {
     EventAssemblerService publisherService;
 
     @Autowired
+    EventProjectAssemblerService projectPublisherService;
+
+    @Autowired
     AuthService authService;
 
     @Autowired
@@ -60,23 +67,26 @@ public class AttachmentServiceImpl implements AttachmentService {
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
+    @Autowired
+    private ClientEventService clientEventService;
+
     /**
      * remove attachment from fileStorage, DataBase (item and relations)
      */
     @Override
     @Transactional
     public Result<Boolean> removeAttachmentEverywhere( AuthToken token, En_CaseType caseType, Long id) {
-        CaseAttachment ca = caseAttachmentDAO.getByAttachmentId(id);
-        if (ca != null) {
-            boolean isDeleted = caseAttachmentDAO.removeByKey(ca.getId());
+        CaseAttachment caseAttachment = caseAttachmentDAO.getByAttachmentId(id);
+        if (caseAttachment != null) {
+            boolean isDeleted = caseAttachmentDAO.removeByKey(caseAttachment.getId());
             if(!isDeleted)
                 return error( En_ResultStatus.NOT_REMOVED);
 
-            caseService.updateCaseModified( token, ca.getCaseId(), new Date() );
+            caseService.updateCaseModified( token, caseAttachment.getCaseId(), new Date() );
 
-            caseService.isExistsAttachments( ca.getCaseId() ).ifOk( isExists -> {
+            caseService.isExistsAttachments( caseAttachment.getCaseId() ).ifOk( isExists -> {
                 if (!isExists) {
-                    caseService.updateExistsAttachmentsFlag( ca.getCaseId(), false );
+                    caseService.updateExistsAttachmentsFlag( caseAttachment.getCaseId(), false );
                 }
             } );
 
@@ -84,10 +94,22 @@ public class AttachmentServiceImpl implements AttachmentService {
 
             Result<Boolean> result = removeAttachment( token, caseType, id);
 
-            if(result.isOk()
-                    && token != null ) {
-                publisherService.onCaseAttachmentEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL,
-                        token.getPersonId(), ca.getCaseId(), null, Collections.singletonList(attachment)));
+            if(result.isOk() && token != null) {
+
+                if (caseAttachment.getCommentId() != null) {
+                    clientEventService.fireEvent( new CaseCommentSavedClientEvent( token.getPersonId(), caseAttachment.getCaseId(), caseAttachment.getCommentId() ) );
+                }
+
+                if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
+                    publisherService.onCaseAttachmentEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL,
+                            token.getPersonId(), caseAttachment.getCaseId(), null, Collections.singletonList(attachment)));
+                }
+
+                if (En_CaseType.PROJECT.equals(caseType)) {
+                    projectPublisherService.onProjectAttachmentEvent(new ProjectAttachmentEvent(this, Collections.emptyList(),
+                            Collections.singletonList(attachment), caseAttachment.getCommentId(), token.getPersonId(), caseAttachment.getCaseId()));
+                }
+
             }
 
             return result;

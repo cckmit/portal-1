@@ -19,4 +19,6 @@ public interface FilterParamView<Q extends FilterQuery> extends IsWidget {
     void fillFilterFields(Q query, SelectorsParams filter);
 
     void setValidateCallback(Consumer<Boolean> callback);
+
+    void setOnFilterChangeCallback(Runnable callback);
 }

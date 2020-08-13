@@ -5,27 +5,27 @@ import freemarker.template.*;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.util.HtmlUtils;
-import ru.protei.portal.core.event.AssembledProjectEvent;
-import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.event.*;
+import ru.protei.portal.core.model.dao.CaseStateDAO;
+import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.dto.Project;
+import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.HTMLHelper;
+import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
+import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.renderer.HTMLRenderer;
-import ru.protei.portal.core.model.dict.En_TextMarkup;
-import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.HTMLHelper;
-import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.utils.EnumLangUtil;
 import ru.protei.portal.core.utils.DateUtils;
 import ru.protei.portal.core.utils.LinkData;
-import ru.protei.portal.core.utils.EnumLangUtil;
 import ru.protei.portal.core.utils.WorkTimeFormatter;
-import ru.protei.portal.core.model.util.TransliterationUtils;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -509,7 +509,11 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("team", event.getTeamDiffs());
         templateModel.put("sla", event.getSlaDiffs());
 
-        templateModel.put( "caseComments",  getProjectCommentsModelKeys(event.getAllComments(), event.getAddedComments(), event.getChangedComments(), event.getRemovedComments(), En_TextMarkup.MARKDOWN));
+        templateModel.put( "caseComments",
+                getProjectCommentsModelKeys(
+                        event.getAllComments(), event.getAddedComments(), event.getChangedComments(),
+                        event.getRemovedComments(), event.getCommentToAttachmentDiffs(), event.getExistingAttachments(), En_TextMarkup.MARKDOWN)
+        );
 
         templateModel.put("hasLinks", hasLinks(links));
         templateModel.put("existingLinks", links == null ? null : links.getSameEntries());
@@ -830,24 +834,61 @@ public class TemplateServiceImpl implements TemplateService {
                 .collect( toList() );
     }
 
-    private List<Map<String, Object>> getProjectCommentsModelKeys(List<CaseComment> comments, List<CaseComment> added, List<CaseComment> changed, List<CaseComment> removed, En_TextMarkup textMarkup){
+    private List<Map<String, Object>> getProjectCommentsModelKeys(List<CaseComment> comments, List<CaseComment> added, List<CaseComment> changed, List<CaseComment> removed,
+                                                                  Map<Long, DiffCollectionResult<Attachment>> commentToAttachmentDiffs, List<Attachment> existingAttachments, En_TextMarkup textMarkup) {
         return comments.stream()
                 .sorted(Comparator.comparing(CaseComment::getCreated, Date::compareTo))
                 .map(comment -> {
 
-                    boolean isNew = contains(added, comment);
-                    boolean isChanged = contains(changed, comment);
+                    boolean isNewComment = contains(added, comment);
+                    boolean isChangedComment = contains(changed, comment);
+                    boolean isRemovedComment = contains(removed, comment);
 
                     Map<String, Object> mailComment = new HashMap<>();
                     mailComment.put("created", comment.getCreated());
                     mailComment.put("author", renameAuthorIfRemoteComment(comment).getAuthor());
                     mailComment.put("text", escapeTextAndRenderHTML(comment.getText(), textMarkup));
-                    mailComment.put("added", isNew);
-                    if (isChanged) {
+
+                    List<CaseAttachment> caseAttachments = emptyIfNull(comment.getCaseAttachments());
+
+                    Set<Attachment> commentAddedAttachments = Optional.ofNullable(commentToAttachmentDiffs.get(comment.getId()))
+                            .map(DiffCollectionResult::getAddedEntries)
+                            .map(HashSet::new)
+                            .orElse(new HashSet<>());
+
+                    Set<Attachment> commentRemovedAttachments = Optional.ofNullable(commentToAttachmentDiffs.get(comment.getId()))
+                            .map(DiffCollectionResult::getRemovedEntries)
+                            .map(HashSet::new)
+                            .orElse(new HashSet<>());
+
+                    Set<Attachment> commentSameAttachments = emptyIfNull(existingAttachments)
+                            .stream()
+                            .filter(existingAttachment -> CollectionUtils.toList(caseAttachments, CaseAttachment::getAttachmentId).contains(existingAttachment.getId()))
+                            .filter(existingAttachment -> !commentAddedAttachments.contains(existingAttachment))
+                            .collect(Collectors.toSet());
+
+                    mailComment.put("added", isNewComment);
+                    mailComment.put("removed", isRemovedComment);
+
+                    if (isNewComment || isRemovedComment) {
+                        commentSameAttachments.addAll(commentAddedAttachments);
+                        commentSameAttachments.addAll(commentRemovedAttachments);
+
+                        commentAddedAttachments.clear();
+                        commentRemovedAttachments.clear();
+                    }
+
+                    if (isChangedComment) {
                         CaseComment oldComment = changed.get(changed.indexOf(comment));
                         mailComment.put("oldText", escapeTextAndRenderHTML(oldComment.getText(), textMarkup));
                     }
-                    mailComment.put("removed", contains(removed, comment));
+
+                    mailComment.put("addedAttachments", commentAddedAttachments);
+                    mailComment.put("sameAttachments", commentSameAttachments);
+                    mailComment.put("removedAttachments", commentRemovedAttachments);
+                    mailComment.put("hasAttachments", isNotEmpty(commentAddedAttachments) || isNotEmpty(commentSameAttachments) || isNotEmpty(commentRemovedAttachments));
+                    mailComment.put("isUpdated", isChangedComment || isNotEmpty(commentAddedAttachments) || isNotEmpty(commentRemovedAttachments));
+
                     return mailComment;
                 })
                 .collect(toList());
@@ -925,6 +966,4 @@ public class TemplateServiceImpl implements TemplateService {
         if (!isEmpty( mergeLinks.getRemovedEntries() )) return true;
         return false;
     }
-
-
 }

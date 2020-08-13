@@ -66,6 +66,11 @@ public class CaseAttachmentDAO_Impl extends PortalBaseJdbcDAO<CaseAttachment> im
     }
 
     @Override
+    public boolean checkExistAnyAttachments(List<Long> attachmentIds) {
+        return checkExistsByCondition("ATT_ID IN " + HelperFunc.makeInArg(attachmentIds, false));
+    }
+
+    @Override
     public Collection<CaseAttachment> calcDiffAndSynchronize(Collection<CaseAttachment> oldList, Collection<CaseAttachment> newList) {
         if(newList == null)
             newList = Collections.emptyList();

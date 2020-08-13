@@ -3,6 +3,7 @@ package ru.protei.portal.core.report.casetimeelapsed;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.ent.CaseCommentTimeElapsedSum;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.JXLSHelper;
 import ru.protei.portal.core.utils.TimeFormatter;
@@ -12,6 +13,9 @@ import java.io.OutputStream;
 import java.text.DateFormat;
 import java.util.List;
 
+import static java.time.Duration.ofMinutes;
+import static java.util.Optional.ofNullable;
+import static org.apache.poi.ss.usermodel.DateUtil.SECONDS_PER_DAY;
 import static ru.protei.portal.core.model.util.TransliterationUtils.transliterate;
 
 public class ExcelReportWriter implements

@@ -2,6 +2,8 @@ package ru.protei.portal.ui.employee.client.factory;
 
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
+import ru.protei.portal.ui.employee.client.activity.birthday.AbstractEmployeeBirthdayView;
+import ru.protei.portal.ui.employee.client.activity.birthday.EmployeeBirthdayActivity;
 import ru.protei.portal.ui.employee.client.activity.edit.AbstractEmployeeEditView;
 import ru.protei.portal.ui.employee.client.activity.edit.EmployeeEditActivity;
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterView;
@@ -16,6 +18,7 @@ import ru.protei.portal.ui.employee.client.activity.preview.EmployeePreviewActiv
 import ru.protei.portal.ui.employee.client.activity.topbrass.AbstractTopBrassActivity;
 import ru.protei.portal.ui.employee.client.activity.topbrass.AbstractTopBrassView;
 import ru.protei.portal.ui.employee.client.activity.topbrass.TopBrassActivity;
+import ru.protei.portal.ui.employee.client.view.birthday.EmployeeBirthdayView;
 import ru.protei.portal.ui.employee.client.view.edit.EmployeeEditView;
 import ru.protei.portal.ui.employee.client.view.filter.EmployeeFilterView;
 import ru.protei.portal.ui.employee.client.view.item.EmployeeItemView;
@@ -40,10 +43,12 @@ public class EmployeeClientModule extends AbstractGinModule {
         bind( EmployeeTableActivity.class ).asEagerSingleton();
         bind( EmployeeListActivity.class ).asEagerSingleton();
         bind( EmployeeEditActivity.class ).asEagerSingleton();
+        bind( EmployeeBirthdayActivity.class ).asEagerSingleton();
         bind( AbstractEmployeeListView.class ).to( EmployeeListView.class ).in( Singleton.class );
         bind( AbstractEmployeeItemView.class ).to( EmployeeItemView.class );
         bind( AbstractEmployeeTableView.class ).to( EmployeeTableView.class ).in( Singleton.class );
         bind( AbstractEmployeeEditView.class ).to( EmployeeEditView.class ).in( Singleton.class );
+        bind( AbstractEmployeeBirthdayView.class ).to( EmployeeBirthdayView.class ).in( Singleton.class );
 
         bind( AbstractEmployeeFilterView.class ).to( EmployeeFilterView.class ).in( Singleton.class );
 

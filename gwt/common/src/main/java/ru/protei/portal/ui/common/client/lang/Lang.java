@@ -836,6 +836,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String dashboardActionRemove();
 
+    String dashboardActionCollapse();
+
+    String dashboardActionExpand();
+
     String commentSendMessage();
 
     String commentAddMessagePlaceholder();
@@ -2894,13 +2898,13 @@ public interface Lang extends Messages, ContactItemLang {
 
     String absenceReportDateRange();
 
-    String absenceStartDateRange();
-
     String absenceReportTitle();
 
     String absenceButtonReport();
 
     String absenceReportHint();
+
+    String absenceButtonSummaryTable();
 
     String buttonSend();
 
@@ -2953,4 +2957,12 @@ public interface Lang extends Messages, ContactItemLang {
     String issueFavorites();
 
     String issueSyncedWith();
+
+    String employeeBirthdays();
+
+    String employeeBirthdayPrevMonth();
+
+    String employeeBirthdayResetMonth();
+
+    String employeeBirthdayNextMonth();
 }

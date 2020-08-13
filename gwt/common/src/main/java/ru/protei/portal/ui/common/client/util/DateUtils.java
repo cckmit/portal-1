@@ -1,11 +1,13 @@
 package ru.protei.portal.ui.common.client.util;
 
-import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.common.YearMonthDay;
+import ru.protei.portal.ui.common.client.lang.Lang;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -199,6 +201,45 @@ public class DateUtils {
         return Objects.equals(d1.getYear(), d2.getYear())
                 && Objects.equals(d1.getMonth(), d2.getMonth())
                 && Objects.equals(d1.getDayOfMonth(), d2.getDayOfMonth());
+    }
+
+    /**
+     * Раньше ли [reference], чем [base]
+     */
+    public static boolean isBefore(YearMonthDay base, YearMonthDay reference) {
+        boolean yearBefore = reference.getYear() < base.getYear();
+        if (yearBefore) return true;
+        boolean yearAfter = reference.getYear() > base.getYear();
+        if (yearAfter) return false;
+        boolean monthBefore = reference.getMonth() < base.getMonth();
+        if (monthBefore) return true;
+        boolean monthAfter = reference.getMonth() > base.getMonth();
+        if (monthAfter) return false;
+        boolean dayBefore = reference.getDayOfMonth() < base.getDayOfMonth();
+        if (dayBefore) return true;
+        boolean dayAfter = reference.getDayOfMonth() > base.getDayOfMonth();
+        if (dayAfter) return false;
+        return false;
+    }
+
+    public static List<YearMonthDay> rangeYearMonthDay(YearMonthDay from, YearMonthDay until) {
+        List<YearMonthDay> days = new ArrayList<>();
+        iterateYearMonthDay(from, until, days::add);
+        return days;
+    }
+
+    public static void iterateYearMonthDay(YearMonthDay current, YearMonthDay until, Consumer<YearMonthDay> next) {
+        while (isBefore(until, current)) {
+            next.accept(current);
+            current = makeYearMonthDay(makeDate(
+                current.getYear(),
+                current.getMonth(),
+                current.getDayOfMonth() + 1
+            ));
+        }
+        if (isSame(until, current)) {
+            next.accept(current);
+        }
     }
 
     public static Date setBeginOfDay(Date date) {
