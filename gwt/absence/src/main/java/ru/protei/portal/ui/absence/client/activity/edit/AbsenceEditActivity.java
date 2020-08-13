@@ -180,6 +180,7 @@ public abstract class AbsenceEditActivity implements AbstractAbsenceEditActivity
                     enableButtons(true);
                     fireEvent(new NotifyEvents.Show(isNew() ? lang.absenceCreated() : lang.absenceUpdated(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new EmployeeEvents.Update(absence.getPersonId()));
+                    fireEvent(new AbsenceEvents.Update());
                     onCancelClicked();
                 }));
     }

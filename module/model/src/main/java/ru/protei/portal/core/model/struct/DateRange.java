@@ -53,4 +53,9 @@ public class DateRange implements Serializable {
                 Objects.equals(from, dateRange.from) &&
                 Objects.equals(to, dateRange.to);
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(intervalType, from, to);
+    }
 }

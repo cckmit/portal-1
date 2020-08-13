@@ -4,12 +4,15 @@ import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
 import ru.protei.portal.ui.absence.client.activity.edit.AbsenceEditActivity;
 import ru.protei.portal.ui.absence.client.activity.edit.AbstractAbsenceEditView;
+import ru.protei.portal.ui.absence.client.activity.summarytable.AbsenceSummaryTableActivity;
+import ru.protei.portal.ui.absence.client.activity.summarytable.AbstractAbsenceSummaryTableView;
 import ru.protei.portal.ui.absence.client.activity.report.AbsenceReportCreateActivity;
 import ru.protei.portal.ui.absence.client.activity.report.AbstractAbsenceReportCreateView;
 import ru.protei.portal.ui.absence.client.activity.report.paramview.AbstractAbsenceFilterParamWidget;
 import ru.protei.portal.ui.absence.client.activity.table.AbsenceTableActivity;
 import ru.protei.portal.ui.absence.client.activity.table.AbstractAbsenceTableView;
 import ru.protei.portal.ui.absence.client.view.edit.AbsenceEditView;
+import ru.protei.portal.ui.absence.client.view.summarytable.AbsenceSummaryTableView;
 import ru.protei.portal.ui.absence.client.view.report.AbsenceReportCreateView;
 import ru.protei.portal.ui.absence.client.widget.paramview.AbsenceFilterParamWidget;
 import ru.protei.portal.ui.absence.client.view.table.AbsenceTableView;
@@ -27,6 +30,9 @@ public class AbsenceClientModule extends AbstractGinModule {
 
         bind(AbsenceTableActivity.class).asEagerSingleton();
         bind(AbstractAbsenceTableView.class).to(AbsenceTableView.class).in(Singleton.class);
+
+        bind(AbsenceSummaryTableActivity.class).asEagerSingleton();
+        bind(AbstractAbsenceSummaryTableView.class).to(AbsenceSummaryTableView.class).in(Singleton.class);
 
         bind(AbsenceEditActivity.class).asEagerSingleton();
         bind(AbstractAbsenceEditView.class).to(AbsenceEditView.class).in(Singleton.class);

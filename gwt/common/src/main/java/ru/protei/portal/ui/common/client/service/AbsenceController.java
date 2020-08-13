@@ -5,8 +5,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.ent.PersonAbsence;
 import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
-
-import java.util.List;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 /**
  * Сервис управления отсутствиями
@@ -17,7 +16,7 @@ public interface AbsenceController extends RemoteService {
     /**
      * Получение записей об отсутствиях
      */
-    List<PersonAbsence> getAbsences(AbsenceQuery query) throws RequestFailedException;
+    SearchResult<PersonAbsence> getAbsences(AbsenceQuery query) throws RequestFailedException;
 
     /**
      * Получение записи об отсутствии

@@ -2898,13 +2898,13 @@ public interface Lang extends Messages, ContactItemLang {
 
     String absenceReportDateRange();
 
-    String absenceStartDateRange();
-
     String absenceReportTitle();
 
     String absenceButtonReport();
 
     String absenceReportHint();
+
+    String absenceButtonSummaryTable();
 
     String buttonSend();
 

@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.utils.DateUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AbsenceQuery;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -43,9 +44,8 @@ public class AbsenceServiceImpl implements AbsenceService {
     private static Logger log = LoggerFactory.getLogger(AbsenceServiceImpl.class);
 
     @Override
-    public Result<List<PersonAbsence>> getAbsences(AuthToken token, AbsenceQuery query) {
-        List<PersonAbsence> result = personAbsenceDAO.listByQuery(query);
-        return ok(result);
+    public Result<SearchResult<PersonAbsence>> getAbsences(AuthToken token, AbsenceQuery query) {
+        return ok(personAbsenceDAO.getSearchResultByQuery(query));
     }
 
     @Override

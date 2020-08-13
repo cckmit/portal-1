@@ -102,7 +102,8 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
                 break;
             case ABSENCE:
                 addOption(En_SortField.absence_person);
-                addOption(En_SortField.absence_date);
+                addOption(En_SortField.absence_date_from);
+                addOption(En_SortField.absence_date_till);
                 addOption(En_SortField.absence_reason);
                 break;
         }
