@@ -6,6 +6,10 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.TextBoxBase;
 import ru.protei.portal.ui.common.client.events.InputEvent;
 
+import java.util.function.Function;
+
+import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
+
 /**
  * Created by bondarenko on 08.11.16.
  */
@@ -13,7 +17,7 @@ abstract class ValidableTextBoxBase extends TextBoxBase implements HasValidable{
 
     ValidableTextBoxBase(Element elem){
         super(elem);
-        addDomHandler(event -> validationTimer.schedule(50), InputEvent.getType());
+        addDomHandler(event -> validationTimer.schedule(200), InputEvent.getType());
     }
 
     @Override
@@ -32,7 +36,10 @@ abstract class ValidableTextBoxBase extends TextBoxBase implements HasValidable{
 
     @Override
     public boolean isValid() {
-        return regexp.test( getValue() );
+        boolean isEmpty = !isNotNull && isEmpty(getValue());
+        boolean isRegexMatched = regexp.test(getValue());
+        boolean isValidByFunction = validationFunction == null || validationFunction.apply(getValue());
+        return isEmpty || (isRegexMatched && isValidByFunction);
     }
 
     public void setPlaceholder(String placeholder ) {
@@ -43,13 +50,16 @@ abstract class ValidableTextBoxBase extends TextBoxBase implements HasValidable{
         this.regexp = RegExp.compile(regexp);
     }
 
+    public void setValidationFunction(Function<String, Boolean> validationFunction) {
+        this.validationFunction = validationFunction;
+    }
+
     public void setNotNull( boolean value ) {
         this.isNotNull = value;
     }
 
     private void validateValue() {
-        boolean isValid = (!isNotNull && getValue().isEmpty()) || isValid();
-        setValid( isValid );
+        setValid(isValid());
     }
 
     Timer validationTimer = new Timer(){
@@ -60,6 +70,7 @@ abstract class ValidableTextBoxBase extends TextBoxBase implements HasValidable{
     };
 
     private RegExp regexp = RegExp.compile( "\\S+" );
+    private Function<String, Boolean> validationFunction;
     private boolean isNotNull = true;
     private static final String REQUIRED_STYLE_NAME="required";
 }

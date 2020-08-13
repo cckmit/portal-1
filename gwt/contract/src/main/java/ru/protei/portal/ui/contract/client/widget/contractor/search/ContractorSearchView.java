@@ -31,8 +31,12 @@ public class ContractorSearchView extends Composite implements AbstractContracto
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        contractorInn.setNotNull(false);
         contractorInn.setRegexp(CONTRACTOR_INN);
+        contractorInn.setValidationFunction(ContractorUtils::checkInn);
+        contractorKPP.setNotNull(false);
         contractorKPP.setRegexp(CONTRACTOR_KPP);
+        contractorFullName.setNotNull(false);
     }
 
     @Override
@@ -56,6 +60,11 @@ public class ContractorSearchView extends Composite implements AbstractContracto
     }
 
     @Override
+    public HasValue<String> contractorFullName() {
+        return contractorFullName;
+    }
+
+    @Override
     public HasValue<Contractor> contractor() {
         return contractor;
     }
@@ -73,6 +82,7 @@ public class ContractorSearchView extends Composite implements AbstractContracto
         contractOrganization.setInnerText(null);
         contractorInn.setValue(null);
         contractorKPP.setValue(null);
+        contractorFullName.setValue(null);
         contractor.setValue(null);
         contractor.fill(new ArrayList<>());
         descriptionInn.setInnerText(null);
@@ -84,20 +94,16 @@ public class ContractorSearchView extends Composite implements AbstractContracto
 
     @Override
     public void setValid(boolean isValid) {
-        // do nothing
+        contractorInn.setValid(isValid);
+        contractorKPP.setValid(isValid);
+        contractorFullName.setValid(isValid);
     }
 
     @Override
     public boolean isValid() {
         return contractorInn.isValid() &
-                contractorKPP.isValid() &&
-                isValidInn(contractorInn);
-    }
-
-    private boolean isValidInn(ValidableTextBox inn) {
-        boolean isValid = ContractorUtils.checkInn(inn.getValue());
-        inn.setValid(isValid);
-        return isValid;
+               contractorKPP.isValid() &
+               contractorFullName.isValid();
     }
 
     @UiHandler( "search" )
@@ -132,9 +138,10 @@ public class ContractorSearchView extends Composite implements AbstractContracto
 
     @UiField
     ValidableTextBox contractorInn;
-
     @UiField
     ValidableTextBox contractorKPP;
+    @UiField
+    ValidableTextBox contractorFullName;
 
     @UiField
     Button search;

@@ -28,6 +28,7 @@ import ru.protei.portal.ui.contract.client.widget.contractor.search.AbstractCont
 import java.util.List;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.WIDE_MODAL;
@@ -204,13 +205,11 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
 
     private AbstractContractorSearchActivity makeSearchViewActivity() {
         return () -> {
-            if (!searchView.isValid()) {
+            ContractorQuery query = makeContractorQuery(searchView);
+            if (!isSearchValid(searchView, query)) {
                 fireEvent(new NotifyEvents.Show(lang.contractContractorValidationError(), NotifyEvents.NotifyType.ERROR));
                 return;
             }
-            ContractorQuery query = new ContractorQuery();
-            query.setInn(searchView.contractorInn().getValue());
-            query.setKpp(searchView.contractorKpp().getValue());
             controller.findContractors(organization, query, new FluentCallback<List<Contractor>>()
                     .withError(t -> {
                         fireEvent(new NotifyEvents.Show(lang.contractContractorFindError(), NotifyEvents.NotifyType.ERROR));
@@ -223,6 +222,20 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
                         searchView.setSearchResult(value);
                     }));
         };
+    }
+
+    private ContractorQuery makeContractorQuery(AbstractContractorSearchView searchView) {
+        ContractorQuery query = new ContractorQuery();
+        query.setInn(searchView.contractorInn().getValue());
+        query.setKpp(searchView.contractorKpp().getValue());
+        query.setFullName(searchView.contractorFullName().getValue());
+        return query;
+    }
+
+    private boolean isSearchValid(AbstractContractorSearchView searchView, ContractorQuery query) {
+        boolean validByView = searchView.isValid();
+        boolean queryValid = isNotEmpty(query.getInn()) || isNotEmpty(query.getKpp()) || isNotEmpty(query.getFullName());
+        return validByView && queryValid;
     }
 
     @Inject
