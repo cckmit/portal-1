@@ -2,6 +2,7 @@ package ru.protei.portal.ui.issue.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
+import com.google.gwt.dom.client.ButtonElement;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -10,10 +11,13 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
+import ru.protei.portal.ui.issue.client.view.create.IssueCreateView;
 
 import static ru.protei.portal.core.model.helper.StringUtils.emptyIfNull;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
@@ -30,6 +34,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         ensureDebugIds();
+        addAttachmentClickHandler(addAttachmentButton, fileUploader);
 
         copyNumber.getElement().setAttribute( "title", lang.issueCopyNumber() );
     }
@@ -56,6 +61,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Override
     public void setCaseNumber( Long caseNumber ) {
         number.setInnerText(lang.crmPrefix() + caseNumber);
+        fileUploader.autoBindingToCase( En_CaseType.CRM_SUPPORT, caseNumber );
     }
 
     @Override
@@ -146,6 +152,25 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         }
     }
 
+    @Override
+    public AttachmentUploader getFileUploader(){
+        return fileUploader;
+    }
+
+    @Override
+    public void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler) {
+        fileUploader.setUploadHandler( handler );
+    }
+
+    @Override
+    public void setAddAttachmentButtonVisible(boolean isVisible) {
+        if (isVisible) {
+            addAttachmentButton.removeClassName("hide");
+        } else {
+            addAttachmentButton.addClassName("hide");
+        }
+    }
+
     @UiHandler("nameAndDescriptionEditButton")
     public void onEditNameAndDescriptionButtonClick(ClickEvent event) {
         if (activity != null) {
@@ -196,6 +221,12 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         }
     }
 
+    private native void addAttachmentClickHandler(Element element, AttachmentUploader fileUploader) /*-{
+        element.onclick = function () {
+            fileUploader.@ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader::initUploading()();
+        }
+    }-*/;
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
@@ -209,6 +240,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         addLinkButton.ensureDebugId(DebugIds.ISSUE.LINKS_BUTTON);
         nameAndDescriptionEditButton.ensureDebugId(DebugIds.ISSUE.EDIT_NAME_AND_DESC_BUTTON);
         favoritesButton.ensureDebugId(DebugIds.ISSUE.FAVORITES_BUTTON);
+        fileUploader.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_UPLOAD_BUTTON);
     }
 
     @UiField
@@ -229,6 +261,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     HTMLPanel tagsContainer;
     @UiField
     HTMLPanel metaEditContainer;
+    @Inject
+    @UiField
+    AttachmentUploader fileUploader;
+    @UiField
+    ButtonElement addAttachmentButton;
     @UiField
     HTMLPanel cardBody;
     @UiField

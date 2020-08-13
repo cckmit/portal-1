@@ -3,6 +3,7 @@ package ru.protei.portal.ui.issue.client.activity.edit;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 
 /**
  * Представление создания и редактирования обращения
@@ -48,4 +49,10 @@ public interface AbstractIssueEditView extends IsWidget {
     String DESCRIPTION = "description";
 
     void setFavoriteButtonActive(boolean isActive);
+
+    AttachmentUploader getFileUploader();
+
+    void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler);
+
+    void setAddAttachmentButtonVisible(boolean isVisible);
 }

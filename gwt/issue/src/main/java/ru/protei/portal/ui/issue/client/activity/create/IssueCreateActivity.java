@@ -2,6 +2,7 @@ package ru.protei.portal.ui.issue.client.activity.create;
 
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
@@ -13,6 +14,7 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.TransliterationUtils;
@@ -22,6 +24,7 @@ import ru.protei.portal.ui.common.client.activity.casetag.taglist.AbstractCaseTa
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DefaultSlaValues;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
+import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
@@ -52,7 +55,6 @@ import static ru.protei.portal.ui.common.client.common.UiConstants.ISSUE_CREATE_
  * Активность создания обращения
  */
 public abstract class IssueCreateActivity implements AbstractIssueCreateActivity, AbstractIssueMetaActivity, Activity {
-
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
@@ -65,7 +67,10 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
                 if (pasteInfo != null && attachment.getMimeType().startsWith("image/")) {
                     addImageToMessage(pasteInfo.strPosition, attachment);
                 }
-                view.attachmentsContainer().add(attachment);
+                view.attachmentsListContainer().add(attachment);
+
+                view.attachmentsRootContainerVisibility().setVisible(!view.attachmentsListContainer().isEmpty());
+                view.setCountOfAttachments(size(view.attachmentsListContainer().getAll()));
             }
 
             @Override
@@ -185,7 +190,12 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     public void removeAttachment(Attachment attachment) {
         attachmentService.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, attachment.getId(), new FluentCallback<Boolean>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR)))
-                .withSuccess(result -> view.attachmentsContainer().remove(attachment)));
+                .withSuccess(result -> {
+                    view.attachmentsListContainer().remove(attachment);
+                    view.setCountOfAttachments(size(view.attachmentsListContainer().getAll()));
+                    view.attachmentsRootContainerVisibility().setVisible(!view.attachmentsListContainer().isEmpty());
+                })
+        );
     }
 
     @Override
@@ -361,10 +371,11 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         view.description().setValue(caseObject.getInfo());
         view.setDescriptionPreviewAllowed(makePreviewDisplaying(AbstractIssueEditView.DESCRIPTION));
         view.setFavoriteButtonActive(Boolean.TRUE.equals(caseObject.isFavorite()));
+        view.setAttachmentContainerShow(localStorageService.getBooleanOrDefault(UiConstants.ATTACHMENTS_PANEL_VISIBILITY, false));
 
         fillMetaView(new CaseObjectMeta(caseObject), caseObject.getNotifiers(), caseObject.getTimeElapsedType(), createRequest.getPlans());
 
-        fillAttachmentsContainer(view.attachmentsContainer(), caseObject.getAttachments());
+        fillAttachmentsContainer(view, caseObject.getAttachments());
 
         fireEvent(new CaseLinkEvents.Show(view.getLinksContainer()).withCaseType(En_CaseType.CRM_SUPPORT).withLinks(createRequest.getLinks()));
         fireEvent(new CaseTagEvents.ShowList(view.getTagsContainer(), createRequest.getTags(), false, a -> tagListActivity = a));
@@ -506,11 +517,15 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         }
     }
 
-    private void fillAttachmentsContainer(HasAttachments attachmentsContainer, List<Attachment> attachments) {
-        attachmentsContainer.clear();
+    private void fillAttachmentsContainer(AbstractIssueCreateView view, List<Attachment> attachments) {
+        boolean isAttachmentsEmpty = isEmpty(attachments);
 
-        if (isNotEmpty(attachments)) {
-            attachmentsContainer.add(attachments);
+        view.attachmentsListContainer().clear();
+        view.attachmentsRootContainerVisibility().setVisible(!isAttachmentsEmpty);
+        view.setCountOfAttachments(size(attachments));
+
+        if (!isAttachmentsEmpty) {
+            view.attachmentsListContainer().add(attachments);
         }
     }
 
@@ -647,8 +662,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         caseObject.setNotifiers(caseMetaNotifiers);
         caseObject.setPlatformId(issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId());
         caseObject.setPlatformName(issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getDisplayText());
-        caseObject.setAttachmentExists(!isEmpty(view.attachmentsContainer().getAll()));
-        caseObject.setAttachments(new ArrayList<>(view.attachmentsContainer().getAll()));
+        caseObject.setAttachmentExists(!isEmpty(view.attachmentsListContainer().getAll()));
+        caseObject.setAttachments(new ArrayList<>(view.attachmentsListContainer().getAll()));
         caseObject.setManagerCompanyId(issueMetaView.getManagerCompany().getId());
         caseObject.setManagerCompanyName(issueMetaView.getManagerCompany().getDisplayText());
         caseObject.setFavorite(view.isFavoriteButtonActive());

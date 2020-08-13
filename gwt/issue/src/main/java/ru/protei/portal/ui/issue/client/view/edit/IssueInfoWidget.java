@@ -4,6 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.LabelElement;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -13,6 +14,8 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.common.LocalStorageService;
+import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
@@ -30,6 +33,16 @@ public class IssueInfoWidget extends Composite {
     @PostConstruct
     public void init() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        attachmentsHeaderContainer.addDomHandler(event -> {
+            if (attachmentsRootContainer.getElement().hasClassName("show")) {
+                attachmentsRootContainer.getElement().removeClassName("show");
+                localStorageService.set(UiConstants.ATTACHMENTS_PANEL_VISIBILITY, Boolean.FALSE.toString());
+            } else {
+                attachmentsRootContainer.getElement().addClassName("show");
+                localStorageService.set(UiConstants.ATTACHMENTS_PANEL_VISIBILITY, Boolean.TRUE.toString());
+            }
+        }, ClickEvent.getType());
+
         ensureDebugIds();
     }
 
@@ -45,36 +58,36 @@ public class IssueInfoWidget extends Composite {
         return historyContainer;
     }
 
-    public HasAttachments attachmentsContainer() {
-        return attachmentContainer;
-    }
-
-    public AttachmentUploader getFileUploader(){
-        return fileUploader;
+    public HasAttachments attachmentsListContainer() {
+        return attachmentListContainer;
     }
 
     public HasVisibility descriptionReadOnlyVisibility() {
         return descriptionReadOnly;
     }
 
-    public void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler ) {
-        fileUploader.setUploadHandler( handler );
-    }
-
-    public void setCaseNumber( Long caseNumber ) {
-        fileUploader.autoBindingToCase( En_CaseType.CRM_SUPPORT, caseNumber );
-    }
-
     public void setDescription( String issueDescription, En_TextMarkup textMarkup ) {
         renderMarkupText(issueDescription, textMarkup, html -> descriptionReadOnly.getElement().setInnerHTML(html));
     }
 
-    public HasVisibility attachmentUploaderVisibility() {
-        return attachmentUploaderContainer;
+    public void setCountOfAttachments(int countOfAttachments) {
+        attachmentsLabel.setInnerText(lang.attachmentsHeader(String.valueOf(countOfAttachments)));
     }
 
-    @UiHandler("attachmentContainer")
-    public void attachmentContainerRemove( RemoveEvent event) {
+    public HasVisibility attachmentsRootContainerVisibility() {
+        return attachmentsRootContainer;
+    }
+
+    public void setAttachmentContainerShow(boolean isShow) {
+        if (isShow) {
+            attachmentsRootContainer.addStyleName("show");
+        } else {
+            attachmentsRootContainer.removeStyleName("show");
+        }
+    }
+
+    @UiHandler("attachmentListContainer")
+    public void attachmentContainerRemove(RemoveEvent event) {
         activity.removeAttachment(event.getAttachment());
     }
 
@@ -90,8 +103,7 @@ public class IssueInfoWidget extends Composite {
         }
 
         descriptionReadOnly.ensureDebugId(DebugIds.ISSUE.DESCRIPTION_FIELD );
-        fileUploader.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_UPLOAD_BUTTON);
-        attachmentContainer.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_LIST_CONTAINER);
+        attachmentListContainer.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_LIST_CONTAINER);
         attachmentsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.ATTACHMENTS);
     }
 
@@ -103,13 +115,12 @@ public class IssueInfoWidget extends Composite {
     @UiField
     HTMLPanel historyContainer;
     @Inject
-    @UiField
-    AttachmentUploader fileUploader;
-    @UiField
-    HTMLPanel attachmentUploaderContainer;
-    @Inject
     @UiField(provided = true)
-    FullViewAttachmentList attachmentContainer;
+    FullViewAttachmentList attachmentListContainer;
+    @UiField
+    HTMLPanel attachmentsRootContainer;
+    @UiField
+    HTMLPanel attachmentsHeaderContainer;
     @UiField
     LabelElement attachmentsLabel;
     @UiField
@@ -119,6 +130,9 @@ public class IssueInfoWidget extends Composite {
 
     @Inject
     TextRenderControllerAsync textRenderController;
+
+    @Inject
+    LocalStorageService localStorageService;
 
     private AbstractIssueEditActivity activity;
 

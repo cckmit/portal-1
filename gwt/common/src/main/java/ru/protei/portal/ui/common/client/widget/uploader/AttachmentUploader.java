@@ -18,7 +18,7 @@ import java.util.*;
 /**
  * Created by bondarenko on 03.07.17.
  */
-public class AttachmentUploader extends FileUploader{
+public class AttachmentUploader extends FileUploader {
 
     public interface FileUploadHandler{
         void onSuccess(Attachment attachment, PasteInfo pasteInfo);

@@ -2953,4 +2953,8 @@ public interface Lang extends Messages, ContactItemLang {
     String issueFavorites();
 
     String issueSyncedWith();
+
+    String attachmentsHeader(String countOfAttachments);
+
+    String attachmentAdd();
 }

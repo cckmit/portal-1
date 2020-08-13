@@ -22,6 +22,8 @@ import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.casetag.taglist.AbstractCaseTagListActivity;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
+import ru.protei.portal.ui.common.client.common.LocalStorageService;
+import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
@@ -43,6 +45,7 @@ import java.util.logging.Logger;
 
 import static ru.protei.portal.core.model.helper.CaseCommentUtils.addImageInMessage;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.util.CaseStateUtil.isTerminalState;
 
@@ -66,6 +69,9 @@ public abstract class IssueEditActivity implements
                     issueNameDescriptionEditWidget.addTempAttachment(attachment);
                 }
                 addAttachmentsToCase( Collections.singleton( attachment ) );
+
+                issueInfoWidget.attachmentsRootContainerVisibility().setVisible(!issueInfoWidget.attachmentsListContainer().isEmpty());
+                issueInfoWidget.setCountOfAttachments(size(issueInfoWidget.attachmentsListContainer().getAll()));
             }
 
             @Override
@@ -74,8 +80,8 @@ public abstract class IssueEditActivity implements
             }
         };
 
-        issueInfoWidget.setFileUploadHandler( uploadHandler );
-        issueNameDescriptionEditWidget.setFileUploader(issueInfoWidget.getFileUploader());
+        view.setFileUploadHandler( uploadHandler );
+        issueNameDescriptionEditWidget.setFileUploader(view.getFileUploader());
     }
 
     @Event
@@ -145,7 +151,7 @@ public abstract class IssueEditActivity implements
     @Event
     public void onRemovingAttachments( AttachmentEvents.Remove event ) {
         if(view.isAttached() && issue.getId().equals(event.issueId)) {
-            event.attachments.forEach( issueInfoWidget.attachmentsContainer()::remove);
+            event.attachments.forEach( issueInfoWidget.attachmentsListContainer()::remove);
             issue.getAttachments().removeAll(event.attachments);
             issue.setAttachmentExists(!issue.getAttachments().isEmpty());
         }
@@ -213,9 +219,13 @@ public abstract class IssueEditActivity implements
         attachmentController.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, attachment.getId(), new FluentCallback<Boolean>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR)))
                 .withSuccess(result -> {
-                    issueInfoWidget.attachmentsContainer().remove(attachment);
+                    issueInfoWidget.attachmentsListContainer().remove(attachment);
                     issue.getAttachments().remove(attachment);
                     issue.setAttachmentExists(!issue.getAttachments().isEmpty());
+
+                    issueInfoWidget.setCountOfAttachments(size(issueInfoWidget.attachmentsListContainer().getAll()));
+                    issueInfoWidget.attachmentsRootContainerVisibility().setVisible(!issueInfoWidget.attachmentsListContainer().isEmpty());
+
                     showComments( issue );
                 }));
     }
@@ -413,11 +423,19 @@ public abstract class IssueEditActivity implements
         view.setName(makeName(issue.getName(), issue.getJiraUrl(), issue.getExtAppType()));
         view.setIntegration(makeIntegrationName(issue));
 
-        issueInfoWidget.setCaseNumber( issue.getCaseNumber() );
+        view.setCaseNumber( issue.getCaseNumber() );
         issueInfoWidget.setDescription(issue.getInfo(), CaseTextMarkupUtil.recognizeTextMarkup(issue));
-        issueInfoWidget.attachmentsContainer().clear();
-        issueInfoWidget.attachmentsContainer().add(issue.getAttachments());
-        issueInfoWidget.attachmentUploaderVisibility().setVisible(!readOnly);
+        issueInfoWidget.attachmentsListContainer().clear();
+        issueInfoWidget.attachmentsListContainer().add(issue.getAttachments());
+
+        boolean isAttachmentsEmpty = isEmpty(issue.getAttachments());
+
+        issueInfoWidget.attachmentsRootContainerVisibility().setVisible(!isAttachmentsEmpty);
+        issueInfoWidget.setCountOfAttachments(size(issue.getAttachments()));
+
+        issueInfoWidget.setAttachmentContainerShow(localStorageService.getBooleanOrDefault(UiConstants.ATTACHMENTS_PANEL_VISIBILITY, false));
+
+        view.setAddAttachmentButtonVisible(!readOnly);
         view.getInfoContainer().clear();
         view.getInfoContainer().add(issueInfoWidget);
 
@@ -446,15 +464,16 @@ public abstract class IssueEditActivity implements
         }
     }
 
-    private void addAttachmentsToCase(Collection<Attachment> attachments){
-        if (issue.getAttachments() == null || issue.getAttachments().isEmpty())
+    private void addAttachmentsToCase(Collection<Attachment> attachments) {
+        if (issue.getAttachments() == null || issue.getAttachments().isEmpty()) {
             issue.setAttachments(new ArrayList<>());
+        }
 
         if (isEmpty(attachments)) {
             return;
         }
 
-        issueInfoWidget.attachmentsContainer().add(attachments);
+        issueInfoWidget.attachmentsListContainer().add(attachments);
         issue.getAttachments().addAll(attachments);
         issue.setAttachmentExists(true);
     }
@@ -516,6 +535,9 @@ public abstract class IssueEditActivity implements
     IssueNameDescriptionEditWidget issueNameDescriptionEditWidget;
     @Inject
     IssueInfoWidget issueInfoWidget;
+
+    @Inject
+    LocalStorageService localStorageService;
 
     @ContextAware
     CaseObject issue;

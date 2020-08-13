@@ -121,4 +121,5 @@ public class UiConstants {
     public static final String REMEMBER_ME_PREFIX = "auth_remember_me_";
     public static final String LINKS_PANEL_VISIBILITY = "case-link-panel-body";
     public static final String ISSUE_CREATE_PREVIEW_DISPLAYED = "issue_create_is_preview_displayed";
+    public static final String ATTACHMENTS_PANEL_VISIBILITY = "attachments-panel-body";
 }

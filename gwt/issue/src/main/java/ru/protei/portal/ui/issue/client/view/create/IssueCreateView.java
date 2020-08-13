@@ -2,8 +2,7 @@ package ru.protei.portal.ui.issue.client.view.create;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.LabelElement;
+import com.google.gwt.dom.client.*;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -12,8 +11,9 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.common.LocalStorageService;
+import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.attachment.list.fullview.FullViewAttachmentList;
@@ -33,13 +33,23 @@ import static ru.protei.portal.ui.common.client.common.UiConstants.Icons.FAVORIT
  */
 public class IssueCreateView extends Composite implements AbstractIssueCreateView {
     @Inject
-    public void onInit() {
+    public void onInit(LocalStorageService localStorageService) {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
         description.setRenderer((text, consumer) -> activity.renderMarkupText(text, consumer));
         description.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged(DESCRIPTION, isDisplay));
         description.setFileUploader(fileUploader);
         description.setDropZonePanel(dropPanel);
+        addAttachmentClickHandler(addAttachmentButton, fileUploader);
+        attachmentsHeaderContainer.addDomHandler(event -> {
+            if (attachmentsRootContainer.getElement().hasClassName("show")) {
+                attachmentsRootContainer.getElement().removeClassName("show");
+                localStorageService.set(UiConstants.ATTACHMENTS_PANEL_VISIBILITY, Boolean.FALSE.toString());
+            } else {
+                attachmentsRootContainer.getElement().addClassName("show");
+                localStorageService.set(UiConstants.ATTACHMENTS_PANEL_VISIBILITY, Boolean.TRUE.toString());
+            }
+        }, ClickEvent.getType());
 
         name.setMaxLength(NAME_MAX_SIZE);
     }
@@ -70,8 +80,8 @@ public class IssueCreateView extends Composite implements AbstractIssueCreateVie
     }
 
     @Override
-    public HasAttachments attachmentsContainer() {
-        return attachmentContainer;
+    public HasAttachments attachmentsListContainer() {
+        return attachmentListContainer;
     }
 
     @Override
@@ -130,6 +140,25 @@ public class IssueCreateView extends Composite implements AbstractIssueCreateVie
         }
     }
 
+    @Override
+    public void setCountOfAttachments(int countOfAttachments) {
+        attachmentsLabel.setInnerText(lang.attachmentsHeader(String.valueOf(countOfAttachments)));
+    }
+
+    @Override
+    public HasVisibility attachmentsRootContainerVisibility() {
+        return attachmentsRootContainer;
+    }
+
+    @Override
+    public void setAttachmentContainerShow(boolean isShow) {
+        if (isShow) {
+            attachmentsRootContainer.addStyleName("show");
+        } else {
+            attachmentsRootContainer.removeStyleName("show");
+        }
+    }
+
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {
@@ -145,7 +174,7 @@ public class IssueCreateView extends Composite implements AbstractIssueCreateVie
 
     }
 
-    @UiHandler("attachmentContainer")
+    @UiHandler("attachmentListContainer")
     public void attachmentContainerRemove(RemoveEvent event) {
         activity.removeAttachment(event.getAttachment());
     }
@@ -178,6 +207,12 @@ public class IssueCreateView extends Composite implements AbstractIssueCreateVie
         }
     }
 
+    private native void addAttachmentClickHandler(Element element, AttachmentUploader fileUploader) /*-{
+        element.onclick = function () {
+            fileUploader.@ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader::initUploading()();
+        }
+    }-*/;
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
@@ -186,7 +221,7 @@ public class IssueCreateView extends Composite implements AbstractIssueCreateVie
         name.ensureDebugId(DebugIds.ISSUE.NAME_INPUT);
         description.setEnsureDebugId(DebugIds.ISSUE.DESCRIPTION_INPUT);
         fileUploader.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_UPLOAD_BUTTON);
-        attachmentContainer.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_LIST_CONTAINER);
+        attachmentListContainer.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_LIST_CONTAINER);
         saveButton.ensureDebugId(DebugIds.ISSUE.SAVE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.ISSUE.CANCEL_BUTTON);
         addTagButton.ensureDebugId(DebugIds.ISSUE.TAGS_BUTTON);
@@ -224,7 +259,11 @@ public class IssueCreateView extends Composite implements AbstractIssueCreateVie
     AttachmentUploader fileUploader;
     @Inject
     @UiField(provided = true)
-    FullViewAttachmentList attachmentContainer;
+    FullViewAttachmentList attachmentListContainer;
+    @UiField
+    HTMLPanel attachmentsRootContainer;
+    @UiField
+    HTMLPanel attachmentsHeaderContainer;
     @UiField
     LabelElement descriptionLabel;
     @UiField
@@ -249,6 +288,8 @@ public class IssueCreateView extends Composite implements AbstractIssueCreateVie
     Button addTagButton;
     @UiField
     Button addLinkButton;
+    @UiField
+    ButtonElement addAttachmentButton;
 
     private HasValidable nameValidator = new HasValidable() {
         @Override

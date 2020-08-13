@@ -1,6 +1,5 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader'
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
              xmlns:tab='urn:import:ru.protei.portal.ui.common.client.widget.tab'
 >
@@ -12,21 +11,19 @@
 
         <div ui:field="attachmentsPanel" class="row form-group">
             <div class="col-md-12">
-                <label ui:field="attachmentsLabel">
-                    <ui:text from="{lang.issueAttachments}"/>
-                </label>
-
-                <div>
-                    <g:HTMLPanel styleName="attach attach-add" ui:field="attachmentUploaderContainer">
-                        <fileuploader:AttachmentUploader ui:field="fileUploader">
-                            <div class="attach-add-circle">
-                                <i class="fas fa-plus ion-plus"/>
-                                <i class="fas fa-circle-notch fa-spin icon-verifiable"/>
-                            </div>
-                        </fileuploader:AttachmentUploader>
+                <g:HTMLPanel ui:field="attachmentsRootContainer" styleName="card card-default card-attachments">
+                    <g:HTMLPanel ui:field="attachmentsHeaderContainer" styleName="card-header">
+                        <label ui:field="attachmentsLabel"/>
+                        <a class="pull-right collapse-btn p-b-0 p-t-0" href="#" id="gwt-debug-issue-links-collapse-button"/>
                     </g:HTMLPanel>
-                    <attachment:fullview.FullViewAttachmentList ui:field="attachmentContainer"/>
-                </div>
+                    <div class="attachments-accordion">
+                        <div class="card-body">
+                            <div>
+                                <attachment:fullview.FullViewAttachmentList ui:field="attachmentListContainer"/>
+                            </div>
+                        </div>
+                    </div>
+                </g:HTMLPanel>
             </div>
         </div>
         <div class="row">

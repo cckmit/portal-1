@@ -27,6 +27,7 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.events.HasAttach
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveHandler;
 import ru.protei.portal.ui.common.client.widget.attachment.preview.AttachmentPreview;
+import ru.protei.portal.ui.common.client.widget.selector.event.HasRemoveHandlers;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 

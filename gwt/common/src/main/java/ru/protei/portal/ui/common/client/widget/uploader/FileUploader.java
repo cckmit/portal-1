@@ -63,6 +63,10 @@ public abstract class FileUploader extends Composite implements HasHTML, HasSafe
         visibleContent.getElement().setInnerText(text);
     }
 
+    public void initUploading() {
+        fileUpload.click();
+    }
+
     public boolean isFileSet() {
         return !StringUtils.isEmpty(fileUpload.getFilename());
     }

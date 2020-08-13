@@ -17,7 +17,7 @@ public interface AbstractIssueCreateView extends IsWidget {
 
     HasValidable nameValidator();
 
-    HasAttachments attachmentsContainer();
+    HasAttachments attachmentsListContainer();
 
     void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler);
 
@@ -40,4 +40,10 @@ public interface AbstractIssueCreateView extends IsWidget {
     boolean isFavoriteButtonActive();
 
     void setFavoriteButtonActive(boolean isActive);
+
+    void setCountOfAttachments(int countOfAttachments);
+
+    HasVisibility attachmentsRootContainerVisibility();
+
+    void setAttachmentContainerShow(boolean isShow);
 }

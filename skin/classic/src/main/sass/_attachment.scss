@@ -389,3 +389,151 @@
     min-height: 75px;
   }
 }
+
+.attachment-uploading {
+  .icon-verifiable-dots {
+    display: inline-block;
+  }
+
+  .ion-plus {
+    display: none;
+  }
+}
+
+.attachment-full-view-uploader {
+  .attachment-uploading {
+    height: 20px;
+  }
+  .ion-plus {
+    font-size: 14px;
+    position: absolute;
+    top: 5px;
+    right: 22px;
+    cursor: pointer;
+    pointer-events: none;
+  }
+}
+
+// Dots spinner
+
+.icon-verifiable-dots {
+  display: none;
+
+  .lds-ellipsis {
+    display: inline-block;
+    position: relative;
+    width: auto;
+    height: auto;
+    right: 20px;
+  }
+
+  .lds-ellipsis div {
+    position: absolute;
+    top: -10px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #5e5e5e;
+    animation-timing-function: cubic-bezier(0, 1, 1, 0);
+  }
+
+  .lds-ellipsis div:nth-child(1) {
+    left: 0;
+    animation: lds-ellipsis1 0.6s infinite;
+  }
+
+  .lds-ellipsis div:nth-child(2) {
+    left: 0;
+    animation: lds-ellipsis2 0.6s infinite;
+  }
+
+  .lds-ellipsis div:nth-child(3) {
+    left: 16px;
+    animation: lds-ellipsis2 0.6s infinite;
+  }
+
+  .lds-ellipsis div:nth-child(4) {
+    left: 32px;
+    animation: lds-ellipsis3 0.6s infinite;
+  }
+}
+
+@keyframes lds-ellipsis1 {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes lds-ellipsis3 {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0);
+  }
+}
+@keyframes lds-ellipsis2 {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(16px, 0);
+  }
+}
+
+.card-attachments {
+  .collapse-btn {
+    font-family: "Font Awesome 5 Free", serif;
+    font-weight: 900;
+  }
+
+  .collapse-btn {
+    &:after {
+      content: "\f078";
+    }
+  }
+
+  .card-header {
+    padding-bottom: 10px;
+    padding-top: 10px;
+    min-height: auto;
+  }
+
+  .attachments-accordion {
+    max-height: 0;
+    transition: max-height .35s ease;
+    overflow: hidden;
+
+    .card-body {
+      max-height: 300px;
+      overflow: hidden;
+      position: relative;
+    }
+  }
+
+  &.show {
+    .collapse-btn {
+      &:after {
+        content: "\f077";
+      }
+    }
+
+    .attachments-accordion {
+      max-height: 300px;
+
+      .card-body {
+        overflow: auto;
+      }
+    }
+
+    .card-header {
+      label {
+        border-bottom: 2px solid;
+      }
+
+      padding-bottom: 0;
+    }
+  }
+}
