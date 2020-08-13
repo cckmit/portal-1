@@ -5,10 +5,12 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.RoomReservable;
 import ru.protei.portal.core.model.ent.RoomReservation;
 import ru.protei.portal.core.model.query.RoomReservationQuery;
+import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.common.YearMonthDay;
@@ -220,8 +222,8 @@ public abstract class RoomReservationCalendarActivity implements Activity, Abstr
     private RoomReservationQuery makeQuery(RoomReservable room, Date date) {
         RoomReservationQuery query = new RoomReservationQuery();
         query.setRoomIds(setOf(room.getId()));
-        query.setDateStart(setBeginOfMonth(date));
-        query.setDateEnd(setEndOfMonth(date));
+        query.setDate(new DateRange(En_DateIntervalType.FIXED,
+                setBeginOfMonth(date), setEndOfMonth(date)));
         return query;
     }
 
@@ -234,8 +236,7 @@ public abstract class RoomReservationCalendarActivity implements Activity, Abstr
         if (!roomsMatched) {
             return null;
         }
-        boolean datesMatched = Objects.equals(queryCache.getDateStart(), query.getDateStart())
-                            && Objects.equals(queryCache.getDateEnd(), query.getDateEnd());
+        boolean datesMatched = Objects.equals(queryCache.getDate(), query.getDate());
         if (!datesMatched) {
             return null;
         }

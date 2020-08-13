@@ -41,7 +41,6 @@ public abstract class RoomReservationTableActivity implements AbstractRoomReserv
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
-        view.getFilterParam().resetFilter();
         view.getPagerContainer().add( pagerView.asWidget() );
 
         loadTable();

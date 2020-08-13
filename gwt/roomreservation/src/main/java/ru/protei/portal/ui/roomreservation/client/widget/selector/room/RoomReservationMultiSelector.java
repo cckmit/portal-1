@@ -13,6 +13,6 @@ public class RoomReservationMultiSelector extends InputPopupMultiSelector<RoomRe
         setSearchEnabled(false);
         setAddName(lang.buttonAdd());
         setClearName(lang.buttonClear());
-        setItemRenderer(room -> room == null ? lang.selectValue() : room.getName());
+        setItemRenderer(room -> room == null ? null : room.getName());
     }
 }

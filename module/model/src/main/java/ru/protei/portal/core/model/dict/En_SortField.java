@@ -173,7 +173,12 @@ public enum En_SortField {
     /**
      * absence reason
      */
-    absence_reason("reason_id");
+    absence_reason("reason_id"),
+
+    /**
+     * room_reservation_date_from
+     */
+    room_reservation_date_from("room_reservation.date_from");
 
     private String fieldName;
     private String bundleKey;

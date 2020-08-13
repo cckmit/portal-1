@@ -10,7 +10,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
-import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.ent.RoomReservable;
 import ru.protei.portal.core.model.ent.SelectorsParams;
@@ -27,6 +26,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.dict.En_SortField.room_reservation_date_from;
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 
 public class RoomReservationParamWidget extends Composite implements AbstractRoomReservationParamWidget {
@@ -36,6 +36,7 @@ public class RoomReservationParamWidget extends Composite implements AbstractRoo
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
         fillDateRanges(dateRange);
+        resetFilter();
     }
 
     @Override
@@ -59,7 +60,7 @@ public class RoomReservationParamWidget extends Composite implements AbstractRoo
 
     @Override
     public void resetFilter() {
-        dateRange.setValue(new DateIntervalWithType(null, En_DateIntervalType.TODAY));
+        dateRange.setValue(new DateIntervalWithType(null, En_DateIntervalType.THIS_WEEK));
         room.setValue(null);
         onFilterChanged();
     }
@@ -68,19 +69,14 @@ public class RoomReservationParamWidget extends Composite implements AbstractRoo
     public RoomReservationQuery getQuery() {
         RoomReservationQuery query = new RoomReservationQuery();
         query.setRoomIds(emptyIfNull(room.getValue()).stream().map(RoomReservable::getId).collect(Collectors.toSet()));
-        query.setDateStart(dateRange.getValue().getInterval().from);
-        query.setDateEnd(dateRange.getValue().getInterval().to);
+        query.setDate(DateIntervalWithType.toDateRange(dateRange.getValue()));
+        query.setSortField(room_reservation_date_from);
         return query;
     }
 
     @Override
     public void fillFilterFields(RoomReservationQuery query, SelectorsParams selectorsParams) {
-        dateRange.setValue(new DateIntervalWithType
-                (new DateInterval(query.getDateStart(), query.getDateEnd()), En_DateIntervalType.FIXED));
-//        room.setValue(query.getRoomIds()); // пока не реализуем сохранение фильтров
-        if (validate()) {
-            onFilterChanged();
-        }
+//        пока не реализуем сохранение фильтров
     }
 
     @Override
