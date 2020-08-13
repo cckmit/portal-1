@@ -2016,6 +2016,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractTypeWorkContract();
 
+    String contractTypeHardwareSoftwareService();
+
     String goToContracts();
 
     String contractStateAgreement();

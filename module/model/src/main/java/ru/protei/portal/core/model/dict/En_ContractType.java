@@ -78,5 +78,11 @@ public enum En_ContractType {
     /**
      * заказ
      */
-    ORDER
+    ORDER,
+
+    /**
+     * Оборудование, ПО и услуги
+     */
+    HARDWARE_SOFTWARE_SERVICE,
+    ;
 }
