@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.enterprise1c.dto.Contractor1C;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.ContractQuery;
+import ru.protei.portal.core.model.struct.ContractorQuery;
 import ru.protei.portal.core.model.util.ContractorUtils;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
@@ -32,6 +33,7 @@ import static java.util.stream.Collectors.toMap;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.*;
 
 public class ContractServiceImpl implements ContractService {
@@ -226,20 +228,20 @@ public class ContractServiceImpl implements ContractService {
     }
 
     @Override
-    public Result<List<Contractor>> findContractors(AuthToken token,
-                                                    String organization, String contractorInn, String contractorKpp) {
-        if (organization == null || contractorInn == null || contractorKpp == null) {
+    public Result<List<Contractor>> findContractors(AuthToken token, String organization, ContractorQuery query) {
+        if (organization == null || query == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        if (!isValidContractor(contractorInn, contractorKpp)) {
+        if (isNotEmpty(query.getInn()) && !isValidInn(query.getInn())) {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
-        Contractor1C queryContractor1C = new Contractor1C();
-        queryContractor1C.setInn(contractorInn);
-        queryContractor1C.setKpp(contractorKpp);
+        if (isNotEmpty(query.getKpp()) && !isValidKpp(query.getKpp())) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
 
+        Contractor1C queryContractor1C = makeContractor1CFromQuery(query);
         Result<List<Contractor1C>> contractors = api1CService.getContractors(queryContractor1C, organization);
         if (contractors.isError()) {
             return error(contractors.getStatus());
@@ -350,13 +352,17 @@ public class ContractServiceImpl implements ContractService {
         return policyService.hasGrantAccessFor(roles, privilege);
     }
 
-    private boolean isValidContractor(String contractorInn, String contractorKpp) {
-        return innPattern.matcher(contractorInn).matches() && ContractorUtils.checkInn(contractorInn) &&
-                kppPattern.matcher(contractorKpp).matches();
+    private boolean isValidInn(String inn) {
+        return innPattern.matcher(inn).matches() && ContractorUtils.checkInn(inn);
+    }
+
+    private boolean isValidKpp(String kpp) {
+        return kppPattern.matcher(kpp).matches();
     }
 
     private boolean isValidContractor(Contractor contractor) {
-        return isValidContractor(contractor.getInn(), contractor.getKpp());
+        return isValidInn(contractor.getInn()) &&
+               isValidKpp(contractor.getKpp());
     }
 
     private boolean isValidContract(Contract contract) {
@@ -364,6 +370,14 @@ public class ContractServiceImpl implements ContractService {
                && contract.getContractor() != null
                && StringUtils.isNotBlank(contract.getContractor().getRefKey())
                && contract.getDateSigning() != null;
+    }
+
+    private Contractor1C makeContractor1CFromQuery(ContractorQuery query) {
+        Contractor1C contractor1C = new Contractor1C();
+        contractor1C.setInn(query.getInn());
+        contractor1C.setKpp(query.getKpp());
+        contractor1C.setFullName(query.getFullName());
+        return contractor1C;
     }
 
     public static Contractor from1C(Contractor1C contractor1C, String country) {

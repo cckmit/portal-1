@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.protei.portal.core.model.ent.Contractor;
+import ru.protei.portal.core.model.struct.ContractorQuery;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
@@ -207,11 +208,10 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
                 fireEvent(new NotifyEvents.Show(lang.contractContractorValidationError(), NotifyEvents.NotifyType.ERROR));
                 return;
             }
-            controller.findContractors(
-                    organization,
-                    searchView.contractorInn().getValue(),
-                    searchView.contractorKpp().getValue(),
-                    new FluentCallback<List<Contractor>>()
+            ContractorQuery query = new ContractorQuery();
+            query.setInn(searchView.contractorInn().getValue());
+            query.setKpp(searchView.contractorKpp().getValue());
+            controller.findContractors(organization, query, new FluentCallback<List<Contractor>>()
                     .withError(t -> {
                         fireEvent(new NotifyEvents.Show(lang.contractContractorFindError(), NotifyEvents.NotifyType.ERROR));
                     })
