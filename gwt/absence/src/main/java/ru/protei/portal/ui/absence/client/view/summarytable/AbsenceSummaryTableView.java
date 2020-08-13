@@ -3,11 +3,9 @@ package ru.protei.portal.ui.absence.client.view.summarytable;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.ent.PersonAbsence;
@@ -19,7 +17,6 @@ import ru.protei.portal.ui.absence.client.widget.AbsenceFilterWidgetModel;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.common.LabelValuePairBuilder;
 import ru.protei.portal.ui.common.client.lang.En_AbsenceReasonLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
@@ -110,7 +107,24 @@ public class AbsenceSummaryTableView extends Composite implements AbstractAbsenc
         editClickColumn.setDisplayPredicate(value -> AccessUtil.isAllowedEdit(policyService, value));
         removeClickColumn.setDisplayPredicate(value -> AccessUtil.isAllowedRemove(policyService, value));
 
+        DynamicColumn<PersonAbsence> reason = new DynamicColumn<>(lang.absenceReason(), "reason",
+                value -> "<div class=\"absence-reason\"><i class=\"" + reasonLang.getIcon(value.getReason()) + "\"></i></div>" +
+                        "<span class=\"absence-label\">" + reasonLang.getName(value.getReason()) +"</span>");
+
+        DynamicColumn<PersonAbsence> person = new DynamicColumn<>(lang.absenceEmployee(), "person",
+                value -> value.getPerson().getName());
+
+        DynamicColumn<PersonAbsence> fromTime = new DynamicColumn<>(lang.absenceFromTime(), "from-time",
+                value -> DateFormatter.formatDateTime(value.getFromTime()));
+
+        DynamicColumn<PersonAbsence> tillTime = new DynamicColumn<>(lang.absenceTillTime(), "till-time",
+                value -> DateFormatter.formatDateTime(value.getTillTime()));
+
+        DynamicColumn<PersonAbsence> comment = new DynamicColumn<>(lang.absenceComment(), "comment",
+                value -> value.getUserComment());
+
         columns.add(reason);
+        columns.add(person);
         columns.add(fromTime);
         columns.add(tillTime);
         columns.add(comment);
@@ -123,93 +137,7 @@ public class AbsenceSummaryTableView extends Composite implements AbstractAbsenc
         table.addColumn(completeClickColumn.header, completeClickColumn.values);
         table.addColumn(editClickColumn.header, editClickColumn.values);
         table.addColumn(removeClickColumn.header, removeClickColumn.values);
-
     }
-
-    ClickColumn<PersonAbsence> person = new ClickColumn<PersonAbsence>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setClassName("summary-table-absence-person-column");
-            columnHeader.setInnerText(lang.accountPerson());
-        }
-
-        @Override
-        public void fillColumnValue(Element cell, PersonAbsence value) {
-            InlineLabel label = new InlineLabel(value.getPerson().getName());
-            label.setStyleName("summary-table-height");
-            cell.appendChild(label.getElement());
-        }
-    };
-
-    ClickColumn<PersonAbsence> reason = new ClickColumn<PersonAbsence>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setClassName("summary-table-absence-reason-column");
-            columnHeader.setInnerText(lang.absenceReason());
-        }
-
-        @Override
-        public void fillColumnValue(Element cell, PersonAbsence value) {
-            com.google.gwt.dom.client.Element reason = LabelValuePairBuilder.make()
-                    .addIconPair(reasonLang.getIcon(value.getReason()), "absence-reason")
-                    .toElement();
-
-            InlineLabel label = new InlineLabel(reasonLang.getName(value.getReason()));
-            label.setStyleName("absence-label");
-
-            HTMLPanel root = new HTMLPanel("");
-            root.setStyleName("summary-table-absence-reason-column-value summary-table-height");
-            root.getElement().appendChild(reason);
-            root.add(label);
-
-            cell.appendChild(root.getElement());
-        }
-    };
-
-    ClickColumn<PersonAbsence> fromTime = new ClickColumn<PersonAbsence>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setInnerText(lang.absenceFromTime());
-            columnHeader.setClassName("summary-table-absence-fromTime-column");
-        }
-
-        @Override
-        public void fillColumnValue(Element cell, PersonAbsence value) {
-            InlineLabel label = new InlineLabel(DateFormatter.formatDateTime(value.getFromTime()));
-            label.setStyleName("summary-table-height");
-            cell.appendChild(label.getElement());
-        }
-    };
-
-    ClickColumn<PersonAbsence> tillTime = new ClickColumn<PersonAbsence>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setInnerText(lang.absenceTillTime());
-            columnHeader.setClassName("summary-table-absence-tillTime-column");
-        }
-
-        @Override
-        public void fillColumnValue(Element cell, PersonAbsence value) {
-            InlineLabel label = new InlineLabel(DateFormatter.formatDateTime(value.getTillTime()));
-            label.setStyleName("summary-table-height");
-            cell.appendChild(label.getElement());
-        }
-    };
-
-    ClickColumn<PersonAbsence> comment = new ClickColumn<PersonAbsence>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setInnerText(lang.absenceComment());
-            columnHeader.setClassName("summary-table-absence-comment-column");
-        }
-
-        @Override
-        public void fillColumnValue(Element cell, PersonAbsence value) {
-            InlineLabel label = new InlineLabel(value.getUserComment());
-            label.setStyleName("summary-table-height");
-            cell.appendChild(label.getElement());
-        }
-    };
 
     @UiField
     InfiniteTableWidget<PersonAbsence> table;

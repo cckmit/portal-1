@@ -2265,7 +2265,6 @@ a {
   }
 }
 
-
 .project-main-info {
   display: flex;
 
@@ -4801,55 +4800,63 @@ table {
   border-top: 2px solid #00808085 !important;
 }
 
-.summary-table-absence-reason-column-value {
-  display: inline-flex;
-  align-items: center;
+/**** ABSENCES ****/
+.absences {
+  table {
+    tbody {
+      tr {
+        td {
+          height: 40px;
 
-  .absence-reason {
-    position: static;
-    height: 35px;
-    width: 35px;
-    min-width: 35px;
-    min-height: 35px;
-    > i {
-      font-size: 1.33333em !important;
+          div {
+            height: 40px;
+            max-height: 40px;
+            white-space: pre-line;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+    }
+    .reason {
+      width: 20%;
+
+      > div {
+        display: inline-flex;
+        align-items: center;
+
+        .absence-reason {
+          position: static;
+          height: 35px;
+          width: 35px;
+          min-width: 35px;
+          min-height: 35px;
+          > i {
+            font-size: 1.33333em !important;
+          }
+        }
+        .absence-label {
+          padding: 10px;
+        }
+      }
+    }
+
+    .person {
+      width: 25%;
+    }
+
+    .from-time, .till-time {
+      width: 15%;
+      > div {
+        white-space: nowrap;
+      }
+
+    }
+
+    .comment {
+      width: 25%;
     }
   }
-  .absence-label {
-    padding: 10px;
-  }
-}
-
-.summary-table-absence-reason-column {
-  width: 15%;
-}
-
-
-.summary-table-absence-person-column{
-  width: 25%;
-}
-
-.summary-table-absence-fromTime-column{
-  width: 15%;
-}
-
-.summary-table-absence-tillTime-column{
-  width: 15%;
-}
-
-.summary-table-absence-comment-column{
-  width: 30%;
-}
-
-.absence table tbody tr td {
-  height: 32px;
-  max-height: 32px;
-}
-
-.summary-table-height {
-  height: 32px;
-  max-height: 32px;
-  white-space: nowrap;
 }
 
 .absence-filter {

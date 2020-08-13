@@ -29,6 +29,11 @@ public abstract class AbsenceSummaryTableActivity implements AbstractAbsenceSumm
     }
 
     @Event
+    public void onAuthSuccess (AuthEvents.Success event) {
+        view.getFilterWidget().resetFilter();
+    }
+
+    @Event
     public void onInit(AppEvents.InitDetails event) {
         this.initDetails = event;
     }
