@@ -10,6 +10,7 @@ import ru.protei.portal.core.service.RoomReservationService;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.RoomReservationController;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -21,7 +22,7 @@ import static ru.protei.portal.ui.common.server.ServiceUtils.getAuthToken;
 public class RoomReservationControllerImpl implements RoomReservationController {
 
     @Override
-    public List<RoomReservation> getReservations(RoomReservationQuery query) throws RequestFailedException {
+    public SearchResult<RoomReservation> getReservations(RoomReservationQuery query) throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
         return checkResultAndGetData(roomReservationService.getReservations(token, query));
     }

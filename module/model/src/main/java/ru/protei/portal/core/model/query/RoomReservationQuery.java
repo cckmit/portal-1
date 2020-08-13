@@ -1,11 +1,13 @@
 package ru.protei.portal.core.model.query;
 
 import ru.protei.portal.core.model.dict.En_RoomReservationReason;
+import ru.protei.portal.core.model.view.filterwidget.FilterQuery;
 
 import java.util.Date;
+import java.util.Objects;
 import java.util.Set;
 
-public class RoomReservationQuery extends BaseQuery {
+public class RoomReservationQuery extends BaseQuery implements FilterQuery {
 
     private Set<Long> roomIds;
     private Set<Long> personRequesterIds;
@@ -74,5 +76,23 @@ public class RoomReservationQuery extends BaseQuery {
                 ", dateStart=" + dateStart +
                 ", dateEnd=" + dateEnd +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof RoomReservationQuery)) return false;
+        RoomReservationQuery that = (RoomReservationQuery) o;
+        return Objects.equals(roomIds, that.roomIds) &&
+                Objects.equals(personRequesterIds, that.personRequesterIds) &&
+                Objects.equals(personResponsibleIds, that.personResponsibleIds) &&
+                Objects.equals(reasons, that.reasons) &&
+                Objects.equals(dateStart, that.dateStart) &&
+                Objects.equals(dateEnd, that.dateEnd);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(roomIds, personRequesterIds, personResponsibleIds, reasons, dateStart, dateEnd);
     }
 }

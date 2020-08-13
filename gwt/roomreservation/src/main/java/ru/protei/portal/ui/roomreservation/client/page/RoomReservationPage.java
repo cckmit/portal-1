@@ -8,10 +8,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
-import ru.protei.portal.ui.common.client.events.ActionBarEvents;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.AuthEvents;
-import ru.protei.portal.ui.common.client.events.RoomReservationEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 import ru.protei.winter.web.common.client.events.SectionEvents;
@@ -41,8 +38,33 @@ public abstract class RoomReservationPage implements Activity {
     }
 
     @Event
-    public void onShowTable(RoomReservationEvents.Show event) {
-        fireSelectTab();
+    public void onShow(RoomReservationEvents.Show event) {
+        fireEvent(new ActionBarEvents.Clear());
+        fireEvent(new ActionBarEvents.Add(lang.table(), "", UiConstants.ActionBarIdentity.ROOM_RESERVATION_TABLE));
+    }
+
+    @Event
+    public void onShow(RoomReservationEvents.ShowTable event) {
+        fireEvent(new ActionBarEvents.Clear());
+        fireEvent(new ActionBarEvents.Add(lang.calendar(), "", UiConstants.ActionBarIdentity.ROOM_RESERVATION_CALENDAR));
+    }
+
+    @Event
+    public void onShowCalendarClicked(ActionBarEvents.Clicked event) {
+        if (!(UiConstants.ActionBarIdentity.ROOM_RESERVATION_CALENDAR.equals(event.identity)) ) {
+            return;
+        }
+
+        fireEvent(show);
+    }
+
+    @Event
+    public void onShowTableClicked(ActionBarEvents.Clicked event) {
+        if (!(UiConstants.ActionBarIdentity.ROOM_RESERVATION_TABLE.equals(event.identity)) ) {
+            return;
+        }
+
+        fireEvent(showTable);
     }
 
     private void fireSelectTab() {
@@ -59,4 +81,5 @@ public abstract class RoomReservationPage implements Activity {
 
     private String TAB;
     private RoomReservationEvents.Show show = new RoomReservationEvents.Show();
+    private RoomReservationEvents.ShowTable showTable = new RoomReservationEvents.ShowTable();
 }

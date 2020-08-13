@@ -44,6 +44,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String table();
 
+    String calendar();
+
     String type();
 
     String createBy( String p0, String p1 );

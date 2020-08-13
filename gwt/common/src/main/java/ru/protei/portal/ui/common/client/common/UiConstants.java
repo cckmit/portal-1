@@ -87,6 +87,8 @@ public class UiConstants {
         String PLAN_CREATE = "plan_create";
         String ABSENCE = "absence";
         String ABSENCE_REPORT = "absence_report";
+        String ROOM_RESERVATION_CALENDAR = "room_reservation_calendar";
+        String ROOM_RESERVATION_TABLE = "room_reservation_table";
     }
 
     public interface Styles {

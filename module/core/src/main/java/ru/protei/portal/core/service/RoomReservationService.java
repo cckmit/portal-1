@@ -9,13 +9,14 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.RoomReservable;
 import ru.protei.portal.core.model.ent.RoomReservation;
 import ru.protei.portal.core.model.query.RoomReservationQuery;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 
 public interface RoomReservationService {
 
     @Privileged({ En_Privilege.ROOM_RESERVATION_VIEW })
-    Result<List<RoomReservation>> getReservations(AuthToken token, RoomReservationQuery query);
+    Result<SearchResult<RoomReservation>> getReservations(AuthToken token, RoomReservationQuery query);
 
     @Privileged({ En_Privilege.ROOM_RESERVATION_VIEW })
     Result<RoomReservation> getReservation(AuthToken token, Long reservationId);
