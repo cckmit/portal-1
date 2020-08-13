@@ -20,14 +20,18 @@ public abstract class EmployeePage implements Activity {
 
     @PostConstruct
     public void onInit() {
-        ТAB = lang.employees();
+        CATEGORY = lang.employees();
+        ТAB1 = lang.list();
+        ТAB2 = lang.birthday();
     }
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.EMPLOYEE_VIEW ) ) {
-            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.EMPLOYEE, ТAB, DebugIds.SIDEBAR_MENU.EMPLOYEE) );
-            fireEvent( new AppEvents.InitPage( show ) );
+            fireEvent( new MenuEvents.Add( CATEGORY, UiConstants.TabIcons.EMPLOYEE, CATEGORY, DebugIds.SIDEBAR_MENU.EMPLOYEE ) );
+            fireEvent( new MenuEvents.Add(ТAB1, UiConstants.TabIcons.EMPLOYEE_LIST, ТAB1, DebugIds.SIDEBAR_MENU.EMPLOYEE_LIST ).withParent( CATEGORY ) );
+            fireEvent( new MenuEvents.Add(ТAB2, UiConstants.TabIcons.EMPLOYEE_BIRTHDAY, ТAB1, DebugIds.SIDEBAR_MENU.EMPLOYEE_BIRTHDAY ).withParent( CATEGORY ) );
+            fireEvent( new AppEvents.InitPage(show1) );
         }
     }
 
@@ -53,18 +57,18 @@ public abstract class EmployeePage implements Activity {
 
     @Event
     public void onClickSection( SectionEvents.Clicked event ) {
-        if ( !ТAB.equals( event.identity ) ) {
+        if ( !ТAB1.equals( event.identity ) ) {
             return;
         }
 
         fireSelectTab();
-        fireEvent( show );
+        fireEvent(show1);
     }
 
     private void fireSelectTab() {
         fireEvent( new ActionBarEvents.Clear() );
         if ( policyService.hasPrivilegeFor( En_Privilege.EMPLOYEE_VIEW ) ) {
-            fireEvent( new MenuEvents.Select( ТAB ) );
+            fireEvent( new MenuEvents.Select(ТAB1, CATEGORY ) );
         }
     }
 
@@ -74,6 +78,9 @@ public abstract class EmployeePage implements Activity {
     @Inject
     PolicyService policyService;
 
-    private String ТAB;
-    private EmployeeEvents.Show show = new EmployeeEvents.Show(false);
+    private String CATEGORY;
+    private String ТAB1;
+    private String ТAB2;
+
+    private EmployeeEvents.Show show1 = new EmployeeEvents.Show(false);
 }

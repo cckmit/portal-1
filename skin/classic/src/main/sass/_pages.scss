@@ -126,11 +126,6 @@ body.sidebar-visible .page-sidebar .menu-items .icon-thumbnail {
   cursor: pointer;
 }
 
-
-.icon-thumbnail{
-  margin-right: 15px !important;
-}
-
 .card .card-body.no-padding .row:not(.reset-no-padding) {
   margin-right: -15px;
   margin-left: -15px;
@@ -175,4 +170,18 @@ body.sidebar-visible .page-sidebar .menu-items .icon-thumbnail {
 
 .b-warning-light {
   border-color: #f9d975;
+}
+
+.page-sidebar .sidebar-menu .menu-items > li > a > .arrow:before {
+  font-family: "Font Awesome 5 Free";
+  font-weight: 600;
+}
+
+.page-sidebar .sidebar-menu .menu-items > li > a > .arrow {
+  float: left;
+  padding-right: 0;
+}
+
+.page-sidebar .sidebar-menu .menu-items > li ul.sub-menu > li {
+  padding: 0 20px 0 10px;
 }

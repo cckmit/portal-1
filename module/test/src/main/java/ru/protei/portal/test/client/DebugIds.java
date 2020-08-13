@@ -95,6 +95,8 @@ public class DebugIds {
         String ROOM_RESERVATION = "sidebar-menu-room-reservation";
         String PLAN = "sidebar-menu-plan";
         String ICON_SUFFIX = "-icon";
+        String EMPLOYEE_LIST = "sidebar-menu-employee-list";
+        String EMPLOYEE_BIRTHDAY = "sidebar-menu-employee-birthday";
     }
 
     public interface SELECTOR {

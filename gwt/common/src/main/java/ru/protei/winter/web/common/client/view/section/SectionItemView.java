@@ -3,6 +3,7 @@ package ru.protei.winter.web.common.client.view.section;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -21,7 +22,6 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
 
     public SectionItemView() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        root.addDomHandler(event -> onSectionClicked(), ClickEvent.getType());
     }
 
     @Override
@@ -74,6 +74,7 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
         if (isVisible != subSection.isVisible()) {
             subSection.setVisible(isVisible);
             subSectionIcon.setVisible(isVisible);
+            arrow.removeClassName("hide");
         }
     }
 
@@ -86,9 +87,11 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
     public void toggleSubSections(boolean forceVisible) {
         isSubSectionVisible = forceVisible || !isSubSectionVisible;
         if (isSubSectionVisible) {
-            subSection.removeStyleName("collapsed");
+            subSection.getElement().getStyle().setDisplay(Style.Display.BLOCK);
+            arrow.addClassName("open active");
         } else {
-            subSection.addStyleName("collapsed");
+            subSection.getElement().getStyle().setDisplay(Style.Display.NONE);
+            arrow.removeClassName("open active");
         }
     }
 
@@ -107,6 +110,7 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
     public void onAnchorClicked( ClickEvent event ) {
         if ( anchor.getHref().endsWith("#") ) {
             event.preventDefault();
+            onSectionClicked();
         }
     }
 
@@ -128,6 +132,8 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
     Element icon;
     @UiField
     SpanElement iconTrumbnail;
+    @UiField
+    SpanElement arrow;
     @UiField
     Label subSectionIcon;
     @UiField
