@@ -16,8 +16,9 @@
                     </div>
                 </div>
             </g:HTMLPanel>
-            <div class="filter-container col-md-3 table-absence-filter-widget" >
-                <filter:RoomReservationParamWidget ui:field="filterParam"/>
+            <div class="filter-container col-md-3" >
+                <filter:RoomReservationFilterWidget ui:field="filterWidget"
+                                styleName="card card-default no-border card-fixed room-reservation-filter"/>
             </div>
         </div>
     </g:HTMLPanel>

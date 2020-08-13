@@ -11,6 +11,8 @@ public class RoomReservationMultiSelector extends InputPopupMultiSelector<RoomRe
     void init(RoomReservableModel model, Lang lang) {
         setAsyncModel(model);
         setSearchEnabled(false);
+        setAddName(lang.buttonAdd());
+        setClearName(lang.buttonClear());
         setItemRenderer(room -> room == null ? lang.selectValue() : room.getName());
     }
 }

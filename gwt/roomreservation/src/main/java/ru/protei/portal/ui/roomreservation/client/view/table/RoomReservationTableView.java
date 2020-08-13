@@ -20,6 +20,7 @@ import ru.protei.portal.ui.common.client.lang.En_RoomReservationReasonLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.roomreservation.client.activity.table.AbstractRoomReservationTableActivity;
 import ru.protei.portal.ui.roomreservation.client.activity.table.AbstractRoomReservationTableView;
+import ru.protei.portal.ui.roomreservation.client.widget.filter.RoomReservationFilterWidget;
 import ru.protei.portal.ui.roomreservation.client.widget.filter.RoomReservationParamWidget;
 
 import java.util.ArrayList;
@@ -28,7 +29,11 @@ import java.util.List;
 public class RoomReservationTableView extends Composite implements AbstractRoomReservationTableView {
 
     @Inject
-    public void onInit(EditClickColumn<RoomReservation> editClickColumn, RemoveClickColumn<RoomReservation> removeClickColumn) {
+    public void onInit(EditClickColumn<RoomReservation> editClickColumn,
+                       RemoveClickColumn<RoomReservation> removeClickColumn,
+                       RoomReservationFilterWidget filterWidget) {
+        this.filterWidget = filterWidget;
+        this.filterWidget.onInit();
         initWidget(ourUiBinder.createAndBindUi(this));
         this.editClickColumn = editClickColumn;
         this.removeClickColumn = removeClickColumn;
@@ -39,7 +44,7 @@ public class RoomReservationTableView extends Composite implements AbstractRoomR
     public void setActivity(AbstractRoomReservationTableActivity activity) {
         this.activity = activity;
 
-        filterParam.setOnFilterChangeCallback(activity::onFilterChange);
+        filterWidget.setOnFilterChangeCallback(activity::onFilterChange);
 
         editClickColumn.setHandler(activity);
         editClickColumn.setEditHandler(activity);
@@ -60,7 +65,7 @@ public class RoomReservationTableView extends Composite implements AbstractRoomR
 
     @Override
     public RoomReservationParamWidget getFilterParam() {
-        return filterParam;
+        return filterWidget.getFilterParamView();
     }
 
     @Override
@@ -166,9 +171,8 @@ public class RoomReservationTableView extends Composite implements AbstractRoomR
     @UiField
     HTMLPanel pagerContainer;
 
-    @Inject
     @UiField(provided = true)
-    RoomReservationParamWidget filterParam;
+    RoomReservationFilterWidget filterWidget;
 
     @Inject
     @UiField

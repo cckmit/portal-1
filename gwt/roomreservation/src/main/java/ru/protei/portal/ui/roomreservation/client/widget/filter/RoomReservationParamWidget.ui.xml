@@ -6,18 +6,16 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="card no-margin filter-content">
-        <g:HTMLPanel styleName="card-body filter-content-body">
-            <div class="row">
-                <room:RoomReservationMultiSelector ui:field="room" header="{lang.roomReservationRoom}"
-                                               hasNullValue="true" addStyleNames="form-group col-md-12"/>
+    <g:HTMLPanel styleName="card card-body no-margin filter-content">
+        <div class="row">
+            <room:RoomReservationMultiSelector ui:field="room" header="{lang.roomReservationRoom}"
+                                           addStyleNames="form-group col-md-12"/>
+        </div>
+        <div class="row">
+            <div class="form-group col-md-12">
+                <range:TypedSelectorRangePicker ui:field="dateRange" formatValue="dd.MM.yyyy HH:mm"
+                                                rangeMandatory="true" typeMandatory="true" header="{lang.roomReservationDates}"/>
             </div>
-            <div class="row">
-                <div class="form-group col-md-12">
-                    <range:TypedSelectorRangePicker ui:field="dateRange" formatValue="dd.MM.yyyy HH:mm"
-                                                    rangeMandatory="true" typeMandatory="true" header="{lang.roomReservationDates}"/>
-                </div>
-            </div>
-        </g:HTMLPanel>
+        </div>
     </g:HTMLPanel>
 </ui:UiBinder>

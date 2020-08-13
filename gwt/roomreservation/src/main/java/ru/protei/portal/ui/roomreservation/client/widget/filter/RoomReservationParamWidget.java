@@ -77,7 +77,7 @@ public class RoomReservationParamWidget extends Composite implements AbstractRoo
     public void fillFilterFields(RoomReservationQuery query, SelectorsParams selectorsParams) {
         dateRange.setValue(new DateIntervalWithType
                 (new DateInterval(query.getDateStart(), query.getDateEnd()), En_DateIntervalType.FIXED));
-//        room.setValue(query.getRoomIds());
+//        room.setValue(query.getRoomIds()); // пока не реализуем сохранение фильтров
         if (validate()) {
             onFilterChanged();
         }

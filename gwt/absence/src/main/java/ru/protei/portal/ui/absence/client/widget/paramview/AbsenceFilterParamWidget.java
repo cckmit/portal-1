@@ -111,6 +111,11 @@ public class AbsenceFilterParamWidget extends Composite implements AbstractAbsen
         validateCallback = callback;
     }
 
+    @Override
+    public void setOnFilterChangeCallback(Runnable callback) {
+        this.onFilterChangeCallback = callback;
+    }
+
     private Set<PersonShortView> applyPersons(SelectorsParams filter, Set<Long> personIds) {
         return emptyIfNull(filter.getPersonShortViews()).stream()
                 .filter(personShortView ->
@@ -187,6 +192,7 @@ public class AbsenceFilterParamWidget extends Composite implements AbstractAbsen
     Lang lang;
 
     private Consumer<Boolean> validateCallback;
+    private Runnable onFilterChangeCallback;
 
     private static AbsenceFilterParamViewUiBinder ourUiBinder = GWT.create(AbsenceFilterParamViewUiBinder.class);
     interface AbsenceFilterParamViewUiBinder extends UiBinder<HTMLPanel, AbsenceFilterParamWidget> {}
