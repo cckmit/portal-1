@@ -12,8 +12,7 @@
              xmlns:contract="urn:import:ru.protei.portal.ui.common.client.widget.selector.contract"
              xmlns:project="urn:import:ru.protei.portal.ui.common.client.widget.project"
              xmlns:tab="urn:import:ru.protei.portal.ui.common.client.widget.tab"
-             xmlns:contractor="urn:import:ru.protei.portal.ui.contract.client.widget.contractor"
-             xmlns:button="urn:import:ru.protei.portal.ui.contract.client.widget.selector.button">
+             xmlns:contractor="urn:import:ru.protei.portal.ui.contract.client.widget.contractor">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -87,11 +86,11 @@
                         <div class="row">
                             <div class="form-group col-md-3">
                                 <label ui:field="typeLabel"><ui:text from="{lang.contractType}"/></label>
-                                <button:ContractTypeSelector ui:field="type" searchEnabled="true" defaultValue="{lang.contractSelectType}" validation="true" hideNullValue="true"/>
+                                <selector:multi.ContractTypeMultiSelector ui:field="types" searchEnabled="true" validation="true"/>
                             </div>
                             <div class="form-group col-md-3">
                                 <label ui:field="stateLabel"><ui:text from="{lang.contractState}"/></label>
-                                <button:ContractStateSelector ui:field="state" validation="true" hasNullValue="false"/>
+                                <selector:button.ContractStateSelector ui:field="state" validation="true" hasNullValue="false"/>
                             </div>
                             <div class="form-group col-md-3">
                                 <label ui:field="contractParentLabel"><ui:text from="{lang.contractParent}"/></label>
@@ -115,7 +114,7 @@
                             </div>
                             <div class="form-group col-md-3">
                                 <label ui:field="costWithCurrencyLabel"><ui:text from="{lang.contractCost}"/></label>
-                                <money:CostCurrencyVatWidget ui:field="costWithCurrency" defaultCurrency="RUB" vatOptions="20,0,no"/>
+                                <money:CostCurrencyVatWidget ui:field="costWithCurrency" defaultCurrency="RUB"/>
                             </div>
                         </div>
                         <div class="row">

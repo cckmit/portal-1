@@ -15,7 +15,9 @@ import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
 
 public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements ContractDAO {
@@ -86,8 +88,12 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
             }
 
             if (CollectionUtils.isNotEmpty(query.getTypes())) {
-                String inArg = HelperFunc.makeInArg(query.getTypes(), type -> String.valueOf(type.ordinal()));
-                condition.append(" and contract.contract_type in ").append(inArg);
+                // Filter by comma-separated value
+                condition.append(" and (");
+                condition.append(stream(query.getTypes())
+                        .map(type -> "contract.contract_types REGEXP '(^|,)" + type.getId() + "(,|$)'")
+                        .collect(Collectors.joining(" or ")));
+                condition.append(")");
             }
 
             if (query.getDirectionId() != null) {

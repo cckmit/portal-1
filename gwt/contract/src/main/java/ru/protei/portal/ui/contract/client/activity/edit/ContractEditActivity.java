@@ -24,11 +24,14 @@ import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
+import java.util.List;
 import java.util.function.Consumer;
 
-import static ru.protei.portal.core.model.util.ContractSupportService.getContractKind;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.DateUtils.addDays;
 import static ru.protei.portal.core.model.helper.DateUtils.getDaysBetween;
+import static ru.protei.portal.core.model.struct.Vat.NoVat;
+import static ru.protei.portal.core.model.util.ContractSupportService.getContractKind;
 
 public abstract class ContractEditActivity implements Activity, AbstractContractEditActivity {
 
@@ -78,15 +81,16 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
     @Override
     public void onTypeChanged() {
-        En_ContractType type = view.type().getValue();
+        List<En_ContractType> types = listOf(view.types().getValue());
 
-        boolean isFrameworkContract = En_ContractType.SUPPLY_AND_WORK_FRAMEWORK_CONTRACT.equals(type)
-                || En_ContractType.LICENSE_FRAMEWORK_CONTRACT.equals(type)
-                || En_ContractType.SUPPLY_FRAMEWORK_CONTRACT.equals(type);
+        boolean isFrameworkContract =
+                types.contains(En_ContractType.SUPPLY_AND_WORK_FRAMEWORK_CONTRACT) ||
+                types.contains(En_ContractType.LICENSE_FRAMEWORK_CONTRACT) ||
+                types.contains(En_ContractType.SUPPLY_FRAMEWORK_CONTRACT);
 
         view.costEnabled().setEnabled(!isFrameworkContract);
         if ( isFrameworkContract ) {
-            view.cost().setValue(new CostWithCurrencyWithVat(0L, En_Currency.RUB, null));
+            view.cost().setValue(new CostWithCurrencyWithVat(0L, En_Currency.RUB, NoVat));
         }
     }
 
@@ -168,7 +172,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         this.contract = value;
         boolean isNew = isNew(contract);
 
-        view.type().setValue(contract.getContractType());
+        view.types().setValue(setOf(contract.getContractTypes()));
         if ( contract.getState() == null ) {
             contract.setState(En_ContractState.AGREEMENT);
         }
@@ -207,7 +211,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     }
 
     private void fillDto() {
-        contract.setContractType(view.type().getValue());
+        contract.setContractTypes(listOf(view.types().getValue()));
         contract.setState(view.state().getValue());
         contract.setNumber(view.number().getValue());
         contract.setCost(view.cost().getValue().getCost());
@@ -254,7 +258,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         if (StringUtils.isBlank(contract.getDescription()))
             return lang.contractValidationEmptyDescription();
 
-        if (contract.getContractType() == null)
+        if (isEmpty(contract.getContractTypes()))
             return lang.contractValidationEmptyType();
 
         if (contract.getStateId() == null)

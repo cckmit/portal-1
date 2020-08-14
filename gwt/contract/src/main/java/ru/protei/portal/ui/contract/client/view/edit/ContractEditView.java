@@ -42,12 +42,12 @@ import ru.protei.portal.ui.contract.client.widget.contractdates.list.ContractDat
 import ru.protei.portal.ui.contract.client.widget.contractor.ContractorWidget;
 import ru.protei.portal.ui.contract.client.widget.contractspecification.list.ContractSpecificationList;
 import ru.protei.portal.ui.contract.client.widget.selector.button.ContractStateSelector;
-import ru.protei.portal.ui.contract.client.widget.selector.button.ContractTypeSelector;
+import ru.protei.portal.ui.contract.client.widget.selector.multi.ContractTypeMultiSelector;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
+import static ru.protei.portal.core.model.struct.Vat.*;
 
 public class ContractEditView extends Composite implements AbstractContractEditView {
 
@@ -55,6 +55,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         dateValid.getElement().setAttribute("placeholder", lang.days());
+        costWithCurrency.setVatOptions(listOf(Vat20, Vat0, NoVat));
         initCuratorSelector();
         ensureDebugIds();
     }
@@ -80,8 +81,8 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
-    public HasValue<En_ContractType> type() {
-        return type;
+    public HasValue<Set<En_ContractType>> types() {
+        return types;
     }
 
     @Override
@@ -231,8 +232,8 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         }
     }
 
-    @UiHandler("type")
-    public void onTypeChanged(ValueChangeEvent<En_ContractType> event) {
+    @UiHandler("types")
+    public void onTypeChanged(ValueChangeEvent<Set<En_ContractType>> event) {
         if ( activity != null ) {
             activity.onTypeChanged();
         }
@@ -290,7 +291,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         number.ensureDebugId(DebugIds.CONTRACT.NUMBER_INPUT);
 
         typeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.TYPE);
-        type.setEnsureDebugId(DebugIds.CONTRACT.TYPE_SELECTOR);
+        types.ensureDebugId(DebugIds.CONTRACT.TYPE_SELECTOR);
 
         stateLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.STATE);
         state.setEnsureDebugId(DebugIds.CONTRACT.STATE_SELECTOR);
@@ -354,7 +355,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     ContractStateSelector state;
     @Inject
     @UiField(provided = true)
-    ContractTypeSelector type;
+    ContractTypeMultiSelector types;
     @UiField
     TextBox kind;
     @Inject

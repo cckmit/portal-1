@@ -19,6 +19,7 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 public interface AbstractContractEditView extends IsWidget {
 
@@ -30,7 +31,7 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasValue<String> number();
 
-    HasValue<En_ContractType> type();
+    HasValue<Set<En_ContractType>> types();
 
     void setKind(En_ContractKind kind);
 

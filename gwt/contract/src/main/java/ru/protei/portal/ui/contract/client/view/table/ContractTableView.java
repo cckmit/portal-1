@@ -30,7 +30,9 @@ import ru.protei.portal.ui.contract.client.activity.table.AbstractContractTableV
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.StringUtils.trim;
 
 public class ContractTableView extends Composite implements AbstractContractTableView {
@@ -130,7 +132,9 @@ public class ContractTableView extends Composite implements AbstractContractTabl
 
         DynamicColumn<Contract> numTypeColumn = new DynamicColumn<>(lang.contractNumber(), "num-column",
                 contract -> "<b>" + SimpleHtmlSanitizer.sanitizeHtml(lang.contractNum(contract.getNumber())).asString() + "</b><br/>"
-                        + "<small>" + contractTypeLang.getName(contract.getContractType()) + "<br/>"
+                        + "<small>" + stream(contract.getContractTypes())
+                                            .map(contractTypeLang::getName)
+                                            .collect(Collectors.joining(", ")) + "<br/>"
                         + "<b>" + lang.contractDateSigning() + ":</b> " + (contract.getDateSigning() == null ? lang.contractDateNotDefined() : dateFormat.format(contract.getDateSigning())) + "<br/>"
                         + "<b>" + lang.contractDateValid() + ":</b> " + (contract.getDateValid() == null ? lang.contractDateNotDefined() : dateFormat.format(contract.getDateValid()))  + "</small>");
         clickColumns.add(numTypeColumn);
