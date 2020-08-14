@@ -6,7 +6,7 @@ import ru.brainworm.factory.context.client.annotation.Url;
 
 public class AbsenceEvents {
 
-    @Url(value = "summarytable")
+    @Url(value = "absences", primary = true)
     public static class ShowSummaryTable {
         public ShowSummaryTable() {
         }

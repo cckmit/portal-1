@@ -182,6 +182,29 @@ body.sidebar-visible .page-sidebar .menu-items .icon-thumbnail {
   padding-right: 0;
 }
 
+.page-sidebar .sidebar-menu .menu-items > li ul.sub-menu {
+  display: block;
+  webkit-transition: all 0.5s ease 0s;
+  -moz-transition: all 0.5s ease 0s;
+  -o-transition: all 0.5s ease 0s;
+  transition: all 0.5s ease 0s;
+  overflow: hidden;
+}
+
 .page-sidebar .sidebar-menu .menu-items > li ul.sub-menu > li {
   padding: 0 20px 0 10px;
+}
+
+.page-sidebar .sidebar-menu .menu-items > li > a > .title,
+.page-sidebar .sidebar-menu .menu-items > li ul.sub-menu > li > a > .title {
+  vertical-align: middle;
+}
+
+.page-sidebar .sidebar-menu .menu-items > li ul.sub-menu > li > a {
+  padding: 0;
+}
+
+.page-sidebar .sidebar-menu .menu-items li:hover > a > .icon-thumbnail,
+.page-sidebar .sidebar-menu .menu-items > li ul.sub-menu > li:hover > a > .icon-thumbnail {
+  color: #fff;
 }

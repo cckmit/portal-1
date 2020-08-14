@@ -13,25 +13,51 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 import ru.protei.winter.web.common.client.events.SectionEvents;
 
-/**
- * Активность по работе с вкладкой "Сотрудники"
- */
-public abstract class EmployeePage implements Activity {
+public abstract class BirthdayPage implements Activity {
 
     @PostConstruct
     public void onInit() {
         CATEGORY = lang.employees();
+        TAB = lang.employeeBirthdays();
     }
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.EMPLOYEE_VIEW ) ) {
-            fireEvent( new MenuEvents.Add( CATEGORY, UiConstants.TabIcons.EMPLOYEE, CATEGORY, DebugIds.SIDEBAR_MENU.EMPLOYEE ) );
+            fireEvent( new MenuEvents.Add(TAB, UiConstants.TabIcons.EMPLOYEE_BIRTHDAY, TAB, DebugIds.SIDEBAR_MENU.EMPLOYEE_BIRTHDAY ).withParent( CATEGORY ) );
+        }
+    }
+
+    @Event
+    public void onShowBirthdays( EmployeeEvents.ShowBirthdays event ) {
+        fireSelectTab();
+    }
+
+    @Event
+    public void onClickSection( SectionEvents.Clicked event ) {
+        if ( !TAB.equals( event.identity ) ) {
+            return;
+        }
+
+        fireSelectTab();
+        fireEvent( show );
+    }
+
+    private void fireSelectTab() {
+        fireEvent( new ActionBarEvents.Clear() );
+        if ( policyService.hasPrivilegeFor( En_Privilege.EMPLOYEE_VIEW ) ) {
+            fireEvent( new MenuEvents.Select( TAB, CATEGORY ) );
         }
     }
 
     @Inject
     Lang lang;
 
+    @Inject
+    PolicyService policyService;
+
     private String CATEGORY;
+    private String TAB;
+
+    private EmployeeEvents.ShowBirthdays show = new EmployeeEvents.ShowBirthdays();
 }

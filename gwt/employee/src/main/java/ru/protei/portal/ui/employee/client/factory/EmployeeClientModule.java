@@ -12,7 +12,7 @@ import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionEditIte
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemView;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractTopBrassItemView;
 import ru.protei.portal.ui.employee.client.activity.list.*;
-import ru.protei.portal.ui.employee.client.activity.page.EmployeePage;
+import ru.protei.portal.ui.employee.client.activity.page.*;
 import ru.protei.portal.ui.employee.client.activity.preview.AbstractEmployeePreviewView;
 import ru.protei.portal.ui.employee.client.activity.preview.EmployeePreviewActivity;
 import ru.protei.portal.ui.employee.client.activity.topbrass.AbstractTopBrassActivity;
@@ -38,6 +38,10 @@ public class EmployeeClientModule extends AbstractGinModule {
     @Override
     protected void configure() {
         bind( EmployeePage.class ).asEagerSingleton();
+        bind( ListPage.class ).asEagerSingleton();
+        bind( TopBrassPage.class ).asEagerSingleton();
+        bind( AbsencePage.class ).asEagerSingleton();
+        bind( BirthdayPage.class ).asEagerSingleton();
 
         bind( EmployeeGridActivity.class ).asEagerSingleton();
         bind( EmployeeTableActivity.class ).asEagerSingleton();

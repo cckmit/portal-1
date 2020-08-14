@@ -69,7 +69,7 @@ public class EmployeeEvents {
     /**
      * Показать руководство
      */
-    @Url(value = "topbrass")
+    @Url(value = "topbrass", primary = true)
     public static class ShowTopBrass {}
 
     public static class UpdateData {
@@ -109,7 +109,7 @@ public class EmployeeEvents {
         }
     }
 
-    @Url(value = "birthdays")
+    @Url(value = "birthdays", primary = true)
     public static class ShowBirthdays {
         public ShowBirthdays() {}
     }

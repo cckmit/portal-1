@@ -2900,8 +2900,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String absenceReportTitle();
 
-    String absenceButtonReport();
-
     String absenceReportHint();
 
     String absenceButtonSummaryTable();
@@ -2965,4 +2963,6 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeBirthdayResetMonth();
 
     String employeeBirthdayNextMonth();
+
+    String topBrass();
 }

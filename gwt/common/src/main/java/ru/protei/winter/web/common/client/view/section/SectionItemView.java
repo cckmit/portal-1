@@ -75,6 +75,7 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
             subSection.setVisible(isVisible);
             subSectionIcon.setVisible(isVisible);
             arrow.removeClassName("hide");
+            hideSubSection();
         }
     }
 
@@ -87,11 +88,11 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
     public void toggleSubSections(boolean forceVisible) {
         isSubSectionVisible = forceVisible || !isSubSectionVisible;
         if (isSubSectionVisible) {
-            subSection.getElement().getStyle().setDisplay(Style.Display.BLOCK);
             arrow.addClassName("open active");
+            showSubSection();
         } else {
-            subSection.getElement().getStyle().setDisplay(Style.Display.NONE);
             arrow.removeClassName("open active");
+            hideSubSection();
         }
     }
 
@@ -118,6 +119,20 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
         if ( activity != null ) {
             activity.onSectionClicked( this );
         }
+    }
+
+    private void hideSubSection() {
+        subSection.getElement().getStyle().setHeight(0, Style.Unit.PX);
+        subSection.getElement().getStyle().setPadding(0, Style.Unit.PX);
+        subSection.getElement().getStyle().setMargin(0, Style.Unit.PX);
+    }
+
+    private void showSubSection() {
+        int height = subSection.getElement().getChildCount() * 38 + 28;
+        subSection.getElement().getStyle().setHeight(height, Style.Unit.PX);
+        subSection.getElement().getStyle().setPaddingTop(18, Style.Unit.PX);
+        subSection.getElement().getStyle().setPaddingBottom(10, Style.Unit.PX);
+        subSection.getElement().getStyle().setMarginBottom(10, Style.Unit.PX);
     }
 
     AbstractSectionItemActivity activity;
