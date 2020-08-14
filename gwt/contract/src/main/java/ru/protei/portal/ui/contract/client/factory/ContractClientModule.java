@@ -10,10 +10,13 @@ import ru.protei.portal.ui.contract.client.activity.preview.AbstractContractPrev
 import ru.protei.portal.ui.contract.client.activity.preview.ContractPreviewActivity;
 import ru.protei.portal.ui.contract.client.activity.table.AbstractContractTableView;
 import ru.protei.portal.ui.contract.client.activity.table.ContractTableActivity;
+import ru.protei.portal.ui.contract.client.activity.table.concise.AbstractContractConciseTableView;
+import ru.protei.portal.ui.contract.client.activity.table.concise.ContractConciseTableActivity;
 import ru.protei.portal.ui.contract.client.view.edit.ContractEditView;
 import ru.protei.portal.ui.contract.client.view.filter.ContractFilterView;
 import ru.protei.portal.ui.contract.client.view.preview.ContractPreviewView;
 import ru.protei.portal.ui.contract.client.view.table.ContractTableView;
+import ru.protei.portal.ui.contract.client.view.table.concise.ContractConciseTableView;
 import ru.protei.portal.ui.contract.client.widget.contractor.create.AbstractContractorCreateView;
 import ru.protei.portal.ui.contract.client.widget.contractor.create.ContractorCreateView;
 import ru.protei.portal.ui.contract.client.widget.contractor.search.AbstractContractorSearchView;
@@ -28,6 +31,9 @@ public class ContractClientModule extends AbstractGinModule {
 
         bind(ContractTableActivity.class).asEagerSingleton();
         bind(AbstractContractTableView.class).to(ContractTableView.class).in(Singleton.class);
+
+        bind(ContractConciseTableActivity.class).asEagerSingleton();
+        bind(AbstractContractConciseTableView.class).to(ContractConciseTableView.class).in(Singleton.class);
 
         bind(ContractEditActivity.class).asEagerSingleton();
         bind(AbstractContractEditView.class).to(ContractEditView.class).in(Singleton.class);

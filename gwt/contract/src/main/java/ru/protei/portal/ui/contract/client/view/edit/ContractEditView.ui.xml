@@ -154,7 +154,7 @@
             </div>
 
             <g:HTMLPanel  styleName="container-fluid padding-15">
-                <tab:TabWidget styleName="">
+                <tab:TabWidget styleName="" ui:field="tabs">
                     <tab:pane.TabWidgetPane tabName="{lang.contractDeliveryAndPaymentsPeriodHeader}">
                         <g:HTMLPanel>
                             <div class="card-body">
@@ -171,6 +171,10 @@
                                         ui:field="specificationList" addStyleNames="row"/>
                             </div>
                         </g:HTMLPanel>
+                    </tab:pane.TabWidgetPane>
+
+                    <tab:pane.TabWidgetPane tabName="{lang.contractListOfExpenditureHeader}">
+                        <g:HTMLPanel ui:field="expenditureContractsContainer"/>
                     </tab:pane.TabWidgetPane>
                 </tab:TabWidget>
             </g:HTMLPanel>

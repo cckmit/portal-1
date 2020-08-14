@@ -4,16 +4,15 @@ import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_ContractState;
-import ru.protei.portal.core.model.dict.En_ContractType;
-import ru.protei.portal.core.model.dict.En_Currency;
-import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.CostWithCurrencyWithVat;
+import ru.protei.portal.core.model.util.ContractSupportService;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -31,7 +30,6 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.DateUtils.addDays;
 import static ru.protei.portal.core.model.helper.DateUtils.getDaysBetween;
 import static ru.protei.portal.core.model.struct.Vat.NoVat;
-import static ru.protei.portal.core.model.util.ContractSupportService.getContractKind;
 
 public abstract class ContractEditActivity implements Activity, AbstractContractEditActivity {
 
@@ -45,10 +43,10 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         this.initDetails = initDetails;
     }
 
-    @Event
+    @Event(Type.FILL_CONTENT)
     public void onShow(ContractEvents.Edit event) {
         if (!hasPrivileges(event.id)) {
-            fireEvent(new ErrorPageEvents.ShowForbidden());
+            fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
 
@@ -111,8 +109,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
     @Override
     public void onContractParentChanged() {
-        boolean contractParentExists = view.contractParent().getValue() != null;
-        view.setKind(getContractKind(contractParentExists));
+        En_ContractKind kind = getContractKind(view);
+        view.setKind(kind);
     }
 
     @Override
@@ -192,8 +190,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.organization().setValue(createOptionOrNull(contract.getOrganizationId(), contract.getOrganizationName()));
         view.contractParent().setValue(createOptionOrNull(contract.getParentContractId(), contract.getParentContractNumber()));
 
-        boolean contractParentExists = contract.getParentContractId() != null;
-        view.setKind(getContractKind(contractParentExists));
+        En_ContractKind kind = getContractKind(view);
+        view.setKind(kind);
 
         if (contract.getProjectId() == null) {
             view.project().setValue(null);
@@ -206,6 +204,13 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.setOrganization(contract.getOrganizationName());
         view.contractor().setValue(contract.getContractor());
         view.organizationEnabled().setEnabled(StringUtils.isBlank(contract.getRefKey()));
+
+        if (!isNew) {
+            fireEvent(new ContractEvents.ShowConciseTable(view.expenditureContractsContainer(), contract.getId()));
+            view.expenditureContractsVisibility().setVisible(true);
+        } else {
+            view.expenditureContractsVisibility().setVisible(false);
+        }
 
         syncSecondContractView(isNew, false);
     }
@@ -323,6 +328,11 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
                 view.saveEnabled().setEnabled(true);
                 onSuccess.accept(id);
             }));
+    }
+
+    private En_ContractKind getContractKind(AbstractContractEditView view) {
+        boolean contractParentExists = view.contractParent().getValue() != null;
+        return ContractSupportService.getContractKind(contractParentExists);
     }
 
     private boolean isNew(Contract contract) {

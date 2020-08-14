@@ -112,6 +112,11 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
                         .append(HelperFunc.makeInArg(query.getOrganizationIds(), false));
             }
 
+            if (CollectionUtils.isNotEmpty(query.getParentContractIds())) {
+                String inArg = HelperFunc.makeInArg(query.getParentContractIds(), false);
+                condition.append(" and contract.parent_contract_id in ").append(inArg);
+            }
+
             if (CollectionUtils.isNotEmpty(query.getManagerIds())) {
                 String inArg = HelperFunc.makeInArg(query.getManagerIds(), false);
                 condition.append(" and (CO.MANAGER in ").append(inArg)

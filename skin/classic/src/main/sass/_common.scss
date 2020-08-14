@@ -3388,6 +3388,11 @@ label {
   max-height: 40px;
 }
 
+.height-30 {
+  height: 30px;
+  max-height: 30px;
+}
+
 .contracts {
   .contract-type-column {
     width: 45px;
@@ -3410,6 +3415,18 @@ label {
     .cost-column {
       display: none;
     }
+  }
+}
+
+.table.contracts-concise {
+  .column-state {
+    width: 5%;
+  }
+  .column-info {
+    width: 40%;
+  }
+  .column-work-group {
+    width: 55%;
   }
 }
 

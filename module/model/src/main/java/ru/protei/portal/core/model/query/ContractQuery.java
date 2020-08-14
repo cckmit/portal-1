@@ -19,6 +19,8 @@ public class ContractQuery extends BaseQuery {
 
     private List<Long> organizationIds;
 
+    private List<Long> parentContractIds;
+
     public Long getDirectionId() {
         return directionId;
     }
@@ -67,6 +69,14 @@ public class ContractQuery extends BaseQuery {
         this.organizationIds = organizationIds;
     }
 
+    public List<Long> getParentContractIds() {
+        return parentContractIds;
+    }
+
+    public void setParentContractIds(List<Long> parentContractIds) {
+        this.parentContractIds = parentContractIds;
+    }
+
     @Override
     public String toString() {
         return "ContractQuery{" +
@@ -76,6 +86,7 @@ public class ContractQuery extends BaseQuery {
                 ", managerIds=" + managerIds +
                 ", contractorIds=" + contractorIds +
                 ", organizationIds=" + organizationIds +
+                ", parentContractIds=" + parentContractIds +
                 '}';
     }
 }

@@ -34,6 +34,7 @@ import ru.protei.portal.ui.common.client.widget.selector.contract.ContractButton
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeCustomButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
+import ru.protei.portal.ui.common.client.widget.tab.TabWidget;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.contract.client.activity.edit.AbstractContractEditActivity;
@@ -218,6 +219,16 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         secondContractContractor.setOrganization(organization);
     }
 
+    @Override
+    public HasWidgets expenditureContractsContainer() {
+        return expenditureContractsContainer;
+    }
+
+    @Override
+    public HasVisibility expenditureContractsVisibility() {
+        return tabs.tabVisibility(lang.contractListOfExpenditureHeader());
+    }
+
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {
@@ -370,12 +381,18 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Inject
     @UiField(provided = true)
     SinglePicker dateSigning;
+
+    @UiField
+    TabWidget tabs;
     @Inject
     @UiField(provided = true)
     ContractDatesList dateList;
     @Inject
     @UiField(provided = true)
     ContractSpecificationList specificationList;
+    @UiField
+    HTMLPanel expenditureContractsContainer;
+
     @Inject
     @UiField(provided = true)
     ContractButtonSelector contractParent;

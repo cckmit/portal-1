@@ -2112,6 +2112,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractSpecificationHeader();
 
+    String contractListOfExpenditureHeader();
+
     String contractSpecificationClausePlaceholder();
 
     String contractSpecificationTextPlaceholder();

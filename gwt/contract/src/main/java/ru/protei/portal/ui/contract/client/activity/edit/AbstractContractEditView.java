@@ -1,9 +1,6 @@
 package ru.protei.portal.ui.contract.client.activity.edit;
 
-import com.google.gwt.user.client.ui.HasEnabled;
-import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.HasVisibility;
-import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_ContractKind;
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
@@ -86,4 +83,8 @@ public interface AbstractContractEditView extends IsWidget {
     HasEnabled secondContractContractorEnabled();
 
     void setSecondContractOrganization(String organization);
+
+    HasWidgets expenditureContractsContainer();
+
+    HasVisibility expenditureContractsVisibility();
 }
