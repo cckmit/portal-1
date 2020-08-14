@@ -31,6 +31,12 @@
                     </label>
                     <validablefield:ValidableTextBox ui:field="contractorKPP" styleName="form-control"/>
                 </div>
+                <div class="form-group col-md-12">
+                    <label>
+                        <ui:text from="{lang.contractContractorFullName}"/>
+                    </label>
+                    <validablefield:ValidableTextBox ui:field="contractorFullName" styleName="form-control"/>
+                </div>
             </div>
             <div class="row">
                 <div class="form-group col-md-12">

@@ -16,6 +16,8 @@ public interface AbstractContractorSearchView extends IsWidget, HasValidable {
 
     HasValue<String> contractorKpp();
 
+    HasValue<String> contractorFullName();
+
     HasValue<Contractor> contractor();
 
     void setSearchResult(List<Contractor> result);
