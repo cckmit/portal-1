@@ -3959,65 +3959,9 @@ table {
   text-decoration: line-through;
 }
 
-/**** card links panel ****/
-.card-links {
-  .collapse-btn {
-    font-family: "Font Awesome 5 Free";
-    font-weight: 900;
-  }
-  .card-header {
-    padding-top: 10px !important;
-    padding-bottom: 0px !important;
-    min-height: unset;
-
-    label {
-      margin-bottom: 0px !important;
-    }
-  }
-
-  &.collapsed {
-    .card-header {
-      padding-bottom: 10px !important;
-    }
-    .card-body {
-      display: none;
-    }
-    .collapse-btn {
-      &:after {
-        content: "\f078";
-      }
-    }
-  }
-
-  &.expanded {
-    .collapse-btn {
-      &:after {
-        content: "\f077";
-      }
-    }
-    .card-header {
-      &:after {
-        content: "";
-        height: 1px;
-        background: rgba(0, 0, 0, .08);
-        left: 16px;
-        right: 16px;
-        position: absolute;
-        bottom: 0;
-      }
-
-      label {
-        border-bottom: 2px solid;
-      }
-    }
-  }
-}
-
-
 /**** case links ****/
 .case-links {
   padding: 5px 10px !important;
-  max-height: 120px;
   overflow: auto;
 
   .case-link {
@@ -4919,6 +4863,22 @@ table {
       }
 
       padding-bottom: 0;
+
+      &:after {
+        content: "";
+        height: 1px;
+        background: rgba(0, 0, 0, .08);
+        left: 20px;
+        right: 16px;
+        position: absolute;
+        bottom: 2px;
+      }
     }
+  }
+}
+
+.card-links {
+  .card-body {
+    padding: 0;
   }
 }

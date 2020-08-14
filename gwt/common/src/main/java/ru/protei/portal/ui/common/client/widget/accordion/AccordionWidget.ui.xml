@@ -7,7 +7,7 @@
                 <div ui:field="accordionContainer" class="card card-default accordion">
                     <customHtmlPanel:CustomHTMLPanel ui:field="headerContainer" styleName="card-header">
                         <label ui:field="headerLabel"/>
-                        <a class="pull-right collapse-btn p-b-0 p-t-0" href="#"/>
+                        <a ui:field="collapseButton" class="pull-right collapse-btn p-b-0 p-t-0" href="javascript:void(0)"/>
                     </customHtmlPanel:CustomHTMLPanel>
                     <div ui:field="accordionBody" class="accordion-body">
                         <div ui:field="accordionCardBody" class="card-body">

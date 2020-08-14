@@ -90,6 +90,9 @@ public class UiConstants {
     }
 
     public interface Styles {
+        String STYLE_ATTRIBUTE = "style";
+
+        String SHOW = "show";
         String HIDE = "hide";
         String HAS_ERROR = "has-error";
         String INACTIVE = "inactive";
@@ -115,6 +118,7 @@ public class UiConstants {
 
     public interface Accordion {
         int ATTACHMENTS_MAX_HEIGHT = 300;
+        int LINKS_MAX_HEIGHT = 120;
     }
 
     /**
