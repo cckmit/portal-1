@@ -110,7 +110,12 @@
                             </div>
                             <div class="form-group col-md-3">
                                 <label ui:field="dateValidLabel"><ui:text from="{lang.contractDateValid}"/></label>
-                                <g:LongBox ui:field="dateValid" styleName="form-control"/>
+                                <g:HTMLPanel styleName="input-group input-group-day-date" ui:field="dateValid">
+                                    <g:LongBox ui:field="dateValidDays" styleName="form-control input-group-element-day"/>
+                                    <div class="input-group-prepend input-group-append"><span class="input-group-text">–</span></div>
+                                    <single:SinglePicker ui:field="dateValidDate" type="DATE" formatValue="dd.MM.yyyy" mandatory="false"
+                                                         styleName="form-control p-0 no-border input-group-element-date"/>
+                                </g:HTMLPanel>
                             </div>
                             <div class="form-group col-md-3">
                                 <label ui:field="costWithCurrencyLabel"><ui:text from="{lang.contractCost}"/></label>

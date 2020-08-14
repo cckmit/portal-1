@@ -256,3 +256,18 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
     font-weight: bold;
   }
 }
+
+.input-group-day-date {
+  .input-group-element-day {
+    flex-grow: initial;
+    min-width: 30%;
+  }
+}
+
+.input-group-money {
+  .input-group-element-decimal {
+    flex-grow: initial;
+    width: calc(30px + 3ch);
+  }
+}
+

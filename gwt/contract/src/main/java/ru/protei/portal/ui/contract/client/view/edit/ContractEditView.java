@@ -5,6 +5,7 @@ import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -55,7 +56,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        dateValid.getElement().setAttribute("placeholder", lang.days());
+        dateValidDays.getElement().setAttribute("placeholder", lang.days());
         costWithCurrency.setVatOptions(listOf(Vat20, Vat0, NoVat));
         initCuratorSelector();
         ensureDebugIds();
@@ -112,8 +113,13 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
+    public HasValue<Date> dateValidDate() {
+        return dateValidDate;
+    }
+
+    @Override
     public HasValue<Long> dateValidDays() {
-        return dateValid;
+        return dateValidDays;
     }
 
     @Override
@@ -285,6 +291,27 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         }
     }
 
+    @UiHandler("dateSigning")
+    public void onDateSigningChanged(ValueChangeEvent<Date> event) {
+        if (activity != null) {
+            activity.onDateSigningChanged(dateSigning.getValue());
+        }
+    }
+
+    @UiHandler("dateValidDate")
+    public void onDateValidDateChanged(ValueChangeEvent<Date> event) {
+        if (activity != null) {
+            activity.onDateValidChanged(dateValidDate.getValue());
+        }
+    }
+
+    @UiHandler("dateValidDays")
+    public void onDateValidDaysChanged(KeyUpEvent event) {
+        if (activity != null) {
+            activity.onDateValidChanged(dateValidDays.getValue());
+        }
+    }
+
     private void initCuratorSelector() {
         EmployeeQuery query = new EmployeeQuery(null, false, true, En_SortField.person_full_name, En_SortDir.ASC);
         query.setDepartmentIds(new HashSet<>(Collections.singletonList(CrmConstants.Department.CONTRACT)));
@@ -376,11 +403,16 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     ValidableTextBox number;
     @UiField
     ValiableAutoResizeTextArea description;
-    @UiField
-    LongBox dateValid;
     @Inject
     @UiField(provided = true)
     SinglePicker dateSigning;
+    @UiField
+    HTMLPanel dateValid;
+    @UiField
+    LongBox dateValidDays;
+    @Inject
+    @UiField(provided = true)
+    SinglePicker dateValidDate;
 
     @UiField
     TabWidget tabs;

@@ -24,6 +24,7 @@ import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
+import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -140,6 +141,32 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         refreshProjectSpecificFields(view.project().getValue());
     }
 
+    @Override
+    public void onDateSigningChanged(Date date) {
+        Date validDate = view.dateValidDate().getValue();
+        if (validDate != null) {
+            Long validDays = getDaysBetween(date, validDate);
+            view.dateValidDays().setValue(validDays);
+        } else {
+            Long validDays = view.dateValidDays().getValue();
+            view.dateValidDate().setValue(addDays(date, validDays));
+        }
+    }
+
+    @Override
+    public void onDateValidChanged(Date date) {
+        Date relative = view.dateSigning().getValue();
+        Long days = getDaysBetween(relative, date);
+        view.dateValidDays().setValue(days);
+    }
+
+    @Override
+    public void onDateValidChanged(Long days) {
+        Date relative = view.dateSigning().getValue();
+        Date date = addDays(relative, days);
+        view.dateValidDate().setValue(date);
+    }
+
     private void projectRequest(Long projectId, Consumer<ProjectInfo> consumer) {
         regionService.getProjectInfo(projectId, new FluentCallback<ProjectInfo>().withSuccess(consumer));
     }
@@ -184,6 +211,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.description().setValue(contract.getDescription());
         view.curator().setValue(createPersonOrNull(contract.getCuratorId(), contract.getCuratorShortName()));
         view.dateSigning().setValue(contract.getDateSigning());
+        view.dateValidDate().setValue(contract.getDateValid());
         view.dateValidDays().setValue(getDaysBetween(contract.getDateSigning(), contract.getDateValid()));
         view.contractDates().setValue(contract.getContractDates());
         view.contractSpecifications().setValue(contract.getContractSpecifications());
@@ -226,7 +254,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         contract.setDescription(view.description().getValue());
         contract.setCuratorId(getPersonIdOrNull(view.curator().getValue()));
         contract.setDateSigning(view.dateSigning().getValue());
-        contract.setDateValid(addDays(contract.getDateSigning(), view.dateValidDays().getValue()));
+        contract.setDateValid(view.dateValidDate().getValue());
         contract.setContractDates(view.contractDates().getValue());
         contract.setContractSpecifications(view.contractSpecifications().getValue());
 

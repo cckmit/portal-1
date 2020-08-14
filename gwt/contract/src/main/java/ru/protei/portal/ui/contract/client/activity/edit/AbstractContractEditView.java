@@ -40,6 +40,8 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasValue<Date> dateSigning();
 
+    HasValue<Date> dateValidDate();
+
     HasValue<Long> dateValidDays();
 
     HasValue<List<ContractDate>> contractDates();
