@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.api;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.protei.portal.core.model.dict.En_Currency;
 
@@ -7,6 +8,11 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+@JsonAutoDetect(
+        getterVisibility = JsonAutoDetect.Visibility.NONE,
+        setterVisibility = JsonAutoDetect.Visibility.NONE,
+        fieldVisibility = JsonAutoDetect.Visibility.ANY
+)
 public class ApiContract implements Serializable {
 
     @JsonProperty("ref_key")

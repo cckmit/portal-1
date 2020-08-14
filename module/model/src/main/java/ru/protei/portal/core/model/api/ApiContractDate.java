@@ -1,11 +1,17 @@
 package ru.protei.portal.core.model.api;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.protei.portal.core.model.dict.En_ContractDatesType;
 
 import java.io.Serializable;
 import java.util.Date;
 
+@JsonAutoDetect(
+        getterVisibility = JsonAutoDetect.Visibility.NONE,
+        setterVisibility = JsonAutoDetect.Visibility.NONE,
+        fieldVisibility = JsonAutoDetect.Visibility.ANY
+)
 public class ApiContractDate implements Serializable {
 
     @JsonProperty("date")
