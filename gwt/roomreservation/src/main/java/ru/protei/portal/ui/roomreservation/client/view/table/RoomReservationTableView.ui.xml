@@ -11,7 +11,7 @@
             <g:HTMLPanel styleName="global-table-container col-md-9">
                 <div class="card card-default no-border">
                     <div class="card-body no-padding">
-                        <table:InfiniteTableWidget ui:field="table" styleName="table table-hover room-reservations"/>
+                        <table:TableWidget ui:field="table" styleName="table table-hover room-reservations"/>
                         <g:HTMLPanel ui:field="pagerContainer" styleName="pager-container"/>
                     </div>
                 </div>

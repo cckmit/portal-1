@@ -4863,28 +4863,35 @@ table {
       }
     }
 
-    .person {
-      width: 17%;
+    .separator-cell {
+      background-color: $bg_light_gray;
+      font-weight: bold;
     }
-    .from-time, .till-time {
-      width: 12%;
+
+    .time {
+      width: 10%;
       > div {
         white-space: nowrap;
       }
     }
+
+    .person {
+      width: 20%;
+    }
+
     .room {
-      width: 16%;
+      width: 20%;
     }
     .reason {
-      width: 8%;
+      width: 10%;
     }
 
     .coffee {
-      width: 9%;
+      width: 10%;
     }
 
     .comment {
-      width: 25%;
+      width: 30%;
     }
   }
 }

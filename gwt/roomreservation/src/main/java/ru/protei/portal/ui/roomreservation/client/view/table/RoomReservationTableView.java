@@ -6,8 +6,9 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.inject.Inject;
-import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
+import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.ent.RoomReservation;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.columns.*;
@@ -55,9 +56,6 @@ public class RoomReservationTableView extends Composite implements AbstractRoomR
             clickColumn.setHandler(activity);
             clickColumn.setColumnProvider(columnProvider);
         });
-
-        table.setLoadHandler( activity );
-        table.setPagerListener( activity );
     }
 
     @Override
@@ -66,34 +64,23 @@ public class RoomReservationTableView extends Composite implements AbstractRoomR
     }
 
     @Override
+    public void addRecords(List<RoomReservation> roomReservations) {
+        roomReservations.forEach(roomReservation -> table.addRow(roomReservation));
+    }
+
+    @Override
+    public void addSeparator(String label) {
+        table.addCustomRow(new InlineLabel(label).getElement(), "separator-cell", "separator-row");
+    }
+
+    @Override
     public void clearRecords() {
-        table.clearCache();
         table.clearRows();
     }
 
     @Override
     public HasWidgets getPagerContainer() {
         return pagerContainer;
-    }
-
-    @Override
-    public void setTotalRecords(int totalRecords) {
-        table.setTotalRecords(totalRecords);
-    }
-
-    @Override
-    public int getPageCount() {
-        return table.getPageCount();
-    }
-
-    @Override
-    public void scrollTo( int page ) {
-        table.scrollToPage( page );
-    }
-
-    @Override
-    public void triggerTableLoad() {
-        table.setTotalRecords(table.getPageSize());
     }
 
     private void initTable() {
@@ -104,11 +91,8 @@ public class RoomReservationTableView extends Composite implements AbstractRoomR
         DynamicColumn<RoomReservation> person = new DynamicColumn<>(lang.roomReservationPersonResponsible(), "person",
                 value -> value.getPersonResponsible().getDisplayName());
 
-        DynamicColumn<RoomReservation> fromTime = new DynamicColumn<>(lang.roomReservationDatesFrom(), "from-time",
-                value -> DateFormatter.formatDateTime(value.getDateFrom()));
-
-        DynamicColumn<RoomReservation> tillTime = new DynamicColumn<>(lang.roomReservationDatesTill(), "till-time",
-                value -> DateFormatter.formatDateTime(value.getDateUntil()));
+        DynamicColumn<RoomReservation> time = new DynamicColumn<>(lang.roomReservationTime(), "time",
+                value -> DateFormatter.formatTimeOnly(value.getDateFrom()) + " - " +  DateFormatter.formatTimeOnly(value.getDateUntil()));
 
         DynamicColumn<RoomReservation> room = new DynamicColumn<>(lang.roomReservationRoom(), "room",
                 value -> value.getRoom().getName());
@@ -122,17 +106,15 @@ public class RoomReservationTableView extends Composite implements AbstractRoomR
         DynamicColumn<RoomReservation> comment = new DynamicColumn<>(lang.roomReservationComment(), "comment",
                 value -> value.getComment());
 
+        columns.add(time);
         columns.add(person);
-        columns.add(fromTime);
-        columns.add(tillTime);
         columns.add(room);
         columns.add(reason);
         columns.add(coffee);
         columns.add(comment);
 
+        table.addColumn(time.header, time.values);
         table.addColumn(person.header, person.values);
-        table.addColumn(fromTime.header, fromTime.values);
-        table.addColumn(tillTime.header, tillTime.values);
         table.addColumn(room.header, room.values);
         table.addColumn(reason.header, reason.values);
         table.addColumn(coffee.header, coffee.values);
@@ -142,7 +124,7 @@ public class RoomReservationTableView extends Composite implements AbstractRoomR
     }
 
     @UiField
-    InfiniteTableWidget<RoomReservation> table;
+    TableWidget<RoomReservation> table;
     @UiField
     HTMLPanel pagerContainer;
 

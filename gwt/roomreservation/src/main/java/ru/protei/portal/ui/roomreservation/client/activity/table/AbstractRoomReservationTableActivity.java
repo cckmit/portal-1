@@ -9,7 +9,6 @@ import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
 
 public interface AbstractRoomReservationTableActivity extends ClickColumn.Handler<RoomReservation>,
         EditClickColumn.EditHandler<RoomReservation>,
-        RemoveClickColumn.RemoveHandler<RoomReservation>,
-        InfiniteLoadHandler<RoomReservation>, InfiniteTableWidget.PagerListener {
+        RemoveClickColumn.RemoveHandler<RoomReservation> {
     void onFilterChange();
 }

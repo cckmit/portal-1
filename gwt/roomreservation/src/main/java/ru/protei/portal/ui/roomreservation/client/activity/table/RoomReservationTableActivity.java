@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.roomreservation.client.activity.table;
 
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -11,13 +10,21 @@ import ru.protei.portal.core.model.ent.RoomReservation;
 import ru.protei.portal.core.model.query.RoomReservationQuery;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
+import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RoomReservationControllerAsync;
+import ru.protei.portal.ui.common.client.util.DateUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static ru.protei.portal.ui.common.client.util.PaginationUtils.PAGE_SIZE;
+import static ru.protei.portal.ui.common.client.util.PaginationUtils.getTotalPages;
 
 public abstract class RoomReservationTableActivity implements AbstractRoomReservationTableActivity, Activity,
         AbstractPagerActivity {
@@ -45,7 +52,7 @@ public abstract class RoomReservationTableActivity implements AbstractRoomReserv
 
         view.getPagerContainer().add( pagerView.asWidget() );
 
-        loadTable();
+        requestRoomReservation(this.page);
     }
 
     @Event
@@ -70,47 +77,44 @@ public abstract class RoomReservationTableActivity implements AbstractRoomReserv
         fireEvent(new ConfirmDialogEvents.Show(lang.absenceRemoveConfirmMessage(), removeAction(value)));
     }
 
-    @Override
-    public void loadData(int offset, int limit, AsyncCallback<List<RoomReservation>> asyncCallback) {
-        boolean isFirstChunk = offset == 0;
-        query = getQuery();
-        query.setOffset(offset);
-        query.setLimit(limit);
-        controller.getReservations(query, new FluentCallback<SearchResult<RoomReservation>>()
-                .withError(throwable -> {
-                    fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-                    asyncCallback.onFailure(throwable);
-                })
-                .withSuccess(sr -> {
-                    if (!query.equals(getQuery())) {
-                        loadData(offset, limit, asyncCallback);
-                    }
-                    else {
-                        if (isFirstChunk) {
-                            view.setTotalRecords(sr.getTotalCount());
-                            pagerView.setTotalPages(view.getPageCount());
-                            pagerView.setTotalCount(sr.getTotalCount());
-                            restoreScroll();
-                        }
+    private void requestRoomReservation( int page ) {
+        view.clearRecords();
 
-                        asyncCallback.onSuccess(sr.getResults());
+        boolean isFirstChunk = page == 0;
+        marker = new Date().getTime();
+
+        query = getQuery();
+        query.setOffset( page*PAGE_SIZE );
+        query.setLimit( PAGE_SIZE );
+
+        controller.getReservations( query, new FluentCallback< SearchResult<RoomReservation> >()
+                .withMarkedSuccess( marker, ( m, r ) -> {
+                    if ( marker == m ) {
+                        if ( isFirstChunk ) {
+                            pagerView.setTotalCount( r.getTotalCount() );
+                            pagerView.setTotalPages( getTotalPages( r.getTotalCount() ) );
+                        }
+                        pagerView.setCurrentPage( page );
+                        Map<Date, List<RoomReservation>> map = r.getResults().stream().collect(Collectors.groupingBy((RoomReservation roomReservation) -> DateUtils.resetTime(roomReservation.getDateFrom())));
+                        map.forEach((d, l) -> {
+                            view.addSeparator( DateFormatter.formatDateOnly(d) );
+                            view.addRecords( l );
+                        });
+
+                        restoreScroll();
                     }
                 }));
     }
 
     @Override
-    public void onPageChanged(int page) {
-        pagerView.setCurrentPage(page);
+    public void onFilterChange() {
+        requestRoomReservation(0);
     }
 
     @Override
     public void onPageSelected(int page) {
-        view.scrollTo(page);
-    }
-
-    @Override
-    public void onFilterChange() {
-        loadTable();
+        this.page = page;
+        requestRoomReservation(this.page);
     }
 
     private Runnable removeAction(RoomReservation value) {
@@ -124,7 +128,6 @@ public abstract class RoomReservationTableActivity implements AbstractRoomReserv
 
     private void loadTable() {
         view.clearRecords();
-        view.triggerTableLoad();
     }
 
     private void restoreScroll() {
@@ -150,4 +153,6 @@ public abstract class RoomReservationTableActivity implements AbstractRoomReserv
 
     private AppEvents.InitDetails initDetails;
     private RoomReservationQuery query = null;
+    private long marker;
+    private int page = 0;
 }
