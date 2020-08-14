@@ -1,6 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader'
+             xmlns:accordion='urn:import:ru.protei.portal.ui.common.client.widget.accordion'
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
              xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.makdown"
              xmlns:text="urn:import:ru.protei.portal.ui.common.client.widget.validatefield"
@@ -65,19 +66,9 @@
 
                     <div class="row form-group">
                         <div class="col-md-12">
-                            <g:HTMLPanel ui:field="attachmentsRootContainer" styleName="card card-default card-attachments">
-                                <g:HTMLPanel ui:field="attachmentsHeaderContainer" styleName="card-header">
-                                    <label ui:field="attachmentsLabel"/>
-                                    <a class="pull-right collapse-btn p-b-0 p-t-0" href="#" id="gwt-debug-issue-links-collapse-button"/>
-                                </g:HTMLPanel>
-                                <div class="attachments-accordion">
-                                    <div class="card-body">
-                                        <div>
-                                            <attachment:fullview.FullViewAttachmentList ui:field="attachmentListContainer"/>
-                                        </div>
-                                    </div>
-                                </div>
-                            </g:HTMLPanel>
+                            <accordion:AccordionWidget ui:field="accordionWidget">
+                                <attachment:fullview.FullViewAttachmentList ui:field="attachmentListContainer"/>
+                            </accordion:AccordionWidget>
                         </div>
                     </div>
                 </div>

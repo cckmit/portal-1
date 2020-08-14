@@ -2,7 +2,6 @@ package ru.protei.portal.ui.issue.client.activity.create;
 
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
@@ -14,7 +13,6 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.TransliterationUtils;
@@ -24,11 +22,9 @@ import ru.protei.portal.ui.common.client.activity.casetag.taglist.AbstractCaseTa
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DefaultSlaValues;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
-import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
-import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductWithChildrenModel;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
@@ -69,7 +65,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
                 }
                 view.attachmentsListContainer().add(attachment);
 
-                view.attachmentsRootContainerVisibility().setVisible(!view.attachmentsListContainer().isEmpty());
+                view.attachmentsVisibility().setVisible(!view.attachmentsListContainer().isEmpty());
                 view.setCountOfAttachments(size(view.attachmentsListContainer().getAll()));
             }
 
@@ -193,7 +189,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
                 .withSuccess(result -> {
                     view.attachmentsListContainer().remove(attachment);
                     view.setCountOfAttachments(size(view.attachmentsListContainer().getAll()));
-                    view.attachmentsRootContainerVisibility().setVisible(!view.attachmentsListContainer().isEmpty());
+                    view.attachmentsVisibility().setVisible(!view.attachmentsListContainer().isEmpty());
                 })
         );
     }
@@ -371,7 +367,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         view.description().setValue(caseObject.getInfo());
         view.setDescriptionPreviewAllowed(makePreviewDisplaying(AbstractIssueEditView.DESCRIPTION));
         view.setFavoriteButtonActive(Boolean.TRUE.equals(caseObject.isFavorite()));
-        view.setAttachmentContainerShow(localStorageService.getBooleanOrDefault(UiConstants.ATTACHMENTS_PANEL_VISIBILITY, false));
 
         fillMetaView(new CaseObjectMeta(caseObject), caseObject.getNotifiers(), caseObject.getTimeElapsedType(), createRequest.getPlans());
 
@@ -521,7 +516,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         boolean isAttachmentsEmpty = isEmpty(attachments);
 
         view.attachmentsListContainer().clear();
-        view.attachmentsRootContainerVisibility().setVisible(!isAttachmentsEmpty);
+        view.attachmentsVisibility().setVisible(!isAttachmentsEmpty);
         view.setCountOfAttachments(size(attachments));
 
         if (!isAttachmentsEmpty) {

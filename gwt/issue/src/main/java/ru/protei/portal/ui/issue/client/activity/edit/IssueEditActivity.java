@@ -70,7 +70,7 @@ public abstract class IssueEditActivity implements
                 }
                 addAttachmentsToCase( Collections.singleton( attachment ) );
 
-                issueInfoWidget.attachmentsRootContainerVisibility().setVisible(!issueInfoWidget.attachmentsListContainer().isEmpty());
+                issueInfoWidget.attachmentsVisibility().setVisible(!issueInfoWidget.attachmentsListContainer().isEmpty());
                 issueInfoWidget.setCountOfAttachments(size(issueInfoWidget.attachmentsListContainer().getAll()));
             }
 
@@ -224,7 +224,7 @@ public abstract class IssueEditActivity implements
                     issue.setAttachmentExists(!issue.getAttachments().isEmpty());
 
                     issueInfoWidget.setCountOfAttachments(size(issueInfoWidget.attachmentsListContainer().getAll()));
-                    issueInfoWidget.attachmentsRootContainerVisibility().setVisible(!issueInfoWidget.attachmentsListContainer().isEmpty());
+                    issueInfoWidget.attachmentsVisibility().setVisible(!issueInfoWidget.attachmentsListContainer().isEmpty());
 
                     showComments( issue );
                 }));
@@ -430,10 +430,8 @@ public abstract class IssueEditActivity implements
 
         boolean isAttachmentsEmpty = isEmpty(issue.getAttachments());
 
-        issueInfoWidget.attachmentsRootContainerVisibility().setVisible(!isAttachmentsEmpty);
+        issueInfoWidget.attachmentsVisibility().setVisible(!isAttachmentsEmpty);
         issueInfoWidget.setCountOfAttachments(size(issue.getAttachments()));
-
-        issueInfoWidget.setAttachmentContainerShow(localStorageService.getBooleanOrDefault(UiConstants.ATTACHMENTS_PANEL_VISIBILITY, false));
 
         view.addAttachmentUploaderVisibility().setVisible(!readOnly);
         view.getInfoContainer().clear();
@@ -535,9 +533,6 @@ public abstract class IssueEditActivity implements
     IssueNameDescriptionEditWidget issueNameDescriptionEditWidget;
     @Inject
     IssueInfoWidget issueInfoWidget;
-
-    @Inject
-    LocalStorageService localStorageService;
 
     @ContextAware
     CaseObject issue;

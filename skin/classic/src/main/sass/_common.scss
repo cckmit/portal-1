@@ -4870,3 +4870,55 @@ table {
     color: gold;
   }
 }
+
+// Accordion
+
+.accordion {
+  .collapse-btn {
+    font-family: "Font Awesome 5 Free", serif;
+    font-weight: 900;
+  }
+
+  .collapse-btn {
+    &:after {
+      content: "\f078";
+    }
+  }
+
+  .card-header {
+    padding-bottom: 10px;
+    padding-top: 10px;
+    min-height: auto;
+  }
+
+  .accordion-body {
+    transition: max-height .35s ease;
+    overflow: hidden;
+
+    .card-body {
+      overflow: hidden;
+      position: relative;
+    }
+  }
+
+
+  &.show {
+    .collapse-btn {
+      &:after {
+        content: "\f077";
+      }
+    }
+
+    .card-body {
+      overflow: auto;
+    }
+
+    .card-header {
+      label {
+        border-bottom: 2px solid;
+      }
+
+      padding-bottom: 0;
+    }
+  }
+}

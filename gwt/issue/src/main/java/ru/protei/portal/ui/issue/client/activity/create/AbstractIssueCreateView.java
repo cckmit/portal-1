@@ -43,7 +43,5 @@ public interface AbstractIssueCreateView extends IsWidget {
 
     void setCountOfAttachments(int countOfAttachments);
 
-    HasVisibility attachmentsRootContainerVisibility();
-
-    void setAttachmentContainerShow(boolean isShow);
+    HasVisibility attachmentsVisibility();
 }

@@ -113,6 +113,10 @@ public class UiConstants {
         String CANCEL = "cancel";
     }
 
+    public interface Accordion {
+        int ATTACHMENTS_MAX_HEIGHT = 300;
+    }
+
     /**
      * from {@link ru.protei.portal.ui.common.client.events.AuthEvents}
      */

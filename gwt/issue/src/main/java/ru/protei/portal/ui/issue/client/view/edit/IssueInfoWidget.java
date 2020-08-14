@@ -18,10 +18,12 @@ import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
+import ru.protei.portal.ui.common.client.widget.accordion.AccordionWidget;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.attachment.list.fullview.FullViewAttachmentList;
+import ru.protei.portal.ui.common.client.widget.htmlpanel.CustomHTMLPanel;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
@@ -33,17 +35,10 @@ public class IssueInfoWidget extends Composite {
     @PostConstruct
     public void init() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        attachmentsHeaderContainer.addDomHandler(event -> {
-            if (attachmentsRootContainer.getElement().hasClassName("show")) {
-                attachmentsRootContainer.getElement().removeClassName("show");
-                localStorageService.set(UiConstants.ATTACHMENTS_PANEL_VISIBILITY, Boolean.FALSE.toString());
-            } else {
-                attachmentsRootContainer.getElement().addClassName("show");
-                localStorageService.set(UiConstants.ATTACHMENTS_PANEL_VISIBILITY, Boolean.TRUE.toString());
-            }
-        }, ClickEvent.getType());
-
         ensureDebugIds();
+
+        accordionWidget.setLocalStorageKey(UiConstants.ATTACHMENTS_PANEL_VISIBILITY);
+        accordionWidget.setMaxHeight(UiConstants.Accordion.ATTACHMENTS_MAX_HEIGHT);
     }
 
     public void setActivity( AbstractIssueEditActivity activity ) {
@@ -71,19 +66,11 @@ public class IssueInfoWidget extends Composite {
     }
 
     public void setCountOfAttachments(int countOfAttachments) {
-        attachmentsLabel.setInnerText(lang.attachmentsHeader(String.valueOf(countOfAttachments)));
+        accordionWidget.setHeader(lang.attachmentsHeader(String.valueOf(countOfAttachments)));
     }
 
-    public HasVisibility attachmentsRootContainerVisibility() {
-        return attachmentsRootContainer;
-    }
-
-    public void setAttachmentContainerShow(boolean isShow) {
-        if (isShow) {
-            attachmentsRootContainer.addStyleName("show");
-        } else {
-            attachmentsRootContainer.removeStyleName("show");
-        }
+    public HasVisibility attachmentsVisibility() {
+        return accordionWidget;
     }
 
     @UiHandler("attachmentListContainer")
@@ -104,7 +91,7 @@ public class IssueInfoWidget extends Composite {
 
         descriptionReadOnly.ensureDebugId(DebugIds.ISSUE.DESCRIPTION_FIELD );
         attachmentListContainer.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_LIST_CONTAINER);
-        attachmentsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.ATTACHMENTS);
+        accordionWidget.setHeaderLabelDebugId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.ATTACHMENTS);
     }
 
     @UiField
@@ -118,21 +105,13 @@ public class IssueInfoWidget extends Composite {
     @UiField(provided = true)
     FullViewAttachmentList attachmentListContainer;
     @UiField
-    HTMLPanel attachmentsRootContainer;
-    @UiField
-    HTMLPanel attachmentsHeaderContainer;
-    @UiField
-    LabelElement attachmentsLabel;
-    @UiField
-    DivElement attachmentsPanel;
-    @UiField
     HTMLPanel descriptionReadOnly;
+    @Inject
+    @UiField(provided = true)
+    AccordionWidget accordionWidget;
 
     @Inject
     TextRenderControllerAsync textRenderController;
-
-    @Inject
-    LocalStorageService localStorageService;
 
     private AbstractIssueEditActivity activity;
 
