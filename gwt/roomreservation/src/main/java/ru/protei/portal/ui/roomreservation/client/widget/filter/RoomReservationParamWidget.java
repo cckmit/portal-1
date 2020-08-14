@@ -40,11 +40,6 @@ public class RoomReservationParamWidget extends Composite implements AbstractRoo
     }
 
     @Override
-    public boolean isValidDateRange() {
-        return validate();
-    }
-
-    @Override
     public void watchForScrollOf(Widget widget) {
 
     }

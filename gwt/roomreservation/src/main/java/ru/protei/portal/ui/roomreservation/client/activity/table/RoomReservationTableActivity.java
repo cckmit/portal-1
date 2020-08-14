@@ -19,8 +19,6 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.ui.common.client.util.PaginationUtils.PAGE_SIZE;
@@ -58,7 +56,7 @@ public abstract class RoomReservationTableActivity implements AbstractRoomReserv
     @Event
     public void onUpdate(RoomReservationEvents.Reload event) {
         if (view.asWidget().isAttached()) {
-            loadTable();
+            reloadTable(page);
         }
     }
 
@@ -95,11 +93,12 @@ public abstract class RoomReservationTableActivity implements AbstractRoomReserv
                             pagerView.setTotalPages( getTotalPages( r.getTotalCount() ) );
                         }
                         pagerView.setCurrentPage( page );
-                        Map<Date, List<RoomReservation>> map = r.getResults().stream().collect(Collectors.groupingBy((RoomReservation roomReservation) -> DateUtils.resetTime(roomReservation.getDateFrom())));
-                        map.forEach((d, l) -> {
-                            view.addSeparator( DateFormatter.formatDateOnly(d) );
-                            view.addRecords( l );
-                        });
+                        r.getResults().stream()
+                                .collect(Collectors.groupingBy((RoomReservation roomReservation) -> DateUtils.resetTime(roomReservation.getDateFrom())))
+                                .forEach((separatorDate, roomReservations) -> {
+                                    view.addSeparator(DateFormatter.formatDateOnly(separatorDate));
+                                    view.addRecords(roomReservations);
+                                });
 
                         restoreScroll();
                     }
@@ -108,7 +107,7 @@ public abstract class RoomReservationTableActivity implements AbstractRoomReserv
 
     @Override
     public void onFilterChange() {
-        requestRoomReservation(0);
+        reloadTable(0);
     }
 
     @Override
@@ -126,8 +125,9 @@ public abstract class RoomReservationTableActivity implements AbstractRoomReserv
         return view.getFilterWidget().getQuery();
     }
 
-    private void loadTable() {
+    private void reloadTable(int page) {
         view.clearRecords();
+        requestRoomReservation(page);
     }
 
     private void restoreScroll() {
