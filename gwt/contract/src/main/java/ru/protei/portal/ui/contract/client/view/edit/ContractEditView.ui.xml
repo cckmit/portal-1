@@ -114,7 +114,7 @@
                             </div>
                             <div class="form-group col-md-3">
                                 <label ui:field="costWithCurrencyLabel"><ui:text from="{lang.contractCost}"/></label>
-                                <money:CostCurrencyVatWidget ui:field="costWithCurrency" defaultCurrency="RUB"/>
+                                <money:MoneyCurrencyVatWidget ui:field="costWithCurrency" defaultCurrency="RUB"/>
                             </div>
                         </div>
                         <div class="row">

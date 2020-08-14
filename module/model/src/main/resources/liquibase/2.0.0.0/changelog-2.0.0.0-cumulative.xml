@@ -43,5 +43,6 @@
   <include file="2020-08-07-add-unique-constraint-to-case_link-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-08-11-add-is_collapsed-column-to-user_dashboard.xml" relativeToChangelogFile="true"/>
   <include file="2020-08-13-add-contract_types-column-to-contract-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-08-14-migrate-money.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

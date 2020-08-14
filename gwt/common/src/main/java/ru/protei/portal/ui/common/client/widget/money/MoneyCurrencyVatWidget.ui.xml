@@ -4,7 +4,9 @@
              xmlns:vat='urn:import:ru.protei.portal.ui.common.client.widget.selector.vat'>
 
     <g:HTMLPanel ui:field="root" styleName="input-group">
-        <g:LongBox ui:field="cost" styleName="form-control"/>
+        <g:LongBox ui:field="moneyNatural" styleName="form-control"/>
+        <div class="input-group-prepend input-group-append"><span class="input-group-text">.</span></div>
+        <g:LongBox ui:field="moneyDecimal" styleName="form-control"/>
         <currency:CurrencyButtonSelector ui:field="currency" styleName="input-group-btn"/>
         <vat:VatButtonSelector ui:field="vat" styleName="input-group-btn" />
     </g:HTMLPanel>

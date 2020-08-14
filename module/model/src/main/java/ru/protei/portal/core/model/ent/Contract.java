@@ -1,11 +1,13 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.converter.MoneyJdbcConverter;
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.dict.En_Currency;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.struct.Money;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EntityOptionSupport;
 import ru.protei.winter.jdbc.annotations.*;
@@ -119,8 +121,8 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     /**
      * Сумма
      */
-    @JdbcColumn(name = "cost")
-    private Long cost;
+    @JdbcColumn(name = "cost", converterType = ConverterType.CUSTOM, converter = MoneyJdbcConverter.class)
+    private Money cost;
 
     /**
      * Валюта
@@ -280,11 +282,11 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
         this.description = description;
     }
 
-    public Long getCost() {
+    public Money getCost() {
         return cost;
     }
 
-    public void setCost(Long cost) {
+    public void setCost(Money cost) {
         this.cost = cost;
     }
 

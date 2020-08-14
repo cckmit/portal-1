@@ -2,7 +2,6 @@ package ru.protei.portal.ui.contract.client.view.table.concise;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.ImageElement;
-import com.google.gwt.safehtml.shared.SimpleHtmlSanitizer;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.DOM;
@@ -13,13 +12,10 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Contract;
-import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.model.helper.NullUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
-import ru.protei.portal.ui.common.client.columns.DynamicColumn;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.lang.En_ContractStateLang;
 import ru.protei.portal.ui.common.client.lang.En_ContractTypeLang;
@@ -32,7 +28,6 @@ import java.util.stream.Collectors;
 
 import static com.google.gwt.safehtml.shared.SimpleHtmlSanitizer.sanitizeHtml;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
-import static ru.protei.portal.core.model.helper.StringUtils.emptyIfNpe;
 import static ru.protei.portal.core.model.helper.StringUtils.emptyIfNull;
 
 public class ContractConciseTableView extends Composite implements AbstractContractConciseTableView {
@@ -125,7 +120,7 @@ public class ContractConciseTableView extends Composite implements AbstractContr
             StringBuilder sb = new StringBuilder();
             sb.append("<b>").append(lang.contractOrganization()).append(":</b> ").append(emptyIfNull(contract.getOrganizationName())).append("</b>");
             sb.append("<br/>");
-            sb.append("<b>").append(lang.contractContractor()).append(":</b> ").append(emptyIfNpe(() -> contract.getContractor().getName())).append("</b>");
+            sb.append("<b>").append(lang.contractContractor()).append(":</b> ").append(NullUtils.emptyIfNull(() -> contract.getContractor().getName())).append("</b>");
             root.setInnerHTML(sb.toString());
             cell.appendChild(root);
         }

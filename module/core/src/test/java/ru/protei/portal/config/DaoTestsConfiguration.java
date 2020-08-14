@@ -2,6 +2,7 @@ package ru.protei.portal.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import ru.protei.portal.core.model.converter.MoneyJdbcConverter;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 
@@ -29,6 +30,13 @@ public class DaoTestsConfiguration {
     @Bean
     public EmployeeSqlBuilder employeeSqlBuilder() {
         return new EmployeeSqlBuilder();
+    }
+
+    /* DAO converters */
+
+    @Bean
+    public MoneyJdbcConverter moneyJdbcConverter() {
+        return new MoneyJdbcConverter();
     }
 
     /* DAO */

@@ -16,7 +16,7 @@ public class ContractToApiMapper {
         ApiContract apiContract = new ApiContract();
         apiContract.setRefKey(contract.getRefKey());
         apiContract.setDateSigning(contract.getDateSigning());
-        apiContract.setCost(contract.getCost());
+        apiContract.setCost(contract.getCost().getFull());
         apiContract.setCurrency(contract.getCurrency());
         apiContract.setVat(contract.getVat());
         apiContract.setDescription(contract.getDescription());

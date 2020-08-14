@@ -10,7 +10,8 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_Currency;
-import ru.protei.portal.core.model.struct.CostWithCurrencyWithVat;
+import ru.protei.portal.core.model.struct.Money;
+import ru.protei.portal.core.model.struct.MoneyWithCurrencyWithVat;
 import ru.protei.portal.ui.common.client.widget.selector.currency.CurrencyButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.vat.VatButtonSelector;
 
@@ -20,9 +21,10 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.helper.NullUtils.defaultIfNull;
 import static ru.protei.portal.core.model.helper.NumberUtils.parseLong;
 
-public class CostCurrencyVatWidget extends Composite implements HasValue<CostWithCurrencyWithVat>, HasEnabled {
+public class MoneyCurrencyVatWidget extends Composite implements HasValue<MoneyWithCurrencyWithVat>, HasEnabled {
 
     @Inject
     public void init() {
@@ -31,19 +33,23 @@ public class CostCurrencyVatWidget extends Composite implements HasValue<CostWit
     }
 
     @Override
-    public CostWithCurrencyWithVat getValue() {
-        return new CostWithCurrencyWithVat(cost.getValue(), currency.getValue(), vat.getValue());
+    public MoneyWithCurrencyWithVat getValue() {
+        Money vMoney = new Money(moneyNatural.getValue(), moneyDecimal.getValue());
+        En_Currency vCurrency = currency.getValue();
+        Long vVat = vat.getValue();
+        return new MoneyWithCurrencyWithVat(vMoney, vCurrency, vVat);
     }
 
     @Override
-    public void setValue(CostWithCurrencyWithVat value) {
+    public void setValue(MoneyWithCurrencyWithVat value) {
         setValue(value, false);
     }
 
     @Override
-    public void setValue(CostWithCurrencyWithVat value, boolean fireEvents) {
-        cost.setValue(value.getCost());
-        currency.setValue(value.getCurrency() == null ? defaultCurrency : value.getCurrency());
+    public void setValue(MoneyWithCurrencyWithVat value, boolean fireEvents) {
+        moneyNatural.setValue(defaultIfNull(() -> value.getMoney().getNatural(), 0L));
+        moneyDecimal.setValue(defaultIfNull(() -> value.getMoney().getDecimal(), 0L));
+        currency.setValue(defaultIfNull(value::getCurrency, defaultCurrency));
         vat.setValue(value.getVatPercent());
         if (fireEvents) {
             ValueChangeEvent.fire(this, value);
@@ -52,18 +58,19 @@ public class CostCurrencyVatWidget extends Composite implements HasValue<CostWit
 
     @Override
     public boolean isEnabled() {
-        return cost.isEnabled();
+        return moneyNatural.isEnabled();
     }
 
     @Override
     public void setEnabled(boolean enabled) {
-        cost.setEnabled(enabled);
+        moneyNatural.setEnabled(enabled);
+        moneyDecimal.setEnabled(enabled);
         currency.setEnabled(enabled);
         vat.setEnabled(enabled);
     }
 
     @Override
-    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<CostWithCurrencyWithVat> handler) {
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<MoneyWithCurrencyWithVat> handler) {
         return addHandler(handler, ValueChangeEvent.getType());
     }
 
@@ -92,26 +99,28 @@ public class CostCurrencyVatWidget extends Composite implements HasValue<CostWit
                 : parseLong(vat);
     }
 
-    @UiHandler("cost")
-    public void onCostChanged(ValueChangeEvent<Long> event) {
-        CostWithCurrencyWithVat value = getValue();
+    @UiHandler({"moneyNatural", "moneyDecimal"})
+    public void onMoneyChanged(ValueChangeEvent<Long> event) {
+        MoneyWithCurrencyWithVat value = getValue();
         ValueChangeEvent.fire(this, value);
     }
 
     @UiHandler("currency")
     public void onCurrencyChanged(ValueChangeEvent<En_Currency> event) {
-        CostWithCurrencyWithVat value = getValue();
+        MoneyWithCurrencyWithVat value = getValue();
         ValueChangeEvent.fire(this, value);
     }
 
     @UiHandler("vat")
     public void onVatChanged(ValueChangeEvent<Long> event) {
-        CostWithCurrencyWithVat value = getValue();
+        MoneyWithCurrencyWithVat value = getValue();
         ValueChangeEvent.fire(this, value);
     }
 
     @UiField
-    LongBox cost;
+    LongBox moneyNatural;
+    @UiField
+    LongBox moneyDecimal;
     @Inject
     @UiField(provided = true)
     CurrencyButtonSelector currency;
@@ -125,6 +134,6 @@ public class CostCurrencyVatWidget extends Composite implements HasValue<CostWit
 
     private static final List<Long> defaultVatOptions = Arrays.asList(20L, 0L, null);
 
-    interface CostCurrencyVatWidgetUiBinder extends UiBinder<HTMLPanel, CostCurrencyVatWidget> {}
+    interface CostCurrencyVatWidgetUiBinder extends UiBinder<HTMLPanel, MoneyCurrencyVatWidget> {}
     private static CostCurrencyVatWidgetUiBinder ourUiBinder = GWT.create(CostCurrencyVatWidgetUiBinder.class);
 }

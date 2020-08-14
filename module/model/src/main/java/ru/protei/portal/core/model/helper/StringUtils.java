@@ -58,16 +58,6 @@ public class StringUtils {
         return isEmpty(s) ? null : s;
     }
 
-    public static @NotNull String emptyIfNpe(@NotNull Callable<String> callable) {
-        try {
-            return emptyIfNull(callable.call());
-        } catch (NullPointerException e) {
-            return "";
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     /**
      * null - не выводится
      */

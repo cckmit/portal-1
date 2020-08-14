@@ -11,7 +11,8 @@ import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.struct.CostWithCurrencyWithVat;
+import ru.protei.portal.core.model.struct.Money;
+import ru.protei.portal.core.model.struct.MoneyWithCurrencyWithVat;
 import ru.protei.portal.core.model.util.ContractSupportService;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -88,7 +89,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
         view.costEnabled().setEnabled(!isFrameworkContract);
         if ( isFrameworkContract ) {
-            view.cost().setValue(new CostWithCurrencyWithVat(0L, En_Currency.RUB, NoVat));
+            view.cost().setValue(new MoneyWithCurrencyWithVat(new Money(0L), En_Currency.RUB, NoVat));
         }
     }
 
@@ -177,9 +178,9 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.state().setValue(contract.getState());
         view.number().setValue(contract.getNumber());
         if ( contract.getCost() == null ) {
-            contract.setCost(0L);
+            contract.setCost(new Money(0L));
         }
-        view.cost().setValue(new CostWithCurrencyWithVat(contract.getCost(), contract.getCurrency(), contract.getVat()));
+        view.cost().setValue(new MoneyWithCurrencyWithVat(contract.getCost(), contract.getCurrency(), contract.getVat()));
         view.description().setValue(contract.getDescription());
         view.curator().setValue(createPersonOrNull(contract.getCuratorId(), contract.getCuratorShortName()));
         view.dateSigning().setValue(contract.getDateSigning());
@@ -219,7 +220,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         contract.setContractTypes(listOf(view.types().getValue()));
         contract.setState(view.state().getValue());
         contract.setNumber(view.number().getValue());
-        contract.setCost(view.cost().getValue().getCost());
+        contract.setCost(view.cost().getValue().getMoney());
         contract.setCurrency(view.cost().getValue().getCurrency());
         contract.setVat(view.cost().getValue().getVatPercent());
         contract.setDescription(view.description().getValue());
