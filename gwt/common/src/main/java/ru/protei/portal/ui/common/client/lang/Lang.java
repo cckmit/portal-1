@@ -2658,6 +2658,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String roomReservationDates();
 
+    String roomReservationDatesFrom();
+
+    String roomReservationDatesTill();
+
     String roomReservationDatesCreateAddWeek();
 
     String roomReservationDatesCreateAddDay();

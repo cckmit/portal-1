@@ -6,7 +6,7 @@ import ru.protei.portal.ui.roomreservation.client.widget.filter.RoomReservationP
 
 public interface AbstractRoomReservationTableView extends IsWidget {
     void setActivity(AbstractRoomReservationTableActivity activity);
-    RoomReservationParamWidget getFilterParam();
+    RoomReservationParamWidget getFilterWidget();
     void clearRecords();
     HasWidgets getPagerContainer();
     void setTotalRecords(int totalRecords);

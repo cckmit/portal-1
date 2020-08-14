@@ -3,7 +3,6 @@ package ru.protei.portal.ui.roomreservation.client.view.table;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
@@ -11,15 +10,13 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.ent.RoomReservation;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.columns.ClickColumn;
-import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
-import ru.protei.portal.ui.common.client.columns.EditClickColumn;
-import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
+import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.En_RoomReservationReasonLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.roomreservation.client.activity.table.AbstractRoomReservationTableActivity;
 import ru.protei.portal.ui.roomreservation.client.activity.table.AbstractRoomReservationTableView;
+import ru.protei.portal.ui.roomreservation.client.util.AccessUtil;
 import ru.protei.portal.ui.roomreservation.client.widget.filter.RoomReservationFilterWidget;
 import ru.protei.portal.ui.roomreservation.client.widget.filter.RoomReservationParamWidget;
 
@@ -64,7 +61,7 @@ public class RoomReservationTableView extends Composite implements AbstractRoomR
     }
 
     @Override
-    public RoomReservationParamWidget getFilterParam() {
+    public RoomReservationParamWidget getFilterWidget() {
         return filterWidget.getFilterParamView();
     }
 
@@ -101,70 +98,48 @@ public class RoomReservationTableView extends Composite implements AbstractRoomR
 
     private void initTable() {
 
-//        editClickColumn.setDisplayPredicate(value -> AccessUtil.isAllowedEdit(policyService, value));
-//        removeClickColumn.setDisplayPredicate(value -> AccessUtil.isAllowedRemove(policyService, value));
+        editClickColumn.setDisplayPredicate(value -> AccessUtil.canEdit(policyService, value));
+        removeClickColumn.setDisplayPredicate(value -> AccessUtil.canRemove(policyService, value));
 
+        DynamicColumn<RoomReservation> person = new DynamicColumn<>(lang.roomReservationPersonResponsible(), "person",
+                value -> value.getPersonResponsible().getDisplayName());
+
+        DynamicColumn<RoomReservation> fromTime = new DynamicColumn<>(lang.roomReservationDatesFrom(), "from-time",
+                value -> DateFormatter.formatDateTime(value.getDateFrom()));
+
+        DynamicColumn<RoomReservation> tillTime = new DynamicColumn<>(lang.roomReservationDatesTill(), "till-time",
+                value -> DateFormatter.formatDateTime(value.getDateUntil()));
+
+        DynamicColumn<RoomReservation> room = new DynamicColumn<>(lang.roomReservationRoom(), "room",
+                value -> value.getRoom().getName());
+
+        DynamicColumn<RoomReservation> reason = new DynamicColumn<>(lang.roomReservationReason(), "reason",
+                value -> reasonLang.getName(value.getReason()));
+
+        DynamicColumn<RoomReservation> coffee = new DynamicColumn<>(lang.roomReservationCoffeeBreakCount(), "coffee",
+                value -> String.valueOf(value.getCoffeeBreakCount()));
+
+        DynamicColumn<RoomReservation> comment = new DynamicColumn<>(lang.roomReservationComment(), "comment",
+                value -> value.getComment());
+
+        columns.add(person);
+        columns.add(fromTime);
+        columns.add(tillTime);
+        columns.add(room);
         columns.add(reason);
-        columns.add(date);
+        columns.add(coffee);
         columns.add(comment);
 
         table.addColumn(person.header, person.values);
-        table.addColumn(date.header, date.values);
+        table.addColumn(fromTime.header, fromTime.values);
+        table.addColumn(tillTime.header, tillTime.values);
+        table.addColumn(room.header, room.values);
         table.addColumn(reason.header, reason.values);
+        table.addColumn(coffee.header, coffee.values);
         table.addColumn(comment.header, comment.values);
         table.addColumn(editClickColumn.header, editClickColumn.values);
         table.addColumn(removeClickColumn.header, removeClickColumn.values);
-
     }
-
-    ClickColumn<RoomReservation> person = new ClickColumn<RoomReservation>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setInnerText(lang.accountPerson());
-        }
-
-        @Override
-        public void fillColumnValue(Element cell, RoomReservation value) {
-            cell.setInnerHTML(value.getPersonResponsible().getDisplayName());
-        }
-    };
-
-    ClickColumn<RoomReservation> date = new ClickColumn<RoomReservation>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setInnerText(lang.absenceFromTime());
-        }
-
-        @Override
-        public void fillColumnValue(Element cell, RoomReservation value) {
-            cell.setInnerHTML(DateFormatter.formatDateTime(value.getDateFrom()) + " - " + DateFormatter.formatDateTime(value.getDateUntil()));
-        }
-    };
-
-
-    ClickColumn<RoomReservation> reason = new ClickColumn<RoomReservation>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setInnerText(lang.absenceReason());
-        }
-
-        @Override
-        public void fillColumnValue(Element cell, RoomReservation value) {
-            cell.setInnerText(reasonLang.getName(value.getReason()));
-        }
-    };
-
-    ClickColumn<RoomReservation> comment = new ClickColumn<RoomReservation>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setInnerText(lang.absenceComment());
-        }
-
-        @Override
-        public void fillColumnValue(Element cell, RoomReservation value) {
-            cell.setInnerHTML(value.getComment());
-        }
-    };
 
     @UiField
     InfiniteTableWidget<RoomReservation> table;

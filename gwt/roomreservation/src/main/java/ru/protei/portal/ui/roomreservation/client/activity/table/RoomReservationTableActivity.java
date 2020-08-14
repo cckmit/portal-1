@@ -11,10 +11,7 @@ import ru.protei.portal.core.model.ent.RoomReservation;
 import ru.protei.portal.core.model.query.RoomReservationQuery;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
-import ru.protei.portal.ui.common.client.events.RoomReservationEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RoomReservationControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -29,6 +26,11 @@ public abstract class RoomReservationTableActivity implements AbstractRoomReserv
     public void onInit() {
         view.setActivity(this);
         pagerView.setActivity( this );
+    }
+
+    @Event
+    public void onAuthSuccess (AuthEvents.Success event) {
+        view.getFilterWidget().resetFilter();
     }
 
     @Event
@@ -117,7 +119,7 @@ public abstract class RoomReservationTableActivity implements AbstractRoomReserv
     }
 
     private RoomReservationQuery getQuery() {
-        return view.getFilterParam().getQuery();
+        return view.getFilterWidget().getQuery();
     }
 
     private void loadTable() {

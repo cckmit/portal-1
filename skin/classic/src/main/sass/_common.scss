@@ -4816,13 +4816,6 @@ table {
   border-top: 2px solid #00808085 !important;
 }
 
-.room-reservation-filter {
-  .filter-content {
-    border: none;
-    padding-top: 10px;
-  }
-}
-
 .absence-reason {
   position: absolute;
   top: -25px;
@@ -4848,6 +4841,58 @@ table {
     height: 100%;
     color: white;
     font-size: 24px !important;
+  }
+}
+
+/**** ROOM-RESERVATION ****/
+.room-reservations {
+  table {
+    tbody {
+      tr {
+        td {
+          height: 40px;
+
+          div {
+            height: 40px;
+            max-height: 40px;
+            white-space: pre-line;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+    }
+
+    .person {
+      width: 17%;
+    }
+    .from-time, .till-time {
+      width: 12%;
+      > div {
+        white-space: nowrap;
+      }
+    }
+    .room {
+      width: 16%;
+    }
+    .reason {
+      width: 8%;
+    }
+
+    .coffee {
+      width: 9%;
+    }
+
+    .comment {
+      width: 25%;
+    }
+  }
+}
+
+.room-reservation-filter {
+  .filter-content {
+    border: none;
+    padding-top: 10px;
   }
 }
 
