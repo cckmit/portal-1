@@ -1,11 +1,11 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader'
+             xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader.buttonpanel'
              xmlns:accordion='urn:import:ru.protei.portal.ui.common.client.widget.accordion'
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
              xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.makdown"
              xmlns:text="urn:import:ru.protei.portal.ui.common.client.widget.validatefield"
->
+             xmlns:buttonpanel="urn:import:ru.protei.portal.ui.common.client.widget.uploader.impl.buttonpanel">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -24,17 +24,8 @@
                             <g:Button ui:field="addLinkButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.linkAdd}">
                                 <i class="fas fa-link"/>
                             </g:Button>
-                            <fileuploader:FullViewAttachmentUploader ui:field="fileUploader" styleName="btn btn-default btn-xs btn-cons-toolbar attachment-full-view-uploader">
-                                <i class="fas fa-plus ion-plus"/>
-                                <div class="icon-verifiable-dots">
-                                    <div class="lds-ellipsis">
-                                        <div/>
-                                        <div/>
-                                        <div/>
-                                        <div/>
-                                    </div>
-                                </div>
-                            </fileuploader:FullViewAttachmentUploader>
+                            <buttonpanel:ButtonPanelAttachmentUploader ui:field="fileUploader"
+                                                                       styleName="btn btn-default btn-xs btn-cons-toolbar attachment-full-view-uploader"/>
                         </div>
                     </div>
 

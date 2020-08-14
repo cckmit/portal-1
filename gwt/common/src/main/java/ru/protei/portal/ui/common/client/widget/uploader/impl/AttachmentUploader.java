@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.uploader;
+package ru.protei.portal.ui.common.client.widget.uploader.impl;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -12,13 +12,14 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_FileUploadStatus;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.util.JsonUtils;
+import ru.protei.portal.ui.common.client.widget.uploader.AbstractAttachmentUploader;
 
 import java.util.*;
 
 /**
  * Created by bondarenko on 03.07.17.
  */
-public class AttachmentUploader extends FileUploader {
+public class AttachmentUploader extends FileUploader implements AbstractAttachmentUploader {
 
     public interface FileUploadHandler{
         void onSuccess(Attachment attachment, PasteInfo pasteInfo);

@@ -13,8 +13,9 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
-import ru.protei.portal.ui.common.client.widget.uploader.FullViewAttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.AbstractAttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.impl.buttonpanel.ButtonPanelAttachmentUploader;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
 
@@ -151,7 +152,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public AttachmentUploader getFileUploader(){
+    public AbstractAttachmentUploader getFileUploader() {
         return fileUploader;
     }
 
@@ -251,7 +252,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     HTMLPanel metaEditContainer;
     @Inject
     @UiField
-    FullViewAttachmentUploader fileUploader;
+    ButtonPanelAttachmentUploader fileUploader;
     @UiField
     HTMLPanel cardBody;
     @UiField

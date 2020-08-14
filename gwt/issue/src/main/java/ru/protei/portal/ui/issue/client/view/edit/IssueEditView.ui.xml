@@ -1,8 +1,8 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:nw='urn:import:ru.protei.portal.ui.issue.client.view.edit'
-             xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader'
->
+             xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader.buttonpanel'
+             xmlns:buttonpanel="urn:import:ru.protei.portal.ui.common.client.widget.uploader.impl.buttonpanel">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -27,17 +27,9 @@
                             <g:Button ui:field="addLinkButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.linkAdd}">
                                 <i class="fas fa-link"/>
                             </g:Button>
-                            <fileuploader:FullViewAttachmentUploader ui:field="fileUploader" styleName="btn btn-default btn-xs btn-cons-toolbar attachment-full-view-uploader">
-                                <i class="fas fa-plus ion-plus"/>
-                                <div class="icon-verifiable-dots">
-                                    <div class="lds-ellipsis">
-                                        <div/>
-                                        <div/>
-                                        <div/>
-                                        <div/>
-                                    </div>
-                                </div>
-                            </fileuploader:FullViewAttachmentUploader>
+                            <buttonpanel:ButtonPanelAttachmentUploader ui:field="fileUploader"
+                                                                       styleName="btn btn-default btn-xs btn-cons-toolbar attachment-full-view-uploader"/>
+
                             <g:Button ui:field="nameAndDescriptionEditButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.editNameAndDescription}">
                                 <i class="fa fa-pencil-alt"/>
                             </g:Button>

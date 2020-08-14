@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.uploader;
+package ru.protei.portal.ui.common.client.widget.uploader.impl;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.FormElement;

@@ -3,7 +3,8 @@ package ru.protei.portal.ui.issue.client.activity.edit;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
-import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.AbstractAttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
 
 /**
  * Представление создания и редактирования обращения
@@ -50,7 +51,7 @@ public interface AbstractIssueEditView extends IsWidget {
 
     void setFavoriteButtonActive(boolean isActive);
 
-    AttachmentUploader getFileUploader();
+    AbstractAttachmentUploader getFileUploader();
 
     void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler);
 
