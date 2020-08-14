@@ -23,21 +23,17 @@
                             <g:Button ui:field="addLinkButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.linkAdd}">
                                 <i class="fas fa-link"/>
                             </g:Button>
-                            <button ui:field="addAttachmentButton" class="btn btn-default btn-xs btn-cons-toolbar" title="{lang.attachmentAdd}">
-                                <div class="attachment-full-view-uploader">
-                                    <fileuploader:AttachmentUploader ui:field="fileUploader">
-                                            <i class="fas fa-plus ion-plus"/>
-                                            <div class="icon-verifiable-dots">
-                                                <div class="lds-ellipsis">
-                                                    <div/>
-                                                    <div/>
-                                                    <div/>
-                                                    <div/>
-                                                </div>
-                                            </div>
-                                    </fileuploader:AttachmentUploader>
+                            <fileuploader:FullViewAttachmentUploader ui:field="fileUploader" styleName="btn btn-default btn-xs btn-cons-toolbar attachment-full-view-uploader">
+                                <i class="fas fa-plus ion-plus"/>
+                                <div class="icon-verifiable-dots">
+                                    <div class="lds-ellipsis">
+                                        <div/>
+                                        <div/>
+                                        <div/>
+                                        <div/>
+                                    </div>
                                 </div>
-                            </button>
+                            </fileuploader:FullViewAttachmentUploader>
                         </div>
                     </div>
 

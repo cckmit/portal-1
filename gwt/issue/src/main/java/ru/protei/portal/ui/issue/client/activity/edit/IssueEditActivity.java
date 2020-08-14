@@ -435,7 +435,7 @@ public abstract class IssueEditActivity implements
 
         issueInfoWidget.setAttachmentContainerShow(localStorageService.getBooleanOrDefault(UiConstants.ATTACHMENTS_PANEL_VISIBILITY, false));
 
-        view.setAddAttachmentButtonVisible(!readOnly);
+        view.addAttachmentUploaderVisibility().setVisible(!readOnly);
         view.getInfoContainer().clear();
         view.getInfoContainer().add(issueInfoWidget);
 

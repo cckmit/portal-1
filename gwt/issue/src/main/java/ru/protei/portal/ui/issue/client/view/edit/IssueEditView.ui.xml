@@ -27,24 +27,20 @@
                             <g:Button ui:field="addLinkButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.linkAdd}">
                                 <i class="fas fa-link"/>
                             </g:Button>
-                            <button ui:field="addAttachmentButton" class="btn btn-default btn-xs btn-cons-toolbar" title="{lang.attachmentAdd}">
-                                <div class="attachment-full-view-uploader">
-                                    <fileuploader:AttachmentUploader ui:field="fileUploader">
-                                        <i class="fas fa-plus ion-plus"/>
-                                        <div class="icon-verifiable-dots">
-                                            <div class="lds-ellipsis">
-                                                <div/>
-                                                <div/>
-                                                <div/>
-                                                <div/>
-                                            </div>
-                                        </div>
-                                    </fileuploader:AttachmentUploader>
-                                </div>
-                            </button>
                             <g:Button ui:field="nameAndDescriptionEditButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.editNameAndDescription}">
                                 <i class="fa fa-pencil-alt"/>
                             </g:Button>
+                            <fileuploader:FullViewAttachmentUploader ui:field="fileUploader" styleName="btn btn-default btn-xs btn-cons-toolbar attachment-full-view-uploader">
+                                <i class="fas fa-plus ion-plus"/>
+                                <div class="icon-verifiable-dots">
+                                    <div class="lds-ellipsis">
+                                        <div/>
+                                        <div/>
+                                        <div/>
+                                        <div/>
+                                    </div>
+                                </div>
+                            </fileuploader:FullViewAttachmentUploader>
                         </div>
                     </div>
 

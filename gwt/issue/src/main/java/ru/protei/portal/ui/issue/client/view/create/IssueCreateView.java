@@ -19,6 +19,7 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEve
 import ru.protei.portal.ui.common.client.widget.attachment.list.fullview.FullViewAttachmentList;
 import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.FullViewAttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.issue.client.activity.create.AbstractIssueCreateActivity;
@@ -40,7 +41,6 @@ public class IssueCreateView extends Composite implements AbstractIssueCreateVie
         description.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged(DESCRIPTION, isDisplay));
         description.setFileUploader(fileUploader);
         description.setDropZonePanel(dropPanel);
-        addAttachmentClickHandler(addAttachmentButton, fileUploader);
         attachmentsHeaderContainer.addDomHandler(event -> {
             if (attachmentsRootContainer.getElement().hasClassName("show")) {
                 attachmentsRootContainer.getElement().removeClassName("show");
@@ -207,12 +207,6 @@ public class IssueCreateView extends Composite implements AbstractIssueCreateVie
         }
     }
 
-    private native void addAttachmentClickHandler(Element element, AttachmentUploader fileUploader) /*-{
-        element.onclick = function () {
-            fileUploader.@ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader::initUploading()();
-        }
-    }-*/;
-
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
@@ -256,7 +250,7 @@ public class IssueCreateView extends Composite implements AbstractIssueCreateVie
 
     @Inject
     @UiField
-    AttachmentUploader fileUploader;
+    FullViewAttachmentUploader fileUploader;
     @Inject
     @UiField(provided = true)
     FullViewAttachmentList attachmentListContainer;
@@ -288,8 +282,6 @@ public class IssueCreateView extends Composite implements AbstractIssueCreateVie
     Button addTagButton;
     @UiField
     Button addLinkButton;
-    @UiField
-    ButtonElement addAttachmentButton;
 
     private HasValidable nameValidator = new HasValidable() {
         @Override

@@ -54,5 +54,5 @@ public interface AbstractIssueEditView extends IsWidget {
 
     void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler);
 
-    void setAddAttachmentButtonVisible(boolean isVisible);
+    HasVisibility addAttachmentUploaderVisibility();
 }
