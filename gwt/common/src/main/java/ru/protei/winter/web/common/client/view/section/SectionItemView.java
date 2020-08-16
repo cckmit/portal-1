@@ -128,7 +128,7 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
     }
 
     private void showSubSection() {
-        int height = subSection.getElement().getChildCount() * 38 + 28;
+        int height = subSection.getElement().getChildCount() * 38 + 30;
         subSection.getElement().getStyle().setHeight(height, Style.Unit.PX);
         subSection.getElement().getStyle().setPaddingTop(18, Style.Unit.PX);
         subSection.getElement().getStyle().setPaddingBottom(10, Style.Unit.PX);

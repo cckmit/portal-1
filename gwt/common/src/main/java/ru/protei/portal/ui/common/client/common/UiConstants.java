@@ -36,6 +36,12 @@ public class UiConstants {
         String TOP_BRASS = "fas fa-user-tie";
         String EMPLOYEE_BIRTHDAY = "fas fa-birthday-cake";
         String ABSENCE = "fas fa-user-alt-slash";
+        String ARCHIVE = "fas fa-file-archive";
+        String BUG_TRACKING = "fas fa-bug";
+        String TODO_LIST = "fas fa-clipboard-check";
+        String FEATURE_REQUEST = "fas fa-question-circle";
+        String CRM = "fas fa-handshake";
+        String ACRM = "fas fa-tools";
     }
     public interface Icons {
         String APPROVED = "fa-clipboard-check";

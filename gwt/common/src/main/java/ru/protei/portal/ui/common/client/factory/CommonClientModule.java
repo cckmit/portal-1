@@ -39,6 +39,7 @@ import ru.protei.portal.ui.common.client.activity.info.JiraInfoActivity;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
 import ru.protei.portal.ui.common.client.activity.notify.AbstractNotifyView;
 import ru.protei.portal.ui.common.client.activity.notify.NotifyActivity;
+import ru.protei.portal.ui.common.client.activity.page.archive.*;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.pathitem.PathItemActivity;
 import ru.protei.portal.ui.common.client.activity.pathitem.item.AbstractPathItemView;
@@ -99,6 +100,13 @@ public class CommonClientModule extends AbstractGinModule {
 
     @Override
     protected void configure() {
+        bind( ArchivePage.class ).asEagerSingleton();
+        bind( BugTrackingPage.class ).asEagerSingleton();
+        bind( ToDoListPage.class ).asEagerSingleton();
+        bind( FeatureRequestPage.class ).asEagerSingleton();
+        bind( CrmPage.class ).asEagerSingleton();
+        bind( AcrmPage.class ).asEagerSingleton();
+
         bind( ServerEventBridge.class ).asEagerSingleton();
 
         bind( ActionBarActivity.class ).asEagerSingleton();

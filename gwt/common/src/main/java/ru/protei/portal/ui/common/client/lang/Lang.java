@@ -2965,4 +2965,6 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeBirthdayNextMonth();
 
     String topBrass();
+
+    String archive();
 }

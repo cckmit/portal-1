@@ -99,6 +99,12 @@ public class DebugIds {
         String EMPLOYEE_LIST = "sidebar-menu-employee-list";
         String EMPLOYEE_BIRTHDAY = "sidebar-menu-employee-birthday";
         String ABSENCE = "sidebar-menu-employee-absence";
+        String ARCHIVE = "sidebar-menu-archive";
+        String BUG_TRACKING = "sidebar-menu-archive-bug-tracking";
+        String TODO_LIST = "sidebar-menu-archive-todo-list";
+        String FEATURE_REQUEST = "sidebar-menu-archive-feature-request";
+        String CRM = "sidebar-menu-archive-crm";
+        String ACRM = "sidebar-menu-archive-acrm";
     }
 
     public interface SELECTOR {
