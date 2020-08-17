@@ -15,4 +15,6 @@ public interface ContractDAO extends PortalBaseDAO<Contract> {
     int countByQuery(ContractQuery query);
 
     List<Contract> getByProjectId(Long projectId);
+
+    List<Contract> getByRefKeys(List<String> refKeys);
 }

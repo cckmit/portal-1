@@ -74,12 +74,93 @@ public class BootstrapService {
         migrateIpReservation();
         updateManagerFiltersWithoutManagerCompany();
         //fillWithCrossLinkColumn();
-        transferYoutrackLinks();
+        //transferYoutrackLinks();
         addCommonManager();
         updateHistoryTable();
         updateIssueFiltersDateRanges();
         updateIssueReportDateRanges();
-        //migratePersonAbsences();
+        migratePersonAbsences();
+        updateWithCrossLinkColumn();
+        transferProjectCrosslinkToYoutrack();
+    }
+
+    private void updateWithCrossLinkColumn() {
+
+        log.debug("updateWithCrossLinkColumn(): start");
+
+        CaseQuery caseQuery = new CaseQuery();
+        caseQuery.setType(En_CaseType.PROJECT);
+        List<CaseObject> projects = caseObjectDAO.getCases(caseQuery);
+
+        log.debug("updateWithCrossLinkColumn(): projects size={}", projects.size());
+
+        for (CaseObject project : projects) {
+            try {
+                CaseLinkQuery query = new CaseLinkQuery();
+                query.setType(En_CaseLink.YT);
+                query.setCaseId(project.getId());
+                List<CaseLink> ytLinks = caseLinkDAO.getListByQuery(query);
+
+                log.debug("updateWithCrossLinkColumn(): ytLinks={}", ytLinks);
+
+                for (CaseLink caseLink : ytLinks) {
+                    caseLink.setWithCrosslink(true);
+                    caseLinkDAO.merge(caseLink);
+                }
+
+                log.debug("updateWithCrossLinkColumn(): successfully updated project ytLinks={}", ytLinks);
+            } catch (Exception e){
+                log.error("updateWithCrossLinkColumn(): failed to updated project={}, errorMessage={}", project, e.getMessage(), e);
+            }
+        }
+
+        log.debug("updateWithCrossLinkColumn(): finish");
+    }
+
+    private void transferProjectCrosslinkToYoutrack() {
+        if (!config.data().integrationConfig().isYoutrackProjectLinksMigrationEnabled() || !config.data().getCommonConfig().isProductionServer()){
+            return;
+        }
+
+        log.debug("transferProjectCrosslinkToYoutrack(): start");
+
+        CaseQuery caseQuery = new CaseQuery();
+        caseQuery.setType(En_CaseType.PROJECT);
+        List<CaseObject> projects = caseObjectDAO.getCases(caseQuery);
+
+        log.debug("transferProjectCrosslinkToYoutrack(): projects size={}", projects.size());
+
+        Set<String> youtrackIssueIds = new HashSet<>();
+
+        for (CaseObject project : projects) {
+            try {
+                CaseLinkQuery query = new CaseLinkQuery();
+                query.setType(En_CaseLink.YT);
+                query.setCaseId(project.getId());
+                List<CaseLink> ytLinks = caseLinkDAO.getListByQuery(query);
+
+                log.debug("transferProjectCrosslinkToYoutrack(): ytLinks={}", ytLinks);
+
+                for (CaseLink caseLink : ytLinks) {
+                    youtrackIssueIds.add(caseLink.getRemoteId());
+                }
+
+            } catch (Exception e){
+                log.error("transferProjectCrosslinkToYoutrack(): project={}, errorMessage={}", project, e.getMessage(), e);
+            }
+        }
+
+        log.debug("transferProjectCrosslinkToYoutrack(): youtrackIssueIds size={}", youtrackIssueIds.size());
+        youtrackIssueIds.forEach(youtrackIssueId -> {
+            try {
+                youtrackService.setIssueProjectNumbers(youtrackIssueId, findLinkedCaseIdsByTypeAndYoutrackId(En_CaseType.PROJECT, youtrackIssueId));
+                log.debug("transferProjectCrosslinkToYoutrack(): SUCCESS transfer case links to youtrack id={}", youtrackIssueId);
+            } catch (Exception e){
+                log.error("transferProjectCrosslinkToYoutrack(): ERROR transfer case links to youtrack id={}, error message={}", youtrackIssueId, e.getMessage());
+            }
+        });
+
+        log.debug("transferProjectCrosslinkToYoutrack(): finish");
     }
 
     private void fillWithCrossLinkColumn() {
@@ -168,25 +249,6 @@ public class BootstrapService {
         });
     }
 
-    private List<Long> findAllCaseIdsByYoutrackId(String youtrackId, Boolean withCrosslink) {
-        CaseLinkQuery caseLinkQuery = new CaseLinkQuery();
-        caseLinkQuery.setRemoteId( youtrackId );
-        caseLinkQuery.setType( En_CaseLink.YT );
-        caseLinkQuery.setWithCrosslink(withCrosslink);
-        List<CaseLink> listByQuery = caseLinkDAO.getListByQuery(caseLinkQuery);
-
-        return listByQuery.stream()
-                .map(CaseLink::getCaseId)
-                .collect(Collectors.toList());
-    }
-
-    private List<Long> findAllCaseNumbersByYoutrackId(String youtrackId, Boolean withCrosslink){
-        List<CaseObject> caseObjects = caseObjectDAO.getListByKeys(findAllCaseIdsByYoutrackId(youtrackId, withCrosslink));
-
-        return caseObjects.stream()
-                .map(CaseObject::getCaseNumber)
-                .collect(Collectors.toList());
-    }
 
     private void fillImportanceLevels() {
         if(importanceLevelDAO.getAll().size() == 4){
@@ -763,6 +825,53 @@ if(true) return; //TODO remove
         calendar.setTime(date);
         calendar.set(Calendar.DAY_OF_MONTH, 1);
         return calendar.getTime();
+    }
+
+    private List<CaseObject> findCaseObjectsByTypeAndYoutrackId(En_CaseType caseType, String youtrackId, Boolean withCrosslink){
+        List<Long> linkedCaseIds = findAllCaseIdsByYoutrackId(youtrackId, withCrosslink);
+
+        if (CollectionUtils.isEmpty(linkedCaseIds)){
+            return new ArrayList<>();
+        }
+
+        CaseQuery query = new CaseQuery();
+        query.setCaseIds(linkedCaseIds);
+        query.setType(caseType);
+        return caseObjectDAO.getCases(query);
+    }
+
+    private List<Long> findAllCaseIdsByYoutrackId(String youtrackId, Boolean withCrosslink) {
+        return findAllCaseLinksByYoutrackId(youtrackId, withCrosslink).stream()
+                .map(CaseLink::getCaseId)
+                .collect(Collectors.toList());
+    }
+
+    private List<CaseLink> findAllCaseLinksByYoutrackId(String youtrackId, Boolean withCrosslink){
+        CaseLinkQuery caseLinkQuery = new CaseLinkQuery();
+        caseLinkQuery.setRemoteId( youtrackId );
+        caseLinkQuery.setType( En_CaseLink.YT );
+        caseLinkQuery.setWithCrosslink(withCrosslink);
+        return caseLinkDAO.getListByQuery(caseLinkQuery);
+    }
+
+    private List<Long> findLinkedCaseIdsByTypeAndYoutrackId(En_CaseType caseType, String youtrackId){
+        List<CaseObject> cases = findCaseObjectsByTypeAndYoutrackId(caseType, youtrackId, true);
+
+        if (CollectionUtils.isEmpty(cases)){
+            return new ArrayList<>();
+        }
+
+        return cases.stream()
+                .map(caseObject -> caseObject.getId())
+                .collect(Collectors.toList());
+    }
+
+    private List<Long> findAllCaseNumbersByYoutrackId(String youtrackId, Boolean withCrosslink){
+        List<CaseObject> caseObjects = caseObjectDAO.getListByKeys(findAllCaseIdsByYoutrackId(youtrackId, withCrosslink));
+
+        return caseObjects.stream()
+                .map(CaseObject::getCaseNumber)
+                .collect(Collectors.toList());
     }
 
     @Inject

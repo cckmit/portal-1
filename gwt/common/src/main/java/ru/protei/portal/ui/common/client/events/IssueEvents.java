@@ -175,5 +175,15 @@ public class IssueEvents {
         }
         public CaseObjectMeta meta;
     }
+
+    public static class IssueFavoriteStateChanged {
+        public IssueFavoriteStateChanged(Long issueId, boolean isFavorite) {
+            this.isFavorite = isFavorite;
+            this.issueId = issueId;
+        }
+
+        public boolean isFavorite;
+        public Long issueId;
+    }
 }
 

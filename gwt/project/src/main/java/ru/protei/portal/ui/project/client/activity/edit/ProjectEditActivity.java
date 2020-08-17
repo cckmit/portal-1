@@ -7,18 +7,20 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
-import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -111,7 +113,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
     @Override
     public void onAddLinkClicked(IsWidget anchor) {
-        fireEvent(new CaseLinkEvents.ShowLinkSelector(anchor, PROJECT_CASE_TYPE, false));
+        fireEvent(new CaseLinkEvents.ShowLinkSelector(anchor, PROJECT_CASE_TYPE));
     }
 
     @Override
@@ -175,10 +177,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         fillCaseLinks(project.getId());
 
         if(!isNew( project )) {
-            fireEvent( new CaseCommentEvents.Show( view.getCommentsContainer() )
-                    .withCaseType( En_CaseType.PROJECT )
-                    .withCaseId( project.getId() )
-                    .withModifyEnabled( hasPrivileges( project.getId() ) ) );
+            fireEvent( new CaseCommentEvents.Show( view.getCommentsContainer(), project.getId(), En_CaseType.PROJECT, hasPrivileges( project.getId() ) ) );
         }
 
         fireEvent(new ProjectEvents.ShowProjectDocuments(view.getDocumentsContainer(), this.project.getId()));
@@ -254,7 +253,16 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
             }
         }
 
+        if (!hasHeadManager(CollectionUtils.emptyIfNull(view.team().getValue()))) {
+            fireEvent(new NotifyEvents.Show(lang.errSaveProjectHeadManager() ,NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
         return true;
+    }
+
+    private boolean hasHeadManager(Set<PersonProjectMemberView> team) {
+        return team.stream().anyMatch(personProjectMemberView -> En_DevUnitPersonRoleType.HEAD_MANAGER.equals(personProjectMemberView.getRole()));
     }
 
     private boolean hasPrivileges(Long projectId) {
@@ -277,8 +285,6 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     RegionControllerAsync regionService;
     @Inject
     PolicyService policyService;
-    @Inject
-    DefaultErrorHandler defaultErrorHandler;
 
     private Project project;
 

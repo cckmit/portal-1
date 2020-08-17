@@ -32,10 +32,6 @@ public abstract class IssueFilterWidgetModel implements Activity, AbstractIssueF
             return;
         }
 
-        if (additionalValidate != null && !additionalValidate.apply(filledUserFilter)) {
-            return;
-        }
-
         filterService.saveIssueFilter(filledUserFilter, new RequestCallback<CaseFilter>() {
             @Override
             public void onError(Throwable throwable) {
@@ -61,11 +57,6 @@ public abstract class IssueFilterWidgetModel implements Activity, AbstractIssueF
         );
     }
 
-    @Override
-    public void addAdditionalFilterValidate(Function<CaseFilter, Boolean> validate) {
-        additionalValidate = validate;
-    }
-
     private Runnable removeAction(Long filterId, Runnable afterRemove) {
         return () -> filterService.removeIssueFilter(filterId, new FluentCallback<Boolean>()
                 .withError(throwable -> {
@@ -84,5 +75,4 @@ public abstract class IssueFilterWidgetModel implements Activity, AbstractIssueF
     IssueFilterControllerAsync filterService;
     @Inject
     DefaultErrorHandler defaultErrorHandler;
-    private Function<CaseFilter, Boolean> additionalValidate;
 }

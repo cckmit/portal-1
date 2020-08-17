@@ -17,6 +17,8 @@ import ru.protei.portal.ui.common.client.widget.selector.rangetype.RangeTypeButt
 import java.util.List;
 import java.util.Objects;
 
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
+
 public class TypedSelectorRangePicker extends Composite
         implements HasValue<DateIntervalWithType>, HasEnabled {
 
@@ -26,7 +28,7 @@ public class TypedSelectorRangePicker extends Composite
     }
 
     public void setHeader( String label ) {
-        this.label.removeStyleName( "hide" );
+        this.label.removeStyleName( HIDE );
         this.label.getElement().setInnerText( label == null ? "" : label );
     }
 

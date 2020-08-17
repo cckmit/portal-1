@@ -12,8 +12,11 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.InlineLabel;
+import org.apache.poi.hssf.record.HideObjRecord;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
+
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 
 public class PopupSelectorItemWithEdit<T> extends Composite implements HasValue<T>, HasAddHandlers, HasEditHandlers, HasClickHandlers, SelectorItem<T> {
 
@@ -76,7 +79,7 @@ public PopupSelectorItemWithEdit() {
     }
 
     public void setEditable(boolean isEditable) {
-        editIcon.setStyleName("hide", !isEditable);
+        editIcon.setStyleName(HIDE, !isEditable);
     }
 
     public void setName (String name) {

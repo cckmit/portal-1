@@ -455,7 +455,7 @@ public class PlanServiceTest extends BaseServiceTest{
         }
 
         for (int i = 0; i < list1.size(); i++) {
-            if (list1.get(i).getId() != list2.get(i).getId()){
+            if (!list1.get(i).getId().equals(list2.get(i).getId())){
                 return false;
             }
         }

@@ -3,6 +3,7 @@ package ru.protei.portal.ui.contract.client.view.table;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.safehtml.shared.SimpleHtmlSanitizer;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.DOM;
@@ -126,15 +127,16 @@ public class ContractTableView extends Composite implements AbstractContractTabl
         clickColumns.add(type);
 
         DynamicColumn<Contract> numTypeColumn = new DynamicColumn<>(lang.contractNumber(), "num-column",
-                contract -> "<b>" + lang.contractNum(contract.getNumber()) + "</b><br/>"
+                contract -> "<b>" + SimpleHtmlSanitizer.sanitizeHtml(lang.contractNum(contract.getNumber())).asString() + "</b><br/>"
                         + "<small>" + contractTypeLang.getName(contract.getContractType()) + "<br/>"
                         + "<b>" + lang.contractDateSigning() + ":</b> " + (contract.getDateSigning() == null ? lang.contractDateNotDefined() : dateFormat.format(contract.getDateSigning())) + "<br/>"
                         + "<b>" + lang.contractDateValid() + ":</b> " + (contract.getDateValid() == null ? lang.contractDateNotDefined() : dateFormat.format(contract.getDateValid()))  + "</small>");
         clickColumns.add(numTypeColumn);
 
         DynamicColumn<Contract> descriptionColumn = new DynamicColumn<>(lang.contractDescription(), "description-column",
-                contract -> "<b>" + (contract.getProjectId() == null ? StringUtils.emptyIfNull(contract.getCaseDirectionName()) : StringUtils.emptyIfNull(contract.getDirectionName())) + "</b><br/>"
-                        + StringUtils.emptyIfNull(contract.getDescription()));
+                contract -> "<b>" + (contract.getDirectionId() == null ?  "" : StringUtils.emptyIfNull(contract.getDirectionName() ) + "</b><br/>"
+                            + (contract.getProjectId() == null ? "" : StringUtils.emptyIfNull(contract.getProjectName() + "<br/>"))
+                            + SimpleHtmlSanitizer.sanitizeHtml(StringUtils.emptyIfNull(contract.getDescription())).asString()));
         clickColumns.add(descriptionColumn);
 
         DynamicColumn<Contract> workGroupColumn = new DynamicColumn<>(lang.contractWorkGroup(), "work-group-column",

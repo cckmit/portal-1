@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.project.client.view.search;
+package ru.protei.portal.ui.common.client.view.projectsearch;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
@@ -17,18 +17,21 @@ import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dto.ProjectInfo;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.activity.projectsearch.AbstractProjectSearchActivity;
+import ru.protei.portal.ui.common.client.activity.projectsearch.AbstractProjectSearchView;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.projectlist.list.ProjectList;
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
-import ru.protei.portal.ui.project.client.activity.search.AbstractProjectSearchActivity;
-import ru.protei.portal.ui.project.client.activity.search.AbstractProjectSearchView;
-import ru.protei.portal.ui.project.client.view.widget.projectlist.list.ProjectList;
 
 import java.util.List;
 import java.util.Set;
 
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 /**
  * Активность поиска проекта
  */
@@ -66,6 +69,9 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
     }
 
     @Override
+    public HasValue<Set<PersonShortView>> managers() { return managers; }
+
+    @Override
     public HasValue<DateInterval> dateCreatedRange() {
         return dateCreatedRange;
     }
@@ -76,14 +82,24 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
     }
 
     @Override
+    public void setVisibleProducts(boolean value) {
+        productsContainer.setVisible(value);
+    }
+
+    @Override
+    public void setVisibleManagers(boolean value) {
+        managersContainer.setVisible(value);
+    }
+
+    @Override
     public void clearProjectList() {
         project.clearItems();
     }
 
     @Override
     public void fillProjectList(List<ProjectInfo> list) {
-        searchInfo.removeClassName("hide");
-        projectsContainer.removeClassName("hide");
+        searchInfo.removeClassName(HIDE);
+        projectsContainer.removeClassName(HIDE);
         project.addItems(list);
     }
 
@@ -92,16 +108,12 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
         name.setValue(null);
         customerType.setValue(null);
         products.setValue(null);
+        managers.setValue(null);
         dateCreatedRange.setValue(null);
-        searchInfo.addClassName("hide");
-        projectsContainer.addClassName("hide");
+        searchInfo.addClassName(HIDE);
+        projectsContainer.addClassName(HIDE);
         project.clearItems();
     }
-
-//    @Override
-//    public void refreshProducts() {
-//        products.refreshOptions();
-//    }
 
     @UiHandler("search")
     public void onSearchClicked(ClickEvent event) {
@@ -120,9 +132,9 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
     }
 
     @UiHandler("project")
-    public void onProjectChanged(ValueChangeEvent<ProjectInfo> event) {
+    public void onProjectSelected(ValueChangeEvent<ProjectInfo> event) {
         if (activity != null) {
-            activity.onProjectChanged();
+            activity.onProjectSelected();
         }
     }
 
@@ -132,6 +144,9 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
         dateCreatedRange.getRelative().ensureDebugId(DebugIds.DOCUMENT.PROJECT_SEARCH.CREATION_DATE_BUTTON);
         customerType.setEnsureDebugId(DebugIds.DOCUMENT.PROJECT_SEARCH.CUSTOMER_TYPE_SELECTOR);
         products.ensureDebugId(DebugIds.DOCUMENT.PROJECT_SEARCH.PRODUCT_SELECTOR);
+        productsContainer.ensureDebugId(DebugIds.DOCUMENT.PROJECT_SEARCH.PRODUCTS_CONTAINER);
+        managers.ensureDebugId(DebugIds.DOCUMENT.PROJECT_SEARCH.MANAGER_SELECTOR);
+        managersContainer.ensureDebugId(DebugIds.DOCUMENT.PROJECT_SEARCH.MANAGERS_CONTAINER);
         search.ensureDebugId(DebugIds.DOCUMENT.PROJECT_SEARCH.FIND_BUTTON);
         reset.ensureDebugId(DebugIds.DOCUMENT.PROJECT_SEARCH.RESET_BUTTON);
 
@@ -152,6 +167,16 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
     @Inject
     @UiField(provided = true)
     DevUnitMultiSelector products;
+
+    @UiField
+    HTMLPanel productsContainer;
+
+    @Inject
+    @UiField(provided = true)
+    EmployeeMultiSelector managers;
+
+    @UiField
+    HTMLPanel managersContainer;
 
     @Inject
     @UiField(provided = true)
@@ -191,6 +216,6 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
 
     private AbstractProjectSearchActivity activity;
 
-    private static SearchProjectViewUiBinder ourUiBinder = GWT.create(SearchProjectViewUiBinder.class);
-    interface SearchProjectViewUiBinder extends UiBinder<HTMLPanel, ProjectSearchView > {}
+    private static ProjectSearchViewUiBinder ourUiBinder = GWT.create(ProjectSearchViewUiBinder.class);
+    interface ProjectSearchViewUiBinder extends UiBinder<HTMLPanel, ProjectSearchView > {}
 }

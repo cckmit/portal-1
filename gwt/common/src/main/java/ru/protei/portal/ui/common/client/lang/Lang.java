@@ -612,6 +612,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String caseLinkYouTrackShort();
 
+    String errYoutrackSynchronizationFailed();
+
     String caseLinkSuccessfulCreated();
 
     String caseLinkSuccessfulRemoved();
@@ -843,8 +845,6 @@ public interface Lang extends Messages, ContactItemLang {
     String issueCommentChangeImportanceTo();
 
     String issueCommentChangeManagerTo();
-
-    String errEditIssueCommentEmpty();
 
     String commentEmpty();
 
@@ -1986,7 +1986,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractTypeExportOfServiceContract();
 
-    String contractTypeGovermentContract();
+    String contractTypeGovernmentContract();
 
     String contractTypeLeaseContract();
 
@@ -2132,7 +2132,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractValidationEmptyType();
 
-    String contractValidationEmptyDirection();
+    String contractValidationEmptyProject();
 
     String contractValidationEmptyState();
 
@@ -2933,4 +2933,24 @@ public interface Lang extends Messages, ContactItemLang {
     String filterRemoveSuccessed();
 
     String filterNotDefined();
+
+    String errorNeedFeelTimeElapsed();
+
+    String errSaveProjectHeadManager();
+
+    String searchProjectTitle();
+
+    String selectContractProject();
+
+    String contractProjectFindNotChosenError();
+
+    String errContractProjectRequired();
+
+    String issueAddToFavorites();
+
+    String issueRemoveFromFavorites();
+
+    String issueFavorites();
+
+    String issueSyncedWith();
 }

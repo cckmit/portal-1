@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.project.client.view.widget.projectlist.list;
+package ru.protei.portal.ui.common.client.widget.projectlist.list;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -16,9 +16,11 @@ import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.project.client.view.widget.projectlist.item.ProjectItem;
+import ru.protei.portal.ui.common.client.widget.projectlist.item.ProjectItem;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ProjectList

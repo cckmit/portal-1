@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.*;
+
 /**
  * Cелектор c выпадающим списком, множественный выбор
  */
@@ -61,9 +63,7 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
             ValueChangeEvent.fire(this, selectorValue);
         }
 
-        if (isValidable) {
-            setValid(isValid());
-        }
+        validateSelector(isValidable);
     }
 
     @Override
@@ -85,9 +85,9 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
     public void setEnabled( boolean enabled ) {
         isEnabled = enabled;
         if (isEnabled) {
-            itemContainer.removeStyleName( INACTIVE );
+            itemContainer.removeStyleName(INACTIVE);
         } else {
-            itemContainer.addStyleName( INACTIVE );
+            itemContainer.addStyleName(INACTIVE);
         }
         caretButton.setEnabled( isEnabled );
         clearButton.setEnabled( isEnabled );
@@ -102,9 +102,9 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
     @Override
     public void setValid(boolean isValid){
         if(isValid)
-            select2.removeClassName(ERROR_STYLENAME);
+            select2.removeClassName(HAS_ERROR);
         else
-            select2.addClassName(ERROR_STYLENAME);
+            select2.addClassName(HAS_ERROR);
     }
 
     public void setValidation(boolean isValidable){
@@ -132,6 +132,7 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         itemViews.clear();
         getSelector().getSelection().clear();
         clearButton.setVisible( false );
+        validateSelector(isValidable);
 
         ValueChangeEvent.fire( this, getValue() );
     }
@@ -141,6 +142,8 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         Set<T> value = getValue();
         showValue( value );
         getPopup().showNear( itemContainer );
+        validateSelector(isValidable);
+
         ValueChangeEvent.fire( this, value );
     }
 
@@ -181,6 +184,8 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         itemViews.add( itemView );
         itemView.setActivity( itemViewToRemove -> removeItem( itemViewToRemove, item ) );
         itemContainer.add( itemView );
+
+        validateSelector(isValidable);
     }
 
     private void removeItem( SelectItemView itemView, T item ) {
@@ -188,6 +193,8 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         itemViews.remove( itemView );
         getSelector().getSelection().select( item );
         clearButton.setVisible( !isEmpty() );
+        validateSelector(isValidable);
+
         ValueChangeEvent.fire( this, getValue() );
     }
 
@@ -215,7 +222,7 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         if (icon != null) {
             addIcon.setClassName( "fa " + icon );
         } else {
-            addIcon.setClassName( "hide" );
+            addIcon.setClassName( HIDE );
         }
         add.setInnerText( text );
         add.removeClassName( "caret" );
@@ -229,7 +236,7 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         if (icon != null) {
             clearIcon.setClassName( "fa " + icon );
         } else {
-            clearIcon.setClassName( "hide" );
+            clearIcon.setClassName( HIDE );
         }
         clear.setInnerText( text );
         clear.setClassName( "" );
@@ -241,6 +248,12 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
             clearButton.removeStyleName("bg-white no-border");
             caretButton.addStyleName(style);
             clearButton.addStyleName(style);
+        }
+    }
+
+    private void validateSelector(boolean isValidable) {
+        if (isValidable) {
+            setValid(isValid());
         }
     }
 
@@ -271,9 +284,6 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
     List<SelectItemView> itemViews = new ArrayList<SelectItemView>();
 
     private boolean isEnabled = true;
-    public static final String INACTIVE = "inactive";
-    public static final String HIDE = "hide";
-    private static final String ERROR_STYLENAME ="has-error";
     private boolean isValidable;
 
     interface BlockSelectorUiBinder extends UiBinder<HTMLPanel, InputPopupMultiSelector> {

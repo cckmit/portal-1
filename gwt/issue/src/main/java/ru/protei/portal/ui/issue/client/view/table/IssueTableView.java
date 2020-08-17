@@ -16,6 +16,7 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.AttachClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
+import ru.protei.portal.ui.common.client.columns.FavoritesClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.separator.Separator;
 import ru.protei.portal.ui.issue.client.activity.table.AbstractIssueTableActivity;
@@ -24,8 +25,6 @@ import ru.protei.portal.ui.issue.client.view.table.columns.ContactColumn;
 import ru.protei.portal.ui.issue.client.view.table.columns.InfoColumn;
 import ru.protei.portal.ui.issue.client.view.table.columns.ManagerColumn;
 import ru.protei.portal.ui.issue.client.view.table.columns.NumberColumn;
-
-import java.util.logging.Logger;
 
 
 /**
@@ -42,6 +41,10 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     @Override
     public void setActivity( AbstractIssueTableActivity activity ) {
         this.activity = activity;
+
+        favoritesClickColumn.setHandler(activity);
+        favoritesClickColumn.setColumnProvider(columnProvider);
+        favoritesClickColumn.setFavoritesStateManager(activity);
 
         editClickColumn.setHandler( activity );
         editClickColumn.setEditHandler( activity );
@@ -136,7 +139,9 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
         contact = new ContactColumn( lang );
         manager = new ManagerColumn( lang );
         info = new InfoColumn( lang );
+        favoritesClickColumn = new FavoritesClickColumn<>(lang);
 
+        table.addColumn(favoritesClickColumn.header, favoritesClickColumn.values);
 //        table.addColumn( selectionColumn.header, selectionColumn.values );
         table.addColumn( issueNumber.header, issueNumber.values );
         table.addColumn( info.header, info.values );
@@ -178,6 +183,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     ContactColumn contact;
     ManagerColumn manager;
     InfoColumn info;
+    FavoritesClickColumn<CaseShortView> favoritesClickColumn;
 
     AbstractColumn hideContact;
     AbstractColumn hideManager;

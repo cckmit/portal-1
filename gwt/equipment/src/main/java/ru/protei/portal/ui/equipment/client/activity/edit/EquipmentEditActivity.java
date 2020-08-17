@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EquipmentShortView;
+import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -22,6 +23,7 @@ import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
+import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -130,6 +132,20 @@ public abstract class EquipmentEditActivity
 
     @Override
     public void onDecimalNumbersChanged() {}
+
+    @Override
+    public void onProjectChanged() {
+        EntityOption project = view.project().getValue();
+
+        if (project == null) {
+            view.manager().setValue(null);
+            return;
+        }
+
+        projectService.getProjectLeader(project.getId(), new FluentCallback<PersonProjectMemberView>()
+                .withSuccess(personProjectMemberView -> view.manager().setValue(personProjectMemberView))
+        );
+    }
 
     @Override
     public void onCreateDocumentClicked() {
@@ -264,6 +280,8 @@ public abstract class EquipmentEditActivity
     DefaultErrorHandler defaultErrorHandler;
     @Inject
     PolicyService policyService;
+    @Inject
+    RegionControllerAsync projectService;
 
     private AppEvents.InitDetails initDetails;
 }

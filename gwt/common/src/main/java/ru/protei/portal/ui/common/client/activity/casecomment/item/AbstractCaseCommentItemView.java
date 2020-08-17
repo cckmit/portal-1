@@ -56,4 +56,8 @@ public interface AbstractCaseCommentItemView extends IsWidget {
     void setPrivacyFlag(Boolean value);
 
     void setTimeElapsedType(En_TimeElapsedType type);
+
+    void displayUpdatedAnimation();
+
+    void displayAddedAnimation();
 }

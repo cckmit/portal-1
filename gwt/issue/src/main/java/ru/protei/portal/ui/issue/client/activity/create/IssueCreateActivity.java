@@ -309,6 +309,11 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         createRequest.setPlans(issueMetaView.ownerPlans().getValue());
     }
 
+    @Override
+    public void onFavoriteStateChanged() {
+        view.setFavoriteButtonActive(!view.isFavoriteButtonActive());
+    }
+
     private void placeView(HasWidgets parent, AbstractIssueCreateView view) {
         parent.clear();
         parent.add(view.asWidget());
@@ -355,6 +360,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         view.name().setValue(caseObject.getName());
         view.description().setValue(caseObject.getInfo());
         view.setDescriptionPreviewAllowed(makePreviewDisplaying(AbstractIssueEditView.DESCRIPTION));
+        view.setFavoriteButtonActive(Boolean.TRUE.equals(caseObject.isFavorite()));
 
         fillMetaView(new CaseObjectMeta(caseObject), caseObject.getNotifiers(), caseObject.getTimeElapsedType(), createRequest.getPlans());
 
@@ -645,6 +651,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         caseObject.setAttachments(new ArrayList<>(view.attachmentsContainer().getAll()));
         caseObject.setManagerCompanyId(issueMetaView.getManagerCompany().getId());
         caseObject.setManagerCompanyName(issueMetaView.getManagerCompany().getDisplayText());
+        caseObject.setFavorite(view.isFavoriteButtonActive());
 
         if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW) && policyService.personBelongsToHomeCompany()) {
             caseObject.setTimeElapsed(issueMetaView.getTimeElapsed());

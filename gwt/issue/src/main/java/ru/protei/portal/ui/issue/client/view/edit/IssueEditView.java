@@ -15,7 +15,11 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
 
+import static ru.protei.portal.core.model.helper.StringUtils.emptyIfNull;
+import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
+import static ru.protei.portal.ui.common.client.common.UiConstants.Icons.FAVORITE_ACTIVE;
+import static ru.protei.portal.ui.common.client.common.UiConstants.Icons.FAVORITE_NOT_ACTIVE;
 
 /**
  * Вид создания и редактирования обращения
@@ -57,6 +61,12 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Override
     public void setName( String issueName ) {
         nameWidget.setName( issueName );
+    }
+
+    @Override
+    public void setIntegration(String name) {
+        integrationLabelName.setInnerText(emptyIfNull(name));
+        integrationLabel.setVisible(!isBlank(name));
     }
 
     @Override
@@ -107,10 +117,10 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Override
     public void setPrivateIssue( boolean isPrivate ) {
         if (isPrivate) {
-            privacyIcon.setClassName( "fas fa-lock text-danger m-l-10" );
+            privacyIcon.setClassName( "fa-fw fas fa-lock text-danger" );
             privacyIcon.setAttribute( DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.PRIVACY_ICON_PRIVATE );
         } else {
-            privacyIcon.setClassName( "fas fa-unlock text-success m-l-10" );
+            privacyIcon.setClassName( "fa-fw fas fa-unlock text-success" );
             privacyIcon.setAttribute( DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.PRIVACY_ICON_PUBLIC );
         }
     }
@@ -123,6 +133,17 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Override
     public void setCreatedBy(String value) {
         this.createdBy.setInnerHTML( value );
+    }
+
+    @Override
+    public void setFavoriteButtonActive(boolean isActive) {
+        if (isActive) {
+            favoriteButtonIcon.replaceClassName(FAVORITE_NOT_ACTIVE, FAVORITE_ACTIVE);
+            favoritesButton.setTitle(lang.issueRemoveFromFavorites());
+        } else {
+            favoriteButtonIcon.replaceClassName(FAVORITE_ACTIVE, FAVORITE_NOT_ACTIVE);
+            favoritesButton.setTitle(lang.issueAddToFavorites());
+        }
     }
 
     @UiHandler("nameAndDescriptionEditButton")
@@ -168,10 +189,18 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         }
     }
 
+    @UiHandler("favoritesButton")
+    public void onFavoriteStateChanged(ClickEvent event) {
+        if (activity != null) {
+            activity.onFavoriteStateChanged();
+        }
+    }
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
+
         privacyIcon.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.PRIVACY_ICON);
         copyNumber.ensureDebugId(DebugIds.ISSUE.COPY_NUMBER_BUTTON);
         backButton.ensureDebugId(DebugIds.ISSUE.BACK_BUTTON);
@@ -179,6 +208,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         addTagButton.ensureDebugId(DebugIds.ISSUE.TAGS_BUTTON);
         addLinkButton.ensureDebugId(DebugIds.ISSUE.LINKS_BUTTON);
         nameAndDescriptionEditButton.ensureDebugId(DebugIds.ISSUE.EDIT_NAME_AND_DESC_BUTTON);
+        favoritesButton.ensureDebugId(DebugIds.ISSUE.FAVORITES_BUTTON);
     }
 
     @UiField
@@ -210,6 +240,10 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @UiField
     Button nameAndDescriptionEditButton;
     @UiField
+    Button favoritesButton;
+    @UiField
+    Element favoriteButtonIcon;
+    @UiField
     Button addTagButton;
     @UiField
     Button addLinkButton;
@@ -218,6 +252,10 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     IssueNameWidget nameWidget;
     @UiField
     HTMLPanel linksContainer;
+    @UiField
+    HTMLPanel integrationLabel;
+    @UiField
+    Element integrationLabelName;
 
     private AbstractIssueEditActivity activity;
 

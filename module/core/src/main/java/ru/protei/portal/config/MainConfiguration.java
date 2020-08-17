@@ -55,6 +55,8 @@ import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsedImpl;
 import ru.protei.portal.core.service.events.*;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
+import ru.protei.portal.core.service.pushevent.ClientEventService;
+import ru.protei.portal.core.service.pushevent.ClientEventServiceImpl;
 import ru.protei.portal.core.service.template.TemplateService;
 import ru.protei.portal.core.service.template.TemplateServiceImpl;
 import ru.protei.portal.core.service.auth.AuthService;
@@ -133,6 +135,11 @@ public class MainConfiguration {
         executor.setCorePoolSize(config.data().reportConfig().getThreadsNumber());
         executor.setMaxPoolSize(config.data().reportConfig().getThreadsNumber());
         return executor;
+    }
+
+    @Bean
+    public ClientEventService getClientEventService() {
+        return new ClientEventServiceImpl();
     }
 
     @Bean
@@ -662,6 +669,11 @@ public class MainConfiguration {
     @Bean
     public AbsenceFilterDAO getAbsenceFilterDAO() {
         return new AbsenceFilterDAO_Impl();
+    }
+
+    @Bean
+    public PersonFavoriteIssuesDAO getPersonFavoritesIssuesDAO() {
+        return new PersonFavoriteIssuesDAO_Impl();
     }
 
     /* SERVICES */

@@ -1,8 +1,8 @@
-package ru.protei.portal.core.model.util.documentvalidators;
+package ru.protei.portal.core.model.util;
 
 import java.util.function.Function;
 
-class Validator implements Function<ValidationResult, ValidationResult> {
+public class Validator implements Function<ValidationResult, ValidationResult> {
     protected Boolean optional;
     protected Function<String, ValidationResult> validationFunction;
 
@@ -18,14 +18,14 @@ class Validator implements Function<ValidationResult, ValidationResult> {
 
     @Override
     public ValidationResult apply(ValidationResult s) {
-        ValidationResult result = validationFunction.apply(s.validatableString);
-        if (result.isValid) {
+        ValidationResult result = validationFunction.apply(s.getMessage());
+        if (result.isValid()) {
             return result;
         }
         if (optional) {
             return s;
         } else {
-            return new ValidationResult(false);
+            return ValidationResult.error();
         }
     }
 }

@@ -16,6 +16,8 @@ import ru.protei.portal.ui.common.client.widget.document.uploader.DocumentUpload
 import ru.protei.portal.ui.document.client.activity.preview.AbstractDocumentPreviewActivity;
 import ru.protei.portal.ui.document.client.activity.preview.AbstractDocumentPreviewView;
 
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
+
 public class DocumentPreviewView extends Composite implements AbstractDocumentPreviewView {
 
     @Inject
@@ -162,10 +164,10 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     @Override
     public HasVisibility documentDocUploadContainerLoading() {
         return new HasVisibility() { // Because documentDocUploadContainerLoading has 'd-flex' class with !important display
-            public boolean isVisible() { return !documentDocUploadContainerLoading.hasClassName("hide"); }
+            public boolean isVisible() { return !documentDocUploadContainerLoading.hasClassName(HIDE); }
             public void setVisible(boolean visible) {
-                documentDocUploadContainerLoading.removeClassName("hide");
-                if (!visible) documentDocUploadContainerLoading.addClassName("hide");
+                documentDocUploadContainerLoading.removeClassName(HIDE);
+                if (!visible) documentDocUploadContainerLoading.addClassName(HIDE);
             }
         };
     }

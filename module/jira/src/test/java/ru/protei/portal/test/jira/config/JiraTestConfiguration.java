@@ -24,18 +24,17 @@ import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.auth.AuthServiceImpl;
 import ru.protei.portal.core.service.auth.LDAPAuthProvider;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
-import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceImpl;
-import ru.protei.portal.core.service.events.AsyncEventPublisherService;
-import ru.protei.portal.core.service.events.EventAssemblerService;
-import ru.protei.portal.core.service.events.EventAssemblerServiceImpl;
-import ru.protei.portal.core.service.events.EventPublisherService;
+import ru.protei.portal.core.service.events.*;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
+import ru.protei.portal.core.service.pushevent.ClientEventService;
+import ru.protei.portal.core.service.pushevent.ClientEventServiceImpl;
 import ru.protei.portal.jira.aspect.JiraServiceLayerInterceptorLogging;
 import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.jira.factory.JiraClientFactoryImpl;
 import ru.protei.portal.jira.service.*;
 import ru.protei.portal.jira.utils.JiraQueueSingleThreadPoolTaskExecutor;
+import ru.protei.portal.schedule.PortalScheduleTasks;
 import ru.protei.portal.test.jira.mock.JiraEndpointDAO_ImplMock;
 import ru.protei.portal.test.jira.mock.JiraPriorityMapEntryDAO_ImplMock;
 import ru.protei.portal.test.jira.mock.JiraStatusMapEntryDAO_ImplMock;
@@ -304,6 +303,11 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public ClientEventService getClientEventService() {
+        return new ClientEventServiceImpl();
+    }
+
+    @Bean
     public CaseStateWorkflowService getCaseStateWorkflowService() {
         return new CaseStateWorkflowServiceImpl();
     }
@@ -319,8 +323,18 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public EventProjectAssemblerService getProjectPublisherService() {
+        return new EventProjectAssemblerServiceImpl();
+    }
+
+    @Bean
     public AssemblerService getAssemblerService() {
         return new AssemblerServiceImpl();
+    }
+
+    @Bean
+    public AssemblerProjectService getAssemblerProjectService() {
+        return new AssemblerProjectServiceImpl();
     }
 
     @Bean
@@ -419,6 +433,11 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public PortalScheduleTasks getPortalScheduleTasks() {
+        return mock(PortalScheduleTasks.class);
+    }
+
+    @Bean
     public UserRoleDAO getUserRoleDAO() {
         return new UserRoleDAO_impl();
     }
@@ -446,5 +465,10 @@ public class JiraTestConfiguration {
     @Bean
     public PlanToCaseObjectDAO getPlanToCaseObjectDAO() {
         return new PlanToCaseObjectDAO_Impl();
+    }
+
+    @Bean
+    public PersonFavoriteIssuesDAO getPersonFavoritesIssuesDAO() {
+        return new PersonFavoriteIssuesDAO_Impl();
     }
 }

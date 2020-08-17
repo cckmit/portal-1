@@ -26,6 +26,8 @@ public interface CaseAttachmentDAO extends PortalBaseDAO<CaseAttachment>{
 
     void removeBatch(Collection<CaseAttachment> list);
 
+    boolean checkExistAnyAttachments(List<Long> attachmentIds);
+
     /**
      * Высчитывает разницу между старым и новым списками сохраняя и удаляя нужные связи
      * @return удалённые CaseAttachments

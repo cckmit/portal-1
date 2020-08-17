@@ -131,6 +131,20 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
         linkedEquipment.setFilter(filter);
     }
 
+    @Override
+    public void setVisibilitySettingsForCreated(boolean isVisible) {
+        if (!isVisible) {
+            projectBox.removeStyleName("col-md-4");
+            projectBox.addStyleName("col-md-8");
+        }
+        else {
+            projectBox.removeStyleName("col-md-8");
+            projectBox.addStyleName("col-md-4");
+        }
+        date.setVisible(isVisible);
+        dateTextBox.setEnabled(false);
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -159,18 +173,9 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
         }
     }
 
-    @Override
-    public void setVisibilitySettingsForCreated(boolean isVisible) {
-        if (!isVisible) {
-            projectBox.removeStyleName("col-md-4");
-            projectBox.addStyleName("col-md-8");
-        }
-        else {
-            projectBox.removeStyleName("col-md-8");
-            projectBox.addStyleName("col-md-4");
-        }
-        date.setVisible(isVisible);
-        dateTextBox.setEnabled(false);
+    @UiHandler("project")
+    public void onProjectChanged(ValueChangeEvent<EntityOption> event) {
+        activity.onProjectChanged();
     }
 
     @Inject

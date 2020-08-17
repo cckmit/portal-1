@@ -2,6 +2,7 @@ package ru.protei.portal.test.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
@@ -81,8 +82,13 @@ public class BaseServiceTest {
     }
 
     public static Person createNewPerson( Company company ) {
+        return createNewPerson(company, null);
+    }
+
+    public static Person createNewPerson(Company company, Long personId) {
         Person person = new Person();
         person.setCreated( new Date() );
+        person.setId(personId);
         person.setCreator( "TEST" );
         person.setCompanyId( company.getId() );
         person.setCompany( company );
@@ -223,7 +229,11 @@ public class BaseServiceTest {
     }
 
     protected Person makePerson( Company company ) {
-        return makePerson(createNewPerson( company ));
+        return makePerson(company, null);
+    }
+
+    protected Person makePerson(Company company, Long personId) {
+        return makePerson(createNewPerson( company, personId ));
     }
 
     protected Person makePerson( Person person ) {
@@ -283,7 +293,7 @@ public class BaseServiceTest {
         return caseObjectDAO.remove(caseObject);
     }
 
-    private static Long generateNextCaseNumber( En_CaseType caseType ) {
+    protected static Long generateNextCaseNumber( En_CaseType caseType ) {
         return caseNumberRepo.get( caseType ).incrementAndGet();
     }
 
@@ -338,4 +348,6 @@ public class BaseServiceTest {
     protected ProjectService projectService;
     @Autowired
     protected PersonAbsenceDAO personAbsenceDAO;
+    @Autowired
+    protected PortalConfig config;
 }

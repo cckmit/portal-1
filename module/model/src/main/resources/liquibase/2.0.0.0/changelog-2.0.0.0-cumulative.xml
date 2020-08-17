@@ -38,5 +38,8 @@
   <include file="2020-07-15-modify-report-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-03-12-create-education-schema.xml" relativeToChangelogFile="true"/>
   <include file="2020-07-21-add-absence_filter-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-07-23-modify-foreign-key-constraint-on-case_comment-to-case_link.xml" relativeToChangelogFile="true"/>
+  <include file="2020-08-03-add-person_favorite_issues-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-08-07-add-unique-constraint-to-case_link-table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

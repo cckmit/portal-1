@@ -10,6 +10,7 @@ import ru.protei.portal.core.utils.JXLSHelper;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,10 +20,12 @@ public class ExcelReportWriter implements
 
     private final JXLSHelper.ReportBook<ReportProjectWithLastComment> book;
     private final Lang.LocalizedLang lang;
+    private final DateFormat dateFormat;
 
-    public ExcelReportWriter(Lang.LocalizedLang localizedLang) {
+    public ExcelReportWriter(Lang.LocalizedLang localizedLang, DateFormat dateFormat) {
         this.book = new JXLSHelper.ReportBook<>(localizedLang, this);
         this.lang = localizedLang;
+        this.dateFormat = dateFormat;
     }
 
     @Override
@@ -55,7 +58,7 @@ public class ExcelReportWriter implements
         return new int[] {
                 2350, 12570, 4200,
                 5200, 5800, 5800,
-                3800, 18570,
+                3800, 5800, 18570,
         };
     }
 
@@ -64,7 +67,7 @@ public class ExcelReportWriter implements
         return new String[] {
                 "ir_id", "ir_name", "ir_state",
                 "ir_customerType", "ir_customer", "ir_region",
-                "ir_direction", "ir_last_comment_text",
+                "ir_direction", "ir_last_comment_date", "ir_last_comment_text",
         };
     }
 
@@ -84,6 +87,7 @@ public class ExcelReportWriter implements
                 project.getRegion().getDisplayText() : "");
         values.add(project.getProductDirection() != null && project.getProductDirection().getDisplayText() != null ?
                 project.getProductDirection().getDisplayText() : "");
+        values.add(comment != null ? dateFormat.format(comment.getCreated()) : "");
         values.add(comment != null ? comment.getText() : "");
 
         return values.toArray();

@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.product.client.view.table;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.safehtml.shared.SimpleHtmlSanitizer;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -19,8 +20,6 @@ import ru.protei.portal.ui.common.client.lang.En_DevUnitTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.product.client.activity.table.AbstractProductTableActivity;
 import ru.protei.portal.ui.product.client.activity.table.AbstractProductTableView;
-
-import java.util.stream.Collectors;
 
 public class ProductTableView extends Composite implements AbstractProductTableView {
 
@@ -117,9 +116,9 @@ public class ProductTableView extends Composite implements AbstractProductTableV
         name = new DynamicColumn<>(lang.name(), "product-name", devUnit -> {
             StringBuilder builder = new StringBuilder();
             builder.append(devUnit.isActiveUnit() ? "<div>" : "<div class='deprecated-entity'><i class='fa fa-lock m-r-5'></i> ")
-                    .append(devUnit.getName())
+                    .append(SimpleHtmlSanitizer.sanitizeHtml(devUnit.getName()).asString())
                     .append(CollectionUtils.isEmpty(devUnit.getAliases()) ? "" :
-                            " (" + devUnit.getAliases().stream().collect(Collectors.joining(", ")) + ")")
+                            " (" + String.join(", ", devUnit.getAliases()) + ")")
                     .append("</div>");
             if (StringUtils.isNotEmpty(devUnit.getInfo())) {
                 builder.append("<small><i>")

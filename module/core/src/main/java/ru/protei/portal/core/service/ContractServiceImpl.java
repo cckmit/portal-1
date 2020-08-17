@@ -31,6 +31,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.*;
 
 public class ContractServiceImpl implements ContractService {
@@ -106,6 +107,9 @@ public class ContractServiceImpl implements ContractService {
         if (contract == null)
             return error(En_ResultStatus.INCORRECT_PARAMS);
 
+        if (contract.getProjectId() == null) {
+            return error(En_ResultStatus.PROJECT_NOT_SELECTED);
+        }
 
         CaseObject caseObject = fillCaseObjectFromContract(null, contract);
         Long id = caseObjectDAO.persist(caseObject);
@@ -157,6 +161,10 @@ public class ContractServiceImpl implements ContractService {
 
         if (contract == null || contract.getId() == null)
             return error(En_ResultStatus.INCORRECT_PARAMS);
+
+        if (contract.getProjectId() == null) {
+            return error(En_ResultStatus.PROJECT_NOT_SELECTED);
+        }
 
         /*
          *  не даем сбрасывать связку договора с договором1С,
@@ -265,6 +273,16 @@ public class ContractServiceImpl implements ContractService {
 
         return api1CService.saveContractor(queryContractor1C, contractor.getOrganization())
             .map(contractor1C -> from1C(contractor1C, contractor1C.getRegistrationCountryKey()));
+    }
+
+    @Override
+    public Result<List<Contract>> getContractsByRefKeys(AuthToken token, List<String> refKeys) {
+        if (isEmpty(refKeys)) {
+            return ok(Collections.emptyList());
+        }
+        List<Contract> contracts = contractDAO.getByRefKeys(refKeys);
+        jdbcManyRelationsHelper.fill(contracts, "contractDates");
+        return ok(contracts);
     }
 
     private CaseObject fillCaseObjectFromContract(CaseObject caseObject, Contract contract) {

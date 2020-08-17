@@ -1,10 +1,7 @@
 package ru.protei.portal.core.service.events;
 
 import org.springframework.context.event.EventListener;
-import ru.protei.portal.core.event.ProjectCommentEvent;
-import ru.protei.portal.core.event.ProjectCreateEvent;
-import ru.protei.portal.core.event.ProjectLinkEvent;
-import ru.protei.portal.core.event.ProjectUpdateEvent;
+import ru.protei.portal.core.event.*;
 
 public interface EventProjectAssemblerService {
     @EventListener
@@ -18,4 +15,7 @@ public interface EventProjectAssemblerService {
 
     @EventListener
     void onProjectLinkEvent(ProjectLinkEvent event);
+
+    @EventListener
+    void onProjectAttachmentEvent(ProjectAttachmentEvent event);
 }

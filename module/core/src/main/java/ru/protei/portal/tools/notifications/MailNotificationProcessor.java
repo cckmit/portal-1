@@ -35,8 +35,8 @@ import ru.protei.winter.core.utils.services.lock.LockService;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
@@ -332,10 +332,11 @@ public class MailNotificationProcessor {
             return;
         }
 
-        String body = bodyTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), false);
-        String subject = subjectTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), false);
-
         try {
+            String body = bodyTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), false);
+
+            String subject = subjectTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), false);
+
             sendMail(notificationEntry.getAddress(), subject, body);
         } catch (Exception e) {
             log.error("Failed to make MimeMessage", e);
@@ -640,7 +641,7 @@ public class MailNotificationProcessor {
             return;
         }
 
-        if ( event.getContent() != null) {
+        if (event.getContent() != null) {
             sendMailToRecipientWithAttachment(
                     fetchNotificationEntryFromPerson(report.getCreator()),
                     bodyTemplate, subjectTemplate,
@@ -678,7 +679,7 @@ public class MailNotificationProcessor {
                 event,
                 addresses,
                 links,
-                makeCrmProjectUrl(config.data().getMailNotificationConfig().getCrmUrlInternal(), event.getProjectId())                ,
+                makeCrmProjectUrl(config.data().getMailNotificationConfig().getCrmUrlInternal(), event.getProjectId()),
                 new EnumLangUtil(lang)
         );
 
@@ -872,7 +873,15 @@ public class MailNotificationProcessor {
             return;
         }
 
-        sendMailToRecipients(notificationEntries, bodyTemplate, subjectTemplate, true);
+        notificationEntries.forEach(entry -> {
+            try {
+                String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), true);
+                String subject = subjectTemplate.getText(entry.getAddress(), entry.getLangCode(), true);
+                sendMail(entry.getAddress(), subject, body, getFromAddressAbsence());
+            } catch (Exception e) {
+                log.error("Failed to make MimeMessage", e);
+            }
+        });
     }
 
     @EventListener
@@ -890,13 +899,7 @@ public class MailNotificationProcessor {
 
         try {
             String subject = subjectTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), true);
-            MimeMessageHelper msg = new MimeMessageHelper(messageFactory.createMailMessage(), true, config.data().smtp().getDefaultCharset());
-            msg.setSubject(subject);
-            msg.setFrom(getFromAddress());
-            msg.setText("", true);
-            msg.setTo(notificationEntry.getAddress());
-            msg.addAttachment(title + ".xlsx", new ByteArrayResource(IOUtils.toByteArray(event.getContent())));
-            mailSendChannel.send(msg.getMimeMessage());
+            sendMailWithAttachment(notificationEntry.getAddress(), subject, null, getFromAddressAbsence(), title + ".xlsx", event.getContent());
         } catch (Exception e) {
             log.error("Failed to make MimeMessage", e);
         }
@@ -934,24 +937,32 @@ public class MailNotificationProcessor {
             try {
                 String body = bodyTemplate.getText(recipients.getAddress(), recipients.getLangCode(), isShowPrivacy);
                 String subject = subjectTemplate.getText(recipients.getAddress(), recipients.getLangCode(), isShowPrivacy);
-                MimeMessageHelper msg = new MimeMessageHelper(messageFactory.createMailMessage(), true, config.data().smtp().getDefaultCharset());
-                msg.setSubject(subject);
-                msg.setFrom(getFromAddress());
-                msg.setText(HelperFunc.nvlt(body, ""), true);
-                msg.setTo(recipients.getAddress());
-                msg.addAttachment(filename, new ByteArrayResource(IOUtils.toByteArray(content)));
-                mailSendChannel.send(msg.getMimeMessage());
+                sendMailWithAttachment(recipients.getAddress(), subject, body, getFromAddress(), filename, content);
             } catch (Exception e) {
                 log.error("Failed to make MimeMessage", e);
             }
     }
 
     private void sendMail(String address, String subject, String body) throws MessagingException {
+        sendMail(address, subject, body, getFromAddress());
+    }
+
+    private void sendMail(String address, String subject, String body, String from) throws MessagingException {
         MimeMessageHelper msg = new MimeMessageHelper(messageFactory.createMailMessage(), true, config.data().smtp().getDefaultCharset());
         msg.setSubject(subject);
-        msg.setFrom(getFromAddress());
+        msg.setFrom(from);
         msg.setText(HelperFunc.nvlt(body, ""), true);
         msg.setTo(address);
+        mailSendChannel.send(msg.getMimeMessage());
+    }
+
+    private void sendMailWithAttachment(String address, String subject, String body, String from, String filename, InputStream content) throws MessagingException, IOException {
+        MimeMessageHelper msg = new MimeMessageHelper(messageFactory.createMailMessage(), true, config.data().smtp().getDefaultCharset());
+        msg.setSubject(subject);
+        msg.setFrom(from);
+        msg.setText(HelperFunc.nvlt(body, ""), true);
+        msg.setTo(address);
+        msg.addAttachment(filename, new ByteArrayResource(IOUtils.toByteArray(content)));
         mailSendChannel.send(msg.getMimeMessage());
     }
 
@@ -965,6 +976,10 @@ public class MailNotificationProcessor {
 
     private String getFromAddress() {
         return config.data().smtp().getFromAddressAlias() + " <" + config.data().smtp().getFromAddress() + ">";
+    }
+
+    private String getFromAddressAbsence() {
+        return config.data().smtp().getFromAddressAlias() + " <" + config.data().smtp().getFromAddressAbsence() + ">";
     }
 
     private List<String> getNotifiersAddresses(Collection<NotificationEntry> notifiers) {
@@ -1049,6 +1064,7 @@ public class MailNotificationProcessor {
                 || event.isTeamChanged()
                 || event.isSlaChanged()
                 || event.isCommentsChanged()
+                || event.isAttachmentChanged()
                 || event.isLinksChanged();
     }
 

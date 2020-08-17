@@ -54,9 +54,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
-        this.employeeId = event.employeeId;
-
-        fillView(employeeId);
+        fillView(event.employeeId);
         view.showFullScreen(true);
     }
 
@@ -65,15 +63,13 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         event.parent.clear();
         event.parent.add( view.asWidget() );
 
-        this.employeeId = event.employee.getId();
-
         fillView(event.employee);
         view.showFullScreen(false);
     }
 
     @Override
     public void onFullScreenClicked() {
-        fireEvent(new EmployeeEvents.ShowFullScreen(employeeId));
+        fireEvent(new EmployeeEvents.ShowFullScreen(employee.getId()));
     }
 
     @Override
@@ -81,11 +77,18 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         fireEvent(new EmployeeEvents.Show(true));
     }
 
+    @Override
+    public void onCreateAbsenceButtonClicked() {
+        fireEvent(new AbsenceEvents.Edit().withEmployee(this.employee));
+    }
+
     private void fillView(Long employeeId) {
         employeeService.getEmployeeWithChangedHiddenCompanyNames(employeeId, new FluentCallback<EmployeeShortView>().withSuccess(this::fillView));
     }
 
     private void fillView(EmployeeShortView employee) {
+
+        this.employee = employee;
 
         view.setPhotoUrl(AvatarUtils.getPhotoUrl(employee.getId()));
         view.setName(employee.getDisplayName());
@@ -132,17 +135,19 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
 
     @Event
     public void onUpdate(EmployeeEvents.Update event) {
-        if(event.id == null || !Objects.equals(event.id, employeeId))
+        if(event.id == null || !Objects.equals(event.id, employee.getId()))
             return;
 
         showAbsences(event.id);
     }
 
     private void showAbsences(Long employeeId) {
+        view.showAbsencesPanel(false);
+
         if (!policyService.hasPrivilegeFor(En_Privilege.ABSENCE_VIEW))
             return;
 
-        view.showAbsencesLabel();
+        view.showAbsencesPanel(true);
         fireEvent(new AbsenceEvents.Show(view.absencesContainer(), employeeId));
     }
 
@@ -159,7 +164,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
             itemView.departmentContainerVisibility().setVisible(true);
         }
 
-        if (head != null && !head.getId().equals(employeeId)) {
+        if (head != null && !head.getId().equals(employee.getId())) {
             itemView.setDepartmentHead(head.getName(), LinkUtils.makePreviewLink(EmployeeShortView.class, head.getId()));
             itemView.departmentHeadContainerVisibility().setVisible(true);
         }
@@ -182,7 +187,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
     @Inject
     PolicyService policyService;
 
-    private Long employeeId;
+    private EmployeeShortView employee;
 
     private AppEvents.InitDetails initDetails;
 }

@@ -64,11 +64,11 @@ public class HttpClient1CImpl implements HttpClient1C{
             response = handler.apply(client1C, headers);
         } catch (Exception e) {
             log.warn("execute(): Can't execute 1c request, unexpected exception", e);
-            return error(En_ResultStatus.GET_DATA_ERROR);
+            return error(En_ResultStatus.REQUEST_1C_FAILED);
         }
         if (response == null) {
             log.warn("execute(): Can't execute 1c request, response is null");
-            return error(En_ResultStatus.GET_DATA_ERROR);
+            return error(En_ResultStatus.REQUEST_1C_FAILED);
         }
         if (HttpStatus.NOT_FOUND.equals(response.getStatusCode())) {
             log.warn("execute(): Can't get data from 1c, NOT_FOUND");

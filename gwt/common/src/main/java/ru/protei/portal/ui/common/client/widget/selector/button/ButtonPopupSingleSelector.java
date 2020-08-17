@@ -24,6 +24,8 @@ import ru.protei.portal.ui.common.client.selector.pageable.SingleValuePageableSe
 import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
+
 /**
  * Cелектор c одиночным выбором, выпадающим списком, выбранные значения отображаются в кнопке.
  */
@@ -117,7 +119,7 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
     }
 
     public void setHeader( String header ) {
-        this.label.removeClassName("hide");
+        this.label.removeClassName(HIDE);
         this.label.setInnerText( header );
     }
 

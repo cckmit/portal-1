@@ -113,6 +113,11 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
     }
 
     @Bean
+    public PersonFavoriteIssuesDAO getPersonFavoritesIssuesDAO() {
+        return new PersonFavoriteIssuesDAO_Impl();
+    }
+
+    @Bean
     public YoutrackService getYoutrackService() {
         return new YoutrackServiceImpl();
     }

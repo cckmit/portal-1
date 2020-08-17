@@ -7,12 +7,15 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
+import ru.protei.portal.core.model.dao.CaseTagDAO;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.struct.CaseObjectComments;
+import ru.protei.portal.core.model.query.CaseTagQuery;
+import ru.protei.portal.core.model.struct.CaseObjectReportRequest;
 import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.TimeFormatter;
 
@@ -39,6 +42,8 @@ public class ReportCaseImpl implements ReportCase {
     CaseObjectDAO caseObjectDAO;
     @Autowired
     CaseCommentDAO caseCommentDAO;
+    @Autowired
+    CaseTagDAO caseTagDAO;
 
     @Override
     public boolean writeReport(OutputStream buffer, Report report, DateFormat dateFormat, TimeFormatter timeFormatter,
@@ -48,7 +53,7 @@ public class ReportCaseImpl implements ReportCase {
 
         final int limit = config.data().reportConfig().getChunkSize();
         int offset = 0;
-        try (ReportWriter<CaseObjectComments> writer =
+        try (ReportWriter<CaseObjectReportRequest> writer =
                     new ExcelReportWriter(localizedLang, dateFormat, timeFormatter, report.isRestricted(), report.isWithDescription())) {
 
             int sheetNumber = writer.createSheet();
@@ -61,7 +66,7 @@ public class ReportCaseImpl implements ReportCase {
                 CaseQuery query = report.getCaseQuery();
                 query.setOffset( offset );
                 query.setLimit( limit );
-                List<CaseObjectComments> comments = processChunk(query);
+                List<CaseObjectReportRequest> comments = processChunk(query);
                 writer.write( sheetNumber, comments );
                 if (size( comments ) < limit) break;
                 offset += limit;
@@ -76,15 +81,19 @@ public class ReportCaseImpl implements ReportCase {
         }
     }
 
-    public List<CaseObjectComments> processChunk( CaseQuery query ) {
-        List<CaseObjectComments> data = new ArrayList<>();
+    public List<CaseObjectReportRequest> processChunk(CaseQuery query ) {
+        List<CaseObjectReportRequest> data = new ArrayList<>();
         List<CaseObject> cases = caseObjectDAO.getCases( query );
         for (CaseObject caseObject : emptyIfNull(cases)) {
             CaseCommentQuery commentQuery = new CaseCommentQuery();
             commentQuery.addCaseObjectId( caseObject.getId() );
             commentQuery.setCaseStateNotNull( query.isCheckImportanceHistory() == null || !query.isCheckImportanceHistory() );
             List<CaseComment> caseComments = caseCommentDAO.getCaseComments( commentQuery );
-            data.add( new CaseObjectComments( caseObject, caseComments ) );
+
+            CaseTagQuery caseTagQuery = new CaseTagQuery(caseObject.getId());
+            List<CaseTag> caseTags = caseTagDAO.getListByQuery(caseTagQuery);
+
+            data.add( new CaseObjectReportRequest( caseObject, caseComments, caseTags ) );
         }
         return data;
     }

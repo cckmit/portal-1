@@ -1,7 +1,7 @@
 package ru.protei.portal.ui.employee.client.activity.item;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import ru.protei.portal.core.model.dict.En_AbsenceReason;
+import ru.protei.portal.core.model.ent.PersonAbsence;
 
 /**
  * Представление сотрудника
@@ -34,5 +34,5 @@ public interface AbstractEmployeeItemView extends IsWidget {
 
     void setEditIcon( String link );
 
-    void setAbsenceReason( En_AbsenceReason absence );
+    void setCurrentAbsence(PersonAbsence absence);
 }

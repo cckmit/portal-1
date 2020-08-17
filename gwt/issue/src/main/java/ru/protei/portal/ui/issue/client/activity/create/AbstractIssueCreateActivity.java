@@ -21,4 +21,6 @@ public interface AbstractIssueCreateActivity {
     void renderMarkupText(String text, Consumer<String> consumer);
 
     void onDisplayPreviewChanged(String description, boolean isDisplay);
+
+    void onFavoriteStateChanged();
 }

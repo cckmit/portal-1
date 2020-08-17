@@ -19,6 +19,8 @@ import java.util.*;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
+
 /**
  * Список чекбоксов с заголовом
  */
@@ -61,7 +63,7 @@ public class OptionList<T>
 
     public void setHeader( String header ) {
         this.header.setInnerText( header == null ? "" : header );
-        this.header.removeClassName("hide");
+        this.header.removeClassName(HIDE);
     }
 
     public void addOption( String name, String info, String text, T value, String styleName, String title ) {

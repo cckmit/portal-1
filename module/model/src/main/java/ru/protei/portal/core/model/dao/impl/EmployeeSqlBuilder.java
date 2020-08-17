@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.dao.impl;
 
+import ru.protei.portal.core.model.dict.En_AbsenceReason;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -8,8 +9,10 @@ import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.utils.DateUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class EmployeeSqlBuilder {
     public SqlCondition createSqlCondition(EmployeeQuery query) {
@@ -132,7 +135,11 @@ public class EmployeeSqlBuilder {
 
             if (query.getAbsent() != null && query.getAbsent()) {
                 condition.append(" and person.id in ")
-                        .append("(select person_id from person_absence where from_time <= ? and till_time >= ?)");
+                        .append("(select person_id from person_absence where from_time <= ? and till_time >= ? and reason_id in " +
+                                HelperFunc.makeInArg( Arrays.asList(En_AbsenceReason.values()).stream()
+                                        .filter(En_AbsenceReason::isActual)
+                                        .map(En_AbsenceReason::getId)
+                                        .collect(Collectors.toSet()))).append(")");
                 args.add(DateUtils.resetSeconds(new Date()));
                 args.add(DateUtils.resetSeconds(new Date()));
             }

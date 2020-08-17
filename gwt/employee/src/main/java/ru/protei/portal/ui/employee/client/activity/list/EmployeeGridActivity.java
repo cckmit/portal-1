@@ -57,8 +57,6 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
             fireEvent(new ActionBarEvents.Add(lang.buttonCreate(), "", UiConstants.ActionBarIdentity.EMPLOYEE_CREATE));
         }
 
-        fireEvent(new EmployeeEvents.ShowDefinite(currentViewType, filterView.asWidget(), query, event.preScroll));
-
         if (policyService.hasPrivilegeFor(En_Privilege.ABSENCE_CREATE)) {
             fireEvent(new ActionBarEvents.Add(lang.absenceButtonCreate(), "", UiConstants.ActionBarIdentity.ABSENCE));
         }
@@ -66,6 +64,8 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
         if (policyService.hasPrivilegeFor(En_Privilege.ABSENCE_REPORT)) {
             fireEvent(new ActionBarEvents.Add(lang.absenceButtonReport(), "", UiConstants.ActionBarIdentity.ABSENCE_REPORT));
         }
+
+        fireEvent(new EmployeeEvents.ShowDefinite(currentViewType, filterView.asWidget(), query, event.preScroll));
     }
 
     @Event

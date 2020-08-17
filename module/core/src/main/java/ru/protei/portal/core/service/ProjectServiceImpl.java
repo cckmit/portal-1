@@ -228,6 +228,9 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     @Transactional
     public Result<Project> saveProject(AuthToken token, Project project ) {
+        if (!validateFields(project)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
 
         CaseObject caseObject = caseObjectDAO.get( project.getId() );
         jdbcManyRelationsHelper.fillAll( caseObject );
@@ -293,9 +296,9 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     @Transactional
     public Result<Project> createProject(AuthToken token, Project project) {
-
-        if (project == null)
-            return error(En_ResultStatus.INCORRECT_PARAMS);
+        if (!validateFields(project)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
 
         CaseObject caseObject = createCaseObjectFromProjectInfo(project);
 
@@ -321,7 +324,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         for (CaseLink caseLink : CollectionUtils.emptyIfNull(project.getLinks())) {
             caseLink.setCaseId(caseObject.getId());
-            Result currentResult = caseLinkService.createLink(token, caseLink, false);
+            Result currentResult = caseLinkService.createLink(token, caseLink, caseObject.getType());
             if (currentResult.isError()) addLinksResult = currentResult;
         }
 
@@ -330,32 +333,6 @@ public class ProjectServiceImpl implements ProjectService {
         ProjectCreateEvent projectCreateEvent = new ProjectCreateEvent(this, token.getPersonId(), project.getId());
 
         return new Result<>(En_ResultStatus.OK, project, (addLinksResult.isOk() ? null : SOME_LINKS_NOT_SAVED), Collections.singletonList(projectCreateEvent));
-    }
-
-    private CaseObject createCaseObjectFromProjectInfo(Project project) {
-        CaseObject caseObject = new CaseObject();
-        caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.PROJECT));
-        caseObject.setType(En_CaseType.PROJECT);
-        caseObject.setCreated(project.getCreated() == null ? new Date() : project.getCreated());
-        caseObject.setStateId(project.getState().getId());
-        caseObject.setCreatorId(project.getCreatorId());
-        caseObject.setName(project.getName());
-        caseObject.setInfo(project.getDescription());
-        caseObject.setManagerId(project.getLeader() == null ? null : project.getLeader().getId());
-        caseObject.setTechnicalSupportValidity(project.getTechnicalSupportValidity());
-        caseObject.setProjectSlas(project.getProjectSlas());
-        caseObject.setPauseDate( project.getPauseDate() );
-
-        if (project.getProductDirection() != null)
-            caseObject.setProductId(project.getProductDirection().getId());
-
-        if (project.getCustomer().getId() != null) {
-            caseObject.setInitiatorCompanyId(project.getCustomer().getId());
-        }
-        if (project.getCustomerType() != null) {
-            caseObject.setLocal(project.getCustomerType().getId());
-        }
-        return caseObject;
     }
 
     @Override
@@ -416,6 +393,55 @@ public class ProjectServiceImpl implements ProjectService {
         List<ProjectInfo> result = projects.stream()
                 .map(ProjectInfo::fromCaseObject).collect(toList());
         return ok(result);
+    }
+
+    @Override
+    public Result<PersonProjectMemberView> getProjectLeader(AuthToken authToken, Long projectId) {
+        Result<Project> projectResult = getProject(authToken, projectId);
+
+        if (projectResult.isError()) {
+            return error(projectResult.getStatus());
+        }
+
+        return projectResult.map(Project::getLeader);
+    }
+
+    private boolean validateFields(Project project) {
+        if (project == null) {
+            return false;
+        }
+
+        if (project.getLeader() == null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private CaseObject createCaseObjectFromProjectInfo(Project project) {
+        CaseObject caseObject = new CaseObject();
+        caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.PROJECT));
+        caseObject.setType(En_CaseType.PROJECT);
+        caseObject.setCreated(project.getCreated() == null ? new Date() : project.getCreated());
+        caseObject.setStateId(project.getState().getId());
+        caseObject.setCreatorId(project.getCreatorId());
+        caseObject.setName(project.getName());
+        caseObject.setInfo(project.getDescription());
+        caseObject.setManagerId(project.getLeader() == null ? null : project.getLeader().getId());
+        caseObject.setTechnicalSupportValidity(project.getTechnicalSupportValidity());
+        caseObject.setProjectSlas(project.getProjectSlas());
+        caseObject.setPauseDate( project.getPauseDate() );
+
+        if (project.getProductDirection() != null)
+            caseObject.setProductId(project.getProductDirection().getId());
+
+        if (project.getCustomer().getId() != null) {
+            caseObject.setInitiatorCompanyId(project.getCustomer().getId());
+        }
+        if (project.getCustomerType() != null) {
+            caseObject.setLocal(project.getCustomerType().getId());
+        }
+        return caseObject;
     }
 
     private void updateTeam(CaseObject caseObject, List<PersonProjectMemberView> team) {

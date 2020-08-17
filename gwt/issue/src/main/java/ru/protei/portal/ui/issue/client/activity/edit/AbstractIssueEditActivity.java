@@ -20,4 +20,6 @@ public interface AbstractIssueEditActivity {
     void onCopyNumberClicked();
 
     void onCopyNumberAndNameClicked();
+
+    void onFavoriteStateChanged();
 }

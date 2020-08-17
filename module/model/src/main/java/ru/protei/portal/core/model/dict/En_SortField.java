@@ -101,6 +101,11 @@ public enum En_SortField {
     project("project"),
 
     /**
+     * document project
+     */
+    document_project("case_object.case_name"),
+
+    /**
      * equipment primary use
      */
     primary_use("primary_use"),

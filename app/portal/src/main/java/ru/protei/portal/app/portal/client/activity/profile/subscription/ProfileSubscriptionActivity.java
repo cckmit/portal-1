@@ -5,6 +5,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.app.portal.client.service.PersonSubscriptionControllerAsync;
+import ru.protei.portal.core.model.struct.PersonSubscriptionChangeRequest;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -47,7 +48,8 @@ public abstract class ProfileSubscriptionActivity implements AbstractProfileSubs
 
     @Override
     public void onPersonsChanged() {
-        personSubscriptionController.updatePersonSubscriptions(view.persons().getValue(),
+        personSubscriptionController.updatePersonSubscriptions(
+                new PersonSubscriptionChangeRequest(policyService.getProfile().getId(), view.persons().getValue()),
                 new FluentCallback<Set<PersonShortView>>()
                         .withSuccess(persons -> {
                             fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));

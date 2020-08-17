@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -36,4 +37,8 @@ public interface IssueControllerAsync {
     void updateManagerOfIssue(long issueId, long personId, AsyncCallback<Void> async);
 
     void updatePlans(Set<PlanOption> plans, Long caseId, AsyncCallback<Set<PlanOption>> async);
+
+    void removeFavoriteState(Long personId, Long issueId, AsyncCallback<Boolean> async);
+
+    void addFavoriteState(Long personId, Long issueId, AsyncCallback<Long> async);
 }

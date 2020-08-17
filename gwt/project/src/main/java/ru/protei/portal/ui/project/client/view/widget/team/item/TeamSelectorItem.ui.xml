@@ -7,7 +7,7 @@
 
     <g:HTMLPanel styleName="project-team-selector-item">
         <div>
-            <role:ProjectRoleFormSelector ui:field="role" header="{lang.projectTeamRole}"/>
+            <role:ProjectRoleFormSelector ui:field="role" header="{lang.projectTeamRole}" mandatory="false"/>
         </div>
 
         <div>

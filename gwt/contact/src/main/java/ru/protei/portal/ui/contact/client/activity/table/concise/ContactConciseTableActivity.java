@@ -17,8 +17,6 @@ import ru.protei.portal.ui.common.client.service.ContactControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.List;
-
 public abstract class ContactConciseTableActivity implements AbstractContactConciseTableActivity, Activity {
 
     @PostConstruct
@@ -28,6 +26,8 @@ public abstract class ContactConciseTableActivity implements AbstractContactConc
 
     @Event
     public void onShow(ContactEvents.ShowConciseTable event) {
+        this.event  = event;
+
         event.parent.clear();
         view.clearRecords();
         event.parent.add(view.asWidget());
@@ -89,7 +89,11 @@ public abstract class ContactConciseTableActivity implements AbstractContactConc
             @Override
             public void onSuccess(Boolean result) {
                 if (result) {
-                    fireEvent(new ContactEvents.Show(false));
+                    if (event.embedded) {
+                        onShow(event);
+                    } else {
+                        fireEvent(new ContactEvents.Show(false));
+                    }
                     fireEvent(new NotifyEvents.Show(lang.contactDeleted(), NotifyEvents.NotifyType.SUCCESS));
                 } else {
                     fireEvent(new NotifyEvents.Show(lang.errInternalError(), NotifyEvents.NotifyType.ERROR));
@@ -106,4 +110,5 @@ public abstract class ContactConciseTableActivity implements AbstractContactConc
     ContactControllerAsync contactService;
 
     private ContactQuery query;
+    private ContactEvents.ShowConciseTable event;
 }

@@ -1,0 +1,19 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="2020-07-23-modify-foreign-key-constraint-on-case_comment-to-case_link" author="vologzhanin">
+        <dropForeignKeyConstraint baseTableName="case_comment" constraintName="case_comment_remote_link_id_fk"/>
+        <addForeignKeyConstraint baseTableName="case_comment"
+                                 baseColumnNames="remote_link_id"
+                                 constraintName="case_comment_remote_link_id_fk"
+                                 referencedTableName="case_link"
+                                 referencedColumnNames="id"
+                                 onDelete="SET NULL"
+                                 onUpdate="CASCADE"
+
+        />
+    </changeSet>
+</databaseChangeLog>

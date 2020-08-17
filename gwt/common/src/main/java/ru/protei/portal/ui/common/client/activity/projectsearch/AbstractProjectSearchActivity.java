@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.project.client.activity.search;
+package ru.protei.portal.ui.common.client.activity.projectsearch;
 
 /**
  * Активность поиска проекта
@@ -6,5 +6,5 @@ package ru.protei.portal.ui.project.client.activity.search;
 public interface AbstractProjectSearchActivity {
     void onSearchClicked();
     void onResetClicked();
-    void onProjectChanged();
+    void onProjectSelected();
 }

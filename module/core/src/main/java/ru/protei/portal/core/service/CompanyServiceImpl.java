@@ -34,7 +34,6 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 public class CompanyServiceImpl implements CompanyService {
 
     private static Logger log = LoggerFactory.getLogger(CompanyServiceImpl.class);
-    private boolean YOUTRACK_INTEGRATION_ENABLED;
 
     @Autowired
     CompanyDAO companyDAO;
@@ -62,11 +61,6 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Autowired
     PortalConfig portalConfig;
-
-    @PostConstruct
-    public void setYoutrackIntergationEnabled () {
-        YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackCompanySyncEnabled();
-    }
 
     @Override
     public Result<SearchResult<Company>> getCompanies( AuthToken token, CompanyQuery query) {
@@ -149,6 +143,7 @@ public class CompanyServiceImpl implements CompanyService {
         company.setArchived(isDeprecated);
 
         if (companyDAO.updateState(company)) {
+            final boolean YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackCompanySyncEnabled();
             if (YOUTRACK_INTEGRATION_ENABLED) {
                 youtrackService.getCompanyByName(company.getCname())
                         .flatMap(companyIdByName -> youtrackService.updateCompanyArchived(companyIdByName, isDeprecated)
@@ -242,6 +237,8 @@ public class CompanyServiceImpl implements CompanyService {
         updateCompanySubscription(company.getId(), company.getSubscriptions());
         addCommonImportanceLevels(companyId);
 
+        final boolean YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackCompanySyncEnabled();
+
         if(YOUTRACK_INTEGRATION_ENABLED) {
             youtrackService.createCompany(company.getCname())
                     .ifOk(newCompanyId ->
@@ -260,6 +257,8 @@ public class CompanyServiceImpl implements CompanyService {
         if (!isValidCompany(company)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
+
+        final boolean YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackCompanySyncEnabled();
 
         String oldName = null;
         if (YOUTRACK_INTEGRATION_ENABLED && StringUtils.isNotEmpty(company.getCname())) {
@@ -386,7 +385,6 @@ public class CompanyServiceImpl implements CompanyService {
                 && !company.getCname().matches(CrmConstants.Masks.COMPANY_NAME_ILLEGAL_CHARS)
                 && !company.getCname().trim().isEmpty()
                 && (company.getParentCompanyId() == null || isEmpty(company.getChildCompanies()) )
-                /*&& isValidContactInfo(company)*/
                 && !checkCompanyExists(company.getCname(), company.getId());
     }
 

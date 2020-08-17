@@ -161,8 +161,9 @@ public class FileController {
         }
 
         if (!isEmpty( bindAttachments )) {
-            caseService.getCaseIdByNumber( authToken, caseNumber ).ifOk(caseId->
-                shareNotification(caseId, authToken.getPersonId(), bindAttachments )  );
+            En_CaseType caseType = En_CaseType.find(caseTypeId);
+            caseService.getCaseId( authToken, caseNumber, caseType ).ifOk(caseId->
+                shareNotification(caseId, caseType, authToken.getPersonId(), bindAttachments )  );
         }
 
         if (result == null) result = new UploadResult(En_FileUploadStatus.SERVER_ERROR, "UploadResult is null");
@@ -290,9 +291,11 @@ public class FileController {
         }
     }
 
-    private void shareNotification( Long caseId, Long initiatorId, List<Attachment> addedAttachments) {
-        publisherService.onCaseAttachmentEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, initiatorId, caseId,
-                addedAttachments, null ));
+    private void shareNotification(Long caseId, En_CaseType caseType, Long initiatorId, List<Attachment> addedAttachments) {
+        if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
+            publisherService.onCaseAttachmentEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, initiatorId, caseId,
+                    addedAttachments, null ));
+        }
     }
 
     private String saveFileStream(InputStream inputStream, String fileName, long fileSize, String contentType) throws IOException {

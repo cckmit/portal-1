@@ -1,30 +1,29 @@
 package ru.protei.portal.core.service.template;
 
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
-import freemarker.template.TemplateExceptionHandler;
+import freemarker.ext.beans.BeansWrapper;
+import freemarker.template.*;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.protei.portal.core.event.AssembledProjectEvent;
-import ru.protei.portal.core.model.dao.CaseStateDAO;
+import org.springframework.web.util.HtmlUtils;
 import ru.protei.portal.core.event.*;
-import ru.protei.portal.core.model.dto.Project;
-import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
-import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.util.DiffCollectionResult;
-import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.ProductShortView;
-import ru.protei.portal.core.renderer.HTMLRenderer;
+import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.utils.LinkData;
-import ru.protei.portal.core.utils.EnumLangUtil;
-import ru.protei.portal.core.utils.WorkTimeFormatter;
+import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
+import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.util.TransliterationUtils;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.core.renderer.HTMLRenderer;
+import ru.protei.portal.core.utils.EnumLangUtil;
+import ru.protei.portal.core.utils.LinkData;
+import ru.protei.portal.core.utils.WorkTimeFormatter;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -89,14 +88,14 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put( "recipients", recipients );
 
         templateModel.put( "createdByMe", false );
-        templateModel.put( "creator", newState.getCreator().getDisplayShortName() );
+        templateModel.put( "creator", newState.getCreator() == null ? null : newState.getCreator().getDisplayShortName() );
         templateModel.put( "created", newState.getCreated() );
         templateModel.put( "caseNumber", newState.getCaseNumber() );
 
         templateModel.put( "nameChanged", event.getName().hasDifferences() );
         templateModel.put( "infoChanged", event.getInfo().hasDifferences() );
-        templateModel.put( "caseName", event.getName().getNewState() );
-        templateModel.put( "oldCaseName", event.getName().getInitialState());
+        templateModel.put( "caseName", HtmlUtils.htmlEscape(event.getName().getNewState() ));
+        templateModel.put( "oldCaseName", HtmlUtils.htmlEscape(event.getName().getInitialState()));
         templateModel.put( "caseInfo", escapeTextAndRenderHTML( event.getInfo().getNewState(), textMarkup ) );
         templateModel.put( "oldCaseInfo", event.getInfo().getInitialState() == null ? null : escapeTextAndRenderHTML( event.getInfo().getInitialState(), textMarkup ) );
 
@@ -266,24 +265,24 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("TransliterationUtils", new TransliterationUtils());
 
         templateModel.put("linkToEmployeeRegistration", String.format(urlTemplate, newState.getId()));
-        templateModel.put("employeeFullName", newState.getEmployeeFullName());
+        templateModel.put("employeeFullName", HtmlUtils.htmlEscape(newState.getEmployeeFullName()));
         templateModel.put("headOfDepartmentShortName", newState.getHeadOfDepartmentShortName());
         templateModel.put("employmentType", newState.getEmploymentType().name());
         templateModel.put("withRegistration", newState.isWithRegistration());
-        templateModel.put("position", newState.getPosition());
+        templateModel.put("position", HtmlUtils.htmlEscape(newState.getPosition()));
         templateModel.put("state", newState.getStateName());
         templateModel.put("employmentDateChanged", event.isEmploymentDateChanged());
         templateModel.put("oldEmploymentDate", oldState == null ? null : oldState.getEmploymentDate());
         templateModel.put("newEmploymentDate", newState.getEmploymentDate());
         templateModel.put("created", newState.getCreated());
-        templateModel.put("workplace", newState.getWorkplace());
+        templateModel.put("workplace", HtmlUtils.htmlEscape(newState.getWorkplace()));
         templateModel.put("equipmentList", newState.getEquipmentList());
-        templateModel.put("operatingSystem", newState.getOperatingSystem());
-        templateModel.put("additionalSoft", newState.getAdditionalSoft());
+        templateModel.put("operatingSystem", HtmlUtils.htmlEscape(newState.getOperatingSystem()));
+        templateModel.put("additionalSoft", HtmlUtils.htmlEscape(newState.getAdditionalSoft()));
         templateModel.put("resourceList", newState.getResourceList());
-        templateModel.put("resourceComment", newState.getResourceComment());
+        templateModel.put("resourceComment", HtmlUtils.htmlEscape(newState.getResourceComment()));
         templateModel.put("phoneOfficeTypeList", newState.getPhoneOfficeTypeList());
-        templateModel.put("comment", newState.getComment());
+        templateModel.put("comment", HtmlUtils.htmlEscape(newState.getComment()));
         templateModel.put("recipients", recipients);
         templateModel.put("curatorsDiff", event.getCuratorsDiff());
 
@@ -469,12 +468,12 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("linkToProject", crmProjectUrl);
         templateModel.put("projectNumber", String.valueOf(event.getProjectId()));
         templateModel.put("nameChanged", event.isNameChanged());
-        templateModel.put("oldName", getNullOrElse(oldProjectState, Project::getName));
-        templateModel.put("newName", newProjectState.getName());
+        templateModel.put("oldName", HtmlUtils.htmlEscape(getNullOrElse(oldProjectState, Project::getName)));
+        templateModel.put("newName", HtmlUtils.htmlEscape(newProjectState.getName()));
 
         templateModel.put("descriptionChanged", event.isDescriptionChanged());
-        templateModel.put("oldDescription", getNullOrElse(oldProjectState, Project::getDescription));
-        templateModel.put("newDescription", newProjectState.getDescription());
+        templateModel.put("oldDescription", HtmlUtils.htmlEscape(getNullOrElse(oldProjectState, Project::getDescription)));
+        templateModel.put("newDescription", HtmlUtils.htmlEscape(newProjectState.getDescription()));
 
         templateModel.put("stateChanged", event.isStateChanged());
         templateModel.put("oldState", getNullOrElse(oldProjectState, Project::getState));
@@ -507,7 +506,11 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("team", event.getTeamDiffs());
         templateModel.put("sla", event.getSlaDiffs());
 
-        templateModel.put( "caseComments",  getProjectCommentsModelKeys(event.getAllComments(), event.getAddedComments(), event.getChangedComments(), event.getRemovedComments(), En_TextMarkup.MARKDOWN));
+        templateModel.put( "caseComments",
+                getProjectCommentsModelKeys(
+                        event.getAllComments(), event.getAddedComments(), event.getChangedComments(),
+                        event.getRemovedComments(), event.getCommentToAttachmentDiffs(), event.getExistingAttachments(), En_TextMarkup.MARKDOWN)
+        );
 
         templateModel.put("hasLinks", hasLinks(links));
         templateModel.put("existingLinks", links == null ? null : links.getSameEntries());
@@ -652,7 +655,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("is_updated", action == SubnetNotificationEvent.Action.UPDATED);
         templateModel.put("is_removed", action == SubnetNotificationEvent.Action.REMOVED);
         templateModel.put("ipAddress", subnet.getAddress() + "." + subnet.getMask());
-        templateModel.put("comment", subnet.getComment());
+        templateModel.put("comment", HtmlUtils.htmlEscape(subnet.getComment()));
         templateModel.put("recipients", recipients);
 
         PreparedTemplate template = new PreparedTemplate("notification/email/subnet.body.%s.ftl");
@@ -681,6 +684,16 @@ public class TemplateServiceImpl implements TemplateService {
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("reservedIps", reservedIps);
         templateModel.put("recipients", recipients);
+
+        BeansWrapper wrapper = BeansWrapper.getDefaultInstance();
+        TemplateHashModel staticModels = wrapper.getStaticModels();
+        try {
+            TemplateHashModel htmlUtils =
+                    (TemplateHashModel) staticModels.get("org.springframework.web.util.HtmlUtils");
+            templateModel.put("HtmlUtils", htmlUtils);
+        } catch (Exception ex) {
+            log.error("getReservedIpNotificationBody: error at 'staticModels.get(org.springframework.web.util.HtmlUtils)'");
+        }
 
         PreparedTemplate template = new PreparedTemplate("notification/email/reserved.ip.body.%s.ftl");
         template.setModel(templateModel);
@@ -790,24 +803,61 @@ public class TemplateServiceImpl implements TemplateService {
                 .collect( toList() );
     }
 
-    private List<Map<String, Object>> getProjectCommentsModelKeys(List<CaseComment> comments, List<CaseComment> added, List<CaseComment> changed, List<CaseComment> removed, En_TextMarkup textMarkup){
+    private List<Map<String, Object>> getProjectCommentsModelKeys(List<CaseComment> comments, List<CaseComment> added, List<CaseComment> changed, List<CaseComment> removed,
+                                                                  Map<Long, DiffCollectionResult<Attachment>> commentToAttachmentDiffs, List<Attachment> existingAttachments, En_TextMarkup textMarkup) {
         return comments.stream()
                 .sorted(Comparator.comparing(CaseComment::getCreated, Date::compareTo))
                 .map(comment -> {
 
-                    boolean isNew = contains(added, comment);
-                    boolean isChanged = contains(changed, comment);
+                    boolean isNewComment = contains(added, comment);
+                    boolean isChangedComment = contains(changed, comment);
+                    boolean isRemovedComment = contains(removed, comment);
 
                     Map<String, Object> mailComment = new HashMap<>();
                     mailComment.put("created", comment.getCreated());
-                    mailComment.put("author", comment.getAuthor());
+                    mailComment.put("author", renameAuthorIfRemoteComment(comment).getAuthor());
                     mailComment.put("text", escapeTextAndRenderHTML(comment.getText(), textMarkup));
-                    mailComment.put("added", isNew);
-                    if (isChanged) {
+
+                    List<CaseAttachment> caseAttachments = emptyIfNull(comment.getCaseAttachments());
+
+                    Set<Attachment> commentAddedAttachments = Optional.ofNullable(commentToAttachmentDiffs.get(comment.getId()))
+                            .map(DiffCollectionResult::getAddedEntries)
+                            .map(HashSet::new)
+                            .orElse(new HashSet<>());
+
+                    Set<Attachment> commentRemovedAttachments = Optional.ofNullable(commentToAttachmentDiffs.get(comment.getId()))
+                            .map(DiffCollectionResult::getRemovedEntries)
+                            .map(HashSet::new)
+                            .orElse(new HashSet<>());
+
+                    Set<Attachment> commentSameAttachments = emptyIfNull(existingAttachments)
+                            .stream()
+                            .filter(existingAttachment -> CollectionUtils.toList(caseAttachments, CaseAttachment::getAttachmentId).contains(existingAttachment.getId()))
+                            .filter(existingAttachment -> !commentAddedAttachments.contains(existingAttachment))
+                            .collect(Collectors.toSet());
+
+                    mailComment.put("added", isNewComment);
+                    mailComment.put("removed", isRemovedComment);
+
+                    if (isNewComment || isRemovedComment) {
+                        commentSameAttachments.addAll(commentAddedAttachments);
+                        commentSameAttachments.addAll(commentRemovedAttachments);
+
+                        commentAddedAttachments.clear();
+                        commentRemovedAttachments.clear();
+                    }
+
+                    if (isChangedComment) {
                         CaseComment oldComment = changed.get(changed.indexOf(comment));
                         mailComment.put("oldText", escapeTextAndRenderHTML(oldComment.getText(), textMarkup));
                     }
-                    mailComment.put("removed", contains(removed, comment));
+
+                    mailComment.put("addedAttachments", commentAddedAttachments);
+                    mailComment.put("sameAttachments", commentSameAttachments);
+                    mailComment.put("removedAttachments", commentRemovedAttachments);
+                    mailComment.put("hasAttachments", isNotEmpty(commentAddedAttachments) || isNotEmpty(commentSameAttachments) || isNotEmpty(commentRemovedAttachments));
+                    mailComment.put("isUpdated", isChangedComment || isNotEmpty(commentAddedAttachments) || isNotEmpty(commentRemovedAttachments));
+
                     return mailComment;
                 })
                 .collect(toList());
@@ -819,6 +869,16 @@ public class TemplateServiceImpl implements TemplateService {
         }
         text = htmlRenderer.plain2html(text, textMarkup, false);
         return text;
+    }
+
+    private CaseComment renameAuthorIfRemoteComment (CaseComment comment){
+        if (StringUtils.isNotBlank(comment.getRemoteId())){
+            comment.getAuthor().setDisplayName(StringUtils.isNotBlank(comment.getOriginalAuthorFullName())
+                    ? comment.getOriginalAuthorFullName()
+                    : comment.getOriginalAuthorName());
+        }
+
+        return comment;
     }
 
     private String escapeTextAndReplaceLineBreaks(String text) {
