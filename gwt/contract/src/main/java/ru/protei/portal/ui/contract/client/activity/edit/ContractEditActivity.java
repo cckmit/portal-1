@@ -32,6 +32,7 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.DateUtils.addDays;
 import static ru.protei.portal.core.model.helper.DateUtils.getDaysBetween;
 import static ru.protei.portal.core.model.struct.Vat.NoVat;
+import static ru.protei.portal.ui.common.client.util.DateUtils.isBefore;
 
 public abstract class ContractEditActivity implements Activity, AbstractContractEditActivity {
 
@@ -300,6 +301,13 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
         if (contract.getDateSigning() == null)
             return lang.contractValidationEmptyDateSigning();
+
+        if (contract.getDateSigning() != null && contract.getDateValid() != null &&
+                isBefore(contract.getDateSigning(), contract.getDateValid()))
+            return lang.contractValidationInvalidDateValid();
+
+        if (contract.getCost() == null || contract.getCost().getFull() < 0)
+            return lang.contractValidationInvalidCost();
 
         if (contract.getProjectId() == null)
             return lang.contractValidationEmptyProject();

@@ -2150,6 +2150,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractValidationEmptyDateValid();
 
+    String contractValidationInvalidDateValid();
+
+    String contractValidationInvalidCost();
+
     String contractValidationContractSpecification();
 
     String contractValidationContractSpecificationClauseDuplication();

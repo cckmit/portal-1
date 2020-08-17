@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.struct.Money;
 import ru.protei.portal.core.model.struct.MoneyWithCurrencyWithVat;
 import ru.protei.portal.ui.common.client.widget.selector.currency.CurrencyButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.vat.VatButtonSelector;
+import ru.protei.portal.ui.common.client.widget.validatefield.ValidableLongBox;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,6 +30,7 @@ public class MoneyCurrencyVatWidget extends Composite implements HasValue<MoneyW
     @Inject
     public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        initValidation();
         setVatOptions(defaultVatOptions);
     }
 
@@ -93,6 +95,11 @@ public class MoneyCurrencyVatWidget extends Composite implements HasValue<MoneyW
         vat.setOptions(options);
     }
 
+    private void initValidation() {
+        moneyNatural.setValidationFunction(value -> value != null && value >= 0);
+        moneyDecimal.setValidationFunction(value -> value != null && value >= 0 && value < 100);
+    }
+
     private Long parseVat(String vat) {
         return Objects.equals(vat, "no")
                 ? null
@@ -118,9 +125,9 @@ public class MoneyCurrencyVatWidget extends Composite implements HasValue<MoneyW
     }
 
     @UiField
-    LongBox moneyNatural;
+    ValidableLongBox moneyNatural;
     @UiField
-    LongBox moneyDecimal;
+    ValidableLongBox moneyDecimal;
     @Inject
     @UiField(provided = true)
     CurrencyButtonSelector currency;

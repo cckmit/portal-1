@@ -37,6 +37,7 @@ import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeCustomBu
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.tab.TabWidget;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
+import ru.protei.portal.ui.common.client.widget.validatefield.ValidableLongBox;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.contract.client.activity.edit.AbstractContractEditActivity;
 import ru.protei.portal.ui.contract.client.activity.edit.AbstractContractEditView;
@@ -57,6 +58,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         dateValidDays.getElement().setAttribute("placeholder", lang.days());
+        dateValidDays.setValidationFunction(value -> value == null || value >= 0);
         costWithCurrency.setVatOptions(listOf(Vat20, Vat0, NoVat));
         initCuratorSelector();
         ensureDebugIds();
@@ -409,7 +411,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @UiField
     HTMLPanel dateValid;
     @UiField
-    LongBox dateValidDays;
+    ValidableLongBox dateValidDays;
     @Inject
     @UiField(provided = true)
     SinglePicker dateValidDate;

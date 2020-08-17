@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.dict.En_Currency;
 import ru.protei.portal.core.model.struct.Money;
 import ru.protei.portal.core.model.struct.MoneyWithCurrency;
 import ru.protei.portal.ui.common.client.widget.selector.currency.CurrencyButtonSelector;
+import ru.protei.portal.ui.common.client.widget.validatefield.ValidableLongBox;
 
 import static ru.protei.portal.core.model.helper.NullUtils.defaultIfNull;
 
@@ -21,6 +22,7 @@ public class MoneyCurrencyWidget extends Composite implements HasValue<MoneyWith
     @Inject
     public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        initValidation();
     }
 
     @Override
@@ -71,6 +73,11 @@ public class MoneyCurrencyWidget extends Composite implements HasValue<MoneyWith
         root.ensureDebugId(debugId);
     }
 
+    private void initValidation() {
+        moneyNatural.setValidationFunction(value -> value != null && value >= 0);
+        moneyDecimal.setValidationFunction(value -> value != null && value >= 0 && value < 100);
+    }
+
     @UiHandler({"moneyNatural", "moneyDecimal"})
     public void onMoneyChanged(ValueChangeEvent<Long> event) {
         MoneyWithCurrency value = getValue();
@@ -84,9 +91,9 @@ public class MoneyCurrencyWidget extends Composite implements HasValue<MoneyWith
     }
 
     @UiField
-    LongBox moneyNatural;
+    ValidableLongBox moneyNatural;
     @UiField
-    LongBox moneyDecimal;
+    ValidableLongBox moneyDecimal;
     @Inject
     @UiField(provided = true)
     CurrencyButtonSelector currency;

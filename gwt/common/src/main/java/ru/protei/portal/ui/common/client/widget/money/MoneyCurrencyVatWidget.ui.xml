@@ -1,12 +1,13 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:validatefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
              xmlns:currency='urn:import:ru.protei.portal.ui.common.client.widget.selector.currency'
              xmlns:vat='urn:import:ru.protei.portal.ui.common.client.widget.selector.vat'>
 
     <g:HTMLPanel ui:field="root" styleName="input-group input-group-money">
-        <g:LongBox ui:field="moneyNatural" styleName="form-control input-group-element-natural"/>
+        <validatefield:ValidableLongBox ui:field="moneyNatural" styleName="form-control input-group-element-natural"/>
         <div class="input-group-prepend input-group-append"><span class="input-group-text">.</span></div>
-        <g:LongBox ui:field="moneyDecimal" styleName="form-control input-group-element-decimal"/>
+        <validatefield:ValidableLongBox ui:field="moneyDecimal" styleName="form-control input-group-element-decimal"/>
         <currency:CurrencyButtonSelector ui:field="currency" styleName="input-group-btn"/>
         <vat:VatButtonSelector ui:field="vat" styleName="input-group-btn" />
     </g:HTMLPanel>
