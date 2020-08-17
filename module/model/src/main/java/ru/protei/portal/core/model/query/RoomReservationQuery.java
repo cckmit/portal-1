@@ -4,7 +4,6 @@ import ru.protei.portal.core.model.dict.En_RoomReservationReason;
 import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.view.filterwidget.FilterQuery;
 
-import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
 
@@ -14,7 +13,7 @@ public class RoomReservationQuery extends BaseQuery implements FilterQuery {
     private Set<Long> personRequesterIds;
     private Set<Long> personResponsibleIds;
     private Set<En_RoomReservationReason> reasons;
-    private DateRange date;
+    private DateRange dateRange;
 
     public RoomReservationQuery() {}
 
@@ -50,12 +49,12 @@ public class RoomReservationQuery extends BaseQuery implements FilterQuery {
         this.reasons = reasons;
     }
 
-    public DateRange getDate() {
-        return date;
+    public DateRange getDateRange() {
+        return dateRange;
     }
 
-    public void setDate(DateRange date) {
-        this.date = date;
+    public void setDateRange(DateRange dateRange) {
+        this.dateRange = dateRange;
     }
 
     @Override
@@ -65,7 +64,7 @@ public class RoomReservationQuery extends BaseQuery implements FilterQuery {
                 ", personRequesterIds=" + personRequesterIds +
                 ", personResponsibleIds=" + personResponsibleIds +
                 ", reasons=" + reasons +
-                ", date=" + date +
+                ", dateRange=" + dateRange +
                 '}';
     }
 
@@ -78,11 +77,11 @@ public class RoomReservationQuery extends BaseQuery implements FilterQuery {
                 Objects.equals(personRequesterIds, that.personRequesterIds) &&
                 Objects.equals(personResponsibleIds, that.personResponsibleIds) &&
                 Objects.equals(reasons, that.reasons) &&
-                Objects.equals(date, that.date);
+                Objects.equals(dateRange, that.dateRange);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(roomIds, personRequesterIds, personResponsibleIds, reasons, date);
+        return Objects.hash(roomIds, personRequesterIds, personResponsibleIds, reasons, dateRange);
     }
 }

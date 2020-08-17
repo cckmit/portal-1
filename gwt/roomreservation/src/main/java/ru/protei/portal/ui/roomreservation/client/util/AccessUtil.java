@@ -46,7 +46,7 @@ public class AccessUtil {
 
     public static boolean hasAccessToRoom(PolicyService policyService, En_Privilege privilege, RoomReservable room) {
         if (room == null) {
-            return false;
+            return true;
         }
         if (!room.isActive()) {
             return false;

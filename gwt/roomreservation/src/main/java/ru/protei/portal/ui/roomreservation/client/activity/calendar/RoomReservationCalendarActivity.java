@@ -222,7 +222,7 @@ public abstract class RoomReservationCalendarActivity implements Activity, Abstr
     private RoomReservationQuery makeQuery(RoomReservable room, Date date) {
         RoomReservationQuery query = new RoomReservationQuery();
         query.setRoomIds(setOf(room.getId()));
-        query.setDate(new DateRange(En_DateIntervalType.FIXED,
+        query.setDateRange(new DateRange(En_DateIntervalType.FIXED,
                 setBeginOfMonth(date), setEndOfMonth(date)));
         return query;
     }
@@ -236,7 +236,7 @@ public abstract class RoomReservationCalendarActivity implements Activity, Abstr
         if (!roomsMatched) {
             return null;
         }
-        boolean datesMatched = Objects.equals(queryCache.getDate(), query.getDate());
+        boolean datesMatched = Objects.equals(queryCache.getDateRange(), query.getDateRange());
         if (!datesMatched) {
             return null;
         }

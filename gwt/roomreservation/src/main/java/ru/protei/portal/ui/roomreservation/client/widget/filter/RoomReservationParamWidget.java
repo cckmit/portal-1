@@ -64,7 +64,7 @@ public class RoomReservationParamWidget extends Composite implements AbstractRoo
     public RoomReservationQuery getQuery() {
         RoomReservationQuery query = new RoomReservationQuery();
         query.setRoomIds(emptyIfNull(room.getValue()).stream().map(RoomReservable::getId).collect(Collectors.toSet()));
-        query.setDate(DateIntervalWithType.toDateRange(dateRange.getValue()));
+        query.setDateRange(DateIntervalWithType.toDateRange(dateRange.getValue()));
         query.setSortField(room_reservation_date_from);
         return query;
     }

@@ -6,8 +6,10 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.RoomReservation;
 import ru.protei.portal.core.model.query.RoomReservationQuery;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -45,6 +47,10 @@ public abstract class RoomReservationTableActivity implements AbstractRoomReserv
 
     @Event(Type.FILL_CONTENT)
     public void onShow(RoomReservationEvents.ShowTable event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.ROOM_RESERVATION_VIEW)) {
+            fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
+            return;
+        }
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
@@ -62,7 +68,7 @@ public abstract class RoomReservationTableActivity implements AbstractRoomReserv
 
     @Override
     public void onItemClicked(RoomReservation value) {
-        // do nothing
+        fireEvent(new RoomReservationEvents.Edit(value.getId()));
     }
 
     @Override
@@ -150,6 +156,9 @@ public abstract class RoomReservationTableActivity implements AbstractRoomReserv
 
     @Inject
     Lang lang;
+
+    @Inject
+    PolicyService policyService;
 
     private AppEvents.InitDetails initDetails;
     private RoomReservationQuery query = null;

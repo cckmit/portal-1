@@ -44,22 +44,22 @@ public class RoomReservationDAO_Impl extends PortalBaseJdbcDAO<RoomReservation> 
                         .append(makeSqlStringCollection(query.getRoomIds(), args, null));
             }
 
-            if (query.getPersonRequesterIds() != null) {
+            if (isNotEmpty(query.getPersonRequesterIds())) {
                 condition.append(" and room_reservation.person_requester_id in ")
                         .append(makeSqlStringCollection(query.getPersonRequesterIds(), args, null));
             }
 
-            if (query.getPersonResponsibleIds() != null) {
+            if (isNotEmpty(query.getPersonResponsibleIds())) {
                 condition.append(" and room_reservation.person_responsible_id in ")
                         .append(makeSqlStringCollection(query.getPersonResponsibleIds(), args, null));
             }
 
-            if (query.getReasons() != null) {
+            if (isNotEmpty(query.getReasons())) {
                 condition.append(" and room_reservation.reason_id in ")
                         .append(makeSqlStringCollection(query.getReasons(), args, EnumType.ID));
             }
 
-            Interval date = makeInterval(query.getDate());
+            Interval date = makeInterval(query.getDateRange());
 
             if ( date != null ) {
                 if (date.from != null) {
