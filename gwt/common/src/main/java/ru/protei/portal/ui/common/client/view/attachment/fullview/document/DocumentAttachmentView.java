@@ -53,7 +53,6 @@ public class DocumentAttachmentView extends Composite implements AbstractAttachm
 
     @Override
     public void setCreationInfo(String author, Date created) {
-        DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat("dd.MM.yyyy HH:mm");
         createdDate.setInnerText(dateTimeFormat.format(created));
         this.authorName.setInnerText(author);
     }
@@ -116,6 +115,7 @@ public class DocumentAttachmentView extends Composite implements AbstractAttachm
     private AbstractAttachmentActivity activity;
 
     private String url;
+    private DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat("dd.MM.yyyy HH:mm");
 
     interface FullAttachmentViewUiBinder extends UiBinder<HTMLPanel, DocumentAttachmentView> {}
     private static FullAttachmentViewUiBinder ourUiBinder = GWT.create(FullAttachmentViewUiBinder.class);
