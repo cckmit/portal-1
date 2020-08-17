@@ -81,7 +81,7 @@ public abstract class RoomReservationPage implements Activity {
     }
 
     @Event
-    public void onCretaeClicked(ActionBarEvents.Clicked event) {
+    public void onCreateClicked(ActionBarEvents.Clicked event) {
         if (!(UiConstants.ActionBarIdentity.ROOM_RESERVATION_CREATE.equals(event.identity)) ) {
             return;
         }

@@ -41,12 +41,12 @@ public class RoomReservationParamWidget extends Composite implements AbstractRoo
 
     @Override
     public void watchForScrollOf(Widget widget) {
-
+        //        пока не реализуем слеженеим за скролом
     }
 
     @Override
     public void stopWatchForScrollOf(Widget widget) {
-
+        //        пока не реализуем слеженеим за скролом
     }
 
     public void setOnFilterChangeCallback(Runnable onFilterChangeCallback) {

@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.ui.common.client.util.PaginationUtils.PAGE_SIZE;
 import static ru.protei.portal.ui.common.client.util.PaginationUtils.getTotalPages;
+import static ru.protei.portal.ui.roomreservation.client.util.AccessUtil.hasAccessToRoomView;
 
 public abstract class RoomReservationTableActivity implements AbstractRoomReservationTableActivity, Activity,
         AbstractPagerActivity {
@@ -47,7 +48,7 @@ public abstract class RoomReservationTableActivity implements AbstractRoomReserv
 
     @Event(Type.FILL_CONTENT)
     public void onShow(RoomReservationEvents.ShowTable event) {
-        if (!policyService.hasPrivilegeFor(En_Privilege.ROOM_RESERVATION_VIEW)) {
+        if (!hasAccessToRoomView(policyService)) {
             fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }

@@ -62,4 +62,8 @@ public class AccessUtil {
         Date now = new Date();
         return now.after(reservation.getDateFrom());
     }
+
+    public static boolean hasAccessToRoomView(PolicyService policyService) {
+        return policyService.hasPrivilegeFor(En_Privilege.ROOM_RESERVATION_VIEW);
+    }
 }
