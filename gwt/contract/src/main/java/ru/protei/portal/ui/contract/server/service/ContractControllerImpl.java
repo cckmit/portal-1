@@ -98,6 +98,12 @@ public class ContractControllerImpl implements ContractController {
         return ServiceUtils.checkResultAndGetData(contractService.createContractor(token, contractor));
     }
 
+    @Override
+    public Contractor removeContractor(Long contractorId) throws RequestFailedException {
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
+        return ServiceUtils.checkResultAndGetData(contractService.removeContractor(token, contractorId));
+    }
+
     @Autowired
     ContractService contractService;
 

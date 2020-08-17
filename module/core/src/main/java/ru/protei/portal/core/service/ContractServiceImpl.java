@@ -1,5 +1,7 @@
 package ru.protei.portal.core.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
@@ -33,10 +35,13 @@ import static java.util.stream.Collectors.toMap;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.*;
 
 public class ContractServiceImpl implements ContractService {
+
+    private static final Logger log = LoggerFactory.getLogger(ContractServiceImpl.class);
 
     @Autowired
     ContractDAO contractDAO;
@@ -275,6 +280,42 @@ public class ContractServiceImpl implements ContractService {
 
         return api1CService.saveContractor(queryContractor1C, contractor.getOrganization())
             .map(contractor1C -> from1C(contractor1C, contractor1C.getRegistrationCountryKey()));
+    }
+
+    @Override
+    public Result<Contractor> removeContractor(AuthToken token, Long contractorId) {
+
+        if (contractorId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        ContractQuery query = new ContractQuery();
+        query.setContractorIds(listOf(contractorId));
+        int contractsSize = contractDAO.getSearchResult(query).getTotalCount();
+        if (contractsSize > 0) {
+            return error(En_ResultStatus.CONTRACTOR_NOT_REMOVED_HAS_CONTRACTS);
+        }
+
+        Contractor contractor = contractorDAO.get(contractorId);
+        if (contractor == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        Contractor1C contractor1C = to1C(contractor);
+        contractor1C.setDeletionMark(true);
+        Result<Contractor1C> result = api1CService.saveContractor(contractor1C, contractor.getOrganization());
+        if (result.isError()) {
+            log.warn("removeContractor(): failed to save contractor to 1c with id = {} | result = {}", contractorId, result);
+            return error(result.getStatus());
+        }
+
+        boolean removed = contractorDAO.removeByKey(contractorId);
+        if (!removed) {
+            log.error("removeContractor(): failed to remove contractor from db, but it was removed from 1c integration | id = {}", contractorId);
+            return error(En_ResultStatus.NOT_REMOVED);
+        }
+
+        return ok(contractor);
     }
 
     @Override

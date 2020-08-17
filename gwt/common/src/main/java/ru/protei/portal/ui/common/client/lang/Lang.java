@@ -2975,4 +2975,6 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeBirthdayResetMonth();
 
     String employeeBirthdayNextMonth();
+
+    String errContractorNotRemovedHasContracts();
 }

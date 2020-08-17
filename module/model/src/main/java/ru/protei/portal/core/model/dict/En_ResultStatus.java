@@ -261,6 +261,11 @@ public enum En_ResultStatus {
     /**
      * Проект не выбран
      */
-    PROJECT_NOT_SELECTED
+    PROJECT_NOT_SELECTED,
+
+    /**
+     * Нельзя удалить контрагента, который выставлен в договорах
+     */
+    CONTRACTOR_NOT_REMOVED_HAS_CONTRACTS,
     ;
 }

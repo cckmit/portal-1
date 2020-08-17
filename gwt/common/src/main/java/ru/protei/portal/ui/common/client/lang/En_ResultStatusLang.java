@@ -78,6 +78,7 @@ public class En_ResultStatusLang {
             case NOT_CURRENT_ABSENCE: return lang.errNotCurrentAbsence();
             case YOUTRACK_SYNCHRONIZATION_FAILED: return lang.errYoutrackSynchronizationFailed();
             case PROJECT_NOT_SELECTED: return lang.errContractProjectRequired();
+            case CONTRACTOR_NOT_REMOVED_HAS_CONTRACTS: return lang.errContractorNotRemovedHasContracts();
             default: return lang.errUnknownResult();
         }
     }
