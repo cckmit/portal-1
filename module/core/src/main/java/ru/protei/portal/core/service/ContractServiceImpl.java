@@ -434,6 +434,7 @@ public class ContractServiceImpl implements ContractService {
         contractor1C.setInn(query.getInn());
         contractor1C.setKpp(query.getKpp());
         contractor1C.setFullName(query.getFullName());
+        contractor1C.setDeletionMark(false);
         return contractor1C;
     }
 
