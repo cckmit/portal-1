@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.query.RoomReservationQuery;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
@@ -32,8 +33,8 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 public class RoomReservationServiceImpl implements RoomReservationService {
 
     @Override
-    public Result<List<RoomReservation>> getReservations(AuthToken authToken, RoomReservationQuery query) {
-        List<RoomReservation> result = roomReservationDAO.listByQuery(query);
+    public Result<SearchResult<RoomReservation>> getReservations(AuthToken authToken, RoomReservationQuery query) {
+        SearchResult<RoomReservation> result = roomReservationDAO.getSearchResultByQuery(query);
         return ok(result);
     }
 

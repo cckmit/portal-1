@@ -46,7 +46,7 @@ public class AccessUtil {
 
     public static boolean hasAccessToRoom(PolicyService policyService, En_Privilege privilege, RoomReservable room) {
         if (room == null) {
-            return false;
+            return true;
         }
         if (!room.isActive()) {
             return false;
@@ -61,5 +61,9 @@ public class AccessUtil {
     private static boolean isReservationStarted(RoomReservation reservation) {
         Date now = new Date();
         return now.after(reservation.getDateFrom());
+    }
+
+    public static boolean hasAccessToRoomView(PolicyService policyService) {
+        return policyService.hasPrivilegeFor(En_Privilege.ROOM_RESERVATION_VIEW);
     }
 }

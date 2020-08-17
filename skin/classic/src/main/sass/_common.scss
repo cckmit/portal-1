@@ -1112,7 +1112,7 @@ label.bordered:after {
 
 /**** Collapsable filter ****/
 
-.filter-collapsable, .absence-filter {
+.filter-collapsable, .absence-filter, .room-reservation-filter {
 
   .filter-header {
     border-bottom: 2px solid #ddd;
@@ -2827,7 +2827,7 @@ div.select2-container {
   }
 }
 
-.issue-filter, .absence-filter {
+.issue-filter, .absence-filter, .room-reservation-filter {
   padding-top: 0px !important;
 
   .user-filter {
@@ -4923,6 +4923,65 @@ table {
     height: 100%;
     color: white;
     font-size: 24px !important;
+  }
+}
+
+/**** ROOM-RESERVATION ****/
+.room-reservations {
+  table {
+    tbody {
+      tr {
+        td {
+          height: 40px;
+
+          div {
+            height: 40px;
+            max-height: 40px;
+            white-space: pre-line;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+    }
+
+    .separator-cell {
+      background-color: $bg_light_gray;
+      font-weight: bold;
+    }
+
+    .time {
+      width: 10%;
+      > div {
+        white-space: nowrap;
+      }
+    }
+
+    .person {
+      width: 20%;
+    }
+
+    .room {
+      width: 20%;
+    }
+    .reason {
+      width: 10%;
+    }
+
+    .coffee {
+      width: 10%;
+    }
+
+    .comment {
+      width: 30%;
+    }
+  }
+}
+
+.room-reservation-filter {
+  .filter-content {
+    border: none;
+    padding-top: 10px;
   }
 }
 

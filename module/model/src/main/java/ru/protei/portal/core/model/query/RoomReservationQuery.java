@@ -1,18 +1,19 @@
 package ru.protei.portal.core.model.query;
 
 import ru.protei.portal.core.model.dict.En_RoomReservationReason;
+import ru.protei.portal.core.model.struct.DateRange;
+import ru.protei.portal.core.model.view.filterwidget.FilterQuery;
 
-import java.util.Date;
+import java.util.Objects;
 import java.util.Set;
 
-public class RoomReservationQuery extends BaseQuery {
+public class RoomReservationQuery extends BaseQuery implements FilterQuery {
 
     private Set<Long> roomIds;
     private Set<Long> personRequesterIds;
     private Set<Long> personResponsibleIds;
     private Set<En_RoomReservationReason> reasons;
-    private Date dateStart;
-    private Date dateEnd;
+    private DateRange dateRange;
 
     public RoomReservationQuery() {}
 
@@ -48,20 +49,12 @@ public class RoomReservationQuery extends BaseQuery {
         this.reasons = reasons;
     }
 
-    public Date getDateStart() {
-        return dateStart;
+    public DateRange getDateRange() {
+        return dateRange;
     }
 
-    public void setDateStart(Date dateStart) {
-        this.dateStart = dateStart;
-    }
-
-    public Date getDateEnd() {
-        return dateEnd;
-    }
-
-    public void setDateEnd(Date dateEnd) {
-        this.dateEnd = dateEnd;
+    public void setDateRange(DateRange dateRange) {
+        this.dateRange = dateRange;
     }
 
     @Override
@@ -71,8 +64,24 @@ public class RoomReservationQuery extends BaseQuery {
                 ", personRequesterIds=" + personRequesterIds +
                 ", personResponsibleIds=" + personResponsibleIds +
                 ", reasons=" + reasons +
-                ", dateStart=" + dateStart +
-                ", dateEnd=" + dateEnd +
+                ", dateRange=" + dateRange +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof RoomReservationQuery)) return false;
+        RoomReservationQuery that = (RoomReservationQuery) o;
+        return Objects.equals(roomIds, that.roomIds) &&
+                Objects.equals(personRequesterIds, that.personRequesterIds) &&
+                Objects.equals(personResponsibleIds, that.personResponsibleIds) &&
+                Objects.equals(reasons, that.reasons) &&
+                Objects.equals(dateRange, that.dateRange);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(roomIds, personRequesterIds, personResponsibleIds, reasons, dateRange);
     }
 }

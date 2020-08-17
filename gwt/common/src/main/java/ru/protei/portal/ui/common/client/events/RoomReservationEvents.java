@@ -12,6 +12,11 @@ public class RoomReservationEvents {
         public Show() {}
     }
 
+    @Url(value = "room_reservation_table", primary = true)
+    public static class ShowTable {
+        public ShowTable() {}
+    }
+
     public static class Reload {
         public Reload() {}
     }

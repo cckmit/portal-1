@@ -90,6 +90,9 @@ public class UiConstants {
         String ABSENCE_REPORT = "absence_report";
         String EMPLOYEE_BIRTHDAYS = "employee_birthdays";
         String ABSENCE_SUMMARY_TABLE = "absence_summary_table";
+        String ROOM_RESERVATION_CALENDAR = "room_reservation_calendar";
+        String ROOM_RESERVATION_TABLE = "room_reservation_table";
+        String ROOM_RESERVATION_CREATE = "room_reservation_create";
     }
 
     public interface Styles {

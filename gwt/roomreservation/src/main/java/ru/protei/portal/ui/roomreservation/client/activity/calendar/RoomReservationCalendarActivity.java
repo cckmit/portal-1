@@ -5,12 +5,15 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.RoomReservable;
 import ru.protei.portal.core.model.ent.RoomReservation;
 import ru.protei.portal.core.model.query.RoomReservationQuery;
+import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
+import ru.protei.portal.ui.common.client.common.YearMonthDay;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
 import ru.protei.portal.ui.common.client.events.RoomReservationEvents;
@@ -19,16 +22,16 @@ import ru.protei.portal.ui.common.client.service.RoomReservationControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.roomreservation.client.struct.RoomReservationCalendar;
-import ru.protei.portal.ui.common.client.common.YearMonthDay;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.ui.common.client.util.DateUtils.*;
 import static ru.protei.portal.ui.roomreservation.client.util.AccessUtil.canView;
 import static ru.protei.portal.ui.roomreservation.client.util.AccessUtil.hasAccessToRoom;
-import static ru.protei.portal.ui.common.client.util.DateUtils.*;
 
 public abstract class RoomReservationCalendarActivity implements Activity, AbstractRoomReservationCalendarActivity {
 
@@ -175,7 +178,7 @@ public abstract class RoomReservationCalendarActivity implements Activity, Abstr
         }
         clearCache();
         showLoading();
-        roomReservationController.getReservations(query, new FluentCallback<List<RoomReservation>>()
+        roomReservationController.getReservations(query, new FluentCallback<SearchResult<RoomReservation>>()
             .withError(throwable -> {
                 hideLoading();
                 hideCalendar();
@@ -183,8 +186,8 @@ public abstract class RoomReservationCalendarActivity implements Activity, Abstr
             })
             .withSuccess(roomReservations -> {
                 hideLoading();
-                storeToCache(query, roomReservations);
-                showCalendar(room, date, roomReservations);
+                storeToCache(query, roomReservations.getResults());
+                showCalendar(room, date, roomReservations.getResults());
             }));
     }
 
@@ -219,8 +222,8 @@ public abstract class RoomReservationCalendarActivity implements Activity, Abstr
     private RoomReservationQuery makeQuery(RoomReservable room, Date date) {
         RoomReservationQuery query = new RoomReservationQuery();
         query.setRoomIds(setOf(room.getId()));
-        query.setDateStart(setBeginOfMonth(date));
-        query.setDateEnd(setEndOfMonth(date));
+        query.setDateRange(new DateRange(En_DateIntervalType.FIXED,
+                setBeginOfMonth(date), setEndOfMonth(date)));
         return query;
     }
 
@@ -233,8 +236,7 @@ public abstract class RoomReservationCalendarActivity implements Activity, Abstr
         if (!roomsMatched) {
             return null;
         }
-        boolean datesMatched = Objects.equals(queryCache.getDateStart(), query.getDateStart())
-                            && Objects.equals(queryCache.getDateEnd(), query.getDateEnd());
+        boolean datesMatched = Objects.equals(queryCache.getDateRange(), query.getDateRange());
         if (!datesMatched) {
             return null;
         }
