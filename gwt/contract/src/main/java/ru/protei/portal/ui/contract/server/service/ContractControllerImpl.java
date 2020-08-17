@@ -99,9 +99,9 @@ public class ContractControllerImpl implements ContractController {
     }
 
     @Override
-    public Contractor removeContractor(Long contractorId) throws RequestFailedException {
+    public Long removeContractor(String organization, String refKey) throws RequestFailedException {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
-        return ServiceUtils.checkResultAndGetData(contractService.removeContractor(token, contractorId));
+        return ServiceUtils.checkResultAndGetData(contractService.removeContractor(token, organization, refKey));
     }
 
     @Autowired

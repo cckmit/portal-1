@@ -34,8 +34,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.*;
 
@@ -283,39 +282,46 @@ public class ContractServiceImpl implements ContractService {
     }
 
     @Override
-    public Result<Contractor> removeContractor(AuthToken token, Long contractorId) {
+    public Result<Long> removeContractor(AuthToken token, String organization, String refKey) {
 
-        if (contractorId == null) {
+        if (StringUtils.isEmpty(organization) || StringUtils.isEmpty(refKey)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        ContractQuery query = new ContractQuery();
-        query.setContractorIds(listOf(contractorId));
-        int contractsSize = contractDAO.getSearchResult(query).getTotalCount();
-        if (contractsSize > 0) {
-            return error(En_ResultStatus.CONTRACTOR_NOT_REMOVED_HAS_CONTRACTS);
-        }
-
-        Contractor contractor = contractorDAO.get(contractorId);
-        if (contractor == null) {
+        Contractor1C contractor1C = findContractor(organization, refKey);
+        if (contractor1C == null) {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
-        Contractor1C contractor1C = to1C(contractor);
+        Contractor contractor = contractorDAO.getContractorByRefKey(refKey);
+        Long contractorId = contractor != null ? contractor.getId() : null;
+        boolean savedToDb = contractorId != null;
+
+        if (savedToDb) {
+            ContractQuery query = new ContractQuery();
+            query.setContractorIds(listOf(contractorId));
+            int contractsSize = contractDAO.getSearchResult(query).getTotalCount();
+            if (contractsSize > 0) {
+                return error(En_ResultStatus.CONTRACTOR_NOT_REMOVED_HAS_CONTRACTS);
+            }
+        }
+
         contractor1C.setDeletionMark(true);
-        Result<Contractor1C> result = api1CService.saveContractor(contractor1C, contractor.getOrganization());
+        Result<Contractor1C> result = api1CService.saveContractor(contractor1C, organization);
         if (result.isError()) {
-            log.warn("removeContractor(): failed to save contractor to 1c with id = {} | result = {}", contractorId, result);
+            log.warn("removeContractor(): failed to save contractor to 1c with refKey = {} | result = {}", refKey, result);
             return error(result.getStatus());
         }
 
-        boolean removed = contractorDAO.removeByKey(contractorId);
-        if (!removed) {
-            log.error("removeContractor(): failed to remove contractor from db, but it was removed from 1c integration | id = {}", contractorId);
-            return error(En_ResultStatus.NOT_REMOVED);
+        if (savedToDb) {
+            boolean removed = contractorDAO.removeByKey(contractorId);
+            if (!removed) {
+                log.error("removeContractor(): failed to remove contractor from db, but it was removed from 1c integration | refKey = {}", refKey);
+                return error(En_ResultStatus.NOT_REMOVED);
+            }
         }
 
-        return ok(contractor);
+        return ok(contractorId);
     }
 
     @Override
@@ -326,6 +332,16 @@ public class ContractServiceImpl implements ContractService {
         List<Contract> contracts = contractDAO.getByRefKeys(refKeys);
         jdbcManyRelationsHelper.fill(contracts, "contractDates");
         return ok(contracts);
+    }
+
+    private Contractor1C findContractor(String organization, String refKey) {
+        Contractor1C query = new Contractor1C();
+        query.setRefKey(refKey);
+        Result<List<Contractor1C>> result = api1CService.getContractors(query, organization);
+        if (result.isError()) {
+            return null;
+        }
+        return getFirst(result.getData());
     }
 
     private CaseObject fillCaseObjectFromContract(CaseObject caseObject, Contract contract) {

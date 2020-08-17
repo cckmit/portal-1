@@ -29,5 +29,5 @@ public interface ContractController extends RemoteService {
 
     Contractor createContractor(Contractor contractor) throws RequestFailedException;
 
-    Contractor removeContractor(Long contractorId) throws RequestFailedException;
+    Long removeContractor(String organization, String refKey) throws RequestFailedException;
 }

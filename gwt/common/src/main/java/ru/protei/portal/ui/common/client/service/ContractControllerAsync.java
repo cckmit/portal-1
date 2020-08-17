@@ -26,5 +26,5 @@ public interface ContractControllerAsync {
 
     void createContractor(Contractor contractor, AsyncCallback<Contractor> callback);
 
-    void removeContractor(Long contractorId, AsyncCallback<Contractor> async);
+    void removeContractor(String organization, String refKey, AsyncCallback<Long> async);
 }

@@ -2977,4 +2977,8 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeBirthdayNextMonth();
 
     String errContractorNotRemovedHasContracts();
+
+    String contractorRemoveConfirmMessage();
+
+    String contractorRemoved();
 }
