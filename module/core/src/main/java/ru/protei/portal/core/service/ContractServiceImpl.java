@@ -288,7 +288,7 @@ public class ContractServiceImpl implements ContractService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        Contractor1C contractor1C = findContractor(organization, refKey);
+        Contractor1C contractor1C = findContractor(organization, queryForRefKey(refKey));
         if (contractor1C == null) {
             return error(En_ResultStatus.NOT_FOUND);
         }
@@ -334,10 +334,9 @@ public class ContractServiceImpl implements ContractService {
         return ok(contracts);
     }
 
-    private Contractor1C findContractor(String organization, String refKey) {
-        Contractor1C query = new Contractor1C();
-        query.setRefKey(refKey);
-        Result<List<Contractor1C>> result = api1CService.getContractors(query, organization);
+    private Contractor1C findContractor(String organization, ContractorQuery query) {
+        Contractor1C contractor1C = makeContractor1CFromQuery(query);
+        Result<List<Contractor1C>> result = api1CService.getContractors(contractor1C, organization);
         if (result.isError()) {
             return null;
         }
@@ -431,11 +430,18 @@ public class ContractServiceImpl implements ContractService {
 
     private Contractor1C makeContractor1CFromQuery(ContractorQuery query) {
         Contractor1C contractor1C = new Contractor1C();
+        contractor1C.setRefKey(query.getRefKey());
         contractor1C.setInn(query.getInn());
         contractor1C.setKpp(query.getKpp());
         contractor1C.setFullName(query.getFullName());
         contractor1C.setDeletionMark(false);
         return contractor1C;
+    }
+
+    private ContractorQuery queryForRefKey(String refKey) {
+        ContractorQuery query = new ContractorQuery();
+        query.setRefKey(refKey);
+        return query;
     }
 
     public static Contractor from1C(Contractor1C contractor1C, String country) {

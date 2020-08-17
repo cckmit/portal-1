@@ -4,11 +4,20 @@ import java.io.Serializable;
 
 public class ContractorQuery implements Serializable {
 
+    private String refKey;
     private String inn;
     private String kpp;
     private String fullName;
 
     public ContractorQuery() {
+    }
+
+    public String getRefKey() {
+        return refKey;
+    }
+
+    public void setRefKey(String refKey) {
+        this.refKey = refKey;
     }
 
     public String getInn() {
@@ -38,7 +47,8 @@ public class ContractorQuery implements Serializable {
     @Override
     public String toString() {
         return "ContractorQuery{" +
-                "inn='" + inn + '\'' +
+                "refKey='" + refKey + '\'' +
+                ", inn='" + inn + '\'' +
                 ", kpp='" + kpp + '\'' +
                 ", fullName='" + fullName + '\'' +
                 '}';
