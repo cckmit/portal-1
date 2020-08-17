@@ -12,9 +12,9 @@ import java.util.function.Function;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 
-abstract class ValidableTextBoxBase<T> extends ValueBoxBase<T> implements HasValidable {
+abstract class ValidableValueBoxBase<T> extends ValueBoxBase<T> implements HasValidable {
 
-    ValidableTextBoxBase(Element elem, Renderer<T> renderer, Parser<T> parser){
+    ValidableValueBoxBase(Element elem, Renderer<T> renderer, Parser<T> parser){
         super(elem, renderer, parser);
         addDomHandler(event -> validationTimer.schedule(200), InputEvent.getType());
     }

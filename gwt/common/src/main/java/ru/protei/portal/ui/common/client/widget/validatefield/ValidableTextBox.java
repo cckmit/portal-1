@@ -11,7 +11,7 @@ import ru.protei.portal.ui.common.client.events.InputHandler;
 /**
  * TextBox c возможностью валидации
  */
-public class ValidableTextBox extends ValidableTextBoxBase<String> {
+public class ValidableTextBox extends ValidableValueBoxBase<String> {
 
     public ValidableTextBox() {
         super(Document.get().createTextInputElement(), PassthroughRenderer.instance(), PassthroughParser.instance());

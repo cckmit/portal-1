@@ -9,7 +9,7 @@ import com.google.gwt.text.shared.testing.PassthroughRenderer;
 /**
  * TextArea c возможностью валидации
  */
-public class ValidableTextArea extends ValidableTextBoxBase<String> {
+public class ValidableTextArea extends ValidableValueBoxBase<String> {
 
     public ValidableTextArea(){
         super(Document.get().createTextAreaElement(), PassthroughRenderer.instance(), PassthroughParser.instance());

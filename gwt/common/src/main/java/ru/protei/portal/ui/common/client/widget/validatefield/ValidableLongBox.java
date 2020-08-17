@@ -7,7 +7,7 @@ import com.google.gwt.text.client.LongRenderer;
 import ru.protei.portal.ui.common.client.events.InputEvent;
 import ru.protei.portal.ui.common.client.events.InputHandler;
 
-public class ValidableLongBox extends ValidableTextBoxBase<Long> {
+public class ValidableLongBox extends ValidableValueBoxBase<Long> {
 
     public ValidableLongBox() {
         super(Document.get().createTextInputElement(), LongRenderer.instance(), LongParser.instance());
