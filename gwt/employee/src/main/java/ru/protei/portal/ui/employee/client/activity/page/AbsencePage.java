@@ -25,6 +25,7 @@ public abstract class AbsencePage implements Activity {
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.EMPLOYEE_VIEW ) && event.profile.hasPrivilegeFor( En_Privilege.ABSENCE_VIEW ) ) {
             fireEvent( new MenuEvents.Add(TAB, UiConstants.TabIcons.ABSENCE, TAB, DebugIds.SIDEBAR_MENU.ABSENCE ).withParent( CATEGORY ) );
+            fireEvent( new AppEvents.InitPage( show ) );
         }
     }
 

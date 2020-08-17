@@ -31,26 +31,26 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
 
     @Override
     public void setText( String value ) {
-        title.setInnerText(value);
+        title.setInnerText( value );
     }
 
     @Override
     public void setIcon( String value ) {
         if ( value == null ) return;
 
-        iconTrumbnail.removeClassName("hide");
-        icon.setClassName(value);
+        iconTrumbnail.removeClassName( "hide" );
+        icon.setClassName( value );
     }
 
     @Override
     public void setActive( boolean value ) {
         if ( value ) {
             root.setStyleName( "active" );
-            iconTrumbnail.addClassName("bg-complete");
+            iconTrumbnail.addClassName( "bg-complete" );
         }
         else {
             root.removeStyleName( "active" );
-            iconTrumbnail.removeClassName("bg-complete");
+            iconTrumbnail.removeClassName( "bg-complete" );
         }
     }
 
@@ -73,9 +73,8 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
     public void setSubMenuVisible(boolean isVisible) {
         if (isVisible != subSection.isVisible()) {
             subSection.setVisible(isVisible);
-            subSectionIcon.setVisible(isVisible);
             arrow.removeClassName("hide");
-            hideSubSection();
+            closeSubSection();
         }
     }
 
@@ -85,19 +84,19 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
     }
 
     @Override
-    public void toggleSubSections(boolean forceVisible) {
-        isSubSectionVisible = forceVisible || !isSubSectionVisible;
+    public void toggleSubSection(Boolean force) {
+        isSubSectionVisible = force == null ? !isSubSectionVisible : force;
         if (isSubSectionVisible) {
             arrow.addClassName("open active");
-            showSubSection();
+            openSubSection();
         } else {
             arrow.removeClassName("open active");
-            hideSubSection();
+            closeSubSection();
         }
     }
 
     @Override
-    public void setSectionTitle(String title) {
+    public void setSectionTitle( String title ) {
         anchor.setTitle( title );
     }
 
@@ -105,6 +104,11 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
     public void setEnsureDebugId( String ensureDebugId ) {
         anchor.ensureDebugId( ensureDebugId );
         icon.setId( ensureDebugId + ICON_SUFFIX );
+    }
+
+    @Override
+    public void setHref( String href ) {
+        anchor.setHref(href);
     }
 
     @UiHandler("anchor")
@@ -121,18 +125,18 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
         }
     }
 
-    private void hideSubSection() {
-        subSection.getElement().getStyle().setHeight(0, Style.Unit.PX);
-        subSection.getElement().getStyle().setPadding(0, Style.Unit.PX);
-        subSection.getElement().getStyle().setMargin(0, Style.Unit.PX);
-    }
-
-    private void showSubSection() {
+    private void openSubSection() {
         int height = subSection.getElement().getChildCount() * 38 + 30;
         subSection.getElement().getStyle().setHeight(height, Style.Unit.PX);
         subSection.getElement().getStyle().setPaddingTop(18, Style.Unit.PX);
         subSection.getElement().getStyle().setPaddingBottom(10, Style.Unit.PX);
         subSection.getElement().getStyle().setMarginBottom(10, Style.Unit.PX);
+    }
+
+    private void closeSubSection() {
+        subSection.getElement().getStyle().setHeight(0, Style.Unit.PX);
+        subSection.getElement().getStyle().setPadding(0, Style.Unit.PX);
+        subSection.getElement().getStyle().setMargin(0, Style.Unit.PX);
     }
 
     AbstractSectionItemActivity activity;
@@ -149,8 +153,6 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
     SpanElement iconTrumbnail;
     @UiField
     SpanElement arrow;
-    @UiField
-    Label subSectionIcon;
     @UiField
     HTMLPanel subSection;
 

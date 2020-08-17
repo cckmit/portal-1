@@ -23,7 +23,7 @@ public abstract class FeatureRequestPage implements Activity {
 
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
-        fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.FEATURE_REQUEST, TAB, DebugIds.SIDEBAR_MENU.FEATURE_REQUEST).withParent(CATEGORY));
+        fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.FEATURE_REQUEST, TAB, FEATURE_REQUEST_URL, DebugIds.SIDEBAR_MENU.FEATURE_REQUEST).withParent(CATEGORY));
     }
 
     @Event
@@ -33,7 +33,6 @@ public abstract class FeatureRequestPage implements Activity {
         }
 
         fireSelectTab();
-        Window.open(FEATURE_REQUEST_URL, "_blank", "");
     }
 
     private void fireSelectTab() {

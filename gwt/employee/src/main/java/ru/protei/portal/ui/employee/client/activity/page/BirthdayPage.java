@@ -25,6 +25,7 @@ public abstract class BirthdayPage implements Activity {
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.EMPLOYEE_VIEW ) ) {
             fireEvent( new MenuEvents.Add(TAB, UiConstants.TabIcons.EMPLOYEE_BIRTHDAY, TAB, DebugIds.SIDEBAR_MENU.EMPLOYEE_BIRTHDAY ).withParent( CATEGORY ) );
+            fireEvent( new AppEvents.InitPage( show ) );
         }
     }
 

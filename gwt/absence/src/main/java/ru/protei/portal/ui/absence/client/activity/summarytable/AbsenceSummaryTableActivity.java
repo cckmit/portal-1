@@ -34,6 +34,10 @@ public abstract class AbsenceSummaryTableActivity implements AbstractAbsenceSumm
 
     @Event
     public void onAuthSuccess (AuthEvents.Success event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.ABSENCE_VIEW)) {
+            return;
+        }
+
         view.getFilterWidget().resetFilter();
     }
 

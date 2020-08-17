@@ -23,7 +23,7 @@ public abstract class BugTrackingPage implements Activity {
 
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
-        fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.BUG_TRACKING, TAB, DebugIds.SIDEBAR_MENU.BUG_TRACKING).withParent(CATEGORY));
+        fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.BUG_TRACKING, TAB, BUG_TRACKING_URL, DebugIds.SIDEBAR_MENU.BUG_TRACKING).withParent(CATEGORY));
     }
 
     @Event
@@ -33,7 +33,6 @@ public abstract class BugTrackingPage implements Activity {
         }
 
         fireSelectTab();
-        Window.open(BUG_TRACKING_URL, "_blank", "");
     }
 
     private void fireSelectTab() {

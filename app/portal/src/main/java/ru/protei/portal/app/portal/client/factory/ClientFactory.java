@@ -32,11 +32,14 @@ import ru.protei.portal.ui.plan.client.factory.PlanClientModule;
  * Фабрика
  */
 @GinModules({
-        EmployeeRegistrationClientModule.class, CommonClientModule.class, DocumentClientModule.class, DocumentTypeClientModule.class, ContractClientModule.class,
-        ClientModule.class, CompanyClientModule.class, ProductClientModule.class, ContactClientModule.class, EquipmentClientModule.class, IssueClientModule.class,
-        EducationClientModule.class, IssueReportClientModule.class, PlanClientModule.class, SiteFolderClientModule.class, ProjectClientModule.class,
-        IssueAssignmentClientModule.class, RegionClientModule.class, IpReservationClientModule.class, RoomReservationClientModule.class, RoleClientModule.class,
-        EmployeeClientModule.class, CaseStateClientModule.class, AccountClientModule.class, AbsenceClientModule.class
+        ClientModule.class, IssueAssignmentClientModule.class, EmployeeRegistrationClientModule.class,
+        EmployeeClientModule.class, RoomReservationClientModule.class, IpReservationClientModule.class, EducationClientModule.class,
+        IssueClientModule.class, IssueReportClientModule.class, SiteFolderClientModule.class, PlanClientModule.class,
+        ProjectClientModule.class, EquipmentClientModule.class, DocumentClientModule.class, ContractClientModule.class,
+        CompanyClientModule.class, ContactClientModule.class, ProductClientModule.class,
+        RoleClientModule.class, AccountClientModule.class,
+        RegionClientModule.class, DocumentTypeClientModule.class, CaseStateClientModule.class,
+        AbsenceClientModule.class, CommonClientModule.class
 })
 public interface ClientFactory
         extends FactoryInjector

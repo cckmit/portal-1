@@ -23,7 +23,7 @@ public abstract class ToDoListPage implements Activity {
 
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
-        fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.TODO_LIST, TAB, DebugIds.SIDEBAR_MENU.TODO_LIST).withParent(CATEGORY));
+        fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.TODO_LIST, TAB, TODO_LIST_URL, DebugIds.SIDEBAR_MENU.TODO_LIST).withParent(CATEGORY));
     }
 
     @Event
@@ -33,7 +33,6 @@ public abstract class ToDoListPage implements Activity {
         }
 
         fireSelectTab();
-        Window.open(TODO_LIST_URL, "_blank", "");
     }
 
     private void fireSelectTab() {

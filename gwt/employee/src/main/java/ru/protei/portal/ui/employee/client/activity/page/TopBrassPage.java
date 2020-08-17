@@ -25,6 +25,7 @@ public abstract class TopBrassPage implements Activity {
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.EMPLOYEE_VIEW ) ) {
             fireEvent( new MenuEvents.Add(TAB, UiConstants.TabIcons.TOP_BRASS, TAB, DebugIds.SIDEBAR_MENU.TOP_BRASS ).withParent( CATEGORY ) );
+            fireEvent( new AppEvents.InitPage( show ) );
         }
     }
 

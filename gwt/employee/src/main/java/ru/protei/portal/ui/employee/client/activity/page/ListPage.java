@@ -74,5 +74,4 @@ public abstract class ListPage implements Activity {
     private String TAB;
 
     private EmployeeEvents.Show show = new EmployeeEvents.Show(false);
-
 }

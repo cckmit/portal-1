@@ -1,14 +1,13 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
     <g:HTMLPanel ui:field="root" tag='li' >
-        <g:Anchor ui:field="anchor" href="#">
+        <g:Anchor ui:field="anchor" href="#" target="_blank">
             <span class="title" ui:field="title"/>
             <span ui:field="arrow" class="arrow hide"/>
             <span class="icon-thumbnail hide" ui:field="iconTrumbnail">
                 <i ui:field="icon"/>
             </span>
         </g:Anchor>
-        <g:Label ui:field="subSectionIcon" visible="false" styleName="sub-menu-icon"/>
         <g:HTMLPanel ui:field="subSection" tag="ul" visible="false" styleName="sub-menu"/>
     </g:HTMLPanel>
 </ui:UiBinder>

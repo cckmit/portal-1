@@ -23,7 +23,7 @@ public abstract class CrmPage implements Activity {
 
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
-        fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.CRM, TAB, DebugIds.SIDEBAR_MENU.CRM).withParent(CATEGORY));
+        fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.CRM, TAB, CRM_URL, DebugIds.SIDEBAR_MENU.CRM).withParent(CATEGORY));
     }
 
     @Event
@@ -33,7 +33,6 @@ public abstract class CrmPage implements Activity {
         }
 
         fireSelectTab();
-        Window.open(CRM_URL, "_blank", "");
     }
 
     private void fireSelectTab() {

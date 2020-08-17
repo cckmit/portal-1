@@ -23,7 +23,7 @@ public abstract class AcrmPage implements Activity {
 
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
-        fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.ACRM, TAB, DebugIds.SIDEBAR_MENU.ACRM).withParent(CATEGORY));
+        fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.ACRM, TAB, ACRM_URL, DebugIds.SIDEBAR_MENU.ACRM).withParent(CATEGORY));
     }
 
     @Event
@@ -33,7 +33,6 @@ public abstract class AcrmPage implements Activity {
         }
 
         fireSelectTab();
-        Window.open(ACRM_URL, "_blank", "");
     }
 
     private void fireSelectTab() {
