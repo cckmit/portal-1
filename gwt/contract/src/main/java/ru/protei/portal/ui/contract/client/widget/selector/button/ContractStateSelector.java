@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.contract.client.widget.selector;
+package ru.protei.portal.ui.contract.client.widget.selector.button;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_ContractState;
@@ -6,7 +6,6 @@ import ru.protei.portal.ui.common.client.lang.En_ContractStateLang;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
-import ru.protei.portal.ui.contract.client.widget.selector.model.ContractStateModel;
 
 import java.util.List;
 

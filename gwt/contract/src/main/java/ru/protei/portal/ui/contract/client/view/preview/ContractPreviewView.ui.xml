@@ -14,7 +14,7 @@
 
                     <img ui:field="state" src="" class="preview-title-image-right"/>
 
-                    <small ui:field="type"/>
+                    <small ui:field="types"/>
 
                     <div class="small hint-text pre-formatted-info">
                         <g:InlineLabel ui:field="description" styleName="m-l--3"/>

@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.listOfOrNull;
+import static ru.protei.portal.core.model.helper.CollectionUtils.nullIfEmpty;
 
 public abstract class ContractTableActivity implements AbstractContractTableActivity,
         AbstractContractFilterActivity, AbstractPagerActivity, Activity {
@@ -152,8 +154,8 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         query.setContractorIds(getContractorIdList(filterView.contractors().getValue()));
         query.setOrganizationIds(getCompaniesIdList(filterView.organizations().getValue()));
         query.setManagerIds(getManagersIdList(filterView.managers().getValue()));
-        query.setType(filterView.type().getValue());
-        query.setState(filterView.state().getValue());
+        query.setTypes(nullIfEmpty(listOfOrNull(filterView.types().getValue())));
+        query.setStates(nullIfEmpty(listOfOrNull(filterView.states().getValue())));
         ProductDirectionInfo value = filterView.direction().getValue();
         query.setDirectionId(value == null ? null : value.id);
         return query;

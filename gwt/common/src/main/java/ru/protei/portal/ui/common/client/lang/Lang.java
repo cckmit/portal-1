@@ -2016,6 +2016,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractTypeWorkContract();
 
+    String contractTypeHardwareSoftwareService();
+
     String goToContracts();
 
     String contractStateAgreement();
@@ -2027,6 +2029,8 @@ public interface Lang extends Messages, ContactItemLang {
     String contractStateWaitOriginal();
 
     String contractWaitingCopiesFromCustomer();
+
+    String contractCancelled();
 
     String contractDescription();
 
@@ -2108,6 +2112,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractSpecificationHeader();
 
+    String contractListOfExpenditureHeader();
+
     String contractSpecificationClausePlaceholder();
 
     String contractSpecificationTextPlaceholder();
@@ -2143,6 +2149,10 @@ public interface Lang extends Messages, ContactItemLang {
     String contractValidationEmptyDateSigning();
 
     String contractValidationEmptyDateValid();
+
+    String contractValidationInvalidDateValid();
+
+    String contractValidationInvalidCost();
 
     String contractValidationContractSpecification();
 

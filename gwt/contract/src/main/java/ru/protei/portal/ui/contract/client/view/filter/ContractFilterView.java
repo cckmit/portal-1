@@ -15,8 +15,8 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
+import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -29,11 +29,10 @@ import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.contract.client.activity.filter.AbstractContractFilterActivity;
 import ru.protei.portal.ui.contract.client.activity.filter.AbstractContractFilterView;
-import ru.protei.portal.ui.contract.client.widget.selector.ContractStateSelector;
-import ru.protei.portal.ui.contract.client.widget.selector.ContractTypeSelector;
+import ru.protei.portal.ui.contract.client.widget.selector.multi.ContractStateMultiSelector;
+import ru.protei.portal.ui.contract.client.widget.selector.multi.ContractTypeMultiSelector;
 
 import java.util.Set;
-
 
 public class ContractFilterView extends Composite implements AbstractContractFilterView {
 
@@ -57,8 +56,8 @@ public class ContractFilterView extends Composite implements AbstractContractFil
         organizations.setValue(null);
         managers.setValue(null);
         direction.setValue(null);
-        state.setValue(null);
-        type.setValue(null);
+        states.setValue(null);
+        types.setValue(null);
     }
 
     @Override
@@ -93,13 +92,13 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     }
 
     @Override
-    public HasValue<En_ContractType> type() {
-        return type;
+    public HasValue<Set<En_ContractType>> types() {
+        return types;
     }
 
     @Override
-    public HasValue<En_ContractState> state() {
-        return state;
+    public HasValue<Set<En_ContractState>> states() {
+        return states;
     }
 
     @Override
@@ -145,13 +144,13 @@ public class ContractFilterView extends Composite implements AbstractContractFil
         restartChangeTimer();
     }
 
-    @UiHandler("state")
-    public void onStateChanged(ValueChangeEvent<En_ContractState> event) {
+    @UiHandler("states")
+    public void onStateChanged(ValueChangeEvent<Set<En_ContractState>> event) {
         restartChangeTimer();
     }
 
-    @UiHandler("type")
-    public void onTypeChanged(ValueChangeEvent<En_ContractType> event) {
+    @UiHandler("types")
+    public void onTypeChanged(ValueChangeEvent<Set<En_ContractType>> event) {
         restartChangeTimer();
     }
 
@@ -197,13 +196,13 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     HomeCompanyMultiSelector organizations;
     @Inject
     @UiField(provided = true)
-    ContractStateSelector state;
+    ContractStateMultiSelector states;
     @Inject
     @UiField(provided = true)
     ProductDirectionButtonSelector direction;
     @Inject
     @UiField(provided = true)
-    ContractTypeSelector type;
+    ContractTypeMultiSelector types;
 
     private AbstractContractFilterActivity activity;
 

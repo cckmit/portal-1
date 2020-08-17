@@ -222,6 +222,13 @@ public class DateUtils {
         return false;
     }
 
+    /**
+     * Раньше ли [reference], чем [base]
+     */
+    public static boolean isBefore(Date base, Date reference) {
+        return reference.getTime() < base.getTime();
+    }
+
     public static List<YearMonthDay> rangeYearMonthDay(YearMonthDay from, YearMonthDay until) {
         List<YearMonthDay> days = new ArrayList<>();
         iterateYearMonthDay(from, until, days::add);

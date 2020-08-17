@@ -1,7 +1,9 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.converter.MoneyJdbcConverter;
 import ru.protei.portal.core.model.dict.En_Currency;
 import ru.protei.portal.core.model.helper.NumberUtils;
+import ru.protei.portal.core.model.struct.Money;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -29,8 +31,8 @@ public class ContractSpecification implements Serializable, Comparable<ContractS
     @JdbcColumn(name = "quantity")
     private Long quantity;
 
-    @JdbcColumn(name = "cost")
-    private Long cost;
+    @JdbcColumn(name = "cost", converterType = ConverterType.CUSTOM, converter = MoneyJdbcConverter.class)
+    private Money cost;
 
     @JdbcColumn(name = "cost_currency")
     @JdbcEnumerated(EnumType.ID)
@@ -93,11 +95,11 @@ public class ContractSpecification implements Serializable, Comparable<ContractS
         this.quantity = quantity;
     }
 
-    public Long getCost() {
+    public Money getCost() {
         return cost;
     }
 
-    public void setCost(Long cost) {
+    public void setCost(Money cost) {
         this.cost = cost;
     }
 

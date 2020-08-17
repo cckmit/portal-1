@@ -30,6 +30,7 @@ import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClientImpl;
 import ru.protei.portal.core.index.document.DocumentStorageIndex;
 import ru.protei.portal.core.index.document.DocumentStorageIndexImpl;
+import ru.protei.portal.core.model.converter.MoneyJdbcConverter;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.renderer.MarkdownRenderer;
 import ru.protei.portal.core.renderer.HTMLRenderer;
@@ -207,6 +208,13 @@ public class MainConfiguration {
     @Bean
     public EmployeeSqlBuilder employeeSqlBuilder() {
         return new EmployeeSqlBuilder();
+    }
+
+    /* DAO converters */
+
+    @Bean
+    public MoneyJdbcConverter moneyJdbcConverter() {
+        return new MoneyJdbcConverter();
     }
 
     /* DAO */
