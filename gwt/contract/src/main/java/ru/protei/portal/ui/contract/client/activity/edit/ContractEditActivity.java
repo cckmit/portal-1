@@ -31,6 +31,7 @@ import java.util.function.Consumer;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.DateUtils.addDays;
 import static ru.protei.portal.core.model.helper.DateUtils.getDaysBetween;
+import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.struct.Vat.NoVat;
 import static ru.protei.portal.ui.common.client.util.DateUtils.isBefore;
 
@@ -97,12 +98,13 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
     @Override
     public void onOrganizationChanged() {
+        boolean isNotSavedTo1c = isBlank(contract.getRefKey());
         EntityOption organization = view.organization().getValue();
         boolean hasOrganization = organization != null;
         String organizationDisplayText = hasOrganization
                 ? organization.getDisplayText()
                 : null;
-        view.contractorEnabled().setEnabled(hasOrganization);
+        view.contractorEnabled().setEnabled(isNotSavedTo1c && hasOrganization);
         view.setOrganization(organizationDisplayText);
         if (view.contractor().getValue() != null) {
             view.contractor().setValue(null);
@@ -198,6 +200,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     private void fillView(Contract value) {
         this.contract = value;
         boolean isNew = isNew(contract);
+        boolean isNotSavedTo1c = isBlank(contract.getRefKey());
+        boolean hasOrganization = contract.getOrganizationId() != null;
 
         view.types().setValue(setOf(contract.getContractTypes()));
         if ( contract.getState() == null ) {
@@ -230,10 +234,10 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
             projectRequest(contract.getProjectId(), this::fillProject);
         }
 
-        view.contractorEnabled().setEnabled(contract.getOrganizationId() != null);
+        view.contractorEnabled().setEnabled(isNotSavedTo1c && hasOrganization);
         view.setOrganization(contract.getOrganizationName());
         view.contractor().setValue(contract.getContractor());
-        view.organizationEnabled().setEnabled(StringUtils.isBlank(contract.getRefKey()));
+        view.organizationEnabled().setEnabled(isNotSavedTo1c);
 
         if (!isNew) {
             fireEvent(new ContractEvents.ShowConciseTable(view.expenditureContractsContainer(), contract.getId()));
@@ -287,10 +291,10 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     }
 
     private String getValidationError() {
-        if (StringUtils.isBlank(contract.getNumber()))
+        if (isBlank(contract.getNumber()))
             return lang.contractValidationEmptyNumber();
 
-        if (StringUtils.isBlank(contract.getDescription()))
+        if (isBlank(contract.getDescription()))
             return lang.contractValidationEmptyDescription();
 
         if (isEmpty(contract.getContractTypes()))
@@ -318,7 +322,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         boolean isNew = isNew(contract);
         boolean createExpenditureContract = isNew && view.secondContractCheckbox().getValue();
         if (createExpenditureContract) {
-            if (StringUtils.isBlank(view.secondContractNumber().getValue()))
+            if (isBlank(view.secondContractNumber().getValue()))
                 return lang.contractValidationEmptyNumber();
             if (view.secondContractOrganization().getValue() == null)
                 return lang.errFieldsRequired();
