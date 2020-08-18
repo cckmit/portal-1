@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.common.client.common;
 
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.DomEvent;
 import ru.protei.portal.ui.common.client.events.Draggable;
 
@@ -8,8 +7,6 @@ import java.util.function.BiConsumer;
 
 public class DragAndDropElementsHandler<T> {
     public void addDraggableElement(T value, Draggable draggableElement) {
-        draggableElement.getDraggableContainer().setDraggable(Element.DRAGGABLE_TRUE);
-
         draggableElement.addDragStartHandler(event -> dragStartHandler(value));
         draggableElement.addDragOverHandler(DomEvent::preventDefault);
         draggableElement.addDropHandler(event -> dropHandler(value));

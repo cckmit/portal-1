@@ -32,6 +32,7 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        headerContainer.setDraggable(Element.DRAGGABLE_TRUE);
     }
 
     @Override
@@ -116,11 +117,6 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     @Override
     public HandlerRegistration addDragEndHandler(DragEndHandler handler) {
         return addDomHandler(handler, DragEndEvent.getType());
-    }
-
-    @Override
-    public Element getDraggableContainer() {
-        return headerContainer;
     }
 
     @UiHandler("open")
