@@ -5,6 +5,7 @@ import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
@@ -41,7 +42,7 @@ public class TimeTextBox extends ValidableTextBox implements HasTime, KeyUpHandl
     @Override
     public Long getTime() {
         String value = getValue();
-        if ( value.isEmpty() || !isValid()) {
+        if (StringUtils.isEmpty(value) || !isValid()) {
             return null;
         }
 
