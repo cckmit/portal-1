@@ -238,6 +238,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
             view.expenditureContractsVisibility().setVisible(false);
         }
 
+        updateOrganizationBasedOnParentContract(contract.getParentContractId(), makePrimaryContractEditContractorView());
         syncSecondContractView(isNew, false);
     }
 
@@ -282,6 +283,10 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         contract.setOrganizationId(getOptionIdOrNull(view.secondContractOrganization().getValue()));
         contract.setContractor(view.secondContractContractor().getValue());
         contract.setParentContractId(parentContractId);
+    }
+
+    private void updateOrganizationBasedOnParentContract(Long contractId, AbstractContractEditContractorView view) {
+        updateOrganizationBasedOnParentContract(contractId, view, () -> {});
     }
 
     private void updateOrganizationBasedOnParentContract(Long contractId, AbstractContractEditContractorView view, Runnable onDone) {
