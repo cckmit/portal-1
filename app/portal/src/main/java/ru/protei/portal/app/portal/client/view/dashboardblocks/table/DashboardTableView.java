@@ -4,7 +4,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.SpanElement;
-import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.*;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -31,6 +32,7 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        getElement().setDraggable(Element.DRAGGABLE_TRUE);
     }
 
     @Override
@@ -95,6 +97,31 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     @Override
     public void setEnsureDebugId(String debugId) {
         table.setEnsureDebugId(debugId);
+    }
+
+    @Override
+    public HandlerRegistration addDragStartHandler(DragStartHandler handler) {
+        return addDomHandler(handler, DragStartEvent.getType());
+    }
+
+    @Override
+    public HandlerRegistration addDragOverHandler(DragOverHandler handler) {
+        return addDomHandler(handler, DragOverEvent.getType());
+    }
+
+    @Override
+    public HandlerRegistration addDropHandler(DropHandler handler) {
+        return addDomHandler(handler, DropEvent.getType());
+    }
+
+    @Override
+    public HandlerRegistration addDragEndHandler(DragEndHandler handler) {
+        return addDomHandler(handler, DragEndEvent.getType());
+    }
+
+    @Override
+    public Element getInnerContainer() {
+        return cardContainer;
     }
 
     @UiHandler("open")
@@ -165,7 +192,6 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     @Inject
     @UiField
     Lang lang;
-
     @UiField
     SpanElement name;
     @UiField
@@ -192,6 +218,9 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     SpanElement tableOverflowText;
     @UiField
     Element collapseIcon;
+
+    @UiField
+    Element cardContainer;
 
     private AbstractDashboardTableActivity activity;
 

@@ -21,4 +21,7 @@ public interface UserDashboardService {
 
     @Privileged(En_Privilege.DASHBOARD_VIEW)
     Result<List<UserDashboard>> getUserDashboards(AuthToken token);
+
+    @Privileged(En_Privilege.DASHBOARD_VIEW)
+    Result<Boolean> swapUserDashboards(AuthToken token, Long srcDashboardId, Long dstDashboardId);
 }

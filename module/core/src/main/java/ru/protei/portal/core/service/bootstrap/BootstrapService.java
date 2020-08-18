@@ -82,6 +82,28 @@ public class BootstrapService {
         migratePersonAbsences();
         updateWithCrossLinkColumn();
         transferProjectCrosslinkToYoutrack();
+        updateUserDashboardOrders();
+    }
+
+    private void updateUserDashboardOrders() {
+        List<UserDashboard> dashboards = userDashboardDAO.getAll();
+
+        if (dashboards.stream().allMatch(userDashboard -> userDashboard.getOrderNumber() != null)) {
+            return;
+        }
+
+        Map<Long, List<UserDashboard>> loginIdToDashboards = dashboards.stream().collect(Collectors.groupingBy(UserDashboard::getLoginId, toList()));
+
+        loginIdToDashboards.forEach((key, userDashboards) -> {
+            fillOrders(userDashboards);
+            userDashboardDAO.mergeBatch(userDashboards);
+        });
+    }
+
+    private void fillOrders(List<UserDashboard> dashboards) {
+        for (int i = 0; i < dashboards.size(); i++) {
+            dashboards.get(i).setOrderNumber(i);
+        }
     }
 
     private void updateWithCrossLinkColumn() {
@@ -937,6 +959,8 @@ if(true) return; //TODO remove
     PlanDAO planDAO;
     @Autowired
     PersonAbsenceDAO personAbsenceDAO;
+    @Autowired
+    UserDashboardDAO userDashboardDAO;
 
     SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd");
 

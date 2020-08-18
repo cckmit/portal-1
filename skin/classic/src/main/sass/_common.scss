@@ -1714,6 +1714,18 @@ a {
   transition: all 0.5s;
 }
 
+.draggable-element {
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.pointer-events-none {
+  pointer-events: none;
+}
+
 
 /**** case tag ****/
 .case-tags-container {

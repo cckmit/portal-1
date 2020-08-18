@@ -110,6 +110,7 @@ public class UiConstants {
         String XL_MODAL = "modal-xl";
         String FAVORITES = "favorites";
         String FAVORITE_ICON = "favorite-icon";
+        String POINTER_EVENTS_NONE = "pointer-events-none";
     }
 
     public interface ColumnClassName {
