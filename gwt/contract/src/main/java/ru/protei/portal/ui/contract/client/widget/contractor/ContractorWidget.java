@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Objects;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.core.model.helper.NullUtils.defaultIfNull;
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
@@ -258,7 +257,9 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
             controller.removeContractor(organization, refKey, new FluentCallback<Long>()
                     .withSuccess(id -> {
                         fireEvent(new NotifyEvents.Show(lang.contractorRemoved(), NotifyEvents.NotifyType.SUCCESS));
-                        String refKeySelected = defaultIfNull(() -> getValue().getRefKey(), "");
+                        String refKeySelected = getValue() != null
+                                ? getValue().getRefKey()
+                                : null;
                         if (Objects.equals(refKeySelected, refKey)) {
                             setValue(null);
                         }

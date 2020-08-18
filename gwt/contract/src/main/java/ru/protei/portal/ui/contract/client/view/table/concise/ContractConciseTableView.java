@@ -12,7 +12,6 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Contract;
-import ru.protei.portal.core.model.helper.NullUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
@@ -120,7 +119,9 @@ public class ContractConciseTableView extends Composite implements AbstractContr
             StringBuilder sb = new StringBuilder();
             sb.append("<b>").append(lang.contractOrganization()).append(":</b> ").append(emptyIfNull(contract.getOrganizationName())).append("</b>");
             sb.append("<br/>");
-            sb.append("<b>").append(lang.contractContractor()).append(":</b> ").append(NullUtils.emptyIfNull(() -> contract.getContractor().getName())).append("</b>");
+            sb.append("<b>").append(lang.contractContractor()).append(":</b> ").append(contract.getContractor() != null
+                    ? emptyIfNull(contract.getContractor().getName())
+                    : "").append("</b>");
             root.setInnerHTML(sb.toString());
             cell.appendChild(root);
         }
