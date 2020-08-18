@@ -282,6 +282,7 @@ public class ContractServiceImpl implements ContractService {
     }
 
     @Override
+    @Transactional
     public Result<Long> removeContractor(AuthToken token, String organization, String refKey) {
 
         if (StringUtils.isEmpty(organization) || StringUtils.isEmpty(refKey)) {
