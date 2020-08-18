@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.issue.client.activity.edit;
 
 import com.google.gwt.i18n.client.LocaleInfo;
+import com.google.gwt.safehtml.shared.SimpleHtmlSanitizer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -440,8 +441,8 @@ public abstract class IssueEditActivity implements
             String idCLM = issueName.split( " " )[0];
             String remainingName = "&nbsp;" + issueName.substring( idCLM.length() );
 
-          return "<a href='"+ jiraUrl + idCLM +"' target='_blank'>"+idCLM+"</a>"
-                    + "<label>"+remainingName+"</label>";
+            return "<a href='"+ jiraUrl + idCLM +"' target='_blank'>"+idCLM+"</a>"
+                    + "<label>"+ SimpleHtmlSanitizer.sanitizeHtml(remainingName).asString() +"</label>";
         }
     }
 
