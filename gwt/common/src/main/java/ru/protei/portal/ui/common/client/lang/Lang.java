@@ -2040,6 +2040,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractContractorDropped();
 
+    String contractOrganizationDropped();
+
     String contractContractorDescription();
 
     String selectContractContractor();

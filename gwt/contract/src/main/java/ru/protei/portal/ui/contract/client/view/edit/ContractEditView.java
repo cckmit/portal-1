@@ -183,6 +183,11 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     public HasEnabled organizationEnabled() { return organization; }
 
     @Override
+    public HasEnabled secondContractOrganizationEnabled() {
+        return secondContractOrganization;
+    }
+
+    @Override
     public void setOrganization(String organization) {
         contractorWidget.setOrganization(organization);
     }
@@ -235,6 +240,16 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Override
     public HasVisibility expenditureContractsVisibility() {
         return tabs.tabVisibility(lang.contractListOfExpenditureHeader());
+    }
+
+    @Override
+    public void setNotAvailableOrganizations(List<Long> organizationsToHide) {
+        organization.setIdsToHide(organizationsToHide);
+    }
+
+    @Override
+    public void setSecondContractNotAvailableOrganizations(List<Long> organizationsToHide) {
+        secondContractOrganization.setIdsToHide(organizationsToHide);
     }
 
     @UiHandler("saveButton")
