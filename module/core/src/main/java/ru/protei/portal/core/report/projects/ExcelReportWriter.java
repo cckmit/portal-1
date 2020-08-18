@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.ReportProjectWithLastComment;
 import ru.protei.portal.core.report.ReportWriter;
+import ru.protei.portal.core.utils.EnumLangUtil;
 import ru.protei.portal.core.utils.JXLSHelper;
 
 import java.io.IOException;
@@ -21,11 +22,13 @@ public class ExcelReportWriter implements
     private final JXLSHelper.ReportBook<ReportProjectWithLastComment> book;
     private final Lang.LocalizedLang lang;
     private final DateFormat dateFormat;
+    private final EnumLangUtil enumLangUtil;
 
-    public ExcelReportWriter(Lang.LocalizedLang localizedLang, DateFormat dateFormat) {
+    public ExcelReportWriter(Lang.LocalizedLang localizedLang, EnumLangUtil enumLangUtil, DateFormat dateFormat) {
         this.book = new JXLSHelper.ReportBook<>(localizedLang, this);
         this.lang = localizedLang;
         this.dateFormat = dateFormat;
+        this.enumLangUtil = enumLangUtil;
     }
 
     @Override
@@ -80,8 +83,8 @@ public class ExcelReportWriter implements
 
         values.add(project.getId());
         values.add(HelperFunc.isNotEmpty(project.getName()) ? project.getName() : "");
-        values.add(project.getState() != null ? lang.get("regionState_" + project.getState()) : "");
-        values.add(project.getCustomerType() != null ? lang.get("customerType_" + project.getCustomerType()) : "");
+        values.add(project.getState() != null ? enumLangUtil.getRegionState(project.getState(), lang.getLanguageTag()) : "");
+        values.add(project.getCustomerType() != null ? enumLangUtil.getCustomerType(project.getCustomerType(), lang.getLanguageTag()) : "");
         values.add(project.getCustomer() != null ? project.getCustomer().getCname() : "");
         values.add(project.getRegion() != null && project.getRegion().getDisplayText() != null ?
                 project.getRegion().getDisplayText() : "");
