@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.struct.ReportProjectWithLastComment;
 import ru.protei.portal.core.report.ReportWriter;
+import ru.protei.portal.core.utils.EnumLangUtil;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.io.IOException;
@@ -54,7 +55,7 @@ public class ReportProjectImpl implements ReportProject {
 
         if (count < 1) {
             log.debug("writeReport : reportId={} has no corresponding case objects", report.getId());
-            ReportWriter<ReportProjectWithLastComment> writer = new ExcelReportWriter(localizedLang, dateFormat);
+            ReportWriter<ReportProjectWithLastComment> writer = new ExcelReportWriter(localizedLang, new EnumLangUtil(lang), dateFormat);
             writer.createSheet();
             writer.collect(buffer);
             return true;
@@ -62,7 +63,7 @@ public class ReportProjectImpl implements ReportProject {
 
         log.debug("writeReport : reportId={} has {} case objects to process", report.getId(), count);
 
-        try (ReportWriter<ReportProjectWithLastComment> writer = new ExcelReportWriter(localizedLang, dateFormat)) {
+        try (ReportWriter<ReportProjectWithLastComment> writer = new ExcelReportWriter(localizedLang, new EnumLangUtil(lang), dateFormat)) {
             int sheetNumber = writer.createSheet();
             if (writeReport(writer, sheetNumber, report, count, isCancel)) {
                 writer.collect(buffer);
