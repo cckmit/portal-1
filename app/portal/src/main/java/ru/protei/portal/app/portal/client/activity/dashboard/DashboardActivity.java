@@ -27,9 +27,7 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 public abstract class DashboardActivity implements AbstractDashboardActivity, Activity{
@@ -179,8 +177,8 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
             return;
         }
 
-        userLoginController.swapUserDashboards(src, dst, new FluentCallback<Boolean>()
-                .withSuccess(result -> loadDashboard())
+        userLoginController.swapUserDashboards(src, dst, new FluentCallback<List<UserDashboard>>()
+                .withSuccess(this::showDashboard)
         );
     }
 

@@ -13,5 +13,5 @@ public interface UserLoginControllerAsync {
 
     void getUserDashboards(AsyncCallback<List<UserDashboard>> async);
 
-    void swapUserDashboards(Long srcDashboardId, Long dstDashboardId, AsyncCallback<Boolean> async);
+    void swapUserDashboards(Long srcDashboardId, Long dstDashboardId, AsyncCallback<List<UserDashboard>> async);
 }

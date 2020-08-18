@@ -32,7 +32,6 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        getElement().setDraggable(Element.DRAGGABLE_TRUE);
     }
 
     @Override
@@ -120,8 +119,8 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     }
 
     @Override
-    public Element getInnerContainer() {
-        return cardContainer;
+    public Element getDraggableContainer() {
+        return headerContainer;
     }
 
     @UiHandler("open")
@@ -220,7 +219,7 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     Element collapseIcon;
 
     @UiField
-    Element cardContainer;
+    Element headerContainer;
 
     private AbstractDashboardTableActivity activity;
 

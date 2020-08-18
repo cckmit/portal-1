@@ -123,7 +123,7 @@ public class UserDashboardServiceImpl implements UserDashboardService {
 
     @Override
     @Transactional
-    public Result<Boolean> swapUserDashboards(AuthToken token, Long srcDashboardId, Long dstDashboardId) {
+    public Result<List<UserDashboard>> swapUserDashboards(AuthToken token, Long srcDashboardId, Long dstDashboardId) {
         if (!validateToken(token)) {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
@@ -143,7 +143,7 @@ public class UserDashboardServiceImpl implements UserDashboardService {
 
         userDashboardDAO.mergeBatch(Arrays.asList(srcDashboard, dstDashboard));
 
-        return ok(true);
+        return getUserDashboards(token);
     }
 
     private void updateOrders(Long loginId) {

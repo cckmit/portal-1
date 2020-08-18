@@ -16,5 +16,5 @@ public interface UserLoginController extends RemoteService {
 
     List<UserDashboard> getUserDashboards() throws RequestFailedException;
 
-    Boolean swapUserDashboards(Long srcDashboardId, Long dstDashboardId) throws RequestFailedException;
+    List<UserDashboard> swapUserDashboards(Long srcDashboardId, Long dstDashboardId) throws RequestFailedException;
 }
