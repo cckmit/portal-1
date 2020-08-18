@@ -39,7 +39,15 @@ import ru.protei.portal.ui.common.client.activity.info.JiraInfoActivity;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
 import ru.protei.portal.ui.common.client.activity.notify.AbstractNotifyView;
 import ru.protei.portal.ui.common.client.activity.notify.NotifyActivity;
+import ru.protei.portal.ui.common.client.activity.page.FloorPlanPage;
+import ru.protei.portal.ui.common.client.activity.page.NotificationSystemPage;
+import ru.protei.portal.ui.common.client.activity.page.YouTrackAdminPage;
+import ru.protei.portal.ui.common.client.activity.page.YouTrackPage;
 import ru.protei.portal.ui.common.client.activity.page.archive.*;
+import ru.protei.portal.ui.common.client.activity.page.storedelivery.CardSearchPage;
+import ru.protei.portal.ui.common.client.activity.page.storedelivery.DeliveryPage;
+import ru.protei.portal.ui.common.client.activity.page.storedelivery.StoreDeliveryPage;
+import ru.protei.portal.ui.common.client.activity.page.storedelivery.StorePage;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.pathitem.PathItemActivity;
 import ru.protei.portal.ui.common.client.activity.pathitem.item.AbstractPathItemView;
@@ -100,12 +108,24 @@ public class CommonClientModule extends AbstractGinModule {
 
     @Override
     protected void configure() {
+        bind( YouTrackPage.class ).asEagerSingleton();
+        bind( YouTrackAdminPage.class ).asEagerSingleton();
+
+        bind( StoreDeliveryPage.class ).asEagerSingleton();
+        bind( StorePage.class ).asEagerSingleton();
+        bind( DeliveryPage.class ).asEagerSingleton();
+        bind( CardSearchPage.class ).asEagerSingleton();
+
+        bind( NotificationSystemPage.class ).asEagerSingleton();
+        bind( FloorPlanPage.class ).asEagerSingleton();
+
         bind( ArchivePage.class ).asEagerSingleton();
         bind( BugTrackingPage.class ).asEagerSingleton();
         bind( ToDoListPage.class ).asEagerSingleton();
         bind( FeatureRequestPage.class ).asEagerSingleton();
         bind( CrmPage.class ).asEagerSingleton();
-        bind( AcrmPage.class ).asEagerSingleton();
+        bind( AdminCrmPage.class ).asEagerSingleton();
+        bind( TestZonePage.class ).asEagerSingleton();
 
         bind( ServerEventBridge.class ).asEagerSingleton();
 

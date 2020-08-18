@@ -41,7 +41,16 @@ public class UiConstants {
         String TODO_LIST = "fas fa-clipboard-check";
         String FEATURE_REQUEST = "fas fa-question-circle";
         String CRM = "fas fa-handshake";
-        String ACRM = "fas fa-tools";
+        String ADMIN_CRM = "fas fa-tools";
+        String TEST_ZONE = "fas fa-database";
+        String STORE_AND_DELIVERY = "fas fa-warehouse";
+        String CARD_SEARCH = "fas fa-search";
+        String DELIVERY = "fas fa-truck";
+        String STORE = "fas fa-memory";
+        String FLOOR_PLAN = "fas fa-search-location";
+        String NOTIFICATION_SYSTEM = "fas fa-envelope";
+        String YOUTRACK = "fas fa-list-ul";
+        String YOUTRACK_ADMIN = "fas fa-tools";
     }
     public interface Icons {
         String APPROVED = "fa-clipboard-check";

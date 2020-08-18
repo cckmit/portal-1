@@ -18,7 +18,7 @@ public abstract class ArchivePage implements Activity {
     }
 
     @Event
-    public void onAuthSuccess( AuthEvents.Success event ) {
+    public void onAuthSuccess(AuthEvents.Success event) {
         fireEvent(new MenuEvents.Add(CATEGORY, UiConstants.TabIcons.ARCHIVE, CATEGORY, DebugIds.SIDEBAR_MENU.ARCHIVE));
     }
 

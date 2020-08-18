@@ -2967,4 +2967,6 @@ public interface Lang extends Messages, ContactItemLang {
     String topBrass();
 
     String archive();
+
+    String storeAndDelivery();
 }

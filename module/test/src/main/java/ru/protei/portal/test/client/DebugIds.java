@@ -104,7 +104,16 @@ public class DebugIds {
         String TODO_LIST = "sidebar-menu-archive-todo-list";
         String FEATURE_REQUEST = "sidebar-menu-archive-feature-request";
         String CRM = "sidebar-menu-archive-crm";
-        String ACRM = "sidebar-menu-archive-acrm";
+        String ADMIN_CRM = "sidebar-menu-archive-admin-crm";
+        String TEST_ZONE = "sidebar-menu-archive-test-zone";
+        String STORE_AND_DELIVERY = "sidebar-menu-store-delivery";
+        String CARD_SEARCH = "sidebar-menu-store-delivery-card-search";
+        String DELIVERY = "sidebar-menu-store-delivery-delivery";
+        String STORE = "sidebar-menu-store-delivery-store";
+        String FLOOR_PLAN = "sidebar-menu-floor-plan";
+        String NOTIFICATION_SYSTEM = "sidebar-menu-notification-system";
+        String YOUTRACK = "sidebar-menu-youtrack";
+        String YOUTRACK_ADMIN = "sidebar-menu-youtrack-admin";
     }
 
     public interface SELECTOR {

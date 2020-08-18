@@ -1,19 +1,16 @@
 package ru.protei.portal.ui.common.client.activity.page.archive;
 
-import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.UiConstants;
-import ru.protei.portal.ui.common.client.events.ActionBarEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.winter.web.common.client.events.MenuEvents;
-import ru.protei.winter.web.common.client.events.SectionEvents;
 
-public abstract class AcrmPage implements Activity {
+public abstract class AdminCrmPage implements Activity {
 
     @PostConstruct
     public void onInit() {
@@ -23,21 +20,7 @@ public abstract class AcrmPage implements Activity {
 
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
-        fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.ACRM, TAB, ACRM_URL, DebugIds.SIDEBAR_MENU.ACRM).withParent(CATEGORY));
-    }
-
-    @Event
-    public void onClickSection(SectionEvents.Clicked event) {
-        if (!TAB.equals(event.identity)) {
-            return;
-        }
-
-        fireSelectTab();
-    }
-
-    private void fireSelectTab() {
-        fireEvent(new ActionBarEvents.Clear());
-        fireEvent(new MenuEvents.Select(TAB, CATEGORY));
+        fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.ADMIN_CRM, TAB, ADMIN_CRM_URL, DebugIds.SIDEBAR_MENU.ADMIN_CRM).withParent(CATEGORY));
     }
 
     @Inject
@@ -45,5 +28,5 @@ public abstract class AcrmPage implements Activity {
 
     private String CATEGORY;
     private String TAB;
-    private final static String ACRM_URL = "http://portal/AdminCRM/session/view_session_admin.jsp";
+    private final static String ADMIN_CRM_URL = "http://portal/AdminCRM/session/view_session_admin.jsp";
 }
