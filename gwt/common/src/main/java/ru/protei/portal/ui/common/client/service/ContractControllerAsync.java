@@ -25,4 +25,6 @@ public interface ContractControllerAsync {
     void findContractors(String organization, ContractorQuery query, AsyncCallback< List<Contractor>> callback);
 
     void createContractor(Contractor contractor, AsyncCallback<Contractor> callback);
+
+    void removeContractor(String organization, String refKey, AsyncCallback<Long> async);
 }

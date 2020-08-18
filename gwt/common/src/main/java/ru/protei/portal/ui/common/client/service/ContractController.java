@@ -28,4 +28,6 @@ public interface ContractController extends RemoteService {
     List<Contractor> findContractors(String organization, ContractorQuery query) throws RequestFailedException;
 
     Contractor createContractor(Contractor contractor) throws RequestFailedException;
+
+    Long removeContractor(String organization, String refKey) throws RequestFailedException;
 }

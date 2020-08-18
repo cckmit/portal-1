@@ -73,9 +73,23 @@ public class Api1CImpl implements Api1C{
         }
 
         try {
-            return client.save(buildSaveContractorUrl(homeCompanyName), jsonMapper.writeValueAsString(contractor), Contractor1C.class)
-                    .ifOk(value -> log.info("saveContractor(): OK "))
-                    .ifError(result -> log.warn("saveContractor(): Can`t save contractor={}. {}", contractor, result));
+            if (StringUtils.isBlank(contractor.getRefKey())) {
+                return client.save(
+                        buildCreateContractorUrl(homeCompanyName),
+                        jsonMapper.writeValueAsString(contractor),
+                        Contractor1C.class
+                )
+                        .ifOk(value -> log.info("saveContractor(): create OK "))
+                        .ifError(result -> log.warn("saveContractor(): Can`t create contractor={}. {}", contractor, result));
+            } else {
+                return client.update(
+                        buildUpdateContractorUrl(contractor, homeCompanyName),
+                        jsonMapper.writeValueAsString(contractor),
+                        Contractor1C.class
+                )
+                        .ifOk(value -> log.info("saveContractor(): update OK "))
+                        .ifError(result -> log.warn("saveContractor(): Can`t update contractor={}. {}", contractor, result));
+            }
         } catch (JsonProcessingException e){
             log.error("saveContractor(): failed to serialize contractor", e);
             return Result.error(En_ResultStatus.INTERNAL_ERROR);
@@ -249,9 +263,15 @@ public class Api1CImpl implements Api1C{
         return url;
     }
 
-    private String buildSaveContractorUrl(String homeCompanyName){
+    private String buildCreateContractorUrl(String homeCompanyName){
         String url = buildCommonUrl(Contractor1C.class, homeCompanyName);
-        log.debug("buildSaveContractorUrl(): url={}", url);
+        log.debug("buildCreateContractorUrl(): url={}", url);
+        return url;
+    }
+
+    private String buildUpdateContractorUrl(Contractor1C contractor, String homeCompanyName){
+        String url = buildCommonUrl(contractor.getClass(), homeCompanyName, contractor.getRefKey());
+        log.debug("buildUpdateContractorUrl(): url={}", url);
         return url;
     }
 

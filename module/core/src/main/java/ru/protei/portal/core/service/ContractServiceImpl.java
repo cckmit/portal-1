@@ -1,5 +1,7 @@
 package ru.protei.portal.core.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
@@ -32,11 +34,13 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.*;
 
 public class ContractServiceImpl implements ContractService {
+
+    private static final Logger log = LoggerFactory.getLogger(ContractServiceImpl.class);
 
     @Autowired
     ContractDAO contractDAO;
@@ -278,6 +282,50 @@ public class ContractServiceImpl implements ContractService {
     }
 
     @Override
+    @Transactional
+    public Result<Long> removeContractor(AuthToken token, String organization, String refKey) {
+
+        if (StringUtils.isEmpty(organization) || StringUtils.isEmpty(refKey)) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        Contractor1C contractor1C = findContractor(organization, queryForRefKey(refKey));
+        if (contractor1C == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        Contractor contractor = contractorDAO.getContractorByRefKey(refKey);
+        Long contractorId = contractor != null ? contractor.getId() : null;
+        boolean savedToDb = contractorId != null;
+
+        if (savedToDb) {
+            ContractQuery query = new ContractQuery();
+            query.setContractorIds(listOf(contractorId));
+            int contractsSize = contractDAO.getSearchResult(query).getTotalCount();
+            if (contractsSize > 0) {
+                return error(En_ResultStatus.CONTRACTOR_NOT_REMOVED_HAS_CONTRACTS);
+            }
+        }
+
+        contractor1C.setDeletionMark(true);
+        Result<Contractor1C> result = api1CService.saveContractor(contractor1C, organization);
+        if (result.isError()) {
+            log.warn("removeContractor(): failed to save contractor to 1c with refKey = {} | result = {}", refKey, result);
+            return error(result.getStatus());
+        }
+
+        if (savedToDb) {
+            boolean removed = contractorDAO.removeByKey(contractorId);
+            if (!removed) {
+                log.error("removeContractor(): failed to remove contractor from db, but it was removed from 1c integration | refKey = {}", refKey);
+                return error(En_ResultStatus.NOT_REMOVED);
+            }
+        }
+
+        return ok(contractorId);
+    }
+
+    @Override
     public Result<List<Contract>> getContractsByRefKeys(AuthToken token, List<String> refKeys) {
         if (isEmpty(refKeys)) {
             return ok(Collections.emptyList());
@@ -285,6 +333,15 @@ public class ContractServiceImpl implements ContractService {
         List<Contract> contracts = contractDAO.getByRefKeys(refKeys);
         jdbcManyRelationsHelper.fill(contracts, "contractDates");
         return ok(contracts);
+    }
+
+    private Contractor1C findContractor(String organization, ContractorQuery query) {
+        Contractor1C contractor1C = makeContractor1CFromQuery(query);
+        Result<List<Contractor1C>> result = api1CService.getContractors(contractor1C, organization);
+        if (result.isError()) {
+            return null;
+        }
+        return getFirst(result.getData());
     }
 
     private CaseObject fillCaseObjectFromContract(CaseObject caseObject, Contract contract) {
@@ -374,10 +431,18 @@ public class ContractServiceImpl implements ContractService {
 
     private Contractor1C makeContractor1CFromQuery(ContractorQuery query) {
         Contractor1C contractor1C = new Contractor1C();
+        contractor1C.setRefKey(query.getRefKey());
         contractor1C.setInn(query.getInn());
         contractor1C.setKpp(query.getKpp());
         contractor1C.setFullName(query.getFullName());
+        contractor1C.setDeletionMark(false);
         return contractor1C;
+    }
+
+    private ContractorQuery queryForRefKey(String refKey) {
+        ContractorQuery query = new ContractorQuery();
+        query.setRefKey(refKey);
+        return query;
     }
 
     public static Contractor from1C(Contractor1C contractor1C, String country) {

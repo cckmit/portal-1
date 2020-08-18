@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.struct.ContractorQuery;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
+import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
@@ -26,8 +27,10 @@ import ru.protei.portal.ui.contract.client.widget.contractor.search.AbstractCont
 import ru.protei.portal.ui.contract.client.widget.contractor.search.AbstractContractorSearchView;
 
 import java.util.List;
+import java.util.Objects;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.NullUtils.defaultIfNull;
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
@@ -121,11 +124,11 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
     private void prepareSearchDialog(AbstractDialogDetailsView dialog) {
         dialog.setActivity(makeSearchDialogActivity());
         dialog.getBodyContainer().add(searchView.asWidget());
-        dialog.removeButtonVisibility().setVisible(false);
         dialog.setHeader(lang.searchContractorTitle());
         dialog.setSaveButtonName(lang.buttonApply());
         dialog.setAdditionalButtonName(lang.buttonCreate());
         dialog.setAdditionalVisible(true);
+        dialog.removeButtonVisibility().setVisible(true);
     }
 
     private void prepareCreateDialog(AbstractDialogDetailsView dialog) {
@@ -152,13 +155,21 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
             public void onCancelClicked() {
                 dialogDetailsSearchView.hidePopup();
             }
-
             @Override
             public void onAdditionalClicked() {
                     createView.reset();
                     createView.setOrganization(organization);
                     dialogDetailsSearchView.hidePopup();
                     dialogDetailsCreateView.showPopup();
+            }
+            @Override
+            public void onRemoveClicked() {
+                Contractor contractor = searchView.contractor().getValue();
+                if (contractor == null) {
+                    fireEvent(new NotifyEvents.Show(lang.contractContractorFindNotChosenError(), NotifyEvents.NotifyType.INFO));
+                    return;
+                }
+                fireEvent(new ConfirmDialogEvents.Show(lang.contractorRemoveConfirmMessage(), removeContractorAction(contractor)));
             }
         };
     }
@@ -236,6 +247,25 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
         boolean validByView = searchView.isValid();
         boolean queryValid = isNotEmpty(query.getInn()) || isNotEmpty(query.getKpp()) || isNotEmpty(query.getFullName());
         return validByView && queryValid;
+    }
+
+    private Runnable removeContractorAction(Contractor contractor) {
+        return () -> {
+            if (contractor == null) {
+                return;
+            }
+            String refKey = contractor.getRefKey();
+            controller.removeContractor(organization, refKey, new FluentCallback<Long>()
+                    .withSuccess(id -> {
+                        fireEvent(new NotifyEvents.Show(lang.contractorRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                        String refKeySelected = defaultIfNull(() -> getValue().getRefKey(), "");
+                        if (Objects.equals(refKeySelected, refKey)) {
+                            setValue(null);
+                        }
+                        searchView.reset();
+                        dialogDetailsSearchView.hidePopup();
+                    }));
+        };
     }
 
     @Inject
