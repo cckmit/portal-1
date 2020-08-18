@@ -14,11 +14,11 @@
                             <g:Button ui:field="backButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.backToIssues}">
                                 <i class="fa fa-arrow-left"/>
                             </g:Button>
-                            <g:Button ui:field="favoritesButton" styleName="btn btn-default btn-xs btn-cons-toolbar">
-                                <i ui:field="favoriteButtonIcon" class="favorite-icon"/>
-                            </g:Button>
                             <g:Button ui:field="showEditViewButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.openFullScreen}">
                                 <i class="fas fa-expand-arrows-alt"/>
+                            </g:Button>
+                            <g:Button ui:field="favoritesButton" styleName="btn btn-default btn-xs btn-cons-toolbar">
+                                <i ui:field="favoriteButtonIcon" class="favorite-icon"/>
                             </g:Button>
                             <g:Button ui:field="addTagButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.tagAdd}">
                                 <i class="fas fa-tag"/>
