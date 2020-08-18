@@ -79,6 +79,7 @@ public class En_ResultStatusLang {
             case YOUTRACK_SYNCHRONIZATION_FAILED: return lang.errYoutrackSynchronizationFailed();
             case PROJECT_NOT_SELECTED: return lang.errContractProjectRequired();
             case CONTRACTOR_NOT_REMOVED_HAS_CONTRACTS: return lang.errContractorNotRemovedHasContracts();
+            case CONTRACT_ORGANIZATION_SHOULD_BE_DIFFERENT_FROM_PARENT: return lang.errContractOrganizationShouldBeDifferentFromParent();
             default: return lang.errUnknownResult();
         }
     }

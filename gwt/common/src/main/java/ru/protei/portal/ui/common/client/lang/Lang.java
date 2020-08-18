@@ -2987,4 +2987,6 @@ public interface Lang extends Messages, ContactItemLang {
     String contractorRemoveConfirmMessage();
 
     String contractorRemoved();
+
+    String errContractOrganizationShouldBeDifferentFromParent();
 }
