@@ -173,7 +173,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     }
 
     private void swapElements(Long src, Long dst) {
-        if (src == null || dst == null || Objects.equals(src, dst)) {
+        if (Objects.equals(src, dst)) {
             return;
         }
 

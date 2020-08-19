@@ -114,6 +114,11 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
         return addDomHandler(handler, DropEvent.getType());
     }
 
+    @Override
+    public HandlerRegistration addDragEndHandler(DragEndHandler handler) {
+        return addDomHandler(handler, DragEndEvent.getType());
+    }
+
     @UiHandler("open")
     public void onOpenClicked(ClickEvent event) {
         event.preventDefault();

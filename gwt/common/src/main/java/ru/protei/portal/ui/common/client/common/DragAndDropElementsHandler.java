@@ -10,6 +10,7 @@ public class DragAndDropElementsHandler<T> {
         draggableElement.addDragStartHandler(event -> dragStartHandler(value));
         draggableElement.addDragOverHandler(DomEvent::preventDefault);
         draggableElement.addDropHandler(event -> dropHandler(value));
+        draggableElement.addDragEndHandler(event -> dragEndHandler());
     }
 
     public void addDropConsumer(BiConsumer<T, T> dropConsumer) {
@@ -21,7 +22,15 @@ public class DragAndDropElementsHandler<T> {
     }
 
     private void dropHandler(T dst) {
+        if (src == null) {
+            return;
+        }
+
         dropConsumer.accept(src, dst);
+    }
+
+    private void dragEndHandler() {
+        src = null;
     }
 
     private T src;
