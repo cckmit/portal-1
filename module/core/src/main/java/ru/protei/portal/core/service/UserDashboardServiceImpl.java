@@ -34,7 +34,7 @@ public class UserDashboardServiceImpl implements UserDashboardService {
         Long loginId = token.getUserLoginId();
         dashboard.setId(null);
         dashboard.setLoginId(loginId);
-        dashboard.setOrderNumber(userDashboardDAO.getAll().size());
+        dashboard.setOrderNumber(userDashboardDAO.findByLoginId(loginId).size());
         dashboard.setId(userDashboardDAO.persist(dashboard));
 
         if (dashboard.getId() == null) {
