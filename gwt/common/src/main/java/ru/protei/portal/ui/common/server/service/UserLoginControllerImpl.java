@@ -45,6 +45,13 @@ public class UserLoginControllerImpl implements UserLoginController {
         return checkResultAndGetData(userDashboardService.getUserDashboards(token));
     }
 
+    @Override
+    public List<UserDashboard> swapUserDashboards(Long srcDashboardId, Long dstDashboardId) throws RequestFailedException {
+        log.info("swapUserDashboards(): src={}, dst={}", srcDashboardId, dstDashboardId);
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
+        return checkResultAndGetData(userDashboardService.swapUserDashboards(token, srcDashboardId, dstDashboardId));
+    }
+
     @Autowired
     SessionService sessionService;
     @Autowired

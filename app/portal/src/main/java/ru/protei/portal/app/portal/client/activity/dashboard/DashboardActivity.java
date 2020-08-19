@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.DragAndDropElementsHandler;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
@@ -27,8 +28,14 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
+import java.util.Objects;
 
 public abstract class DashboardActivity implements AbstractDashboardActivity, Activity{
+
+    @Inject
+    public void onInit() {
+        dragAndDropElementsHandler.addDropConsumer(this::swapElements);
+    }
 
     @Event
     public void onInitDetails( AppEvents.InitDetails initDetails ) {
@@ -147,6 +154,9 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
             showEmpty();
             return;
         }
+
+        view.clearContainers();
+
         for (int i = 0; i < dashboardList.size(); i++) {
             UserDashboard dashboard = dashboardList.get(i);
             if (dashboard.getCaseFilter() == null || dashboard.getCaseFilter().getParams() == null) {
@@ -156,9 +166,20 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
             String name = dashboard.getName();
             CaseQuery query = new CaseQuery(filter.getParams());
             AbstractDashboardTableView table = createIssueTable(dashboard, i, name, query);
+            dragAndDropElementsHandler.addDraggableElement(dashboard.getId(), table);
             view.addTableToContainer(table.asWidget());
             loadTable(table, query);
         }
+    }
+
+    private void swapElements(Long src, Long dst) {
+        if (Objects.equals(src, dst)) {
+            return;
+        }
+
+        userLoginController.swapUserDashboards(src, dst, new FluentCallback<List<UserDashboard>>()
+                .withSuccess(this::showDashboard)
+        );
     }
 
     private AbstractDashboardTableView createIssueTable(UserDashboard dashboard, int order, String name, CaseQuery query) {
@@ -256,7 +277,10 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     Provider<AbstractDashboardTableView> tableProvider;
     @Inject
     PolicyService policyService;
+    @Inject
+    private DragAndDropElementsHandler<Long> dragAndDropElementsHandler;
 
     private AppEvents.InitDetails initDetails;
+
     private final static int TABLE_LIMIT = 50;
 }

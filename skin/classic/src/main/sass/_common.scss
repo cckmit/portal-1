@@ -1720,6 +1720,14 @@ a {
   transition: all 0.5s;
 }
 
+.draggable-element {
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
 
 /**** case tag ****/
 .case-tags-container {

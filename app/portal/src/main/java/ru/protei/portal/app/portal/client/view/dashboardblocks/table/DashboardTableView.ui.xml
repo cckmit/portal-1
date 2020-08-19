@@ -5,9 +5,9 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName=" p-b-15 p-t-15">
+    <g:HTMLPanel styleName="p-b-15 p-t-15 draggable-element">
         <div class="card card-default widget-11 widget-loader-bar dashboard no-margin">
-            <div class="card-header">
+            <div ui:field="headerContainer" class="card-header bg-white">
                 <div class="card-title">
                     <g:Button ui:field="collapse" styleName="btn btn-default padding-0 no-border bg-transparent">
                         <i ui:field="collapseIcon" class="fas fa-caret-down font-large m-r-5 collapse-icon"/>

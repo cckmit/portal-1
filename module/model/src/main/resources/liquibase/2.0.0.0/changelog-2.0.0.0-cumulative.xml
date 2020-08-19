@@ -44,5 +44,6 @@
   <include file="2020-08-11-add-is_collapsed-column-to-user_dashboard.xml" relativeToChangelogFile="true"/>
   <include file="2020-08-13-add-contract_types-column-to-contract-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-08-14-migrate-money.xml" relativeToChangelogFile="true"/>
+  <include file="2020-08-17-add-order_number-column-to-user_dashboard-table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
