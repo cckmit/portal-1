@@ -42,7 +42,7 @@ public class TimeTextBox extends ValidableTextBox implements HasTime, KeyUpHandl
     @Override
     public Long getTime() {
         String value = getValue();
-        if (StringUtils.isEmpty(value) || !isValid()) {
+        if (value.isEmpty() || !isValid()) {
             return null;
         }
 
