@@ -110,6 +110,8 @@ public class CaseQuery extends BaseQuery {
 
     private Long planId;
 
+    private List<Long> initiatorCompanyIds;
+
     public CaseQuery() {}
 
     public CaseQuery(Long id) {
@@ -166,6 +168,7 @@ public class CaseQuery extends BaseQuery {
         setManagerOrInitiatorCondition(query.getManagerOrInitiatorCondition());
         setPlanId(query.getPlanId());
         setPersonIdToIsFavorite(query.getPersonIdToIsFavorite());
+        setInitiatorCompanyIds(query.getInitiatorCompanyIds());
     }
 
     public Long getId() {
@@ -449,6 +452,14 @@ public class CaseQuery extends BaseQuery {
         this.personIdToIsFavorite = personIdToIsFavorite;
     }
 
+    public List<Long> getInitiatorCompanyIds() {
+        return initiatorCompanyIds;
+    }
+
+    public void setInitiatorCompanyIds(List<Long> initiatorCompanyIds) {
+        this.initiatorCompanyIds = initiatorCompanyIds;
+    }
+
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
                 id != null ||
@@ -479,7 +490,8 @@ public class CaseQuery extends BaseQuery {
                 platformIndependentProject != null ||
                 managerOrInitiatorCondition != null ||
                 planId != null ||
-                personIdToIsFavorite != null;
+                personIdToIsFavorite != null ||
+                CollectionUtils.isNotEmpty(initiatorCompanyIds);
     }
 
     @Override
@@ -524,6 +536,7 @@ public class CaseQuery extends BaseQuery {
                 ", isCheckImportanceHistory=" + isCheckImportanceHistory +
                 ", managerOrInitiatorCondition=" + managerOrInitiatorCondition +
                 ", planId=" + planId +
+                ", initiatorCompanyIds=" + initiatorCompanyIds +
                 '}';
     }
 
@@ -565,7 +578,8 @@ public class CaseQuery extends BaseQuery {
                 Objects.equals(creatorIds, caseQuery.creatorIds) &&
                 Objects.equals(managerOrInitiatorCondition, caseQuery.managerOrInitiatorCondition) &&
                 Objects.equals(planId, caseQuery.planId) &&
-                Objects.equals(personIdToIsFavorite, caseQuery.personIdToIsFavorite);
+                Objects.equals(personIdToIsFavorite, caseQuery.personIdToIsFavorite) &&
+                Objects.equals(initiatorCompanyIds, caseQuery.initiatorCompanyIds);
     }
 
     @Override
@@ -574,6 +588,6 @@ public class CaseQuery extends BaseQuery {
                 type, stateIds, importanceIds, allowViewPrivate, viewPrivate, createdRange, modifiedRange,
                 searchStringAtComments, searchCasenoString, memberId, commentAuthorIds, caseTagsIds,
                 customerSearch, findRecordByCaseComments, local, platformIndependentProject, productDirectionIds,
-                creatorIds, regionIds, headManagerIds, caseMemberIds, managerOrInitiatorCondition, planId, personIdToIsFavorite);
+                creatorIds, regionIds, headManagerIds, caseMemberIds, managerOrInitiatorCondition, planId, personIdToIsFavorite, initiatorCompanyIds);
     }
 }

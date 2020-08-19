@@ -307,6 +307,7 @@ public abstract class IssueReportCreateActivity implements Activity,
         query.setSortField(projectFilterView.sortField().getValue());
         query.setSortDir(projectFilterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
         query.setOnlyMineProjects(projectFilterView.onlyMineProjects().getValue());
+        query.setInitiatorCompanyIds(projectFilterView.initiatorCompanies().getValue());
         return  query;
     }
 
