@@ -142,12 +142,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.slaInputReadOnly().setValue(project.getProjectSlas());
         view.slaContainerVisibility().setVisible(isSlaContainerVisible(project.getProjectSlas()));
         view.setTechnicalSupportValidity(project.getTechnicalSupportValidity() == null ? null : DateTimeFormat.getFormat("dd.MM.yyyy").format(project.getTechnicalSupportValidity()));
-
-        Long pauseDate = project.getPauseDate();
-
-        view.setPauseDateValidity(pauseDate == null ? null : DateTimeFormat.getFormat("dd.MM.yyyy").format(new Date(pauseDate)));
-        view.pauseDateContainerVisibility().setVisible(pauseDate != null);
-        view.setTechnicalSupportContainerView(pauseDate == null ? UiConstants.Styles.FULL_VIEW : UiConstants.Styles.SHORT_VIEW);
+        view.setPauseDateValidity(project.getPauseDate() == null ? "" : lang.projectPauseDate(DateTimeFormat.getFormat("dd.MM.yyyy").format(new Date(project.getPauseDate()))));
 
         if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_VIEW)) {
             fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())

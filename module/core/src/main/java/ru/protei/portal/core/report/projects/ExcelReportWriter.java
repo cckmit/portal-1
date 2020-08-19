@@ -64,7 +64,7 @@ public class ExcelReportWriter implements
         return new int[] {
                 2350, 12570, 4200,
                 5200, 5800, 5800,
-                3800, 5800, 18570, 6800
+                3800, 6800, 5800, 18570
         };
     }
 
@@ -73,7 +73,7 @@ public class ExcelReportWriter implements
         return new String[] {
                 "ir_id", "ir_name", "ir_state",
                 "ir_customerType", "ir_customer", "ir_region",
-                "ir_direction", "ir_last_comment_date", "ir_last_comment_text", "ir_pause_date"
+                "ir_direction", "ir_pause_date", "ir_last_comment_date", "ir_last_comment_text"
         };
     }
 
@@ -93,9 +93,9 @@ public class ExcelReportWriter implements
                 project.getRegion().getDisplayText() : "");
         values.add(project.getProductDirection() != null && project.getProductDirection().getDisplayText() != null ?
                 project.getProductDirection().getDisplayText() : "");
+        values.add(project.getPauseDate() != null ? dateFormat.format(new Date(project.getPauseDate())) : "");
         values.add(comment != null ? dateTimeFormat.format(comment.getCreated()) : "");
         values.add(comment != null ? comment.getText() : "");
-        values.add(project.getPauseDate() != null ? dateFormat.format(new Date(project.getPauseDate())) : "");
 
         return values.toArray();
     }
