@@ -17,6 +17,12 @@ public class ValidableTextBox extends ValidableValueBoxBase<String> {
         super(Document.get().createTextInputElement(), PassthroughRenderer.instance(), PassthroughParser.instance());
     }
 
+    @Override
+    public String getValue() {
+        String raw = super.getValue();
+        return raw == null ? "" : raw;
+    }
+
     public int getMaxLength() {
         return this.getInputElement().getMaxLength();
     }
