@@ -50,11 +50,11 @@ public interface AbstractProjectPreviewView extends IsWidget {
 
     void setTechnicalSupportValidity(String value);
 
+    void setPauseDateValidity(String value);
+
     HasVisibility backButtonVisibility();
 
     HasWidgets getCommentsContainer();
     HasWidgets getDocumentsContainer();
     HasWidgets getLinksContainer();
-
-
 }
