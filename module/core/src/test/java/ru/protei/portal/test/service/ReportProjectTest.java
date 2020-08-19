@@ -108,7 +108,7 @@ public class ReportProjectTest extends BaseServiceTest {
         boolean result = false;
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         try {
-            result = reportProject.writeReport(buffer, report, new SimpleDateFormat("dd.MM.yyyy HH:mm"), id -> false);
+            result = reportProject.writeReport(buffer, report, new SimpleDateFormat("dd.MM.yyyy HH:mm"), new SimpleDateFormat("dd.MM.yyyy"), id -> false);
         } catch (Exception exception) {
             Assert.fail();
         }
@@ -131,7 +131,7 @@ public class ReportProjectTest extends BaseServiceTest {
         boolean result = false;
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         try {
-            result = reportProject.writeReport(buffer, report, new SimpleDateFormat("dd.MM.yyyy HH:mm"), id -> false);
+            result = reportProject.writeReport(buffer, report, new SimpleDateFormat("dd.MM.yyyy HH:mm"), new SimpleDateFormat("dd.MM.yyyy"), id -> false);
         } catch (Exception exception) {
             Assert.fail();
         }

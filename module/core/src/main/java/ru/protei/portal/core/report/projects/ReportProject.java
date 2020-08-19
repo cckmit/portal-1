@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public interface ReportProject {
-    boolean writeReport(OutputStream buffer, Report report, DateFormat dateFormat,
+    boolean writeReport(OutputStream buffer, Report report, DateFormat dateTimeFormat, DateFormat dateFormat,
                         Predicate<Long> isCancel) throws IOException;
     List<ReportProjectWithLastComment> createData(CaseQuery query);
 }
