@@ -174,6 +174,13 @@ public class IssueEvents {
         public Long issueId;
     }
 
+    public static class IssueProductChanged {
+        public IssueProductChanged( Long issueId ) {
+            this.issueId = issueId;
+        }
+        public Long issueId;
+    }
+
     public static class IssueMetaChanged {
         public IssueMetaChanged(CaseObjectMeta meta) {
             this.meta = meta;
