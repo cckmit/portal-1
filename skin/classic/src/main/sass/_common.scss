@@ -5044,3 +5044,15 @@ table {
 .font-large {
   font-size: large !important;
 }
+
+.time-elapsed-popup {
+  z-index: 1;
+  display: flex;
+  position: absolute;
+  top: 20px;
+  right: 0;
+
+  .time-elapsed-popup-selector {
+    min-width: 210px;
+  }
+}

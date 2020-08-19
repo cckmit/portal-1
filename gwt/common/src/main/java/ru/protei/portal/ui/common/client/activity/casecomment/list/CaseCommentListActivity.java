@@ -45,6 +45,8 @@ import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import static java.util.Optional.ofNullable;
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.CaseCommentUtils.*;
 
@@ -352,6 +354,31 @@ public abstract class CaseCommentListActivity
         fireChangedPreview();
     }
 
+    @Override
+    public void onTimeElapsedClicked(AbstractCaseCommentItemView view) {
+        if (CollectionUtils.isEmpty(itemViewToModel)) {
+            return;
+        }
+
+        Long commentAuthorId = ofNullable(itemViewToModel.get(view)).map(CaseComment::getAuthorId).orElse(null);
+
+        if (!Objects.equals(commentAuthorId, profile.getId())) {
+            return;
+        }
+
+        if (view.timeElapsedTypePopupVisibility().isVisible()) {
+            view.timeElapsedTypePopupVisibility().setVisible(false);
+            return;
+        }
+
+        closeAllTimeElapsedPopups(itemViewToModel.keySet());
+        view.timeElapsedTypePopupVisibility().setVisible(true);
+    }
+
+    private void closeAllTimeElapsedPopups(Set<AbstractCaseCommentItemView> abstractCaseCommentItemViews) {
+        stream(abstractCaseCommentItemViews).forEach(view -> view.timeElapsedTypePopupVisibility().setVisible(false));
+    }
+
     private void removeAttachment(Long id, Runnable successAction){
         attachmentService.removeAttachmentEverywhere(caseType, id, new RequestCallback<Boolean>() {
             @Override
@@ -465,7 +492,6 @@ public abstract class CaseCommentListActivity
 
         itemView.enabledEdit( isModifyEnabled && isEnableEdit( value, profile.getId() ) );
         itemView.enableReply(isModifyEnabled);
-        itemView.enableUpdateTimeElapsedType(Objects.equals(value.getAuthorId(), profile.getId()));
 
         return itemView;
     }
@@ -666,7 +692,7 @@ public abstract class CaseCommentListActivity
 
 
     private void updateTimeElapsedInIssue(Collection<CaseComment> comments) {
-        Long timeElapsed = CollectionUtils.stream(comments).filter(cmnt -> cmnt.getTimeElapsed() != null)
+        Long timeElapsed = stream(comments).filter(cmnt -> cmnt.getTimeElapsed() != null)
                 .mapToLong(cmnt -> cmnt.getTimeElapsed()).sum();
         fireEvent( new IssueEvents.ChangeTimeElapsed(timeElapsed) );
     }
