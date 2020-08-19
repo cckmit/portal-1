@@ -2987,4 +2987,8 @@ public interface Lang extends Messages, ContactItemLang {
     String contractorRemoved();
 
     String projectPauseDate(String date);
+
+    String errDashboardChooseFilter();
+
+    String errDashboardTableNameEmpty();
 }

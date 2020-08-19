@@ -16,6 +16,7 @@ import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDe
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.DashboardEvents;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.client.service.UserLoginControllerAsync;
@@ -130,12 +131,16 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
     }
 
     private boolean validate() {
-        if (StringUtils.isBlank(view.name().getValue())) {
-            return false;
-        }
         if (view.filter().getValue() == null || view.filter().getValue().getId() == null) {
+            fireEvent(new NotifyEvents.Show(lang.errDashboardChooseFilter(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
+
+        if (StringUtils.isBlank(view.name().getValue())) {
+            fireEvent(new NotifyEvents.Show(lang.errDashboardTableNameEmpty(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
         return true;
     }
 
