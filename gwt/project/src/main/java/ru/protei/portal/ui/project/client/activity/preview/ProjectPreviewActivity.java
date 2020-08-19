@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
+import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
 import ru.protei.portal.ui.common.client.lang.En_PersonRoleTypeLang;
@@ -24,6 +25,7 @@ import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -140,6 +142,12 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.slaInputReadOnly().setValue(project.getProjectSlas());
         view.slaContainerVisibility().setVisible(isSlaContainerVisible(project.getProjectSlas()));
         view.setTechnicalSupportValidity(project.getTechnicalSupportValidity() == null ? null : DateTimeFormat.getFormat("dd.MM.yyyy").format(project.getTechnicalSupportValidity()));
+
+        Long pauseDate = project.getPauseDate();
+
+        view.setPauseDateValidity(pauseDate == null ? null : DateTimeFormat.getFormat("dd.MM.yyyy").format(new Date(pauseDate)));
+        view.pauseDateContainerVisibility().setVisible(pauseDate != null);
+        view.setTechnicalSupportContainerView(pauseDate == null ? UiConstants.Styles.FULL_VIEW : UiConstants.Styles.SHORT_VIEW);
 
         if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_VIEW)) {
             fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())

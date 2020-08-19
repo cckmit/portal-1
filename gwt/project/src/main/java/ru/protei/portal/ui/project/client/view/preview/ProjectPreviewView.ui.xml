@@ -74,7 +74,15 @@
                     </div>
                 </div>
                 <div class="row clearfix">
-                    <div class="col-md-12">
+                    <g:HTMLPanel ui:field="pauseDateContainer" styleName="col-md-6">
+                        <div class="form-group form-group-default">
+                            <label>
+                                <ui:text from="{lang.issuePauseDateValidity}"/>
+                            </label>
+                            <div ui:field="pauseDateValidity"/>
+                        </div>
+                    </g:HTMLPanel>
+                    <div ui:field="technicalSupportContainer" class="col-md-6">
                         <div class="form-group form-group-default">
                             <label>
                                 <ui:text from="{lang.technicalSupportValidity}"/>

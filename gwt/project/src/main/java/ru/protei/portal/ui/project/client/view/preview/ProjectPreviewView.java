@@ -83,6 +83,21 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     }
 
     @Override
+    public void setTechnicalSupportContainerView(String view) {
+        technicalSupportContainer.setClassName(view);
+    }
+
+    @Override
+    public void setPauseDateValidity(String value) {
+        pauseDateValidity.setInnerText(value);
+    }
+
+    @Override
+    public HasVisibility pauseDateContainerVisibility() {
+        return pauseDateContainer;
+    }
+
+    @Override
     public HasVisibility backButtonVisibility() {
         return backButtonContainer;
     }
@@ -214,6 +229,12 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     SpanElement projectDirection;
     @UiField
     DivElement technicalSupportValidity;
+    @UiField
+    DivElement technicalSupportContainer;
+    @UiField
+    DivElement pauseDateValidity;
+    @UiField
+    HTMLPanel pauseDateContainer;
     @UiField
     SpanElement company;
     @UiField
