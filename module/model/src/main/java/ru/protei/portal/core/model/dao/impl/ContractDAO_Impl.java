@@ -52,6 +52,14 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
         return getListByCondition(query.buildSql(), query.args());
     }
 
+    @Override
+    public boolean mergeRefKey(Long contractId, String refKey) {
+        Contract contract = new Contract();
+        contract.setId(contractId);
+        contract.setRefKey(refKey);
+        return partialMerge(contract, "ref_key");
+    }
+
     private JdbcQueryParameters buildJdbcQueryParameters(ContractQuery query) {
 
         JdbcQueryParameters parameters = new JdbcQueryParameters();

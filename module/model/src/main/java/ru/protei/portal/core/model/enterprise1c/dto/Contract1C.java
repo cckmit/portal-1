@@ -29,6 +29,9 @@ public class Contract1C {
     @JsonProperty("Дата")
     private String dateSigning;
 
+    @JsonProperty("DeletionMark")
+    private Boolean deletionMark;
+
     public String getRefKey() { return refKey; }
 
     public void setRefKey(String refKey) { this.refKey = refKey; }
@@ -49,6 +52,10 @@ public class Contract1C {
 
     public void setContractorKey(String contractorKey) { this.contractorKey = contractorKey; }
 
+    public Boolean getDeletionMark() { return deletionMark; }
+
+    public void setDeletionMark(Boolean deletionMark) { this.deletionMark = deletionMark; }
+
     @Override
     public String toString() {
         return "Contract1C{" +
@@ -57,6 +64,7 @@ public class Contract1C {
                 ", name='" + name + '\'' +
                 ", contractorKey='" + contractorKey + '\'' +
                 ", dateSigning='" + dateSigning + '\'' +
+                ", deletionMark=" + deletionMark +
                 '}';
     }
 }

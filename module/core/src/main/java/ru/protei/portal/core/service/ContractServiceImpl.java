@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.client.enterprise1c.api.Api1C;
+import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
@@ -169,57 +170,124 @@ public class ContractServiceImpl implements ContractService {
 
     @Override
     @Transactional
-    public Result<Long> updateContract( AuthToken token, Contract contract) {
+    public Result<Long> updateContract(AuthToken token, Contract contract) {
+
+        Long contractId = contract != null
+                ? contract.getId()
+                : null;
+
         if (!hasGrantAccessFor(token, En_Privilege.CONTRACT_EDIT)) {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
-        if (contract == null || contract.getId() == null)
+        if (contractId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
 
         if (contract.getProjectId() == null) {
             return error(En_ResultStatus.PROJECT_NOT_SELECTED);
         }
 
-        /*
-         *  не даем сбрасывать связку договора с договором1С,
-         *  она может существовать только, если задан контрагент
-         */
-        if (config.data().enterprise1C().isContractSyncEnabled() && StringUtils.isNotBlank(contract.getRefKey()) && contract.getContractor() == null) {
+        if (isNotBlank(contract.getRefKey()) && contract.getContractor() == null) {
+            /*
+             *  не даем сбрасывать связку договора с договором1С,
+             *  она может существовать только, если задан контрагент
+             */
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        CaseObject caseObject = caseObjectDAO.get(contract.getId());
-        if (caseObject == null) {
+        CaseObject prevContractCaseObject = caseObjectDAO.get(contractId);
+        Contract prevContract = contractDAO.get(contractId);
+        if (prevContractCaseObject == null || prevContract == null) {
             return error(En_ResultStatus.NOT_FOUND);
         }
-        fillCaseObjectFromContract(caseObject, contract);
-        caseObjectDAO.merge(caseObject);
 
         Contractor contractor = contract.getContractor();
         if (contractor != null) {
             Result<Long> result = saveContractor(contractor);
-            if (result.isOk()) {
-                contract.setContractorId(result.getData());
-            } else {
-                return result;
+            if (result.isError()) {
+                log.error("updateContract(): id = {} | failed to save contractor to db with result = {}", contractId, result);
+                throw new ResultStatusException(result.getStatus());
             }
+            contract.setContractorId(result.getData());
         } else {
             contract.setContractorId(null);
         }
 
-        if (config.data().enterprise1C().isContractSyncEnabled() && contract.getContractor() != null) {
-            Result<Contract1C> result = saveContract1C(contract);
-            if (result.isOk()) {
-                contract.setRefKey(result.getData().getRefKey());
-            } else {
-                return error(En_ResultStatus.INTERNAL_ERROR);
-            }
+        fillCaseObjectFromContract(prevContractCaseObject, contract);
+
+        boolean contractCaseObjectSaved = caseObjectDAO.merge(prevContractCaseObject);
+        if (!contractCaseObjectSaved) {
+            log.error("updateContract(): id = {} | failed to save contract's case object to db", contractId);
+            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
         }
 
-        contractDAO.merge(contract);
-        jdbcManyRelationsHelper.persist(contract, "contractDates");
-        jdbcManyRelationsHelper.persist(contract, "contractSpecifications");
+        boolean contractSaved = contractDAO.merge(contract);
+        if (!contractSaved) {
+            log.error("updateContract(): id = {} | failed to save contract to db", contractId);
+            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+        }
+
+        try {
+            jdbcManyRelationsHelper.persist(contract, "contractDates");
+            jdbcManyRelationsHelper.persist(contract, "contractSpecifications");
+        } catch (Exception e) {
+            log.error("updateContract(): id = {} | failed to save contract's relations to db", contractId, e);
+            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED, e);
+        }
+
+        boolean is1cSync = config.data().enterprise1C().isContractSyncEnabled();
+        boolean isContractorDefined = contract.getContractor() != null;
+        if (is1cSync && isContractorDefined) {
+
+            boolean isRefKeySet = isNotEmpty(contract.getRefKey());
+
+            boolean isOrganizationChanged =
+                    prevContract.getOrganizationId() != null &&
+                    contract.getOrganizationId() != null &&
+                    !Objects.equals(prevContract.getOrganizationId(), contract.getOrganizationId());
+
+            if (isRefKeySet && isOrganizationChanged) {
+                String organizationPrev = prevContract.getOrganizationName();
+                String organizationNew = contract.getOrganizationName();
+                Contract1C contract1C = to1C(contract);
+                contract1C.setDeletionMark(true);
+                Result<Contract1C> removeResult = api1CService.saveContract(contract1C, organizationPrev);
+                if (removeResult.isError()) {
+                    log.error("updateContract(): id = {} | organization modification | failed to remove contract from 1c with result = {}", contractId, removeResult);
+                    throw new ResultStatusException(removeResult.getStatus());
+                }
+                contract1C.setRefKey(null);
+                contract1C.setDeletionMark(false);
+                Result<Contract1C> createResult = api1CService.saveContract(contract1C, organizationNew);
+                if (createResult.isError()) {
+                    // Not rollback-able error
+                    log.error("updateContract(): id = {} | organization modification | NO-ROLLBACK | failed to create contract at 1c with result = {}", contractId, createResult);
+                    return error(createResult.getStatus());
+                }
+                contract.setRefKey(createResult.getData().getRefKey());
+                boolean contractUpdated = contractDAO.mergeRefKey(contract.getId(), contract.getRefKey());
+                if (!contractUpdated) {
+                    // Not rollback-able error
+                    log.error("updateContract(): id = {} | organization modification | NO-ROLLBACK | failed to save contract's refKey to db", contractId);
+                    return error(En_ResultStatus.NOT_UPDATED);
+                }
+            }
+            else {
+                Result<Contract1C> result = saveContract1C(contract);
+                if (result.isError()) {
+                    log.error("updateContract(): id = {} | failed to save contractor to 1c with result = {}", contractId, result);
+                    throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+                }
+                contract.setRefKey(result.getData().getRefKey());
+                boolean contractUpdated = contractDAO.mergeRefKey(contract.getId(), contract.getRefKey());
+                if (!contractUpdated) {
+                    // Not rollback-able error
+                    log.error("updateContract(): id = {} | NO-ROLLBACK | failed to save contract's refKey to db", contractId);
+                    return error(En_ResultStatus.NOT_UPDATED);
+                }
+            }
+        }
 
         return ok(contract.getId());
     }
