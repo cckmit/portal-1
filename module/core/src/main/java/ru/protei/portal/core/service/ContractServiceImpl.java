@@ -35,7 +35,7 @@ import static java.util.stream.Collectors.toMap;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
-import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
+import static ru.protei.portal.core.model.helper.StringUtils.*;
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.*;
 
 public class ContractServiceImpl implements ContractService {
@@ -246,11 +246,7 @@ public class ContractServiceImpl implements ContractService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        if (isNotEmpty(query.getInn()) && !isValidInn(query.getInn())) {
-            return error(En_ResultStatus.VALIDATION_ERROR);
-        }
-
-        if (isNotEmpty(query.getKpp()) && !isValidKpp(query.getKpp())) {
+        if (!isValidContractorQuery(query)) {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
@@ -438,12 +434,39 @@ public class ContractServiceImpl implements ContractService {
                && contract.getDateSigning() != null;
     }
 
+    private boolean isValidContractorQuery(ContractorQuery query) {
+
+        if (query == null) {
+            return false;
+        }
+
+        if (isNotEmpty(query.getInn()) && !isValidInn(query.getInn())) {
+            return false;
+        }
+
+        if (isNotEmpty(query.getKpp()) && !isValidKpp(query.getKpp())) {
+            return false;
+        }
+
+        if (isNotEmpty(query.getInn()) && isEmpty(query.getKpp())) {
+            return false;
+        }
+
+        if (isEmpty(query.getInn()) && isNotEmpty(query.getKpp())) {
+            return false;
+        }
+
+        return true;
+    }
+
     private Contractor1C makeContractor1CFromQuery(ContractorQuery query) {
         Contractor1C contractor1C = new Contractor1C();
         contractor1C.setRefKey(query.getRefKey());
         contractor1C.setInn(query.getInn());
         contractor1C.setKpp(query.getKpp());
+        contractor1C.setName(query.getName());
         contractor1C.setFullName(query.getFullName());
+        contractor1C.setRegistrationCountryKey(query.getRegistrationCountryKey());
         contractor1C.setDeletionMark(false);
         return contractor1C;
     }

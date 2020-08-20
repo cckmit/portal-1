@@ -14,9 +14,11 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.Contractor;
+import ru.protei.portal.core.model.ent.ContractorCountry;
 import ru.protei.portal.core.model.util.ContractorUtils;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.contractor.contractor.ContractorSelector;
+import ru.protei.portal.ui.common.client.widget.selector.contractor.country.ContractorCountrySelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 
 import java.util.ArrayList;
@@ -36,7 +38,9 @@ public class ContractorSearchView extends Composite implements AbstractContracto
         contractorInn.setValidationFunction(ContractorUtils::checkInn);
         contractorKPP.setNotNull(false);
         contractorKPP.setRegexp(CONTRACTOR_KPP);
+        contractorName.setNotNull(false);
         contractorFullName.setNotNull(false);
+        contractorCountry.setValidation(false);
     }
 
     @Override
@@ -47,6 +51,7 @@ public class ContractorSearchView extends Composite implements AbstractContracto
     @Override
     public void setOrganization(String value) {
         contractOrganization.setInnerText(value);
+        contractorCountry.setOrganization(value);
     }
 
     @Override
@@ -60,8 +65,18 @@ public class ContractorSearchView extends Composite implements AbstractContracto
     }
 
     @Override
+    public HasValue<String> contractorName() {
+        return contractorName;
+    }
+
+    @Override
     public HasValue<String> contractorFullName() {
         return contractorFullName;
+    }
+
+    @Override
+    public HasValue<ContractorCountry> contractorCountry() {
+        return contractorCountry;
     }
 
     @Override
@@ -82,7 +97,9 @@ public class ContractorSearchView extends Composite implements AbstractContracto
         contractOrganization.setInnerText(null);
         contractorInn.setValue(null);
         contractorKPP.setValue(null);
+        contractorName.setValue(null);
         contractorFullName.setValue(null);
+        contractorCountry.setValue(null);
         contractor.setValue(null);
         contractor.fill(new ArrayList<>());
         descriptionInn.setInnerText(null);
@@ -103,6 +120,7 @@ public class ContractorSearchView extends Composite implements AbstractContracto
     public boolean isValid() {
         return contractorInn.isValid() &
                contractorKPP.isValid() &
+               contractorName.isValid() &
                contractorFullName.isValid();
     }
 
@@ -141,7 +159,12 @@ public class ContractorSearchView extends Composite implements AbstractContracto
     @UiField
     ValidableTextBox contractorKPP;
     @UiField
+    ValidableTextBox contractorName;
+    @UiField
     ValidableTextBox contractorFullName;
+    @Inject
+    @UiField(provided = true)
+    ContractorCountrySelector contractorCountry;
 
     @UiField
     Button search;
