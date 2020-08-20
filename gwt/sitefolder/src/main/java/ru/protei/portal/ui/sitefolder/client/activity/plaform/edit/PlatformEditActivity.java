@@ -20,7 +20,7 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
+import ru.protei.portal.ui.common.client.service.AttachmentControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
@@ -308,7 +308,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
     @Inject
     PolicyService policyService;
     @Inject
-    AttachmentServiceAsync attachmentService;
+    AttachmentControllerAsync attachmentService;
     @Inject
     RegionControllerAsync regionService;
 
