@@ -7,7 +7,10 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasEnabled;
+import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_Currency;
 import ru.protei.portal.core.model.struct.Money;
@@ -22,7 +25,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
-import static ru.protei.portal.core.model.helper.NullUtils.defaultIfNull;
 import static ru.protei.portal.core.model.helper.NumberUtils.parseLong;
 
 public class MoneyCurrencyVatWidget extends Composite implements HasValue<MoneyWithCurrencyWithVat>, HasEnabled {
@@ -49,9 +51,15 @@ public class MoneyCurrencyVatWidget extends Composite implements HasValue<MoneyW
 
     @Override
     public void setValue(MoneyWithCurrencyWithVat value, boolean fireEvents) {
-        moneyNatural.setValue(defaultIfNull(() -> value.getMoney().getNatural(), 0L));
-        moneyDecimal.setValue(defaultIfNull(() -> value.getMoney().getDecimal(), 0L));
-        currency.setValue(defaultIfNull(value::getCurrency, defaultCurrency));
+        Money vMoney = value.getMoney() != null
+                ? value.getMoney()
+                : new Money(0L);
+        En_Currency vCurrency = value.getCurrency() != null
+                ? value.getCurrency()
+                : defaultCurrency;
+        moneyNatural.setValue(vMoney.getNatural());
+        moneyDecimal.setValue(vMoney.getDecimal());
+        currency.setValue(vCurrency);
         vat.setValue(value.getVatPercent());
         if (fireEvents) {
             ValueChangeEvent.fire(this, value);

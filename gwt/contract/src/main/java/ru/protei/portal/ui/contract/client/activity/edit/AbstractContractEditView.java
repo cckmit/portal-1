@@ -84,9 +84,15 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasEnabled secondContractContractorEnabled();
 
+    HasEnabled secondContractOrganizationEnabled();
+
     void setSecondContractOrganization(String organization);
 
     HasWidgets expenditureContractsContainer();
 
     HasVisibility expenditureContractsVisibility();
+
+    void setNotAvailableOrganizations(List<Long> organizationsToHide);
+
+    void setSecondContractNotAvailableOrganizations(List<Long> organizationsToHide);
 }

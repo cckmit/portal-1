@@ -2040,6 +2040,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractContractorDropped();
 
+    String contractOrganizationDropped();
+
     String contractContractorDescription();
 
     String selectContractContractor();
@@ -2987,4 +2989,6 @@ public interface Lang extends Messages, ContactItemLang {
     String contractorRemoved();
 
     String projectPauseDate(String date);
+
+    String errContractOrganizationShouldBeDifferentFromParent();
 }

@@ -1,6 +1,8 @@
 package ru.protei.portal.ui.contract.client.activity.edit;
 
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.HasEnabled;
+import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -10,7 +12,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.Contract;
-import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.struct.Money;
 import ru.protei.portal.core.model.struct.MoneyWithCurrencyWithVat;
 import ru.protei.portal.core.model.util.ContractSupportService;
@@ -26,11 +28,14 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
+import static java.util.Collections.emptyList;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.DateUtils.addDays;
 import static ru.protei.portal.core.model.helper.DateUtils.getDaysBetween;
+import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.struct.Vat.NoVat;
 import static ru.protei.portal.ui.common.client.util.DateUtils.isBefore;
 
@@ -62,7 +67,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
             return;
         }
 
-        requestData(event.id);
+        requestContract(event.id, this::fillView);
     }
 
     @Override
@@ -98,22 +103,21 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     @Override
     public void onOrganizationChanged() {
         EntityOption organization = view.organization().getValue();
-        boolean hasOrganization = organization != null;
-        String organizationDisplayText = hasOrganization
-                ? organization.getDisplayText()
-                : null;
-        view.contractorEnabled().setEnabled(hasOrganization);
-        view.setOrganization(organizationDisplayText);
-        if (view.contractor().getValue() != null) {
-            view.contractor().setValue(null);
-            fireEvent(new NotifyEvents.Show(lang.contractContractorDropped(), NotifyEvents.NotifyType.INFO));
-        }
+        setOrganization(organization, makePrimaryContractEditContractorView());
+        updateOrganizationBasedOnParentContract(fillDto(contract), makeSecondaryContractEditContractorView());
     }
 
     @Override
     public void onContractParentChanged() {
-        En_ContractKind kind = getContractKind(view);
+        EntityOption contractParent = view.contractParent().getValue();
+        Long contractParentId = contractParent != null
+                ? contractParent.getId()
+                : null;
+        En_ContractKind kind = getContractKind(contractParent);
         view.setKind(kind);
+        updateOrganizationBasedOnParentContract(contractParentId, makePrimaryContractEditContractorView(), () -> {
+            updateOrganizationBasedOnParentContract(fillDto(contract), makeSecondaryContractEditContractorView());
+        });
     }
 
     @Override
@@ -125,16 +129,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     @Override
     public void onSecondContractOrganizationChanged() {
         EntityOption organization = view.secondContractOrganization().getValue();
-        boolean hasOrganization = organization != null;
-        String organizationDisplayText = hasOrganization
-                ? organization.getDisplayText()
-                : null;
-        view.secondContractContractorEnabled().setEnabled(organization != null);
-        view.setSecondContractOrganization(organizationDisplayText);
-        if (view.secondContractContractor().getValue() != null) {
-            view.secondContractContractor().setValue(null);
-            fireEvent(new NotifyEvents.Show(lang.contractContractorDropped(), NotifyEvents.NotifyType.INFO));
-        }
+        setOrganization(organization, makeSecondaryContractEditContractorView());
     }
 
     @Override
@@ -168,7 +163,11 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.dateValidDate().setValue(date);
     }
 
-    private void projectRequest(Long projectId, Consumer<ProjectInfo> consumer) {
+    private void requestContract(Long contractId, Consumer<Contract> consumer) {
+        contractService.getContract(contractId, new FluentCallback<Contract>().withSuccess(consumer));
+    }
+
+    private void requestProject(Long projectId, Consumer<ProjectInfo> consumer) {
         regionService.getProjectInfo(projectId, new FluentCallback<ProjectInfo>().withSuccess(consumer));
     }
 
@@ -190,14 +189,11 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.manager().setValue(null);
     }
 
-    private void requestData(Long id){
-        contractService.getContract(id, new FluentCallback<Contract>()
-                .withSuccess(this::fillView));
-    }
-
     private void fillView(Contract value) {
         this.contract = value;
         boolean isNew = isNew(contract);
+        boolean isNotSavedTo1c = isBlank(contract.getRefKey());
+        boolean hasOrganization = contract.getOrganizationId() != null;
 
         view.types().setValue(setOf(contract.getContractTypes()));
         if ( contract.getState() == null ) {
@@ -220,20 +216,20 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.organization().setValue(createOptionOrNull(contract.getOrganizationId(), contract.getOrganizationName()));
         view.contractParent().setValue(createOptionOrNull(contract.getParentContractId(), contract.getParentContractNumber()));
 
-        En_ContractKind kind = getContractKind(view);
+        En_ContractKind kind = getContractKind(view.contractParent().getValue());
         view.setKind(kind);
 
         if (contract.getProjectId() == null) {
             view.project().setValue(null);
             clearProjectSpecificFields();
         } else {
-            projectRequest(contract.getProjectId(), this::fillProject);
+            requestProject(contract.getProjectId(), this::fillProject);
         }
 
-        view.contractorEnabled().setEnabled(contract.getOrganizationId() != null);
+        view.contractorEnabled().setEnabled(isNotSavedTo1c && hasOrganization);
         view.setOrganization(contract.getOrganizationName());
         view.contractor().setValue(contract.getContractor());
-        view.organizationEnabled().setEnabled(StringUtils.isBlank(contract.getRefKey()));
+        view.organizationEnabled().setEnabled(isNotSavedTo1c);
 
         if (!isNew) {
             fireEvent(new ContractEvents.ShowConciseTable(view.expenditureContractsContainer(), contract.getId()));
@@ -242,10 +238,15 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
             view.expenditureContractsVisibility().setVisible(false);
         }
 
+        updateOrganizationBasedOnParentContract(contract.getParentContractId(), makePrimaryContractEditContractorView());
         syncSecondContractView(isNew, false);
     }
 
     private void fillDto() {
+        fillDto(contract);
+    }
+
+    private Contract fillDto(Contract contract) {
         contract.setContractTypes(listOf(view.types().getValue()));
         contract.setState(view.state().getValue());
         contract.setNumber(view.number().getValue());
@@ -273,6 +274,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
             contract.setCaseManagerId(null);
             contract.setCaseDirectionId(null);
         }
+
+        return contract;
     }
 
     private void fillDtoSecondContract(Contract contract, Long parentContractId) {
@@ -282,15 +285,64 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         contract.setParentContractId(parentContractId);
     }
 
+    private void updateOrganizationBasedOnParentContract(Long contractId, AbstractContractEditContractorView view) {
+        updateOrganizationBasedOnParentContract(contractId, view, () -> {});
+    }
+
+    private void updateOrganizationBasedOnParentContract(Long contractId, AbstractContractEditContractorView view, Runnable onDone) {
+        if (contractId == null) {
+            updateOrganizationBasedOnParentContract((Contract) null, view);
+            onDone.run();
+        } else {
+            requestContract(contractId, contract -> {
+                updateOrganizationBasedOnParentContract(contract, view);
+                onDone.run();
+            });
+        }
+    }
+
+    private void updateOrganizationBasedOnParentContract(Contract contract, AbstractContractEditContractorView view) {
+        Long contractParentOrganizationId = contract != null
+                ? contract.getOrganizationId()
+                : null;
+        if (contractParentOrganizationId == null) {
+            view.setNotAvailableOrganizations(emptyList());
+            return;
+        }
+        Long selectedOrganizationId = view.organization().getValue() != null
+                ? view.organization().getValue().getId()
+                : null;
+        view.setNotAvailableOrganizations(listOf(contractParentOrganizationId));
+        if (Objects.equals(selectedOrganizationId, contractParentOrganizationId)) {
+            setOrganization(null, view);
+            fireEvent(new NotifyEvents.Show(lang.contractOrganizationDropped(), NotifyEvents.NotifyType.INFO));
+        }
+    }
+
+    private void setOrganization(EntityOption organization, AbstractContractEditContractorView view) {
+        boolean isNotSavedTo1c = isBlank(contract.getRefKey());
+        boolean hasOrganization = organization != null;
+        String organizationDisplayText = hasOrganization
+                ? organization.getDisplayText()
+                : null;
+        view.organization().setValue(organization);
+        view.setOrganization(organizationDisplayText);
+        view.contractorEnabled().setEnabled(isNotSavedTo1c && hasOrganization);
+        if (view.contractor().getValue() != null) {
+            view.contractor().setValue(null);
+            fireEvent(new NotifyEvents.Show(lang.contractContractorDropped(), NotifyEvents.NotifyType.INFO));
+        }
+    }
+
     private void showValidationError() {
         fireEvent(new NotifyEvents.Show(getValidationError(), NotifyEvents.NotifyType.ERROR));
     }
 
     private String getValidationError() {
-        if (StringUtils.isBlank(contract.getNumber()))
+        if (isBlank(contract.getNumber()))
             return lang.contractValidationEmptyNumber();
 
-        if (StringUtils.isBlank(contract.getDescription()))
+        if (isBlank(contract.getDescription()))
             return lang.contractValidationEmptyDescription();
 
         if (isEmpty(contract.getContractTypes()))
@@ -318,7 +370,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         boolean isNew = isNew(contract);
         boolean createExpenditureContract = isNew && view.secondContractCheckbox().getValue();
         if (createExpenditureContract) {
-            if (StringUtils.isBlank(view.secondContractNumber().getValue()))
+            if (isBlank(view.secondContractNumber().getValue()))
                 return lang.contractValidationEmptyNumber();
             if (view.secondContractOrganization().getValue() == null)
                 return lang.errFieldsRequired();
@@ -367,8 +419,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
             }));
     }
 
-    private En_ContractKind getContractKind(AbstractContractEditView view) {
-        boolean contractParentExists = view.contractParent().getValue() != null;
+    private En_ContractKind getContractKind(EntityOption contractParent) {
+        boolean contractParentExists = contractParent != null;
         return ContractSupportService.getContractKind(contractParentExists);
     }
 
@@ -422,6 +474,53 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.secondContractContractor().setValue(null);
         view.secondContractContractorEnabled().setEnabled(false);
         view.setSecondContractOrganization(null);
+        updateOrganizationBasedOnParentContract(fillDto(contract), makeSecondaryContractEditContractorView());
+    }
+
+    private AbstractContractEditContractorView makePrimaryContractEditContractorView() {
+        return new AbstractContractEditContractorView() {
+            public void setOrganization(String organization) {
+                view.setOrganization(organization);
+            }
+            public void setNotAvailableOrganizations(List<Long> organizationsToHide) {
+                view.setNotAvailableOrganizations(organizationsToHide);
+            }
+            public HasValue<EntityOption> organization() {
+                return view.organization();
+            }
+            public HasValue<Contractor> contractor() {
+                return view.contractor();
+            }
+            public HasEnabled organizationEnabled() {
+                return view.organizationEnabled();
+            }
+            public HasEnabled contractorEnabled() {
+                return view.contractorEnabled();
+            }
+        };
+    }
+
+    private AbstractContractEditContractorView makeSecondaryContractEditContractorView() {
+        return new AbstractContractEditContractorView() {
+            public void setOrganization(String organization) {
+                view.setSecondContractOrganization(organization);
+            }
+            public void setNotAvailableOrganizations(List<Long> organizationsToHide) {
+                view.setSecondContractNotAvailableOrganizations(organizationsToHide);
+            }
+            public HasValue<EntityOption> organization() {
+                return view.secondContractOrganization();
+            }
+            public HasValue<Contractor> contractor() {
+                return view.secondContractContractor();
+            }
+            public HasEnabled organizationEnabled() {
+                return view.secondContractOrganizationEnabled();
+            }
+            public HasEnabled contractorEnabled() {
+                return view.secondContractContractorEnabled();
+            }
+        };
     }
 
     @Inject

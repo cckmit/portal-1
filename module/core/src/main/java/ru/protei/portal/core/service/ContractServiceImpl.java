@@ -117,6 +117,15 @@ public class ContractServiceImpl implements ContractService {
             return error(En_ResultStatus.PROJECT_NOT_SELECTED);
         }
 
+        if (contract.getParentContractId() != null) {
+            Contract parentContract = contractDAO.get(contract.getParentContractId());
+            if (parentContract != null) {
+                if (Objects.equals(contract.getOrganizationId(), parentContract.getOrganizationId())) {
+                    return error(En_ResultStatus.CONTRACT_ORGANIZATION_SHOULD_BE_DIFFERENT_FROM_PARENT);
+                }
+            }
+        }
+
         CaseObject caseObject = fillCaseObjectFromContract(null, contract);
         Long id = caseObjectDAO.persist(caseObject);
         if (id == null)
