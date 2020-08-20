@@ -1,10 +1,10 @@
-package ru.protei.portal.ui.absence.client.widget;
+package ru.protei.portal.ui.absence.client.widget.filter;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.AbsenceFilter;
 import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.core.model.view.AbsenceFilterShortView;
-import ru.protei.portal.ui.absence.client.widget.paramview.AbsenceFilterParamWidget;
+import ru.protei.portal.ui.absence.client.widget.filter.paramview.AbsenceFilterParamWidget;
 import ru.protei.portal.ui.common.client.widget.filterwidget.FilterWidget;
 import ru.protei.portal.ui.common.client.widget.selector.absence.AbsenceFilterSelector;
 

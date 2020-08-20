@@ -5,6 +5,8 @@ import ru.protei.portal.core.model.ent.PersonAbsence;
 import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.util.List;
+
 /**
  * Асинхронный сервис управления отсутствиями
  */
@@ -24,6 +26,12 @@ public interface AbsenceControllerAsync {
      * Сохранение записи об отсутствии
      */
     void saveAbsence(PersonAbsence absence, AsyncCallback<Long> callback);
+
+    /**
+     * Сохранение список записей об отсутствии
+     */
+    void saveAbsenceList(List<PersonAbsence> absence, AsyncCallback<List<Long>> callback);
+
 
     /**
      * Удаление записи об отсутствии

@@ -849,6 +849,9 @@ public class MailNotificationProcessor {
 
     @EventListener
     public void onAbsenceNotificationEvent(AbsenceNotificationEvent event) {
+        if (true) {
+            return;
+        }
         Person initiator = event.getInitiator();
         PersonAbsence absence = event.getNewState();
         EventAction action = event.getAction();

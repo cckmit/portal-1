@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.absence.client.widget.paramview;
+package ru.protei.portal.ui.absence.client.widget.filter.paramview;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;

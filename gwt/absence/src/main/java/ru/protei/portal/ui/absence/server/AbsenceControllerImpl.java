@@ -15,7 +15,10 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.ui.common.server.ServiceUtils.*;
 
 /**
@@ -51,6 +54,18 @@ public class AbsenceControllerImpl implements AbsenceController {
                 absenceService.updateAbsence(token, absence);
         log.info("saveAbsence(): result={}", result.isOk() ? "ok" : result.getStatus());
         return checkResultAndGetData(result);
+    }
+
+    @Override
+    public List<Long> saveAbsenceList(List<PersonAbsence> absenceList) throws RequestFailedException {
+        log.info("saveAbsenceList(): absenceList={}", absenceList);
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
+
+        List<Long> result = stream(absenceList).map(absence -> absenceService.createAbsence(token, absence))
+                .map(Result::getData).collect(Collectors.toList());
+//        log.info("saveAbsence(): result={}", result.isOk() ? "ok" : result.getStatus());
+//        return checkResultAndGetData(result);
+        return result;
     }
 
     @Override

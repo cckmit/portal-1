@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.absence.client.view.edit;
+package ru.protei.portal.ui.absence.client.view.create;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
@@ -11,19 +11,19 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
-import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
-import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.absence.client.activity.common.AbstractAbsenceCommonActivity;
-import ru.protei.portal.ui.absence.client.activity.edit.AbstractAbsenceEditView;
+import ru.protei.portal.ui.absence.client.activity.create.AbstractAbsenceCreateView;
+import ru.protei.portal.ui.absence.client.widget.datetime.AbsenceDates;
 
-public class AbsenceEditView extends Composite implements AbstractAbsenceEditView {
+import java.util.List;
+
+public class AbsenceCreateView extends Composite implements AbstractAbsenceCreateView {
 
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
-
     }
 
     @Override
@@ -31,9 +31,8 @@ public class AbsenceEditView extends Composite implements AbstractAbsenceEditVie
         this.activity = activity;
     }
 
-
     @Override
-    public HasValue<DateInterval> dateRange() {
+    public HasValue<List<DateInterval>> dateRange() {
         return dateRange;
     }
 
@@ -42,13 +41,14 @@ public class AbsenceEditView extends Composite implements AbstractAbsenceEditVie
         return dateRange;
     }
 
+
     @Override
     public void setDateRangeValid(boolean isValid) {
-        dateRange.markInputValid(isValid);
+//        dateRange.markInputValid(isValid);
     }
 
     @UiHandler("dateRange")
-    public void onDateRangeChanged(ValueChangeEvent<DateInterval> event) {
+    public void onDateRangeChanged(ValueChangeEvent<List<DateInterval>> event) {
         activity.onDateRangeChanged();
     }
 
@@ -56,8 +56,8 @@ public class AbsenceEditView extends Composite implements AbstractAbsenceEditVie
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
-        dateRange.setEnsureDebugId(DebugIds.ABSENCE.DATE_RANGE_INPUT);
-        dateRange.getRelative().ensureDebugId(DebugIds.ABSENCE.DATE_RANGE_BUTTON);
+//        dateRange.setEnsureDebugId(DebugIds.ABSENCE.DATE_RANGE_INPUT);
+//        dateRange.getRelative().ensureDebugId(DebugIds.ABSENCE.DATE_RANGE_BUTTON);
     }
 
     @UiField
@@ -65,10 +65,10 @@ public class AbsenceEditView extends Composite implements AbstractAbsenceEditVie
 
     @Inject
     @UiField(provided = true)
-    RangePicker dateRange;
+    AbsenceDates dateRange;
 
     protected AbstractAbsenceCommonActivity activity;
 
-    private static AbsenceEditViewUiBinder ourUiBinder = GWT.create(AbsenceEditViewUiBinder.class);
-    interface AbsenceEditViewUiBinder extends UiBinder<HTMLPanel, AbsenceEditView> {}
+    private static AbsenceCreateViewUiBinder ourUiBinder = GWT.create(AbsenceCreateViewUiBinder.class);
+    interface AbsenceCreateViewUiBinder extends UiBinder<HTMLPanel, AbsenceCreateView> {}
 }

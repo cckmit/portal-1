@@ -7,6 +7,8 @@ import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.util.List;
+
 /**
  * Сервис управления отсутствиями
  */
@@ -27,6 +29,11 @@ public interface AbsenceController extends RemoteService {
      * Сохранение записи об отсутствии
      */
     Long saveAbsence(PersonAbsence absence) throws RequestFailedException;
+
+    /**
+     * Сохранение список записей об отсутствии
+     */
+    List<Long> saveAbsenceList(List<PersonAbsence> absence) throws RequestFailedException;
 
     /**
      * Удаление записи об отсутствии

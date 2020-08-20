@@ -1,8 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:table="urn:import:ru.brainworm.factory.widget.table.client"
-             xmlns:widget="urn:import:ru.protei.portal.ui.absence.client.widget"
->
+             xmlns:filter="urn:import:ru.protei.portal.ui.absence.client.widget.filter">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -17,7 +16,7 @@
                 </div>
             </g:HTMLPanel>
             <div class="filter-container col-md-3" >
-                <widget:AbsenceFilterWidget ui:field="filterWidget" styleName="card card-default no-border card-fixed absence-filter"/>
+                <filter:AbsenceFilterWidget ui:field="filterWidget" styleName="card card-default no-border card-fixed absence-filter"/>
             </div>
         </div>
     </g:HTMLPanel>
