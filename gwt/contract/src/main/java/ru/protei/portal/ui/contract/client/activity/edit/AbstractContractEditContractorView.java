@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.contract.client.activity.edit;
 
-import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -16,8 +15,4 @@ public interface AbstractContractEditContractorView {
     HasValue<EntityOption> organization();
 
     HasValue<Contractor> contractor();
-
-    HasEnabled organizationEnabled();
-
-    HasEnabled contractorEnabled();
 }

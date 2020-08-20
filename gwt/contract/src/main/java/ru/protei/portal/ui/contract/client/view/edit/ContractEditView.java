@@ -175,19 +175,6 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
-    public HasEnabled contractorEnabled() {
-        return contractorWidget;
-    }
-
-    @Override
-    public HasEnabled organizationEnabled() { return organization; }
-
-    @Override
-    public HasEnabled secondContractOrganizationEnabled() {
-        return secondContractOrganization;
-    }
-
-    @Override
     public void setOrganization(String organization) {
         contractorWidget.setOrganization(organization);
     }
@@ -219,11 +206,6 @@ public class ContractEditView extends Composite implements AbstractContractEditV
 
     @Override
     public HasValue<Contractor> secondContractContractor() {
-        return secondContractContractor;
-    }
-
-    @Override
-    public HasEnabled secondContractContractorEnabled() {
         return secondContractContractor;
     }
 
