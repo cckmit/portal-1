@@ -18,18 +18,31 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="form-group col-md-6">
+            <div class="row m-b-10">
+                <div class="form-group col-md-6 m-b-0">
                     <label>
                         <ui:text from="{lang.contractContractorInn}"/>
                     </label>
-                    <validablefield:ValidableTextBox ui:field="contractorInn" styleName="form-control"/>
                 </div>
-                <div class="form-group col-md-6">
+                <div class="form-group col-md-6 m-b-0">
                     <label>
                         <ui:text from="{lang.contractContractorKpp}"/>
                     </label>
+                </div>
+                <div class="input-group col-md-12">
+                    <validablefield:ValidableTextBox ui:field="contractorInn" styleName="form-control"/>
+                    <div class="input-group-prepend input-group-append">
+                        <span class="input-group-text">&amp;</span>
+                    </div>
                     <validablefield:ValidableTextBox ui:field="contractorKPP" styleName="form-control"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-12">
+                    <label>
+                        <ui:text from="{lang.contractContractorName}"/>
+                    </label>
+                    <validablefield:ValidableTextBox ui:field="contractorName" styleName="form-control"/>
                 </div>
                 <div class="form-group col-md-12">
                     <label>
@@ -40,9 +53,19 @@
             </div>
             <div class="row">
                 <div class="form-group col-md-12">
+                    <label>
+                        <ui:text from="{lang.contractContractorCountry}"/>
+                    </label>
+                    <contractor:country.ContractorCountrySelector ui:field="contractorCountry"
+                                                                  hasNullValue="true" defaultValue="{lang.selectorAny}"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-12">
                     <g:Button ui:field="search" styleName="btn btn-complete pull-right" text="{lang.buttonSearch}"/>
                 </div>
             </div>
+
             <div class="row">
                 <div class="form-group col-md-12">
                     <label>

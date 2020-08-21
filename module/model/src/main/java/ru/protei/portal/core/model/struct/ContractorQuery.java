@@ -7,7 +7,9 @@ public class ContractorQuery implements Serializable {
     private String refKey;
     private String inn;
     private String kpp;
+    private String name;
     private String fullName;
+    private String registrationCountryKey;
 
     public ContractorQuery() {
     }
@@ -36,6 +38,14 @@ public class ContractorQuery implements Serializable {
         this.kpp = kpp;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getFullName() {
         return fullName;
     }
@@ -44,13 +54,23 @@ public class ContractorQuery implements Serializable {
         this.fullName = fullName;
     }
 
+    public String getRegistrationCountryKey() {
+        return registrationCountryKey;
+    }
+
+    public void setRegistrationCountryKey(String registrationCountryKey) {
+        this.registrationCountryKey = registrationCountryKey;
+    }
+
     @Override
     public String toString() {
         return "ContractorQuery{" +
                 "refKey='" + refKey + '\'' +
                 ", inn='" + inn + '\'' +
                 ", kpp='" + kpp + '\'' +
+                ", name='" + name + '\'' +
                 ", fullName='" + fullName + '\'' +
+                ", registrationCountryKey='" + registrationCountryKey + '\'' +
                 '}';
     }
 }

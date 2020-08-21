@@ -192,8 +192,6 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     private void fillView(Contract value) {
         this.contract = value;
         boolean isNew = isNew(contract);
-        boolean isNotSavedTo1c = isBlank(contract.getRefKey());
-        boolean hasOrganization = contract.getOrganizationId() != null;
 
         view.types().setValue(setOf(contract.getContractTypes()));
         if ( contract.getState() == null ) {
@@ -226,10 +224,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
             requestProject(contract.getProjectId(), this::fillProject);
         }
 
-        view.contractorEnabled().setEnabled(isNotSavedTo1c && hasOrganization);
         view.setOrganization(contract.getOrganizationName());
         view.contractor().setValue(contract.getContractor());
-        view.organizationEnabled().setEnabled(isNotSavedTo1c);
 
         if (!isNew) {
             fireEvent(new ContractEvents.ShowConciseTable(view.expenditureContractsContainer(), contract.getId()));
@@ -320,14 +316,12 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     }
 
     private void setOrganization(EntityOption organization, AbstractContractEditContractorView view) {
-        boolean isNotSavedTo1c = isBlank(contract.getRefKey());
         boolean hasOrganization = organization != null;
         String organizationDisplayText = hasOrganization
                 ? organization.getDisplayText()
                 : null;
         view.organization().setValue(organization);
         view.setOrganization(organizationDisplayText);
-        view.contractorEnabled().setEnabled(isNotSavedTo1c && hasOrganization);
         if (view.contractor().getValue() != null) {
             view.contractor().setValue(null);
             fireEvent(new NotifyEvents.Show(lang.contractContractorDropped(), NotifyEvents.NotifyType.INFO));
@@ -472,7 +466,6 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.secondContractNumber().setValue(null);
         view.secondContractOrganization().setValue(null);
         view.secondContractContractor().setValue(null);
-        view.secondContractContractorEnabled().setEnabled(false);
         view.setSecondContractOrganization(null);
         updateOrganizationBasedOnParentContract(fillDto(contract), makeSecondaryContractEditContractorView());
     }
@@ -491,12 +484,6 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
             public HasValue<Contractor> contractor() {
                 return view.contractor();
             }
-            public HasEnabled organizationEnabled() {
-                return view.organizationEnabled();
-            }
-            public HasEnabled contractorEnabled() {
-                return view.contractorEnabled();
-            }
         };
     }
 
@@ -513,12 +500,6 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
             }
             public HasValue<Contractor> contractor() {
                 return view.secondContractContractor();
-            }
-            public HasEnabled organizationEnabled() {
-                return view.secondContractOrganizationEnabled();
-            }
-            public HasEnabled contractorEnabled() {
-                return view.secondContractContractorEnabled();
             }
         };
     }

@@ -64,10 +64,6 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasValue<ProductDirectionInfo> direction();
 
-    HasEnabled organizationEnabled();
-
-    HasEnabled contractorEnabled();
-
     void setOrganization(String organization);
 
     HasValue<Boolean> secondContractCheckbox();
@@ -81,10 +77,6 @@ public interface AbstractContractEditView extends IsWidget {
     HasValue<EntityOption> secondContractOrganization();
 
     HasValue<Contractor> secondContractContractor();
-
-    HasEnabled secondContractContractorEnabled();
-
-    HasEnabled secondContractOrganizationEnabled();
 
     void setSecondContractOrganization(String organization);
 
