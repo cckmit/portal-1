@@ -136,6 +136,9 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
         DynamicColumn<Project> customerColumn = new DynamicColumn<>(lang.projectCustomerType(), "customers",
                 value -> {
                     StringBuilder content = new StringBuilder();
+                    if ( value.getCustomer() != null && value.getCustomer().toEntityOption() != null) {
+                        content.append("<b>").append(value.getCustomer().toEntityOption().getDisplayText()).append("</b>").append("<br/>");
+                    }
                     if (value.getCustomerType() != null) {
                         content.append("<i>").append(customerTypeLang.getName(value.getCustomerType())).append("</i>").append("<br/>");
                     }
@@ -145,15 +148,6 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
                     return content.toString();
                 });
         columns.add(customerColumn);
-
-        DynamicColumn<Project> customerName = new DynamicColumn<>(lang.projectCustomerCompany(), "customer-name",
-                value -> {
-                    if ( value.getCustomer() != null && value.getCustomer().toEntityOption() != null) {
-                        return value.getCustomer().toEntityOption().getDisplayText();
-                    }
-                    return "";
-                });
-        columns.add(customerName);
 
         DynamicColumn<Project> infoColumn = new DynamicColumn<>(lang.projectInfo(), "info",
                 value -> "<b>" + SimpleHtmlSanitizer.sanitizeHtml(value.getName()).asString() + "</b>" +
@@ -185,7 +179,6 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
         table.addColumn( statusColumn.header, statusColumn.values );
         table.addColumn( numberColumn.header, numberColumn.values );
         table.addColumn( customerColumn.header, customerColumn.values );
-        table.addColumn( customerName.header, customerName.values );
         table.addColumn( infoColumn.header, infoColumn.values );
         table.addColumn( managerColumn.header, managerColumn.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );

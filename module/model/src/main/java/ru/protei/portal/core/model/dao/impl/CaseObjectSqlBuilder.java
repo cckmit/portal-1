@@ -326,10 +326,6 @@ public class CaseObjectSqlBuilder {
 
                 args.add(query.getPersonIdToIsFavorite().getA());
             }
-
-            if ( isNotEmpty(query.getInitiatorCompanyIds()) ) {
-                condition.append( " and initiator_company in " ).append( makeInArg( query.getInitiatorCompanyIds(), false ) );
-            }
         });
     }
 }
