@@ -237,17 +237,39 @@ public class ContractServiceImpl implements ContractService {
         }
 
         boolean is1cSync = config.data().enterprise1C().isContractSyncEnabled();
-        boolean isContractorDefined = contract.getContractor() != null;
-        if (is1cSync && isContractorDefined) {
+        if (is1cSync) {
 
             boolean isRefKeySet = isNotEmpty(contract.getRefKey());
+
+            boolean isContractorDefined = contract.getContractor() != null;
+
+            boolean isOrganizationRemoved =
+                    prevContract.getOrganizationId() != null &&
+                    contract.getOrganizationId() == null;
 
             boolean isOrganizationChanged =
                     prevContract.getOrganizationId() != null &&
                     contract.getOrganizationId() != null &&
                     !Objects.equals(prevContract.getOrganizationId(), contract.getOrganizationId());
 
-            if (isRefKeySet && isOrganizationChanged) {
+            if (isRefKeySet && isOrganizationRemoved) {
+                String organizationPrev = prevContract.getOrganizationName();
+                Contract1C contract1C = to1C(contract);
+                contract1C.setDeletionMark(true);
+                Result<Contract1C> removeResult = api1CService.saveContract(contract1C, organizationPrev);
+                if (removeResult.isError()) {
+                    log.error("updateContract(): id = {} | organization removal | failed to remove contract from 1c with result = {}", contractId, removeResult);
+                    throw new ResultStatusException(removeResult.getStatus());
+                }
+                contract.setRefKey(null);
+                boolean contractUpdated = contractDAO.mergeRefKey(contract.getId(), contract.getRefKey());
+                if (!contractUpdated) {
+                    // Not rollback-able error
+                    log.error("updateContract(): id = {} | organization removal | NO-ROLLBACK | failed to save contract's refKey to db", contractId);
+                    return error(En_ResultStatus.NOT_UPDATED);
+                }
+            }
+            else if (isRefKeySet && isOrganizationChanged) {
                 String organizationPrev = prevContract.getOrganizationName();
                 String organizationNew = contract.getOrganizationName();
                 Contract1C contract1C = to1C(contract);
@@ -273,7 +295,7 @@ public class ContractServiceImpl implements ContractService {
                     return error(En_ResultStatus.NOT_UPDATED);
                 }
             }
-            else {
+            else if (isContractorDefined) {
                 Result<Contract1C> result = saveContract1C(contract);
                 if (result.isError()) {
                     log.error("updateContract(): id = {} | failed to save contractor to 1c with result = {}", contractId, result);
