@@ -16,6 +16,8 @@ public class CrmConstants {
 
     public static final String DEFAULT_LOCALE = "ru";
 
+    public static final List<String> CONFIG_EXTENSIONS = Arrays.asList(".config", ".cfg", ".properties", ".xml", ".json");
+
     public interface Session {
         String AUTH_TOKEN = "session-auth-token";
         String FILE_ITEM = "file-item";

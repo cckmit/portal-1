@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.dict.AttachmentType;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentActivity;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentView;
 import ru.protei.portal.ui.common.client.activity.attachment.fullview.AbstractAttachmentFullView;
@@ -27,9 +28,7 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.events.HasAttach
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveHandler;
 import ru.protei.portal.ui.common.client.widget.attachment.preview.AttachmentPreview;
-import ru.protei.portal.ui.common.client.widget.selector.event.HasRemoveHandlers;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -84,8 +83,11 @@ public class FullViewAttachmentList extends Composite implements HasAttachments,
 
     @Override
     public void clear() {
+        configsContainer.clear();
         documentsContainer.clear();
+        otherContainer.clear();
         imagesContainer.clear();
+
         viewToAttachment.clear();
     }
 
@@ -116,10 +118,6 @@ public class FullViewAttachmentList extends Composite implements HasAttachments,
         attachmentPreview.show(attachment);
     }
 
-    public void setHiddenControls(boolean hideControls){
-        this.isHiddenControls = hideControls;
-    }
-
     public void setEnsureDebugId(String debugId) {
         attachmentList.ensureDebugId(debugId);
     }
@@ -127,6 +125,8 @@ public class FullViewAttachmentList extends Composite implements HasAttachments,
     private AbstractAttachmentView createView(Attachment attachment) {
         AttachmentType.AttachmentCategory category = AttachmentType.getCategory(attachment.getMimeType());
         boolean isImage = category == AttachmentType.AttachmentCategory.IMAGE;
+        boolean isConfig = CrmConstants.CONFIG_EXTENSIONS.stream().anyMatch(attachment.getFileName()::contains);
+        boolean isDocument = category == AttachmentType.AttachmentCategory.TEXT;
         String attachmentUrl = DOWNLOAD_PATH + attachment.getExtLink();
 
         AbstractAttachmentView view = isImage ? imageAttachmentViewFactory.get() : documentAttachmentViewFactory.get();
@@ -138,14 +138,16 @@ public class FullViewAttachmentList extends Composite implements HasAttachments,
         view.setDownloadUrl(attachmentUrl);
         view.setPicture(attachmentUrl);
 
-        view.removeButtonVisibility().setVisible(!isHiddenControls);
-
         viewToAttachment.put(view, attachment);
 
         if (isImage) {
             imagesContainer.add(view.asWidget());
-        } else {
+        } else if (isConfig) {
+            configsContainer.add(view.asWidget());
+        } else if (isDocument) {
             documentsContainer.add(view.asWidget());
+        } else {
+            otherContainer.add(view.asWidget());
         }
 
         return view;
@@ -154,9 +156,10 @@ public class FullViewAttachmentList extends Composite implements HasAttachments,
     private void fillPersonDependentFields(Collection<Attachment> attachments, List<Person> persons) {
         viewToAttachment.forEach((view, attachment) -> {
             if (attachments.contains(attachment)) {
-                stream(persons).filter(person -> person.getId().equals(attachment.getCreatorId())).findFirst().ifPresent(person -> {
-                    fillPersonDependentFields(view, attachment, person);
-                });
+                stream(persons)
+                        .filter(person -> person.getId().equals(attachment.getCreatorId()))
+                        .findFirst()
+                        .ifPresent(person -> fillPersonDependentFields(view, attachment, person));
             }
         });
     }
@@ -173,7 +176,11 @@ public class FullViewAttachmentList extends Composite implements HasAttachments,
     @UiField
     HTMLPanel attachmentList;
     @UiField
+    HTMLPanel configsContainer;
+    @UiField
     HTMLPanel documentsContainer;
+    @UiField
+    HTMLPanel otherContainer;
     @UiField
     HTMLPanel imagesContainer;
     @Inject
@@ -183,8 +190,6 @@ public class FullViewAttachmentList extends Composite implements HasAttachments,
     @Inject
     PersonControllerAsync personService;
 
-
-    private boolean isHiddenControls;
     private Map<AbstractAttachmentView, Attachment> viewToAttachment;
     private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/files/";
 

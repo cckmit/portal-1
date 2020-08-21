@@ -1,9 +1,9 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
-    <g:HTMLPanel ui:field="root" styleName="gallery-item m-1 full-view-attach">
+    <g:HTMLPanel ui:field="root" styleName="gallery-item attach-col-xl-4 attach-col-md-6 attach-col-sm-12 p-r-5 p-l-5 full-view-attach">
         <g:Image styleName="image-responsive-height" ui:field="picture"/>
-        <div class="overlayer bottom-left full-width">
-            <div class="overlayer-wrapper more-content">
+        <div class="overlayer fixed-left fixed-bottom full-width">
+            <div class="overlayer-wrapper m-l-5 m-r-5 more-content">
                 <div class="gradient-grey p-l-10 p-r-10 p-t-50 p-b-10">
                     <h6 ui:field="fileName" class="text-white light m-t-0 m-b-5"/>
                     <div class="d-flex flex-row">
