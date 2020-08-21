@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.absence.client.view.create;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -23,7 +22,6 @@ public class AbsenceCreateView extends Composite implements AbstractAbsenceCreat
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        ensureDebugIds();
     }
 
     @Override
@@ -33,31 +31,17 @@ public class AbsenceCreateView extends Composite implements AbstractAbsenceCreat
 
     @Override
     public HasValue<List<DateInterval>> dateRange() {
-        return dateRange;
+        return absenceDates;
     }
-
-    @Override
-    public HasEnabled dateRangeEnabled() {
-        return dateRange;
-    }
-
 
     @Override
     public void setDateRangeValid(boolean isValid) {
-//        dateRange.markInputValid(isValid);
+        absenceDates.setValid(isValid);
     }
 
-    @UiHandler("dateRange")
+    @UiHandler("absenceDates")
     public void onDateRangeChanged(ValueChangeEvent<List<DateInterval>> event) {
         activity.onDateRangeChanged();
-    }
-
-    protected void ensureDebugIds() {
-        if (!DebugInfo.isDebugIdEnabled()) {
-            return;
-        }
-//        dateRange.setEnsureDebugId(DebugIds.ABSENCE.DATE_RANGE_INPUT);
-//        dateRange.getRelative().ensureDebugId(DebugIds.ABSENCE.DATE_RANGE_BUTTON);
     }
 
     @UiField
@@ -65,7 +49,7 @@ public class AbsenceCreateView extends Composite implements AbstractAbsenceCreat
 
     @Inject
     @UiField(provided = true)
-    AbsenceDates dateRange;
+    AbsenceDates absenceDates;
 
     protected AbstractAbsenceCommonActivity activity;
 

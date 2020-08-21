@@ -14,8 +14,6 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AbsenceControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 
-import java.util.function.Consumer;
-
 public abstract class AbsenceCommonActivity implements AbstractAbsenceCommonActivity, AbstractDialogDetailsActivity, Activity {
 
     protected void onInit() {
@@ -36,7 +34,7 @@ public abstract class AbsenceCommonActivity implements AbstractAbsenceCommonActi
         if (!validateView()) {
             return;
         }
-        saveAbsence();
+        save();
     }
 
     @Override
@@ -53,7 +51,7 @@ public abstract class AbsenceCommonActivity implements AbstractAbsenceCommonActi
         if (!view.asWidget().isAttached()) {
             return;
         }
-        fillView();
+        performFillView();
     }
 
     protected void showLoading() {
@@ -84,7 +82,7 @@ public abstract class AbsenceCommonActivity implements AbstractAbsenceCommonActi
             return false;
         }
 
-        return validate();
+        return additionalValidate();
     }
 
     protected PersonAbsence fillCommonDTO() {
@@ -95,13 +93,13 @@ public abstract class AbsenceCommonActivity implements AbstractAbsenceCommonActi
         return absence;
     }
 
-    void saveAbsence() {
+    void save() {
         enableButtons(false);
-        save(result -> {
+        performSave(() -> {
             enableButtons(true);
             fireEvent(new AbsenceEvents.Update());
-            onCancelClicked();
-        });
+            onCancelClicked();}
+            );
     }
 
     private void enableButtons(boolean isEnable) {
@@ -109,9 +107,9 @@ public abstract class AbsenceCommonActivity implements AbstractAbsenceCommonActi
         dialogView.saveButtonEnabled().setEnabled(isEnable);
     }
 
-    protected abstract void save(Consumer<Long> success);
-    protected abstract void fillView();
-    protected abstract boolean validate();
+    protected abstract void performSave(Runnable afterSave);
+    protected abstract void performFillView();
+    protected abstract boolean additionalValidate();
 
     @Inject
     protected Lang lang;

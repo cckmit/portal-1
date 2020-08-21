@@ -12,8 +12,8 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public abstract class AbsenceCreateActivity extends AbsenceCommonActivity {
@@ -22,6 +22,7 @@ public abstract class AbsenceCreateActivity extends AbsenceCommonActivity {
     public void onInit() {
         super.onInit();
         view.getDateContainer().add(createView);
+        createView.setActivity(this);
     }
 
     @Event
@@ -35,31 +36,40 @@ public abstract class AbsenceCreateActivity extends AbsenceCommonActivity {
 
     @Override
     public void onDateRangeChanged() {
-//        createView.setDateRangeValid(isDateRangeValid(createView.dateRange().getValue()));
+        List<DateInterval> value = createView.dateRange().getValue();
+        if (isDateRangeValid(value)) {
+            createView.setDateRangeValid(isDateRangesIntersectValid(value));
+        } else {
+            createView.setDateRangeValid(true);
+        }
     }
 
     private boolean hasAccessCreate() {
         return policyService.hasPrivilegeFor(En_Privilege.ABSENCE_CREATE);
     }
 
-    protected void fillView() {
+    protected void performFillView() {
         fillView(new PersonAbsence());
 
         createView.dateRange().setValue(new ArrayList<>());
-//        createView.setDateRangeValid(isDateRangeValid(view.dateRange().getValue()));
+        createView.setDateRangeValid(true);
         dialogView.saveButtonVisibility().setVisible(true);
     }
 
-    protected boolean validate() {
-//        if (!isDateRangeValid(view.dateRange().getValue())) {
-//            fireEvent(new NotifyEvents.Show(lang.absenceValidationDateRange(), NotifyEvents.NotifyType.ERROR));
-//            return false;
-//        }
+    protected boolean additionalValidate() {
+        if (!isDateRangeValid(createView.dateRange().getValue())) {
+            fireEvent(new NotifyEvents.Show(lang.absenceValidationDateRanges(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+        if (!isDateRangesIntersectValid(createView.dateRange().getValue())) {
+            fireEvent(new NotifyEvents.Show(lang.absenceValidationDateRangesIntersection(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
         return true;
     }
 
     @Override
-    protected void save(Consumer<Long> success) {
+    protected void performSave(Runnable afterSave) {
         List<DateInterval> value = createView.dateRange().getValue();
         List<PersonAbsence> collect = value.stream().map(date -> {
             PersonAbsence personAbsence = fillDTO();
@@ -75,12 +85,37 @@ public abstract class AbsenceCreateActivity extends AbsenceCommonActivity {
                 .withSuccess(absence -> {
                     fireEvent(new NotifyEvents.Show(lang.absenceCreated(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new EmployeeEvents.Update(collect.get(0).getPersonId()));
-                    success.accept(0L);
+                    afterSave.run();
                 }));
     }
 
     private PersonAbsence fillDTO() {
         return fillCommonDTO();
+    }
+
+    private boolean isDateRangesIntersectValid(List<DateInterval> dateIntervals) {
+        List<DateInterval> temp = new ArrayList<>(dateIntervals);
+        temp.sort(Comparator.nullsFirst(Comparator.comparing(date -> date.from)));
+        boolean result = true;
+        for (int i = 0; i < temp.size()-1; i++) {
+            if (temp.get(i).to.after(temp.get(i + 1).from)) {
+                result = false;
+                break;
+            }
+        }
+        return result;
+    }
+
+    private boolean isDateRangeValid(List<DateInterval> dateIntervals) {
+        for (DateInterval dateInterval : dateIntervals) {
+            if (!(dateInterval != null &&
+                    dateInterval.from != null &&
+                    dateInterval.to != null &&
+                    dateInterval.from.before(dateInterval.to))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Inject

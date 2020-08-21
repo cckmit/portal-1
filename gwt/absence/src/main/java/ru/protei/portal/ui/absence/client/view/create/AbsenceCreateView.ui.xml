@@ -5,6 +5,6 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel ui:field="root">
-        <dates:AbsenceDates ui:field="dateRange"/>
+        <dates:AbsenceDates ui:field="absenceDates"/>
     </g:HTMLPanel>
 </ui:UiBinder>

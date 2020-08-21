@@ -21,8 +21,12 @@ public class AbsenceDatesItem extends Composite implements HasValue<DateInterval
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 
-    public void setHandler(Handler handler) {
-        this.handler = handler;
+    public void setRemoveHandler(Runnable removeHandler) {
+        this.removeHandler = removeHandler;
+    }
+
+    public void setChangeHandler(Runnable changeHandler) {
+        this.changeHandler = changeHandler;
     }
 
     @Override
@@ -65,10 +69,17 @@ public class AbsenceDatesItem extends Composite implements HasValue<DateInterval
         return addHandler(handler, ValueChangeEvent.getType());
     }
 
+    @UiHandler("dateRange")
+    public void onDateRangeChanged(ValueChangeEvent<DateInterval> event) {
+        if (changeHandler != null) {
+            changeHandler.run();
+        }
+    }
+
     @UiHandler("remove")
     public void removeClick(ClickEvent event) {
-        if (handler != null) {
-            handler.onRemove();
+        if (removeHandler != null) {
+            removeHandler.run();
         }
     }
 
@@ -78,11 +89,8 @@ public class AbsenceDatesItem extends Composite implements HasValue<DateInterval
     @UiField
     Button remove;
 
-    public interface Handler {
-        void onRemove();
-    }
-
-    private Handler handler;
+    private Runnable removeHandler;
+    private Runnable changeHandler;
 
     interface AbsenceDatesItemBinder extends UiBinder<HTMLPanel, AbsenceDatesItem> {}
     private static AbsenceDatesItemBinder ourUiBinder = GWT.create(AbsenceDatesItemBinder.class);

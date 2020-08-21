@@ -38,11 +38,6 @@ public class AbsenceEditView extends Composite implements AbstractAbsenceEditVie
     }
 
     @Override
-    public HasEnabled dateRangeEnabled() {
-        return dateRange;
-    }
-
-    @Override
     public void setDateRangeValid(boolean isValid) {
         dateRange.markInputValid(isValid);
     }

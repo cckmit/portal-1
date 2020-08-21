@@ -11,8 +11,6 @@ import ru.protei.portal.ui.common.client.events.EmployeeEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
-import java.util.function.Consumer;
-
 import static com.google.gwt.user.datepicker.client.CalendarUtil.copyDate;
 
 public abstract class AbsenceEditActivity extends AbsenceCommonActivity {
@@ -21,6 +19,7 @@ public abstract class AbsenceEditActivity extends AbsenceCommonActivity {
     public void onInit() {
         super.onInit();
         view.getDateContainer().add(editView);
+        editView.setActivity(this);
 
         view.employeeEnabled().setEnabled(false);
         view.reasonEnabled().setEnabled(false);
@@ -45,7 +44,7 @@ public abstract class AbsenceEditActivity extends AbsenceCommonActivity {
         return policyService.hasPrivilegeFor(En_Privilege.ABSENCE_EDIT);
     }
 
-    protected void fillView() {
+    protected void performFillView() {
         showLoading();
         absenceController.getAbsence(event.id, new FluentCallback<PersonAbsence>()
                 .withError(throwable -> {
@@ -63,7 +62,7 @@ public abstract class AbsenceEditActivity extends AbsenceCommonActivity {
     }
 
 
-    protected boolean validate() {
+    protected boolean additionalValidate() {
         if (!isDateRangeValid(editView.dateRange().getValue())) {
             fireEvent(new NotifyEvents.Show(lang.absenceValidationDateRange(), NotifyEvents.NotifyType.ERROR));
             return false;
@@ -72,14 +71,14 @@ public abstract class AbsenceEditActivity extends AbsenceCommonActivity {
     }
 
     @Override
-    protected void save(Consumer<Long> success) {
+    protected void performSave(Runnable afterSave) {
         PersonAbsence personAbsence = fillDTO();
         absenceController.saveAbsence(personAbsence, new FluentCallback<Long>()
                 .withError(throwable -> defaultErrorHandler.accept(throwable))
                 .withSuccess(result -> {
                     fireEvent(new NotifyEvents.Show(lang.absenceUpdated(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new EmployeeEvents.Update(personAbsence.getPersonId()));
-                    success.accept(result);
+                    afterSave.run();
                 }));
     }
 

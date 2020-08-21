@@ -3,8 +3,8 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel>
-        <g:HTMLPanel ui:field="root" styleName="row"/>
+    <g:HTMLPanel ui:field="root">
+        <g:HTMLPanel ui:field="container" styleName="row"/>
         <g:HTMLPanel styleName="btn-group col-md-12 p-0" ui:field="controls">
             <g:Button styleName="btn btn-default col-md-6" ui:field="createAddWeek">
                 <i class="fas fa-plus-circle"/> <ui:text from="{lang.roomReservationDatesCreateAddWeek}"/>

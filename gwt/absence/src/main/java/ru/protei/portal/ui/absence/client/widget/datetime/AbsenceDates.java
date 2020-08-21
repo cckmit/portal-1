@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.absence.client.widget.datetime;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
@@ -12,6 +13,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.absence.client.widget.datetime.item.AbsenceDatesItem;
 
 import java.util.ArrayList;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 import static com.google.gwt.user.datepicker.client.CalendarUtil.addDaysToDate;
 import static com.google.gwt.user.datepicker.client.CalendarUtil.copyDate;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HAS_ERROR;
 import static ru.protei.portal.ui.common.client.util.DateUtils.resetTime;
 
 public class AbsenceDates extends Composite implements HasValue<List<DateInterval>>, HasEnabled, HasVaryAbility {
@@ -29,6 +32,7 @@ public class AbsenceDates extends Composite implements HasValue<List<DateInterva
     @Inject
     public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        ensureDebugIds();
     }
 
     @Override
@@ -86,34 +90,42 @@ public class AbsenceDates extends Composite implements HasValue<List<DateInterva
     public void createAddWeekClick(ClickEvent event) {
         List<DateInterval> value = getValue();
         value.add(addDays(value.get(value.size() - 1), 7));
-        setValue(value);
+        setValue(value, true);
     }
 
     @UiHandler("createAddDay")
     public void createAddDayClick(ClickEvent event) {
         List<DateInterval> value = getValue();
         value.add(addDays(value.get(value.size() - 1), 1));
-        setValue(value);
+        setValue(value, true);
     }
 
+    public void setValid(boolean isValid) {
+        if (isValid) {
+            root.removeStyleName(HAS_ERROR);
+        } else {
+            root.addStyleName(HAS_ERROR);
+        }
+    }
 
     private void fillView(List<DateInterval> intervals) {
-        root.clear();
+        container.clear();
         stream(intervals)
             .map(interval -> {
                 AbsenceDatesItem item = itemProvider.get();
                 item.setEnabled(isEnabled);
                 item.setVaryAble(isVaryAble);
                 item.setValue(interval);
-                item.setHandler(() -> {
+                item.setRemoveHandler(() -> {
                     items.remove(item);
                     render();
                 });
+                item.setChangeHandler(this::fireChange);
                 return item;
             })
             .forEach(item -> {
                 items.add(item);
-                root.add(item.asWidget());
+                container.add(item.asWidget());
             });
     }
 
@@ -155,10 +167,25 @@ public class AbsenceDates extends Composite implements HasValue<List<DateInterva
         return d;
     }
 
+    private void fireChange() {
+        ValueChangeEvent.fire(AbsenceDates.this, null);
+    }
+
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+        container.ensureDebugId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ABSENCE.DATE_RANGE_CONTAINER);
+        createAddDay.ensureDebugId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ABSENCE.DATE_RANGE_CONTAINER_ADD_DAY_BUTTON);
+        createAddWeek.ensureDebugId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ABSENCE.DATE_RANGE_CONTAINER_ADD_WEEK_BUTTON);
+    }
+
     @Inject
     Provider<AbsenceDatesItem> itemProvider;
     @UiField
     HTMLPanel root;
+    @UiField
+    HTMLPanel container;
     @UiField
     HTMLPanel controls;
     @UiField
