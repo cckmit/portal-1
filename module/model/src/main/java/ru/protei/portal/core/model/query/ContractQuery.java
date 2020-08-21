@@ -9,15 +9,17 @@ public class ContractQuery extends BaseQuery {
 
     private Long directionId;
 
-    private En_ContractType type;
+    private List<En_ContractType> types;
 
-    private En_ContractState state;
+    private List<En_ContractState> states;
 
     private List<Long> managerIds;
 
     private List<Long> contractorIds;
 
     private List<Long> organizationIds;
+
+    private List<Long> parentContractIds;
 
     public Long getDirectionId() {
         return directionId;
@@ -27,12 +29,12 @@ public class ContractQuery extends BaseQuery {
         this.directionId = directionId;
     }
 
-    public En_ContractType getType() {
-        return type;
+    public List<En_ContractType> getTypes() {
+        return types;
     }
 
-    public void setType(En_ContractType type) {
-        this.type = type;
+    public void setTypes(List<En_ContractType> types) {
+        this.types = types;
     }
 
     public List<Long> getManagerIds() {
@@ -51,12 +53,12 @@ public class ContractQuery extends BaseQuery {
         this.contractorIds = contractorIds;
     }
 
-    public En_ContractState getState() {
-        return state;
+    public List<En_ContractState> getStates() {
+        return states;
     }
 
-    public void setState(En_ContractState state) {
-        this.state = state;
+    public void setStates(List<En_ContractState> states) {
+        this.states = states;
     }
 
     public List<Long> getOrganizationIds() {
@@ -65,5 +67,26 @@ public class ContractQuery extends BaseQuery {
 
     public void setOrganizationIds(List<Long> organizationIds) {
         this.organizationIds = organizationIds;
+    }
+
+    public List<Long> getParentContractIds() {
+        return parentContractIds;
+    }
+
+    public void setParentContractIds(List<Long> parentContractIds) {
+        this.parentContractIds = parentContractIds;
+    }
+
+    @Override
+    public String toString() {
+        return "ContractQuery{" +
+                "directionId=" + directionId +
+                ", types=" + types +
+                ", states=" + states +
+                ", managerIds=" + managerIds +
+                ", contractorIds=" + contractorIds +
+                ", organizationIds=" + organizationIds +
+                ", parentContractIds=" + parentContractIds +
+                '}';
     }
 }

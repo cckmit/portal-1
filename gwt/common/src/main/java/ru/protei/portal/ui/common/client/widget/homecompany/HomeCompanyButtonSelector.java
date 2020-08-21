@@ -7,6 +7,9 @@ import ru.protei.portal.ui.common.client.selector.SelectorItem;
 import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonPopupSingleSelector;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class HomeCompanyButtonSelector extends ButtonPopupSingleSelector<EntityOption> {
 
     @Inject
@@ -15,6 +18,7 @@ public class HomeCompanyButtonSelector extends ButtonPopupSingleSelector<EntityO
         setAsyncModel(homeCompanyModel);
         setSearchEnabled(false);
         setItemRenderer( value ->value == null ? lang.selectValue() : value.getDisplayText());
+        setFilter(value -> value == null || !idsToHide.contains(value.getId()));
     }
 
     @Override
@@ -32,5 +36,12 @@ public class HomeCompanyButtonSelector extends ButtonPopupSingleSelector<EntityO
         model.setSynchronizeWith1C(synchronizeWith1C);
     }
 
+    public void setIdsToHide(List<Long> idsToHide) {
+        this.idsToHide.clear();
+        this.idsToHide.addAll(idsToHide);
+        clearSelector();
+    }
+
+    private List<Long> idsToHide = new ArrayList<>();
     private HomeCompanyModel model;
 }

@@ -44,6 +44,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String table();
 
+    String calendar();
+
     String type();
 
     String createBy( String p0, String p1 );
@@ -917,6 +919,8 @@ public interface Lang extends Messages, ContactItemLang {
     String projectProducts();
 
     String projectCustomerType();
+
+    String projectCustomer();
 
     String projectTeam();
 
@@ -2016,6 +2020,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractTypeWorkContract();
 
+    String contractTypeHardwareSoftwareService();
+
     String goToContracts();
 
     String contractStateAgreement();
@@ -2028,11 +2034,15 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractWaitingCopiesFromCustomer();
 
+    String contractCancelled();
+
     String contractDescription();
 
     String contractContractor();
 
     String contractContractorDropped();
+
+    String contractOrganizationDropped();
 
     String contractContractorDescription();
 
@@ -2108,6 +2118,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractSpecificationHeader();
 
+    String contractListOfExpenditureHeader();
+
     String contractSpecificationClausePlaceholder();
 
     String contractSpecificationTextPlaceholder();
@@ -2143,6 +2155,10 @@ public interface Lang extends Messages, ContactItemLang {
     String contractValidationEmptyDateSigning();
 
     String contractValidationEmptyDateValid();
+
+    String contractValidationInvalidDateValid();
+
+    String contractValidationInvalidCost();
 
     String contractValidationContractSpecification();
 
@@ -2656,6 +2672,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String roomReservationDates();
 
+    String roomReservationTime();
+
     String roomReservationDatesCreateAddWeek();
 
     String roomReservationDatesCreateAddDay();
@@ -2963,6 +2981,16 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeBirthdayResetMonth();
 
     String employeeBirthdayNextMonth();
+
+    String errContractorNotRemovedHasContracts();
+
+    String contractorRemoveConfirmMessage();
+
+    String contractorRemoved();
+
+    String projectPauseDate(String date);
+
+    String errContractOrganizationShouldBeDifferentFromParent();
 
     String topBrass();
 

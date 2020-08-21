@@ -1,11 +1,13 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.converter.MoneyJdbcConverter;
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.dict.En_Currency;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.struct.Money;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EntityOptionSupport;
 import ru.protei.winter.jdbc.annotations.*;
@@ -119,8 +121,8 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     /**
      * Сумма
      */
-    @JdbcColumn(name = "cost")
-    private Long cost;
+    @JdbcColumn(name = "cost", converterType = ConverterType.CUSTOM, converter = MoneyJdbcConverter.class)
+    private Money cost;
 
     /**
      * Валюта
@@ -136,11 +138,11 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     private Long vat;
 
     /**
-     * Тип
+     * Типы
      */
-    @JdbcColumn(name = "contract_type")
-    @JdbcEnumerated(EnumType.ORDINAL)
-    private En_ContractType contractType;
+    @JdbcEnumerated(EnumType.ID)
+    @JdbcColumnCollection(name = "contract_types", separator = ",")
+    private List<En_ContractType> contractTypes;
 
     @JdbcColumn(name = "date_signing")
     private Date dateSigning;
@@ -280,11 +282,11 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
         this.description = description;
     }
 
-    public Long getCost() {
+    public Money getCost() {
         return cost;
     }
 
-    public void setCost(Long cost) {
+    public void setCost(Money cost) {
         this.cost = cost;
     }
 
@@ -312,12 +314,12 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
         this.number = number;
     }
 
-    public En_ContractType getContractType() {
-        return contractType;
+    public List<En_ContractType> getContractTypes() {
+        return contractTypes;
     }
 
-    public void setContractType(En_ContractType contractType) {
-        this.contractType = contractType;
+    public void setContractTypes(List<En_ContractType> contractTypes) {
+        this.contractTypes = contractTypes;
     }
 
     public String getManagerShortName() {
@@ -501,7 +503,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
                 ", cost=" + cost +
                 ", currency=" + currency +
                 ", vat=" + vat +
-                ", contractType=" + contractType +
+                ", contractTypes=" + contractTypes +
                 ", dateSigning=" + dateSigning +
                 ", dateValid=" + dateValid +
                 ", contractDates=" + contractDates +

@@ -34,6 +34,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.HelperFunc.isNotEmpty;
 
 public abstract class ContractPreviewActivity implements AbstractContractPreviewActivity, Activity {
@@ -111,7 +112,9 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
         }
         view.setState( stateImage );
 
-        view.setType(typeLang.getName(value.getContractType()));
+        view.setTypes(stream(value.getContractTypes())
+                .map(typeLang::getName)
+                .collect(Collectors.joining(", ")));
         view.setDateSigning(formatDate(value.getDateSigning()));
         view.setDateValid(formatDate(value.getDateValid()));
         view.setDescription(StringUtils.emptyIfNull(value.getDescription()));
@@ -123,7 +126,7 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
         view.setDates(getAllDatesAsWidget(value.getContractDates()));
         view.setSpecifications(getAllSpecificationsAsWidgets(value.getContractSpecifications()));
         view.setParentContract(value.getParentContractNumber() == null ? "" : lang.contractNum(value.getParentContractNumber()));
-        view.setChildContracts(CollectionUtils.stream(value.getChildContracts())
+        view.setChildContracts(stream(value.getChildContracts())
                 .map(contract -> lang.contractNum(contract.getNumber()))
                 .collect(Collectors.joining(", ")));
         view.setProject(StringUtils.emptyIfNull(value.getProjectName()), LinkUtils.makePreviewLink(Project.class, value.getProjectId()));

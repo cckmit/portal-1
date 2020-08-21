@@ -1,0 +1,20 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:filter='urn:import:ru.protei.portal.ui.common.client.widget.filterwidget'
+>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel ui:field="root">
+
+        <div class="filter-header">
+            <label ui:field="labelFilters"><ui:text from="{lang.filters}"/></label>
+        </div>
+
+        <filter:FilterParamView ui:field="filterParamView"/>
+
+        <div ui:field="footer" class="card-footer text-right">
+            <g:Button ui:field="resetBtn" styleName="btn btn-default" text="{lang.buttonReset}"/>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

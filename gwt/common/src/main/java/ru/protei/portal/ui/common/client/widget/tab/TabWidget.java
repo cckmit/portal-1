@@ -13,6 +13,8 @@ import ru.protei.portal.ui.common.client.widget.tab.pane.TabWidgetPane;
 
 import java.util.*;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+
 public class TabWidget extends Composite implements HasWidgets, TabWidgetHandler {
 
     public TabWidget() {
@@ -31,8 +33,6 @@ public class TabWidget extends Composite implements HasWidgets, TabWidgetHandler
 
     @Override
     public void clear() {
-        tabContent.clear();
-        tabNameToPane.clear();
         clearTabs();
     }
 
@@ -47,6 +47,7 @@ public class TabWidget extends Composite implements HasWidgets, TabWidgetHandler
             TabWidgetPane pane = (TabWidgetPane) widget;
             tabNameToPane.remove(pane.getTabName());
             tabNameToNavItem.remove(pane.getTabName());
+            popup.getChildContainer().remove(tabNameToNavSelectorItem.remove(pane.getTabName()));
         }
         return tabContent.remove(widget);
     }
@@ -66,12 +67,46 @@ public class TabWidget extends Composite implements HasWidgets, TabWidgetHandler
         navItem.setTabNameDebugId(debugId);
     }
 
+    public HasVisibility tabVisibility(String tabName) {
+        return new HasVisibility() {
+            public boolean isVisible() { return isTabVisible(tabName); }
+            public void setVisible(boolean visible) { setTabVisible(tabName, visible); }
+        };
+    }
+
+    public void setTabVisible(String tabName, boolean isVisible) {
+        TabWidgetNavItem navItem = tabNameToNavItem.get(tabName);
+        if (navItem != null) {
+            navItem.setVisible(isVisible);
+        }
+
+        SelectorItem selectorItem = tabNameToNavSelectorItem.get(tabName);
+        if (selectorItem != null) {
+            selectorItem.setVisible(isVisible);
+        }
+
+        TabWidgetPane pane = tabNameToPane.get(tabName);
+        if (pane != null) {
+            pane.setVisible(isVisible);
+        }
+
+        if (!isVisible && Objects.equals(selectedTabName, tabName)) {
+            selectFirstTab();
+        }
+    }
+
+    public boolean isTabVisible(String tabName) {
+        TabWidgetPane pane = tabNameToPane.get(tabName);
+        return pane != null && pane.isVisible();
+    }
+
     private void addTab(TabWidgetPane pane) {
 
         TabWidgetNavItem navItem = makeNavItem(pane);
         SelectorItem selectorItem = makeSelectorItem(pane);
 
         popup.getChildContainer().add(selectorItem);
+        tabNameToNavSelectorItem.put(pane.getTabName(), selectorItem);
         navTabs.add(navItem);
         tabNameToNavItem.put(pane.getTabName(), navItem);
         tabNameToPane.put(pane.getTabName(), pane);
@@ -108,13 +143,19 @@ public class TabWidget extends Composite implements HasWidgets, TabWidgetHandler
     }
 
     private void clearTabs() {
+        tabContent.clear();
+        tabNameToPane.clear();
         navTabs.clear();
         tabNameToNavItem.clear();
+        tabNameToNavSelectorItem.clear();
         popup.getChildContainer().clear();
+        selectedTabName = null;
+        currentTabName = null;
     }
 
     @Override
     public void onTabSelected(String tabName) {
+        selectedTabName = tabName;
         setNavItemSelected(tabName);
         setNavItemDropdownSelected(tabName);
         setPaneSelected(tabName);
@@ -143,7 +184,9 @@ public class TabWidget extends Composite implements HasWidgets, TabWidgetHandler
     }
 
     private Optional<TabWidgetPane> findFirstPane() {
-        return tabNameToPane.values().stream().findFirst();
+        return stream(tabNameToPane.values())
+                .filter(UIObject::isVisible)
+                .findFirst();
     }
 
     @UiHandler("navDropdownTabsSelected")
@@ -160,8 +203,10 @@ public class TabWidget extends Composite implements HasWidgets, TabWidgetHandler
     HTMLPanel tabContent;
 
     private SelectorPopup popup = new SelectorPopup();
+    private String selectedTabName = null;
     private String currentTabName = null;
     private String tabNameActiveByDefault = null;
+    private Map<String, SelectorItem> tabNameToNavSelectorItem = new HashMap<>();
     private Map<String, TabWidgetNavItem> tabNameToNavItem = new HashMap<>();
     private Map<String, TabWidgetPane> tabNameToPane = new HashMap<>();
 

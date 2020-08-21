@@ -4,27 +4,27 @@ import ru.protei.portal.core.model.dict.En_Currency;
 
 import java.io.Serializable;
 
-public class CostWithCurrencyWithVat implements Serializable {
+public class MoneyWithCurrencyWithVat implements Serializable {
 
-    private Long cost;
+    private Money money;
     private En_Currency currency;
     private Long vatPercent;
 
-    public CostWithCurrencyWithVat() {
+    public MoneyWithCurrencyWithVat() {
     }
 
-    public CostWithCurrencyWithVat(Long cost, En_Currency currency, Long vatPercent) {
-        this.cost = cost;
+    public MoneyWithCurrencyWithVat(Money money, En_Currency currency, Long vatPercent) {
+        this.money = safeMoney(money);
         this.currency = currency;
         this.vatPercent = vatPercent;
     }
 
-    public Long getCost() {
-        return cost;
+    public Money getMoney() {
+        return money;
     }
 
-    public void setCost(Long cost) {
-        this.cost = cost;
+    public void setMoney(Money money) {
+        this.money = safeMoney(money);
     }
 
     public En_Currency getCurrency() {
@@ -41,5 +41,9 @@ public class CostWithCurrencyWithVat implements Serializable {
 
     public void setVatPercent(Long vatPercent) {
         this.vatPercent = vatPercent;
+    }
+
+    private Money safeMoney(Money money) {
+        return money != null ? money : new Money(0L);
     }
 }

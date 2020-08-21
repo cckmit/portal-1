@@ -39,6 +39,8 @@ public class En_ContractTypeLang {
                 return lang.contractTypeSupplyFrameworkContract();
             case WORK_CONTRACT:
                 return lang.contractTypeWorkContract();
+            case HARDWARE_SOFTWARE_SERVICE:
+                return lang.contractTypeHardwareSoftwareService();
         }
         return lang.unknownField();
     }

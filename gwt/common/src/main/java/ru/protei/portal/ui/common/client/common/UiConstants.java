@@ -30,7 +30,7 @@ public class UiConstants {
         String CONTRACT = "fa fa-file-signature";
         String EDUCATION = "fas fa-graduation-cap";
         String IP_RESERVATION = "fa fa-sitemap";
-        String ROOM_RESERVATION = "fas fa-calendar-day";
+        String ROOM_RESERVATION = "fas fa-clock";
         String PLAN = "fa fa-list-ol";
         String EMPLOYEE_LIST = "fas fa-th";
         String TOP_BRASS = "fas fa-user-tie";
@@ -53,6 +53,8 @@ public class UiConstants {
         String YOUTRACK_ADMIN = "fas fa-tools";
         String RESERVED_IP = "fas fa-map-marker";
         String SUBNET = "fas fa-project-diagram";
+        String ROOM_RESERVATION_CALENDAR = "fas fa-calendar-day";
+        String ROOM_RESERVATION_TABLE = "fas fa-th-list";
 
     }
     public interface Icons {
@@ -112,6 +114,9 @@ public class UiConstants {
         String ABSENCE_REPORT = "absence_report";
         String EMPLOYEE_BIRTHDAYS = "employee_birthdays";
         String ABSENCE_SUMMARY_TABLE = "absence_summary_table";
+        String ROOM_RESERVATION_CALENDAR = "room_reservation_calendar";
+        String ROOM_RESERVATION_TABLE = "room_reservation_table";
+        String ROOM_RESERVATION_CREATE = "room_reservation_create";
     }
 
     public interface Styles {

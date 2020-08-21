@@ -40,8 +40,8 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     }
 
     @Override
-    public void setType(String value) {
-        this.type.setInnerText(value);
+    public void setTypes(String value) {
+        this.types.setInnerText(value);
     }
 
     @Override
@@ -150,7 +150,7 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     @UiField
     HTMLPanel commentContainer;
     @UiField
-    Element type;
+    Element types;
     @UiField
     SpanElement dateSigning;
     @UiField

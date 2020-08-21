@@ -863,7 +863,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     @Inject
     HomeCompanyService homeCompanyService;
     @Inject
-    AttachmentServiceAsync attachmentService;
+    AttachmentControllerAsync attachmentService;
     @Inject
     CompanyControllerAsync companyService;
     @Inject

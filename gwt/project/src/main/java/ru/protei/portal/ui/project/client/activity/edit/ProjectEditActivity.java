@@ -182,7 +182,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
         fireEvent(new ProjectEvents.ShowProjectDocuments(view.getDocumentsContainer(), this.project.getId()));
 
-        view.saveVisibility().setVisible( hasPrivileges(project == null ? null : project.getId()) );
+        view.saveVisibility().setVisible( hasPrivileges(project.getId()) );
         view.saveEnabled().setEnabled(true);
     }
 

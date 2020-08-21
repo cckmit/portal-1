@@ -39,6 +39,12 @@ $bg_master_lightest: #fafafa;
   }
 }
 
+.modal {
+  .modal-dialog {
+    box-shadow: 0px 0px 6px 0px #0000007a;
+  }
+}
+
 /**   SORT BUTTON   **/
 .button.empty {
   padding: 0;
@@ -1112,7 +1118,7 @@ label.bordered:after {
 
 /**** Collapsable filter ****/
 
-.filter-collapsable, .absence-filter {
+.filter-collapsable, .absence-filter, .room-reservation-filter {
 
   .filter-header {
     border-bottom: 2px solid #ddd;
@@ -1714,6 +1720,14 @@ a {
   transition: all 0.5s;
 }
 
+.draggable-element {
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
 
 /**** case tag ****/
 .case-tags-container {
@@ -2232,11 +2246,11 @@ a {
     tbody {
       tr {
         td {
-          height: 70px;
+          height: 74px;
 
           div {
-            height: 70px;
-            max-height: 70px;
+            height: 74px;
+            max-height: 74px;
             white-space: pre-line;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -2827,7 +2841,7 @@ div.select2-container {
   }
 }
 
-.issue-filter, .absence-filter {
+.issue-filter, .absence-filter, .room-reservation-filter {
   padding-top: 0px !important;
 
   .user-filter {
@@ -3387,6 +3401,11 @@ label {
   max-height: 40px;
 }
 
+.height-30 {
+  height: 30px;
+  max-height: 30px;
+}
+
 .contracts {
   .contract-type-column {
     width: 45px;
@@ -3409,6 +3428,18 @@ label {
     .cost-column {
       display: none;
     }
+  }
+}
+
+.table.contracts-concise {
+  .column-state {
+    width: 5%;
+  }
+  .column-info {
+    width: 40%;
+  }
+  .column-work-group {
+    width: 55%;
   }
 }
 
@@ -4906,6 +4937,49 @@ table {
     height: 100%;
     color: white;
     font-size: 24px !important;
+  }
+}
+
+/**** ROOM-RESERVATION ****/
+.room-reservations {
+  table {
+    .separator-cell {
+      background-color: $bg_light_gray;
+      font-weight: bold;
+    }
+
+    .time {
+      width: 10%;
+      > div {
+        white-space: nowrap;
+      }
+    }
+
+    .person {
+      width: 20%;
+    }
+
+    .room {
+      width: 20%;
+    }
+    .reason {
+      width: 10%;
+    }
+
+    .coffee {
+      width: 10%;
+    }
+
+    .comment {
+      width: 30%;
+    }
+  }
+}
+
+.room-reservation-filter {
+  .filter-content {
+    border: none;
+    padding-top: 10px;
   }
 }
 

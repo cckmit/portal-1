@@ -15,7 +15,7 @@ public interface AbstractContractPreviewView extends IsWidget {
 
     void setHeader(String value);
 
-    void setType(String value);
+    void setTypes(String value);
 
     void setState(String value);
 

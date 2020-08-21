@@ -5,6 +5,7 @@ import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -19,7 +20,7 @@ import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.ent.ContractSpecification;
 import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.query.EmployeeQuery;
-import ru.protei.portal.core.model.struct.CostWithCurrencyWithVat;
+import ru.protei.portal.core.model.struct.MoneyWithCurrencyWithVat;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -28,33 +29,37 @@ import ru.protei.portal.ui.common.client.lang.En_ContractKindLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.ValiableAutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyButtonSelector;
-import ru.protei.portal.ui.common.client.widget.money.CostCurrencyVatWidget;
+import ru.protei.portal.ui.common.client.widget.money.MoneyCurrencyVatWidget;
 import ru.protei.portal.ui.common.client.widget.project.ProjectWidget;
 import ru.protei.portal.ui.common.client.widget.selector.contract.ContractButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeCustomButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
+import ru.protei.portal.ui.common.client.widget.tab.TabWidget;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
+import ru.protei.portal.ui.common.client.widget.validatefield.ValidableLongBox;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.contract.client.activity.edit.AbstractContractEditActivity;
 import ru.protei.portal.ui.contract.client.activity.edit.AbstractContractEditView;
 import ru.protei.portal.ui.contract.client.widget.contractdates.list.ContractDatesList;
 import ru.protei.portal.ui.contract.client.widget.contractor.ContractorWidget;
 import ru.protei.portal.ui.contract.client.widget.contractspecification.list.ContractSpecificationList;
-import ru.protei.portal.ui.contract.client.widget.selector.ContractStateSelector;
-import ru.protei.portal.ui.contract.client.widget.selector.ContractTypeSelector;
+import ru.protei.portal.ui.contract.client.widget.selector.button.ContractStateSelector;
+import ru.protei.portal.ui.contract.client.widget.selector.multi.ContractTypeMultiSelector;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
+import static ru.protei.portal.core.model.struct.Vat.*;
 
 public class ContractEditView extends Composite implements AbstractContractEditView {
 
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        dateValid.getElement().setAttribute("placeholder", lang.days());
+        dateValidDays.getElement().setAttribute("placeholder", lang.days());
+        dateValidDays.setValidationFunction(value -> value == null || value >= 0);
+        costWithCurrency.setVatOptions(listOf(Vat20, Vat0, NoVat));
         initCuratorSelector();
         ensureDebugIds();
     }
@@ -70,7 +75,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
-    public HasValue<CostWithCurrencyWithVat> cost() {
+    public HasValue<MoneyWithCurrencyWithVat> cost() {
         return costWithCurrency;
     }
 
@@ -80,8 +85,8 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
-    public HasValue<En_ContractType> type() {
-        return type;
+    public HasValue<Set<En_ContractType>> types() {
+        return types;
     }
 
     @Override
@@ -110,8 +115,13 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
+    public HasValue<Date> dateValidDate() {
+        return dateValidDate;
+    }
+
+    @Override
     public HasValue<Long> dateValidDays() {
-        return dateValid;
+        return dateValidDays;
     }
 
     @Override
@@ -165,14 +175,6 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
-    public HasEnabled contractorEnabled() {
-        return contractorWidget;
-    }
-
-    @Override
-    public HasEnabled organizationEnabled() { return organization; }
-
-    @Override
     public void setOrganization(String organization) {
         contractorWidget.setOrganization(organization);
     }
@@ -208,13 +210,28 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
-    public HasEnabled secondContractContractorEnabled() {
-        return secondContractContractor;
+    public void setSecondContractOrganization(String organization) {
+        secondContractContractor.setOrganization(organization);
     }
 
     @Override
-    public void setSecondContractOrganization(String organization) {
-        secondContractContractor.setOrganization(organization);
+    public HasWidgets expenditureContractsContainer() {
+        return expenditureContractsContainer;
+    }
+
+    @Override
+    public HasVisibility expenditureContractsVisibility() {
+        return tabs.tabVisibility(lang.contractListOfExpenditureHeader());
+    }
+
+    @Override
+    public void setNotAvailableOrganizations(List<Long> organizationsToHide) {
+        organization.setIdsToHide(organizationsToHide);
+    }
+
+    @Override
+    public void setSecondContractNotAvailableOrganizations(List<Long> organizationsToHide) {
+        secondContractOrganization.setIdsToHide(organizationsToHide);
     }
 
     @UiHandler("saveButton")
@@ -231,8 +248,8 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         }
     }
 
-    @UiHandler("type")
-    public void onTypeChanged(ValueChangeEvent<En_ContractType> event) {
+    @UiHandler("types")
+    public void onTypeChanged(ValueChangeEvent<Set<En_ContractType>> event) {
         if ( activity != null ) {
             activity.onTypeChanged();
         }
@@ -273,6 +290,27 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         }
     }
 
+    @UiHandler("dateSigning")
+    public void onDateSigningChanged(ValueChangeEvent<Date> event) {
+        if (activity != null) {
+            activity.onDateSigningChanged(dateSigning.getValue());
+        }
+    }
+
+    @UiHandler("dateValidDate")
+    public void onDateValidDateChanged(ValueChangeEvent<Date> event) {
+        if (activity != null) {
+            activity.onDateValidChanged(dateValidDate.getValue());
+        }
+    }
+
+    @UiHandler("dateValidDays")
+    public void onDateValidDaysChanged(KeyUpEvent event) {
+        if (activity != null) {
+            activity.onDateValidChanged(dateValidDays.getValue());
+        }
+    }
+
     private void initCuratorSelector() {
         EmployeeQuery query = new EmployeeQuery(null, false, true, En_SortField.person_full_name, En_SortDir.ASC);
         query.setDepartmentIds(new HashSet<>(Collections.singletonList(CrmConstants.Department.CONTRACT)));
@@ -290,7 +328,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         number.ensureDebugId(DebugIds.CONTRACT.NUMBER_INPUT);
 
         typeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.TYPE);
-        type.setEnsureDebugId(DebugIds.CONTRACT.TYPE_SELECTOR);
+        types.ensureDebugId(DebugIds.CONTRACT.TYPE_SELECTOR);
 
         stateLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.STATE);
         state.setEnsureDebugId(DebugIds.CONTRACT.STATE_SELECTOR);
@@ -354,27 +392,38 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     ContractStateSelector state;
     @Inject
     @UiField(provided = true)
-    ContractTypeSelector type;
+    ContractTypeMultiSelector types;
     @UiField
     TextBox kind;
     @Inject
     @UiField(provided = true)
-    CostCurrencyVatWidget costWithCurrency;
+    MoneyCurrencyVatWidget costWithCurrency;
     @UiField
     ValidableTextBox number;
     @UiField
     ValiableAutoResizeTextArea description;
-    @UiField
-    LongBox dateValid;
     @Inject
     @UiField(provided = true)
     SinglePicker dateSigning;
+    @UiField
+    HTMLPanel dateValid;
+    @UiField
+    ValidableLongBox dateValidDays;
+    @Inject
+    @UiField(provided = true)
+    SinglePicker dateValidDate;
+
+    @UiField
+    TabWidget tabs;
     @Inject
     @UiField(provided = true)
     ContractDatesList dateList;
     @Inject
     @UiField(provided = true)
     ContractSpecificationList specificationList;
+    @UiField
+    HTMLPanel expenditureContractsContainer;
+
     @Inject
     @UiField(provided = true)
     ContractButtonSelector contractParent;

@@ -22,7 +22,7 @@
             </div>
 
             <div class="col-md-3">
-                <money:CostCurrencyWidget ui:field="costWithCurrency" defaultCurrency="RUB"/>
+                <money:MoneyCurrencyWidget ui:field="costWithCurrency" defaultCurrency="RUB"/>
             </div>
 
             <div class="col-md-1">

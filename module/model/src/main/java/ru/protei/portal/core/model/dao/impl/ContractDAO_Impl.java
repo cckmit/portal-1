@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.dao.impl;
 import org.apache.commons.lang3.StringUtils;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.ContractDAO;
+import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContractQuery;
@@ -14,7 +15,9 @@ import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
 
 public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements ContractDAO {
@@ -49,6 +52,14 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
         return getListByCondition(query.buildSql(), query.args());
     }
 
+    @Override
+    public boolean mergeRefKey(Long contractId, String refKey) {
+        Contract contract = new Contract();
+        contract.setId(contractId);
+        contract.setRefKey(refKey);
+        return partialMerge(contract, "ref_key");
+    }
+
     private JdbcQueryParameters buildJdbcQueryParameters(ContractQuery query) {
 
         JdbcQueryParameters parameters = new JdbcQueryParameters();
@@ -76,14 +87,21 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
                 args.add(likeArg);
             }
 
-            if (query.getState() != null) {
-                condition.append(" and CO.state = ?");
-                args.add(query.getState().getId());
+            if (CollectionUtils.isNotEmpty(query.getStates())) {
+                String inArg = HelperFunc.makeInArg(query.getStates(), state -> String.valueOf(state.getId()));
+                condition.append(" and CO.state in ").append(inArg);
+            } else {
+                condition.append(" and CO.state != ?");
+                args.add(En_ContractState.CANCELLED.getId());
             }
 
-            if (query.getType() != null) {
-                condition.append(" and contract.contract_type = ?");
-                args.add(query.getType().ordinal());
+            if (CollectionUtils.isNotEmpty(query.getTypes())) {
+                // Filter by comma-separated value
+                condition.append(" and (");
+                condition.append(stream(query.getTypes())
+                        .map(type -> "contract.contract_types REGEXP '(^|,)" + type.getId() + "(,|$)'")
+                        .collect(Collectors.joining(" or ")));
+                condition.append(")");
             }
 
             if (query.getDirectionId() != null) {
@@ -100,6 +118,11 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
             if (CollectionUtils.isNotEmpty(query.getOrganizationIds())) {
                 condition.append(" and contract.organization_id in ")
                         .append(HelperFunc.makeInArg(query.getOrganizationIds(), false));
+            }
+
+            if (CollectionUtils.isNotEmpty(query.getParentContractIds())) {
+                String inArg = HelperFunc.makeInArg(query.getParentContractIds(), false);
+                condition.append(" and contract.parent_contract_id in ").append(inArg);
             }
 
             if (CollectionUtils.isNotEmpty(query.getManagerIds())) {

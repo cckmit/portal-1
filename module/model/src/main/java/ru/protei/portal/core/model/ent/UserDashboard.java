@@ -26,6 +26,9 @@ public class UserDashboard implements Serializable {
     @JdbcColumn(name = "is_collapsed")
     private Boolean isCollapsed;
 
+    @JdbcColumn(name = "order_number")
+    private Integer orderNumber;
+
     public UserDashboard() {}
 
     public Long getId() {
@@ -81,6 +84,14 @@ public class UserDashboard implements Serializable {
         this.isCollapsed = isCollapsed;
     }
 
+    public Integer getOrderNumber() {
+        return orderNumber;
+    }
+
+    public void setOrderNumber(Integer orderNumber) {
+        this.orderNumber = orderNumber;
+    }
+
     @Override
     public String toString() {
         return "UserDashboard{" +
@@ -90,6 +101,7 @@ public class UserDashboard implements Serializable {
                 ", caseFilter=" + caseFilter +
                 ", name='" + name + '\'' +
                 ", isCollapsed=" + isCollapsed +
+                ", order=" + orderNumber +
                 '}';
     }
 }

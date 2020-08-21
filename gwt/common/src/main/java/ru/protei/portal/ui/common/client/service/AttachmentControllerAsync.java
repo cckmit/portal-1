@@ -6,7 +6,7 @@ import ru.protei.portal.core.model.ent.Attachment;
 
 import java.util.List;
 
-public interface AttachmentServiceAsync {
+public interface AttachmentControllerAsync {
 
     void getAttachmentsByCaseId(En_CaseType caseType, Long caseId, AsyncCallback<List<Attachment>> async);
 

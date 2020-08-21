@@ -20,6 +20,8 @@ public class En_ContractStateLang {
                 return lang.contractStateWaitOriginal();
             case WAITING_COPIES_FROM_CUSTOMER:
                 return lang.contractWaitingCopiesFromCustomer();
+            case CANCELLED:
+                return lang.contractCancelled();
         }
         return lang.unknownField();
     }

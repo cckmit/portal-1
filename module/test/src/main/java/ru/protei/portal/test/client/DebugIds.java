@@ -115,6 +115,8 @@ public class DebugIds {
         String YOUTRACK_ADMIN = "sidebar-menu-youtrack-admin";
         String RESERVED_IP = "sidebar-menu-ip-reservation-reserved-ip";
         String SUBNET = "sidebar-menu-ip-reservation-subnet";
+        String ROOM_RESERVATION_CALENDAR = "sidebar-menu-room-reservation-calendar";
+        String ROOM_RESERVATION_TABLE = "sidebar-menu-room-reservation-table";
     }
 
     public interface SELECTOR {
@@ -952,4 +954,15 @@ public class DebugIds {
         String SORT_FIELD_SELECTOR = "absence-report-sort-field-selector";
         String SORT_DIR_BUTTON = "absence-report-sort-dir-button";
     }
+
+    public interface ROOM_RESERVATION {
+        interface FILTER {
+            String DATE_RANGE_INPUT = "room-reservation-filter-date-range-input";
+            String ROOM_SELECTOR_ADD_BUTTON = "room-reservation-filter-room-selector-add-button";
+            String ROOM_SELECTOR_CLEAR_BUTTON = "room-reservation-filter-room-selector-clear-button";
+            String ROOM_SELECTOR_ITEM_CONTAINER = "room-reservation-filter-room-selector-item-container";
+            String ROOM_SELECTOR_LABEL = "room-reservation-filter-room-selector-label";
+        }
+    }
+
 }

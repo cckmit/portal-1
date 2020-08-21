@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.issue.client.activity.edit;
 
 import com.google.gwt.i18n.client.LocaleInfo;
+import com.google.gwt.safehtml.shared.SimpleHtmlSanitizer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -24,7 +25,7 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
+import ru.protei.portal.ui.common.client.service.AttachmentControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.util.ClipboardUtils;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
@@ -440,8 +441,8 @@ public abstract class IssueEditActivity implements
             String idCLM = issueName.split( " " )[0];
             String remainingName = "&nbsp;" + issueName.substring( idCLM.length() );
 
-          return "<a href='"+ jiraUrl + idCLM +"' target='_blank'>"+idCLM+"</a>"
-                    + "<label>"+remainingName+"</label>";
+            return "<a href='"+ jiraUrl + idCLM +"' target='_blank'>"+idCLM+"</a>"
+                    + "<label>"+ SimpleHtmlSanitizer.sanitizeHtml(remainingName).asString() +"</label>";
         }
     }
 
@@ -504,7 +505,7 @@ public abstract class IssueEditActivity implements
     @Inject
     IssueControllerAsync issueController;
     @Inject
-    AttachmentServiceAsync attachmentController;
+    AttachmentControllerAsync attachmentController;
 
     @Inject
     Lang lang;

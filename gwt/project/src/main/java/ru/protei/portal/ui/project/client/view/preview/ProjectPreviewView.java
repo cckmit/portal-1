@@ -83,6 +83,11 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     }
 
     @Override
+    public void setPauseDateValidity(String value) {
+        pauseDate.setInnerText(value);
+    }
+
+    @Override
     public HasVisibility backButtonVisibility() {
         return backButtonContainer;
     }
@@ -222,6 +227,8 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     Element iconState;
     @UiField
     SpanElement state;
+    @UiField
+    SpanElement pauseDate;
     @UiField
     Anchor product;
     @UiField
