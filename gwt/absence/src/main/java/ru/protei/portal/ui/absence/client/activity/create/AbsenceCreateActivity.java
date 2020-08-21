@@ -68,7 +68,7 @@ public abstract class AbsenceCreateActivity extends AbsenceCommonActivity {
             return personAbsence;
         }).collect(Collectors.toList());
 
-        absenceController.saveAbsenceList(collect, new FluentCallback<List<Long>>()
+        absenceController.saveAbsences(collect, new FluentCallback<List<Long>>()
                 .withError(throwable -> {
                     defaultErrorHandler.accept(throwable);
                 })

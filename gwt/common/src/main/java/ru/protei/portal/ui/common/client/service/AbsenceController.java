@@ -33,7 +33,7 @@ public interface AbsenceController extends RemoteService {
     /**
      * Сохранение список записей об отсутствии
      */
-    List<Long> saveAbsenceList(List<PersonAbsence> absence) throws RequestFailedException;
+    List<Long> saveAbsences(List<PersonAbsence> absence) throws RequestFailedException;
 
     /**
      * Удаление записи об отсутствии

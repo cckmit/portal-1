@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.AbsenceNotificationEvent;
 import ru.protei.portal.core.event.EventAction;
+import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.PersonAbsenceDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.PersonNotifierDAO;
@@ -89,7 +90,50 @@ public class AbsenceServiceImpl implements AbsenceService {
                         initiator,
                         null,
                         newState,
+                        null,
                         getAbsenceNotifiers(newState)));
+    }
+
+    @Override
+    public Result<List<Long>> createAbsences(AuthToken token, List<PersonAbsence> absences) {
+
+        for (PersonAbsence absence : absences) {
+            if (!validateFields(absence)) {
+                return error( En_ResultStatus.INCORRECT_PARAMS);
+            }
+
+            if (hasAbsenceIntersections(absence.getPersonId(), absence.getFromTime(), absence.getTillTime(), absence.getId())) {
+                return error(En_ResultStatus.ABSENCE_HAS_INTERSECTIONS);
+            }
+        }
+
+        List<Long> ids = stream(absences).map(absence -> {
+            absence.setCreated(new Date());
+            absence.setCreatorId(token.getPersonId());
+
+            Long absenceId = personAbsenceDAO.persist(absence);
+
+            if (absenceId == null) {
+                throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+            }
+
+            return absenceId;
+        }).collect(Collectors.toList());
+
+
+        Person initiator = personDAO.get(token.getPersonId());
+        List<PersonAbsence> multiAddAbsence = personAbsenceDAO.getListByKeys(ids);
+        PersonAbsence newState = multiAddAbsence.get(0);
+
+        return ok(ids)
+                .publishEvent(new AbsenceNotificationEvent(
+                        this,
+                        EventAction.CREATED,
+                        initiator,
+                        null,
+                        newState,
+                        multiAddAbsence,
+                        getAbsenceNotifiers(multiAddAbsence.get(0))));
     }
 
     @Override
@@ -122,6 +166,7 @@ public class AbsenceServiceImpl implements AbsenceService {
                         initiator,
                         oldState,
                         newState,
+                        null,
                         getAbsenceNotifiers(newState)));
     }
 
@@ -149,6 +194,7 @@ public class AbsenceServiceImpl implements AbsenceService {
                 initiator,
                 null,
                 storedAbsence,
+                null,
                 getAbsenceNotifiers(storedAbsence)));
     }
 
@@ -184,6 +230,7 @@ public class AbsenceServiceImpl implements AbsenceService {
                         initiator,
                         oldState,
                         newState,
+                        null,
                         getAbsenceNotifiers(newState)));
     }
 

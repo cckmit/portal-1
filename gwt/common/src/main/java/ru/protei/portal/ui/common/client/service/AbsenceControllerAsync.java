@@ -30,7 +30,7 @@ public interface AbsenceControllerAsync {
     /**
      * Сохранение список записей об отсутствии
      */
-    void saveAbsenceList(List<PersonAbsence> absence, AsyncCallback<List<Long>> callback);
+    void saveAbsences(List<PersonAbsence> absence, AsyncCallback<List<Long>> callback);
 
 
     /**

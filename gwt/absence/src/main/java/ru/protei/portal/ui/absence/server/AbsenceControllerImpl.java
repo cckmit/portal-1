@@ -57,15 +57,13 @@ public class AbsenceControllerImpl implements AbsenceController {
     }
 
     @Override
-    public List<Long> saveAbsenceList(List<PersonAbsence> absenceList) throws RequestFailedException {
-        log.info("saveAbsenceList(): absenceList={}", absenceList);
+    public List<Long> saveAbsences(List<PersonAbsence> absences) throws RequestFailedException {
+        log.info("saveAbsences(): absenceList={}", absences);
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
 
-        List<Long> result = stream(absenceList).map(absence -> absenceService.createAbsence(token, absence))
-                .map(Result::getData).collect(Collectors.toList());
-//        log.info("saveAbsence(): result={}", result.isOk() ? "ok" : result.getStatus());
-//        return checkResultAndGetData(result);
-        return result;
+        Result<List<Long>> result = absenceService.createAbsences(token, absences);
+        log.info("saveAbsences(): result={}", result.isOk() ? "ok" : result.getStatus());
+        return checkResultAndGetData(result);
     }
 
     @Override
