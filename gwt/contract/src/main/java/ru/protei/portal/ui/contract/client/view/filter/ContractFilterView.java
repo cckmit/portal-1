@@ -50,7 +50,7 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     @Override
     public void resetFilter() {
         name.setValue(null);
-        sortField.setValue(En_SortField.creation_date);
+        sortField.setValue(En_SortField.contract_creation_date);
         sortDir.setValue(false);
         contractors.setValue(null);
         organizations.setValue(null);

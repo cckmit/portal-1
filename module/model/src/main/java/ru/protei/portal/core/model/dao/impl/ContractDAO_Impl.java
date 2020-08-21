@@ -58,7 +58,7 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
         SqlCondition where = createSqlCondition(query);
         parameters.withCondition(where.condition, where.args)
                 .withDistinct(true)
-                .withSort(TypeConverters.createSort(query, "CO"))
+                .withSort(TypeConverters.createSort(query))
                 .withOffset(query.getOffset());
         if (query.limit > 0) {
             parameters = parameters.withLimit(query.getLimit());

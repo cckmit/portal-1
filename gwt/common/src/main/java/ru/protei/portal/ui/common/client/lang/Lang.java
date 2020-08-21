@@ -2991,4 +2991,6 @@ public interface Lang extends Messages, ContactItemLang {
     String projectPauseDate(String date);
 
     String errContractOrganizationShouldBeDifferentFromParent();
+
+    String signingDate();
 }
