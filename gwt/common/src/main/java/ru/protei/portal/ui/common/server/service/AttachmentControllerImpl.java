@@ -9,7 +9,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.service.session.SessionService;
-import ru.protei.portal.ui.common.client.service.AttachmentService;
+import ru.protei.portal.ui.common.client.service.AttachmentController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
@@ -21,7 +21,7 @@ import java.util.List;
  */
 
 @Service( "AttachmentController" )
-public class AttachmentServiceImpl implements AttachmentService{
+public class AttachmentControllerImpl implements AttachmentController {
 
     @Override
     public List<Attachment> getAttachmentsByCaseId(En_CaseType caseType, Long caseId) throws RequestFailedException {
@@ -74,6 +74,6 @@ public class AttachmentServiceImpl implements AttachmentService{
     @Autowired
     ru.protei.portal.core.service.AttachmentService attachmentService;
 
-    private static final Logger log = LoggerFactory.getLogger(AttachmentServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(AttachmentControllerImpl.class);
 
 }

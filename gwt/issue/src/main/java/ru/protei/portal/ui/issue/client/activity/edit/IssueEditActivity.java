@@ -25,7 +25,7 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
+import ru.protei.portal.ui.common.client.service.AttachmentControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.util.ClipboardUtils;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
@@ -505,7 +505,7 @@ public abstract class IssueEditActivity implements
     @Inject
     IssueControllerAsync issueController;
     @Inject
-    AttachmentServiceAsync attachmentController;
+    AttachmentControllerAsync attachmentController;
 
     @Inject
     Lang lang;
