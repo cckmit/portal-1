@@ -45,7 +45,6 @@ import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import static java.util.Optional.ofNullable;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.CaseCommentUtils.*;

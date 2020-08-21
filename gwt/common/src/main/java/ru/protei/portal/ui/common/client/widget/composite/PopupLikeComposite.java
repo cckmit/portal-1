@@ -24,11 +24,11 @@ public class PopupLikeComposite extends Composite {
     }
 
     protected void addClickableContainer(Element container) {
-        containers.add(container);
+        clickableElements.add(container);
     }
 
     private void addClickHandler() {
-        Scheduler.get().scheduleDeferred( (Command) () -> handlerRegistration = RootPanel.get().addDomHandler(this::onElementClicked, ClickEvent.getType()));
+        Scheduler.get().scheduleDeferred((Command) () -> handlerRegistration = RootPanel.get().addDomHandler(this::onElementClicked, ClickEvent.getType()));
     }
 
     private void removeClickHandler() {
@@ -38,13 +38,27 @@ public class PopupLikeComposite extends Composite {
     }
 
     private void onElementClicked(ClickEvent event) {
-        String clickedElement = Element.as(event.getNativeEvent().getEventTarget()).getString();
+        String clickedElementString = Element.as(event.getNativeEvent().getEventTarget()).getString();
 
-        if (!getElement().getString().contains(clickedElement) && containers.stream().noneMatch(container -> container.getString().contains(clickedElement))) {
-            setVisible(false);
+        if (keepPopupVisible(clickedElementString, clickableElements)) {
+            return;
         }
+
+        setVisible(false);
+    }
+
+    private boolean keepPopupVisible(String clickedElementString, List<Element> clickableElements) {
+        if (getElement().getString().contains(clickedElementString)) {
+            return true;
+        }
+
+        if (clickableElements.stream().anyMatch(container -> container.getString().contains(clickedElementString))) {
+            return true;
+        }
+
+        return false;
     }
 
     private HandlerRegistration handlerRegistration;
-    private List<Element> containers = new ArrayList<>();
+    private List<Element> clickableElements = new ArrayList<>();
 }
