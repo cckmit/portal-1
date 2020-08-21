@@ -90,8 +90,7 @@ public class DebugIds {
         String EMPLOYEE = "sidebar-menu-employee";
         String CONTRACT = "sidebar-menu-contract";
         String EDUCATION = "sidebar-menu-education";
-        String SUBNET = "sidebar-menu-subnet";
-        String RESERVED_IP = "sidebar-menu-reserved-ip";
+        String IP_RESERVATION = "sidebar-menu-ip-reservation";
         String ROOM_RESERVATION = "sidebar-menu-room-reservation";
         String PLAN = "sidebar-menu-plan";
         String ICON_SUFFIX = "-icon";
@@ -114,6 +113,8 @@ public class DebugIds {
         String NOTIFICATION_SYSTEM = "sidebar-menu-notification-system";
         String YOUTRACK = "sidebar-menu-youtrack";
         String YOUTRACK_ADMIN = "sidebar-menu-youtrack-admin";
+        String RESERVED_IP = "sidebar-menu-ip-reservation-reserved-ip";
+        String SUBNET = "sidebar-menu-ip-reservation-subnet";
     }
 
     public interface SELECTOR {

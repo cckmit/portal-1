@@ -14,7 +14,7 @@ public abstract class FloorPlanPage implements Activity {
 
     @PostConstruct
     public void onInit() {
-        TAB = "Планы помещений";
+        TAB = lang.floorPlans();
     }
 
     @Event

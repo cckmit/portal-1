@@ -15,7 +15,7 @@ public abstract class AdminCrmPage implements Activity {
     @PostConstruct
     public void onInit() {
         CATEGORY = lang.archive();
-        TAB = "Журнал системного администратора";
+        TAB = lang.systemAdministratorLog();
     }
 
     @Event

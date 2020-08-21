@@ -51,6 +51,9 @@ public class UiConstants {
         String NOTIFICATION_SYSTEM = "fas fa-envelope";
         String YOUTRACK = "fas fa-list-ul";
         String YOUTRACK_ADMIN = "fas fa-tools";
+        String RESERVED_IP = "fas fa-map-marker";
+        String SUBNET = "fas fa-project-diagram";
+
     }
     public interface Icons {
         String APPROVED = "fa-clipboard-check";

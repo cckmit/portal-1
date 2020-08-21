@@ -2544,9 +2544,9 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reservedIpSubnetUnableToRemove();
 
-    String reservedIpSubnetsBtn();
+    String subnets();
 
-    String reservedIpIpsBtn();
+    String reservedIps();
 
     String reservedIpNumber();
 
@@ -2969,4 +2969,20 @@ public interface Lang extends Messages, ContactItemLang {
     String archive();
 
     String storeAndDelivery();
+
+    String systemAdministratorLog();
+
+    String floorPlans();
+
+    String boardSearch();
+
+    String delivery();
+
+    String store();
+
+    String supportAndMarketing();
+
+    String notificationSystem();
+
+    String testZones();
 }

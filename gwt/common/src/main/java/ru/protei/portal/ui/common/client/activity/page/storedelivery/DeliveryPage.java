@@ -15,7 +15,7 @@ public abstract class DeliveryPage implements Activity {
     @PostConstruct
     public void onInit() {
         CATEGORY = lang.storeAndDelivery();
-        TAB = "Поставки";
+        TAB = lang.delivery();
     }
 
     @Event

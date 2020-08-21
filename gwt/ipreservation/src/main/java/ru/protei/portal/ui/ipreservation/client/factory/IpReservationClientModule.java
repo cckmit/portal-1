@@ -15,6 +15,8 @@ import ru.protei.portal.ui.ipreservation.client.activity.subnet.table.AbstractSu
 import ru.protei.portal.ui.ipreservation.client.activity.reservedip.table.ReservedIpTableActivity;
 import ru.protei.portal.ui.ipreservation.client.activity.subnet.table.SubnetTableActivity;
 import ru.protei.portal.ui.ipreservation.client.page.IpReservationPage;
+import ru.protei.portal.ui.ipreservation.client.page.ReservedIpPage;
+import ru.protei.portal.ui.ipreservation.client.page.SubnetPage;
 import ru.protei.portal.ui.ipreservation.client.view.reservedip.create.ReservedIpCreateView;
 import ru.protei.portal.ui.ipreservation.client.view.reservedip.edit.ReservedIpEditView;
 import ru.protei.portal.ui.ipreservation.client.view.subnet.edit.SubnetEditView;
@@ -30,6 +32,8 @@ public class IpReservationClientModule extends AbstractGinModule {
     @Override
     protected void configure()    {
         bind( IpReservationPage.class ).asEagerSingleton();
+        bind( ReservedIpPage.class ).asEagerSingleton();
+        bind( SubnetPage.class ).asEagerSingleton();
 
         bind( ReservedIpTableActivity.class ).asEagerSingleton ();
         bind( AbstractReservedIpTableView.class ).to(ReservedIpTableView.class).in(Singleton.class);

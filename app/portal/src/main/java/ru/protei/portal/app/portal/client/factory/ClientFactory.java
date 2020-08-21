@@ -32,13 +32,14 @@ import ru.protei.portal.ui.plan.client.factory.PlanClientModule;
  * Фабрика
  */
 @GinModules({
-        ClientModule.class, IssueAssignmentClientModule.class, EmployeeRegistrationClientModule.class,
-        EmployeeClientModule.class, RoomReservationClientModule.class, IpReservationClientModule.class, EducationClientModule.class,
-        IssueClientModule.class, IssueReportClientModule.class, SiteFolderClientModule.class, PlanClientModule.class,
-        ProjectClientModule.class, EquipmentClientModule.class, DocumentClientModule.class, ContractClientModule.class,
+        ClientModule.class, IssueClientModule.class, IssueAssignmentClientModule.class,
+        PlanClientModule.class, CaseStateClientModule.class, IssueReportClientModule.class,
+        EmployeeRegistrationClientModule.class, EmployeeClientModule.class,
         CompanyClientModule.class, ContactClientModule.class, ProductClientModule.class,
+        ProjectClientModule.class, RegionClientModule.class, SiteFolderClientModule.class,
+        EquipmentClientModule.class, DocumentClientModule.class, DocumentTypeClientModule.class, ContractClientModule.class,
+        IpReservationClientModule.class, RoomReservationClientModule.class, EducationClientModule.class,
         RoleClientModule.class, AccountClientModule.class,
-        RegionClientModule.class, DocumentTypeClientModule.class, CaseStateClientModule.class,
         AbsenceClientModule.class, CommonClientModule.class
 })
 public interface ClientFactory

@@ -14,7 +14,7 @@ public abstract class YouTrackAdminPage implements Activity {
 
     @PostConstruct
     public void onInit() {
-        TAB = "Журнал системного администратора";
+        TAB = lang.systemAdministratorLog();
     }
 
     @Event

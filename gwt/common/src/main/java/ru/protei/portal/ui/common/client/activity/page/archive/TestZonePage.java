@@ -15,7 +15,7 @@ public abstract class TestZonePage implements Activity {
     @PostConstruct
     public void onInit() {
         CATEGORY = lang.archive();
-        TAB = "Администратор тестовых зон";
+        TAB = lang.testZones();
     }
 
     @Event

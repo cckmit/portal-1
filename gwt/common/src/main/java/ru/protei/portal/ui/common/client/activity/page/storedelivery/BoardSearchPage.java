@@ -10,12 +10,12 @@ import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 
-public abstract class CardSearchPage implements Activity {
+public abstract class BoardSearchPage implements Activity {
 
     @PostConstruct
     public void onInit() {
         CATEGORY = lang.storeAndDelivery();
-        TAB = "Поиск платы";
+        TAB = lang.boardSearch();
     }
 
     @Event

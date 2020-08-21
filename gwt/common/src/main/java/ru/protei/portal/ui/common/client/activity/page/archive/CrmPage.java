@@ -15,7 +15,7 @@ public abstract class CrmPage implements Activity {
     @PostConstruct
     public void onInit() {
         CATEGORY = lang.archive();
-        TAB = "Техподдержка и маркетинг";
+        TAB = lang.supportAndMarketing();
     }
 
     @Event

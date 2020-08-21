@@ -15,7 +15,7 @@ public abstract class StorePage implements Activity {
     @PostConstruct
     public void onInit() {
         CATEGORY = lang.storeAndDelivery();
-        TAB = "Оборудование";
+        TAB = lang.store();
     }
 
     @Event

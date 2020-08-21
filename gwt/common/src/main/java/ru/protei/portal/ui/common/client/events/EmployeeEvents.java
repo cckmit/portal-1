@@ -18,7 +18,8 @@ public class EmployeeEvents {
     public static class Show {
         @Omit
         public Boolean preScroll = false;
-        public Show () {}
+        public Show () {
+        }
         public Show(Boolean preScroll) {
             this.preScroll = preScroll;
         }

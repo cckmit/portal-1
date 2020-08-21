@@ -23,7 +23,7 @@ public abstract class AbsencePage implements Activity {
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
-        if ( event.profile.hasPrivilegeFor( En_Privilege.EMPLOYEE_VIEW ) && event.profile.hasPrivilegeFor( En_Privilege.ABSENCE_VIEW ) ) {
+        if ( event.profile.hasPrivilegeFor( En_Privilege.ABSENCE_VIEW ) ) {
             fireEvent( new MenuEvents.Add(TAB, UiConstants.TabIcons.ABSENCE, TAB, DebugIds.SIDEBAR_MENU.ABSENCE ).withParent( CATEGORY ) );
             fireEvent( new AppEvents.InitPage( show ) );
         }
@@ -46,7 +46,7 @@ public abstract class AbsencePage implements Activity {
 
     private void fireSelectTab() {
         fireEvent( new ActionBarEvents.Clear() );
-        if ( policyService.hasPrivilegeFor( En_Privilege.EMPLOYEE_VIEW ) && policyService.hasPrivilegeFor( En_Privilege.ABSENCE_VIEW ) ) {
+        if ( policyService.hasPrivilegeFor( En_Privilege.ABSENCE_VIEW ) ) {
             fireEvent( new MenuEvents.Select( TAB, CATEGORY ) );
         }
     }

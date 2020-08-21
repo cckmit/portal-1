@@ -22,9 +22,6 @@ public abstract class YouTrackPage implements Activity {
         fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.YOUTRACK, TAB, YOUTRACK_URL, DebugIds.SIDEBAR_MENU.YOUTRACK));
     }
 
-    @Inject
-    Lang lang;
-
     private String TAB;
     private final static String YOUTRACK_URL = "https://youtrack.protei.ru/issues";
 }

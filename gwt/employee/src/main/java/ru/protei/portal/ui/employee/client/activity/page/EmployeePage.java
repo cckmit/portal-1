@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -23,13 +24,15 @@ public abstract class EmployeePage implements Activity {
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
-        if ( event.profile.hasPrivilegeFor( En_Privilege.EMPLOYEE_VIEW ) ) {
+        if ( policyService.hasAnyPrivilegeOf( En_Privilege.EMPLOYEE_VIEW, En_Privilege.ABSENCE_VIEW ) ) {
             fireEvent( new MenuEvents.Add( CATEGORY, UiConstants.TabIcons.EMPLOYEE, CATEGORY, DebugIds.SIDEBAR_MENU.EMPLOYEE ) );
         }
     }
 
     @Inject
     Lang lang;
+    @Inject
+    private PolicyService policyService;
 
     private String CATEGORY;
 }
