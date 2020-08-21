@@ -920,6 +920,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String projectCustomerType();
 
+    String projectCustomer();
+
     String projectTeam();
 
     String projectSelectRole();

@@ -133,9 +133,12 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
                 });
         columns.add(numberColumn);
 
-        DynamicColumn<Project> customerColumn = new DynamicColumn<>(lang.projectCustomerType(), "customers",
+        DynamicColumn<Project> customerColumn = new DynamicColumn<>(lang.projectCustomer(), "customers",
                 value -> {
                     StringBuilder content = new StringBuilder();
+                    if ( value.getCustomer() != null && value.getCustomer().toEntityOption() != null) {
+                        content.append("<b>").append(value.getCustomer().toEntityOption().getDisplayText()).append("</b>").append("<br/>");
+                    }
                     if (value.getCustomerType() != null) {
                         content.append("<i>").append(customerTypeLang.getName(value.getCustomerType())).append("</i>").append("<br/>");
                     }
