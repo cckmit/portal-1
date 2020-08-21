@@ -266,7 +266,7 @@ public class CaseCommentItemView
 
     @UiHandler("timeElapsed")
     public void onTimeElapsedClicked(ClickEvent event) {
-        activity.onTimeElapsedClicked(this);
+        timeElapsedTypePopup.setVisible(!timeElapsedTypePopup.isVisible());
     }
 
     private void setTestAttributes() {

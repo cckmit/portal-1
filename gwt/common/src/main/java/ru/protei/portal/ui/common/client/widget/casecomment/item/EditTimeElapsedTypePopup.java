@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.common.client.widget.casecomment.item;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.*;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -9,16 +8,16 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.lang.TimeElapsedTypeLang;
 import ru.protei.portal.ui.common.client.view.selector.ElapsedTimeTypeSelector;
+import ru.protei.portal.ui.common.client.widget.composite.PopupLikeComposite;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 
-public class EditTimeElapsedTypePopup extends Composite implements HasValueChangeHandlers<En_TimeElapsedType> {
+public class EditTimeElapsedTypePopup extends PopupLikeComposite implements HasValueChangeHandlers<En_TimeElapsedType> {
     @Inject
     public void onInit(TimeElapsedTypeLang elapsedTimeTypeLang) {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -26,6 +25,8 @@ public class EditTimeElapsedTypePopup extends Composite implements HasValueChang
         typeSelector.setDisplayOptionCreator(type ->
                 new DisplayOption((type == null || En_TimeElapsedType.NONE.equals(type)) ? lang.issueCommentElapsedTimeTypeLabel() : elapsedTimeTypeLang.getName(type)));
         typeSelector.fillOptions();
+
+        addClickableContainer(typeSelector.getPopupContainer());
     }
 
     @Override

@@ -354,31 +354,6 @@ public abstract class CaseCommentListActivity
         fireChangedPreview();
     }
 
-    @Override
-    public void onTimeElapsedClicked(AbstractCaseCommentItemView view) {
-        if (CollectionUtils.isEmpty(itemViewToModel)) {
-            return;
-        }
-
-        Long commentAuthorId = ofNullable(itemViewToModel.get(view)).map(CaseComment::getAuthorId).orElse(null);
-
-        if (!Objects.equals(commentAuthorId, profile.getId())) {
-            return;
-        }
-
-        if (view.timeElapsedTypePopupVisibility().isVisible()) {
-            view.timeElapsedTypePopupVisibility().setVisible(false);
-            return;
-        }
-
-        closeAllTimeElapsedPopups(itemViewToModel.keySet());
-        view.timeElapsedTypePopupVisibility().setVisible(true);
-    }
-
-    private void closeAllTimeElapsedPopups(Set<AbstractCaseCommentItemView> abstractCaseCommentItemViews) {
-        stream(abstractCaseCommentItemViews).forEach(view -> view.timeElapsedTypePopupVisibility().setVisible(false));
-    }
-
     private void removeAttachment(Long id, Runnable successAction){
         attachmentService.removeAttachmentEverywhere(caseType, id, new RequestCallback<Boolean>() {
             @Override

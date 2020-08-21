@@ -4,7 +4,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel ui:field="root" styleName="time-elapsed-popup">
+    <g:HTMLPanel ui:field="root" styleName="time-elapsed-popup" visible="false">
         <timeElapsed:ElapsedTimeTypeSelector ui:field="typeSelector" addStyleNames="time-elapsed-popup-selector"/>
         <g:Button ui:field="confirmBtn" styleName="btn btn-success btn-xs" text="{lang.msgOK}"/>
     </g:HTMLPanel>
