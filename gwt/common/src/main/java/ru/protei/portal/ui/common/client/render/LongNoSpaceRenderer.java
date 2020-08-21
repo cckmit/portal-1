@@ -4,6 +4,8 @@ import com.google.gwt.text.client.LongRenderer;
 import com.google.gwt.text.shared.AbstractRenderer;
 import com.google.gwt.text.shared.Renderer;
 
+import static ru.protei.portal.core.model.util.CrmConstants.Masks.ONE_OR_MORE_SPACES;
+
 public class LongNoSpaceRenderer extends AbstractRenderer<Long> {
     private static LongNoSpaceRenderer INSTANCE;
 
@@ -19,6 +21,6 @@ public class LongNoSpaceRenderer extends AbstractRenderer<Long> {
 
     public String render(Long object) {
         String rendered = LongRenderer.instance().render(object);
-        return rendered.replaceAll("\\s+","");
+        return rendered.replaceAll(ONE_OR_MORE_SPACES,"");
     }
 }
