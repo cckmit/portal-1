@@ -33,6 +33,7 @@ public class UiConstants {
         String ROOM_RESERVATION = "fas fa-clock";
         String PLAN = "fa fa-list-ol";
         String EMPLOYEE_LIST = "fas fa-th";
+        String EMPLOYEE_TABLE = "fas fa-th-list";
         String TOP_BRASS = "fas fa-user-tie";
         String EMPLOYEE_BIRTHDAY = "fas fa-birthday-cake";
         String ABSENCE = "fas fa-user-alt-slash";

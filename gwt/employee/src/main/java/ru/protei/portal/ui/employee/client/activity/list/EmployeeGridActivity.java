@@ -9,7 +9,6 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -27,7 +26,6 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
         filterView.setActivity(this);
         filterView.resetFilter();
         query = makeQuery();
-        currentViewType = ViewType.valueOf(localStorageService.getOrDefault(EMPLOYEE_CURRENT_VIEW_TYPE, ViewType.LIST.toString()));
     }
 
     @Event
@@ -42,32 +40,17 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
             return;
         }
 
+        if (event.view != null) {
+            currentViewType = event.view;
+        }
+        fireEvent(new EmployeeEvents.SelectTab(currentViewType));
+
         fireEvent(new ActionBarEvents.Clear());
-
-        boolean isListCurrent = currentViewType == ViewType.LIST;
-        fireEvent(new ActionBarEvents.Add(
-                isListCurrent ? lang.table() : lang.list(),
-                isListCurrent ? UiConstants.ActionBarIcons.TABLE : UiConstants.ActionBarIcons.LIST,
-                UiConstants.ActionBarIdentity.EMPLOYEE_TYPE_VIEW
-        ));
-
         if (policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_CREATE)) {
             fireEvent(new ActionBarEvents.Add(lang.buttonCreate(), "", UiConstants.ActionBarIdentity.EMPLOYEE_CREATE));
         }
 
         fireEvent(new EmployeeEvents.ShowDefinite(currentViewType, filterView.asWidget(), query, event.preScroll));
-    }
-
-    @Event
-    public void onChangeViewClicked(ActionBarEvents.Clicked event) {
-        if (!(UiConstants.ActionBarIdentity.EMPLOYEE_TYPE_VIEW.equals(event.identity))) {
-            return;
-        }
-
-        currentViewType = currentViewType == ViewType.TABLE ? ViewType.LIST : ViewType.TABLE;
-        onShow(new EmployeeEvents.Show(false));
-
-        localStorageService.set(EMPLOYEE_CURRENT_VIEW_TYPE, currentViewType.toString());
     }
 
     @Event
@@ -86,25 +69,21 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
     }
 
     @Event
-    public void onEmployeeViewClicked(ActionBarEvents.Clicked event) {
-        if (!UiConstants.ActionBarIdentity.EMPLOYEE_VIEW.equals(event.identity)) {
-            return;
-        }
-
-        if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_VIEW)) {
-            fireEvent(new ErrorPageEvents.ShowForbidden());
-            return;
-        }
-
-        fireEvent(new EmployeeEvents.Show(false));
-    }
-
-    @Event
     public void onUpdate(EmployeeEvents.Update event) {
         if(event.id == null || !policyService.hasPrivilegeFor(En_Privilege.ABSENCE_VIEW))
             return;
 
         fireEvent(new EmployeeEvents.UpdateDefinite(currentViewType, event.id));
+    }
+
+    @Event
+    public void onEdit(EmployeeEvents.Edit event) {
+        fireEvent(new EmployeeEvents.SelectTab(currentViewType));
+    }
+
+    @Event
+    public void onShowFullScreen(EmployeeEvents.ShowFullScreen event) {
+        fireEvent(new EmployeeEvents.SelectTab(currentViewType));
     }
 
     @Override
@@ -134,11 +113,8 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
     @Inject
     Lang lang;
     @Inject
-    LocalStorageService localStorageService;
-    @Inject
     PolicyService policyService;
 
-    private ViewType currentViewType;
+    private ViewType currentViewType = ViewType.LIST;
     private EmployeeQuery query;
-    private static final String EMPLOYEE_CURRENT_VIEW_TYPE = "employeeCurrentViewType";
 }

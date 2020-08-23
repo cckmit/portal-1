@@ -21,7 +21,7 @@ public abstract class TablePage implements Activity {
     @PostConstruct
     public void onInit() {
         CATEGORY = lang.roomReservation();
-        TAB = lang.table();
+        TAB = lang.generalTable();
     }
 
     @Event

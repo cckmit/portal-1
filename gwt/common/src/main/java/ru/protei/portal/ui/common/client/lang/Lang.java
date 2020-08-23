@@ -3013,4 +3013,6 @@ public interface Lang extends Messages, ContactItemLang {
     String notificationSystem();
 
     String testZones();
+
+    String generalTable();
 }

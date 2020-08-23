@@ -17,25 +17,25 @@ import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 import ru.protei.winter.web.common.client.events.SectionEvents;
 
-public abstract class ListPage implements Activity {
+public abstract class TablePage implements Activity {
 
     @PostConstruct
     public void onInit() {
         CATEGORY = lang.employees();
-        TAB = lang.list();
+        TAB = lang.table();
     }
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.EMPLOYEE_VIEW ) ) {
-            fireEvent( new MenuEvents.Add( TAB, UiConstants.TabIcons.EMPLOYEE_LIST, TAB, DebugIds.SIDEBAR_MENU.EMPLOYEE_LIST ).withParent( CATEGORY ) );
+            fireEvent( new MenuEvents.Add( TAB, UiConstants.TabIcons.EMPLOYEE_TABLE, TAB, DebugIds.SIDEBAR_MENU.EMPLOYEE_TABLE ).withParent( CATEGORY ) );
             fireEvent( new AppEvents.InitPage( show ) );
         }
     }
 
     @Event
     public void onSelectTab( EmployeeEvents.SelectTab event ) {
-        if ( event.view == ViewType.LIST ) {
+        if ( event.view == ViewType.TABLE ) {
             fireSelectTab();
         }
     }
@@ -66,5 +66,5 @@ public abstract class ListPage implements Activity {
     private String CATEGORY;
     private String TAB;
 
-    private EmployeeEvents.Show show = new EmployeeEvents.Show( ViewType.LIST, false );
+    private EmployeeEvents.Show show = new EmployeeEvents.Show( ViewType.TABLE, false );
 }

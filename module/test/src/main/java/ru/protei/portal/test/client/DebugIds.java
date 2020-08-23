@@ -96,6 +96,7 @@ public class DebugIds {
         String ICON_SUFFIX = "-icon";
         String TOP_BRASS = "sidebar-menu-employee-top-brass";
         String EMPLOYEE_LIST = "sidebar-menu-employee-list";
+        String EMPLOYEE_TABLE = "sidebar-menu-employee-table";
         String EMPLOYEE_BIRTHDAY = "sidebar-menu-employee-birthday";
         String ABSENCE = "sidebar-menu-employee-absence";
         String ARCHIVE = "sidebar-menu-archive";

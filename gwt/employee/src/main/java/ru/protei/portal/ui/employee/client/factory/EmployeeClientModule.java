@@ -39,6 +39,7 @@ public class EmployeeClientModule extends AbstractGinModule {
     protected void configure() {
         bind( EmployeePage.class ).asEagerSingleton();
         bind( ListPage.class ).asEagerSingleton();
+        bind( TablePage.class ).asEagerSingleton();
         bind( TopBrassPage.class ).asEagerSingleton();
         bind( AbsencePage.class ).asEagerSingleton();
         bind( BirthdayPage.class ).asEagerSingleton();
