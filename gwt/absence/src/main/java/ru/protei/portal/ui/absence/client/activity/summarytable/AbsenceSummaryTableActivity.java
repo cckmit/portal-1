@@ -78,7 +78,7 @@ public abstract class AbsenceSummaryTableActivity implements AbstractAbsenceSumm
             return;
         }
 
-        fireEvent(new AbsenceEvents.Edit());
+        fireEvent(new AbsenceEvents.Create());
     }
 
     @Event
