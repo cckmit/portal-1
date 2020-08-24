@@ -35,6 +35,7 @@ public class IssueInfoWidget extends Composite {
 
     public void setActivity( AbstractIssueEditActivity activity ) {
         this.activity = activity;
+        attachmentListContainer.setActivity(activity);
     }
 
     public HasWidgets getCommentsContainer() {

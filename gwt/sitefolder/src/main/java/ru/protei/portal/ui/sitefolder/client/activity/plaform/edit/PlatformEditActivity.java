@@ -31,7 +31,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import java.util.*;
 import java.util.function.Consumer;
 
-public abstract class PlatformEditActivity implements Activity, AbstractPlatformEditActivity {
+public abstract class PlatformEditActivity implements AbstractPlatformEditActivity {
 
     @PostConstruct
     public void onInit() {

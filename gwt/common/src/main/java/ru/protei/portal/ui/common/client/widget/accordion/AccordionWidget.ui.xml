@@ -1,14 +1,14 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:customHtmlPanel='urn:import:ru.protei.portal.ui.common.client.widget.htmlpanel'>
+             xmlns:htmlPanel='urn:import:ru.protei.portal.ui.common.client.widget.htmlpanel'>
     <g:HTMLPanel>
         <div class="row form-group">
             <div class="col-md-12">
                 <div ui:field="accordionContainer" class="card card-default accordion">
-                    <customHtmlPanel:CustomHTMLPanel ui:field="headerContainer" styleName="card-header">
+                    <htmlPanel:ClickableHTMLPanel ui:field="headerContainer" styleName="card-header">
                         <label ui:field="headerLabel"/>
                         <a ui:field="collapseButton" class="pull-right collapse-btn p-b-0 p-t-0" href="javascript:void(0)"/>
-                    </customHtmlPanel:CustomHTMLPanel>
+                    </htmlPanel:ClickableHTMLPanel>
                     <div ui:field="accordionBody" class="accordion-body">
                         <div ui:field="accordionCardBody" class="card-body">
                             <g:HTMLPanel ui:field="bodyContainer"/>

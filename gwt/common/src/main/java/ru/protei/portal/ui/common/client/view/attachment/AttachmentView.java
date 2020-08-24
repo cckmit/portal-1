@@ -4,6 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -16,6 +17,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 
 import java.util.Date;
 
+import static ru.protei.portal.core.model.util.CrmConstants.BYTES_IN_MEGABYTE;
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
 /**
@@ -47,13 +49,15 @@ public class AttachmentView extends Composite implements AbstractAttachmentView 
     }
 
     @Override
-    public void setFileSize(long B){
-        float MB = (int)(B / 1048576f * 100) / 100f;
-        if(MB == 0){
+    public void setFileSize(long bytes){
+        float MB = bytes / BYTES_IN_MEGABYTE;
+        if (MB < 1 / 100f) {
             MB = 1 / 100f; // для JS
         }
 
-        this.fileSize.setInnerText("("+ MB + " MB)");
+        NumberFormat numberFormat = NumberFormat.getFormat("#.##");
+
+        this.fileSize.setInnerText("("+ numberFormat.format(MB).replace(",", ".") + " MB)");
     }
 
     @Override

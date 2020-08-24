@@ -1,6 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
-    <g:HTMLPanel ui:field="root" styleName="gallery-item attach-col-xl-4 attach-col-md-6 attach-col-sm-12 p-r-5 p-l-5 full-view-attach">
+    <g:HTMLPanel ui:field="root" styleName="gallery-item attach-col-xl-4 attach-col-md-6 attach-col-sm-12 p-l-5 p-r-5 full-view-attach">
         <g:Image styleName="image-responsive-height" ui:field="picture"/>
         <div class="overlayer fixed-left fixed-bottom full-width">
             <div class="overlayer-wrapper m-l-5 m-r-5 more-content">

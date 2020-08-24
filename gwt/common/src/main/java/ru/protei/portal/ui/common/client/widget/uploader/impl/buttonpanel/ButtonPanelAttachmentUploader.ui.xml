@@ -4,7 +4,7 @@
 
     <g:HTMLPanel>
         <uploader:AttachmentUploader ui:field="attachmentUploader">
-            <i class="fas fa-plus ion-plus"/>
+            <i class="fas fa-file-upload ion-plus"/>
             <div class="icon-verifiable-dots">
                 <div class="lds-ellipsis">
                     <div/>

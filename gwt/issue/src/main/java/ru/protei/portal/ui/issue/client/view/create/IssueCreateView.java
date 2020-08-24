@@ -51,6 +51,7 @@ public class IssueCreateView extends Composite implements AbstractIssueCreateVie
     @Override
     public void setActivity(AbstractIssueCreateActivity activity) {
         this.activity = activity;
+        attachmentListContainer.setActivity(activity);
     }
 
     @Override

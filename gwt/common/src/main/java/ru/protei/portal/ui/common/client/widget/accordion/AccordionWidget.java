@@ -12,7 +12,7 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
-import ru.protei.portal.ui.common.client.widget.htmlpanel.CustomHTMLPanel;
+import ru.protei.portal.ui.common.client.widget.htmlpanel.ClickableHTMLPanel;
 
 import java.util.Iterator;
 
@@ -129,7 +129,7 @@ public class AccordionWidget extends Composite implements HasWidgets {
     }
 
     @UiField
-    CustomHTMLPanel headerContainer;
+    ClickableHTMLPanel headerContainer;
     @UiField
     LabelElement headerLabel;
     @UiField

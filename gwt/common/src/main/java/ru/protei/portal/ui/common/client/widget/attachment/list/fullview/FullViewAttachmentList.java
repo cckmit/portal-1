@@ -4,12 +4,12 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.protei.portal.core.model.dict.AttachmentType;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.Person;
@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentActivity;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentView;
 import ru.protei.portal.ui.common.client.activity.attachment.fullview.AbstractAttachmentFullView;
+import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PersonControllerAsync;
 import ru.protei.portal.ui.common.client.util.AvatarUtils;
@@ -48,6 +49,7 @@ public class FullViewAttachmentList extends Composite implements HasAttachments,
         }
 
         AbstractAttachmentView view = createView(attachment);
+        addViewInContainer(view, attachment);
 
         personService.getPersonsByIds(Collections.singletonList(attachment.getCreatorId()), new FluentCallback<List<Person>>()
                 .withSuccess(persons -> fillPersonDependentFields(view, attachment, persons.iterator().next()))
@@ -61,12 +63,17 @@ public class FullViewAttachmentList extends Composite implements HasAttachments,
             return;
         }
 
-        attachments.forEach(this::createView);
+        final List<Attachment> localAttachments = new ArrayList<>(attachments);
+
+        localAttachments.forEach(attachment -> {
+            AbstractAttachmentView view = createView(attachment);
+            addViewInContainer(view, attachment);
+        });
 
         Set<Long> attachmentCreatorIds = attachments.stream().map(Attachment::getCreatorId).collect(Collectors.toSet());
 
         personService.getPersonsByIds(attachmentCreatorIds, new FluentCallback<List<Person>>()
-                .withSuccess(persons -> fillPersonDependentFields(attachments, persons))
+                .withSuccess(persons -> fillPersonDependentFields(localAttachments, persons))
         );
     }
 
@@ -108,14 +115,21 @@ public class FullViewAttachmentList extends Composite implements HasAttachments,
 
     @Override
     public void onAttachmentRemove(AbstractAttachmentView attachment) {
-        if (Window.confirm(lang.attachmentRemoveConfirmMessage())) {
-            RemoveEvent.fire(this, viewToAttachment.get(attachment));
+        if (activity == null) {
+            return;
         }
+
+        activity.fireEvent(new ConfirmDialogEvents.Show(lang.attachmentRemoveConfirmMessage(), () -> RemoveEvent.fire(this, viewToAttachment.get(attachment))));
     }
 
     @Override
     public void onShowPreview(Image attachment) {
         attachmentPreview.show(attachment);
+    }
+
+    @Override
+    public void setActivity(Activity activity) {
+        this.activity = activity;
     }
 
     public void setEnsureDebugId(String debugId) {
@@ -125,8 +139,6 @@ public class FullViewAttachmentList extends Composite implements HasAttachments,
     private AbstractAttachmentView createView(Attachment attachment) {
         AttachmentType.AttachmentCategory category = AttachmentType.getCategory(attachment.getMimeType());
         boolean isImage = category == AttachmentType.AttachmentCategory.IMAGE;
-        boolean isConfig = CrmConstants.CONFIG_EXTENSIONS.stream().anyMatch(attachment.getFileName()::contains);
-        boolean isDocument = category == AttachmentType.AttachmentCategory.TEXT;
         String attachmentUrl = DOWNLOAD_PATH + attachment.getExtLink();
 
         AbstractAttachmentView view = isImage ? imageAttachmentViewFactory.get() : documentAttachmentViewFactory.get();
@@ -139,16 +151,6 @@ public class FullViewAttachmentList extends Composite implements HasAttachments,
         view.setPicture(attachmentUrl);
 
         viewToAttachment.put(view, attachment);
-
-        if (isImage) {
-            imagesContainer.add(view.asWidget());
-        } else if (isConfig) {
-            configsContainer.add(view.asWidget());
-        } else if (isDocument) {
-            documentsContainer.add(view.asWidget());
-        } else {
-            otherContainer.add(view.asWidget());
-        }
 
         return view;
     }
@@ -167,6 +169,24 @@ public class FullViewAttachmentList extends Composite implements HasAttachments,
     private void fillPersonDependentFields(AbstractAttachmentView view, Attachment attachment, Person person) {
         view.setCreationInfo(person.getDisplayShortName(), attachment.getCreated());
         ((AbstractAttachmentFullView) view).setAuthorAvatarUrl(AvatarUtils.getAvatarUrl(person));
+    }
+
+    private void addViewInContainer(AbstractAttachmentView view, Attachment attachment) {
+        AttachmentType.AttachmentCategory category = AttachmentType.getCategory(attachment.getMimeType());
+
+        boolean isImage = category == AttachmentType.AttachmentCategory.IMAGE;
+        boolean isConfig = CrmConstants.CONFIG_EXTENSIONS.stream().anyMatch(attachment.getFileName()::contains);
+        boolean isDocument = category == AttachmentType.AttachmentCategory.TEXT;
+
+        if (isImage) {
+            imagesContainer.add(view.asWidget());
+        } else if (isConfig) {
+            configsContainer.add(view.asWidget());
+        } else if (isDocument) {
+            documentsContainer.add(view.asWidget());
+        } else {
+            otherContainer.add(view.asWidget());
+        }
     }
 
     @Inject
@@ -191,6 +211,7 @@ public class FullViewAttachmentList extends Composite implements HasAttachments,
     PersonControllerAsync personService;
 
     private Map<AbstractAttachmentView, Attachment> viewToAttachment;
+    private Activity activity;
     private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/files/";
 
     interface AttachmentListUiBinder extends UiBinder<HTMLPanel, FullViewAttachmentList> {}

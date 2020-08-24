@@ -50,7 +50,7 @@ import static ru.protei.portal.ui.common.client.common.UiConstants.ISSUE_CREATE_
 /**
  * Активность создания обращения
  */
-public abstract class IssueCreateActivity implements AbstractIssueCreateActivity, AbstractIssueMetaActivity, Activity {
+public abstract class IssueCreateActivity implements AbstractIssueCreateActivity, AbstractIssueMetaActivity {
     @PostConstruct
     public void onInit() {
         view.setActivity(this);

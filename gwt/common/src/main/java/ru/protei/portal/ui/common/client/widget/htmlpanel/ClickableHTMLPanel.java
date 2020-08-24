@@ -7,16 +7,16 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.user.client.ui.HTMLPanel;
 
-public class CustomHTMLPanel extends HTMLPanel implements HasClickHandlers {
-    public CustomHTMLPanel(String html) {
+public class ClickableHTMLPanel extends HTMLPanel implements HasClickHandlers {
+    public ClickableHTMLPanel(String html) {
         super(html);
     }
 
-    public CustomHTMLPanel(SafeHtml safeHtml) {
+    public ClickableHTMLPanel(SafeHtml safeHtml) {
         super(safeHtml);
     }
 
-    public CustomHTMLPanel(String tag, String html) {
+    public ClickableHTMLPanel(String tag, String html) {
         super(tag, html);
     }
 

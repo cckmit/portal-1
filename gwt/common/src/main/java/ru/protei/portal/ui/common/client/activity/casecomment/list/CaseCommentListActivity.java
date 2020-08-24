@@ -52,8 +52,7 @@ import static ru.protei.portal.core.model.helper.CaseCommentUtils.*;
  * Активность списка комментариев
  */
 public abstract class CaseCommentListActivity
-        implements Activity,
-        AbstractCaseCommentListActivity, AbstractCaseCommentItemActivity {
+        implements AbstractCaseCommentListActivity, AbstractCaseCommentItemActivity {
 
     @Inject
     public void onInit() {

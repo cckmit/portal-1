@@ -10,11 +10,13 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.protei.portal.core.model.dict.AttachmentType;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentActivity;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentView;
+import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PersonControllerAsync;
 import ru.protei.portal.ui.common.client.view.attachment.AttachmentView;
@@ -112,14 +114,21 @@ public class AttachmentList extends Composite implements HasAttachments, HasAtta
 
     @Override
     public void onAttachmentRemove(AbstractAttachmentView attachment) {
-        if(Window.confirm(lang.attachmentRemoveConfirmMessage())) {
-            RemoveEvent.fire(this, viewToAttachment.get(attachment));
+        if (activity == null) {
+            return;
         }
+
+        activity.fireEvent(new ConfirmDialogEvents.Show(lang.attachmentRemoveConfirmMessage(), () -> RemoveEvent.fire(this, viewToAttachment.get(attachment))));
     }
 
     @Override
     public void onShowPreview(Image attachment) {
         attachmentPreview.show(attachment);
+    }
+
+    @Override
+    public void setActivity(Activity activity) {
+        this.activity = activity;
     }
 
     public void setSimpleMode(boolean isSimpleMode){
@@ -176,6 +185,7 @@ public class AttachmentList extends Composite implements HasAttachments, HasAtta
     private boolean isSimpleMode;
     private boolean isHiddenControls;
     private Map<AbstractAttachmentView, Attachment> viewToAttachment;
+    private Activity activity;
     private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/files/";
 
     interface AttachmentListUiBinder extends UiBinder<HTMLPanel, AttachmentList> {}

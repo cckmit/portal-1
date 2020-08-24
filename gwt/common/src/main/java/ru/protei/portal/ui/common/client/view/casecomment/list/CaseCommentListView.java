@@ -59,6 +59,7 @@ public class CaseCommentListView
     @Override
     public void setActivity(AbstractCaseCommentListActivity activity) {
         this.activity = activity;
+        attachmentList.setActivity(activity);
     }
 
     @Override

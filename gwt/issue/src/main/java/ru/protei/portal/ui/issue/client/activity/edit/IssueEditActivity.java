@@ -49,8 +49,7 @@ import static ru.protei.portal.core.model.util.CaseStateUtil.isTerminalState;
 
 public abstract class IssueEditActivity implements
         AbstractIssueEditActivity,
-        AbstractIssueNameDescriptionEditWidgetActivity,
-        Activity
+        AbstractIssueNameDescriptionEditWidgetActivity
 {
 
     @PostConstruct
@@ -143,6 +142,9 @@ public abstract class IssueEditActivity implements
     public void onAddingAttachments( AttachmentEvents.Add event ) {
         if(view.isAttached() && issue.getId().equals(event.issueId)) {
             addAttachmentsToCase(event.attachments);
+
+            issueInfoWidget.setCountOfAttachments(size(issueInfoWidget.attachmentsListContainer().getAll()));
+            issueInfoWidget.attachmentsVisibility().setVisible(!issueInfoWidget.attachmentsListContainer().isEmpty());
         }
     }
 
@@ -152,6 +154,9 @@ public abstract class IssueEditActivity implements
             event.attachments.forEach( issueInfoWidget.attachmentsListContainer()::remove);
             issue.getAttachments().removeAll(event.attachments);
             issue.setAttachmentExists(!issue.getAttachments().isEmpty());
+
+            issueInfoWidget.setCountOfAttachments(size(issueInfoWidget.attachmentsListContainer().getAll()));
+            issueInfoWidget.attachmentsVisibility().setVisible(!issueInfoWidget.attachmentsListContainer().isEmpty());
         }
     }
 

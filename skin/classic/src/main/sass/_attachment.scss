@@ -352,8 +352,10 @@
 .full-view-attachment-list {
   .document-attachments {
     .full-view-attach {
-      height: unset;
-      background: #f0f0f0;
+      background: transparent;
+      > div {
+        background: #f0f0f0;
+      }
     }
   }
 
