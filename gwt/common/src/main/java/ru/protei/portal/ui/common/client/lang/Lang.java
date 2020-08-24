@@ -3019,4 +3019,6 @@ public interface Lang extends Messages, ContactItemLang {
     String testZones();
 
     String generalTable();
+
+    String signingDate();
 }

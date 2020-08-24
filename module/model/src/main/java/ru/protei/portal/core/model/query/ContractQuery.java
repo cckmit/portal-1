@@ -1,13 +1,21 @@
 package ru.protei.portal.core.model.query;
 
+import ru.protei.portal.core.model.dict.En_ContractKind;
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
+import ru.protei.portal.core.model.struct.DateRange;
 
 import java.util.List;
 
 public class ContractQuery extends BaseQuery {
 
     private Long directionId;
+
+    private DateRange dateSigningRange;
+
+    private DateRange dateValidRange;
+
+    private En_ContractKind kind;
 
     private List<En_ContractType> types;
 
@@ -27,6 +35,30 @@ public class ContractQuery extends BaseQuery {
 
     public void setDirectionId(Long directionId) {
         this.directionId = directionId;
+    }
+
+    public DateRange getDateSigningRange() {
+        return dateSigningRange;
+    }
+
+    public void setDateSigningRange(DateRange dateSigningRange) {
+        this.dateSigningRange = dateSigningRange;
+    }
+
+    public DateRange getDateValidRange() {
+        return dateValidRange;
+    }
+
+    public void setDateValidRange(DateRange dateValidRange) {
+        this.dateValidRange = dateValidRange;
+    }
+
+    public En_ContractKind getKind() {
+        return kind;
+    }
+
+    public void setKind(En_ContractKind kind) {
+        this.kind = kind;
     }
 
     public List<En_ContractType> getTypes() {
@@ -81,6 +113,9 @@ public class ContractQuery extends BaseQuery {
     public String toString() {
         return "ContractQuery{" +
                 "directionId=" + directionId +
+                ", dateSigningRange=" + dateSigningRange +
+                ", dateValidRange=" + dateValidRange +
+                ", kind=" + kind +
                 ", types=" + types +
                 ", states=" + states +
                 ", managerIds=" + managerIds +

@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.listOfOrNull;
 import static ru.protei.portal.core.model.helper.CollectionUtils.nullIfEmpty;
+import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.toDateRange;
 
 public abstract class ContractTableActivity implements AbstractContractTableActivity,
         AbstractContractFilterActivity, AbstractPagerActivity, Activity {
@@ -61,7 +62,7 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
     @Event(Type.FILL_CONTENT)
     public void onShow(ContractEvents.Show event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.CONTRACT_VIEW)) {
-            fireEvent(new ErrorPageEvents.ShowForbidden());
+            fireEvent(new ErrorPageEvents.ShowForbidden(init.parent));
             return;
         }
 
@@ -158,6 +159,9 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         query.setStates(nullIfEmpty(listOfOrNull(filterView.states().getValue())));
         ProductDirectionInfo value = filterView.direction().getValue();
         query.setDirectionId(value == null ? null : value.id);
+        query.setKind(filterView.kind().getValue());
+        query.setDateSigningRange(toDateRange(filterView.dateSigningRange().getValue()));
+        query.setDateValidRange(toDateRange(filterView.dateValidRange().getValue()));
         return query;
     }
 
