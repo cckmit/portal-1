@@ -57,10 +57,6 @@ public abstract class SubnetTableActivity
 
         fireEvent(new ActionBarEvents.Clear());
 
-        if (policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_VIEW)) {
-            fireEvent(new ActionBarEvents.Add(lang.reservedIpIpsBtn(), "", UiConstants.ActionBarIdentity.RESERVED_IP));
-        }
-
         if (policyService.hasPrivilegeFor( En_Privilege.SUBNET_CREATE )) {
             fireEvent(new ActionBarEvents.Add(CREATE_ACTION, null, UiConstants.ActionBarIdentity.SUBNET_CREATE));
         }
@@ -71,21 +67,6 @@ public abstract class SubnetTableActivity
     @Event
     public void onCloseEdit(IpReservationEvents.CloseEdit event) {
         animation.closeDetails();
-    }
-
-    @Event
-    public void onReservedIpBtnClicked(ActionBarEvents.Clicked event) {
-        if (!(UiConstants.ActionBarIdentity.RESERVED_IP.equals(event.identity))) {
-            return;
-        }
-
-        if (!policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_VIEW)) {
-            fireEvent(new ErrorPageEvents.ShowForbidden());
-            return;
-        }
-
-        fireEvent(new ActionBarEvents.Clear());
-        fireEvent(new IpReservationEvents.ShowReservedIp());
     }
 
     @Event

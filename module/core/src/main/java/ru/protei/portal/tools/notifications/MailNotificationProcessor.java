@@ -41,7 +41,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
-import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.partitioningBy;
 import static ru.protei.portal.core.model.dict.En_CaseLink.CRM;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
@@ -903,6 +902,36 @@ public class MailNotificationProcessor {
         } catch (Exception e) {
             log.error("Failed to make MimeMessage", e);
         }
+    }
+
+    // -----------------------
+    // Birthdays notifications
+    // -----------------------
+
+    @EventListener
+    public void onBirthdaysNotificationEvent( BirthdaysNotificationEvent event) {
+        log.info( "onBirthdaysNotificationEvent(): {}", event );
+
+        if (CollectionUtils.isEmpty(event.getEmployees()) || CollectionUtils.isEmpty(event.getNotifiers())) {
+            log.error("Failed to send birthdays notification: empty data or notifiers");
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.getBirthdaysNotificationSubject( event.getFromDate(), event.getToDate() );
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for PersonCaseFilter notification");
+            return;
+        }
+
+        List<String> recipients = getNotifiersAddresses(event.getNotifiers());
+
+        PreparedTemplate bodyTemplate = templateService.getBirthdaysNotificationBody( event.getEmployees(), recipients );
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for release PersonCaseFilter notification");
+            return;
+        }
+
+        sendMailToRecipients(event.getNotifiers(), bodyTemplate, subjectTemplate, true);
     }
 
     // -----

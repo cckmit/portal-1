@@ -8,7 +8,9 @@ import ru.protei.portal.ui.roomreservation.client.activity.edit.AbstractRoomRese
 import ru.protei.portal.ui.roomreservation.client.activity.edit.RoomReservationEditActivity;
 import ru.protei.portal.ui.roomreservation.client.activity.table.AbstractRoomReservationTableView;
 import ru.protei.portal.ui.roomreservation.client.activity.table.RoomReservationTableActivity;
+import ru.protei.portal.ui.roomreservation.client.page.CalendarPage;
 import ru.protei.portal.ui.roomreservation.client.page.RoomReservationPage;
+import ru.protei.portal.ui.roomreservation.client.page.TablePage;
 import ru.protei.portal.ui.roomreservation.client.view.calendar.RoomReservationCalendarView;
 import ru.protei.portal.ui.roomreservation.client.view.edit.RoomReservationEditView;
 import ru.protei.portal.ui.roomreservation.client.view.table.RoomReservationTableView;
@@ -18,6 +20,8 @@ public class RoomReservationClientModule extends AbstractGinModule {
     protected void configure() {
 
         bind(RoomReservationPage.class).asEagerSingleton();
+        bind(CalendarPage.class).asEagerSingleton();
+        bind(TablePage.class).asEagerSingleton();
 
         bind(RoomReservationCalendarActivity.class).asEagerSingleton();
         bind(AbstractRoomReservationCalendarView.class).to(RoomReservationCalendarView.class).in(Singleton.class);

@@ -30,8 +30,33 @@ public class UiConstants {
         String CONTRACT = "fa fa-file-signature";
         String EDUCATION = "fas fa-graduation-cap";
         String IP_RESERVATION = "fa fa-sitemap";
-        String ROOM_RESERVATION = "fas fa-calendar-day";
+        String ROOM_RESERVATION = "fas fa-clock";
         String PLAN = "fa fa-list-ol";
+        String EMPLOYEE_LIST = "fas fa-th";
+        String EMPLOYEE_TABLE = "fas fa-th-list";
+        String TOP_BRASS = "fas fa-user-tie";
+        String EMPLOYEE_BIRTHDAY = "fas fa-birthday-cake";
+        String ABSENCE = "fas fa-user-alt-slash";
+        String ARCHIVE = "fas fa-file-archive";
+        String BUG_TRACKING = "fas fa-bug";
+        String TODO_LIST = "fas fa-clipboard-check";
+        String FEATURE_REQUEST = "fas fa-question-circle";
+        String CRM = "fas fa-handshake";
+        String ADMIN_CRM = "fas fa-tools";
+        String TEST_ZONE = "fas fa-database";
+        String STORE_AND_DELIVERY = "fas fa-warehouse";
+        String CARD_SEARCH = "fas fa-search";
+        String DELIVERY = "fas fa-truck";
+        String STORE = "fas fa-memory";
+        String FLOOR_PLAN = "fas fa-search-location";
+        String NOTIFICATION_SYSTEM = "fas fa-envelope";
+        String YOUTRACK = "fas fa-list-ul";
+        String YOUTRACK_ADMIN = "fas fa-tools";
+        String RESERVED_IP = "fas fa-map-marker";
+        String SUBNET = "fas fa-project-diagram";
+        String ROOM_RESERVATION_CALENDAR = "fas fa-calendar-day";
+        String ROOM_RESERVATION_TABLE = "fas fa-th-list";
+
     }
     public interface Icons {
         String APPROVED = "fa-clipboard-check";

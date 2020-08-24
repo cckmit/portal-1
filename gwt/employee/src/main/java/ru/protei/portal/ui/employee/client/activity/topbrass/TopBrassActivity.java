@@ -41,11 +41,6 @@ public abstract class TopBrassActivity implements Activity, AbstractTopBrassActi
         );
     }
 
-    @Override
-    public void onBackButtonClicked() {
-        fireEvent(new EmployeeEvents.Show(false));
-    }
-
     private void fillView(SearchResult<EmployeeShortView> heads) {
         heads.getResults().forEach(this::fillView);
     }

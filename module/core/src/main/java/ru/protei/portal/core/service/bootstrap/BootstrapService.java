@@ -21,6 +21,7 @@ import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.service.EmployeeService;
 import ru.protei.portal.core.service.YoutrackService;
 import ru.protei.portal.core.svn.document.DocumentSvnApi;
 import ru.protei.portal.tools.migrate.struct.ExternalPersonAbsence;

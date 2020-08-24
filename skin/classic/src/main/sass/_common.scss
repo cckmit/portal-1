@@ -4943,22 +4943,6 @@ table {
 /**** ROOM-RESERVATION ****/
 .room-reservations {
   table {
-    tbody {
-      tr {
-        td {
-          height: 40px;
-
-          div {
-            height: 40px;
-            max-height: 40px;
-            white-space: pre-line;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
-        }
-      }
-    }
-
     .separator-cell {
       background-color: $bg_light_gray;
       font-weight: bold;

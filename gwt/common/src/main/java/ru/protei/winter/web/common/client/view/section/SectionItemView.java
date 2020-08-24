@@ -3,6 +3,7 @@ package ru.protei.winter.web.common.client.view.section;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -21,7 +22,6 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
 
     public SectionItemView() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        root.addDomHandler(event -> onSectionClicked(), ClickEvent.getType());
     }
 
     @Override
@@ -31,26 +31,26 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
 
     @Override
     public void setText( String value ) {
-        title.setInnerText(value);
+        title.setInnerText( value );
     }
 
     @Override
     public void setIcon( String value ) {
         if ( value == null ) return;
 
-        iconTrumbnail.removeClassName("hide");
-        icon.setClassName(value);
+        iconTrumbnail.removeClassName( "hide" );
+        icon.setClassName( value );
     }
 
     @Override
     public void setActive( boolean value ) {
         if ( value ) {
             root.setStyleName( "active" );
-            iconTrumbnail.addClassName("bg-complete");
+            iconTrumbnail.addClassName( "bg-complete" );
         }
         else {
             root.removeStyleName( "active" );
-            iconTrumbnail.removeClassName("bg-complete");
+            iconTrumbnail.removeClassName( "bg-complete" );
         }
     }
 
@@ -73,7 +73,8 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
     public void setSubMenuVisible(boolean isVisible) {
         if (isVisible != subSection.isVisible()) {
             subSection.setVisible(isVisible);
-            subSectionIcon.setVisible(isVisible);
+            arrow.removeClassName("hide");
+            closeSubSection();
         }
     }
 
@@ -83,17 +84,19 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
     }
 
     @Override
-    public void toggleSubSections(boolean forceVisible) {
-        isSubSectionVisible = forceVisible || !isSubSectionVisible;
+    public void toggleSubSection(Boolean force) {
+        isSubSectionVisible = force == null ? !isSubSectionVisible : force;
         if (isSubSectionVisible) {
-            subSection.removeStyleName("collapsed");
+            arrow.addClassName("open active");
+            openSubSection();
         } else {
-            subSection.addStyleName("collapsed");
+            arrow.removeClassName("open active");
+            closeSubSection();
         }
     }
 
     @Override
-    public void setSectionTitle(String title) {
+    public void setSectionTitle( String title ) {
         anchor.setTitle( title );
     }
 
@@ -103,10 +106,16 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
         icon.setId( ensureDebugId + ICON_SUFFIX );
     }
 
+    @Override
+    public void setHref( String href ) {
+        anchor.setHref(href);
+    }
+
     @UiHandler("anchor")
     public void onAnchorClicked( ClickEvent event ) {
         if ( anchor.getHref().endsWith("#") ) {
             event.preventDefault();
+            onSectionClicked();
         }
     }
 
@@ -114,6 +123,20 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
         if ( activity != null ) {
             activity.onSectionClicked( this );
         }
+    }
+
+    private void openSubSection() {
+        int height = subSection.getElement().getChildCount() * 38 + 30;
+        subSection.getElement().getStyle().setHeight(height, Style.Unit.PX);
+        subSection.getElement().getStyle().setPaddingTop(18, Style.Unit.PX);
+        subSection.getElement().getStyle().setPaddingBottom(10, Style.Unit.PX);
+        subSection.getElement().getStyle().setMarginBottom(10, Style.Unit.PX);
+    }
+
+    private void closeSubSection() {
+        subSection.getElement().getStyle().setHeight(0, Style.Unit.PX);
+        subSection.getElement().getStyle().setPadding(0, Style.Unit.PX);
+        subSection.getElement().getStyle().setMargin(0, Style.Unit.PX);
     }
 
     AbstractSectionItemActivity activity;
@@ -129,7 +152,7 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
     @UiField
     SpanElement iconTrumbnail;
     @UiField
-    Label subSectionIcon;
+    SpanElement arrow;
     @UiField
     HTMLPanel subSection;
 

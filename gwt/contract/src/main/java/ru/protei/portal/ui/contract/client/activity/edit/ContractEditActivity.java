@@ -33,8 +33,8 @@ import java.util.function.Consumer;
 
 import static java.util.Collections.emptyList;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
-import static ru.protei.portal.core.model.helper.DateUtils.addDays;
-import static ru.protei.portal.core.model.helper.DateUtils.getDaysBetween;
+import static ru.protei.portal.ui.common.client.util.DateUtils.addDays;
+import static ru.protei.portal.ui.common.client.util.DateUtils.getDaysBetween;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.struct.Vat.NoVat;
 import static ru.protei.portal.ui.common.client.util.DateUtils.isBefore;
