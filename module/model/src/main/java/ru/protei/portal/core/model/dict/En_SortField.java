@@ -183,7 +183,19 @@ public enum En_SortField {
     /**
      * room_reservation_date_from
      */
-    room_reservation_date_from("room_reservation.date_from");
+    room_reservation_date_from("room_reservation.date_from"),
+
+    /**
+     * Дата создания контракта
+     */
+    contract_creation_date("CO.created"),
+
+    /**
+     * Дата подписания контракта
+     */
+    contract_signing_date("contract.date_signing"),
+
+    ;
 
     private String fieldName;
     private String bundleKey;

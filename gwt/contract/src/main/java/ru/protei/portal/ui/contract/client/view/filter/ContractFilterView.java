@@ -6,15 +6,14 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_ContractState;
-import ru.protei.portal.core.model.dict.En_ContractType;
-import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -27,6 +26,9 @@ import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSel
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
+import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
+import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
+import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedSelectorRangePicker;
 import ru.protei.portal.ui.contract.client.activity.filter.AbstractContractFilterActivity;
 import ru.protei.portal.ui.contract.client.activity.filter.AbstractContractFilterView;
 import ru.protei.portal.ui.contract.client.widget.selector.multi.ContractStateMultiSelector;
@@ -34,12 +36,16 @@ import ru.protei.portal.ui.contract.client.widget.selector.multi.ContractTypeMul
 
 import java.util.Set;
 
+import static java.util.Arrays.asList;
+
 public class ContractFilterView extends Composite implements AbstractContractFilterView {
 
     @Inject
     public void onInit() {
         initWidget(outUiBinder.createAndBindUi(this));
         sortField.setType(ModuleType.CONTRACT);
+        dateSigningRange.fillSelector(En_DateIntervalType.allTypes());
+        dateValidRange.fillSelector(En_DateIntervalType.allTypes());
     }
 
     @Override
@@ -50,7 +56,7 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     @Override
     public void resetFilter() {
         name.setValue(null);
-        sortField.setValue(En_SortField.creation_date);
+        sortField.setValue(En_SortField.contract_creation_date);
         sortDir.setValue(false);
         contractors.setValue(null);
         organizations.setValue(null);
@@ -58,6 +64,9 @@ public class ContractFilterView extends Composite implements AbstractContractFil
         direction.setValue(null);
         states.setValue(null);
         types.setValue(null);
+        kind.setValue(true);
+        dateSigningRange.setValue(null);
+        dateValidRange.setValue(null);
     }
 
     @Override
@@ -104,6 +113,33 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     @Override
     public HasValue<ProductDirectionInfo> direction() {
         return direction;
+    }
+
+    @Override
+    public TakesValue<En_ContractKind> kind() {
+        return new TakesValue<En_ContractKind>() {
+            public void setValue(En_ContractKind value) {
+                kind.setValue(value != null
+                        ? value == En_ContractKind.RECEIPT
+                        : null);
+            }
+            public En_ContractKind getValue() {
+                Boolean value = kind.getValue();
+                return value == null ? null : value
+                        ? En_ContractKind.RECEIPT
+                        : En_ContractKind.EXPENDITURE;
+            }
+        };
+    }
+
+    @Override
+    public HasValue<DateIntervalWithType> dateSigningRange() {
+        return dateSigningRange;
+    }
+
+    @Override
+    public HasValue<DateIntervalWithType> dateValidRange() {
+        return dateValidRange;
     }
 
     @UiHandler("resetBtn")
@@ -159,6 +195,21 @@ public class ContractFilterView extends Composite implements AbstractContractFil
         restartChangeTimer();
     }
 
+    @UiHandler("kind")
+    public void onKindChanged(ValueChangeEvent<Boolean> event) {
+        restartChangeTimer();
+    }
+
+    @UiHandler("dateSigningRange")
+    public void onDateSigningRangeChanged(ValueChangeEvent<DateIntervalWithType> event) {
+        restartChangeTimer();
+    }
+
+    @UiHandler("dateValidRange")
+    public void onDateValidRangeChanged(ValueChangeEvent<DateIntervalWithType> event) {
+        restartChangeTimer();
+    }
+
     private void restartChangeTimer() {
         changeTimer.cancel();
         changeTimer.schedule(300);
@@ -203,6 +254,14 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     @Inject
     @UiField(provided = true)
     ContractTypeMultiSelector types;
+    @UiField
+    ThreeStateButton kind;
+    @Inject
+    @UiField(provided = true)
+    TypedSelectorRangePicker dateSigningRange;
+    @Inject
+    @UiField(provided = true)
+    TypedSelectorRangePicker dateValidRange;
 
     private AbstractContractFilterActivity activity;
 
