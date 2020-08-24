@@ -12,7 +12,7 @@
             <g:Anchor styleName="issue-link" ui:field="remoteLink" href="#"/>
             <i ui:field="privateComment"/>
             <li ui:field="info" class="info hide p-l-5 p-r-5"/>
-            <div>
+            <div class="display-inline">
                 <g:Label ui:field="timeElapsed" styleName="time-label" title="{lang.issueCommentElapsedTimeTypeChange}"/>
                 <popup:EditTimeElapsedTypePopup ui:field="timeElapsedTypePopup" visible="false"/>
             </div>
