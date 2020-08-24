@@ -12,7 +12,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentActivity;
+import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentList;
 import ru.protei.portal.ui.common.client.activity.attachment.fullview.AbstractAttachmentFullView;
 
 import java.util.Date;
@@ -28,7 +28,7 @@ public class ImageAttachmentView extends Composite implements AbstractAttachment
     }
 
     @Override
-    public void setActivity(AbstractAttachmentActivity activity) {
+    public void setActivity(AbstractAttachmentList activity) {
         this.activity = activity;
     }
 
@@ -118,7 +118,7 @@ public class ImageAttachmentView extends Composite implements AbstractAttachment
     @UiField
     SpanElement createdDate;
 
-    private AbstractAttachmentActivity activity;
+    private AbstractAttachmentList activity;
 
     private String url;
 

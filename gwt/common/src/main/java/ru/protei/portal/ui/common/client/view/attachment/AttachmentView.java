@@ -11,7 +11,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentActivity;
+import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentList;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
@@ -33,7 +33,7 @@ public class AttachmentView extends Composite implements AbstractAttachmentView 
     }
 
     @Override
-    public void setActivity(AbstractAttachmentActivity activity) {
+    public void setActivity(AbstractAttachmentList activity) {
         this.activity = activity;
     }
 
@@ -121,7 +121,7 @@ public class AttachmentView extends Composite implements AbstractAttachmentView 
     @Inject
     Lang lang;
 
-    AbstractAttachmentActivity activity;
+    AbstractAttachmentList activity;
 
     interface AttachmentViewUiBinder extends UiBinder<HTMLPanel, AttachmentView> {}
     private static AttachmentViewUiBinder ourUiBinder = GWT.create(AttachmentViewUiBinder.class);

@@ -12,7 +12,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentActivity;
+import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentList;
 import ru.protei.portal.ui.common.client.activity.attachment.fullview.AbstractAttachmentFullView;
 
 import java.util.Date;
@@ -28,7 +28,7 @@ public class DocumentAttachmentView extends Composite implements AbstractAttachm
     }
 
     @Override
-    public void setActivity(AbstractAttachmentActivity activity) {
+    public void setActivity(AbstractAttachmentList activity) {
         this.activity = activity;
     }
 
@@ -115,7 +115,7 @@ public class DocumentAttachmentView extends Composite implements AbstractAttachm
     @UiField
     HTMLPanel root;
 
-    private AbstractAttachmentActivity activity;
+    private AbstractAttachmentList activity;
 
     private String url;
     private DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat("dd.MM.yyyy HH:mm");

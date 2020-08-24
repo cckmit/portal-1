@@ -9,7 +9,7 @@ import java.util.Date;
  * Created by bondarenko on 28.12.16.
  */
 public interface AbstractAttachmentView extends IsWidget {
-    void setActivity( AbstractAttachmentActivity activity );
+    void setActivity( AbstractAttachmentList activity );
 
     void setPicture(String url);
     void setFileName(String fileName);

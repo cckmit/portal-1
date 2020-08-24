@@ -4,7 +4,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -14,7 +13,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.protei.portal.core.model.dict.AttachmentType;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentActivity;
+import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentList;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentView;
 import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -32,7 +31,7 @@ import java.util.stream.Collectors;
 /**
  * Created by bondarenko on 17.01.17.
  */
-public class AttachmentList extends Composite implements HasAttachments, HasAttachmentListHandlers, AbstractAttachmentActivity {
+public class AttachmentList extends Composite implements HasAttachments, HasAttachmentListHandlers, AbstractAttachmentList {
     public AttachmentList() {
         initWidget(ourUiBinder.createAndBindUi(this));
         viewToAttachment = new HashMap<>();

@@ -15,7 +15,7 @@ import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentActivity;
+import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentList;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentView;
 import ru.protei.portal.ui.common.client.activity.attachment.fullview.AbstractAttachmentFullView;
 import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
-public class FullViewAttachmentList extends Composite implements HasAttachments, HasAttachmentListHandlers, AbstractAttachmentActivity {
+public class FullViewAttachmentList extends Composite implements HasAttachments, HasAttachmentListHandlers, AbstractAttachmentList {
     public FullViewAttachmentList() {
         initWidget(ourUiBinder.createAndBindUi(this));
         viewToAttachment = new HashMap<>();
@@ -150,8 +150,6 @@ public class FullViewAttachmentList extends Composite implements HasAttachments,
         view.setDownloadUrl(attachmentUrl);
         view.setPicture(attachmentUrl);
 
-        viewToAttachment.put(view, attachment);
-
         return view;
     }
 
@@ -172,6 +170,8 @@ public class FullViewAttachmentList extends Composite implements HasAttachments,
     }
 
     private void addViewInContainer(AbstractAttachmentView view, Attachment attachment) {
+        viewToAttachment.put(view, attachment);
+
         AttachmentType.AttachmentCategory category = AttachmentType.getCategory(attachment.getMimeType());
 
         boolean isImage = category == AttachmentType.AttachmentCategory.IMAGE;
