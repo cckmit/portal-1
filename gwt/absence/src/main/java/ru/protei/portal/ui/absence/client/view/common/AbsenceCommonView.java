@@ -72,7 +72,7 @@ public class AbsenceCommonView extends Composite implements AbstractAbsenceCommo
     }
 
     @Override
-    public HTMLPanel getDateContainer() {
+    public HasWidgets getDateContainer() {
         return dateContainer;
     }
 

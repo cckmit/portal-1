@@ -16,19 +16,6 @@ import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 
 public abstract class AbsenceCommonActivity implements AbstractAbsenceCommonActivity, AbstractDialogDetailsActivity, Activity {
 
-    protected void onInit() {
-        dialogView.setActivity(this);
-        dialogView.removeButtonVisibility().setVisible(false);
-        dialogView.setSaveOnEnterClick(false);
-        dialogView.getBodyContainer().add(view.asWidget());
-    }
-
-    protected void onShow() {
-        hideForm();
-        dialogView.showPopup();
-        showForm();
-    }
-
     @Override
     public void onSaveClicked() {
         if (!validateView()) {
@@ -42,16 +29,17 @@ public abstract class AbsenceCommonActivity implements AbstractAbsenceCommonActi
         dialogView.hidePopup();
     }
 
-    private void hideForm() {
-        view.contentVisibility().setVisible(false);
+    protected void onInit() {
+        dialogView.setActivity(this);
+        dialogView.removeButtonVisibility().setVisible(false);
+        dialogView.setSaveOnEnterClick(false);
+        dialogView.getBodyContainer().add(view.asWidget());
     }
 
-    private void showForm() {
-        view.contentVisibility().setVisible(true);
-        if (!view.asWidget().isAttached()) {
-            return;
-        }
-        performFillView();
+    protected void onShow() {
+        hideForm();
+        dialogView.showPopup();
+        showForm();
     }
 
     protected void showLoading() {
@@ -71,6 +59,30 @@ public abstract class AbsenceCommonActivity implements AbstractAbsenceCommonActi
         view.comment().setValue(absence.getUserComment());
     }
 
+    protected PersonAbsence fillCommonDTO() {
+        PersonAbsence absence = new PersonAbsence();
+        absence.setPersonId(view.employee().getValue().getId());
+        absence.setReason(view.reason().getValue());
+        absence.setUserComment(view.comment().getValue());
+        return absence;
+    }
+
+    protected abstract void performSave(Runnable afterSave);
+    protected abstract void performFillView();
+    protected abstract boolean additionalValidate();
+
+    private void hideForm() {
+        view.contentVisibility().setVisible(false);
+    }
+
+    private void showForm() {
+        view.contentVisibility().setVisible(true);
+        if (!view.asWidget().isAttached()) {
+            return;
+        }
+        performFillView();
+    }
+
     private boolean validateView() {
         if (!view.employeeValidator().isValid()) {
             fireEvent(new NotifyEvents.Show(lang.absenceValidationEmployee(), NotifyEvents.NotifyType.ERROR));
@@ -85,15 +97,7 @@ public abstract class AbsenceCommonActivity implements AbstractAbsenceCommonActi
         return additionalValidate();
     }
 
-    protected PersonAbsence fillCommonDTO() {
-        PersonAbsence absence = new PersonAbsence();
-        absence.setPersonId(view.employee().getValue().getId());
-        absence.setReason(view.reason().getValue());
-        absence.setUserComment(view.comment().getValue());
-        return absence;
-    }
-
-    void save() {
+    private void save() {
         enableButtons(false);
         performSave(() -> {
             enableButtons(true);
@@ -106,10 +110,6 @@ public abstract class AbsenceCommonActivity implements AbstractAbsenceCommonActi
         dialogView.removeButtonEnabled().setEnabled(isEnable);
         dialogView.saveButtonEnabled().setEnabled(isEnable);
     }
-
-    protected abstract void performSave(Runnable afterSave);
-    protected abstract void performFillView();
-    protected abstract boolean additionalValidate();
 
     @Inject
     protected Lang lang;

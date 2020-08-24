@@ -592,7 +592,7 @@ public class TemplateServiceImpl implements TemplateService {
     public PreparedTemplate getAbsenceNotificationBody(AbsenceNotificationEvent event, EventAction action, Collection<String> recipients) {
         PersonAbsence oldState = event.getOldState();
         PersonAbsence newState = event.getNewState();
-        List<PersonAbsence> multiAddAbsence = event.getMultiAddAbsence();
+        List<PersonAbsence> multiAddAbsenceList = event.getMultiAddAbsenceList();
 
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("is_created", action == EventAction.CREATED);
@@ -609,7 +609,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("oldTillTime", oldState == null ? null : dateFormat.format(oldState.getTillTime()));
         templateModel.put("tillTime", dateFormat.format(newState.getTillTime()));
 
-        templateModel.put("multiAddAbsence", multiAddAbsence);
+        templateModel.put("multiAddAbsenceList", multiAddAbsenceList);
 
         templateModel.put("reason", newState.getReason().getId());
 

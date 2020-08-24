@@ -21,7 +21,7 @@ public abstract class AbsenceCreateActivity extends AbsenceCommonActivity {
     @Inject
     public void onInit() {
         super.onInit();
-        view.getDateContainer().add(createView);
+        view.getDateContainer().add(createView.asWidget());
         createView.setActivity(this);
     }
 
@@ -42,10 +42,6 @@ public abstract class AbsenceCreateActivity extends AbsenceCommonActivity {
         } else {
             createView.setDateRangeValid(true);
         }
-    }
-
-    private boolean hasAccessCreate() {
-        return policyService.hasPrivilegeFor(En_Privilege.ABSENCE_CREATE);
     }
 
     protected void performFillView() {
@@ -79,14 +75,15 @@ public abstract class AbsenceCreateActivity extends AbsenceCommonActivity {
         }).collect(Collectors.toList());
 
         absenceController.saveAbsences(collect, new FluentCallback<List<Long>>()
-                .withError(throwable -> {
-                    defaultErrorHandler.accept(throwable);
-                })
                 .withSuccess(absence -> {
                     fireEvent(new NotifyEvents.Show(lang.absenceCreated(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new EmployeeEvents.Update(collect.get(0).getPersonId()));
                     afterSave.run();
                 }));
+    }
+
+    private boolean hasAccessCreate() {
+        return policyService.hasPrivilegeFor(En_Privilege.ABSENCE_CREATE);
     }
 
     private PersonAbsence fillDTO() {

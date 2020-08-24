@@ -8,8 +8,8 @@
     <g:HTMLPanel styleName="form-group col-md-12 m-b-0">
         <div class="row m-t-5 m-b-5">
             <range:RangePicker ui:field="dateRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm" mandatory="true" styleName="col-md-10"/>
-            <g:HTMLPanel styleName="btn-group pull-right col-md-2">
-                <g:Button styleName="btn btn-danger" ui:field="remove">
+            <g:HTMLPanel styleName="col-md-2">
+                <g:Button styleName="btn btn-danger pull-right" ui:field="remove">
                     <i class="fas fa-trash-alt"/>
                 </g:Button>
             </g:HTMLPanel>

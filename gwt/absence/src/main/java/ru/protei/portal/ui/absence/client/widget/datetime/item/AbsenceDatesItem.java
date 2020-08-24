@@ -13,20 +13,16 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.ui.absence.client.widget.datetime.HasVaryAbility;
+import ru.protei.portal.ui.common.client.widget.selector.event.HasRemoveHandlers;
+import ru.protei.portal.ui.common.client.widget.selector.event.RemoveEvent;
+import ru.protei.portal.ui.common.client.widget.selector.event.RemoveHandler;
 
-public class AbsenceDatesItem extends Composite implements HasValue<DateInterval>, HasEnabled, HasVaryAbility {
+public class AbsenceDatesItem extends Composite implements HasValue<DateInterval>, HasEnabled, HasVaryAbility,
+        HasRemoveHandlers {
 
     @Inject
     public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
-    }
-
-    public void setRemoveHandler(Runnable removeHandler) {
-        this.removeHandler = removeHandler;
-    }
-
-    public void setChangeHandler(Runnable changeHandler) {
-        this.changeHandler = changeHandler;
     }
 
     @Override
@@ -69,18 +65,19 @@ public class AbsenceDatesItem extends Composite implements HasValue<DateInterval
         return addHandler(handler, ValueChangeEvent.getType());
     }
 
+    @Override
+    public HandlerRegistration addRemoveHandler(RemoveHandler handler) {
+        return addHandler(handler, RemoveEvent.getType());
+    }
+
     @UiHandler("dateRange")
     public void onDateRangeChanged(ValueChangeEvent<DateInterval> event) {
-        if (changeHandler != null) {
-            changeHandler.run();
-        }
+        ValueChangeEvent.fire(this, getValue());
     }
 
     @UiHandler("remove")
     public void removeClick(ClickEvent event) {
-        if (removeHandler != null) {
-            removeHandler.run();
-        }
+        RemoveEvent.fire(this);
     }
 
     @Inject
@@ -88,9 +85,6 @@ public class AbsenceDatesItem extends Composite implements HasValue<DateInterval
     RangePicker dateRange;
     @UiField
     Button remove;
-
-    private Runnable removeHandler;
-    private Runnable changeHandler;
 
     interface AbsenceDatesItemBinder extends UiBinder<HTMLPanel, AbsenceDatesItem> {}
     private static AbsenceDatesItemBinder ourUiBinder = GWT.create(AbsenceDatesItemBinder.class);

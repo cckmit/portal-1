@@ -56,9 +56,9 @@
                     <tr>
                         <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">${_absenceDateRange}</td>
                         <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                            <#if multiAddAbsence??>
-                                <#list multiAddAbsence as item>
-                                    ${(item.getFromTime())!'?'} - ${(item.getFromTime())!'?'} <br>
+                            <#if multiAddAbsenceList??>
+                                <#list multiAddAbsenceList as absence>
+                                    ${(absence.getFromTime())!'?'} - ${(absence.getTillTime())!'?'} <br>
                                 </#list>
                             <#else>
                                 <#if fromTimeChanged>

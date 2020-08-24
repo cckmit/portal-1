@@ -111,22 +111,24 @@ public class AbsenceDates extends Composite implements HasValue<List<DateInterva
     private void fillView(List<DateInterval> intervals) {
         container.clear();
         stream(intervals)
-            .map(interval -> {
-                AbsenceDatesItem item = itemProvider.get();
-                item.setEnabled(isEnabled);
-                item.setVaryAble(isVaryAble);
-                item.setValue(interval);
-                item.setRemoveHandler(() -> {
-                    items.remove(item);
-                    render();
-                });
-                item.setChangeHandler(this::fireChange);
-                return item;
-            })
+            .map(this::createAbsenceDatesItem)
             .forEach(item -> {
                 items.add(item);
                 container.add(item.asWidget());
             });
+    }
+
+    private AbsenceDatesItem createAbsenceDatesItem(DateInterval interval) {
+        AbsenceDatesItem item = itemProvider.get();
+        item.setEnabled(isEnabled);
+        item.setVaryAble(isVaryAble);
+        item.setValue(interval);
+        item.addRemoveHandler(removeEvent -> {
+            items.remove(item);
+            render();
+        });
+        item.addValueChangeHandler(this::fireChange);
+        return item;
     }
 
     private void clearView() {
@@ -146,6 +148,10 @@ public class AbsenceDates extends Composite implements HasValue<List<DateInterva
         setValue(getValue());
     }
 
+    private Date makeBlankDate() {
+        return addHours(resetTime(new Date()), 1);
+    }
+
     private DateInterval addDays(DateInterval interval, int days) {
         Date from = copyDate(interval.from);
         Date to = copyDate(interval.to);
@@ -154,20 +160,13 @@ public class AbsenceDates extends Composite implements HasValue<List<DateInterva
         return new DateInterval(from, to);
     }
 
-    private Date makeBlankDate() {
-        Date now = new Date();
-        Date date = resetTime(now);
-        date.setHours(now.getHours() + 1);
-        return date;
-    }
-
     private Date addHours(Date date, int hours) {
         Date d = copyDate(date);
         d.setHours(d.getHours() + hours);
         return d;
     }
 
-    private void fireChange() {
+    private void fireChange(ValueChangeEvent<DateInterval> ignore) {
         ValueChangeEvent.fire(AbsenceDates.this, null);
     }
 

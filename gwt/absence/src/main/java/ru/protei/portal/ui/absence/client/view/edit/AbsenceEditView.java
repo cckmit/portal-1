@@ -55,9 +55,6 @@ public class AbsenceEditView extends Composite implements AbstractAbsenceEditVie
         dateRange.getRelative().ensureDebugId(DebugIds.ABSENCE.DATE_RANGE_BUTTON);
     }
 
-    @UiField
-    HTMLPanel root;
-
     @Inject
     @UiField(provided = true)
     RangePicker dateRange;

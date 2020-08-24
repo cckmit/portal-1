@@ -4,7 +4,7 @@
 >
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel ui:field="root">
+    <g:HTMLPanel>
         <range:RangePicker ui:field="dateRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm" mandatory="true"/>
     </g:HTMLPanel>
 </ui:UiBinder>

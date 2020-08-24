@@ -18,7 +18,7 @@ public abstract class AbsenceEditActivity extends AbsenceCommonActivity {
     @Inject
     public void onInit() {
         super.onInit();
-        view.getDateContainer().add(editView);
+        view.getDateContainer().add(editView.asWidget());
         editView.setActivity(this);
 
         view.employeeEnabled().setEnabled(false);
@@ -38,10 +38,6 @@ public abstract class AbsenceEditActivity extends AbsenceCommonActivity {
     @Override
     public void onDateRangeChanged() {
         editView.setDateRangeValid(isDateRangeValid(editView.dateRange().getValue()));
-    }
-
-    private boolean hasAccessEdit() {
-        return policyService.hasPrivilegeFor(En_Privilege.ABSENCE_EDIT);
     }
 
     protected void performFillView() {
@@ -74,12 +70,15 @@ public abstract class AbsenceEditActivity extends AbsenceCommonActivity {
     protected void performSave(Runnable afterSave) {
         PersonAbsence personAbsence = fillDTO();
         absenceController.saveAbsence(personAbsence, new FluentCallback<Long>()
-                .withError(throwable -> defaultErrorHandler.accept(throwable))
                 .withSuccess(result -> {
                     fireEvent(new NotifyEvents.Show(lang.absenceUpdated(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new EmployeeEvents.Update(personAbsence.getPersonId()));
                     afterSave.run();
                 }));
+    }
+
+    private boolean hasAccessEdit() {
+        return policyService.hasPrivilegeFor(En_Privilege.ABSENCE_EDIT);
     }
 
     private PersonAbsence fillDTO() {

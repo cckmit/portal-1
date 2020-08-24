@@ -13,19 +13,19 @@ public class AbsenceNotificationEvent extends ApplicationEvent {
     private final Person initiator;
     private final PersonAbsence oldState;
     private final PersonAbsence newState;
-    private final List<PersonAbsence> multiAddAbsence;
+    private final List<PersonAbsence> multiAddAbsenceList;
     private final EventAction action;
     private final Set<Person> notifiers;
 
     public AbsenceNotificationEvent(Object source, EventAction action, Person initiator, PersonAbsence oldState,
-                                    PersonAbsence newState, List<PersonAbsence> multiAddAbsence, Set<Person> notifiers) {
+                                    PersonAbsence newState, List<PersonAbsence> multiAddAbsenceList, Set<Person> notifiers) {
         super(source);
         this.action = action;
         this.initiator = initiator;
         this.oldState = oldState;
         this.newState = newState;
         this.notifiers = notifiers;
-        this.multiAddAbsence = multiAddAbsence;
+        this.multiAddAbsenceList = multiAddAbsenceList;
     }
 
     public EventAction getAction() {
@@ -48,8 +48,8 @@ public class AbsenceNotificationEvent extends ApplicationEvent {
         return notifiers;
     }
 
-    public List<PersonAbsence> getMultiAddAbsence() {
-        return multiAddAbsence;
+    public List<PersonAbsence> getMultiAddAbsenceList() {
+        return multiAddAbsenceList;
     }
 
     public boolean isFromTimeChanged() {

@@ -15,5 +15,5 @@ public interface AbstractAbsenceCommonView extends IsWidget {
     HasEnabled reasonEnabled();
     HasValidable employeeValidator();
     HasValidable reasonValidator();
-    HTMLPanel getDateContainer();
+    HasWidgets getDateContainer();
 }
