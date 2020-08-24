@@ -327,7 +327,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                             <span style="font-size:10px;margin-bottom:5px;color:red;line-height: 17px;margin-right:5px">(${_privateComment})</span>
                         </#if>
                     </#if>
-                    <span style="font-size:14px;margin-bottom:5px;color:#0062ff;line-height: 17px;">
+                    <span style="color:blue;font-size:14px;margin-bottom:5px;color:#0062ff;line-height: 17px;">
                         <#if caseComment.author??>
                             ${TranslitUtils.transliterate(caseComment.author.displayName, lang)!''}
                         </#if>
