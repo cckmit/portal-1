@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.absence.client.widget;
+package ru.protei.portal.ui.absence.client.widget.filter;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.AbsenceFilter;

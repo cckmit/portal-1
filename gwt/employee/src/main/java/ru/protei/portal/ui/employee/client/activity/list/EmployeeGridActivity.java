@@ -129,7 +129,7 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
             return;
         }
 
-        fireEvent(new AbsenceEvents.Edit());
+        fireEvent(new AbsenceEvents.Create());
     }
 
     @Event

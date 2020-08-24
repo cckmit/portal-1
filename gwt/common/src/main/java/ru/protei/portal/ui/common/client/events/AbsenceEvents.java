@@ -43,5 +43,13 @@ public class AbsenceEvents {
         }
     }
 
+    public static class Create {
+        public EmployeeShortView employee;
+        public Create withEmployee(EmployeeShortView employee) {
+            this.employee = employee;
+            return this;
+        }
+    }
+
     public static class CreateReport {}
 }

@@ -2872,6 +2872,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String absenceValidationDateRange();
 
+    String absenceValidationDateRanges();
+
+    String absenceValidationDateRangesIntersection();
+
     String absenceValidationReason();
 
     String absenceCreation();

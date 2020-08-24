@@ -1,12 +1,14 @@
-package ru.protei.portal.ui.absence.client.activity.edit;
+package ru.protei.portal.ui.absence.client.activity.create;
 
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.ui.absence.client.activity.common.AbstractAbsenceCommonActivity;
 
-public interface AbstractAbsenceEditView extends IsWidget {
+import java.util.List;
+
+public interface AbstractAbsenceCreateView extends IsWidget {
     void setActivity(AbstractAbsenceCommonActivity activity);
-    HasValue<DateInterval> dateRange();
+    HasValue<List<DateInterval>> dateRange();
     void setDateRangeValid(boolean isValid);
 }

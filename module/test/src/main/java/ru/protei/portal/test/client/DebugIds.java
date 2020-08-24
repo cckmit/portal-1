@@ -912,6 +912,9 @@ public class DebugIds {
         String REASON_SELECTOR = "absence-reason-selector";
         String COMMENT_LABEL = "absence-comment-label";
         String COMMENT_INPUT = "absence-comment-input";
+        String DATE_RANGE_CONTAINER = "absence-date-range-container";
+        String DATE_RANGE_CONTAINER_ADD_DAY_BUTTON = "absence-date-range-container-add-day-button";
+        String DATE_RANGE_CONTAINER_ADD_WEEK_BUTTON = "absence-date-range-container-add-week-button";
     }
 
     public interface ABSENCE_REPORT {
