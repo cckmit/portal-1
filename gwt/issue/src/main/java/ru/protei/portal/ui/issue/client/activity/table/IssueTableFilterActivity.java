@@ -10,6 +10,7 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Attachment;
+import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -105,8 +106,7 @@ public abstract class IssueTableFilterActivity
         if (event.filter == null) {
             loadTable();
         } else {
-            filterView.userFilter().setValue(new CaseFilterShortView(event.filter.getId(), event.filter.getName()));
-            fillFilterFieldsByCaseQuery(event.filter.getParams());
+            fillFilterFieldsByCaseQuery(event.filter);
         }
 
         validateSearchField(filterView.getIssueFilterParams().isSearchFieldCorrect());
@@ -309,19 +309,23 @@ public abstract class IssueTableFilterActivity
         scrollTo = 0;
     }
 
-    private void fillFilterFieldsByCaseQuery( CaseQuery caseQuery ) {
+    private void fillFilterFieldsByCaseQuery(CaseFilter filter) {
         filterView.resetFilter();
-        filterService.getSelectorsParams( caseQuery, new RequestCallback<SelectorsParams>() {
+        filterView.userFilter().setValue(filter.toShortView());
+
+        final CaseQuery caseQuery = filter.getParams();
+
+        filterService.getSelectorsParams(caseQuery, new RequestCallback<SelectorsParams>() {
             @Override
-            public void onError( Throwable throwable ) {
-                fireEvent( new NotifyEvents.Show( lang.errNotFound(), NotifyEvents.NotifyType.ERROR ) );
+            public void onError(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR));
             }
 
             @Override
-            public void onSuccess( SelectorsParams selectorsParams ) {
+            public void onSuccess(SelectorsParams selectorsParams) {
                 filterView.getIssueFilterParams().fillFilterFields(caseQuery, selectorsParams);
             }
-        } );
+        });
     }
 
     private void showPreview ( CaseShortView value ) {
