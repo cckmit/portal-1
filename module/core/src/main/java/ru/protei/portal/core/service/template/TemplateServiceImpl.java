@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.util.HtmlUtils;
 import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.dao.CaseStateDAO;
+import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
@@ -481,6 +482,11 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("stateChanged", event.isStateChanged());
         templateModel.put("oldState", getNullOrElse(oldProjectState, Project::getState));
         templateModel.put("newState", newProjectState.getState());
+
+        templateModel.put("showPauseDate", newProjectState.getState() == En_RegionState.PAUSED);
+        templateModel.put("pauseDateChanged", event.isPauseDateChanged());
+        templateModel.put("oldPauseDate", getNullOrElse(getNullOrElse(oldProjectState, Project::getPauseDate), new SimpleDateFormat("dd.MM.yyyy")::format));
+        templateModel.put("newPauseDate", getNullOrElse(newProjectState.getPauseDate(), new SimpleDateFormat("dd.MM.yyyy")::format));
 
         templateModel.put("regionChanged", event.isRegionChanged());
         templateModel.put("oldRegion", getNullOrElse(getNullOrElse(oldProjectState, Project::getRegion), EntityOption::getDisplayText));

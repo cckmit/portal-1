@@ -1084,6 +1084,7 @@ public class MailNotificationProcessor {
         return event.isNameChanged()
                 || event.isDescriptionChanged()
                 || event.isStateChanged()
+                || event.isPauseDateChanged()
                 || event.isRegionChanged()
                 || event.isCompanyChanged()
                 || event.isCustomerTypeChanged()
