@@ -11,9 +11,11 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
+import com.google.inject.Inject;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 /**
@@ -22,9 +24,10 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
  */
 @Deprecated
 public class ButtonSelector<T> extends Selector<T> implements HasValidable, HasEnabled{
-
-    public ButtonSelector() {
+    @Inject
+    public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        inputContainer.add(popup);
     }
 
     @Override
@@ -135,5 +138,4 @@ public class ButtonSelector<T> extends Selector<T> implements HasValidable, HasE
 
     interface InputSelectorUiBinder extends UiBinder<HTMLPanel, ButtonSelector > { }
     private static InputSelectorUiBinder ourUiBinder = GWT.create(InputSelectorUiBinder.class);
-
 }
