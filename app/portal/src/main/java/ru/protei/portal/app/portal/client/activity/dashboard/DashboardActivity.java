@@ -164,11 +164,10 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
             }
             CaseFilter filter = dashboard.getCaseFilter();
             String name = dashboard.getName();
-            CaseQuery query = new CaseQuery(filter.getParams());
-            AbstractDashboardTableView table = createIssueTable(dashboard, i, name, query);
+            AbstractDashboardTableView table = createIssueTable(dashboard, i, name, filter);
             dragAndDropElementsHandler.addDraggableElement(dashboard.getId(), table);
             view.addTableToContainer(table.asWidget());
-            loadTable(table, query);
+            loadTable(table, new CaseQuery(filter.getParams()));
         }
     }
 
@@ -182,7 +181,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         );
     }
 
-    private AbstractDashboardTableView createIssueTable(UserDashboard dashboard, int order, String name, CaseQuery query) {
+    private AbstractDashboardTableView createIssueTable(UserDashboard dashboard, int order, String name, CaseFilter filter) {
         AbstractDashboardTableView table = tableProvider.get();
         table.setEnsureDebugId(DebugIds.DASHBOARD.TABLE + order);
         table.setName(name);
@@ -194,7 +193,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
             }
             @Override
             public void onOpenClicked() {
-                fireEvent(new IssueEvents.Show(new CaseQuery(query), false));
+                fireEvent(new IssueEvents.Show(filter, false));
             }
             @Override
             public void onEditClicked() {
@@ -211,7 +210,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
             }
             @Override
             public void onReloadClicked() {
-                loadTable(table, query);
+                loadTable(table, filter.getParams());
             }
         });
         return table;

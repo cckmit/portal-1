@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueCollapseFilterActivity;
@@ -101,11 +102,11 @@ public abstract class IssueTableFilterActivity
 
         this.preScroll = event.preScroll;
 
-        if (event.query != null) {
-            fillFilterFieldsByCaseQuery(event.query);
-            event.query = null;
-        } else {
+        if (event.filter == null) {
             loadTable();
+        } else {
+            filterView.userFilter().setValue(new CaseFilterShortView(event.filter.getId(), event.filter.getName()));
+            fillFilterFieldsByCaseQuery(event.filter.getParams());
         }
 
         validateSearchField(filterView.getIssueFilterParams().isSearchFieldCorrect());

@@ -103,6 +103,10 @@ public class IssueFilterWidget extends Composite {
         this.filterValidator = filterValidator;
     }
 
+    public HasValue<CaseFilterShortView> userFilter() {
+        return userFilter;
+    }
+
     @UiHandler( "resetBtn" )
     public void onResetClicked ( ClickEvent event ) {
         onUserFilterChanged(null);
