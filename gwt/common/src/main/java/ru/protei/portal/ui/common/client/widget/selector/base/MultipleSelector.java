@@ -148,7 +148,7 @@ public abstract class MultipleSelector<T>
 
     private void onScroll() {
         if ( popup.isAttached() ) {
-            popup.show(relative);
+            popup.showNear(relative);
         }
     }
 
@@ -176,7 +176,7 @@ public abstract class MultipleSelector<T>
 
     protected void showPopup( IsWidget relative ) {
         this.relative = relative;
-        popup.show( relative );
+        popup.showNear( relative );
         popup.setSearchVisible( true );
         popup.setSearchAutoFocus( true );
         popup.clearSearchField();

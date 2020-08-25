@@ -251,9 +251,9 @@ public abstract class Selector<T>
     }
 
     private void onScroll() {
-//        if (popup.isAttached()) {
-//            popup.showNear(relative);
-//        }
+        if (popup.isAttached()) {
+            popup.showNear(relative);
+        }
     }
 
     @Override
@@ -261,9 +261,9 @@ public abstract class Selector<T>
         return addHandler(handler, SelectorChangeValEvent.getType());
     }
 
-//    public void addCloseHandler(CloseHandler<PopupPanel> handler) {
-//        popup.addCloseHandler(handler);
-//    }
+    public void addCloseHandler(CloseHandler<PopupPanel> handler) {
+        popup.addCloseHandler(handler);
+    }
 
     public void setFilter( SelectorFilter<T> selectorFilter ) {
         filter = selectorFilter;
@@ -289,21 +289,21 @@ public abstract class Selector<T>
 
     protected void showPopup(IsWidget relative) {
         this.relative = relative;
-        popup.show(relative);
+        popup.showNear(relative);
         showPopup();
     }
 
-//    protected void showPopupRight(IsWidget relative) {
-//        this.relative = relative;
-//        popup.showNearRight(relative);
-//        showPopup();
-//    }
-//
-//    protected void showPopupInlineRight(IsWidget relative) {
-//        this.relative = relative;
-//        popup.showNearInlineRight(relative);
-//        showPopup();
-//    }
+    protected void showPopupRight(IsWidget relative) {
+        this.relative = relative;
+        popup.showNearRight(relative);
+        showPopup();
+    }
+
+    protected void showPopupInlineRight(IsWidget relative) {
+        this.relative = relative;
+        popup.showNearInlineRight(relative);
+        showPopup();
+    }
 
     protected void reselectValueIfNeeded() {
         T value = getValue();

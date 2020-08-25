@@ -261,7 +261,7 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
     public void navDropdownTabsSelectedClick(ClickEvent event) {
         event.preventDefault();
         if (!isSelectable) return;
-        popup.show(navDropdownTabsSelected);
+        popup.showNear(navDropdownTabsSelected);
     }
 
     private Optional<WizardWidgetPane> findFirstPane() {

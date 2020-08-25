@@ -3,9 +3,6 @@ package ru.protei.portal.ui.common.client.widget.composite;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.CloseEvent;
-import com.google.gwt.event.logical.shared.CloseHandler;
-import com.google.gwt.event.logical.shared.HasCloseHandlers;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Composite;
@@ -14,7 +11,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PopupLikeComposite extends Composite implements HasCloseHandlers {
+public class PopupLikeComposite extends Composite {
     @Override
     public void setVisible(boolean visible) {
         super.setVisible(visible);
@@ -23,16 +20,11 @@ public class PopupLikeComposite extends Composite implements HasCloseHandlers {
             addClickHandler();
         } else {
             removeClickHandler();
-            CloseEvent.fire(this, null);
         }
     }
 
     protected void addClickableContainer(Element container) {
         clickableElements.add(container);
-    }
-
-    protected void setAutoHide(boolean isAutoHide) {
-        this.isAutoHide = isAutoHide;
     }
 
     private void addClickHandler() {
@@ -56,10 +48,6 @@ public class PopupLikeComposite extends Composite implements HasCloseHandlers {
     }
 
     private boolean keepPopupVisible(String clickedElementString, List<Element> clickableElements) {
-        if (isAutoHide) {
-            return false;
-        }
-
         if (getElement().getString().contains(clickedElementString)) {
             return true;
         }
@@ -73,10 +61,4 @@ public class PopupLikeComposite extends Composite implements HasCloseHandlers {
 
     private HandlerRegistration handlerRegistration;
     private List<Element> clickableElements = new ArrayList<>();
-    private boolean isAutoHide;
-
-    @Override
-    public HandlerRegistration addCloseHandler(CloseHandler handler) {
-        return addHandler(handler, CloseEvent.getType());
-    }
 }

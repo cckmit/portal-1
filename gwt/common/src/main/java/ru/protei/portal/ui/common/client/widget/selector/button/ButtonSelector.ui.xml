@@ -1,6 +1,5 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:popup="urn:import:ru.protei.portal.ui.common.client.widget.selector.popup">
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
     <g:HTMLPanel styleName="dropdown-selector" ui:field="inputContainer">
         <label ui:field="label" class="hide"/>
@@ -8,7 +7,6 @@
             <i ui:field="icon"/>
             <span ui:field="text" class="selector-val"></span>
         </g:Button>
-        <g:HTMLPanel ui:field="popupContainer"/>
     </g:HTMLPanel>
 
 </ui:UiBinder>
