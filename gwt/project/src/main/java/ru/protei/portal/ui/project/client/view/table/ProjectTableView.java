@@ -25,6 +25,7 @@ import ru.protei.portal.ui.project.client.activity.table.AbstractProjectTableVie
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 
 /**
@@ -108,6 +109,11 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
     @Override
     public void scrollTo( int page ) {
         table.scrollToPage( page );
+    }
+
+    @Override
+    public void setChangeSelectionIfSelectedPredicate(Predicate<Project> changeSelectionIfSelectedPredicate) {
+        columnProvider.setChangeSelectionIfSelectedPredicate(changeSelectionIfSelectedPredicate);
     }
 
     private void initTable () {

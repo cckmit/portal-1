@@ -5,6 +5,8 @@ import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 
+import java.util.function.Predicate;
+
 /**
  * Представление таблицы проектов
  */
@@ -29,4 +31,6 @@ public interface AbstractProjectTableView extends IsWidget {
     int getPageCount();
 
     void scrollTo( int page );
+
+    void setChangeSelectionIfSelectedPredicate(Predicate<Project> changeSelectionIfSelectedPredicate);
 }
