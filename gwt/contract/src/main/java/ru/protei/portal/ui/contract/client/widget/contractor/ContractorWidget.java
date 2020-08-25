@@ -252,10 +252,7 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
         if (query == null) {
             return false;
         }
-        if (isNotEmpty(query.getInn()) && isEmpty(query.getKpp())) {
-            return false;
-        }
-        if (isEmpty(query.getInn()) && isNotEmpty(query.getKpp())) {
+        if (isNotEmpty(query.getKpp()) && isEmpty(query.getInn())) {
             return false;
         }
         return isNotEmpty(query.getInn())
