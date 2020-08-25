@@ -538,11 +538,7 @@ public class ContractServiceImpl implements ContractService {
             return false;
         }
 
-        if (isNotEmpty(query.getInn()) && isEmpty(query.getKpp())) {
-            return false;
-        }
-
-        if (isEmpty(query.getInn()) && isNotEmpty(query.getKpp())) {
+        if (isNotEmpty(query.getKpp()) && isEmpty(query.getInn())) {
             return false;
         }
 
