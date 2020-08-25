@@ -1,9 +1,10 @@
 package ru.protei.portal.ui.sitefolder.client.activity.plaform.edit;
 
+import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.view.EntityOption;
 
-public interface AbstractPlatformEditActivity {
+public interface AbstractPlatformEditActivity extends Activity {
 
     void onSaveClicked();
     void onCancelClicked();

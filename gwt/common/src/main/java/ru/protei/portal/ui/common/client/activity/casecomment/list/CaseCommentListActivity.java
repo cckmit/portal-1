@@ -34,8 +34,8 @@ import ru.protei.portal.ui.common.client.service.CaseCommentControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
 import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemView;
 import ru.protei.portal.ui.common.client.widget.timefield.WorkTimeFormatter;
-import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
-import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
+import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.impl.PasteInfo;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -52,8 +52,7 @@ import static ru.protei.portal.core.model.helper.CaseCommentUtils.*;
  * Активность списка комментариев
  */
 public abstract class CaseCommentListActivity
-        implements Activity,
-        AbstractCaseCommentListActivity, AbstractCaseCommentItemActivity {
+        implements AbstractCaseCommentListActivity, AbstractCaseCommentItemActivity {
 
     @Inject
     public void onInit() {
@@ -165,7 +164,7 @@ public abstract class CaseCommentListActivity
                             newView.displayUpdatedAnimation();
                             itemViewToModel.remove( oldView );
                             itemViewToModel.put( newView, comment );
-                            if (CollectionUtils.isEmpty(oldView.attachmentContainer())){
+                            if (CollectionUtils.isEmpty(oldView.attachmentContainer().getAll())){
                                 updateCaseAttachment(Collections.emptyList(), comment.getCaseAttachments());
                             } else {
                                 updateCaseAttachment(new ArrayList<>(oldView.attachmentContainer().getAll()), comment.getCaseAttachments());

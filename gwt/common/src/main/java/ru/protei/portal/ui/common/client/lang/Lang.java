@@ -3021,4 +3021,8 @@ public interface Lang extends Messages, ContactItemLang {
     String generalTable();
 
     String signingDate();
+
+    String attachmentsHeader(String countOfAttachments);
+
+    String attachmentAdd();
 }

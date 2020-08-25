@@ -12,12 +12,15 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
+import ru.protei.portal.ui.common.client.widget.accordion.AccordionWidget;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
+import ru.protei.portal.ui.common.client.widget.attachment.list.fullview.FullViewAttachmentList;
 import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
-import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.impl.buttonpanel.ButtonPanelAttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.issue.client.activity.create.AbstractIssueCreateActivity;
@@ -39,13 +42,16 @@ public class IssueCreateView extends Composite implements AbstractIssueCreateVie
         description.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged(DESCRIPTION, isDisplay));
         description.setFileUploader(fileUploader);
         description.setDropZonePanel(dropPanel);
-
         name.setMaxLength(NAME_MAX_SIZE);
+
+        accordionWidget.setLocalStorageKey(UiConstants.ATTACHMENTS_PANEL_VISIBILITY);
+        accordionWidget.setMaxHeight(UiConstants.Accordion.ATTACHMENTS_MAX_HEIGHT);
     }
 
     @Override
     public void setActivity(AbstractIssueCreateActivity activity) {
         this.activity = activity;
+        attachmentListContainer.setActivity(activity);
     }
 
     @Override
@@ -69,8 +75,8 @@ public class IssueCreateView extends Composite implements AbstractIssueCreateVie
     }
 
     @Override
-    public HasAttachments attachmentsContainer() {
-        return attachmentContainer;
+    public HasAttachments attachmentsListContainer() {
+        return attachmentListContainer;
     }
 
     @Override
@@ -129,6 +135,16 @@ public class IssueCreateView extends Composite implements AbstractIssueCreateVie
         }
     }
 
+    @Override
+    public void setCountOfAttachments(int countOfAttachments) {
+        accordionWidget.setHeader(lang.attachmentsHeader(String.valueOf(countOfAttachments)));
+    }
+
+    @Override
+    public HasVisibility attachmentsVisibility() {
+        return accordionWidget;
+    }
+
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {
@@ -144,7 +160,7 @@ public class IssueCreateView extends Composite implements AbstractIssueCreateVie
 
     }
 
-    @UiHandler("attachmentContainer")
+    @UiHandler("attachmentListContainer")
     public void attachmentContainerRemove(RemoveEvent event) {
         activity.removeAttachment(event.getAttachment());
     }
@@ -185,7 +201,7 @@ public class IssueCreateView extends Composite implements AbstractIssueCreateVie
         name.ensureDebugId(DebugIds.ISSUE.NAME_INPUT);
         description.setEnsureDebugId(DebugIds.ISSUE.DESCRIPTION_INPUT);
         fileUploader.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_UPLOAD_BUTTON);
-        attachmentContainer.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_LIST_CONTAINER);
+        attachmentListContainer.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_LIST_CONTAINER);
         saveButton.ensureDebugId(DebugIds.ISSUE.SAVE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.ISSUE.CANCEL_BUTTON);
         addTagButton.ensureDebugId(DebugIds.ISSUE.TAGS_BUTTON);
@@ -194,7 +210,8 @@ public class IssueCreateView extends Composite implements AbstractIssueCreateVie
 
         nameLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.NAME);
         descriptionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.INFO);
-        attachmentsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.ATTACHMENTS);
+        accordionWidget.setHeaderLabelDebugId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.ATTACHMENTS);
+        accordionWidget.setCollapseButtonDebugId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.ATTACHMENT_COLLAPSE_BUTTON);
     }
 
     @UiField
@@ -220,14 +237,12 @@ public class IssueCreateView extends Composite implements AbstractIssueCreateVie
 
     @Inject
     @UiField
-    AttachmentUploader fileUploader;
+    ButtonPanelAttachmentUploader fileUploader;
     @Inject
     @UiField(provided = true)
-    AttachmentList attachmentContainer;
+    FullViewAttachmentList attachmentListContainer;
     @UiField
     LabelElement descriptionLabel;
-    @UiField
-    LabelElement attachmentsLabel;
     @UiField
     HTMLPanel nameContainer;
     @UiField
@@ -248,6 +263,9 @@ public class IssueCreateView extends Composite implements AbstractIssueCreateVie
     Button addTagButton;
     @UiField
     Button addLinkButton;
+    @Inject
+    @UiField(provided = true)
+    AccordionWidget accordionWidget;
 
     private HasValidable nameValidator = new HasValidable() {
         @Override

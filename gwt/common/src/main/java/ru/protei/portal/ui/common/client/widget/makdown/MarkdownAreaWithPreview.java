@@ -17,8 +17,8 @@ import com.google.gwt.user.client.ui.ToggleButton;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.dndautoresizetextarea.DndAutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.imagepastetextarea.event.PasteEvent;
-import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
-import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
+import ru.protei.portal.ui.common.client.widget.uploader.AbstractAttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.impl.PasteInfo;
 import ru.protei.portal.ui.common.shared.model.HTMLRenderer;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
@@ -64,7 +64,7 @@ public class MarkdownAreaWithPreview
         return addHandler(valueChangeHandler, ValueChangeEvent.getType());
     }
 
-    public void setFileUploader(AttachmentUploader fileUploader) {
+    public void setFileUploader(AbstractAttachmentUploader fileUploader) {
         this.fileUploader = fileUploader;
     }
 
@@ -171,7 +171,7 @@ public class MarkdownAreaWithPreview
     };
 
     private static final int PREVIEW_CHANGE_DELAY_MS = 200;
-    private AttachmentUploader fileUploader;
+    private AbstractAttachmentUploader fileUploader;
 
     interface MarkdownAreaWithPreviewUiBinder extends UiBinder<HTMLPanel, MarkdownAreaWithPreview> {}
     private static MarkdownAreaWithPreviewUiBinder ourUiBinder = GWT.create( MarkdownAreaWithPreviewUiBinder.class );

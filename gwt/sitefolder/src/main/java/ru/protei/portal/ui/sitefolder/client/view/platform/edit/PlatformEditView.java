@@ -17,7 +17,7 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEve
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.project.ProjectButtonSelector;
-import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.edit.AbstractPlatformEditActivity;
@@ -40,6 +40,7 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
     @Override
     public void setActivity(AbstractPlatformEditActivity activity) {
         this.activity = activity;
+        attachmentContainer.setActivity(activity);
     }
 
     @Override

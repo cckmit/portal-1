@@ -318,6 +318,7 @@ public class DebugIds {
         String NOTIFIERS_SELECTOR_LABEL = "issue-notifiers-selector-label";
         String ATTACHMENT_UPLOAD_BUTTON = "issue-attachment-upload-button";
         String ATTACHMENT_LIST_CONTAINER = "issue-attachment-list-container";
+        String ATTACHMENT_COLLAPSE_BUTTON = "issue-attachment-collapse-button";
         String SAVE_BUTTON = "issue-save-button";
         String CANCEL_BUTTON = "issue-cancel-button";
         String COPY_NUMBER_BUTTON = "issue-copy-number-button";

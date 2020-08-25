@@ -10,8 +10,12 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.uploader.AbstractAttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.impl.buttonpanel.ButtonPanelAttachmentUploader;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
 
@@ -56,6 +60,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Override
     public void setCaseNumber( Long caseNumber ) {
         number.setInnerText(lang.crmPrefix() + caseNumber);
+        fileUploader.autoBindingToCase( En_CaseType.CRM_SUPPORT, caseNumber );
     }
 
     @Override
@@ -146,6 +151,21 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         }
     }
 
+    @Override
+    public AbstractAttachmentUploader getFileUploader() {
+        return fileUploader;
+    }
+
+    @Override
+    public void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler) {
+        fileUploader.setUploadHandler( handler );
+    }
+
+    @Override
+    public HasVisibility addAttachmentUploaderVisibility() {
+        return fileUploader;
+    }
+
     @UiHandler("nameAndDescriptionEditButton")
     public void onEditNameAndDescriptionButtonClick(ClickEvent event) {
         if (activity != null) {
@@ -209,6 +229,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         addLinkButton.ensureDebugId(DebugIds.ISSUE.LINKS_BUTTON);
         nameAndDescriptionEditButton.ensureDebugId(DebugIds.ISSUE.EDIT_NAME_AND_DESC_BUTTON);
         favoritesButton.ensureDebugId(DebugIds.ISSUE.FAVORITES_BUTTON);
+        fileUploader.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_UPLOAD_BUTTON);
     }
 
     @UiField
@@ -229,6 +250,9 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     HTMLPanel tagsContainer;
     @UiField
     HTMLPanel metaEditContainer;
+    @Inject
+    @UiField
+    ButtonPanelAttachmentUploader fileUploader;
     @UiField
     HTMLPanel cardBody;
     @UiField

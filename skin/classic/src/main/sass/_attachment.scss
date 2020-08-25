@@ -347,3 +347,265 @@
     box-shadow: #{$shadow};
   }
 }
+
+/**** Full attachment view ****/
+.full-view-attachment-list {
+  .document-attachments {
+    .full-view-attach {
+      background: transparent;
+      > div {
+        background: #f0f0f0;
+      }
+    }
+  }
+
+  .image-attachments {
+    .full-view-attach {
+      background: transparent;
+      text-shadow: 1px 1px 1px #000000;
+    }
+
+    .image-header {
+      position: absolute;
+      top: 5px;
+      left: 15px;
+    }
+
+    .gradient-grey {
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 22%, rgba(0, 0, 0, 0.8) 105%);
+    }
+  }
+
+  .attachment-author-name {
+    line-height: 16px;
+  }
+
+  .attachment-file-info {
+    line-height: 14px;
+  }
+
+  .attach-hide-remove-btn {
+    .attach-remove-btn {
+      display: none !important;
+    }
+  }
+
+  .gallery-item {
+    height: auto;
+    max-height: 130px;
+    min-height: 75px;
+  }
+}
+
+.attachment-uploading {
+  .icon-verifiable-dots {
+    display: inline-block;
+  }
+
+  .ion-plus {
+    display: none;
+  }
+}
+
+.attachment-full-view-uploader {
+  .attachment-uploading {
+    height: 20px;
+  }
+  .ion-plus {
+    font-size: 14px;
+    position: absolute;
+    top: 5px;
+    right: 22px;
+    cursor: pointer;
+    pointer-events: none;
+  }
+}
+
+/**** Dots spinner ****/
+.icon-verifiable-dots {
+  display: none;
+
+  .lds-ellipsis {
+    display: inline-block;
+    position: relative;
+    width: auto;
+    height: auto;
+    right: 20px;
+  }
+
+  .lds-ellipsis div {
+    position: absolute;
+    top: -10px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #5e5e5e;
+    animation-timing-function: cubic-bezier(0, 1, 1, 0);
+  }
+
+  .lds-ellipsis div:nth-child(1) {
+    left: 0;
+    animation: lds-ellipsis1 0.6s infinite;
+  }
+
+  .lds-ellipsis div:nth-child(2) {
+    left: 0;
+    animation: lds-ellipsis2 0.6s infinite;
+  }
+
+  .lds-ellipsis div:nth-child(3) {
+    left: 16px;
+    animation: lds-ellipsis2 0.6s infinite;
+  }
+
+  .lds-ellipsis div:nth-child(4) {
+    left: 32px;
+    animation: lds-ellipsis3 0.6s infinite;
+  }
+}
+
+@keyframes lds-ellipsis1 {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes lds-ellipsis3 {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0);
+  }
+}
+@keyframes lds-ellipsis2 {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(16px, 0);
+  }
+}
+
+/**** responsive layout for full view attachments ****/
+@media (min-width: 1000px) {
+  .preview-container {
+    .attach-col-sm-12 {
+      -ms-flex: 0 0 100%;
+      flex: 0 0 100%;
+      max-width: 100%;
+    }
+  }
+}
+
+@media (min-width: 1400px) {
+  .preview-container {
+    .attach-col-md-6 {
+      -ms-flex: 0 0 50%;
+      flex: 0 0 50%;
+      max-width: 50%;
+    }
+  }
+}
+
+@media (min-width: 1900px) {
+  .preview-container {
+    .attach-col-xl-4 {
+      -ms-flex: 0 0 33.333333%;
+      flex: 0 0 33.333333%;
+      max-width: 33.333333%;
+    }
+  }
+}
+
+@media (min-width: 1300px) {
+  body.menu-pin {
+    .preview-container {
+      .attach-col-sm-12 {
+        -ms-flex: 0 0 100%;
+        flex: 0 0 100%;
+        max-width: 100%;
+      }
+    }
+  }
+}
+
+@media (min-width: 1600px) {
+  body.menu-pin {
+    .preview-container {
+      .attach-col-md-6 {
+        -ms-flex: 0 0 50%;
+        flex: 0 0 50%;
+        max-width: 50%;
+      }
+    }
+  }
+}
+
+@media (min-width: 2100px) {
+  body.menu-pin {
+    .preview-container {
+      .attach-col-xl-4 {
+        -ms-flex: 0 0 33.333333%;
+        flex: 0 0 33.333333%;
+        max-width: 33.333333%;
+      }
+    }
+  }
+}
+
+@media (min-width: 700px) {
+  .attach-col-sm-12 {
+    -ms-flex: 0 0 100%;
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
+
+@media (min-width: 1020px) {
+  .attach-col-md-6 {
+    -ms-flex: 0 0 50%;
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+}
+
+@media (min-width: 1400px) {
+  .attach-col-xl-4 {
+    -ms-flex: 0 0 33.333333%;
+    flex: 0 0 33.333333%;
+    max-width: 33.333333%;
+  }
+}
+
+@media (min-width: 900px) {
+  body.menu-pin {
+    .attach-col-sm-12 {
+      -ms-flex: 0 0 100%;
+      flex: 0 0 100%;
+      max-width: 100%;
+    }
+  }
+}
+
+@media (min-width: 1220px) {
+  body.menu-pin {
+    .attach-col-md-6 {
+      -ms-flex: 0 0 50%;
+      flex: 0 0 50%;
+      max-width: 50%;
+    }
+  }
+}
+
+@media (min-width: 1600px) {
+  body.menu-pin {
+    .attach-col-xl-4 {
+      -ms-flex: 0 0 33.333333%;
+      flex: 0 0 33.333333%;
+      max-width: 33.333333%;
+    }
+  }
+}
