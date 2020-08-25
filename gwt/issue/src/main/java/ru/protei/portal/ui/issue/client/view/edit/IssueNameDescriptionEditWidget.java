@@ -21,7 +21,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
 import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
-import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.AbstractAttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -47,7 +47,7 @@ public class IssueNameDescriptionEditWidget extends Composite {
         name.setMaxLength(NAME_MAX_SIZE);
     }
 
-    public void setFileUploader(AttachmentUploader pasteHandler) {
+    public void setFileUploader(AbstractAttachmentUploader pasteHandler) {
         description.setFileUploader(pasteHandler);
     }
 

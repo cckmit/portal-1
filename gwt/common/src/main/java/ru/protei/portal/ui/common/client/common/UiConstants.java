@@ -121,6 +121,9 @@ public class UiConstants {
     }
 
     public interface Styles {
+        String STYLE_ATTRIBUTE = "style";
+
+        String SHOW = "show";
         String HIDE = "hide";
         String HAS_ERROR = "has-error";
         String INACTIVE = "inactive";
@@ -144,6 +147,11 @@ public class UiConstants {
         String CANCEL = "cancel";
     }
 
+    public interface Accordion {
+        int ATTACHMENTS_MAX_HEIGHT = 300;
+        int LINKS_MAX_HEIGHT = 120;
+    }
+
     /**
      * from {@link ru.protei.portal.ui.common.client.events.AuthEvents}
      */
@@ -152,4 +160,5 @@ public class UiConstants {
     public static final String REMEMBER_ME_PREFIX = "auth_remember_me_";
     public static final String LINKS_PANEL_VISIBILITY = "case-link-panel-body";
     public static final String ISSUE_CREATE_PREVIEW_DISPLAYED = "issue_create_is_preview_displayed";
+    public static final String ATTACHMENTS_PANEL_VISIBILITY = "attachments-panel-body";
 }

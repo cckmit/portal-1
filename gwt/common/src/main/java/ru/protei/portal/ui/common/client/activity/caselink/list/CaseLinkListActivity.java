@@ -52,7 +52,6 @@ public abstract class CaseLinkListActivity
         event.parent.add(view.asWidget());
 
         view.getLinksContainer().clear();
-        view.setLinksContainerVisible(Boolean.parseBoolean(storage.get(UiConstants.LINKS_PANEL_VISIBILITY)));
         hideOrShowIfNoLinks();
 
         linksSet.clear();
@@ -122,12 +121,6 @@ public abstract class CaseLinkListActivity
             case YT:
                 addYtLink( caseLink );
         }
-    }
-
-    @Override
-    public void onLinksContainerStateChanged(boolean isVisible) {
-        storage.set(UiConstants.LINKS_PANEL_VISIBILITY, String.valueOf(isVisible));
-        view.setLinksContainerVisible(isVisible);
     }
 
     private void fillView(List<CaseLink> links) {
@@ -260,7 +253,6 @@ public abstract class CaseLinkListActivity
     }
 
     private void resetLinksContainerStateByLinksCount() {
-        view.setLinksContainerVisible(linksSet.size() > 0);
         view.setHeader(lang.linkedWith() + (linksSet.size() == 0 ? "" : " (" + linksSet.size() + ")"));
     }
 

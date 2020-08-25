@@ -5,7 +5,7 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.ui.common.client.widget.uploader.FileUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.impl.FileUploader;
 
 public class ImageBase64Picker extends FileUploader {
 

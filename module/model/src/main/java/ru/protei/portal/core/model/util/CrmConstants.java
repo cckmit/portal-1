@@ -11,10 +11,14 @@ public class CrmConstants {
     public static final int EMAIL_MAX_SIZE = 254;
     public static final int NAME_MAX_SIZE = 1024;
 
+    public static final float BYTES_IN_MEGABYTE = 1024 * 1024;
+
     public static final String SOME_LINKS_NOT_SAVED = "some links not saved";
     public static final String SOME_PLANS_NOT_UPDATED = "some plans not updated";
 
     public static final String DEFAULT_LOCALE = "ru";
+
+    public static final List<String> CONFIG_EXTENSIONS = Arrays.asList(".config", ".cfg", ".properties", ".xml", ".json");
 
     public interface Session {
         String AUTH_TOKEN = "session-auth-token";
