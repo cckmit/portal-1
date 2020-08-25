@@ -26,6 +26,7 @@
 <@set name="_updated" value="${updated_just_now}"/>
 <@set name="_linkedTasks" value="${linkedTasks}"/>
 <@set name="_attachments" value="${attachments}"/>
+<@set name="_projectPauseDate" value="${projectPauseDate}"/>
 
 <#noparse>
 <#macro changeTo old, new>
@@ -154,6 +155,23 @@
                 </#if>
             </td>
         </tr>
+        <#if showPauseDate>
+            <tr>
+                <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
+                    ${_projectPauseDate}
+                </td>
+                <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
+                    <#if pauseDateChanged>
+                        <@changeTo
+                        old="${oldPauseDate!'?'}"
+                        new="${newPauseDate!'?'}"
+                        />
+                    <#else>
+                        ${newPauseDate!'?'}
+                    </#if>
+                </td>
+            </tr>
+        </#if>
         <tr>
             <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
                 ${_projectRegion}
