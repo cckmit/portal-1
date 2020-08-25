@@ -60,6 +60,8 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasValue<Contractor> contractor();
 
+    HasEnabled contractorEnabled();
+
     HasValue<PersonShortView> manager();
 
     HasValue<ProductDirectionInfo> direction();
@@ -77,6 +79,8 @@ public interface AbstractContractEditView extends IsWidget {
     HasValue<EntityOption> secondContractOrganization();
 
     HasValue<Contractor> secondContractContractor();
+
+    HasEnabled secondContractContractorEnabled();
 
     void setSecondContractOrganization(String organization);
 

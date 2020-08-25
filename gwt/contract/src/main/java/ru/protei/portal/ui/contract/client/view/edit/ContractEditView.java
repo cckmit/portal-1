@@ -170,6 +170,11 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
+    public HasEnabled contractorEnabled() {
+        return contractorWidget;
+    }
+
+    @Override
     public HasValue<ProductDirectionInfo> direction() {
         return direction;
     }
@@ -206,6 +211,11 @@ public class ContractEditView extends Composite implements AbstractContractEditV
 
     @Override
     public HasValue<Contractor> secondContractContractor() {
+        return secondContractContractor;
+    }
+
+    @Override
+    public HasEnabled secondContractContractorEnabled() {
         return secondContractContractor;
     }
 
