@@ -28,5 +28,5 @@ public abstract class BugTrackingPage implements Activity {
 
     private String CATEGORY;
     private String TAB;
-    private final static String BUG_TRACKING_URL = "http://portal/bt/index.jsp";
+    private final static String BUG_TRACKING_URL = "https://oldportal.protei.ru/bt/index.jsp";
 }

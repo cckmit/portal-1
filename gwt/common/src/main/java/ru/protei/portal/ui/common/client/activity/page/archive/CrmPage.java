@@ -28,5 +28,5 @@ public abstract class CrmPage implements Activity {
 
     private String CATEGORY;
     private String TAB;
-    private final static String CRM_URL = "http://portal/crm/index.jsp";
+    private final static String CRM_URL = "https://oldportal.protei.ru/crm/index.jsp";
 }

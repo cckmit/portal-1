@@ -28,5 +28,5 @@ public abstract class BoardSearchPage implements Activity {
 
     private String CATEGORY;
     private String TAB;
-    private final static String CARD_SEARCH_URL = "http://portal/sd/store/card_info.jsp";
+    private final static String CARD_SEARCH_URL = "https://oldportal.protei.ru/sd/store/card_info.jsp";
 }

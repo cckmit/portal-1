@@ -28,5 +28,5 @@ public abstract class AdminCrmPage implements Activity {
 
     private String CATEGORY;
     private String TAB;
-    private final static String ADMIN_CRM_URL = "http://portal/AdminCRM/session/view_session_admin.jsp";
+    private final static String ADMIN_CRM_URL = "https://oldportal.protei.ru/AdminCRM/session/view_session_admin.jsp";
 }

@@ -28,5 +28,5 @@ public abstract class DeliveryPage implements Activity {
 
     private String CATEGORY;
     private String TAB;
-    private final static String DELIVERY_URL = "http://portal/sd/delivery/delivery.jsp";
+    private final static String DELIVERY_URL = "https://oldportal.protei.ru/sd/delivery/delivery.jsp";
 }
