@@ -45,5 +45,5 @@ public abstract class ToDoListPage implements Activity {
 
     private String CATEGORY;
     private String TAB;
-    private final static String TODO_LIST_URL = "http://portal/ct/index.jsp";
+    private final static String TODO_LIST_URL = "https://oldportal.protei.ru/ct/index.jsp";
 }

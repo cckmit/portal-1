@@ -28,5 +28,5 @@ public abstract class TestZonePage implements Activity {
 
     private String CATEGORY;
     private String TAB;
-    private final static String TEST_ZONE_URL = "http://portal/tzones/index.jsp";
+    private final static String TEST_ZONE_URL = "https://oldportal.protei.ru/tzones/index.jsp";
 }

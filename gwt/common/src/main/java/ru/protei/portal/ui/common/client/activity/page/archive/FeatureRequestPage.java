@@ -28,5 +28,5 @@ public abstract class FeatureRequestPage implements Activity {
 
     private String CATEGORY;
     private String TAB;
-    private final static String FEATURE_REQUEST_URL = "http://portal/frq/index.jsp";
+    private final static String FEATURE_REQUEST_URL = "https://oldportal.protei.ru/frq/index.jsp";
 }

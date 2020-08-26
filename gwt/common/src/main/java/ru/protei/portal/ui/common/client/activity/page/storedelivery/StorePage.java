@@ -28,5 +28,5 @@ public abstract class StorePage implements Activity {
 
     private String CATEGORY;
     private String TAB;
-    private final static String STORE_URL = "http://portal/sd/index.jsp";
+    private final static String STORE_URL = "https://oldportal.protei.ru/sd/index.jsp";
 }

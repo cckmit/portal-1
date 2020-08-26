@@ -26,5 +26,5 @@ public abstract class FloorPlanPage implements Activity {
     Lang lang;
 
     private String TAB;
-    private final static String FLOOR_PLAN_URL = "http://portal/plan/plan_5.html";
+    private final static String FLOOR_PLAN_URL = "https://oldportal.protei.ru/plan/plan_5.html";
 }
