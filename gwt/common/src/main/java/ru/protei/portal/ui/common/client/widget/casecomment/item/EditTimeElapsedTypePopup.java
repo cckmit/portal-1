@@ -26,6 +26,7 @@ public class EditTimeElapsedTypePopup extends PopupLikeComposite implements HasV
                 new DisplayOption((type == null || En_TimeElapsedType.NONE.equals(type)) ? lang.issueCommentElapsedTimeTypeLabel() : elapsedTimeTypeLang.getName(type)));
         typeSelector.fillOptions();
 
+        setAutoHide(true);
         addClickableContainer(typeSelector.getPopupContainer());
     }
 

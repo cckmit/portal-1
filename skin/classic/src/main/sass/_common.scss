@@ -4776,6 +4776,10 @@ table {
     padding-left: 0;
     padding-right: 0;
   }
+
+  .nav-tabs ~ .tab-content {
+    overflow: unset;
+  }
 }
 
 .history-item-history-type {
@@ -5061,4 +5065,9 @@ table {
   position: absolute;
   display: block;
   float: left;
+  z-index: 150;
+
+  .dropdown-menu {
+    position: relative;
+  }
 }

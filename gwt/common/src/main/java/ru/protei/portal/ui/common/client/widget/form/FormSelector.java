@@ -11,6 +11,8 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
+import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
@@ -25,12 +27,27 @@ import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
  *  @deprecated  следует использовать {@link FormPopupSingleSelector}
  */
 @Deprecated
-public class FormSelector<T> extends Selector<T> implements HasValidable, HasEnabled{
+public class FormSelector<T> extends Selector<T> implements HasValidable, HasEnabled {
+    public FormSelector() {
+        initWidget(ourUiBinder.createAndBindUi(this));
+    }
 
     @Inject
     public void onInit() {
-        initWidget(ourUiBinder.createAndBindUi(this));
         initHandler();
+        root.add(popup);
+    }
+
+    @Override
+    protected void onLoad() {
+        super.onLoad();
+    }
+
+    @Override
+    protected void onUnload() {
+        super.onUnload();
+
+        popup.getElement().removeFromParent();
     }
 
     @Override
@@ -137,7 +154,9 @@ public class FormSelector<T> extends Selector<T> implements HasValidable, HasEna
         formContainer.sinkEvents(Event.ONCLICK);
         formContainer.addHandler(event -> {
             formContainer.addStyleName(FOCUS_STYLENAME);
-            showPopup(formContainer);
+            if (!popup.isVisible()) {
+                showPopup(formContainer);
+            }
         }, ClickEvent.getType());
 
         popup.addCloseHandler(event -> formContainer.removeStyleName(FOCUS_STYLENAME));
@@ -150,6 +169,8 @@ public class FormSelector<T> extends Selector<T> implements HasValidable, HasEna
         })
     }-*/;
 
+    @UiField
+    HTMLPanel root;
     @UiField
     HTMLPanel formContainer;
     @UiField

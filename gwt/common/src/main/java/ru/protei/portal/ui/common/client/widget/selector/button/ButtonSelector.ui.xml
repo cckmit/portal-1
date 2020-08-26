@@ -8,7 +8,6 @@
             <i ui:field="icon"/>
             <span ui:field="text" class="selector-val"></span>
         </g:Button>
-        <g:HTMLPanel ui:field="popupContainer"/>
     </g:HTMLPanel>
 
 </ui:UiBinder>

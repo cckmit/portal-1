@@ -9,8 +9,8 @@
             <g:Button ui:field="addButton"/>
         </div>
         <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="dropdown-searchbox hide"/>
-        <div class="dropdown-menu full-width show">
+        <g:HTMLPanel ui:field="dropdownMenu" styleName="dropdown-menu full-width show">
             <g:HTMLPanel ui:field="childContainer" tag="ul" styleName="full-width"/>
-        </div>
+        </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

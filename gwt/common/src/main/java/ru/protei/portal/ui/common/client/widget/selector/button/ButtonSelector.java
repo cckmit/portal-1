@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.selector.button;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.dom.client.SpanElement;
@@ -23,10 +24,13 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
  * @deprecated  следует использовать {@link ButtonPopupSingleSelector}
  */
 @Deprecated
-public class ButtonSelector<T> extends Selector<T> implements HasValidable, HasEnabled{
+public class ButtonSelector<T> extends Selector<T> implements HasValidable, HasEnabled {
+    public ButtonSelector() {
+        initWidget(ourUiBinder.createAndBindUi(this));
+    }
+
     @Inject
     public void onInit() {
-        initWidget(ourUiBinder.createAndBindUi(this));
         inputContainer.add(popup);
     }
 
@@ -83,7 +87,9 @@ public class ButtonSelector<T> extends Selector<T> implements HasValidable, HasE
 
     @UiHandler( "button" )
     public void onBtnClick (ClickEvent event) {
-        showPopup(button);
+        if (!popup.isVisible()) {
+            showPopup(button);
+        }
     }
 
     public void setHeader( String header ) {

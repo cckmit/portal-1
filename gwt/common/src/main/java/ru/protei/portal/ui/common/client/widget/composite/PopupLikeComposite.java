@@ -20,11 +20,16 @@ public class PopupLikeComposite extends Composite implements HasCloseHandlers {
         super.setVisible(visible);
 
         if (visible) {
-            addClickHandler();
+            addClickHandler(isAutoHide);
         } else {
-            removeClickHandler();
+            removeClickHandler(isAutoHide);
             CloseEvent.fire(this, null);
         }
+    }
+
+    @Override
+    public HandlerRegistration addCloseHandler(CloseHandler handler) {
+        return addHandler(handler, CloseEvent.getType());
     }
 
     protected void addClickableContainer(Element container) {
@@ -35,11 +40,19 @@ public class PopupLikeComposite extends Composite implements HasCloseHandlers {
         this.isAutoHide = isAutoHide;
     }
 
-    private void addClickHandler() {
+    private void addClickHandler(boolean isAutoHide) {
+        if (!isAutoHide) {
+            return;
+        }
+
         Scheduler.get().scheduleDeferred((Command) () -> handlerRegistration = RootPanel.get().addDomHandler(this::onElementClicked, ClickEvent.getType()));
     }
 
-    private void removeClickHandler() {
+    private void removeClickHandler(boolean isAutoHide) {
+        if (!isAutoHide) {
+            return;
+        }
+
         if (handlerRegistration != null) {
             handlerRegistration.removeHandler();
         }
@@ -56,10 +69,6 @@ public class PopupLikeComposite extends Composite implements HasCloseHandlers {
     }
 
     private boolean keepPopupVisible(String clickedElementString, List<Element> clickableElements) {
-        if (isAutoHide) {
-            return false;
-        }
-
         if (getElement().getString().contains(clickedElementString)) {
             return true;
         }
@@ -71,12 +80,8 @@ public class PopupLikeComposite extends Composite implements HasCloseHandlers {
         return false;
     }
 
-    private HandlerRegistration handlerRegistration;
-    private List<Element> clickableElements = new ArrayList<>();
     private boolean isAutoHide;
 
-    @Override
-    public HandlerRegistration addCloseHandler(CloseHandler handler) {
-        return addHandler(handler, CloseEvent.getType());
-    }
+    private HandlerRegistration handlerRegistration;
+    private List<Element> clickableElements = new ArrayList<>();
 }
