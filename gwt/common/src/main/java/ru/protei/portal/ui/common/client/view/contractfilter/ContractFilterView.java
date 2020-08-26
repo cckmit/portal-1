@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.contract.client.view.filter;
+package ru.protei.portal.ui.common.client.view.contractfilter;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -21,6 +21,8 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.contract.state.ContractStatesMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.contract.type.ContractTypesMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contractor.multicontractor.MultiContractorSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
@@ -29,14 +31,10 @@ import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSele
 import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedSelectorRangePicker;
-import ru.protei.portal.ui.contract.client.activity.filter.AbstractContractFilterActivity;
-import ru.protei.portal.ui.contract.client.activity.filter.AbstractContractFilterView;
-import ru.protei.portal.ui.contract.client.widget.selector.multi.ContractStateMultiSelector;
-import ru.protei.portal.ui.contract.client.widget.selector.multi.ContractTypeMultiSelector;
+import ru.protei.portal.ui.common.client.activity.contractfilter.AbstractContractFilterActivity;
+import ru.protei.portal.ui.common.client.activity.contractfilter.AbstractContractFilterView;
 
 import java.util.Set;
-
-import static java.util.Arrays.asList;
 
 public class ContractFilterView extends Composite implements AbstractContractFilterView {
 
@@ -247,13 +245,13 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     HomeCompanyMultiSelector organizations;
     @Inject
     @UiField(provided = true)
-    ContractStateMultiSelector states;
+    ContractStatesMultiSelector states;
     @Inject
     @UiField(provided = true)
     ProductDirectionButtonSelector direction;
     @Inject
     @UiField(provided = true)
-    ContractTypeMultiSelector types;
+    ContractTypesMultiSelector types;
     @UiField
     ThreeStateButton kind;
     @Inject

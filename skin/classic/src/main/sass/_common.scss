@@ -2871,6 +2871,13 @@ div.select2-container {
   }
 }
 
+.contract-filter {
+  .resize-md-12 {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+  }
+}
+
 .user-filter-name {
   text-align: left;
   a {

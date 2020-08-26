@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.contract.client.widget.selector.multi;
+package ru.protei.portal.ui.common.client.widget.selector.contract.type;
 
 import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.ui.common.client.selector.pageable.SelectorModel;

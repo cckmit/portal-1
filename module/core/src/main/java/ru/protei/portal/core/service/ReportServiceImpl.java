@@ -12,6 +12,7 @@ import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.ReportDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ReportCaseQuery;
+import ru.protei.portal.core.model.dto.ReportContractQuery;
 import ru.protei.portal.core.model.dto.ReportDto;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Report;
@@ -19,6 +20,7 @@ import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.BaseQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.query.ReportQuery;
 import ru.protei.portal.core.model.struct.Pair;
 import ru.protei.portal.core.model.struct.ReportContent;
@@ -48,6 +50,7 @@ public class ReportServiceImpl implements ReportService {
         put(En_ReportType.CASE_TIME_ELAPSED, new Pair<>(En_Privilege.ISSUE_REPORT, listOf(En_Scope.SYSTEM)));
         put(En_ReportType.CASE_RESOLUTION_TIME, new Pair<>(En_Privilege.ISSUE_REPORT, listOf(En_Scope.SYSTEM)));
         put(En_ReportType.PROJECT, new Pair<>(En_Privilege.ISSUE_REPORT, listOf(En_Scope.SYSTEM)));
+        put(En_ReportType.CONTRACT, new Pair<>(En_Privilege.CONTRACT_REPORT, listOf(En_Scope.SYSTEM)));
     }};
 
     @Autowired
@@ -317,6 +320,10 @@ public class ReportServiceImpl implements ReportService {
                         report,
                         objectMapper.readValue(report.getQuery(), CaseQuery.class)
                 ));
+                case CONTRACT: return ok(new ReportContractQuery(
+                        report,
+                        objectMapper.readValue(report.getQuery(), ContractQuery.class)
+                ));
             }
             throw new IllegalStateException("No switch branch matched for En_ReportType");
         } catch (IOException e) {
@@ -357,6 +364,7 @@ public class ReportServiceImpl implements ReportService {
             case CASE_OBJECTS: langKey = "report_case_objects_at"; break;
             case CASE_TIME_ELAPSED: langKey = "report_case_time_elapsed_at"; break;
             case PROJECT: langKey = "report_project_at"; break;
+            case CONTRACT: langKey = "report_contract_at"; break;
         }
         Lang.LocalizedLang localizedLang = getLang().getFor(Locale.forLanguageTag(locale));
         return localizedLang.get(langKey) + " " + dateFormat.format(new Date());
@@ -370,6 +378,7 @@ public class ReportServiceImpl implements ReportService {
                 case CASE_TIME_ELAPSED:
                 case CASE_RESOLUTION_TIME:
                 case PROJECT: return objectMapper.writeValueAsString((CaseQuery) query);
+                case CONTRACT: return objectMapper.writeValueAsString((ContractQuery) query);
             }
             throw new IllegalStateException("No switch branch matched for En_ReportType");
         } catch (JsonProcessingException e) {

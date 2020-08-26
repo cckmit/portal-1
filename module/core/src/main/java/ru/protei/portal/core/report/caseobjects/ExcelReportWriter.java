@@ -1,5 +1,6 @@
 package ru.protei.portal.core.report.caseobjects;
 
+import org.apache.poi.ss.usermodel.*;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseComment;
@@ -158,8 +159,16 @@ public class ExcelReportWriter implements
     }
 
     @Override
-    public String[] getFormats() {
-        return getFormats(isNotRestricted, withDescription);
+    public CellStyle getCellStyle(Workbook workbook, int columnIndex) {
+        return book.makeCellStyle(columnIndex, cs -> {
+            cs.setFont(book.makeFont(0, f -> {
+                f.setFontName("Calibri");
+                f.setFontHeightInPoints((short) 11);
+            }));
+            cs.setVerticalAlignment(VerticalAlignment.CENTER);
+            cs.setDataFormat(workbook.createDataFormat()
+                    .getFormat(getFormats(isNotRestricted, withDescription)[columnIndex]));
+        });
     }
 
     private double toExcelTimeFormat(Long minutes) {

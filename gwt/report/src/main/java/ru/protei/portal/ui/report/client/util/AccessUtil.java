@@ -21,6 +21,7 @@ public class AccessUtil {
         put(En_ReportType.CASE_TIME_ELAPSED, new Pair<>(En_Privilege.ISSUE_REPORT, listOf(En_Scope.SYSTEM)));
         put(En_ReportType.CASE_RESOLUTION_TIME, new Pair<>(En_Privilege.ISSUE_REPORT, listOf(En_Scope.SYSTEM)));
         put(En_ReportType.PROJECT, new Pair<>(En_Privilege.ISSUE_REPORT, listOf(En_Scope.SYSTEM)));
+        put(En_ReportType.CONTRACT, new Pair<>(En_Privilege.CONTRACT_REPORT, listOf(En_Scope.SYSTEM)));
     }};
 
     public static boolean canView(PolicyService policyService) {

@@ -20,10 +20,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ReportDto;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Report;
-import ru.protei.portal.core.model.query.AbsenceQuery;
-import ru.protei.portal.core.model.query.BaseQuery;
-import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.query.ReportQuery;
+import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.struct.ReportContent;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -31,6 +28,7 @@ import ru.protei.portal.core.report.absence.ReportAbsence;
 import ru.protei.portal.core.report.caseobjects.ReportCase;
 import ru.protei.portal.core.report.caseresolution.ReportCaseResolutionTime;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsed;
+import ru.protei.portal.core.report.contract.ReportContract;
 import ru.protei.portal.core.report.projects.ReportProject;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.utils.TimeFormatter;
@@ -85,6 +83,8 @@ public class ReportControlServiceImpl implements ReportControlService {
     EventPublisherService publisherService;
     @Autowired
     ReportAbsence reportAbsence;
+    @Autowired
+    ReportContract reportContract;
     @Autowired
     @Qualifier(REPORT_TASKS)
     Executor reportExecutorService;
@@ -234,6 +234,14 @@ public class ReportControlServiceImpl implements ReportControlService {
                         report,
                         getQuery(report, CaseQuery.class),
                         new SimpleDateFormat("dd.MM.yyyy HH:mm"),
+                        new SimpleDateFormat("dd.MM.yyyy"),
+                        this::isCancel
+                );
+            case CONTRACT:
+                return reportContract.writeReport(
+                        buffer,
+                        report,
+                        getQuery(report, ContractQuery.class),
                         new SimpleDateFormat("dd.MM.yyyy"),
                         this::isCancel
                 );

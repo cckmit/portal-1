@@ -4,7 +4,7 @@ import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
 import ru.protei.portal.ui.contract.client.activity.edit.AbstractContractEditView;
 import ru.protei.portal.ui.contract.client.activity.edit.ContractEditActivity;
-import ru.protei.portal.ui.contract.client.activity.filter.AbstractContractFilterView;
+import ru.protei.portal.ui.common.client.activity.contractfilter.AbstractContractFilterView;
 import ru.protei.portal.ui.contract.client.activity.page.ContractPage;
 import ru.protei.portal.ui.contract.client.activity.preview.AbstractContractPreviewView;
 import ru.protei.portal.ui.contract.client.activity.preview.ContractPreviewActivity;
@@ -13,7 +13,7 @@ import ru.protei.portal.ui.contract.client.activity.table.ContractTableActivity;
 import ru.protei.portal.ui.contract.client.activity.table.concise.AbstractContractConciseTableView;
 import ru.protei.portal.ui.contract.client.activity.table.concise.ContractConciseTableActivity;
 import ru.protei.portal.ui.contract.client.view.edit.ContractEditView;
-import ru.protei.portal.ui.contract.client.view.filter.ContractFilterView;
+import ru.protei.portal.ui.common.client.view.contractfilter.ContractFilterView;
 import ru.protei.portal.ui.contract.client.view.preview.ContractPreviewView;
 import ru.protei.portal.ui.contract.client.view.table.ContractTableView;
 import ru.protei.portal.ui.contract.client.view.table.concise.ContractConciseTableView;
@@ -21,8 +21,8 @@ import ru.protei.portal.ui.contract.client.widget.contractor.create.AbstractCont
 import ru.protei.portal.ui.contract.client.widget.contractor.create.ContractorCreateView;
 import ru.protei.portal.ui.contract.client.widget.contractor.search.AbstractContractorSearchView;
 import ru.protei.portal.ui.contract.client.widget.contractor.search.ContractorSearchView;
-import ru.protei.portal.ui.contract.client.widget.selector.button.ContractStateModel;
-import ru.protei.portal.ui.contract.client.widget.selector.button.ContractTypeModel;
+import ru.protei.portal.ui.common.client.widget.selector.contract.state.ContractStateModel;
+import ru.protei.portal.ui.common.client.widget.selector.contract.type.ContractTypeModel;
 
 public class ContractClientModule extends AbstractGinModule {
     @Override

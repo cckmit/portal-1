@@ -7,6 +7,8 @@ import ru.protei.portal.core.model.struct.DateRange;
 
 import java.util.List;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
+
 public class ContractQuery extends BaseQuery {
 
     private Long directionId;
@@ -107,6 +109,21 @@ public class ContractQuery extends BaseQuery {
 
     public void setParentContractIds(List<Long> parentContractIds) {
         this.parentContractIds = parentContractIds;
+    }
+
+    @Override
+    public boolean isParamsPresent() {
+        return super.isParamsPresent() ||
+                directionId != null ||
+                dateSigningRange != null ||
+                dateValidRange != null ||
+                kind != null ||
+                isNotEmpty(types) ||
+                isNotEmpty(states) ||
+                isNotEmpty(managerIds) ||
+                isNotEmpty(contractorIds) ||
+                isNotEmpty(organizationIds) ||
+                isNotEmpty(parentContractIds);
     }
 
     @Override

@@ -8,20 +8,24 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.dto.ReportCaseQuery;
+import ru.protei.portal.core.model.dto.ReportContractQuery;
 import ru.protei.portal.core.model.dto.ReportDto;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.DateRange;
+import ru.protei.portal.ui.common.client.activity.contractfilter.AbstractContractFilterView;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectFilterActivity;
+import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectFilterView;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ReportControllerAsync;
-import ru.protei.portal.ui.common.client.view.projectfilter.ProjectFilterView;
 import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidget;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -31,8 +35,10 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static java.util.Arrays.asList;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.searchCaseNumber;
+import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.toDateRange;
 import static ru.protei.portal.ui.report.client.util.AccessUtil.availableReportTypes;
 import static ru.protei.portal.ui.report.client.util.AccessUtil.canEdit;
 
@@ -151,6 +157,10 @@ public abstract class ReportCreateActivity implements Activity,
                 }
                 return new ReportCaseQuery(report, query);
             }
+            case CONTRACT: {
+                ContractQuery query = getContractQuery();
+                return new ReportContractQuery(report, query);
+            }
         }
         throw new IllegalStateException("No switch branch matched for En_ReportType");
     }
@@ -173,6 +183,18 @@ public abstract class ReportCreateActivity implements Activity,
                 view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
                 view.getFilterContainer().clear();
                 view.getFilterContainer().add(projectFilterView.asWidget());
+                view.scheduledTypeContainerVisibility().setVisible(false);
+                view.checkImportanceHistoryContainerVisibility().setVisible(false);
+                view.withDescriptionContainerVisibility().setVisible(false);
+                view.checkImportanceHistory().setValue(false);
+                view.withDescription().setValue(false);
+                break;
+            }
+            case CONTRACT: {
+                contractFilterView.resetFilter();
+                view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
+                view.getFilterContainer().clear();
+                view.getFilterContainer().add(contractFilterView.asWidget());
                 view.scheduledTypeContainerVisibility().setVisible(false);
                 view.checkImportanceHistoryContainerVisibility().setVisible(false);
                 view.withDescriptionContainerVisibility().setVisible(false);
@@ -205,6 +227,7 @@ public abstract class ReportCreateActivity implements Activity,
             case CASE_TIME_ELAPSED: return true;
             case CASE_RESOLUTION_TIME: return false;
             case PROJECT: return false;
+            case CONTRACT: return false;
         }
         return false;
     }
@@ -367,6 +390,24 @@ public abstract class ReportCreateActivity implements Activity,
         query.setInitiatorCompanyIds(projectFilterView.initiatorCompanies().getValue());
         return query.toCaseQuery(policyService.getProfile().getId());
     }
+    
+    private ContractQuery getContractQuery() {
+        ContractQuery query = new ContractQuery();
+        query.setSearchString(contractFilterView.searchString().getValue());
+        query.setSortDir(contractFilterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
+        query.setSortField(contractFilterView.sortField().getValue());
+        query.setContractorIds(collectIds(contractFilterView.contractors().getValue()));
+        query.setOrganizationIds(collectIds(contractFilterView.organizations().getValue()));
+        query.setManagerIds(collectIds(contractFilterView.managers().getValue()));
+        query.setTypes(nullIfEmpty(listOfOrNull(contractFilterView.types().getValue())));
+        query.setStates(nullIfEmpty(listOfOrNull(contractFilterView.states().getValue())));
+        ProductDirectionInfo value = contractFilterView.direction().getValue();
+        query.setDirectionId(value == null ? null : value.id);
+        query.setKind(contractFilterView.kind().getValue());
+        query.setDateSigningRange(toDateRange(contractFilterView.dateSigningRange().getValue()));
+        query.setDateValidRange(toDateRange(contractFilterView.dateValidRange().getValue()));
+        return query;
+    }
 
     @Inject
     Lang lang;
@@ -382,7 +423,9 @@ public abstract class ReportCreateActivity implements Activity,
     @Inject
     IssueFilterWidget issueFilterWidget;
     @Inject
-    ProjectFilterView projectFilterView;
+    AbstractProjectFilterView projectFilterView;
+    @Inject
+    AbstractContractFilterView contractFilterView;
 
     private boolean isSaving;
     private AppEvents.InitDetails initDetails;

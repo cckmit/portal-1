@@ -1,23 +1,24 @@
-package ru.protei.portal.ui.contract.client.widget.selector.button;
+package ru.protei.portal.ui.common.client.widget.selector.contract.type;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_ContractState;
-import ru.protei.portal.ui.common.client.lang.En_ContractStateLang;
+import ru.protei.portal.core.model.dict.En_ContractType;
+import ru.protei.portal.ui.common.client.lang.En_ContractTypeLang;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
 import java.util.List;
 
-public class ContractStateSelector extends ButtonSelector<En_ContractState> implements SelectorWithModel<En_ContractState> {
+public class ContractTypeSelector extends ButtonSelector<En_ContractType> implements SelectorWithModel<En_ContractType> {
+
     @Inject
-    public void init(ContractStateModel model, En_ContractStateLang stateLang) {
+    public void init(ContractTypeModel model, En_ContractTypeLang typeLang) {
         setSelectorModel(model);
-        setDisplayOptionCreator(o -> new DisplayOption(o == null ? defaultValue : stateLang.getName(o)));
+        setDisplayOptionCreator(o -> new DisplayOption(o == null ? defaultValue : typeLang.getName(o)));
     }
 
     @Override
-    public void fillOptions(List<En_ContractState> options) {
+    public void fillOptions(List<En_ContractType> options) {
         clearOptions();
 
         if (defaultValue != null) {

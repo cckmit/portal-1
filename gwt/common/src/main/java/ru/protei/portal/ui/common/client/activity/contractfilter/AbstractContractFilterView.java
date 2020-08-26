@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.contract.client.activity.filter;
+package ru.protei.portal.ui.common.client.activity.contractfilter;
 
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.HasValue;

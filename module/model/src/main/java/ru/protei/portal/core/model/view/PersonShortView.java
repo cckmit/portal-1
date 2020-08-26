@@ -1,13 +1,14 @@
 package ru.protei.portal.core.model.view;
 
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.marker.HasLongId;
 
 import java.io.Serializable;
 
 /**
  * Сокращенное представление контакта
  */
-public class PersonShortView implements Serializable {
+public class PersonShortView implements Serializable, HasLongId {
     private Long id;
     private String name;
     private boolean isFired;

@@ -73,10 +73,11 @@ public class ReportProjectImpl implements ReportProject {
             int sheetNumber = writer.createSheet();
             if (writeReport(writer, sheetNumber, report.getId(), query, count, isCancel)) {
                 writer.collect(buffer);
+                return true;
             }
-            return true;
+            return false;
         } catch (Exception ex) {
-            log.warn("writeReport : fail to process reportId={} query: {} ",
+            log.error("writeReport : fail to process reportId={} query: {} ",
                     report.getId(), query, ex);
             return false;
         }
@@ -105,7 +106,7 @@ public class ReportProjectImpl implements ReportProject {
             try {
                 writer.write(sheetNumber, data);
             } catch (Throwable th) {
-                log.warn("writeReport : fail to process chunk [{} - {}] : reportId={} {}", offset, amount, reportId, th);
+                log.error("writeReport : fail to process chunk [{} - {}] : reportId={}", offset, amount, reportId, th);
                 return false;
             }
             offset += step;

@@ -44,8 +44,8 @@ import ru.protei.portal.ui.contract.client.activity.edit.AbstractContractEditVie
 import ru.protei.portal.ui.contract.client.widget.contractdates.list.ContractDatesList;
 import ru.protei.portal.ui.contract.client.widget.contractor.ContractorWidget;
 import ru.protei.portal.ui.contract.client.widget.contractspecification.list.ContractSpecificationList;
-import ru.protei.portal.ui.contract.client.widget.selector.button.ContractStateSelector;
-import ru.protei.portal.ui.contract.client.widget.selector.multi.ContractTypeMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.contract.state.ContractStateSelector;
+import ru.protei.portal.ui.common.client.widget.selector.contract.type.ContractTypesMultiSelector;
 
 import java.util.*;
 
@@ -402,7 +402,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     ContractStateSelector state;
     @Inject
     @UiField(provided = true)
-    ContractTypeMultiSelector types;
+    ContractTypesMultiSelector types;
     @UiField
     TextBox kind;
     @Inject
