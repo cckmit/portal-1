@@ -24,7 +24,7 @@
 
     <servlet>
         <servlet-name>reportDownloadServlet</servlet-name>
-        <servlet-class>ru.protei.portal.ui.issuereport.server.servlet.ReportDownloadServlet</servlet-class>
+        <servlet-class>ru.protei.portal.ui.report.server.servlet.ReportDownloadServlet</servlet-class>
     </servlet>
 
     <!-- Сервлет для работы шины сообщений между клиентом и сервером -->

@@ -2,6 +2,7 @@ package ru.protei.portal.core.service.template;
 
 import freemarker.template.TemplateException;
 import ru.protei.portal.core.event.*;
+import ru.protei.portal.core.model.dto.ReportDto;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
@@ -43,9 +44,9 @@ public interface TemplateService {
 
     PreparedTemplate getDocumentDocFileUpdatedByMemberSubject(String documentName);
 
-    PreparedTemplate getMailReportBody(Report report);
+    PreparedTemplate getMailReportBody(ReportDto reportDto);
 
-    PreparedTemplate getMailReportSubject(Report report);
+    PreparedTemplate getMailReportSubject(ReportDto reportDto);
 
     String getEmployeeRegistrationProbationHeadOfDepartmentEmailNotificationBody( Long employeeRegistrationId, String employeeFullName, String urlTemplate, String recipientName ) throws IOException, TemplateException;
 

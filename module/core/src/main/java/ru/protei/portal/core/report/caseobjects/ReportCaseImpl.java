@@ -46,8 +46,12 @@ public class ReportCaseImpl implements ReportCase {
     CaseTagDAO caseTagDAO;
 
     @Override
-    public boolean writeReport(OutputStream buffer, Report report, DateFormat dateFormat, TimeFormatter timeFormatter,
-                                    Predicate<Long> isCancel) throws IOException {
+    public boolean writeReport(OutputStream buffer,
+                               Report report,
+                               CaseQuery query,
+                               DateFormat dateFormat,
+                               TimeFormatter timeFormatter,
+                               Predicate<Long> isCancel) throws IOException {
         log.info("writeReport : reportId={}", report.getId());
         Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
 
@@ -63,7 +67,6 @@ public class ReportCaseImpl implements ReportCase {
                     log.info( "writeReport(): Cancel processing of report {}", report.getId() );
                     return true;
                 }
-                CaseQuery query = report.getCaseQuery();
                 query.setOffset( offset );
                 query.setLimit( limit );
                 List<CaseObjectReportRequest> comments = processChunk(query);
@@ -76,7 +79,7 @@ public class ReportCaseImpl implements ReportCase {
             return true;
         } catch (Exception ex) {
             log.warn( "writeReport : fail to process chunk [{} - {}] : reportId={} query: {} ",
-                                                offset, limit, report.getId(), report.getCaseQuery(), ex );
+                                                offset, limit, report.getId(), query, ex );
             return false;
         }
     }

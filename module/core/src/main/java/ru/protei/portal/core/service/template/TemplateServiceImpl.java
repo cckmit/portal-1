@@ -9,11 +9,14 @@ import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.dto.Project;
+import ru.protei.portal.core.model.dto.ReportCaseQuery;
+import ru.protei.portal.core.model.dto.ReportDto;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
@@ -409,15 +412,24 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getMailReportBody(Report report) {
+    public PreparedTemplate getMailReportBody(ReportDto reportDto) {
+        Report report = reportDto.getReport();
+        DateRange createdRange = reportDto instanceof ReportCaseQuery
+                ? ((ReportCaseQuery) reportDto).getQuery().getCreatedRange()
+                : null;
+        DateRange modifiedRange = reportDto instanceof ReportCaseQuery
+                ? ((ReportCaseQuery) reportDto).getQuery().getModifiedRange()
+                : null;
+
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("reportId", report.getId());
         templateModel.put("name", report.getName());
         templateModel.put("created", report.getCreated());
         templateModel.put("creator", report.getCreator().getDisplayShortName());
         templateModel.put("type", report.getReportType());
-        templateModel.put(Report.Columns.STATUS, report.getStatus());
-        templateModel.put("filter", report.getCaseQuery());
+        templateModel.put("status", report.getStatus());
+        templateModel.put("createdRange", createdRange);
+        templateModel.put("modifiedRange", modifiedRange);
 
         PreparedTemplate template = new PreparedTemplate("notification/email/report.body.%s.ftl");
         template.setModel(templateModel);
@@ -426,7 +438,8 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getMailReportSubject(Report report) {
+    public PreparedTemplate getMailReportSubject(ReportDto reportDto) {
+        Report report = reportDto.getReport();
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("reportTitle", report.getName());
         templateModel.put("scheduledType", report.getScheduledType());

@@ -48,9 +48,14 @@ public class ReportProjectImpl implements ReportProject {
     ReportDAO reportDAO;
 
     @Override
-    public boolean writeReport(OutputStream buffer, Report report, DateFormat dateTimeFormat, DateFormat dateFormat, Predicate<Long> isCancel) throws IOException {
+    public boolean writeReport(OutputStream buffer,
+                               Report report,
+                               CaseQuery query,
+                               DateFormat dateTimeFormat,
+                               DateFormat dateFormat,
+                               Predicate<Long> isCancel) throws IOException {
 
-        int count = caseObjectDAO.countByQuery(report.getCaseQuery());
+        int count = caseObjectDAO.countByQuery(query);
 
         Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
 
@@ -66,38 +71,41 @@ public class ReportProjectImpl implements ReportProject {
 
         try (ReportWriter<ReportProjectWithLastComment> writer = new ExcelReportWriter(localizedLang, new EnumLangUtil(lang), dateTimeFormat, dateFormat)) {
             int sheetNumber = writer.createSheet();
-            if (writeReport(writer, sheetNumber, report, count, isCancel)) {
+            if (writeReport(writer, sheetNumber, report.getId(), query, count, isCancel)) {
                 writer.collect(buffer);
             }
             return true;
         } catch (Exception ex) {
             log.warn("writeReport : fail to process reportId={} query: {} ",
-                    report.getId(), report.getCaseQuery(), ex);
+                    report.getId(), query, ex);
             return false;
         }
     }
 
-    private boolean writeReport(ReportWriter<ReportProjectWithLastComment> writer, int sheetNumber, Report report, int count,
-                                    Predicate<Long> isCancel) {
+    private boolean writeReport(ReportWriter<ReportProjectWithLastComment> writer,
+                                int sheetNumber,
+                                Long reportId,
+                                CaseQuery query,
+                                int count,
+                                Predicate<Long> isCancel) {
 
         final int step = config.data().reportConfig().getChunkSize();
         final int limit = count;
         int offset = 0;
 
         while (offset < limit) {
-            if (isCancel.test(report.getId())) {
-                log.info( "writeReport(): Cancel processing of report {}", report.getId() );
+            if (isCancel.test(reportId)) {
+                log.info("writeReport(): Cancel processing of report {}", reportId);
                 return true;
             }
             int amount = offset + step < limit ? step : limit - offset;
-            CaseQuery query = report.getCaseQuery();
             query.setOffset(offset);
             query.setLimit(amount);
             List<ReportProjectWithLastComment> data = createData(query);
             try {
                 writer.write(sheetNumber, data);
             } catch (Throwable th) {
-                log.warn("writeReport : fail to process chunk [{} - {}] : reportId={} {}", offset, amount, report.getId(), th);
+                log.warn("writeReport : fail to process chunk [{} - {}] : reportId={} {}", offset, amount, reportId, th);
                 return false;
             }
             offset += step;

@@ -4,7 +4,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.ReportDAO;
 import ru.protei.portal.core.model.dict.En_ReportScheduledType;
-import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ReportQuery;
@@ -16,7 +15,6 @@ import ru.protei.winter.jdbc.JdbcHelper;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -41,37 +39,20 @@ public class ReportDAO_Impl extends PortalBaseJdbcDAO<Report> implements ReportD
     }
 
     @Override
+    public List<Report> getReports(ReportQuery query) {
+        SqlCondition where = createSqlCondition(query);
+        return getList(new JdbcQueryParameters()
+                .withCondition(where.condition, where.args)
+                .withDistinct(true)
+        );
+    }
+
+    @Override
     public List<Report> getReportsByIds(Long creatorId, Set<Long> includeIds, Set<Long> excludeIds) {
         ReportQuery query = new ReportQuery();
         query.setCreatorId(creatorId);
         query.setIncludeIds(includeIds);
         query.setExcludeIds(excludeIds);
-        SqlCondition where = createSqlCondition(query);
-        return getList(new JdbcQueryParameters()
-                .withCondition(where.condition, where.args)
-                .withDistinct(true)
-        );
-    }
-
-    @Override
-    public List<Report> getReportsByStatuses(List<En_ReportStatus> statuses, int limit) {
-        ReportQuery query = new ReportQuery();
-        query.setStatuses(statuses);
-        query.setLimit(limit);
-        SqlCondition where = createSqlCondition(query);
-        return getList(new JdbcQueryParameters()
-                .withCondition(where.condition, where.args)
-                .withDistinct(true)
-                .withLimit(query.getLimit())
-        );
-    }
-
-    @Override
-    public List<Report> getReportsByStatuses(List<En_ReportStatus> statuses, Date lastModifiedBefore, List<En_ReportScheduledType> scheduledTypes) {
-        ReportQuery query = new ReportQuery();
-        query.setStatuses(statuses);
-        query.setToModified(lastModifiedBefore);
-        query.setScheduledTypes(scheduledTypes);
         SqlCondition where = createSqlCondition(query);
         return getList(new JdbcQueryParameters()
                 .withCondition(where.condition, where.args)
@@ -125,6 +106,10 @@ public class ReportDAO_Impl extends PortalBaseJdbcDAO<Report> implements ReportD
             if (query.getLocale() != null) {
                 condition.append(" and report.locale = ?");
                 args.add(query.getLocale());
+            }
+
+            if (CollectionUtils.isNotEmpty(query.getTypes())) {
+                condition.append(" and report.type in ").append(JdbcHelper.makeSqlStringCollection(query.getTypes(), args, null));
             }
 
             if (CollectionUtils.isNotEmpty(query.getStatuses())) {
