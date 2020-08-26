@@ -99,10 +99,6 @@ public class IssueFilterWidget extends Composite {
         footer.removeClassName("card-footer");
     }
 
-    public void setFilterValidator(Function<CaseFilter, Boolean> filterValidator) {
-        this.filterValidator = filterValidator;
-    }
-
     @UiHandler( "resetBtn" )
     public void onResetClicked ( ClickEvent event ) {
         onUserFilterChanged(null);
@@ -132,10 +128,6 @@ public class IssueFilterWidget extends Composite {
             filledUserFilter.setId(userFilter.getValue().getId());
         }
         filledUserFilter.getParams().setCheckImportanceHistory( null );//don`t save CheckImportanceHistory
-
-        if (filterValidator != null && !filterValidator.apply(filledUserFilter)) {
-            return;
-        }
 
         model.onOkSavingFilterClicked(filterName.getValue(), filledUserFilter,
                 filter -> {
@@ -322,7 +314,6 @@ public class IssueFilterWidget extends Composite {
 
     private boolean isCreateFilterAction = true;
     private En_CaseFilterType filterType = En_CaseFilterType.CASE_OBJECTS;
-    private Function<CaseFilter, Boolean> filterValidator;
     private static IssueFilterWidget.IssueFilterViewUiBinder ourUiBinder = GWT.create( IssueFilterWidget.IssueFilterViewUiBinder.class );
     interface IssueFilterViewUiBinder extends UiBinder<HTMLPanel, IssueFilterWidget> {}
 }
