@@ -573,16 +573,16 @@ public class EmployeeServiceImpl implements EmployeeService {
     private boolean updateEmployeeInOldPortal(Long personId) {
         List<WorkerEntry> workers = workerEntryDAO.getWorkers(new WorkerEntryQuery(personId));
 
-        WorkerEntry activeWorker = workers == null ? null : workers.stream().filter(WorkerEntry::isMain).findFirst().orElse(null);
+        WorkerEntry worker = workers == null ? null : getMainEntry(workers);
 
         Person person = personDAO.get(personId);
 
-        if (activeWorker == null || person == null){
-            log.warn("updateEmployeeInOldPortal(): activeWorker={}, person={}", activeWorker, person);
+        if (worker == null || person == null){
+            log.warn("updateEmployeeInOldPortal(): activeWorker={}, person={}", worker, person);
             return false;
         }
 
-        return migrationManager.saveExternalEmployee(person, activeWorker.getDepartmentName(), activeWorker.getPositionName()).equals(En_ResultStatus.OK);
+        return migrationManager.saveExternalEmployee(person, worker.getDepartmentName(), worker.getPositionName()).equals(En_ResultStatus.OK);
     }
 
     private boolean fireEmployeeInOldPortal(Person person) {
@@ -789,5 +789,13 @@ public class EmployeeServiceImpl implements EmployeeService {
                         .filter(En_AbsenceReason::isActual)
                         .map(En_AbsenceReason::getId)
                         .collect(Collectors.toSet()));
+    }
+
+    private WorkerEntry getMainEntry(List<WorkerEntry> workers) {
+        return workers.stream().filter(WorkerEntry::isMain).findFirst().orElse(getFirstEntry(workers));
+    }
+
+    private WorkerEntry getFirstEntry(List<WorkerEntry> workers) {
+        return workers.stream().findFirst().orElse(null);
     }
 }

@@ -40,6 +40,7 @@ import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionEditIte
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionEditItemView;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.util.CrmConstants.ContactConstants.*;
 
@@ -155,14 +156,13 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
     @Override
     public void onSaveClicked() {
+        if (employee.isFired() && positionMap.isEmpty()){
+            fireEvent(new Back());
+            return;
+        }
+
         String errorMsg = validate();
-
         if (errorMsg != null) {
-            if (employee.isFired()){
-                fireEvent(new Back());
-                return;
-            }
-
             fireErrorMessage(errorMsg);
             return;
         }
@@ -267,6 +267,9 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
             view.getPositionsContainer().add(makePositionView(worker).asWidget());
 
+            boolean isWorkerInSyncCompany = isAnyWorkerInSyncCompany(positionMap.values().stream().collect(Collectors.toList()));
+            setPersonFieldsEnabled (!isWorkerInSyncCompany);
+
             view.company().setValue(null);
             view.companyDepartment().setValue(null);
             view.workerPosition().setValue(null);
@@ -365,6 +368,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         infoFacade.setEmail(view.workEmail().getValue());
         employee.setIpAddress(view.ipAddress().getValue());
 
+        employee.setFired(false, null);
         return employee;
     }
 
