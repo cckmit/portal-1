@@ -267,7 +267,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
             view.getPositionsContainer().add(makePositionView(worker).asWidget());
 
-            boolean isWorkerInSyncCompany = isAnyWorkerInSyncCompany(positionMap.values().stream().collect(Collectors.toList()));
+            boolean isWorkerInSyncCompany = isAnyWorkerInSyncCompany(new ArrayList<>(positionMap.values()));
             setPersonFieldsEnabled (!isWorkerInSyncCompany);
 
             view.company().setValue(null);
