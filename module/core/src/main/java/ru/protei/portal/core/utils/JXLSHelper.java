@@ -5,12 +5,11 @@ import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import ru.protei.portal.core.Lang;
+import ru.protei.portal.core.utils.ExcelFormatUtils.ExcelFormat;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
-
-import static ru.protei.portal.core.report.caseobjects.ExcelReportWriter.ExcelFormat.STANDARD;
 
 public final class JXLSHelper {
     // -----------
@@ -29,14 +28,7 @@ public final class JXLSHelper {
             int[] getColumnsWidth();
             String[] getColumnNames();
             Object[] getColumnValues(T object);
-
-            default String[] getFormats() {
-                String[] formats = new String[getColumnNames().length];
-
-                Arrays.fill(formats, STANDARD);
-
-                return formats;
-            }
+            String[] getFormats();
         }
 
         public ReportBook(Lang.LocalizedLang lang, Writer<T> writer) {

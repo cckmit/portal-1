@@ -35,13 +35,13 @@ public class ReportAbsenceImpl implements ReportAbsence {
     PersonAbsenceDAO personAbsenceDAO;
 
     @Override
-    public boolean writeReport(OutputStream buffer, final AbsenceQuery query, DateFormat dateFormat) throws IOException {
+    public boolean writeReport(OutputStream buffer, final AbsenceQuery query) throws IOException {
 
         Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(CrmConstants.DEFAULT_LOCALE));
 
         int limit = config.data().reportConfig().getChunkSize();
         int offset = 0;
-        try (ReportWriter<PersonAbsence> writer = new ExcelReportWriter(localizedLang, dateFormat)) {
+        try (ReportWriter<PersonAbsence> writer = new ExcelReportWriter(localizedLang)) {
             int sheetNumber = writer.createSheet();
             writer.setSheetName(sheetNumber, localizedLang.get("ar_absences"));
 
