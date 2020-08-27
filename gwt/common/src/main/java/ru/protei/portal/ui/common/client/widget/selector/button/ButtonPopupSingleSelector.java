@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
+import com.google.inject.Inject;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.UiConstants;
@@ -39,6 +40,11 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
         setEmptySearchText( lang.searchNoMatchesFound() );
         setSearchAutoFocus( true );
         setPageSize( CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE );
+    }
+
+    @Inject
+    public void onInit() {
+        root.add(getPopup());
     }
 
     @Override
@@ -88,9 +94,13 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
 
     @UiHandler("button")
     public void onShowPopupClicked(ClickEvent event) {
-        getPopup().getChildContainer().clear();
-        getSelector().fillFromBegin(this);
-        getPopup().showNear(button);
+        if (getPopup().isVisible()) {
+            button.getElement().blur();
+        } else {
+            getPopup().getChildContainer().clear();
+            getSelector().fillFromBegin(this);
+            getPopup().showNear(button);
+        }
     }
 
     public void setEnsureDebugIdLabel( String company ) {

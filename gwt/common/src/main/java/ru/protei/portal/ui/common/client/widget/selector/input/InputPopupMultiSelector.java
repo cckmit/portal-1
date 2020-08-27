@@ -42,6 +42,7 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         setPageSize( CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE );
         setEmptyListText( lang.emptySelectorList() );
         setEmptySearchText( lang.searchNoMatchesFound() );
+        root.add(getPopup());
     }
 
     public void setHeader( String label ) {
@@ -101,10 +102,7 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
 
     @Override
     public void setValid(boolean isValid){
-        if(isValid)
-            select2.removeClassName(HAS_ERROR);
-        else
-            select2.addClassName(HAS_ERROR);
+        select2.setStyleName(HAS_ERROR, !isValid);
     }
 
     public void setValidation(boolean isValidable){
@@ -117,9 +115,12 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         if (!isEnabled) {
             return;
         }
-        getPopup().getChildContainer().clear();
-        getSelector().fillFromBegin( this );
-        getPopup().showNear( itemContainer );
+
+        if (!getPopup().isVisible()) {
+            getPopup().getChildContainer().clear();
+            getSelector().fillFromBegin( this );
+            getPopup().showNear( select2 );
+        }
     }
 
     @UiHandler({"clearButton"})
@@ -141,7 +142,7 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
     protected void onSelectionChanged() {
         Set<T> value = getValue();
         showValue( value );
-        getPopup().showNear( itemContainer );
+        getPopup().showNear( select2 );
         validateSelector(isValidable);
 
         ValueChangeEvent.fire( this, value );
@@ -258,7 +259,9 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
     }
 
     @UiField
-    DivElement select2;
+    HTMLPanel root;
+    @UiField
+    protected HTMLPanel select2;
     @UiField
     Button caretButton;
     @UiField

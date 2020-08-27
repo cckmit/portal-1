@@ -1,13 +1,15 @@
 package ru.protei.portal.ui.common.client.selector;
 
+import com.google.gwt.event.logical.shared.HasCloseHandlers;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.UIObject;
 import ru.protei.portal.ui.common.client.events.AddHandler;
-import ru.protei.portal.ui.common.client.popup.BasePopupView;
 import ru.protei.portal.ui.common.client.selector.popup.PopupHandler;
+import ru.protei.portal.ui.common.client.widget.composite.popper.PopperComposite;
 
-public interface SelectorPopup {
+public interface SelectorPopup extends IsWidget, HasCloseHandlers {
     void setPopupHandler( PopupHandler tPopupSelector );
 
     HasWidgets getChildContainer();
@@ -16,7 +18,7 @@ public interface SelectorPopup {
 
     void showNear( UIObject showNear );
 
-    void showNear( UIObject showNear, BasePopupView.Position position, Integer width );
+    void showNear( UIObject showNear, PopperComposite.Placement placement );
 
     void showLoading( boolean isLoading );
 
@@ -29,4 +31,6 @@ public interface SelectorPopup {
     void setAddButton(boolean addVisible, String text);
 
     void hide();
+
+    boolean isVisible();
 }

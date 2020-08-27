@@ -16,6 +16,7 @@ import ru.protei.portal.ui.common.client.events.PlanEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.popup.BasePopupView;
 import ru.protei.portal.ui.common.client.service.PlanControllerAsync;
+import ru.protei.portal.ui.common.client.widget.composite.popper.PopperComposite;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -190,7 +191,7 @@ public abstract class PlannedIssuesTableActivity implements AbstractPlannedIssue
         });
         popup.getPopup().getChildContainer().clear();
         popup.fill();
-        popup.getPopup().showNear(relative, BasePopupView.Position.BY_RIGHT_SIDE, null);
+        popup.getPopup().showNear(relative, PopperComposite.Placement.RIGHT);
     }
 
     private void swapIssues( CaseShortView src, CaseShortView dst ) {

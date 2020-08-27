@@ -27,6 +27,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.popup.BasePopupView;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.service.UserCaseAssignmentControllerAsync;
+import ru.protei.portal.ui.common.client.widget.composite.popper.PopperComposite;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.issueassignment.client.activity.desk.rowadd.AbstractDeskRowAddView;
@@ -185,7 +186,7 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
         });
         popup.getPopup().getChildContainer().clear();
         popup.fill();
-        popup.getPopup().showNear(relative, BasePopupView.Position.BY_RIGHT_SIDE, null);
+        popup.getPopup().showNear(relative, PopperComposite.Placement.RIGHT);
     }
 
     private void showNotification(UserCaseAssignmentTable userCaseAssignmentTable) {

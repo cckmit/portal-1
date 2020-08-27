@@ -47,6 +47,8 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
         setPageSize( CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE );
         setEmptyListText( lang.emptySelectorList() );
         setEmptySearchText( lang.searchNoMatchesFound() );
+
+        root.add(popup);
     }
 
     public interface SelectedValueRenderer<T> {
@@ -149,7 +151,7 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
         formContainer.removeStyleName(REQUIRED_STYLENAME);
     }
 
-    public void onShowPopupClicked( HTMLPanel button) {
+    public void onShowPopupClicked(HTMLPanel button) {
         getPopup().getChildContainer().clear();
         getSelector().fillFromBegin(this);
         getPopup().showNear(button);
@@ -167,15 +169,16 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
     private void initHandler() {
         formContainer.sinkEvents(Event.ONCLICK);
         formContainer.addHandler(event -> {
-            formContainer.addStyleName(FOCUS_STYLENAME);
-            onShowPopupClicked(formContainer);
+            if (!getPopup().isVisible()) {
+                formContainer.addStyleName(FOCUS_STYLENAME);
+                onShowPopupClicked(formContainer);
+            }
         }, ClickEvent.getType());
-
     }
 
     @Override
-    public void onPopupUnload( SelectorPopup selectorPopup ) {
-        super.onPopupUnload( selectorPopup );
+    public void onPopupHide(SelectorPopup selectorPopup ) {
+        super.onPopupHide( selectorPopup );
         formContainer.removeStyleName(FOCUS_STYLENAME);
     }
 
@@ -205,6 +208,8 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
 
     protected String defaultValue = null;
 
+    @UiField
+    HTMLPanel root;
     @UiField
     HTMLPanel formContainer;
     @UiField

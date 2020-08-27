@@ -54,8 +54,9 @@ public class PersonMultiSelector extends InputPopupMultiSelector<PersonShortView
             SelectorItem item = new SelectorItem();
             item.setName(StringUtils.isEmpty(selectCompanyMessage) ? lang.initiatorSelectACompany() : selectCompanyMessage);
             item.getElement().addClassName(UiConstants.Styles.TEXT_CENTER);
+            getPopup().getChildContainer().clear();
             getPopup().getChildContainer().add(item);
-            getPopup().showNear( itemContainer );
+            getPopup().showNear( select2 );
         }
     }
 

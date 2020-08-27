@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.issueassignment.client.activity.table;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.inject.Inject;
@@ -24,6 +25,7 @@ import ru.protei.portal.ui.common.client.popup.BasePopupView;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.client.util.CaseStateUtils;
+import ru.protei.portal.ui.common.client.widget.composite.popper.PopperComposite;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.issueassignment.client.widget.popupselector.PopupSingleSelector;
@@ -182,7 +184,7 @@ public abstract class TableActivity implements Activity, AbstractTableActivity {
         });
         popup.getPopup().getChildContainer().clear();
         popup.fill();
-        popup.getPopup().showNear(relative, BasePopupView.Position.BY_RIGHT_SIDE, null);
+        popup.getPopup().showNear(relative, PopperComposite.Placement.RIGHT);
     }
 
     @Inject

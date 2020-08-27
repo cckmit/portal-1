@@ -8,11 +8,36 @@ import com.google.gwt.user.client.Window;
 import ru.protei.portal.ui.common.client.widget.composite.PopupLikeComposite;
 
 public abstract class PopperComposite extends PopupLikeComposite {
-    public interface Placement {
-        String TOP = "top";
-        String BOTTOM = "bottom";
-        String RIGHT = "right";
-        String LEFT = "left";
+    public enum Placement {
+        TOP {
+            @Override
+            public String getCode() {
+                return "top";
+            }
+        },
+
+        RIGHT {
+            @Override
+            public String getCode() {
+                return "right";
+            }
+        },
+
+        BOTTOM {
+            @Override
+            public String getCode() {
+                return "bottom";
+            }
+        },
+
+        LEFT {
+            @Override
+            public String getCode() {
+                return "left";
+            }
+        };
+
+        public abstract String getCode();
     }
 
     public PopperComposite() {
@@ -23,9 +48,9 @@ public abstract class PopperComposite extends PopupLikeComposite {
         show(relative, Placement.BOTTOM);
     }
 
-    public void show(Element relative, String placement) {
+    public void show(Element relative, Placement placement) {
         setVisible(true);
-        popper = createPopper(relative, getElement(), placement);
+        popper = createPopper(relative, getElement(), placement.getCode());
         addResizeHandlerAndResize(isAutoResize, relative, getElement());
     }
 

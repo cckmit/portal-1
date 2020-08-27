@@ -4,7 +4,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel ui:field="root" styleName="single-selector-popup" visible="false">
+    <g:HTMLPanel ui:field="root" styleName="selector-popup" visible="false">
         <div class="dropdown-addbutton hide" ui:field="addContainer">
             <g:Button ui:field="addButton"/>
         </div>
