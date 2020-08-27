@@ -10,21 +10,20 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.CaseObjectReportRequest;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.report.ReportWriter;
+import ru.protei.portal.core.utils.ExcelFormatUtils.ExcelFormat;
 import ru.protei.portal.core.utils.JXLSHelper;
 import ru.protei.portal.core.utils.TimeFormatter;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.DateFormat;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
-import static org.apache.poi.ss.usermodel.DateUtil.SECONDS_PER_DAY;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.util.TransliterationUtils.transliterate;
+import static ru.protei.portal.core.utils.ExcelFormatUtils.toExcelTimeFormat;
 
 public class ExcelReportWriter implements
         ReportWriter<CaseObjectReportRequest>,
@@ -37,12 +36,6 @@ public class ExcelReportWriter implements
     private final boolean isNotRestricted;
     private final String locale;
     private final boolean withDescription;
-
-    public interface ExcelFormat {
-        String STANDARD = "@";
-        String DATE_TIME = "DD.MM.YY HH:MM";
-        String INFINITE_HOURS_MINUTES = "[H]:MM";
-    }
 
     public ExcelReportWriter(Lang.LocalizedLang localizedLang, DateFormat dateFormat, TimeFormatter timeFormatter,
                              boolean isRestricted, boolean withDescription) {
@@ -160,10 +153,6 @@ public class ExcelReportWriter implements
     @Override
     public String[] getFormats() {
         return getFormats(isNotRestricted, withDescription);
-    }
-
-    private double toExcelTimeFormat(Long minutes) {
-        return (double) Duration.ofMinutes(Optional.ofNullable(minutes).orElse(0L)).getSeconds() / SECONDS_PER_DAY;
     }
 
     private Long getDurationBetween(Date from, Date... toList) {

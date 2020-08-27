@@ -10,7 +10,6 @@ import java.util.function.Predicate;
 
 public interface ReportCaseTimeElapsed {
     boolean writeReport(OutputStream buffer,
-                        Report report, DateFormat dateFormat,
-                        TimeFormatter timeFormatter,
+                        Report report,
                         Predicate<Long> isCancel) throws IOException;
 }
