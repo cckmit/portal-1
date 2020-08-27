@@ -4,6 +4,8 @@ import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.ent.PersonAbsence;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.report.ReportWriter;
+import ru.protei.portal.core.utils.ExcelFormatUtils;
+import ru.protei.portal.core.utils.ExcelFormatUtils.ExcelFormat;
 import ru.protei.portal.core.utils.JXLSHelper;
 
 import java.io.IOException;
@@ -18,12 +20,10 @@ public class ExcelReportWriter implements
 
     private final JXLSHelper.ReportBook<PersonAbsence> book;
     private final Lang.LocalizedLang lang;
-    private final DateFormat dateFormat;
 
-    public ExcelReportWriter(Lang.LocalizedLang lang, DateFormat dateFormat) {
+    public ExcelReportWriter(Lang.LocalizedLang lang) {
         this.book = new JXLSHelper.ReportBook<>(lang, this);
         this.lang = lang;
-        this.dateFormat = dateFormat;
     }
 
     @Override
@@ -52,6 +52,13 @@ public class ExcelReportWriter implements
     }
 
     @Override
+    public String[] getFormats() {
+        return new String[] {
+                ExcelFormat.STANDARD, ExcelFormat.FULL_DATE_TIME, ExcelFormat.FULL_DATE_TIME, ExcelFormat.STANDARD, ExcelFormat.STANDARD
+        };
+    }
+
+    @Override
     public int[] getColumnsWidth() {
         return new int[] { 6500, 4200, 4200, 5800, 6500 };
     }
@@ -65,8 +72,8 @@ public class ExcelReportWriter implements
     public Object[] getColumnValues(PersonAbsence object) {
         List<Object> values = new ArrayList<>();
         values.add(object.getPerson() != null && HelperFunc.isNotEmpty(object.getPerson().getName()) ? object.getPerson().getName() : "");
-        values.add(object.getFromTime() != null ? dateFormat.format(object.getFromTime()) : "");
-        values.add(object.getTillTime() != null ? dateFormat.format(object.getTillTime()) : "");
+        values.add(object.getFromTime() != null ? object.getFromTime() : "");
+        values.add(object.getTillTime() != null ? object.getTillTime() : "");
         values.add(object.getReason() != null ? lang.get("absenceReasonValue" + object.getReason().getId()) : "");
         values.add(HelperFunc.isNotEmpty(object.getUserComment()) ? object.getUserComment() : "");
         return values.toArray();
