@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 
 /**
@@ -110,6 +110,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     public Result<SearchResult<EmployeeShortView>> employeeList(AuthToken token, EmployeeQuery query) {
 
         SearchResult<EmployeeShortView> sr = employeeShortViewDAO.getSearchResult(query);
+        sr.setResults(stream(sr.getResults())
+                .map(this::removeSensitiveInformation)
+                .collect(Collectors.toList()));
         List<EmployeeShortView> results = sr.getResults();
 
         if (CollectionUtils.isNotEmpty(results)) {
@@ -128,6 +131,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         query.setHomeCompanies(fillHiddenCompaniesIfProteiChosen(query.getHomeCompanies()));
 
         SearchResult<EmployeeShortView> sr = employeeShortViewDAO.getSearchResult(query);
+        sr.setResults(stream(sr.getResults())
+                .map(this::removeSensitiveInformation)
+                .collect(Collectors.toList()));
         List<EmployeeShortView> results = sr.getResults();
 
         if (CollectionUtils.isNotEmpty(results)) {
@@ -159,6 +165,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         EmployeeShortView employeeShortView = employeeShortViewDAO.get(employeeId);
         jdbcManyRelationsHelper.fill(employeeShortView, "workerEntries");
+        employeeShortView = removeSensitiveInformation(employeeShortView);
 
         return ok(employeeShortView);
     }
@@ -181,6 +188,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         EmployeeShortView employeeShortView = employeeShortViewDAO.get(employeeId);
         jdbcManyRelationsHelper.fill(employeeShortView, "workerEntries");
+        employeeShortView = removeSensitiveInformation(employeeShortView);
 
         employeeShortView.setWorkerEntries(changeCompanyNameIfHidden(employeeShortView.getWorkerEntries()));
         employeeShortView.setCurrentAbsence(personAbsenceDAO.currentAbsence(employeeId));
@@ -264,8 +272,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         person.setDisplayName(person.getLastName() + " " + person.getFirstName() + (StringUtils.isNotEmpty(person.getSecondName()) ? " " + person.getSecondName() : ""));
         person.setDisplayShortName(createPersonShortName(person));
-
         person.setCompanyId(CrmConstants.Company.HOME_COMPANY_ID);
+        person.getContactInfo().addItems(getSensitiveContactItems(oldPerson.getContactInfo().getItems()));
+
         boolean success = personDAO.partialMerge(person,  "company_id", "firstname", "lastname", "secondname", "sex", "birthday", "ipaddress", "contactInfo", "displayname", "displayShortName");
 
         if (success) {
@@ -412,6 +421,21 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
        return ok(true);
+    }
+
+    private EmployeeShortView removeSensitiveInformation(EmployeeShortView employeeShortView) {
+        List<ContactItem> sensitive = getSensitiveContactItems(employeeShortView.getContactInfo().getItems());
+        employeeShortView.setContactInfo(new ContactInfo(stream(employeeShortView.getContactInfo().getItems())
+                .filter(item -> !sensitive.contains(item))
+                .collect(Collectors.toList())));
+        return employeeShortView;
+    }
+
+    private List<ContactItem> getSensitiveContactItems(List<ContactItem> contactItems) {
+        List<En_ContactItemType> types = listOf(En_ContactItemType.ADDRESS, En_ContactItemType.ADDRESS_LEGAL);
+        return stream(contactItems)
+                .filter(item -> types.contains(item.type()))
+                .collect(Collectors.toList());
     }
 
     private void updateAccount(UserLogin userLogin, AuthToken token) {
