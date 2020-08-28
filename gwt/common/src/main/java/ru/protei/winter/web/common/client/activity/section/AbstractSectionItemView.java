@@ -31,4 +31,6 @@ public interface AbstractSectionItemView extends IsWidget {
     void setSectionTitle(String var1);
 
     void setHref(String var1);
+
+    void addClickHandler();
 }
