@@ -455,7 +455,7 @@ public abstract class IssueEditActivity implements
         jiraUrl = En_ExtAppType.JIRA.getCode().equals( extAppType ) ? jiraUrl : "";
 
         if (jiraUrl.isEmpty() || !issueName.startsWith( "CLM" )) {
-            return issueName;
+            return SimpleHtmlSanitizer.sanitizeHtml(issueName).asString();
         } else {
             String idCLM = issueName.split( " " )[0];
             String remainingName = "&nbsp;" + issueName.substring( idCLM.length() );
