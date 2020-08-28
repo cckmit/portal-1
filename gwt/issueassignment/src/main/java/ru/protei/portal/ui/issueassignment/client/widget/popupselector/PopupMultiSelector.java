@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.issueassignment.client.widget.popupselector;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -68,10 +69,6 @@ public abstract class PopupMultiSelector<T> extends AbstractPopupSelector<T> imp
         return true;
     }
 
-    public void setRelative(UIObject relative) {
-        this.relative = relative;
-    }
-
     protected MultiValuePageableSelector<T> selector = new MultiValuePageableSelector<>();
-    protected UIObject relative;
+    protected Element relative;
 }

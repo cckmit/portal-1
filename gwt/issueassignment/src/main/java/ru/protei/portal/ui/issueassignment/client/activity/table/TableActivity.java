@@ -1,7 +1,9 @@
 package ru.protei.portal.ui.issueassignment.client.activity.table;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -74,12 +76,14 @@ public abstract class TableActivity implements Activity, AbstractTableActivity {
 
     @Override
     public void onItemClicked(CaseShortView value) {
-        fireEvent(new IssueAssignmentEvents.ShowIssuePreview(value.getCaseNumber()));
+        if (value != null) {
+            fireEvent(new IssueAssignmentEvents.ShowIssuePreview(value.getCaseNumber()));
+        }
     }
 
     @Override
     public void onItemActionAssign(CaseShortView value, UIObject relative) {
-        showPersonSingleSelector(relative, person -> {
+        showPersonSingleSelector(relative.getElement(), person -> {
             if (person == null) {
                 return;
             }
@@ -171,8 +175,8 @@ public abstract class TableActivity implements Activity, AbstractTableActivity {
         return Long.parseLong(value);
     }
 
-    private void showPersonSingleSelector(UIObject relative, Consumer<PersonShortView> onChanged) {
-        PopupSingleSelector<PersonShortView> popup = new PopupSingleSelector<PersonShortView>() {};
+    private void showPersonSingleSelector(Element relative, Consumer<PersonShortView> onChanged) {
+        PopupSingleSelector<PersonShortView> popup = new PopupSingleSelector<>();
         popup.setModel(index -> index >= people.size() ? null : people.get(index));
         popup.setItemRenderer(PersonShortView::getName);
         popup.setEmptyListText(lang.emptySelectorList());
@@ -184,7 +188,7 @@ public abstract class TableActivity implements Activity, AbstractTableActivity {
         });
         popup.getPopup().getChildContainer().clear();
         popup.fill();
-        popup.getPopup().showNear(relative, PopperComposite.Placement.RIGHT);
+        popup.getPopup().showNear(relative, PopperComposite.Placement.BOTTOM, -104, 2);
     }
 
     @Inject

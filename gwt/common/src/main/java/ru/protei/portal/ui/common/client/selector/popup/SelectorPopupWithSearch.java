@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.selector.popup;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ScrollEvent;
 import com.google.gwt.event.dom.client.ScrollHandler;
@@ -9,7 +10,6 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.test.client.DebugIds;
@@ -68,19 +68,23 @@ public class SelectorPopupWithSearch extends PopperComposite
     }
 
     @Override
-    public void showNear(UIObject view) {
-        showNear(view, Placement.BOTTOM);
+    public void showNear(Element relative) {
+        addPagingHandler();
+        show(relative);
+        search.setFocus(isSearchAutoFocus);
     }
 
     @Override
-    public void showNear(UIObject view, Placement placement) {
-        if (isVisible()) {
-            hide();
-        }
-
+    public void showNear(Element relative, Placement placement) {
         addPagingHandler();
+        show(relative, placement);
+        search.setFocus(isSearchAutoFocus);
+    }
 
-        show(view.getElement(), placement);
+    @Override
+    public void showNear(Element relative, Placement placement, int skidding, int distance) {
+        addPagingHandler();
+        show(relative, placement, skidding, distance);
         search.setFocus(isSearchAutoFocus);
     }
 
@@ -132,13 +136,13 @@ public class SelectorPopupWithSearch extends PopperComposite
         message.setText( noElementsMessage == null ? "" : noElementsMessage );
     }
 
-    public void clearSearchField() {
-            search.setValue( "" );
-    }
-
     @Override
     public void setAddButtonVisibility(boolean isVisible) {
         addButton.setVisible( isVisible );
+    }
+
+    public void clearSearchField() {
+            search.setValue( "" );
     }
 
     public String getSearchString() {
@@ -167,6 +171,10 @@ public class SelectorPopupWithSearch extends PopperComposite
     }
 
     private void addPagingHandler() {
+        if (scrollForPagingHandleRegistration != null) {
+            return;
+        }
+
         scrollForPagingHandleRegistration = dropdown.addDomHandler(new ScrollHandler() {
             @Override
             public void onScroll( ScrollEvent scrollEvent ) {
@@ -184,6 +192,8 @@ public class SelectorPopupWithSearch extends PopperComposite
         if (scrollForPagingHandleRegistration != null) {
             scrollForPagingHandleRegistration.removeHandler();
         }
+
+        scrollForPagingHandleRegistration = null;
     }
 
     private void ensureDefaultDebugIds() {

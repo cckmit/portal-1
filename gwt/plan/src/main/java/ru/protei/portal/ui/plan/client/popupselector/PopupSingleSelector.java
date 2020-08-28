@@ -1,12 +1,15 @@
 package ru.protei.portal.ui.plan.client.popupselector;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.UIObject;
 import ru.protei.portal.ui.common.client.selector.AbstractPopupSelector;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
+import ru.protei.portal.ui.common.client.selector.SelectorPopup;
 import ru.protei.portal.ui.common.client.selector.pageable.AbstractPageableSelector;
 import ru.protei.portal.ui.common.client.selector.pageable.SingleValuePageableSelector;
 import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
@@ -65,8 +68,17 @@ public abstract class PopupSingleSelector<T> extends AbstractPopupSelector<T> im
         return true;
     }
 
-    public void setRelative(UIObject relative) {
+    @Override
+    public void onPopupHide(SelectorPopup selectorPopup) {
+        super.onPopupHide(selectorPopup);
+        getPopup().asWidget().getElement().removeFromParent();
+    }
+
+    public void setRelative(Element relative) {
         this.relative = relative;
+        getPopup().setAutoResize(false);
+        RootPanel.get().add(getPopup());
+        relative.getParentElement().appendChild(getPopup().asWidget().getElement());
     }
 
     public void fill() {
@@ -74,5 +86,5 @@ public abstract class PopupSingleSelector<T> extends AbstractPopupSelector<T> im
     }
 
     protected SingleValuePageableSelector<T> selector = new SingleValuePageableSelector<>();
-    protected UIObject relative;
+    protected Element relative;
 }

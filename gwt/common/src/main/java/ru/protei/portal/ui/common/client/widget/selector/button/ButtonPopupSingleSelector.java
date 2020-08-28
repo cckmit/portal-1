@@ -99,7 +99,7 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
         } else {
             getPopup().getChildContainer().clear();
             getSelector().fillFromBegin(this);
-            getPopup().showNear(button);
+            getPopup().showNear(button.getElement());
         }
     }
 

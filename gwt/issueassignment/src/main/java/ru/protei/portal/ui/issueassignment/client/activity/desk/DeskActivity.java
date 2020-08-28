@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.issueassignment.client.activity.desk;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
@@ -24,7 +25,6 @@ import ru.protei.portal.ui.common.client.events.CaseTagEvents;
 import ru.protei.portal.ui.common.client.events.IssueAssignmentEvents;
 import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.popup.BasePopupView;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.service.UserCaseAssignmentControllerAsync;
 import ru.protei.portal.ui.common.client.widget.composite.popper.PopperComposite;
@@ -137,7 +137,7 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
                 });
     }
 
-    private void showPersonMultiSelector(UIObject relative, List<UserCaseAssignment> rows, UserCaseAssignment row) {
+    private void showPersonMultiSelector(Element relative, List<UserCaseAssignment> rows, UserCaseAssignment row) {
         List<PersonShortView> people = row.getPersonShortViews();
         List<PersonShortView> existingPeople = fetchAllPeople(rows);
         existingPeople.removeAll(people);
@@ -155,12 +155,13 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
         });
     }
 
-    private void showStateMultiSelector(UIObject relative, List<UserCaseAssignment> columns, UserCaseAssignment column) {
+    private void showStateMultiSelector(Element relative, List<UserCaseAssignment> columns, UserCaseAssignment column) {
         List<EntityOption> states = column.getStateEntityOptions();
         List<EntityOption> existingStates = fetchAllStates(columns);
         existingStates.removeAll(states);
         DeskStateMultiPopup statePopup = statePopupProvider.get();
         statePopup.setValue(new HashSet<>(states));
+
         statePopup.show(relative, existingStates, value -> {
             if (CollectionUtils.isEmpty(value)) {
                 return;
@@ -173,8 +174,8 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
         });
     }
 
-    private void showPersonSingleSelector(UIObject relative, Consumer<PersonShortView> onChanged) {
-        PopupSingleSelector<PersonShortView> popup = new PopupSingleSelector<PersonShortView>() {};
+    private void showPersonSingleSelector(Element relative, Consumer<PersonShortView> onChanged) {
+        PopupSingleSelector<PersonShortView> popup = new PopupSingleSelector<>();
         popup.setModel(index -> index >= people.size() ? null : people.get(index));
         popup.setItemRenderer(PersonShortView::getName);
         popup.setEmptyListText(lang.emptySelectorList());
@@ -186,7 +187,7 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
         });
         popup.getPopup().getChildContainer().clear();
         popup.fill();
-        popup.getPopup().showNear(relative, PopperComposite.Placement.RIGHT);
+        popup.getPopup().showNear(relative, PopperComposite.Placement.BOTTOM, -104, 2);
     }
 
     private void showNotification(UserCaseAssignmentTable userCaseAssignmentTable) {
@@ -273,7 +274,7 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
         if (columns.isEmpty()) {
             tr.add(new HTMLPanel("th", ""));
         }
-        tr.add(buildHeaderAddCell(columns, tr));
+        tr.add(buildHeaderAddCell(columns, tr.getElement()));
         return tr;
     }
 
@@ -283,7 +284,7 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
         rowStateView.setHandler(new AbstractDeskRowStateView.Handler() {
             @Override
             public void onEdit() {
-                showStateMultiSelector(rowStateView.asWidget(), columns, column);
+                showStateMultiSelector(rowStateView.rootContainer().getElement(), columns, column);
             }
             @Override
             public void onRemove() {
@@ -295,14 +296,14 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
         return th;
     }
 
-    private Widget buildHeaderAddCell(List<UserCaseAssignment> columns, UIObject relative) {
+    private Widget buildHeaderAddCell(List<UserCaseAssignment> columns, Element relative) {
         AbstractDeskRowAddView rowAddView = rowAddViewProvider.get();
         rowAddView.setButtonTitle(lang.issueAssignmentDeskAddColumn());
         rowAddView.setHandler(() -> {
             UserCaseAssignment column = new UserCaseAssignment();
             column.setTableEntity(En_TableEntity.COLUMN);
             column.setStates(new ArrayList<>());
-            showStateMultiSelector(relative, columns, column);
+            showStateMultiSelector(relative.getParentElement(), columns, column);
         });
         HTMLPanel th = new HTMLPanel("th", "");
         th.addStyleName("icon-cell");
@@ -324,7 +325,7 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
         rowPersonView.setHandler(new AbstractDeskRowPersonView.Handler() {
             @Override
             public void onEdit() {
-                showPersonMultiSelector(rowPersonView.asWidget(), rows, row);
+                showPersonMultiSelector(rowPersonView.asWidget().getElement(), rows, row);
             }
             @Override
             public void onRemove() {
@@ -349,7 +350,7 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
             UserCaseAssignment row = new UserCaseAssignment();
             row.setTableEntity(En_TableEntity.ROW);
             row.setPersonShortViews(new ArrayList<>());
-            showPersonMultiSelector(rowAddView.asWidget(), rows, row);
+            showPersonMultiSelector(rowAddView.asWidget().getElement(), rows, row);
         });
         HTMLPanel td = new HTMLPanel("td", "");
         td.getElement().setAttribute("colspan", String.valueOf(columnsCount));
@@ -380,7 +381,7 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
             }
             @Override
             public void onOpenOptions(UIObject relative, CaseShortView issue) {
-                showPersonSingleSelector(relative, person -> {
+                showPersonSingleSelector(relative.getElement(), person -> {
                     if (person == null) {
                         return;
                     }

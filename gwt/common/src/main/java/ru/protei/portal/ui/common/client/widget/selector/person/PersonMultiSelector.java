@@ -56,7 +56,7 @@ public class PersonMultiSelector extends InputPopupMultiSelector<PersonShortView
             item.getElement().addClassName(UiConstants.Styles.TEXT_CENTER);
             getPopup().getChildContainer().clear();
             getPopup().getChildContainer().add(item);
-            getPopup().showNear( select2 );
+            getPopup().showNear( select2.getElement() );
         }
     }
 

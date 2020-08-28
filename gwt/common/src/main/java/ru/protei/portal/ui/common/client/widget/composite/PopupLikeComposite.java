@@ -45,6 +45,10 @@ public class PopupLikeComposite extends Composite implements HasCloseHandlers {
             return;
         }
 
+        if (handlerRegistration != null) {
+            return;
+        }
+
         Scheduler.get().scheduleDeferred((Command) () -> handlerRegistration = RootPanel.get().addDomHandler(this::onElementClicked, ClickEvent.getType()));
     }
 
@@ -56,6 +60,8 @@ public class PopupLikeComposite extends Composite implements HasCloseHandlers {
         if (handlerRegistration != null) {
             handlerRegistration.removeHandler();
         }
+
+        handlerRegistration = null;
     }
 
     private void onElementClicked(ClickEvent event) {

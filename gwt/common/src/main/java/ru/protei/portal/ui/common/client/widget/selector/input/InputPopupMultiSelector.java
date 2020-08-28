@@ -119,7 +119,7 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         if (!getPopup().isVisible()) {
             getPopup().getChildContainer().clear();
             getSelector().fillFromBegin( this );
-            getPopup().showNear( select2 );
+            getPopup().showNear( select2.getElement() );
         }
     }
 
@@ -142,7 +142,7 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
     protected void onSelectionChanged() {
         Set<T> value = getValue();
         showValue( value );
-        getPopup().showNear( select2 );
+        getPopup().showNear( select2.getElement() );
         validateSelector(isValidable);
 
         ValueChangeEvent.fire( this, value );

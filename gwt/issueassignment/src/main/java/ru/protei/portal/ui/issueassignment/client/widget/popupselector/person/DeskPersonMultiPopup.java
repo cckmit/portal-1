@@ -1,10 +1,14 @@
 package ru.protei.portal.ui.issueassignment.client.widget.popupselector.person;
 
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.selector.SelectorPopup;
+import ru.protei.portal.ui.common.client.widget.composite.popper.PopperComposite;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeModel;
 import ru.protei.portal.ui.issueassignment.client.widget.popupselector.PopupMultiSelector;
 
@@ -25,13 +29,21 @@ public class DeskPersonMultiPopup extends PopupMultiSelector<PersonShortView> {
         setEmptySearchText(lang.searchNoMatchesFound());
     }
 
-    public void show(UIObject relative, Collection<PersonShortView> exclude, Consumer<Set<PersonShortView>> onDone) {
+    @Override
+    public void onPopupHide(SelectorPopup selectorPopup) {
+        super.onPopupHide(selectorPopup);
+        getPopup().asWidget().getElement().removeFromParent();
+    }
+
+    public void show(Element relative, Collection<PersonShortView> exclude, Consumer<Set<PersonShortView>> onDone) {
         this.relative = relative;
         setFilter(personView -> !personView.isFired() && !exclude.contains(personView));
         setPopupUnloadHandler(() -> onDone.accept(getValue()));
         getPopup().getChildContainer().clear();
         getSelector().fillFromBegin(this);
-        getPopup().showNear(relative);
+        RootPanel.get().add(getPopup());
+        relative.appendChild(getPopup().asWidget().getElement());
+        getPopup().showNear(relative, PopperComposite.Placement.BOTTOM);
     }
 
     @Override

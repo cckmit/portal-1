@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.plan.client.activity.edit.tables;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.inject.Inject;
@@ -124,7 +125,7 @@ public abstract class PlannedIssuesTableActivity implements AbstractPlannedIssue
 
     @Override
     public void onItemActionAssign(CaseShortView value, UIObject relative) {
-        showPlanSingleSelector(relative, plan -> {
+        showPlanSingleSelector(relative.getElement(), plan -> {
             if (plan == null || isNew()) {
                 return;
             }
@@ -177,10 +178,10 @@ public abstract class PlannedIssuesTableActivity implements AbstractPlannedIssue
         };
     }
 
-    private void showPlanSingleSelector(UIObject relative, Consumer<Plan> onChanged) {
+    private void showPlanSingleSelector(Element relative, Consumer<Plan> onChanged) {
         PopupSingleSelector<Plan> popup = new PopupSingleSelector<Plan>() {};
         popup.setModel(index -> index >= plans.size() ? null : plans.get(index));
-        popup.setItemRenderer(plan -> plan.getName());
+        popup.setItemRenderer(Plan::getName);
         popup.setFilter(value -> !value.getId().equals(planId));
         popup.setEmptyListText(lang.emptySelectorList());
         popup.setEmptySearchText(lang.searchNoMatchesFound());
@@ -191,7 +192,7 @@ public abstract class PlannedIssuesTableActivity implements AbstractPlannedIssue
         });
         popup.getPopup().getChildContainer().clear();
         popup.fill();
-        popup.getPopup().showNear(relative, PopperComposite.Placement.RIGHT);
+        popup.getPopup().showNear(relative, PopperComposite.Placement.BOTTOM, -104, 2);
     }
 
     private void swapIssues( CaseShortView src, CaseShortView dst ) {

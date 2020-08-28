@@ -154,7 +154,7 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
     public void onShowPopupClicked(HTMLPanel button) {
         getPopup().getChildContainer().clear();
         getSelector().fillFromBegin(this);
-        getPopup().showNear(button);
+        getPopup().showNear(button.getElement());
     }
 
     public void setEnsureDebugId(String debugId) {
@@ -232,7 +232,7 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
     private static final String DISABLE_STYLENAME ="disabled";
     private static final String FOCUS_STYLENAME ="focused";
     private SelectorPopupWithSearch popup = new SelectorPopupWithSearch();
-    interface InputSelectorUiBinder extends UiBinder<HTMLPanel, FormPopupSingleSelector> { }
-    private static InputSelectorUiBinder ourUiBinder = GWT.create(InputSelectorUiBinder.class);
+    interface FormPopupSingleSelectorUiBinder extends UiBinder<HTMLPanel, FormPopupSingleSelector> { }
+    private static FormPopupSingleSelectorUiBinder ourUiBinder = GWT.create(FormPopupSingleSelectorUiBinder.class);
 
 }

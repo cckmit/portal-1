@@ -90,7 +90,7 @@ public class ButtonPopupMultiSelector<T> extends AbstractPopupSelector<T>
         if (!getPopup().isVisible()) {
             getPopup().getChildContainer().clear();
             getSelector().fillFromBegin(this);
-            getPopup().showNear(button);
+            getPopup().showNear(button.getElement());
         }
     }
 
