@@ -117,9 +117,7 @@ public class RoomReservationServiceImpl implements RoomReservationService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        boolean outdated = isReservationStarted(stored)
-                        || isReservationFinished(reservation);
-        if (outdated) {
+        if (isReservationFinished(reservation)) {
             return error(En_ResultStatus.ROOM_RESERVATION_OUTDATED);
         }
 
