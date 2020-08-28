@@ -76,7 +76,7 @@ public abstract class AbsenceCreateActivity extends AbsenceCommonActivity {
 
         absenceController.saveAbsences(collect, new FluentCallback<List<Long>>()
                 .withSuccess(absence -> {
-                    fireEvent(new NotifyEvents.Show(lang.absenceCreated(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new NotifyEvents.Show(lang.absenceCreated(collect.size()), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new EmployeeEvents.Update(collect.get(0).getPersonId()));
                     afterSave.run();
                 }));

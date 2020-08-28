@@ -2884,7 +2884,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String absenceButtonCreate();
 
-    String absenceCreated();
+    String absenceCreated(@PluralCount int count);
 
     String absences();
 
