@@ -28,6 +28,10 @@ public class ContactInfo implements Serializable, AbstractContactInfo {
         this.itemList = new ArrayList<>(src.itemList);
     }
 
+    public ContactInfo(List<ContactItem> itemList) {
+        this.itemList = itemList;
+    }
+
 
     /**
      * возвращает список всех элементов
@@ -125,5 +129,11 @@ public class ContactInfo implements Serializable, AbstractContactInfo {
     public ContactItem replaceOthers(En_ContactItemType type) {
         itemList.removeIf(contactItem -> contactItem.isItemOf(type));
         return addItem(type);
+    }
+
+    @Override
+    public List<ContactItem> addItems(List<ContactItem> items) {
+        itemList.addAll(items);
+        return items;
     }
 }
