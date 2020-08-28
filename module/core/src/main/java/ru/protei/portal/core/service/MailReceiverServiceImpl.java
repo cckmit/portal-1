@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.config.PortalConfigData;
 import ru.protei.portal.core.model.struct.MailReceiveInfo;
 import ru.protei.portal.core.service.events.EventPublisherService;
 
@@ -13,7 +14,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.function.Function;
 
 import static ru.protei.portal.util.MailReceiverUtils.*;
 
@@ -21,8 +21,10 @@ public class MailReceiverServiceImpl implements MailReceiverService {
 
     private static Logger log = LoggerFactory.getLogger(MailReceiverServiceImpl.class);
     private Store store;
-    private Function<Store, Boolean> connect;
     private FetchProfile fetchProfile = createFetchProfile();
+
+    @Autowired
+    PortalConfig portalConfig;
 
     @Autowired
     EventPublisherService publisherService;
@@ -31,33 +33,17 @@ public class MailReceiverServiceImpl implements MailReceiverService {
     CaseCommentService caseCommentService;
 
     @Autowired
-    public void onInit(PortalConfig portalConfig) {
+    public void onInit() {
         try {
             store = Session.getInstance(createProperties()).getStore();
         } catch (NoSuchProviderException e) {
             log.error("onInit(): fail to get store");
         }
-        connect = (store) -> {
-                try {
-                    if (!store.isConnected()) {
-                        store.connect(
-                                portalConfig.data().getMailReceiver().getHost(),
-                                portalConfig.data().getMailReceiver().getUser(),
-                                portalConfig.data().getMailReceiver().getPass());
-                    }
-                    return true;
-                } catch (MessagingException e) {
-                    log.error("connect(): fail to connect user={}, host={}",
-                            portalConfig.data().getMailReceiver().getUser(),
-                            portalConfig.data().getMailReceiver().getHost());
-                    return false;
-                }
-        };
     }
 
     @Override
     public void mailForComment() {
-        if (!connect.apply(store)) {
+        if (!connect(store, portalConfig.data().getMailReceiver())) {
             return;
         }
 
@@ -73,12 +59,21 @@ public class MailReceiverServiceImpl implements MailReceiverService {
             for (Message message : search) {
                 mailReceiveInfos.add(parseMessage(message));
             }
-
+            inbox.close(false);
             store.close();
 
             caseCommentService.addMailComments(mailReceiveInfos);
+
         } catch (MessagingException | IOException e) {
             log.error("mailForComment(): fail, e = ", e);
+        } finally {
+            if (store != null) {
+                try {
+                    store.close();
+                } catch (MessagingException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -97,7 +92,22 @@ public class MailReceiverServiceImpl implements MailReceiverService {
         return fetchProfile;
     }
 
+    private boolean connect(Store store, PortalConfigData.MailReceiverConfig mailReceiverConfig) {
+        try {
+            if (!store.isConnected()) {
+                store.connect(mailReceiverConfig.getHost(), mailReceiverConfig.getUser(), mailReceiverConfig.getPass());
+            }
+            return true;
+        } catch (MessagingException e) {
+            log.error("connect(): fail to connect user={}, host={}", mailReceiverConfig.getUser(), mailReceiverConfig.getHost());
+            return false;
+        }
+    }
+
     private MailReceiveInfo parseMessage(Message message) throws IOException, MessagingException {
-        return new MailReceiveInfo(getCaseNo(message), getSenderEmail(message), extractText(message));
+        return new MailReceiveInfo(
+                getCaseNo(message),
+                getSenderEmail(message),
+                extractText(message));
     }
 }

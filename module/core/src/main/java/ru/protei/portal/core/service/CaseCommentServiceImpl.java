@@ -1,6 +1,9 @@
 package ru.protei.portal.core.service;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.safety.Whitelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,7 @@ import ru.protei.portal.core.model.event.CaseCommentSavedClientEvent;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
+import ru.protei.portal.core.model.struct.MailReceiveContentAndType;
 import ru.protei.portal.core.model.struct.MailReceiveInfo;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseCommentShortView;
@@ -525,19 +529,29 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             log.info("addMailComments(): process mailReceiveInfo={}", mailReceiveInfo);
 
             caseCommentDAO.persist(
-                    createComment(caseObject, personDAO.get(employeeShortView.getId()), mailReceiveInfo.getText()));
+                    createComment(caseObject, personDAO.get(employeeShortView.getId()), mailReceiveInfo.getContentAndTypes()));
         }
 
         return ok();
     }
 
-    private CaseComment createComment(CaseObject caseObject, Person person, String comment) {
+    private CaseComment createComment(CaseObject caseObject, Person person, List<MailReceiveContentAndType> contentAndTypes) {
         CaseComment caseComment = new CaseComment();
         caseComment.setCaseId(caseObject.getId());
         caseComment.setAuthor(person);
         caseComment.setCreated(new Date());
         caseComment.setOriginalAuthorFullName(person.getDisplayName());
         caseComment.setOriginalAuthorName(person.getDisplayName());
+        String comment = contentAndTypes.stream().map(contentAndType -> {
+            if (contentAndType.getContentType().startsWith("TEXT/HTML")) {
+                contentAndType.setContent(
+                        Jsoup.clean(
+                                Jsoup.parse(contentAndType.getContent()).html(), "", Whitelist.none(),
+                                                        new Document.OutputSettings().prettyPrint(true))
+                );
+            }
+            return contentAndType;
+        }).map(MailReceiveContentAndType::getContent).collect(Collectors.joining("/n"));
         caseComment.setText(comment);
 
         return caseComment;
