@@ -24,6 +24,8 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
     @EventListener
     @Override
     public void onApplicationStartOrRefreshContext(ContextRefreshedEvent event) {
+        scheduler.scheduleAtFixedRate(mailReceiverService::mailForComment, 30 * 1000);
+
         log.info("onApplicationStartOrRefresh() Context refresh counter={} refresh source: {}",  contextRefreshedEventCounter.getAndIncrement(), event.getSource());
         if (isPortalStarted.getAndSet( true )) return;
 
@@ -133,6 +135,8 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
     PersonCaseFilterService personCaseFilterService;
     @Autowired
     EventPublisherService publisherService;
+    @Autowired
+    MailReceiverService mailReceiverService;
 
     private static AtomicBoolean isPortalStarted = new AtomicBoolean(false);
     private static AtomicInteger contextRefreshedEventCounter = new AtomicInteger(0);

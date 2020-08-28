@@ -997,6 +997,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public MailReceiverService getMailReceiverService() {
+        return new MailReceiverServiceImpl();
+    }
+
+    @Bean
     public ReportCase getReportCase() {
         return new ReportCaseImpl();
     }
