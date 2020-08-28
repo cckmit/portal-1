@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
+import ru.protei.portal.core.model.struct.MailReceiveInfo;
 import ru.protei.portal.core.model.view.CaseCommentShortView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -116,4 +117,6 @@ public interface CaseCommentService {
     Result<Boolean> updateProjectCommentsFromYoutrack(AuthToken token, CaseComment comment );
 
     Result<Boolean> deleteProjectCommentsFromYoutrack(AuthToken token, String commentRemoteId);
+
+    Result<Void> addMailComments(List<MailReceiveInfo> mailReceiveInfos);
 }

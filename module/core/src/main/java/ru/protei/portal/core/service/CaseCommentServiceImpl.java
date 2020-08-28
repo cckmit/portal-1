@@ -9,24 +9,23 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
-import ru.protei.portal.core.event.ProjectAttachmentEvent;
-import ru.protei.portal.core.model.event.CaseCommentSavedClientEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
+import ru.protei.portal.core.event.ProjectAttachmentEvent;
 import ru.protei.portal.core.event.ProjectCommentEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.exception.RollbackTransactionException;
-import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
-import ru.protei.portal.core.model.dao.CaseCommentDAO;
-import ru.protei.portal.core.model.dao.CaseCommentShortViewDAO;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.event.CaseCommentRemovedClientEvent;
+import ru.protei.portal.core.model.event.CaseCommentSavedClientEvent;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
+import ru.protei.portal.core.model.struct.MailReceiveInfo;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseCommentShortView;
+import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
@@ -500,6 +499,50 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         return ok(true).publishEvents(events);
     }
 
+    @Override
+    @Transactional
+    public Result<Void> addMailComments(List<MailReceiveInfo> mailReceiveInfos) {
+        log.info("addMailComments(): mailReceiveInfos={}", mailReceiveInfos);
+
+        for (MailReceiveInfo mailReceiveInfo : mailReceiveInfos) {
+            if (!mailReceiveInfo.hasFullInfo()) {
+                log.warn("addMailComments(): no Full Info mailReceiveInfo={}", mailReceiveInfo);
+                continue;
+            }
+
+            CaseObject caseObject = caseObjectDAO.getCaseByCaseno(mailReceiveInfo.getCaseNo());
+            if (caseObject == null) {
+                log.warn("addMailComments(): no case ={}", mailReceiveInfo.getCaseNo());
+                continue;
+            }
+
+            EmployeeShortView employeeShortView = employeeShortViewDAO.getEmployeeByEmail(mailReceiveInfo.getSenderEmail());
+            if (employeeShortView == null) {
+                log.warn("addMailComments(): no person={}", mailReceiveInfo.getSenderEmail());
+                continue;
+            }
+
+            log.info("addMailComments(): process mailReceiveInfo={}", mailReceiveInfo);
+
+            caseCommentDAO.persist(
+                    createComment(caseObject, personDAO.get(employeeShortView.getId()), mailReceiveInfo.getText()));
+        }
+
+        return ok();
+    }
+
+    private CaseComment createComment(CaseObject caseObject, Person person, String comment) {
+        CaseComment caseComment = new CaseComment();
+        caseComment.setCaseId(caseObject.getId());
+        caseComment.setAuthor(person);
+        caseComment.setCreated(new Date());
+        caseComment.setOriginalAuthorFullName(person.getDisplayName());
+        caseComment.setOriginalAuthorName(person.getDisplayName());
+        caseComment.setText(comment);
+
+        return caseComment;
+    }
+
     private Result<List<CaseComment>> getList(CaseCommentQuery query) {
         List<CaseComment> comments = caseCommentDAO.getCaseComments(query);
         return getList(comments);
@@ -600,6 +643,10 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     CaseCommentShortViewDAO caseCommentShortViewDAO;
     @Autowired
     CaseAttachmentDAO caseAttachmentDAO;
+    @Autowired
+    EmployeeShortViewDAO employeeShortViewDAO;
+    @Autowired
+    PersonDAO personDAO;
 
     @Autowired
     private ClientEventService clientEventService;

@@ -5,10 +5,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.struct.MailReceiveInfo;
+import ru.protei.portal.core.service.events.EventPublisherService;
 
 import javax.mail.*;
 import javax.mail.search.FlagTerm;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.function.Function;
 
@@ -22,6 +25,12 @@ public class MailReceiverServiceImpl implements MailReceiverService {
     private FetchProfile fetchProfile = createFetchProfile();
 
     @Autowired
+    EventPublisherService publisherService;
+
+    @Autowired
+    CaseCommentService caseCommentService;
+
+    @Autowired
     public void onInit(PortalConfig portalConfig) {
         try {
             store = Session.getInstance(createProperties()).getStore();
@@ -30,10 +39,12 @@ public class MailReceiverServiceImpl implements MailReceiverService {
         }
         connect = (store) -> {
                 try {
-                    store.connect(
-                            portalConfig.data().getMailReceiver().getHost(),
-                            portalConfig.data().getMailReceiver().getUser(),
-                            portalConfig.data().getMailReceiver().getPass());
+                    if (!store.isConnected()) {
+                        store.connect(
+                                portalConfig.data().getMailReceiver().getHost(),
+                                portalConfig.data().getMailReceiver().getUser(),
+                                portalConfig.data().getMailReceiver().getPass());
+                    }
                     return true;
                 } catch (MessagingException e) {
                     log.error("connect(): fail to connect user={}, host={}",
@@ -54,18 +65,18 @@ public class MailReceiverServiceImpl implements MailReceiverService {
             Folder inbox = store.getFolder("INBOX");
             inbox.open(Folder.READ_WRITE);
             Message[] search = inbox.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
+            if (search.length == 0) {
+                return;
+            }
             inbox.fetch(search, fetchProfile);
-
+            List<MailReceiveInfo> mailReceiveInfos = new ArrayList<>();
             for (Message message : search) {
-                MailReceiveInfo mailInfo = parseMessage(message);
-                System.out.println("message              : " + message.getMessageNumber());
-                System.out.println("mailInfo.caseNo      : " + mailInfo.caseNo);
-                System.out.println("mailInfo.senderEmail : " + mailInfo.senderEmail);
-                System.out.println("mailInfo.text        : " + mailInfo.text.substring(0, Math.min(mailInfo.text.length(), 100)));
-                System.out.println();
+                mailReceiveInfos.add(parseMessage(message));
             }
 
             store.close();
+
+            caseCommentService.addMailComments(mailReceiveInfos);
         } catch (MessagingException | IOException e) {
             log.error("mailForComment(): fail, e = ", e);
         }
