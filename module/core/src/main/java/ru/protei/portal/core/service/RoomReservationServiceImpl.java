@@ -58,9 +58,9 @@ public class RoomReservationServiceImpl implements RoomReservationService {
                 return error(En_ResultStatus.INCORRECT_PARAMS);
             }
 
-            boolean outdated = isReservationFinished(reservation);
-            if (outdated) {
-                return error(En_ResultStatus.ROOM_RESERVATION_OUTDATED);
+            boolean finished = isReservationFinished(reservation);
+            if (finished) {
+                return error(En_ResultStatus.ROOM_RESERVATION_FINISHED);
             }
 
             boolean hasAccessToRoom = hasAccessToRoom(token, En_Privilege.ROOM_RESERVATION_CREATE, findRoom(getActiveRooms(), reservation.getRoom()));
@@ -117,8 +117,9 @@ public class RoomReservationServiceImpl implements RoomReservationService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        if (isReservationFinished(reservation)) {
-            return error(En_ResultStatus.ROOM_RESERVATION_OUTDATED);
+        boolean finished = isReservationFinished(reservation);
+        if (finished) {
+            return error(En_ResultStatus.ROOM_RESERVATION_FINISHED);
         }
 
         boolean hasAccess = hasAccessToReservation(token, En_Privilege.ROOM_RESERVATION_EDIT, stored);
