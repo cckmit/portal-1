@@ -588,6 +588,7 @@ public class TemplateServiceImpl implements TemplateService {
     @Override
     public PreparedTemplate getAbsenceNotificationSubject(Person initiator, PersonAbsence absence) {
         Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("is_leave", absence.getReason().isLeave());
         templateModel.put("absentEmployee", absence.getPerson().getName());
         templateModel.put("initiator", initiator.getDisplayName());
 
