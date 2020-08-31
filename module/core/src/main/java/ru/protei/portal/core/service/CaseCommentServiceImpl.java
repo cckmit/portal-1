@@ -42,8 +42,8 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
-import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
+import static ru.protei.portal.core.model.dict.En_Privilege.ISSUE_EDIT;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public class CaseCommentServiceImpl implements CaseCommentService {
 
@@ -527,6 +527,26 @@ public class CaseCommentServiceImpl implements CaseCommentService {
                 continue;
             }
 
+            List<UserLogin> userLogins = userLoginDAO.findByPersonId( employeeShortView.getId() );
+            if (userLogins.isEmpty()) {
+                log.warn("addCommentsReceivedByMail(): no userLogin={}", receivedMail.getSenderEmail());
+                continue;
+            }
+
+            UserLogin login = userLogins.get(0);
+
+            jdbcManyRelationsHelper.fill( login, "roles" );
+            if (!policyService.hasGrantAccessFor(login.getRoles(), ISSUE_EDIT)) {
+                log.warn("addCommentsReceivedByMail(): no privilege={}", receivedMail.getSenderEmail());
+                continue;
+            }
+
+            Person person = personDAO.get(employeeShortView.getId());
+            if (person == null) {
+                log.warn("addCommentsReceivedByMail(): no person={}", receivedMail.getSenderEmail());
+                continue;
+            }
+
             log.info("addCommentsReceivedByMail(): process receivedMail={}", receivedMail);
 
             comments.add(
@@ -665,6 +685,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     EmployeeShortViewDAO employeeShortViewDAO;
     @Autowired
     PersonDAO personDAO;
+    @Autowired
+    UserLoginDAO userLoginDAO;
 
     @Autowired
     private ClientEventService clientEventService;
