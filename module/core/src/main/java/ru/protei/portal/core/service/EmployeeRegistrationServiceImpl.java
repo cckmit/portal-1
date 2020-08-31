@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -288,7 +289,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
 
     private CharSequence makeCommonDescriptionString( EmployeeRegistration er ) {
         return join( "Анкета: ", makeYtLinkToCrmRegistration( er.getId(), er.getEmployeeFullName() ),
-                "\n", "Отдел: ", er.getDepartment(),
+                "\n", "Отдел: ", StringUtils.emptyIfNull(er.getDepartment()),
                 "\n", "Руководитель: ", er.getHeadOfDepartmentShortName(),
                 "\n", "Расположение рабочего места: ", er.getWorkplace()
         );
@@ -344,6 +345,8 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
                 return "Store Delivery";
             case EMAIL:
                 return "почта";
+            case VPN:
+                return "OpenVPN";
         }
         return "";
     }
