@@ -166,6 +166,7 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         PopupSelectableItem<T> item = new PopupSelectableItem<>();
         item.setElementHtml( elementHtml );
         item.setSelected( isSelected( element ) );
+        item.setTitle(elementHtml);
         return item;
     }
 

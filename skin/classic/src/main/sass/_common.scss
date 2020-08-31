@@ -2818,10 +2818,9 @@ div.select2-container {
       padding-left: 0;
       margin-bottom: 5px;
       li.select2-search-choice {
-        display: inline !important;
         padding-right: 10px;
         .selected-value {
-          max-width: 85%;
+          max-width: 100px;
           text-overflow: ellipsis;
           overflow: hidden;
           white-space: nowrap;
@@ -5043,4 +5042,32 @@ table {
 
 .font-large {
   font-size: large !important;
+}
+
+.selectable-item.selectable-item-text {
+  width: inherit;
+  .checkbox {
+    width: inherit;
+    label {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      bottom: -5px;
+      width: inherit;
+    }
+  }
+}
+
+.selector-popup {
+  .dropdown-menu {
+    ul {
+      li {
+        a {
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+        }
+      }
+    }
+  }
 }

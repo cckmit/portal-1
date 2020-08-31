@@ -40,6 +40,7 @@ public class SelectorItem
 
     public void setName( String name ) {
         text.setInnerText( name );
+        setTitle(name);
     }
 
     public void setStyle( String style ) {
