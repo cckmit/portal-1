@@ -547,7 +547,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("is_updated", action == RoomReservationNotificationEvent.Action.UPDATED);
         templateModel.put("is_removed", action == RoomReservationNotificationEvent.Action.REMOVED);
         templateModel.put("person_responsible", roomReservation.getPersonResponsible() != null
-                ? roomReservation.getPersonResponsible().getDisplayName()
+                ? roomReservation.getPersonResponsible().getName()
                 : "?");
         templateModel.put("room", roomReservation.getRoom() != null
                 ? roomReservation.getRoom().getName()

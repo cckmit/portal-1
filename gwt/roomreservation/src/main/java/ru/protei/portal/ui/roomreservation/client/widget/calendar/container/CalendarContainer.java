@@ -198,7 +198,7 @@ public class CalendarContainer extends Composite implements HasValue<RoomReserva
 
     private String makeReservationTitle(RoomReservation reservation) {
         return reservation.getPersonResponsible() != null
-                ? reservation.getPersonResponsible().getDisplayShortName()
+                ? reservation.getPersonResponsible().getName()
                 : "?";
     }
 
