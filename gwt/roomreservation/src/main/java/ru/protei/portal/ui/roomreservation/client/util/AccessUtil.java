@@ -23,9 +23,9 @@ public class AccessUtil {
     }
 
     public static boolean canEdit(PolicyService policyService, RoomReservation reservation) {
-        boolean isReservationStarted = isReservationStarted(reservation);
+        boolean isReservationFinished = isReservationFinished(reservation);
         boolean hasAccess = hasAccessToReservation(policyService, En_Privilege.ROOM_RESERVATION_EDIT, reservation);
-        return !isReservationStarted && hasAccess;
+        return !isReservationFinished && hasAccess;
     }
 
     public static boolean canRemove(PolicyService policyService, RoomReservation reservation) {
@@ -61,6 +61,11 @@ public class AccessUtil {
     private static boolean isReservationStarted(RoomReservation reservation) {
         Date now = new Date();
         return now.after(reservation.getDateFrom());
+    }
+
+    private static boolean isReservationFinished(RoomReservation reservation) {
+        Date now = new Date();
+        return now.after(reservation.getDateUntil());
     }
 
     public static boolean hasAccessToRoomView(PolicyService policyService) {

@@ -2692,7 +2692,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String roomReservationRemoved();
 
-    String errRoomReservationOutdated();
+    String errRoomReservationFinished();
 
     String errRoomReservationRoomNotAccessible();
 
