@@ -131,9 +131,8 @@ public class BirthdaysCalendarContainer extends Composite implements HasValue<Em
         HTMLPanel containerImage = makeStyledDiv("bday-container-image thumbnail-wrapper d24 circular");
         containerImage.add(makeStyledImg("thumbnail-photo", getAvatarUrl(birthday.getId(), En_CompanyCategory.HOME, birthday.getGender())));
         container.add(containerImage);
-        HTMLPanel containerText = makeStyledDiv("bday-container-text flex-grow-1");
-        containerText.add(makeStyledDiv("bday-container-text-1 no-margin text-truncate", birthday.getName()));
-        containerText.add(makeStyledDiv("bday-container-text-2 no-margin text-truncate", getMonthName(birthday.getBirthdayMonth(), lang) + ", " + birthday.getBirthdayDayOfMonth()));
+        HTMLPanel containerText = makeStyledDiv("bday-container-text flex-grow-1 d-flex align-items-center");
+        containerText.add(makeStyledDiv("bday-container-text-0 no-margin text-truncate", birthday.getName()));
         container.add(containerText);
         bday.add(container);
         bday.addClickHandler(event -> {
