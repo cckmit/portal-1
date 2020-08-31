@@ -24,4 +24,12 @@ public class MailReceiveContentAndType {
     public void setContentType(String contentType) {
         this.contentType = contentType;
     }
+
+    @Override
+    public String toString() {
+        return "MailReceiveContentAndType{" +
+                "content='" + content + '\'' +
+                ", contentType='" + contentType + '\'' +
+                '}';
+    }
 }

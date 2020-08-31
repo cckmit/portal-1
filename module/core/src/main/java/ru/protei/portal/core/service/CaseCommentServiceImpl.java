@@ -26,7 +26,7 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
 import ru.protei.portal.core.model.struct.MailReceiveContentAndType;
-import ru.protei.portal.core.model.struct.MailReceiveInfo;
+import ru.protei.portal.core.model.struct.ReceivedMail;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseCommentShortView;
 import ru.protei.portal.core.model.view.EmployeeShortView;
@@ -505,32 +505,36 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     @Override
     @Transactional
-    public Result<Void> addMailComments(List<MailReceiveInfo> mailReceiveInfos) {
-        log.info("addMailComments(): mailReceiveInfos={}", mailReceiveInfos);
+    public Result<Void> addCommentsReceivedByMail(List<ReceivedMail> receivedMails) {
+        log.info("addCommentsReceivedByMail(): receivedMails={}", receivedMails);
 
-        for (MailReceiveInfo mailReceiveInfo : mailReceiveInfos) {
-            if (!mailReceiveInfo.hasFullInfo()) {
-                log.warn("addMailComments(): no Full Info mailReceiveInfo={}", mailReceiveInfo);
+        List<CaseComment> comments = new ArrayList<>();
+        for (ReceivedMail receivedMail : receivedMails) {
+            if (!receivedMail.hasFullInfo()) {
+                log.warn("addCommentsReceivedByMail(): no full info receivedMail={}", receivedMail);
                 continue;
             }
 
-            CaseObject caseObject = caseObjectDAO.getCaseByCaseno(mailReceiveInfo.getCaseNo());
+            CaseObject caseObject = caseObjectDAO.getCaseByCaseno(receivedMail.getCaseNo());
             if (caseObject == null) {
-                log.warn("addMailComments(): no case ={}", mailReceiveInfo.getCaseNo());
+                log.warn("addCommentsReceivedByMail(): no case ={}", receivedMail.getCaseNo());
                 continue;
             }
 
-            EmployeeShortView employeeShortView = employeeShortViewDAO.getEmployeeByEmail(mailReceiveInfo.getSenderEmail());
+            EmployeeShortView employeeShortView = employeeShortViewDAO.getEmployeeByEmail(receivedMail.getSenderEmail());
             if (employeeShortView == null) {
-                log.warn("addMailComments(): no person={}", mailReceiveInfo.getSenderEmail());
+                log.warn("addCommentsReceivedByMail(): no employee={}", receivedMail.getSenderEmail());
                 continue;
             }
 
-            log.info("addMailComments(): process mailReceiveInfo={}", mailReceiveInfo);
+            log.info("addCommentsReceivedByMail(): process receivedMail={}", receivedMail);
 
-            caseCommentDAO.persist(
-                    createComment(caseObject, personDAO.get(employeeShortView.getId()), mailReceiveInfo.getContentAndTypes()));
+            comments.add(
+                    createComment(caseObject, personDAO.get(employeeShortView.getId()), receivedMail.getContentAndTypes())
+            );
         }
+
+        caseCommentDAO.persistBatch(comments);
 
         return ok();
     }
@@ -542,19 +546,19 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         caseComment.setCreated(new Date());
         caseComment.setOriginalAuthorFullName(person.getDisplayName());
         caseComment.setOriginalAuthorName(person.getDisplayName());
-        String comment = contentAndTypes.stream().map(contentAndType -> {
-            if (contentAndType.getContentType().startsWith("TEXT/HTML")) {
-                contentAndType.setContent(
-                        Jsoup.clean(
-                                Jsoup.parse(contentAndType.getContent()).html(), "", Whitelist.none(),
-                                                        new Document.OutputSettings().prettyPrint(true))
-                );
-            }
-            return contentAndType;
-        }).map(MailReceiveContentAndType::getContent).collect(Collectors.joining("/n"));
+        String comment = contentAndTypes.stream()
+                .map(contentAndType -> contentAndType.getContentType().startsWith("TEXT/HTML") ?
+                        cleanHTMLContent(contentAndType.getContent())
+                        : contentAndType.getContent())
+                .collect(Collectors.joining("\n"));
         caseComment.setText(comment);
 
         return caseComment;
+    }
+
+    private String cleanHTMLContent(String htmlContent) {
+        return Jsoup.clean(Jsoup.parse(htmlContent).html(),
+                "", Whitelist.none(), new Document.OutputSettings().prettyPrint(false));
     }
 
     private Result<List<CaseComment>> getList(CaseCommentQuery query) {

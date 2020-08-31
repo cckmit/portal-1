@@ -2,12 +2,12 @@ package ru.protei.portal.core.model.struct;
 
 import java.util.List;
 
-public class MailReceiveInfo {
+public class ReceivedMail {
     private Long caseNo;
     private String senderEmail;
     private List<MailReceiveContentAndType> contentAndTypes;
 
-    public MailReceiveInfo(Long caseNo, String senderEmail, List<MailReceiveContentAndType> contentAndTypes) {
+    public ReceivedMail(Long caseNo, String senderEmail, List<MailReceiveContentAndType> contentAndTypes) {
         this.caseNo = caseNo;
         this.senderEmail = senderEmail;
         this.contentAndTypes = contentAndTypes;

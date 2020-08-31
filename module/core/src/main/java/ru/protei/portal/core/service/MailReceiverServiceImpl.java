@@ -3,9 +3,10 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.config.PortalConfigData;
-import ru.protei.portal.core.model.struct.MailReceiveInfo;
+import ru.protei.portal.core.model.struct.ReceivedMail;
 import ru.protei.portal.core.service.events.EventPublisherService;
 
 import javax.mail.*;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
 import static ru.protei.portal.util.MailReceiverUtils.*;
 
 public class MailReceiverServiceImpl implements MailReceiverService {
@@ -42,7 +44,8 @@ public class MailReceiverServiceImpl implements MailReceiverService {
     }
 
     @Override
-    public void mailForComment() {
+    @Async(BACKGROUND_TASKS)
+    public void performReceiveMailAndAddComments() {
         if (!connect(store, portalConfig.data().getMailReceiver())) {
             return;
         }
@@ -52,20 +55,25 @@ public class MailReceiverServiceImpl implements MailReceiverService {
             inbox.open(Folder.READ_WRITE);
             Message[] search = inbox.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
             if (search.length == 0) {
+                log.info("performReceiveMailAndAddComments(): no messages");
                 return;
             }
             inbox.fetch(search, fetchProfile);
-            List<MailReceiveInfo> mailReceiveInfos = new ArrayList<>();
+            List<ReceivedMail> receivedMails = new ArrayList<>();
             for (Message message : search) {
-                mailReceiveInfos.add(parseMessage(message));
+                log.info("performReceiveMailAndAddComments(): message = {}", message);
+                try {
+                    receivedMails.add(parseMessage(message));
+                } catch (MessagingException | IOException e) {
+                    log.error("performReceiveMailAndAddComments(): fail perform message, e = ", e);
+                }
             }
             inbox.close(false);
             store.close();
 
-            caseCommentService.addMailComments(mailReceiveInfos);
-
-        } catch (MessagingException | IOException e) {
-            log.error("mailForComment(): fail, e = ", e);
+            caseCommentService.addCommentsReceivedByMail(receivedMails);
+        } catch (MessagingException e) {
+            log.error("performReceiveMailAndAddComments(): fail, e = ", e);
         } finally {
             if (store != null) {
                 try {
@@ -104,10 +112,10 @@ public class MailReceiverServiceImpl implements MailReceiverService {
         }
     }
 
-    private MailReceiveInfo parseMessage(Message message) throws IOException, MessagingException {
-        return new MailReceiveInfo(
+    private ReceivedMail parseMessage(Message message) throws IOException, MessagingException {
+        return new ReceivedMail(
                 getCaseNo(message),
                 getSenderEmail(message),
-                extractText(message));
+                getContent(message));
     }
 }
