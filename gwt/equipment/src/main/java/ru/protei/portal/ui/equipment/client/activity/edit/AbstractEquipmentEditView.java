@@ -52,4 +52,8 @@ public interface AbstractEquipmentEditView extends IsWidget {
     HasEnabled createDocumentButtonEnabled();
 
     HasVisibility documentsVisibility();
+
+    HasVisibility nameErrorLabelVisibility();
+
+    HasText nameErrorLabel();
 }

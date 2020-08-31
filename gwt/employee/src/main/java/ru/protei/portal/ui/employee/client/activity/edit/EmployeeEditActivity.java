@@ -447,9 +447,9 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         view.workerPosition().setValue(null);
         onCompanySelected();
 
-        view.firstNameErrorLabel().setText(lang.contactFieldLengthExceed(view.firstNameLabel(), FIRST_NAME_SIZE));
-        view.secondNameErrorLabel().setText(lang.contactFieldLengthExceed(view.secondNameLabel(), SECOND_NAME_SIZE));
-        view.lastNameErrorLabel().setText(lang.contactFieldLengthExceed(view.lastNameLabel(), LAST_NAME_SIZE));
+        view.firstNameErrorLabel().setText(lang.promptFieldLengthExceed(view.firstNameLabel(), FIRST_NAME_SIZE));
+        view.secondNameErrorLabel().setText(lang.promptFieldLengthExceed(view.secondNameLabel(), SECOND_NAME_SIZE));
+        view.lastNameErrorLabel().setText(lang.promptFieldLengthExceed(view.lastNameLabel(), LAST_NAME_SIZE));
 
         boolean isEnabled = !employee.isFired() && (employee.getWorkerEntries() == null || employee.getWorkerEntries().size() == 0 || !isWorkerInSyncCompany);
         view.fireBtnVisibility().setVisible(personId != null & isEnabled & !employee.isFired());

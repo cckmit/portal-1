@@ -10,9 +10,11 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.ent.DecimalNumber;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.events.InputEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.decimalnumber.multiple.MultipleDecimalNumberInput;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
@@ -35,6 +37,7 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        nameErrorLabel().setText(lang.promptFieldLengthExceed(lang.equipmentNameBySpecification(), CrmConstants.EquipmentConstants.NAME_SIZE));
     }
 
     @Override
@@ -145,6 +148,16 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
         dateTextBox.setEnabled(false);
     }
 
+    @Override
+    public HasVisibility nameErrorLabelVisibility() {
+        return nameSpecificationErrorLabel;
+    }
+
+    @Override
+    public HasText nameErrorLabel() {
+        return nameSpecificationErrorLabel;
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -166,16 +179,16 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
         }
     }
 
-    @UiHandler( "numbers" )
-    public void onDecimalNumbersChanged(ValueChangeEvent<List<DecimalNumber>> event) {
-        if ( activity != null ) {
-            activity.onDecimalNumbersChanged();
-        }
-    }
-
     @UiHandler("project")
     public void onProjectChanged(ValueChangeEvent<EntityOption> event) {
         activity.onProjectChanged();
+    }
+
+    @UiHandler("nameSpecification")
+    public void onNameSpecificationChanged(InputEvent event) {
+        if (activity != null) {
+            activity.onNameChanged();
+        }
     }
 
     @Inject
@@ -191,6 +204,8 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     ValidableTextBox nameSldWrks;
     @UiField
     ValidableTextBox nameSpecification;
+    @UiField
+    Label nameSpecificationErrorLabel;
     @UiField
     TextArea comment;
     @Inject

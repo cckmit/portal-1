@@ -380,11 +380,11 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
         view.showInfo(userLogin.getId() != null);
 
-        view.firstNameErrorLabel().setText(lang.contactFieldLengthExceed(view.firstNameLabel(), FIRST_NAME_SIZE));
-        view.secondNameErrorLabel().setText(lang.contactFieldLengthExceed(view.secondNameLabel(), SECOND_NAME_SIZE));
-        view.lastNameErrorLabel().setText(lang.contactFieldLengthExceed(view.lastNameLabel(), LAST_NAME_SIZE));
-        view.shortNameErrorLabel().setText(lang.contactFieldLengthExceed(view.shortNameLabel(), SHORT_NAME_SIZE));
-        view.loginErrorLabel().setText(lang.contactFieldLengthExceed(view.loginLabel(), LOGIN_SIZE));
+        view.firstNameErrorLabel().setText(lang.promptFieldLengthExceed(view.firstNameLabel(), FIRST_NAME_SIZE));
+        view.secondNameErrorLabel().setText(lang.promptFieldLengthExceed(view.secondNameLabel(), SECOND_NAME_SIZE));
+        view.lastNameErrorLabel().setText(lang.promptFieldLengthExceed(view.lastNameLabel(), LAST_NAME_SIZE));
+        view.shortNameErrorLabel().setText(lang.promptFieldLengthExceed(view.shortNameLabel(), SHORT_NAME_SIZE));
+        view.loginErrorLabel().setText(lang.promptFieldLengthExceed(view.loginLabel(), LOGIN_SIZE));
     }
 
     private boolean passwordNotDefined() {

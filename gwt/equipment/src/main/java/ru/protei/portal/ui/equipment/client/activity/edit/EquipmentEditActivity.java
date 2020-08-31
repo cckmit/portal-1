@@ -13,6 +13,8 @@ import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.dto.Project;
+import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.util.CrmConstants.EquipmentConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
@@ -106,6 +108,11 @@ public abstract class EquipmentEditActivity
             return;
         }
 
+        if (equipment.getName().length() > EquipmentConstants.NAME_SIZE) {
+            fireEvent(new NotifyEvents.Show(lang.promptFieldLengthExceed(lang.equipmentNameBySpecification(), EquipmentConstants.NAME_SIZE), NotifyEvents.NotifyType.ERROR));
+            return;
+        }
+
         equipmentService.saveEquipment(equipment, new FluentCallback<Equipment>()
                 .withError(t -> {
                     if (t instanceof RequestFailedException) {
@@ -129,9 +136,6 @@ public abstract class EquipmentEditActivity
     public void onCancelClicked() {
         fireEvent(new EquipmentEvents.Show(!isNew(this.equipment)));
     }
-
-    @Override
-    public void onDecimalNumbersChanged() {}
 
     @Override
     public void onProjectChanged() {
@@ -170,6 +174,13 @@ public abstract class EquipmentEditActivity
         fillDTO(equipment);
 
         fireEvent(new DocumentEvents.CreateWithEquipment(equipment.getId(), projectId, equipment.getProjectName()));
+    }
+
+    @Override
+    public void onNameChanged() {
+        if (view.name().getValue() != null) {
+            view.nameErrorLabelVisibility().setVisible(view.name().getValue().length() > EquipmentConstants.NAME_SIZE);
+        }
     }
 
     private void fillView(Equipment equipment) {
