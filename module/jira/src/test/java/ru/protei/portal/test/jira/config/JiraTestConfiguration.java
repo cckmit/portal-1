@@ -343,6 +343,11 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public MailReceiverService getMailReceiverService() {
+        return mock(MailReceiverService.class);
+    }
+
+    @Bean
     public YoutrackHttpClient getYoutrackHttpClient() {
         return new YoutrackHttpClientImpl();
     }
@@ -470,5 +475,10 @@ public class JiraTestConfiguration {
     @Bean
     public PersonFavoriteIssuesDAO getPersonFavoritesIssuesDAO() {
         return new PersonFavoriteIssuesDAO_Impl();
+    }
+
+    @Bean
+    public EmployeeShortViewDAO getEmployeeShortViewDAO() {
+        return new EmployeeShortViewDAO_Impl();
     }
 }

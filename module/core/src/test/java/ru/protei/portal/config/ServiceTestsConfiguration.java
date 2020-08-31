@@ -378,6 +378,11 @@ public class ServiceTestsConfiguration {
     }
 
     @Bean
+    public MailReceiverService getMailReceiverService() {
+        return mock(MailReceiverService.class);
+    }
+
+    @Bean
     public ReportCase getReportCase() {
         return new ReportCaseImpl();
     }
