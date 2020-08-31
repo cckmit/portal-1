@@ -32,4 +32,8 @@ public enum En_AbsenceReason implements HasId {
     public boolean isActual() {
         return actual;
     }
+
+    public boolean isLeave() {
+        return id == LEAVE.id || id == LEAVE_WITHOUT_PAY.id;
+    }
 }
