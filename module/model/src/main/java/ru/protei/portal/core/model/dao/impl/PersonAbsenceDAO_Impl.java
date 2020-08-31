@@ -65,7 +65,7 @@ public class PersonAbsenceDAO_Impl extends PortalBaseJdbcDAO<PersonAbsence> impl
                     args.add(dateRange.from);
                 }
                 if (dateRange.to != null) {
-                    condition.append(" and (person_absence.till_time <= ? or person_absence.from_time <= ?)");
+                    condition.append(" and (person_absence.till_time < ? or person_absence.from_time < ?)");
                     args.add(dateRange.to);
                     args.add(dateRange.to);
                 }
