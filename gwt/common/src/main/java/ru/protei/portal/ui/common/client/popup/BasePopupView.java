@@ -72,7 +72,10 @@ public abstract class BasePopupView
 
     public void showNear( UIObject view ) {
         relative = view;
+
+        getElement().getStyle().setLeft(relative.getAbsoluteLeft(), Style.Unit.PX);
         showRelativeTo( relative );
+
         getPositionRoot().getElement().getStyle().setPosition( Style.Position.RELATIVE );
         getPositionRoot().getElement().getStyle().setDisplay( Style.Display.BLOCK );
         getPositionRoot().getElement().getStyle().setWidth( relative.getElement().getParentElement().getOffsetWidth(), Style.Unit.PX );
