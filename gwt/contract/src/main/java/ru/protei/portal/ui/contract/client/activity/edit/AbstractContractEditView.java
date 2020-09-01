@@ -1,9 +1,6 @@
 package ru.protei.portal.ui.contract.client.activity.edit;
 
-import com.google.gwt.user.client.ui.HasEnabled;
-import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.HasVisibility;
-import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_ContractKind;
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
@@ -12,13 +9,14 @@ import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.ent.ContractSpecification;
 import ru.protei.portal.core.model.ent.Contractor;
-import ru.protei.portal.core.model.struct.CostWithCurrencyWithVat;
+import ru.protei.portal.core.model.struct.MoneyWithCurrencyWithVat;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 public interface AbstractContractEditView extends IsWidget {
 
@@ -26,11 +24,11 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasEnabled saveEnabled();
 
-    HasValue<CostWithCurrencyWithVat> cost();
+    HasValue<MoneyWithCurrencyWithVat> cost();
 
     HasValue<String> number();
 
-    HasValue<En_ContractType> type();
+    HasValue<Set<En_ContractType>> types();
 
     void setKind(En_ContractKind kind);
 
@@ -41,6 +39,8 @@ public interface AbstractContractEditView extends IsWidget {
     HasValue<PersonShortView> curator();
 
     HasValue<Date> dateSigning();
+
+    HasValue<Date> dateValidDate();
 
     HasValue<Long> dateValidDays();
 
@@ -60,13 +60,11 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasValue<Contractor> contractor();
 
+    HasEnabled contractorEnabled();
+
     HasValue<PersonShortView> manager();
 
     HasValue<ProductDirectionInfo> direction();
-
-    HasEnabled organizationEnabled();
-
-    HasEnabled contractorEnabled();
 
     void setOrganization(String organization);
 
@@ -85,4 +83,12 @@ public interface AbstractContractEditView extends IsWidget {
     HasEnabled secondContractContractorEnabled();
 
     void setSecondContractOrganization(String organization);
+
+    HasWidgets expenditureContractsContainer();
+
+    HasVisibility expenditureContractsVisibility();
+
+    void setNotAvailableOrganizations(List<Long> organizationsToHide);
+
+    void setSecondContractNotAvailableOrganizations(List<Long> organizationsToHide);
 }

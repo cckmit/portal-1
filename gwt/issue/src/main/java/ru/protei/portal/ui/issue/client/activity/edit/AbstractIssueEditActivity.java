@@ -1,11 +1,12 @@
 package ru.protei.portal.ui.issue.client.activity.edit;
 
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.protei.portal.core.model.ent.Attachment;
 
-public interface AbstractIssueEditActivity {
+public interface AbstractIssueEditActivity extends Activity {
 
-    void removeAttachment( Attachment attachment );
+    void removeAttachment(Attachment attachment );
 
     void onNameAndDescriptionEditClicked();
 

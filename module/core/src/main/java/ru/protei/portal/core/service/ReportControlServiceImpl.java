@@ -52,7 +52,6 @@ public class ReportControlServiceImpl implements ReportControlService {
     private static Logger log = LoggerFactory.getLogger(ReportControlServiceImpl.class);
     private final Object sync = new Object();
     private final Set<Long> reportsInProcess = new HashSet<>();
-    private final static DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 
     @Autowired
     Lang lang;
@@ -212,8 +211,6 @@ public class ReportControlServiceImpl implements ReportControlService {
             case CASE_TIME_ELAPSED:
                 return reportCaseTimeElapsed.writeReport(
                         buffer, report,
-                        new SimpleDateFormat("dd.MM.yyyy HH:mm"),
-                        new TimeFormatter(),
                         this::isCancel
                 );
             case CASE_RESOLUTION_TIME:
@@ -223,7 +220,7 @@ public class ReportControlServiceImpl implements ReportControlService {
                 Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
                 return caseCompletionTimeReport.writeReport(  buffer, localizedLang );
             case PROJECT:
-                return reportProject.writeReport(buffer, report, new SimpleDateFormat("dd.MM.yyyy HH:mm"), this::isCancel);
+                return reportProject.writeReport(buffer, report, this::isCancel);
         }
         return false;
     }
@@ -325,7 +322,7 @@ public class ReportControlServiceImpl implements ReportControlService {
     public Result<Void> processAbsenceReport(Person initiator, String title, AbsenceQuery query) {
         try {
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-            if (reportAbsence.writeReport(buffer, query, dateFormat)) {
+            if (reportAbsence.writeReport(buffer, query)) {
 
                 publisherService.publishEvent(new AbsenceReportEvent(
                         this,

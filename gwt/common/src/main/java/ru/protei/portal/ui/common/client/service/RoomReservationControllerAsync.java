@@ -4,12 +4,13 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.ent.RoomReservable;
 import ru.protei.portal.core.model.ent.RoomReservation;
 import ru.protei.portal.core.model.query.RoomReservationQuery;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 
 public interface RoomReservationControllerAsync {
 
-    void getReservations(RoomReservationQuery query, AsyncCallback<List<RoomReservation>> async);
+    void getReservations(RoomReservationQuery query, AsyncCallback<SearchResult<RoomReservation>> async);
 
     void getReservation(Long reservationId, AsyncCallback<RoomReservation> async);
 

@@ -16,10 +16,16 @@ public class EmployeeEvents {
      */
     @Url( value = "employees", primary = true )
     public static class Show {
+        public ViewType view;
         @Omit
         public Boolean preScroll = false;
-        public Show () {}
+        public Show () {
+        }
         public Show(Boolean preScroll) {
+            this.preScroll = preScroll;
+        }
+        public Show(ViewType view, Boolean preScroll) {
+            this.view = view;
             this.preScroll = preScroll;
         }
     }
@@ -29,15 +35,13 @@ public class EmployeeEvents {
      */
     public static class ShowPreview {
 
-        public ShowPreview( HasWidgets parent, EmployeeShortView employee, boolean isForTableView ) {
+        public ShowPreview( HasWidgets parent, EmployeeShortView employee ) {
             this.parent = parent;
             this.employee = employee;
-            this.isForTableView = isForTableView;
         }
 
         public HasWidgets parent;
         public EmployeeShortView employee;
-        public boolean isForTableView;
     }
 
     @Url(value = "employee_preview", primary = true)
@@ -69,7 +73,7 @@ public class EmployeeEvents {
     /**
      * Показать руководство
      */
-    @Url(value = "topbrass")
+    @Url(value = "topbrass", primary = true)
     public static class ShowTopBrass {}
 
     public static class UpdateData {
@@ -82,7 +86,7 @@ public class EmployeeEvents {
         public EmployeeQuery query;
     }
 
-    @Url( value = "employee", primary = false )
+    @Url( value = "employee" )
     public static class Edit {
 
         public Long id;
@@ -109,4 +113,16 @@ public class EmployeeEvents {
         }
     }
 
+    @Url(value = "birthdays", primary = true)
+    public static class ShowBirthdays {
+        public ShowBirthdays() {}
+    }
+
+    public static class SelectTab {
+        public ViewType view;
+
+        public SelectTab(ViewType view) {
+            this.view = view;
+        }
+    }
 }

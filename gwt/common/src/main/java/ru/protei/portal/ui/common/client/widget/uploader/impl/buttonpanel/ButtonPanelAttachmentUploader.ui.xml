@@ -1,0 +1,18 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:uploader="urn:import:ru.protei.portal.ui.common.client.widget.uploader.impl">
+
+    <g:HTMLPanel>
+        <uploader:AttachmentUploader ui:field="attachmentUploader">
+            <i class="fas fa-file-upload ion-plus"/>
+            <div class="icon-verifiable-dots">
+                <div class="lds-ellipsis">
+                    <div/>
+                    <div/>
+                    <div/>
+                    <div/>
+                </div>
+            </div>
+        </uploader:AttachmentUploader>
+    </g:HTMLPanel>
+</ui:UiBinder>

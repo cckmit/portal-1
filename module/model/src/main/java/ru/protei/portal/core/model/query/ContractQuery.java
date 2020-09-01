@@ -1,7 +1,9 @@
 package ru.protei.portal.core.model.query;
 
+import ru.protei.portal.core.model.dict.En_ContractKind;
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
+import ru.protei.portal.core.model.struct.DateRange;
 
 import java.util.List;
 
@@ -9,15 +11,23 @@ public class ContractQuery extends BaseQuery {
 
     private Long directionId;
 
-    private En_ContractType type;
+    private DateRange dateSigningRange;
 
-    private En_ContractState state;
+    private DateRange dateValidRange;
+
+    private En_ContractKind kind;
+
+    private List<En_ContractType> types;
+
+    private List<En_ContractState> states;
 
     private List<Long> managerIds;
 
     private List<Long> contractorIds;
 
     private List<Long> organizationIds;
+
+    private List<Long> parentContractIds;
 
     public Long getDirectionId() {
         return directionId;
@@ -27,12 +37,36 @@ public class ContractQuery extends BaseQuery {
         this.directionId = directionId;
     }
 
-    public En_ContractType getType() {
-        return type;
+    public DateRange getDateSigningRange() {
+        return dateSigningRange;
     }
 
-    public void setType(En_ContractType type) {
-        this.type = type;
+    public void setDateSigningRange(DateRange dateSigningRange) {
+        this.dateSigningRange = dateSigningRange;
+    }
+
+    public DateRange getDateValidRange() {
+        return dateValidRange;
+    }
+
+    public void setDateValidRange(DateRange dateValidRange) {
+        this.dateValidRange = dateValidRange;
+    }
+
+    public En_ContractKind getKind() {
+        return kind;
+    }
+
+    public void setKind(En_ContractKind kind) {
+        this.kind = kind;
+    }
+
+    public List<En_ContractType> getTypes() {
+        return types;
+    }
+
+    public void setTypes(List<En_ContractType> types) {
+        this.types = types;
     }
 
     public List<Long> getManagerIds() {
@@ -51,12 +85,12 @@ public class ContractQuery extends BaseQuery {
         this.contractorIds = contractorIds;
     }
 
-    public En_ContractState getState() {
-        return state;
+    public List<En_ContractState> getStates() {
+        return states;
     }
 
-    public void setState(En_ContractState state) {
-        this.state = state;
+    public void setStates(List<En_ContractState> states) {
+        this.states = states;
     }
 
     public List<Long> getOrganizationIds() {
@@ -65,5 +99,29 @@ public class ContractQuery extends BaseQuery {
 
     public void setOrganizationIds(List<Long> organizationIds) {
         this.organizationIds = organizationIds;
+    }
+
+    public List<Long> getParentContractIds() {
+        return parentContractIds;
+    }
+
+    public void setParentContractIds(List<Long> parentContractIds) {
+        this.parentContractIds = parentContractIds;
+    }
+
+    @Override
+    public String toString() {
+        return "ContractQuery{" +
+                "directionId=" + directionId +
+                ", dateSigningRange=" + dateSigningRange +
+                ", dateValidRange=" + dateValidRange +
+                ", kind=" + kind +
+                ", types=" + types +
+                ", states=" + states +
+                ", managerIds=" + managerIds +
+                ", contractorIds=" + contractorIds +
+                ", organizationIds=" + organizationIds +
+                ", parentContractIds=" + parentContractIds +
+                '}';
     }
 }

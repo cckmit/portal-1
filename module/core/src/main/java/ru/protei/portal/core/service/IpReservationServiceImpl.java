@@ -25,8 +25,6 @@ import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -35,6 +33,7 @@ import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.not;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.helper.DateRangeUtils.makeDateWithOffset;
 
 /**
  * Реализация сервиса управления подсистемой резервирования IP
@@ -453,7 +452,7 @@ public class IpReservationServiceImpl implements IpReservationService {
      * @return
      */
     @Override
-    public Result<Boolean> notifyOwnersAboutReleaseIp() {
+    public Result<Void> notifyOwnersAboutReleaseIp() {
 
         Date releaseDateStart = makeDateWithOffset(1);
         Date releaseDateEnd = makeDateWithOffset(CrmConstants.IpReservation.RELEASE_DATE_EXPIRES_IN_DAYS);
@@ -466,7 +465,7 @@ public class IpReservationServiceImpl implements IpReservationService {
         Map<Long, List<ReservedIp>> reservedIpsByOwners = getReservedIpsByOwners(query);
         if (reservedIpsByOwners.isEmpty()) {
             log.info("notifyOwnersAboutReleaseIp(): expired reservedIps is empty for period from {} to {}", releaseDateStart, releaseDateEnd);
-            return ok(false);
+            return ok();
         }
 
         int notificationSentAmount = 0;
@@ -487,7 +486,7 @@ public class IpReservationServiceImpl implements IpReservationService {
         }
 
         log.info("notifyOwnersAboutReleaseIp(): done {} notification(s)", notificationSentAmount);
-        return ok(notificationSentAmount > 0);
+        return ok();
     }
 
     /**
@@ -495,7 +494,7 @@ public class IpReservationServiceImpl implements IpReservationService {
      * @return
      */
     @Override
-    public Result<Boolean> notifyAdminsAboutExpiredReleaseDates() {
+    public Result<Void> notifyAdminsAboutExpiredReleaseDates() {
 
         Date today = makeDateWithOffset(0);
 
@@ -507,21 +506,21 @@ public class IpReservationServiceImpl implements IpReservationService {
 
         if (CollectionUtils.isEmpty(reservedIps)) {
             log.info("notifyAdminsAboutExpiredReleaseDates(): expired release date IP list is empty for today {}", today);
-            return ok(false);
+            return ok();
         }
 
         List<NotificationEntry> notificationEntries = makeNotificationListFromConfiguration();
 
         if (CollectionUtils.isEmpty(notificationEntries)) {
             log.info("notifyAdminsAboutExpiredReleaseDates(): notification for expired release date IPs: no entries to be notified");
-            return ok(false);
+            return ok();
         }
 
         log.info("notifyAdminsAboutExpiredReleaseDates(): notification for expired release date IPs: entries to be notified: {}", notificationEntries);
         publisherService.publishEvent(new ReservedIpReleaseRemainingEvent(this, reservedIps, null, today, notificationEntries));
 
         log.info("notifyAdminsAboutExpiredReleaseDates(): done");
-        return ok(true);
+        return ok();
     }
 
     private boolean isValidSubnet(Subnet subnet) {
@@ -692,11 +691,6 @@ public class IpReservationServiceImpl implements IpReservationService {
 
     private boolean isSystemAdministrator (AuthToken token, En_Privilege privilege) {
         return policyService.hasScopeForPrivilege(token.getRoles(), privilege, En_Scope.SYSTEM);
-    }
-
-    private Date makeDateWithOffset(int dayOffset) {
-        LocalDate localDate = LocalDate.now().plusDays(dayOffset);
-        return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
 
     private List<ReservedIp> getReservedIps(ReservedIpQuery query) {

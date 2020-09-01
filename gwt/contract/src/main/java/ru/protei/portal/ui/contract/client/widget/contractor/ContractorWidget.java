@@ -12,9 +12,12 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.protei.portal.core.model.ent.Contractor;
+import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.struct.ContractorQuery;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
+import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
@@ -25,8 +28,11 @@ import ru.protei.portal.ui.contract.client.widget.contractor.search.AbstractCont
 import ru.protei.portal.ui.contract.client.widget.contractor.search.AbstractContractorSearchView;
 
 import java.util.List;
+import java.util.Objects;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.WIDE_MODAL;
@@ -119,11 +125,11 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
     private void prepareSearchDialog(AbstractDialogDetailsView dialog) {
         dialog.setActivity(makeSearchDialogActivity());
         dialog.getBodyContainer().add(searchView.asWidget());
-        dialog.removeButtonVisibility().setVisible(false);
         dialog.setHeader(lang.searchContractorTitle());
         dialog.setSaveButtonName(lang.buttonApply());
         dialog.setAdditionalButtonName(lang.buttonCreate());
         dialog.setAdditionalVisible(true);
+        dialog.removeButtonVisibility().setVisible(true);
     }
 
     private void prepareCreateDialog(AbstractDialogDetailsView dialog) {
@@ -150,13 +156,21 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
             public void onCancelClicked() {
                 dialogDetailsSearchView.hidePopup();
             }
-
             @Override
             public void onAdditionalClicked() {
                     createView.reset();
                     createView.setOrganization(organization);
                     dialogDetailsSearchView.hidePopup();
                     dialogDetailsCreateView.showPopup();
+            }
+            @Override
+            public void onRemoveClicked() {
+                Contractor contractor = searchView.contractor().getValue();
+                if (contractor == null) {
+                    fireEvent(new NotifyEvents.Show(lang.contractContractorFindNotChosenError(), NotifyEvents.NotifyType.INFO));
+                    return;
+                }
+                fireEvent(new ConfirmDialogEvents.Show(lang.contractorRemoveConfirmMessage(), removeContractorAction(contractor)));
             }
         };
     }
@@ -203,15 +217,12 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
 
     private AbstractContractorSearchActivity makeSearchViewActivity() {
         return () -> {
-            if (!searchView.isValid()) {
+            ContractorQuery query = makeContractorQuery(searchView);
+            if (!searchView.isValid() || !isValidContractorQuery(query)) {
                 fireEvent(new NotifyEvents.Show(lang.contractContractorValidationError(), NotifyEvents.NotifyType.ERROR));
                 return;
             }
-            controller.findContractors(
-                    organization,
-                    searchView.contractorInn().getValue(),
-                    searchView.contractorKpp().getValue(),
-                    new FluentCallback<List<Contractor>>()
+            controller.findContractors(organization, query, new FluentCallback<List<Contractor>>()
                     .withError(t -> {
                         fireEvent(new NotifyEvents.Show(lang.contractContractorFindError(), NotifyEvents.NotifyType.ERROR));
                     })
@@ -221,6 +232,53 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
                             return;
                         }
                         searchView.setSearchResult(value);
+                    }));
+        };
+    }
+
+    private ContractorQuery makeContractorQuery(AbstractContractorSearchView searchView) {
+        ContractorQuery query = new ContractorQuery();
+        query.setInn(searchView.contractorInn().getValue());
+        query.setKpp(searchView.contractorKpp().getValue());
+        query.setName(searchView.contractorName().getValue());
+        query.setFullName(searchView.contractorFullName().getValue());
+        query.setRegistrationCountryKey(searchView.contractorCountry().getValue() != null
+                ? searchView.contractorCountry().getValue().getRefKey()
+                : null);
+        return query;
+    }
+
+    private boolean isValidContractorQuery(ContractorQuery query) {
+        if (query == null) {
+            return false;
+        }
+        if (isNotEmpty(query.getKpp()) && isEmpty(query.getInn())) {
+            return false;
+        }
+        return isNotEmpty(query.getInn())
+                || isNotEmpty(query.getKpp())
+                || isNotEmpty(query.getName())
+                || isNotEmpty(query.getFullName())
+                || isNotEmpty(query.getRegistrationCountryKey());
+    }
+
+    private Runnable removeContractorAction(Contractor contractor) {
+        return () -> {
+            if (contractor == null) {
+                return;
+            }
+            String refKey = contractor.getRefKey();
+            controller.removeContractor(organization, refKey, new FluentCallback<Long>()
+                    .withSuccess(id -> {
+                        fireEvent(new NotifyEvents.Show(lang.contractorRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                        String refKeySelected = getValue() != null
+                                ? getValue().getRefKey()
+                                : null;
+                        if (Objects.equals(refKeySelected, refKey)) {
+                            setValue(null);
+                        }
+                        searchView.reset();
+                        dialogDetailsSearchView.hidePopup();
                     }));
         };
     }

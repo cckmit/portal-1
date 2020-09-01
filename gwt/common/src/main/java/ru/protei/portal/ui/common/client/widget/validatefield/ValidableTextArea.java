@@ -3,14 +3,16 @@ package ru.protei.portal.ui.common.client.widget.validatefield;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.TextAreaElement;
+import com.google.gwt.text.shared.testing.PassthroughParser;
+import com.google.gwt.text.shared.testing.PassthroughRenderer;
 
 /**
  * TextArea c возможностью валидации
  */
-public class ValidableTextArea extends ValidableTextBoxBase{
+public class ValidableTextArea extends ValidableValueBoxBase<String> {
 
     public ValidableTextArea(){
-        super(Document.get().createTextAreaElement());
+        super(Document.get().createTextAreaElement(), PassthroughRenderer.instance(), PassthroughParser.instance());
 //        this.setStyleName("gwt-TextArea");
     }
 

@@ -5,7 +5,8 @@
              xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
              xmlns:tab='urn:import:ru.protei.portal.ui.common.client.widget.tab'
              xmlns:w='urn:import:ru.protei.portal.ui.common.client.widget'
-             xmlns:project='urn:import:ru.protei.portal.ui.common.client.widget.selector.project'>
+             xmlns:project='urn:import:ru.protei.portal.ui.common.client.widget.selector.project'
+             xmlns:fileUploader="urn:import:ru.protei.portal.ui.common.client.widget.uploader.impl">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -46,12 +47,12 @@
                     <label ui:field="attachmentsLabel"><ui:text from="{lang.siteFolderAttachments}"/></label>
                     <div>
                         <div class="attach attach-add">
-                            <w:uploader.AttachmentUploader ui:field="fileUploader">
+                            <fileUploader:AttachmentUploader ui:field="fileUploader">
                                 <div class="attach-add-circle">
                                     <i class="fas fa-plus ion-plus"/>
                                     <i class="fas fa-circle-notch fa-spin icon-verifiable"/>
                                 </div>
-                            </w:uploader.AttachmentUploader>
+                            </fileUploader:AttachmentUploader>
                         </div>
                         <w:attachment.list.AttachmentList ui:field="attachmentContainer"/>
                     </div>

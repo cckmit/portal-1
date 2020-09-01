@@ -50,5 +50,17 @@ public class ContractEvents {
         public Long contractId;
     }
 
+    public static class ShowConciseTable {
+        public ShowConciseTable() {}
+
+        public ShowConciseTable(HasWidgets parent, Long parentContractId) {
+            this.parent = parent;
+            this.parentContractId = parentContractId;
+        }
+
+        public HasWidgets parent;
+        public Long parentContractId;
+    }
+
     public static class ChangeModel {}
 }

@@ -11,7 +11,6 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.winter.web.common.client.events.MenuEvents;
-import ru.protei.winter.web.common.client.events.SectionEvents;
 
 /**
  * Активность по работе с вкладкой "Сотрудники"
@@ -20,60 +19,20 @@ public abstract class EmployeePage implements Activity {
 
     @PostConstruct
     public void onInit() {
-        ТAB = lang.employees();
+        CATEGORY = lang.employees();
     }
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
-        if ( event.profile.hasPrivilegeFor( En_Privilege.EMPLOYEE_VIEW ) ) {
-            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.EMPLOYEE, ТAB, DebugIds.SIDEBAR_MENU.EMPLOYEE) );
-            fireEvent( new AppEvents.InitPage( show ) );
-        }
-    }
-
-    @Event
-    public void onShowTable( EmployeeEvents.Show event ) {
-        fireSelectTab();
-    }
-
-    @Event
-    public void onShowTopBrass( EmployeeEvents.ShowTopBrass event ) {
-        fireSelectTab();
-    }
-
-    @Event
-    public void onShowEdit( EmployeeEvents.Edit event ) {
-        fireSelectTab();
-    }
-
-    @Event
-    public void onShowPreview( EmployeeEvents.ShowFullScreen event ) {
-        fireSelectTab();
-    }
-
-    @Event
-    public void onClickSection( SectionEvents.Clicked event ) {
-        if ( !ТAB.equals( event.identity ) ) {
-            return;
-        }
-
-        fireSelectTab();
-        fireEvent( show );
-    }
-
-    private void fireSelectTab() {
-        fireEvent( new ActionBarEvents.Clear() );
-        if ( policyService.hasPrivilegeFor( En_Privilege.EMPLOYEE_VIEW ) ) {
-            fireEvent( new MenuEvents.Select( ТAB ) );
+        if ( policyService.hasAnyPrivilegeOf( En_Privilege.EMPLOYEE_VIEW, En_Privilege.ABSENCE_VIEW ) ) {
+            fireEvent( new MenuEvents.Add( CATEGORY, UiConstants.TabIcons.EMPLOYEE, CATEGORY, DebugIds.SIDEBAR_MENU.EMPLOYEE ) );
         }
     }
 
     @Inject
     Lang lang;
-
     @Inject
-    PolicyService policyService;
+    private PolicyService policyService;
 
-    private String ТAB;
-    private EmployeeEvents.Show show = new EmployeeEvents.Show(false);
+    private String CATEGORY;
 }

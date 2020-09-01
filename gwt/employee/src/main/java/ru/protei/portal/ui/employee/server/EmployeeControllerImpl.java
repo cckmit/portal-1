@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.WorkerEntry;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EmployeeQuery;
+import ru.protei.portal.core.model.struct.EmployeesBirthdays;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.WorkerEntryShortView;
@@ -22,6 +23,7 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.List;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.size;
@@ -215,6 +217,12 @@ public class EmployeeControllerImpl implements EmployeeController {
     public List<WorkerEntryShortView> getWorkerEntryList(int offset, int limit) throws RequestFailedException {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         return ServiceUtils.checkResultAndGetData(employeeService.getWorkerEntryList(token, offset, limit));
+    }
+
+    @Override
+    public EmployeesBirthdays getEmployeesBirthdays(Date dateFrom, Date dateUntil) throws RequestFailedException {
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(employeeService.getEmployeesBirthdays(token, dateFrom, dateUntil));
     }
 
     @Autowired

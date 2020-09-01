@@ -13,8 +13,6 @@ public interface AbstractCaseLinkListView extends IsWidget {
 
     void showSelector(IsWidget target);
 
-    void setLinksContainerVisible(boolean isVisible);
-
     HasWidgets getLinksContainer();
 
     HasVisibility getContainerVisibility();

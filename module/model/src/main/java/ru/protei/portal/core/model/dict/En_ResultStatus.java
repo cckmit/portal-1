@@ -220,9 +220,9 @@ public enum En_ResultStatus {
     SUBNET_NOT_ALLOWED_FOR_RESERVE,
 
     /**
-     * Резервирование комнат: событие уже началось/закончилось
+     * Резервирование комнат: событие уже закончилось
      */
-    ROOM_RESERVATION_OUTDATED,
+    ROOM_RESERVATION_FINISHED,
 
     /**
      * Резервирование комнат: доступ к комнате отклонен
@@ -261,6 +261,16 @@ public enum En_ResultStatus {
     /**
      * Проект не выбран
      */
-    PROJECT_NOT_SELECTED
+    PROJECT_NOT_SELECTED,
+
+    /**
+     * Нельзя удалить контрагента, который выставлен в договорах
+     */
+    CONTRACTOR_NOT_REMOVED_HAS_CONTRACTS,
+
+    /**
+     * Организация в контракте должна быть не равна организации в приходном контракте
+     */
+    CONTRACT_ORGANIZATION_SHOULD_BE_DIFFERENT_FROM_PARENT,
     ;
 }

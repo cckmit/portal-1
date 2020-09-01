@@ -12,6 +12,7 @@ public class En_SortFieldLang {
         switch (value)
         {
             case creation_date:
+            case contract_creation_date:
                 return lang.created();
             case name:
                 return lang.name();
@@ -60,12 +61,16 @@ public class En_SortFieldLang {
                 return lang.planFinishDate();
             case author_id:
                 return lang.issueCommentAuthor();
-            case absence_date:
-                return lang.absenceStartDateRange();
+            case absence_date_from:
+                return lang.absenceFromTime();
+            case absence_date_till:
+                return lang.absenceTillTime();
             case absence_person:
                 return lang.contactFullName();
             case absence_reason:
                 return lang.absenceReason();
+            case contract_signing_date:
+                return lang.signingDate();
 
             default:
                 return lang.unknownField();

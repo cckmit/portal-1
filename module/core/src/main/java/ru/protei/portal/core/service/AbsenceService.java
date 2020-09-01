@@ -8,13 +8,14 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.PersonAbsence;
 import ru.protei.portal.core.model.query.AbsenceQuery;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 
 public interface AbsenceService {
 
     @Privileged(En_Privilege.ABSENCE_VIEW)
-    Result<List<PersonAbsence>> getAbsences(AuthToken token, AbsenceQuery query);
+    Result<SearchResult<PersonAbsence>> getAbsences(AuthToken token, AbsenceQuery query);
 
     @Privileged(En_Privilege.ABSENCE_VIEW)
     Result<PersonAbsence> getAbsence(AuthToken token, Long id);
@@ -22,6 +23,10 @@ public interface AbsenceService {
     @Privileged(En_Privilege.ABSENCE_CREATE)
     @Auditable(En_AuditType.ABSENCE_CREATE)
     Result<Long> createAbsence(AuthToken token, PersonAbsence absence);
+
+    @Privileged(En_Privilege.ABSENCE_CREATE)
+    @Auditable(En_AuditType.ABSENCE_CREATE)
+    Result<List<Long>> createAbsences(AuthToken token, List<PersonAbsence> absence);
 
     @Privileged(En_Privilege.ABSENCE_EDIT)
     @Auditable(En_AuditType.ABSENCE_MODIFY)

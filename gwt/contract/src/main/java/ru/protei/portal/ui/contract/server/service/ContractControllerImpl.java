@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContractQuery;
+import ru.protei.portal.core.model.struct.ContractorQuery;
 import ru.protei.portal.core.service.ContractService;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.ContractController;
@@ -86,15 +87,21 @@ public class ContractControllerImpl implements ContractController {
     }
 
     @Override
-    public List<Contractor> findContractors(String organization, String contractorInn, String contractorKpp) throws RequestFailedException {
+    public List<Contractor> findContractors(String organization, ContractorQuery query) throws RequestFailedException {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
-        return ServiceUtils.checkResultAndGetData(contractService.findContractors(token, organization, contractorInn, contractorKpp));
+        return ServiceUtils.checkResultAndGetData(contractService.findContractors(token, organization, query));
     }
 
     @Override
     public Contractor createContractor(Contractor contractor) throws RequestFailedException {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
         return ServiceUtils.checkResultAndGetData(contractService.createContractor(token, contractor));
+    }
+
+    @Override
+    public Long removeContractor(String organization, String refKey) throws RequestFailedException {
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
+        return ServiceUtils.checkResultAndGetData(contractService.removeContractor(token, organization, refKey));
     }
 
     @Autowired

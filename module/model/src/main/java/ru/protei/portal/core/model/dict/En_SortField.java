@@ -161,9 +161,14 @@ public enum En_SortField {
     finish_date("finish_date"),
 
     /**
-     * absence date
+     * absence date from
      */
-    absence_date("from_time"),
+    absence_date_from("from_time"),
+
+    /**
+     * absence date till
+     */
+    absence_date_till("till_time"),
 
     /**
      * absence person
@@ -173,7 +178,24 @@ public enum En_SortField {
     /**
      * absence reason
      */
-    absence_reason("reason_id");
+    absence_reason("reason_id"),
+
+    /**
+     * room_reservation_date_from
+     */
+    room_reservation_date_from("room_reservation.date_from"),
+
+    /**
+     * Дата создания контракта
+     */
+    contract_creation_date("CO.created"),
+
+    /**
+     * Дата подписания контракта
+     */
+    contract_signing_date("contract.date_signing"),
+
+    ;
 
     private String fieldName;
     private String bundleKey;

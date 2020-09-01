@@ -27,6 +27,7 @@
                             <div>
                                 <i ui:field="iconState"/>
                                 <span ui:field="state"/>
+                                <span ui:field="pauseDate" class="nowrap"/>
                             </div>
                         </div>
                     </div>

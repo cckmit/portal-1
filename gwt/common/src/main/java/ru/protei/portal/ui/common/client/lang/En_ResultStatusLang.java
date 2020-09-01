@@ -69,7 +69,7 @@ public class En_ResultStatusLang {
             case EMPLOYEE_MIGRATION_FAILED: return lang.errEmployeeMigrationFailed();
             case SUBNET_DOES_NOT_EXIST: return lang.errSaveReservedIpSubnetDoesNotExist();
             case SUBNET_NOT_ALLOWED_FOR_RESERVE: return lang.errSaveReservedIpSubnetNotAvailable();
-            case ROOM_RESERVATION_OUTDATED: return lang.errRoomReservationOutdated();
+            case ROOM_RESERVATION_FINISHED: return lang.errRoomReservationFinished();
             case ROOM_RESERVATION_ROOM_NOT_ACCESSIBLE: return lang.errRoomReservationRoomNotAccessible();
             case ROOM_RESERVATION_HAS_INTERSECTIONS: return lang.errRoomReservationHasIntersections();
             case ISSUE_FILTER_IS_USED: return lang.errPersonCaseFilterInUse();
@@ -78,6 +78,8 @@ public class En_ResultStatusLang {
             case NOT_CURRENT_ABSENCE: return lang.errNotCurrentAbsence();
             case YOUTRACK_SYNCHRONIZATION_FAILED: return lang.errYoutrackSynchronizationFailed();
             case PROJECT_NOT_SELECTED: return lang.errContractProjectRequired();
+            case CONTRACTOR_NOT_REMOVED_HAS_CONTRACTS: return lang.errContractorNotRemovedHasContracts();
+            case CONTRACT_ORGANIZATION_SHOULD_BE_DIFFERENT_FROM_PARENT: return lang.errContractOrganizationShouldBeDifferentFromParent();
             default: return lang.errUnknownResult();
         }
     }

@@ -9,11 +9,13 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.WorkerEntry;
 import ru.protei.portal.core.model.query.EmployeeQuery;
+import ru.protei.portal.core.model.struct.EmployeesBirthdays;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -60,4 +62,9 @@ public interface EmployeeService {
 
     @Privileged(En_Privilege.EMPLOYEE_EDIT)
     Result<Boolean> updateEmployeeWorkers(AuthToken token, List<WorkerEntry> workerEntryList);
+
+    @Privileged(En_Privilege.EMPLOYEE_VIEW)
+    Result<EmployeesBirthdays> getEmployeesBirthdays(AuthToken token, Date dateFrom, Date dateUntil);
+
+    Result<Void> notifyAboutBirthdays();
 }

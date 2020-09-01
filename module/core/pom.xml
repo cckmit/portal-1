@@ -102,6 +102,8 @@
                         <argument>notification/email/absence.report.subject.ftl</argument>
                         <argument>notification/email/project.pausetime.subject.ftl</argument>
                         <argument>notification/email/project.pausetime.body.ftl</argument>
+                        <argument>notification/email/birthdays.subject.ftl</argument>
+                        <argument>notification/email/birthdays.body.ftl</argument>
                     </arguments>
                 </configuration>
             </plugin>

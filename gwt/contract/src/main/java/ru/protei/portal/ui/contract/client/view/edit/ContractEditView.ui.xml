@@ -86,11 +86,11 @@
                         <div class="row">
                             <div class="form-group col-md-3">
                                 <label ui:field="typeLabel"><ui:text from="{lang.contractType}"/></label>
-                                <selector:ContractTypeSelector ui:field="type" searchEnabled="true" defaultValue="{lang.contractSelectType}" validation="true" hideNullValue="true"/>
+                                <selector:multi.ContractTypeMultiSelector ui:field="types" searchEnabled="true" validation="true"/>
                             </div>
                             <div class="form-group col-md-3">
                                 <label ui:field="stateLabel"><ui:text from="{lang.contractState}"/></label>
-                                <selector:ContractStateSelector ui:field="state" validation="true" hasNullValue="false"/>
+                                <selector:button.ContractStateSelector ui:field="state" validation="true" hasNullValue="false"/>
                             </div>
                             <div class="form-group col-md-3">
                                 <label ui:field="contractParentLabel"><ui:text from="{lang.contractParent}"/></label>
@@ -110,11 +110,16 @@
                             </div>
                             <div class="form-group col-md-3">
                                 <label ui:field="dateValidLabel"><ui:text from="{lang.contractDateValid}"/></label>
-                                <g:LongBox ui:field="dateValid" styleName="form-control"/>
+                                <g:HTMLPanel styleName="input-group input-group-day-date" ui:field="dateValid">
+                                    <validatefield:ValidableLongBox ui:field="dateValidDays" styleName="form-control input-group-element-day"/>
+                                    <div class="input-group-prepend input-group-append"><span class="input-group-text">–</span></div>
+                                    <single:SinglePicker ui:field="dateValidDate" type="DATE" formatValue="dd.MM.yyyy" mandatory="false"
+                                                         styleName="form-control p-0 no-border input-group-element-date"/>
+                                </g:HTMLPanel>
                             </div>
-                            <div class="form-group col-md-3">
+                            <div class="form-group col-md-6">
                                 <label ui:field="costWithCurrencyLabel"><ui:text from="{lang.contractCost}"/></label>
-                                <money:CostCurrencyVatWidget ui:field="costWithCurrency" defaultCurrency="RUB" vatOptions="20,0,no"/>
+                                <money:MoneyCurrencyVatWidget ui:field="costWithCurrency" defaultCurrency="RUB"/>
                             </div>
                         </div>
                         <div class="row">
@@ -154,7 +159,7 @@
             </div>
 
             <g:HTMLPanel  styleName="container-fluid padding-15">
-                <tab:TabWidget styleName="">
+                <tab:TabWidget styleName="" ui:field="tabs">
                     <tab:pane.TabWidgetPane tabName="{lang.contractDeliveryAndPaymentsPeriodHeader}">
                         <g:HTMLPanel>
                             <div class="card-body">
@@ -171,6 +176,10 @@
                                         ui:field="specificationList" addStyleNames="row"/>
                             </div>
                         </g:HTMLPanel>
+                    </tab:pane.TabWidgetPane>
+
+                    <tab:pane.TabWidgetPane tabName="{lang.contractListOfExpenditureHeader}">
+                        <g:HTMLPanel ui:field="expenditureContractsContainer"/>
                     </tab:pane.TabWidgetPane>
                 </tab:TabWidget>
             </g:HTMLPanel>

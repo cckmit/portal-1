@@ -1,8 +1,11 @@
 package ru.protei.portal.app.portal.client.view.dashboardblocks.table;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.SpanElement;
-import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.*;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -29,6 +32,7 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        headerContainer.setDraggable(Element.DRAGGABLE_TRUE);
     }
 
     @Override
@@ -51,6 +55,19 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     @Override
     public void setName(String name) {
         this.name.setInnerText(name);
+    }
+
+    @Override
+    public void setCollapsed(boolean isCollapsed) {
+        if (isCollapsed){
+            tableContainer.addClassName("table-container-collapsed");
+            collapseIcon.replaceClassName("fa-caret-down", "fa-caret-right");
+            collapse.setTitle(lang.dashboardActionExpand());
+        } else {
+            tableContainer.removeClassName("table-container-collapsed");
+            collapseIcon.replaceClassName("fa-caret-right", "fa-caret-down");
+            collapse.setTitle(lang.dashboardActionCollapse());
+        }
     }
 
     @Override
@@ -80,6 +97,26 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     @Override
     public void setEnsureDebugId(String debugId) {
         table.setEnsureDebugId(debugId);
+    }
+
+    @Override
+    public HandlerRegistration addDragStartHandler(DragStartHandler handler) {
+        return addDomHandler(handler, DragStartEvent.getType());
+    }
+
+    @Override
+    public HandlerRegistration addDragOverHandler(DragOverHandler handler) {
+        return addDomHandler(handler, DragOverEvent.getType());
+    }
+
+    @Override
+    public HandlerRegistration addDropHandler(DropHandler handler) {
+        return addDomHandler(handler, DropEvent.getType());
+    }
+
+    @Override
+    public HandlerRegistration addDragEndHandler(DragEndHandler handler) {
+        return addDomHandler(handler, DragEndEvent.getType());
     }
 
     @UiHandler("open")
@@ -114,6 +151,14 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
         }
     }
 
+    @UiHandler("collapse")
+    public void onCollapseClicked(ClickEvent event) {
+        boolean isCollapsed = tableContainer.getClassName().contains("table-container-collapsed");
+
+        activity.onCollapseClicked(!isCollapsed);
+        setCollapsed(!isCollapsed);
+    }
+
     private void initTable() {
 
         ClickColumnProvider<CaseShortView> columnProvider = new ClickColumnProvider<>();
@@ -142,7 +187,6 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     @Inject
     @UiField
     Lang lang;
-
     @UiField
     SpanElement name;
     @UiField
@@ -154,15 +198,24 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     @UiField
     Button remove;
     @UiField
+    Button collapse;
+    @UiField
     Button reload;
     @UiField
     IndeterminateCircleLoading loading;
     @UiField
     TableWidget<CaseShortView> table;
     @UiField
+    DivElement tableContainer;
+    @UiField
     HTMLPanel tableOverflow;
     @UiField
     SpanElement tableOverflowText;
+    @UiField
+    Element collapseIcon;
+
+    @UiField
+    Element headerContainer;
 
     private AbstractDashboardTableActivity activity;
 

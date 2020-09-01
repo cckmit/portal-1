@@ -15,9 +15,9 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AbsenceControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.Date;
-import java.util.List;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
 import static ru.protei.portal.ui.common.client.util.DateUtils.setBeginOfDay;
@@ -72,9 +72,9 @@ public abstract class AbsenceTableActivity implements AbstractAbsenceTableActivi
     }
 
     private void requestData(AbsenceQuery query) {
-        absenceController.getAbsences(query, new FluentCallback<List<PersonAbsence>>()
+        absenceController.getAbsences(query, new FluentCallback<SearchResult<PersonAbsence>>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR)))
-                .withSuccess(absences -> view.addRecords(absences)));
+                .withSuccess(absences -> view.addRecords(absences.getResults())));
     }
 
     private Runnable removeAction(PersonAbsence value) {

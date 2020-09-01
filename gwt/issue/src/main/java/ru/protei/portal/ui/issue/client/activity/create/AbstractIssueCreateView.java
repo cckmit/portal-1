@@ -2,7 +2,7 @@ package ru.protei.portal.ui.issue.client.activity.create;
 
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
-import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 
@@ -17,7 +17,7 @@ public interface AbstractIssueCreateView extends IsWidget {
 
     HasValidable nameValidator();
 
-    HasAttachments attachmentsContainer();
+    HasAttachments attachmentsListContainer();
 
     void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler);
 
@@ -40,4 +40,8 @@ public interface AbstractIssueCreateView extends IsWidget {
     boolean isFavoriteButtonActive();
 
     void setFavoriteButtonActive(boolean isActive);
+
+    void setCountOfAttachments(int countOfAttachments);
+
+    HasVisibility attachmentsVisibility();
 }

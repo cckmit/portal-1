@@ -19,7 +19,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.function.Consumer;
 
-public abstract class PlatformPreviewActivity implements Activity, AbstractPlatformPreviewActivity {
+public abstract class PlatformPreviewActivity implements AbstractPlatformPreviewActivity {
 
     @PostConstruct
     public void onInit() {

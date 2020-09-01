@@ -2,10 +2,11 @@ package ru.protei.portal.app.portal.client.activity.dashboardblocks.table;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.ui.common.client.events.Draggable;
 
 import java.util.List;
 
-public interface AbstractDashboardTableView extends IsWidget {
+public interface AbstractDashboardTableView extends IsWidget, Draggable {
 
     void setActivity(AbstractDashboardTableActivity activity);
 
@@ -14,6 +15,8 @@ public interface AbstractDashboardTableView extends IsWidget {
     void putRecords(List<CaseShortView> list);
 
     void setName(String name);
+
+    void setCollapsed(boolean isCollapsed);
 
     void setTotalRecords(int totalRecords);
 

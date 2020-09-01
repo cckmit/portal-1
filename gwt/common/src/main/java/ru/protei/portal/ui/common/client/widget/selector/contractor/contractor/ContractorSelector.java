@@ -7,18 +7,20 @@ import ru.protei.portal.ui.common.client.widget.selector.button.ButtonPopupSingl
 import java.util.List;
 
 public class ContractorSelector extends ButtonPopupSingleSelector<Contractor> {
+
     @Inject
     public void init( ContractorModel model ) {
         this.model = model;
         setModel( model );
         setItemRenderer( option -> option == null ? defaultValue : option.getFullName() );
         setValidation(true);
-        setSearchEnabled(false);
+        setSearchEnabled(true);
         setHideSelectedFromChose(true);
         setDefaultValue(lang.contractContractorSelectorPlaceholder());
     }
 
     public void fill(List<Contractor> list) {
+        clearSelector();
         model.fill(list);
     }
 

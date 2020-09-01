@@ -2,8 +2,20 @@ package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import ru.protei.portal.core.model.view.EmployeeShortView;
+import ru.brainworm.factory.context.client.annotation.Url;
 
 public class AbsenceEvents {
+
+    @Url(value = "absences", primary = true)
+    public static class ShowSummaryTable {
+        public ShowSummaryTable() {
+        }
+    }
+
+    public static class Update {
+        public Update() {
+        }
+    }
 
     public static class Show {
 
@@ -26,6 +38,14 @@ public class AbsenceEvents {
             this.id = id;
         }
         public Edit withEmployee(EmployeeShortView employee) {
+            this.employee = employee;
+            return this;
+        }
+    }
+
+    public static class Create {
+        public EmployeeShortView employee;
+        public Create withEmployee(EmployeeShortView employee) {
             this.employee = employee;
             return this;
         }

@@ -4,7 +4,7 @@ import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
-import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 public interface AbstractPlatformEditView extends IsWidget {

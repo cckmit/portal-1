@@ -1,6 +1,8 @@
 package ru.protei.portal.ui.sitefolder.client.activity.plaform.preview;
 
-public interface AbstractPlatformPreviewActivity {
+import ru.brainworm.factory.generator.activity.client.activity.Activity;
+
+public interface AbstractPlatformPreviewActivity extends Activity {
     void onOpenServersClicked();
 
     void onFullScreenClicked();

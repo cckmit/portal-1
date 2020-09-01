@@ -14,11 +14,12 @@
 
                     <img ui:field="state" src="" class="preview-title-image-right"/>
 
-                    <small ui:field="type"/>
-
                     <div class="small hint-text pre-formatted-info">
-                        <g:InlineLabel ui:field="description" styleName="m-l--3"/>
+                        <span ui:field="description"/>
                     </div>
+
+                    <h5><ui:text from="{lang.contractContractor}"/></h5>
+                    <span ui:field="contractor"/>
 
                     <h5><ui:text from="{lang.contractCommonHeader}"/></h5>
 
@@ -54,8 +55,8 @@
                     </div>
 
                     <div class="small">
-                        <b><ui:text from="{lang.contractManager}: "/></b>
-                        <span ui:field="manager"/>
+                        <b><ui:text from="{lang.contractProject}: "/></b>
+                        <g:Anchor ui:field="project" href="#" target="_blank"/>
                     </div>
 
                     <div class="small">
@@ -64,13 +65,8 @@
                     </div>
 
                     <div class="small">
-                        <b><ui:text from="{lang.contractContractor}: "/></b>
-                        <span ui:field="contractor"/>
-                    </div>
-
-                    <div class="small">
-                        <b><ui:text from="{lang.contractProject}: "/></b>
-                        <g:Anchor ui:field="project" href="#" target="_blank"/>
+                        <b><ui:text from="{lang.contractManager}: "/></b>
+                        <span ui:field="manager"/>
                     </div>
 
                     <tab:TabWidget styleName="">

@@ -12,6 +12,10 @@ public class ContractorUtils {
     public static final List<Integer> MULT_N =  Arrays.asList(2, 4, 10, 3, 5, 9, 4, 6, 8);
 
     public static boolean checkInn(String innStr) {
+        if (innStr == null) {
+            return false;
+        }
+
         boolean valid;
         List<Integer> inn = stringToIntArray(innStr);
 

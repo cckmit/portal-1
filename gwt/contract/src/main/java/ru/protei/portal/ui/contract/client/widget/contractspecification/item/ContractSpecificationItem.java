@@ -18,12 +18,13 @@ import com.google.gwt.user.client.ui.LongBox;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_Currency;
 import ru.protei.portal.core.model.ent.ContractSpecification;
-import ru.protei.portal.core.model.struct.CostWithCurrency;
+import ru.protei.portal.core.model.struct.Money;
+import ru.protei.portal.core.model.struct.MoneyWithCurrency;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.ValiableAutoResizeTextArea;
-import ru.protei.portal.ui.common.client.widget.money.CostCurrencyWidget;
+import ru.protei.portal.ui.common.client.widget.money.MoneyCurrencyWidget;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
@@ -61,7 +62,7 @@ public class ContractSpecificationItem
         clause.setValue( value.getClause() );
         text.setValue( value.getText() );
         quantity.setValue(value.getQuantity());
-        costWithCurrency.setValue(new CostWithCurrency(value.getCost(), value.getCurrency()));
+        costWithCurrency.setValue(new MoneyWithCurrency(value.getCost(), value.getCurrency()));
     }
 
     @Override
@@ -97,10 +98,10 @@ public class ContractSpecificationItem
     }
 
     @UiHandler("costWithCurrency")
-    public void onCostWithCurrencyChanged(ValueChangeEvent<CostWithCurrency> event) {
-        CostWithCurrency val = costWithCurrency.getValue();
-        Long cost = val != null
-                ? val.getCost()
+    public void onCostWithCurrencyChanged(ValueChangeEvent<MoneyWithCurrency> event) {
+        MoneyWithCurrency val = costWithCurrency.getValue();
+        Money cost = val != null
+                ? val.getMoney()
                 : null;
         En_Currency currency = val != null
                 ? val.getCurrency()
@@ -156,7 +157,7 @@ public class ContractSpecificationItem
     LongBox quantity;
     @Inject
     @UiField(provided = true)
-    CostCurrencyWidget costWithCurrency;
+    MoneyCurrencyWidget costWithCurrency;
     @UiField
     Button remove;
     @UiField

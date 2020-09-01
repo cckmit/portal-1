@@ -6,16 +6,18 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel ui:field="root">
-        <div class="row">
-            <div class="form-group col-md-12">
-                <label ui:field="labelFilters"><ui:text from="{lang.filters}"/></label>
-                <filter:FilterSelector ui:field="filterSelector"/>
-            </div>
+
+        <div class="filter-header">
+            <label ui:field="labelFilters"><ui:text from="{lang.filters}"/></label>
+        </div>
+
+        <div class="user-filter form-group">
+            <filter:FilterSelector ui:field="filterSelector"/>
         </div>
 
         <filter:FilterParamView ui:field="filterParamView"/>
 
-        <div ui:field="footer" class="card-footer filter-content text-right">
+       <div ui:field="footer" class="card-footer text-right">
             <div class="user-filter-name hide" ui:field="filterNameContainer">
                 <label class="bold"><ui:text from="{lang.filterName}"/></label>
                 <div class="input-group">

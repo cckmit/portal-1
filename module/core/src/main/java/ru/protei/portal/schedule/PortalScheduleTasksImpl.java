@@ -23,7 +23,7 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
 
     @EventListener
     @Override
-    public void onApplicationStartOrRefreshContext( ContextRefreshedEvent event) {
+    public void onApplicationStartOrRefreshContext(ContextRefreshedEvent event) {
         log.info("onApplicationStartOrRefresh() Context refresh counter={} refresh source: {}",  contextRefreshedEventCounter.getAndIncrement(), event.getSource());
         if (isPortalStarted.getAndSet( true )) return;
 
@@ -43,6 +43,8 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         scheduler.schedule(this::processScheduledMailReportsWeekly, new CronTrigger( "0 0 5 * * MON"));
         // at 10:00:00 am every day
         scheduler.schedule(this::processPersonCaseFilterMailNotification, new CronTrigger( "0 0 10 * * ?"));
+        // at 09:00:00 am every MONDAY
+        scheduler.schedule(this::notifyAboutBirthdays, new CronTrigger( "0 0 9 * * MON"));
 
         scheduleNotificationsAboutPauseTime();
     }
@@ -106,6 +108,11 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         publisherService.publishEvent( new SchedulePauseTimeOnStartupEvent( this ) );
     }
 
+    private void notifyAboutBirthdays() {
+        log.info( "notifyAboutBirthdays" );
+        employeeService.notifyAboutBirthdays();
+    }
+
     @Autowired
     PortalConfig config;
 
@@ -120,6 +127,8 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
     ReportControlService reportControlService;
     @Autowired
     IpReservationService ipReservationService;
+    @Autowired
+    EmployeeService employeeService;
     @Autowired
     PersonCaseFilterService personCaseFilterService;
     @Autowired

@@ -6,7 +6,9 @@
              xmlns:contractor="urn:import:ru.protei.portal.ui.common.client.widget.selector.contractor.multicontractor"
              xmlns:selector="urn:import:ru.protei.portal.ui.contract.client.widget.selector"
              xmlns:productdirection="urn:import:ru.protei.portal.ui.common.client.widget.selector.productdirection"
-             xmlns:homecompany="urn:import:ru.protei.portal.ui.common.client.widget.homecompany">
+             xmlns:homecompany="urn:import:ru.protei.portal.ui.common.client.widget.homecompany"
+             xmlns:threestate="urn:import:ru.protei.portal.ui.common.client.widget.threestate"
+             xmlns:range="urn:import:ru.protei.portal.ui.common.client.widget.typedrangepicker">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -26,13 +28,33 @@
                     </div>
                 </div>
 
-                <selector:ContractTypeSelector ui:field="type"
-                                               header="{lang.contractType}" addStyleNames="form-group col-md-12"
-                                               hasNullValue="true" defaultValue="{lang.selectorAny}"/>
+                <contractor:MultiContractorSelector ui:field="contractors"
+                                                    header="{lang.contractContractor}"
+                                                    addStyleNames="form-group col-md-12"/>
 
-                <selector:ContractStateSelector ui:field="state"
-                                                header="{lang.contractState}" addStyleNames="form-group col-md-12"
-                                                hasNullValue="true" defaultValue="{lang.selectorAny}"/>
+                <range:TypedSelectorRangePicker ui:field="dateSigningRange" formatValue="dd.MM.yyyy HH:mm"
+                                                header="{lang.contractDateSigning}"
+                                                addStyleNames="form-group col-md-12"/>
+
+                <range:TypedSelectorRangePicker ui:field="dateValidRange" formatValue="dd.MM.yyyy HH:mm"
+                                                header="{lang.contractDateValid}"
+                                                addStyleNames="form-group col-md-12"/>
+
+                <selector:multi.ContractTypeMultiSelector ui:field="types"
+                                             header="{lang.contractType}" addStyleNames="form-group col-md-12"/>
+
+                <selector:multi.ContractStateMultiSelector ui:field="states"
+                                              header="{lang.contractState}" addStyleNames="form-group col-md-12"/>
+
+                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.contractKind}"/></label>
+                    <threestate:ThreeStateButton ui:field="kind" yesText="{lang.contractKindReceipt}" noText="{lang.contractKindExpenditure}"/>
+                </div>
+
+                <homecompany:HomeCompanyMultiSelector ui:field="organizations"
+                                                      header="{lang.contractOrganization}"
+                                                      reverseOrder="true"
+                                                      addStyleNames="form-group col-md-12"/>
 
                 <productdirection:ProductDirectionButtonSelector ui:field="direction"
                                                                  header="{lang.productDirection}"
@@ -44,14 +66,6 @@
                                               addStyleNames="form-group col-md-12"
                                               firedEmployeesVisible="true"/>
 
-                <contractor:MultiContractorSelector ui:field="contractors"
-                                                    header="{lang.contractContractor}"
-                                                    addStyleNames="form-group col-md-12"/>
-
-                <homecompany:HomeCompanyMultiSelector ui:field="organizations"
-                                                      header="{lang.contractOrganization}"
-                                                      reverseOrder="true"
-                                                      addStyleNames="form-group col-md-12"/>
             </div>
         </div>
         <div class="card-footer text-right">

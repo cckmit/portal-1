@@ -39,6 +39,12 @@ $bg_master_lightest: #fafafa;
   }
 }
 
+.modal {
+  .modal-dialog {
+    box-shadow: 0px 0px 6px 0px #0000007a;
+  }
+}
+
 /**   SORT BUTTON   **/
 .button.empty {
   padding: 0;
@@ -1112,7 +1118,7 @@ label.bordered:after {
 
 /**** Collapsable filter ****/
 
-.filter-collapsable {
+.filter-collapsable, .absence-filter, .room-reservation-filter {
 
   .filter-header {
     border-bottom: 2px solid #ddd;
@@ -1699,6 +1705,29 @@ a {
   }
 }
 
+.collapse-icon {
+  width: 20px;
+}
+
+.table-container-collapsed {
+  height: 0 !important;
+}
+
+.transition-05 {
+  -webkit-transition: all 0.5s;
+  -moz-transition: all 0.5s;
+  -o-transition: all 0.5s;
+  transition: all 0.5s;
+}
+
+.draggable-element {
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
 
 /**** case tag ****/
 .case-tags-container {
@@ -2217,11 +2246,11 @@ a {
     tbody {
       tr {
         td {
-          height: 70px;
+          height: 74px;
 
           div {
-            height: 70px;
-            max-height: 70px;
+            height: 74px;
+            max-height: 74px;
             white-space: pre-line;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -2264,7 +2293,6 @@ a {
     }
   }
 }
-
 
 .project-main-info {
   display: flex;
@@ -2813,12 +2841,12 @@ div.select2-container {
   }
 }
 
-.issue-filter {
+.issue-filter, .absence-filter, .room-reservation-filter {
   padding-top: 0px !important;
 
   .user-filter {
     background: #f5f5f51a;
-    border-bottom: 2px solid #dee4e5;
+    border-bottom: 2px solid #ddd;
     padding: 15px;
   }
 
@@ -3373,28 +3401,71 @@ label {
   max-height: 40px;
 }
 
-.contracts {
-  .contract-type-column {
-    width: 45px;
+.height-30 {
+  height: 30px;
+  max-height: 30px;
+}
+
+.table-contracts {
+  .contract-column-state {
+    width: 5%;
   }
-  .num-column {
+  .contract-column-info {
     width: 20%;
   }
-
-  .work-group-column {
+  .contract-column-contractor {
+    width: 20%;
+  }
+  .contract-column-description {
     width: 25%;
+  }
+  .contract-column-work-group {
+    width: 20%;
+  }
+  .contract-column-cost {
+    width: 10%;
+  }
+  tr > td > div {
+    height: 5rem;
+    max-height: 5rem;
+    white-space: pre-line;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 
 .short-table-view {
-  .contracts {
-    .work-group-column {
+  .table-contracts {
+    .contract-column-state {
+      width: 5%;
+    }
+    .contract-column-info {
+      width: 50%;
+    }
+    .contract-column-contractor {
+      width: 50%;
+    }
+    .contract-column-description {
       display: none;
     }
+    .contract-column-work-group {
+      display: none;
+    }
+    .contract-column-cost {
+      display: none;
+    }
+  }
+}
 
-    .cost-column {
-      display: none;
-    }
+.table.contracts-concise {
+  .column-state {
+    width: 5%;
+  }
+  .column-info {
+    width: 40%;
+  }
+  .column-contractor {
+    width: 55%;
   }
 }
 
@@ -3959,65 +4030,9 @@ table {
   text-decoration: line-through;
 }
 
-/**** card links panel ****/
-.card-links {
-  .collapse-btn {
-    font-family: "Font Awesome 5 Free";
-    font-weight: 900;
-  }
-  .card-header {
-    padding-top: 10px !important;
-    padding-bottom: 0px !important;
-    min-height: unset;
-
-    label {
-      margin-bottom: 0px !important;
-    }
-  }
-
-  &.collapsed {
-    .card-header {
-      padding-bottom: 10px !important;
-    }
-    .card-body {
-      display: none;
-    }
-    .collapse-btn {
-      &:after {
-        content: "\f078";
-      }
-    }
-  }
-
-  &.expanded {
-    .collapse-btn {
-      &:after {
-        content: "\f077";
-      }
-    }
-    .card-header {
-      &:after {
-        content: "";
-        height: 1px;
-        background: rgba(0, 0, 0, .08);
-        left: 16px;
-        right: 16px;
-        position: absolute;
-        bottom: 0;
-      }
-
-      label {
-        border-bottom: 2px solid;
-      }
-    }
-  }
-}
-
-
 /**** case links ****/
 .case-links {
   padding: 5px 10px !important;
-  max-height: 120px;
   overflow: auto;
 
   .case-link {
@@ -4801,6 +4816,72 @@ table {
   border-top: 2px solid #00808085 !important;
 }
 
+/**** ABSENCES ****/
+.absences {
+  table {
+    tbody {
+      tr {
+        td {
+          height: 40px;
+
+          div {
+            height: 40px;
+            max-height: 40px;
+            white-space: pre-line;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+    }
+    .reason {
+      width: 20%;
+
+      > div {
+        display: inline-flex;
+        align-items: center;
+
+        .absence-reason {
+          position: static;
+          height: 35px;
+          width: 35px;
+          min-width: 35px;
+          min-height: 35px;
+          > i {
+            font-size: 1.33333em !important;
+          }
+        }
+        .absence-label {
+          padding: 10px;
+        }
+      }
+    }
+
+    .person {
+      width: 25%;
+    }
+
+    .from-time, .till-time {
+      width: 15%;
+      > div {
+        white-space: nowrap;
+      }
+
+    }
+
+    .comment {
+      width: 25%;
+    }
+  }
+}
+
+.absence-filter {
+  .filter-content {
+    border: none;
+    padding-top: 0 !important;
+  }
+}
+
 .absence-reason {
   position: absolute;
   top: -25px;
@@ -4826,6 +4907,49 @@ table {
     height: 100%;
     color: white;
     font-size: 24px !important;
+  }
+}
+
+/**** ROOM-RESERVATION ****/
+.room-reservations {
+  table {
+    .separator-cell {
+      background-color: $bg_light_gray;
+      font-weight: bold;
+    }
+
+    .time {
+      width: 10%;
+      > div {
+        white-space: nowrap;
+      }
+    }
+
+    .person {
+      width: 20%;
+    }
+
+    .room {
+      width: 20%;
+    }
+    .reason {
+      width: 10%;
+    }
+
+    .coffee {
+      width: 10%;
+    }
+
+    .comment {
+      width: 30%;
+    }
+  }
+}
+
+.room-reservation-filter {
+  .filter-content {
+    border: none;
+    padding-top: 10px;
   }
 }
 
@@ -4868,5 +4992,77 @@ table {
 .favorite-icon {
   &.fas {
     color: gold;
+  }
+}
+
+.font-large {
+  font-size: large !important;
+}
+
+// Accordion
+
+.accordion {
+  .collapse-btn {
+    font-family: "Font Awesome 5 Free", serif;
+    font-weight: 900;
+  }
+
+  .collapse-btn {
+    &:after {
+      content: "\f078";
+    }
+  }
+
+  .card-header {
+    padding-bottom: 10px;
+    padding-top: 10px;
+    min-height: auto;
+  }
+
+  .accordion-body {
+    transition: max-height .35s ease;
+    overflow: hidden;
+
+    .card-body {
+      overflow: hidden;
+      position: relative;
+    }
+  }
+
+
+  &.show {
+    .collapse-btn {
+      &:after {
+        content: "\f077";
+      }
+    }
+
+    .card-body {
+      overflow: auto;
+    }
+
+    .card-header {
+      label {
+        border-bottom: 2px solid;
+      }
+
+      padding-bottom: 0;
+
+      &:after {
+        content: "";
+        height: 1px;
+        background: rgba(0, 0, 0, .08);
+        left: 20px;
+        right: 16px;
+        position: absolute;
+        bottom: 2px;
+      }
+    }
+  }
+}
+
+.card-links {
+  .card-body {
+    padding: 0;
   }
 }

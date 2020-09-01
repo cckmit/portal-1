@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.common;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class YearMonthDay implements Serializable {
 
@@ -58,5 +59,21 @@ public class YearMonthDay implements Serializable {
                 ", dayOfMonth=" + dayOfMonth +
                 ", dayOfWeek=" + dayOfWeek +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        YearMonthDay that = (YearMonthDay) o;
+        return Objects.equals(year, that.year) &&
+                Objects.equals(month, that.month) &&
+                Objects.equals(dayOfMonth, that.dayOfMonth) &&
+                Objects.equals(dayOfWeek, that.dayOfWeek);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(year, month, dayOfMonth, dayOfWeek);
     }
 }

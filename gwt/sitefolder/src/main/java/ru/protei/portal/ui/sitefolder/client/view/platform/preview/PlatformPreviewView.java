@@ -24,6 +24,7 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     @Override
     public void setActivity(AbstractPlatformPreviewActivity activity) {
         this.activity = activity;
+        attachmentContainer.setActivity(activity);
     }
 
     @Override

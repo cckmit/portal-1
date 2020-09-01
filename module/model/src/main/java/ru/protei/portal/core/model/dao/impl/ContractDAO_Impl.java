@@ -3,10 +3,12 @@ package ru.protei.portal.core.model.dao.impl;
 import org.apache.commons.lang3.StringUtils;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.ContractDAO;
+import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.util.sqlcondition.Query;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -14,7 +16,10 @@ import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
 import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
 
 public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements ContractDAO {
@@ -49,13 +54,21 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
         return getListByCondition(query.buildSql(), query.args());
     }
 
+    @Override
+    public boolean mergeRefKey(Long contractId, String refKey) {
+        Contract contract = new Contract();
+        contract.setId(contractId);
+        contract.setRefKey(refKey);
+        return partialMerge(contract, "ref_key");
+    }
+
     private JdbcQueryParameters buildJdbcQueryParameters(ContractQuery query) {
 
         JdbcQueryParameters parameters = new JdbcQueryParameters();
         SqlCondition where = createSqlCondition(query);
         parameters.withCondition(where.condition, where.args)
                 .withDistinct(true)
-                .withSort(TypeConverters.createSort(query, "CO"))
+                .withSort(TypeConverters.createSort(query))
                 .withOffset(query.getOffset());
         if (query.limit > 0) {
             parameters = parameters.withLimit(query.getLimit());
@@ -76,14 +89,21 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
                 args.add(likeArg);
             }
 
-            if (query.getState() != null) {
-                condition.append(" and CO.state = ?");
-                args.add(query.getState().getId());
+            if (CollectionUtils.isNotEmpty(query.getStates())) {
+                String inArg = HelperFunc.makeInArg(query.getStates(), state -> String.valueOf(state.getId()));
+                condition.append(" and CO.state in ").append(inArg);
+            } else {
+                condition.append(" and CO.state != ?");
+                args.add(En_ContractState.CANCELLED.getId());
             }
 
-            if (query.getType() != null) {
-                condition.append(" and contract.contract_type = ?");
-                args.add(query.getType().ordinal());
+            if (CollectionUtils.isNotEmpty(query.getTypes())) {
+                // Filter by comma-separated value
+                condition.append(" and (");
+                condition.append(stream(query.getTypes())
+                        .map(type -> "contract.contract_types REGEXP '(^|,)" + type.getId() + "(,|$)'")
+                        .collect(Collectors.joining(" or ")));
+                condition.append(")");
             }
 
             if (query.getDirectionId() != null) {
@@ -102,11 +122,53 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
                         .append(HelperFunc.makeInArg(query.getOrganizationIds(), false));
             }
 
+            if (CollectionUtils.isNotEmpty(query.getParentContractIds())) {
+                String inArg = HelperFunc.makeInArg(query.getParentContractIds(), false);
+                condition.append(" and contract.parent_contract_id in ").append(inArg);
+            }
+
             if (CollectionUtils.isNotEmpty(query.getManagerIds())) {
                 String inArg = HelperFunc.makeInArg(query.getManagerIds(), false);
                 condition.append(" and (CO.MANAGER in ").append(inArg)
                         .append("or P.MANAGER in ").append(inArg)
                         .append(")");
+            }
+
+            if (query.getKind() != null) {
+                String kindCondition = null;
+                switch (query.getKind()) {
+                    case RECEIPT: kindCondition = "IS NULL"; break;
+                    case EXPENDITURE: kindCondition = "IS NOT NULL"; break;
+                }
+                condition.append(" and contract.parent_contract_id ").append(kindCondition);
+            }
+
+            if (query.getDateSigningRange() != null) {
+                Interval interval = makeInterval(query.getDateSigningRange());
+                if (interval != null) {
+                    if (interval.from != null) {
+                        condition.append(" and contract.date_signing >= ?");
+                        args.add(interval.from);
+                    }
+                    if (interval.to != null) {
+                        condition.append(" and contract.date_signing <= ?");
+                        args.add(interval.to);
+                    }
+                }
+            }
+
+            if (query.getDateValidRange() != null) {
+                Interval interval = makeInterval(query.getDateValidRange());
+                if (interval != null) {
+                    if (interval.from != null) {
+                        condition.append(" and contract.date_valid >= ?");
+                        args.add(interval.from);
+                    }
+                    if (interval.to != null) {
+                        condition.append(" and contract.date_valid <= ?");
+                        args.add(interval.to);
+                    }
+                }
             }
         }));
     }

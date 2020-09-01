@@ -6,13 +6,14 @@ import ru.protei.portal.core.model.ent.RoomReservable;
 import ru.protei.portal.core.model.ent.RoomReservation;
 import ru.protei.portal.core.model.query.RoomReservationQuery;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 
 @RemoteServiceRelativePath("springGwtServices/RoomReservationController")
 public interface RoomReservationController extends RemoteService {
 
-    List<RoomReservation> getReservations(RoomReservationQuery query) throws RequestFailedException;
+    SearchResult<RoomReservation> getReservations(RoomReservationQuery query) throws RequestFailedException;
 
     RoomReservation getReservation(Long reservationId) throws RequestFailedException;
 

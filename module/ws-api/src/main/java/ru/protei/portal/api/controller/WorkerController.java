@@ -924,7 +924,6 @@ public class WorkerController {
         person.setGender(rec.getSex() == null ? En_Gender.UNDEFINED : rec.getSex() == 1 ? En_Gender.MALE : En_Gender.FEMALE);
         person.setBirthday(HelperFunc.isEmpty(rec.getBirthday()) ? null : HelperService.DATE.parse(rec.getBirthday()));
         person.setIpAddress(HelperFunc.isEmpty(rec.getIpAddress()) ? null : rec.getIpAddress().trim());
-        person.setPassportInfo(HelperFunc.isEmpty(rec.getPassportInfo()) ? null : rec.getPassportInfo().trim());
         person.setInfo(HelperFunc.isEmpty(rec.getInfo()) ? null : rec.getInfo().trim());
 
         PlainContactInfoFacade contactInfoFacade = new PlainContactInfoFacade(person.getContactInfo());

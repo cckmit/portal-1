@@ -9,7 +9,6 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.struct.Interval;
-import ru.protei.portal.core.utils.DateUtils;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -18,6 +17,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
+import static ru.protei.portal.core.utils.DateUtils.resetSeconds;
 
 /**
  * Created by michael on 05.07.16.
@@ -39,7 +39,7 @@ public class PersonAbsenceDAO_Impl extends PortalBaseJdbcDAO<PersonAbsence> impl
     public PersonAbsence currentAbsence(Long employeeId) {
         return getByCondition("person_absence.person_id = ? and person_absence.from_time <= ? and person_absence.till_time >= ?" +
                         " and person_absence.reason_id in " + HelperFunc.makeInArg(actualReasons(), false),
-                employeeId, DateUtils.resetSeconds(new Date()), DateUtils.resetSeconds(new Date()));
+                employeeId, resetSeconds(new Date()), resetSeconds(new Date()));
     }
 
     @Override
@@ -65,7 +65,7 @@ public class PersonAbsenceDAO_Impl extends PortalBaseJdbcDAO<PersonAbsence> impl
                     args.add(dateRange.from);
                 }
                 if (dateRange.to != null) {
-                    condition.append(" and (person_absence.till_time <= ? or person_absence.from_time <= ?)");
+                    condition.append(" and (person_absence.till_time < ? or person_absence.from_time < ?)");
                     args.add(dateRange.to);
                     args.add(dateRange.to);
                 }

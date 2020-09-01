@@ -44,6 +44,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String table();
 
+    String calendar();
+
     String type();
 
     String createBy( String p0, String p1 );
@@ -836,6 +838,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String dashboardActionRemove();
 
+    String dashboardActionCollapse();
+
+    String dashboardActionExpand();
+
     String commentSendMessage();
 
     String commentAddMessagePlaceholder();
@@ -913,6 +919,8 @@ public interface Lang extends Messages, ContactItemLang {
     String projectProducts();
 
     String projectCustomerType();
+
+    String projectCustomer();
 
     String projectTeam();
 
@@ -2012,6 +2020,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractTypeWorkContract();
 
+    String contractTypeHardwareSoftwareService();
+
     String goToContracts();
 
     String contractStateAgreement();
@@ -2024,11 +2034,15 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractWaitingCopiesFromCustomer();
 
+    String contractCancelled();
+
     String contractDescription();
 
     String contractContractor();
 
     String contractContractorDropped();
+
+    String contractOrganizationDropped();
 
     String contractContractorDescription();
 
@@ -2104,6 +2118,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractSpecificationHeader();
 
+    String contractListOfExpenditureHeader();
+
     String contractSpecificationClausePlaceholder();
 
     String contractSpecificationTextPlaceholder();
@@ -2139,6 +2155,10 @@ public interface Lang extends Messages, ContactItemLang {
     String contractValidationEmptyDateSigning();
 
     String contractValidationEmptyDateValid();
+
+    String contractValidationInvalidDateValid();
+
+    String contractValidationInvalidCost();
 
     String contractValidationContractSpecification();
 
@@ -2540,9 +2560,9 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reservedIpSubnetUnableToRemove();
 
-    String reservedIpSubnetsBtn();
+    String subnets();
 
-    String reservedIpIpsBtn();
+    String reservedIps();
 
     String reservedIpNumber();
 
@@ -2652,6 +2672,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String roomReservationDates();
 
+    String roomReservationTime();
+
     String roomReservationDatesCreateAddWeek();
 
     String roomReservationDatesCreateAddDay();
@@ -2670,7 +2692,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String roomReservationRemoved();
 
-    String errRoomReservationOutdated();
+    String errRoomReservationFinished();
 
     String errRoomReservationRoomNotAccessible();
 
@@ -2850,6 +2872,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String absenceValidationDateRange();
 
+    String absenceValidationDateRanges();
+
+    String absenceValidationDateRangesIntersection();
+
     String absenceValidationReason();
 
     String absenceCreation();
@@ -2858,7 +2884,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String absenceButtonCreate();
 
-    String absenceCreated();
+    String absenceCreated(@PluralCount int count);
 
     String absences();
 
@@ -2894,13 +2920,11 @@ public interface Lang extends Messages, ContactItemLang {
 
     String absenceReportDateRange();
 
-    String absenceStartDateRange();
-
     String absenceReportTitle();
 
-    String absenceButtonReport();
-
     String absenceReportHint();
+
+    String absenceButtonSummaryTable();
 
     String buttonSend();
 
@@ -2953,4 +2977,52 @@ public interface Lang extends Messages, ContactItemLang {
     String issueFavorites();
 
     String issueSyncedWith();
+
+    String employeeBirthdays();
+
+    String employeeBirthdayPrevMonth();
+
+    String employeeBirthdayResetMonth();
+
+    String employeeBirthdayNextMonth();
+
+    String errContractorNotRemovedHasContracts();
+
+    String contractorRemoveConfirmMessage();
+
+    String contractorRemoved();
+
+    String projectPauseDate(String date);
+
+    String errContractOrganizationShouldBeDifferentFromParent();
+
+    String topBrass();
+
+    String archive();
+
+    String storeAndDelivery();
+
+    String systemAdministratorLog();
+
+    String floorPlans();
+
+    String boardSearch();
+
+    String delivery();
+
+    String store();
+
+    String supportAndMarketing();
+
+    String notificationSystem();
+
+    String testZones();
+
+    String generalTable();
+
+    String signingDate();
+
+    String attachmentsHeader(String countOfAttachments);
+
+    String attachmentAdd();
 }

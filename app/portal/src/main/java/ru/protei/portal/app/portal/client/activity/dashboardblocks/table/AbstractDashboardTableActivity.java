@@ -13,5 +13,7 @@ public interface AbstractDashboardTableActivity extends ClickColumn.Handler<Case
 
     void onRemoveClicked();
 
+    void onCollapseClicked(boolean isCollapsed);
+
     void onReloadClicked();
 }
