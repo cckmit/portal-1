@@ -14,7 +14,6 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.ui.common.client.events.InputEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.decimalnumber.multiple.MultipleDecimalNumberInput;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
@@ -27,6 +26,7 @@ import ru.protei.portal.ui.equipment.client.activity.edit.AbstractEquipmentEditV
 import ru.protei.portal.ui.equipment.client.widget.type.EquipmentTypeBtnGroup;
 
 import java.util.List;
+import java.util.function.Function;
 
 
 /**
@@ -158,6 +158,11 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
         return nameSpecificationErrorLabel;
     }
 
+    @Override
+    public void setNameSizeValidationFunction(Function<String, Boolean> validationFunction) {
+        nameSpecification.setValidationFunction(validationFunction);
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -182,13 +187,6 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     @UiHandler("project")
     public void onProjectChanged(ValueChangeEvent<EntityOption> event) {
         activity.onProjectChanged();
-    }
-
-    @UiHandler("nameSpecification")
-    public void onNameSpecificationChanged(InputEvent event) {
-        if (activity != null) {
-            activity.onNameChanged();
-        }
     }
 
     @Inject

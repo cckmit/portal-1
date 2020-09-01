@@ -33,6 +33,8 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import java.util.List;
 import java.util.Objects;
 
+import static ru.protei.portal.core.model.helper.StringUtils.emptyIfNull;
+
 /**
  * Активность карточки редактирования единицы оборудования
  */
@@ -176,13 +178,6 @@ public abstract class EquipmentEditActivity
         fireEvent(new DocumentEvents.CreateWithEquipment(equipment.getId(), projectId, equipment.getProjectName()));
     }
 
-    @Override
-    public void onNameChanged() {
-        if (view.name().getValue() != null) {
-            view.nameErrorLabelVisibility().setVisible(view.name().getValue().length() > EquipmentConstants.NAME_SIZE);
-        }
-    }
-
     private void fillView(Equipment equipment) {
         this.equipment = equipment;
 
@@ -227,6 +222,13 @@ public abstract class EquipmentEditActivity
                         (equipmentShortView -> true) :
                         (equipmentShortView -> !Objects.equals(equipmentShortView.getId(), equipment.getId()))
         );
+
+        view.setNameSizeValidationFunction(name -> {
+            boolean isValidSize = emptyIfNull(name).length() <= CrmConstants.EquipmentConstants.NAME_SIZE;
+
+            view.nameErrorLabelVisibility().setVisible(!isValidSize);
+            return isValidSize;
+        });
 
         fireEvent(new EquipmentEvents.ShowDocumentList(view.documents(), equipment.getId()));
     }

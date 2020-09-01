@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 
 import java.util.List;
+import java.util.function.Function;
 
 
 /**
@@ -56,4 +57,6 @@ public interface AbstractEquipmentEditView extends IsWidget {
     HasVisibility nameErrorLabelVisibility();
 
     HasText nameErrorLabel();
+
+    void setNameSizeValidationFunction(Function<String, Boolean> validationFunction);
 }
