@@ -1,7 +1,7 @@
 package ru.protei.portal.util;
 
 import org.apache.commons.io.IOUtils;
-import ru.protei.portal.core.model.struct.MailReceiveContentAndType;
+import ru.protei.portal.core.model.struct.receivedmail.MailReceiveContentAndType;
 
 import javax.mail.*;
 import javax.mail.internet.ContentType;
@@ -18,8 +18,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class MailReceiverUtils {
-    static public List<MailReceiveContentAndType> getContent(Message message) throws MessagingException, IOException {
+public class MailReceiverParsers {
+    static public List<MailReceiveContentAndType> parseContent(Message message) throws MessagingException, IOException {
         List<MailReceiveContentAndType> list = new ArrayList<>();
         Object content = message.getContent();
         if (content == null) {
@@ -28,14 +28,14 @@ public class MailReceiverUtils {
         if (message.getContentType().startsWith(MIME_TEXT)) {
             list.add(new MailReceiveContentAndType((String)content, message.getContentType()));
         } else if (content instanceof Part) {
-            list.addAll(getContent((Part) content));
+            list.addAll(parseContent((Part) content));
         } else {
-            list.addAll(getContent((Multipart) content));
+            list.addAll(parseContent((Multipart) content));
         }
         return list;
     }
 
-    static private List<MailReceiveContentAndType> getContent(Part part) throws IOException, MessagingException {
+    static private List<MailReceiveContentAndType> parseContent(Part part) throws IOException, MessagingException {
         List<MailReceiveContentAndType> list = new ArrayList<>();
         Object content = part.getContent();
         if (content == null) {
@@ -45,9 +45,9 @@ public class MailReceiverUtils {
             list.add(new MailReceiveContentAndType((String)content, part.getContentType()));
             return list;
         } else if (content instanceof Part) {
-            return getContent((Part)content);
+            return parseContent((Part)content);
         } else if (content instanceof Multipart) {
-            return getContent((Multipart) content);
+            return parseContent((Multipart) content);
         } else {
             if (!part.getContentType().startsWith(MIME_TEXT)) {
                 return list;
@@ -60,28 +60,28 @@ public class MailReceiverUtils {
         }
     }
 
-    static private List<MailReceiveContentAndType> getContent(Multipart multipart) throws MessagingException {
+    static private List<MailReceiveContentAndType> parseContent(Multipart multipart) throws MessagingException {
         return extractContentAll(multipart, new ContentType(multipart.getContentType()).match(MIME_MULTIPART_ALTERNATIVE));
     }
 
     static private List<MailReceiveContentAndType> extractContentAll(Multipart multipart, boolean alternative) throws MessagingException {
         return IntStream.range(0, multipart.getCount())
-                .mapToObj(i -> getContentBodyPart(multipart, i))
+                .mapToObj(i -> parseContentBodyPart(multipart, i))
                 .filter(Objects::nonNull)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
     }
 
-    static private List<MailReceiveContentAndType> getContentBodyPart(Multipart multipart, int i) {
+    static private List<MailReceiveContentAndType> parseContentBodyPart(Multipart multipart, int i) {
         try {
-            return getContent(multipart.getBodyPart(i));
+            return parseContent(multipart.getBodyPart(i));
         } catch (MessagingException | IOException e) {
             e.printStackTrace();
             return new ArrayList<>();
         }
     }
 
-    static public Long getCaseNo(Message message) throws MessagingException {
+    static public Long parseCaseNo(Message message) throws MessagingException {
         try {
             String subject = message.getSubject();
             if (subject == null) {
@@ -102,7 +102,7 @@ public class MailReceiverUtils {
         }
     }
 
-    static public String getSenderEmail(Message message) throws MessagingException {
+    static public String parseSenderEmail(Message message) throws MessagingException {
         Address[] from = message.getFrom();
         if (from == null) {
             return null;

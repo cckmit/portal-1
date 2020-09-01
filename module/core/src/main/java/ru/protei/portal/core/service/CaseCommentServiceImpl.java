@@ -25,8 +25,8 @@ import ru.protei.portal.core.model.event.CaseCommentSavedClientEvent;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
-import ru.protei.portal.core.model.struct.MailReceiveContentAndType;
-import ru.protei.portal.core.model.struct.ReceivedMail;
+import ru.protei.portal.core.model.struct.receivedmail.MailReceiveContentAndType;
+import ru.protei.portal.core.model.struct.receivedmail.ReceivedMail;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseCommentShortView;
 import ru.protei.portal.core.model.view.EmployeeShortView;
@@ -43,7 +43,8 @@ import java.util.stream.Collectors;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.dict.En_Privilege.ISSUE_EDIT;
-import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
 
 public class CaseCommentServiceImpl implements CaseCommentService {
 
@@ -505,56 +506,47 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     @Override
     @Transactional
-    public Result<Void> addCommentsReceivedByMail(List<ReceivedMail> receivedMails) {
-        log.info("addCommentsReceivedByMail(): receivedMails={}", receivedMails);
-
-        List<CaseComment> comments = new ArrayList<>();
-        for (ReceivedMail receivedMail : receivedMails) {
-            if (!receivedMail.hasFullInfo()) {
-                log.warn("addCommentsReceivedByMail(): no full info receivedMail={}", receivedMail);
-                continue;
-            }
-
-            CaseObject caseObject = caseObjectDAO.getCaseByCaseno(receivedMail.getCaseNo());
-            if (caseObject == null) {
-                log.warn("addCommentsReceivedByMail(): no case ={}", receivedMail.getCaseNo());
-                continue;
-            }
-
-            EmployeeShortView employeeShortView = employeeShortViewDAO.getEmployeeByEmail(receivedMail.getSenderEmail());
-            if (employeeShortView == null) {
-                log.warn("addCommentsReceivedByMail(): no employee={}", receivedMail.getSenderEmail());
-                continue;
-            }
-
-            List<UserLogin> userLogins = userLoginDAO.findByPersonId( employeeShortView.getId() );
-            if (userLogins.isEmpty()) {
-                log.warn("addCommentsReceivedByMail(): no userLogin={}", receivedMail.getSenderEmail());
-                continue;
-            }
-
-            UserLogin login = userLogins.get(0);
-
-            jdbcManyRelationsHelper.fill( login, "roles" );
-            if (!policyService.hasGrantAccessFor(login.getRoles(), ISSUE_EDIT)) {
-                log.warn("addCommentsReceivedByMail(): no privilege={}", receivedMail.getSenderEmail());
-                continue;
-            }
-
-            Person person = personDAO.get(employeeShortView.getId());
-            if (person == null) {
-                log.warn("addCommentsReceivedByMail(): no person={}", receivedMail.getSenderEmail());
-                continue;
-            }
-
-            log.info("addCommentsReceivedByMail(): process receivedMail={}", receivedMail);
-
-            comments.add(
-                    createComment(caseObject, personDAO.get(employeeShortView.getId()), receivedMail.getContentAndTypes())
-            );
+    public Result<Void> addCommentReceivedByMail(ReceivedMail receivedMail) {
+        if (receivedMail.getCaseNo() == null || receivedMail.getSenderEmail() == null) {
+            log.warn("addCommentsReceivedByMail(): no case no or sender mail receivedMail ={}", receivedMail);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        caseCommentDAO.persistBatch(comments);
+        EmployeeShortView employeeShortView = employeeShortViewDAO.getEmployeeByEmail(receivedMail.getSenderEmail());
+        if (employeeShortView == null) {
+            log.warn("addCommentsReceivedByMail(): no found employee by email={}", receivedMail.getSenderEmail());
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        List<UserLogin> userLogins = userLoginDAO.findByPersonId( employeeShortView.getId() );
+        if (userLogins.isEmpty()) {
+            log.warn("addCommentsReceivedByMail(): no found user login by email ={}", receivedMail.getSenderEmail());
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        UserLogin login = userLogins.get(0);
+        jdbcManyRelationsHelper.fill( login, "roles" );
+        if (!policyService.hasGrantAccessFor(login.getRoles(), ISSUE_EDIT)) {
+            log.warn("addCommentsReceivedByMail(): no privilege for create comment ={}", receivedMail.getSenderEmail());
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
+        Person person = personDAO.get(employeeShortView.getId());
+        if (person == null) {
+            log.warn("addCommentsReceivedByMail(): no found person person by mail ={}", receivedMail.getSenderEmail());
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        CaseObject caseObject = caseObjectDAO.getCaseByCaseno(receivedMail.getCaseNo());
+        if (caseObject == null) {
+            log.warn("addCommentsReceivedByMail(): no found case for case no ={}", receivedMail.getCaseNo());
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        log.info("addCommentsReceivedByMail(): process receivedMail={}", receivedMail);
+        caseCommentDAO.persist(
+                createComment(caseObject, person, receivedMail.getContentAndTypes())
+        );
 
         return ok();
     }

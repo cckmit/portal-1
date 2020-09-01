@@ -1,4 +1,4 @@
-package ru.protei.portal.core.model.struct;
+package ru.protei.portal.core.model.struct.receivedmail;
 
 import java.util.List;
 
@@ -23,10 +23,6 @@ public class ReceivedMail {
 
     public List<MailReceiveContentAndType> getContentAndTypes() {
         return contentAndTypes;
-    }
-
-    public boolean hasFullInfo() {
-        return caseNo != null && senderEmail != null;
     }
 
     @Override

@@ -1,4 +1,4 @@
-package ru.protei.portal.core.model.struct;
+package ru.protei.portal.core.model.struct.receivedmail;
 
 public class MailReceiveContentAndType {
     private String content;
