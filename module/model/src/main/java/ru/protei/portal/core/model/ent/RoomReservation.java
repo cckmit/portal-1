@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_RoomReservationReason;
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -19,10 +20,10 @@ public class RoomReservation extends AuditableObject implements Serializable {
     private Date dateRequested;
 
     @JdbcJoinedObject(localColumn="person_requester_id")
-    private Person personRequester;
+    private PersonShortView personRequester;
 
     @JdbcJoinedObject(localColumn="person_responsible_id")
-    private Person personResponsible;
+    private PersonShortView personResponsible;
 
     @JdbcJoinedObject(localColumn="room_id")
     private RoomReservable room;
@@ -44,7 +45,7 @@ public class RoomReservation extends AuditableObject implements Serializable {
     private String comment;
 
     @JdbcManyToMany(linkTable = "room_reservation_notifiers", localLinkColumn = "room_reservation_id", remoteLinkColumn = "person_id")
-    private List<Person> personsToBeNotified;
+    private List<PersonShortView> personsToBeNotified;
 
     public RoomReservation() {
     }
@@ -65,19 +66,19 @@ public class RoomReservation extends AuditableObject implements Serializable {
         this.dateRequested = dateRequested;
     }
 
-    public Person getPersonRequester() {
+    public PersonShortView getPersonRequester() {
         return personRequester;
     }
 
-    public void setPersonRequester(Person personRequester) {
+    public void setPersonRequester(PersonShortView personRequester) {
         this.personRequester = personRequester;
     }
 
-    public Person getPersonResponsible() {
+    public PersonShortView getPersonResponsible() {
         return personResponsible;
     }
 
-    public void setPersonResponsible(Person personResponsible) {
+    public void setPersonResponsible(PersonShortView personResponsible) {
         this.personResponsible = personResponsible;
     }
 
@@ -129,11 +130,11 @@ public class RoomReservation extends AuditableObject implements Serializable {
         this.comment = comment;
     }
 
-    public List<Person> getPersonsToBeNotified() {
+    public List<PersonShortView> getPersonsToBeNotified() {
         return personsToBeNotified;
     }
 
-    public void setPersonsToBeNotified(List<Person> personsToBeNotified) {
+    public void setPersonsToBeNotified(List<PersonShortView> personsToBeNotified) {
         this.personsToBeNotified = personsToBeNotified;
     }
 

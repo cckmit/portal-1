@@ -64,9 +64,6 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
     @JdbcColumn(name="ipaddress")
     private String ipAddress;
 
-    @JdbcColumn(name="passportinfo")
-    private String passportInfo;
-
     @JdbcColumn(name="info")
     private String info;
 
@@ -238,14 +235,6 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
         this.contactInfo = contactInfo;
     }
 
-    public String getPassportInfo() {
-        return passportInfo;
-    }
-
-    public void setPassportInfo(String passportInfo) {
-        this.passportInfo = passportInfo;
-    }
-
     public String getInfo() {
         return info;
     }
@@ -357,7 +346,6 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
     }
 
     public void resetPrivacyInfo() {
-        passportInfo = null;
         department = null;
         position = null;
         info = null;
@@ -386,7 +374,6 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
                 ", genderCode='" + genderCode + '\'' +
                 ", birthday=" + birthday +
                 ", ipAddress='" + ipAddress + '\'' +
-                ", passportInfo='" + passportInfo + '\'' +
                 ", info='" + info + '\'' +
                 ", isDeleted=" + isDeleted +
                 ", isFired=" + isFired +
