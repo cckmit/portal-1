@@ -118,5 +118,5 @@ public interface CaseCommentService {
 
     Result<Boolean> deleteProjectCommentsFromYoutrack(AuthToken token, String commentRemoteId);
 
-    Result<Void> addCommentReceivedByMail(ReceivedMail receivedMails);
+    Result<Boolean> addCommentReceivedByMail(ReceivedMail receivedMails);
 }

@@ -19,45 +19,22 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class MailReceiverParsers {
-    static public List<MailReceiveContentAndType> parseContent(Message message) throws MessagingException, IOException {
-        List<MailReceiveContentAndType> list = new ArrayList<>();
-        Object content = message.getContent();
-        if (content == null) {
-            return list;
-        }
-        if (message.getContentType().startsWith(MIME_TEXT)) {
-            list.add(new MailReceiveContentAndType((String)content, message.getContentType()));
-        } else if (content instanceof Part) {
-            list.addAll(parseContent((Part) content));
-        } else {
-            list.addAll(parseContent((Multipart) content));
-        }
-        return list;
-    }
-
-    static private List<MailReceiveContentAndType> parseContent(Part part) throws IOException, MessagingException {
+    static public List<MailReceiveContentAndType> parseContent(Part part) throws IOException, MessagingException {
         List<MailReceiveContentAndType> list = new ArrayList<>();
         Object content = part.getContent();
         if (content == null) {
             return list;
-        }
-        if (part.getContentType().startsWith(MIME_TEXT)) {
+        } else if (part.getContentType().startsWith(MIME_TEXT)) {
             list.add(new MailReceiveContentAndType((String)content, part.getContentType()));
-            return list;
         } else if (content instanceof Part) {
             return parseContent((Part)content);
         } else if (content instanceof Multipart) {
             return parseContent((Multipart) content);
-        } else {
-            if (!part.getContentType().startsWith(MIME_TEXT)) {
-                return list;
-            }
-            if (content instanceof InputStream) {
-                String s = IOUtils.toString((InputStream) content, StandardCharsets.UTF_8);
-                list.add(new MailReceiveContentAndType(s, part.getContentType()));
-            }
-            return list;
+        } else if (content instanceof InputStream) {
+            String s = IOUtils.toString((InputStream) content, StandardCharsets.UTF_8);
+            list.add(new MailReceiveContentAndType(s, part.getContentType()));
         }
+        return list;
     }
 
     static private List<MailReceiveContentAndType> parseContent(Multipart multipart) throws MessagingException {
@@ -87,16 +64,14 @@ public class MailReceiverParsers {
             if (subject == null) {
                 return null;
             }
-            Matcher matcher = issueRePattern.matcher(subject);
+
+            Matcher matcher = issueIdPattern.matcher(subject);
             if (!matcher.find()) {
                 return null;
+            } else {
+                String caseNo = subject.substring(matcher.start() + ISSUE_ID_PREFIX.length(), matcher.end());
+                return Long.valueOf(caseNo);
             }
-            matcher = issueIdPattern.matcher(subject.substring(matcher.start(), matcher.end()));
-            if (!matcher.find()) {
-                return null;
-            }
-            String caseNo = subject.substring(matcher.start() + ISSUE_ID_PREFIX.length(), matcher.end());
-            return Long.valueOf(caseNo);
         } catch (NumberFormatException e) {
             return null;
         }
@@ -114,10 +89,18 @@ public class MailReceiverParsers {
         }
     }
 
+    static public String parseServiceInfo(Message message) {
+        try {
+            String[] messageId = message.getHeader("Message-ID");
+            String[] messageReceived = message.getHeader("Received");
+            return "Message-ID : " + String.join(", ", messageId) + ", Received : "+ String.join(", ", messageReceived);
+        } catch (MessagingException e) {
+            return "failed parse service info";
+        }
+    }
+
     static private final String ISSUE_ID_PREFIX = "CRM-";
-    static private final String ISSUE_RE_PREFIX = "Re:";
     static private final String MIME_MULTIPART_ALTERNATIVE = "multipart/alternative";
     static private final String MIME_TEXT = "TEXT/";
-    static private final Pattern issueRePattern = Pattern.compile("^" + ISSUE_RE_PREFIX + ".+" + ISSUE_ID_PREFIX + "\\d+");
     static private final Pattern issueIdPattern = Pattern.compile(ISSUE_ID_PREFIX + "\\d+");
 }

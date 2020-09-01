@@ -12,10 +12,8 @@ import ru.protei.portal.core.service.events.EventPublisherService;
 import javax.mail.*;
 import javax.mail.search.FlagTerm;
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 import static java.util.Arrays.stream;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
@@ -63,15 +61,16 @@ public class MailReceiverServiceImpl implements MailReceiverService {
                 return;
             }
             inbox.fetch(search, createFetchProfile());
-            List<ReceivedMail> receivedMails = stream(search)
-                    .map(this::parseMessage)
-                    .filter(mail ->
-                            mail.filter(receivedMail -> receivedMail.getCaseNo() != null && receivedMail.getSenderEmail() != null)
-                                    .isPresent())
-                    .map(Optional::get)
-                    .collect(Collectors.toList());
 
-            receivedMails.forEach(caseCommentService::addCommentReceivedByMail);
+            stream(search).forEach(message -> {
+                log.info("performReceiveMailAndAddComments(): message service info = {}", parseServiceInfo(message));
+                parseMessage(message)
+                        .filter(this::hasFullInfo)
+                        .ifPresent(mail -> caseCommentService.addCommentReceivedByMail(mail)
+                                .ifOk(ignore -> setSeen(inbox, message)));
+            });
+
+            inbox.close(false);
         } catch (MessagingException e) {
             log.error("performReceiveMailAndAddComments(): fail");
             throw new RuntimeException();
@@ -83,6 +82,20 @@ public class MailReceiverServiceImpl implements MailReceiverService {
                     e.printStackTrace();
                 }
             }
+        }
+    }
+
+    private boolean hasFullInfo(ReceivedMail receivedMail) {
+        return receivedMail.getCaseNo() != null &&
+                receivedMail.getSenderEmail() != null &&
+                !receivedMail.getContentAndTypes().isEmpty();
+    }
+
+    private void setSeen(Folder folder, Message message) {
+        try {
+            folder.setFlags(message.getMessageNumber(), message.getMessageNumber(), new Flags(Flags.Flag.SEEN), true);
+        } catch (MessagingException e) {
+            log.error("setSeen(): fail message = {}", message);
         }
     }
 

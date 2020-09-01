@@ -25,8 +25,6 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
     @EventListener
     @Override
     public void onApplicationStartOrRefreshContext(ContextRefreshedEvent event) {
-        // every 5 minutes
-        scheduler.scheduleAtFixedRate(mailReceiverService::performReceiveMailAndAddComments, TimeUnit.MINUTES.toMillis(1));
 
         log.info("onApplicationStartOrRefresh() Context refresh counter={} refresh source: {}",  contextRefreshedEventCounter.getAndIncrement(), event.getSource());
         if (isPortalStarted.getAndSet( true )) return;
@@ -49,7 +47,8 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         scheduler.schedule(this::processPersonCaseFilterMailNotification, new CronTrigger( "0 0 10 * * ?"));
         // at 09:00:00 am every MONDAY
         scheduler.schedule(this::notifyAboutBirthdays, new CronTrigger( "0 0 9 * * MON"));
-
+        // every 5 minutes
+        scheduler.scheduleAtFixedRate(mailReceiverService::performReceiveMailAndAddComments, TimeUnit.MINUTES.toMillis(5));
 
         scheduleNotificationsAboutPauseTime();
     }

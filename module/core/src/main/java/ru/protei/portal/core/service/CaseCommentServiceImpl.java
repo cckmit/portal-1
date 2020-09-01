@@ -24,6 +24,7 @@ import ru.protei.portal.core.model.event.CaseCommentRemovedClientEvent;
 import ru.protei.portal.core.model.event.CaseCommentSavedClientEvent;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
+import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
 import ru.protei.portal.core.model.struct.receivedmail.MailReceiveContentAndType;
 import ru.protei.portal.core.model.struct.receivedmail.ReceivedMail;
@@ -38,6 +39,7 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
+import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
@@ -506,32 +508,38 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     @Override
     @Transactional
-    public Result<Void> addCommentReceivedByMail(ReceivedMail receivedMail) {
+    public Result<Boolean> addCommentReceivedByMail(ReceivedMail receivedMail) {
         if (receivedMail.getCaseNo() == null || receivedMail.getSenderEmail() == null) {
             log.warn("addCommentsReceivedByMail(): no case no or sender mail receivedMail ={}", receivedMail);
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        EmployeeShortView employeeShortView = employeeShortViewDAO.getEmployeeByEmail(receivedMail.getSenderEmail());
-        if (employeeShortView == null) {
+        List<EmployeeShortView> employeeShortViewList = getEmployeeShortViewByMail(receivedMail.getSenderEmail());
+        if (employeeShortViewList.isEmpty()) {
             log.warn("addCommentsReceivedByMail(): no found employee by email={}", receivedMail.getSenderEmail());
             return error(En_ResultStatus.NOT_FOUND);
         }
 
-        List<UserLogin> userLogins = userLoginDAO.findByPersonId( employeeShortView.getId() );
+        if (employeeShortViewList.size() > 1) {
+            log.warn("addCommentsReceivedByMail(): more than only one employee found by email={}", receivedMail.getSenderEmail());
+            return error(En_ResultStatus.INTERNAL_ERROR);
+        }
+        Long personId = employeeShortViewList.get(0).getId();
+
+        List<UserLogin> userLogins = userLoginDAO.findByPersonId( personId );
         if (userLogins.isEmpty()) {
             log.warn("addCommentsReceivedByMail(): no found user login by email ={}", receivedMail.getSenderEmail());
             return error(En_ResultStatus.NOT_FOUND);
         }
 
-        UserLogin login = userLogins.get(0);
-        jdbcManyRelationsHelper.fill( login, "roles" );
-        if (!policyService.hasGrantAccessFor(login.getRoles(), ISSUE_EDIT)) {
+        jdbcManyRelationsHelper.fill( userLogins, "roles" );
+        if (stream(userLogins)
+                .noneMatch(userlogin -> policyService.hasGrantAccessFor(userlogin.getRoles(), ISSUE_EDIT))) {
             log.warn("addCommentsReceivedByMail(): no privilege for create comment ={}", receivedMail.getSenderEmail());
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
-        Person person = personDAO.get(employeeShortView.getId());
+        Person person = personDAO.get(personId);
         if (person == null) {
             log.warn("addCommentsReceivedByMail(): no found person person by mail ={}", receivedMail.getSenderEmail());
             return error(En_ResultStatus.NOT_FOUND);
@@ -544,28 +552,51 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
 
         log.info("addCommentsReceivedByMail(): process receivedMail={}", receivedMail);
-        caseCommentDAO.persist(
-                createComment(caseObject, person, receivedMail.getContentAndTypes())
-        );
+        CaseComment comment = createComment(caseObject, person, makeCommentText(receivedMail.getContentAndTypes()));
+        caseCommentDAO.persist(comment);
 
-        return ok();
+        boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( comment.getCaseId() ) );
+
+        return ok(true).publishEvent( new CaseCommentEvent( this, ServiceModule.GENERAL, personId, comment.getCaseId(), isEagerEvent,
+                null, comment, null) );
     }
 
-    private CaseComment createComment(CaseObject caseObject, Person person, List<MailReceiveContentAndType> contentAndTypes) {
+    private List<EmployeeShortView> getEmployeeShortViewByMail(String mail) {
+        EmployeeQuery query = new EmployeeQuery();
+        query.setEmail(mail);
+        return employeeShortViewDAO.getEmployees(query);
+    }
+
+    private CaseComment createComment(CaseObject caseObject, Person person, String comment) {
         CaseComment caseComment = new CaseComment();
         caseComment.setCaseId(caseObject.getId());
         caseComment.setAuthor(person);
         caseComment.setCreated(new Date());
         caseComment.setOriginalAuthorFullName(person.getDisplayName());
         caseComment.setOriginalAuthorName(person.getDisplayName());
-        String comment = contentAndTypes.stream()
-                .map(contentAndType -> contentAndType.getContentType().startsWith("TEXT/HTML") ?
-                        cleanHTMLContent(contentAndType.getContent())
-                        : contentAndType.getContent())
-                .collect(Collectors.joining("\n"));
         caseComment.setText(comment);
+        caseComment.setPrivateComment(caseObject.isPrivateCase());
 
         return caseComment;
+    }
+
+    private String makeCommentText(List<MailReceiveContentAndType> contentAndTypes) {
+        return stream(contentAndTypes)
+                .reduce(findSimplestContent())
+                .map(c -> c.getContentType().startsWith("TEXT/HTML") ?
+                        cleanHTMLContent(c.getContent()) : c.getContent())
+                .orElse("");
+    }
+
+    private BinaryOperator<MailReceiveContentAndType> findSimplestContent() {
+        return BinaryOperator.minBy(
+                Comparator.comparing((MailReceiveContentAndType item) -> contentTypeWeight(item.getContentType())));
+    }
+
+    private int contentTypeWeight(String contentType) {
+        if (contentType.startsWith("TEXT/PLAIN")) return 1;
+        if (contentType.startsWith("TEXT/HTML")) return 2;
+        return 3;
     }
 
     private String cleanHTMLContent(String htmlContent) {
