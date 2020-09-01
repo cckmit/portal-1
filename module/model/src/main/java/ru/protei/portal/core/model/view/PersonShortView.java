@@ -1,15 +1,25 @@
 package ru.protei.portal.core.model.view;
 
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.winter.jdbc.annotations.JdbcColumn;
+import ru.protei.winter.jdbc.annotations.JdbcEntity;
+import ru.protei.winter.jdbc.annotations.JdbcId;
 
 import java.io.Serializable;
 
 /**
  * Сокращенное представление контакта
  */
+@JdbcEntity(table = "person")
 public class PersonShortView implements Serializable {
+
+    @JdbcId(name = "id")
     private Long id;
+
+    @JdbcColumn(name="displayShortName")
     private String name;
+
+    @JdbcColumn(name = "isfired")
     private boolean isFired;
 
     public PersonShortView() {}
