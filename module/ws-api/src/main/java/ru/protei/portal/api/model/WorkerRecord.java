@@ -325,7 +325,6 @@ public class WorkerRecord {
         setPhoneWork (contactInfoFacade.getWorkPhone ());
         setPhoneMobile (contactInfoFacade.getMobilePhone ());
         setPhoneHome (contactInfoFacade.getHomePhone ());
-        setPassportInfo (p.getPassportInfo ());
         setInfo (p.getInfo ());
         setAddress (contactInfoFacade.getLegalAddress());
         setAddressHome (contactInfoFacade.getHomeAddress());

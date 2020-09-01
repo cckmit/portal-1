@@ -115,7 +115,6 @@ public class ExportServiceTest {
         person.setDisplayName(JUNIT_TEST_NAME);
         person.setDisplayShortName(JUNIT_TEST_NAME);
         person.setGender(En_Gender.MALE);
-        person.setPassportInfo("passport");
         person.setIpAddress("127.0.0.1");
 
         Assert.assertNotNull(personDAO.persist(person));
@@ -127,7 +126,6 @@ public class ExportServiceTest {
         Assert.assertNotNull(externalPerson);
         Assert.assertEquals(JUNIT_TEST_NAME, externalPerson.getFirstName());
         Assert.assertEquals(JUNIT_TEST_NAME, externalPerson.getLastName());
-        Assert.assertEquals("passport", externalPerson.getPassportInfo());
         Assert.assertEquals(En_Gender.MALE, externalPerson.getGender());
         Assert.assertNotNull(externalPerson.getCreated());
         Assert.assertNotNull(externalPerson.getBirthday());
