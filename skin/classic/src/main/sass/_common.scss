@@ -698,6 +698,10 @@ label.bordered:after {
             overflow: hidden;
             text-overflow: ellipsis;
           }
+
+          &.equipment-name-column {
+            word-break: break-word;
+          }
         }
 
         .equipment-type-column {

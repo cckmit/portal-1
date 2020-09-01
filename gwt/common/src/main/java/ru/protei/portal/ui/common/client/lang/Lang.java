@@ -420,7 +420,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String goToContacts();
 
-    String contactFieldLengthExceed( String p0, int p1 );
+    String promptFieldLengthExceed(String fieldName, int fieldLength);
 
     String contactGeneratePassword();
 
