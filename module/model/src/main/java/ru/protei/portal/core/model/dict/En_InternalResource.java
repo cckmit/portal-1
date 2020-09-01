@@ -11,5 +11,6 @@ public enum En_InternalResource {
     GIT,
     CRM,
     STORE_DELIVERY,
-    EMAIL
+    EMAIL,
+    VPN
 }

@@ -3025,4 +3025,6 @@ public interface Lang extends Messages, ContactItemLang {
     String attachmentsHeader(String countOfAttachments);
 
     String attachmentAdd();
+
+    String internalResourceVpn();
 }
