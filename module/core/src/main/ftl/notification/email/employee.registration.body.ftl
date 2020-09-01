@@ -39,6 +39,7 @@
 <@set name="_employee_resource_crm" value="${employee_resource_crm}"/>
 <@set name="_employee_resource_store_delivery" value="${employee_resource_store_delivery}"/>
 <@set name="_employee_resource_email" value="${employee_resource_email}"/>
+<@set name="_employee_resource_vpn" value="${employee_resource_vpn}"/>
 
 <@set name="_phone_type_text" value="${phone_type_text}"/>
 <@set name="_phone_type_international" value="${phone_type_international}"/>
@@ -239,6 +240,7 @@
                             <#case "CRM">${_employee_resource_crm}<#break>
                             <#case "STORE_DELIVERY">${_employee_resource_store_delivery}<#break>
                             <#case "EMAIL">${_employee_resource_email}<#break>
+                            <#case "VPN">${_employee_resource_vpn}<#break>
                         </#switch><#sep>, </#sep><#rt>
                     </#list><#rt>
                 </#if><#rt>
