@@ -8,6 +8,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.UserLogin;
+import ru.protei.portal.core.model.ent.UserLoginShortView;
 import ru.protei.portal.core.model.query.AccountQuery;
 import ru.protei.portal.core.service.AccountService;
 import ru.protei.portal.core.service.session.SessionService;
@@ -33,6 +34,13 @@ public class AccountControllerImpl implements AccountController {
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
         Result<SearchResult<UserLogin>> result = accountService.getAccounts(token, query);
         return checkResultAndGetData(result);
+    }
+
+    @Override
+    public List<UserLoginShortView> getUserLoginShortViewList(AccountQuery query) throws RequestFailedException {
+        log.info("getUserLoginShortViewList(): query={}", query);
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
+        return checkResultAndGetData(accountService.getUserLoginShortViewList(token, query));
     }
 
     @Override

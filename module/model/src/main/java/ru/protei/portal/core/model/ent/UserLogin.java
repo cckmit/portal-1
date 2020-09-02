@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_AdminState;
 import ru.protei.portal.core.model.dict.En_AuthType;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -49,6 +50,16 @@ public class UserLogin extends AuditableObject {
     })
     private String displayShortName;
 
+    @JdbcJoinedColumn( mappedColumn = "firstname", joinPath = {
+            @JdbcJoinPath( table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "p" ),
+    })
+    private String firstName;
+
+    @JdbcJoinedColumn( mappedColumn = "lastname", joinPath = {
+            @JdbcJoinPath( table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "p" ),
+    })
+    private String lastName;
+
     @JdbcJoinedColumn( mappedColumn = "isfired", joinPath = {
             @JdbcJoinPath( table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "p" ),
     })
@@ -64,6 +75,16 @@ public class UserLogin extends AuditableObject {
             @JdbcJoinPath( table = "company", localColumn = "company_id", remoteColumn = "id", sqlTableAlias = "c" )
     })
     private String companyName;
+
+    @JdbcJoinedColumn( mappedColumn = "category_id", joinPath = {
+            @JdbcJoinPath( table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "p" ),
+            @JdbcJoinPath( table = "company", localColumn = "company_id", remoteColumn = "id", sqlTableAlias = "c" )
+    })
+    @JdbcEnumerated( EnumType.ID )
+    private En_CompanyCategory companyCategory;
+
+    @JdbcJoinedColumn(localColumn = "personId", remoteColumn = "id", table = "person", mappedColumn = "sex")
+    private String genderCode;
 
     @JdbcColumn(name = "authType")
     @JdbcEnumerated(EnumType.ID)
@@ -203,6 +224,38 @@ public class UserLogin extends AuditableObject {
         companyName = person.getCompany().getCname();
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public En_CompanyCategory getCompanyCategory() {
+        return companyCategory;
+    }
+
+    public void setCompanyCategory(En_CompanyCategory companyCategory) {
+        this.companyCategory = companyCategory;
+    }
+
+    public String getGenderCode() {
+        return genderCode;
+    }
+
+    public void setGenderCode(String genderCode) {
+        this.genderCode = genderCode;
+    }
+
     @Override
     public String getAuditType() {
         return "UserLogin";
@@ -222,16 +275,20 @@ public class UserLogin extends AuditableObject {
     }
 
     @Override
-    public String toString () {
+    public String toString() {
         return "UserLogin{" +
                 "id=" + id +
                 ", ulogin='" + ulogin + '\'' +
+                ", upass='" + upass + '\'' +
                 ", created=" + created +
                 ", lastPwdChange=" + lastPwdChange +
                 ", pwdExpired=" + pwdExpired +
                 ", adminStateId=" + adminStateId +
                 ", personId=" + personId +
                 ", displayName='" + displayName + '\'' +
+                ", displayShortName='" + displayShortName + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
                 ", isFired=" + isFired +
                 ", companyId=" + companyId +
                 ", companyName='" + companyName + '\'' +

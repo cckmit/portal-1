@@ -93,7 +93,7 @@ public class DndAutoResizeTextArea extends AutoResizeTextArea {
 
                 dataList.push(data);
 
-                if (dataList.length == files.length) {
+                if (dataList.length === files.length) {
                     view.@ru.protei.portal.ui.common.client.widget.dndautoresizetextarea.DndAutoResizeTextArea::onPastedObjects(*)(dataList);
                 }
             };

@@ -30,6 +30,7 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEve
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveHandler;
 import ru.protei.portal.ui.common.client.widget.dndautoresizetextarea.DndAutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.imagepastetextarea.event.PasteEvent;
+import ru.protei.portal.ui.common.client.widget.mentioningtextarea.MentioningTextArea;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeTextBox;
@@ -291,8 +292,9 @@ public class CaseCommentListView
 
     @UiField
     HTMLPanel root;
-    @UiField
-    DndAutoResizeTextArea comment;
+    @Inject
+    @UiField(provided = true)
+    MentioningTextArea comment;
     @UiField
     FlowPanel commentsContainer;
     @UiField

@@ -718,7 +718,7 @@ public abstract class CaseCommentListActivity
     }
 
     private void renderTextAsync(String text, En_TextMarkup textMarkup, Consumer<String> consumer) {
-        textRenderController.render(text, textMarkup, new FluentCallback<String>()
+        textRenderController.render(text, textMarkup, true, new FluentCallback<String>()
                 .withError(throwable -> consumer.accept(text))
                 .withSuccess(consumer));
     }

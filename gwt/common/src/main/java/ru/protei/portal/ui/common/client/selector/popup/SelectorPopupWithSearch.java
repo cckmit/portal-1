@@ -95,7 +95,7 @@ public class SelectorPopupWithSearch extends BasePopupView
         }, ScrollEvent.getType() );
     }
 
-   @Override
+    @Override
     public void showLoading(boolean isLoading) {
         loading.setVisible(isLoading);
     }
@@ -123,6 +123,11 @@ public class SelectorPopupWithSearch extends BasePopupView
     public void setAddButton(boolean addVisible, String text) {
         addButton.setText(text);
         setAddButton(addVisible);
+    }
+
+    @Override
+    public HasVisibility searchVisibility() {
+        return search;
     }
 
     @UiHandler( "search" )

@@ -5070,3 +5070,20 @@ table {
     padding: 0;
   }
 }
+
+.user-login-selector {
+  li {
+    height: 40px;
+
+    .image-wrapper {
+      height: 50%;
+
+      img {
+        height: 30px;
+        width: 25px;
+        border-radius: 50%;
+        -webkit-border-radius: 50%;
+      }
+    }
+  }
+}

@@ -26,11 +26,14 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
 
 /**
  * Реализация сервиса управления учетными записями
@@ -82,6 +85,11 @@ public class AccountServiceImpl implements AccountService {
         jdbcManyRelationsHelper.fill( userLogin, "roles" );
 
         return ok( userLogin );
+    }
+
+    @Override
+    public Result<List<UserLoginShortView>> getUserLoginShortViewList(AuthToken token, AccountQuery query) {
+        return ok(userLoginDAO.getSearchResult(query).map(UserLoginShortView::new).getResults());
     }
 
     @Override
@@ -201,6 +209,34 @@ public class AccountServiceImpl implements AccountService {
         userLogin.setLastPwdChange(new Date());
 
         return userLoginDAO.saveOrUpdate(userLogin) ? ok() : error( En_ResultStatus.INTERNAL_ERROR);
+    }
+
+    @Override
+    public Result<String> replaceLoginWithUsername(String text) {
+        Pattern pattern = Pattern.compile("(^@|\\s+@)(\\w|@)*");
+        Matcher matcher = pattern.matcher(text);
+
+        Set<String> possibleLoginList = new HashSet<>();
+
+        while (matcher.find()) {
+            possibleLoginList.add(matcher.group().replaceAll("\\s+", "").substring(1));
+        }
+
+        if (possibleLoginList.isEmpty()) {
+            return ok(text);
+        }
+
+        AccountQuery query = new AccountQuery();
+        query.setAdminState(En_AdminState.UNLOCKED);
+        query.setLoginList(possibleLoginList);
+
+        SearchResult<UserLogin> searchResult = userLoginDAO.getSearchResult(query);
+
+        for (UserLogin nextUserLogin : searchResult.getResults()) {
+            text = text.replace("@" + nextUserLogin.getUlogin(), "@" + nextUserLogin.getLastName() + " " + nextUserLogin.getFirstName());
+        }
+
+        return ok(text);
     }
 
     private boolean isValidLogin( UserLogin userLogin ) {
