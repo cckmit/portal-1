@@ -10,6 +10,8 @@ import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 
+import static ru.protei.portal.ui.common.client.activity.page.util.AccessUtil.canUseExternalLink;
+
 public abstract class TestZonePage implements Activity {
 
     @PostConstruct
@@ -20,7 +22,9 @@ public abstract class TestZonePage implements Activity {
 
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
-        fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.TEST_ZONE, TAB, TEST_ZONE_URL, DebugIds.SIDEBAR_MENU.TEST_ZONE).withParent(CATEGORY));
+        if (canUseExternalLink(event.profile)) {
+            fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.TEST_ZONE, TAB, TEST_ZONE_URL, DebugIds.SIDEBAR_MENU.TEST_ZONE).withParent(CATEGORY));
+        }
     }
 
     @Inject
