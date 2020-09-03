@@ -44,7 +44,7 @@ public class ContractClientModule extends AbstractGinModule {
         bind(AbstractContractorSearchView.class).to(ContractorSearchView.class);
         bind(AbstractContractorCreateView.class).to(ContractorCreateView.class);
 
-        bind(AbstractContractFilterView.class).to(ContractFilterView.class).in(Singleton.class);
+        bind(AbstractContractFilterView.class).to(ContractFilterView.class);
 
         bind(ContractStateModel.class).asEagerSingleton();
         bind(ContractTypeModel.class).asEagerSingleton();

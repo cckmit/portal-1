@@ -21,6 +21,8 @@ public interface AbstractContractFilterView extends IsWidget {
 
     void resetFilter();
 
+    void clearFooterStyle();
+
     HasValue<String> searchString();
 
     HasValue<En_SortField> sortField();

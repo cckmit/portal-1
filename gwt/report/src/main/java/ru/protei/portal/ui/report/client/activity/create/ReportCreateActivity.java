@@ -51,6 +51,7 @@ public abstract class ReportCreateActivity implements Activity,
         issueFilterWidget.getIssueFilterParams().setModel(this);
         issueFilterWidget.clearFooterStyle();
         projectFilterView.clearFooterStyle();
+        contractFilterView.clearFooterStyle();
     }
 
     @Event
@@ -62,6 +63,7 @@ public abstract class ReportCreateActivity implements Activity,
     public void onAuthSuccess(AuthEvents.Success event) {
         issueFilterWidget.resetFilter();
         projectFilterView.resetFilter();
+        contractFilterView.resetFilter();
     }
 
     @Event(Type.FILL_CONTENT)

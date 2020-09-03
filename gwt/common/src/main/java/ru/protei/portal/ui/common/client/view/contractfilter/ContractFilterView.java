@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.view.contractfilter;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -65,6 +66,11 @@ public class ContractFilterView extends Composite implements AbstractContractFil
         kind.setValue(true);
         dateSigningRange.setValue(null);
         dateValidRange.setValue(null);
+    }
+
+    @Override
+    public void clearFooterStyle() {
+        footer.removeClassName("card-footer");
     }
 
     @Override
@@ -260,6 +266,8 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     @Inject
     @UiField(provided = true)
     TypedSelectorRangePicker dateValidRange;
+    @UiField
+    DivElement footer;
 
     private AbstractContractFilterActivity activity;
 
