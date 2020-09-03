@@ -1,6 +1,5 @@
 package ru.protei.portal.core.model.query;
 
-import ru.protei.portal.core.model.dict.En_AdminState;
 import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
@@ -20,8 +19,6 @@ public class AccountQuery extends BaseQuery {
      */
     private List<Long> roleIds;
     private Long companyId;
-    private En_AdminState adminState;
-    private Set<String> loginList;
 
     public AccountQuery() {}
 
@@ -57,29 +54,12 @@ public class AccountQuery extends BaseQuery {
         this.companyId = companyId;
     }
 
-    public En_AdminState getAdminState() {
-        return adminState;
-    }
-
-    public void setAdminState(En_AdminState adminState) {
-        this.adminState = adminState;
-    }
-
-    public Set<String> getLoginList() {
-        return loginList;
-    }
-
-    public void setLoginList(Set<String> loginList) {
-        this.loginList = loginList;
-    }
-
     @Override
     public String toString() {
         return "AccountQuery{" +
                 "types=" + types +
                 ", roleIds=" + roleIds +
                 ", companyId=" + companyId +
-                ", adminState=" + adminState +
                 ", searchString='" + searchString + '\'' +
                 ", sortField=" + sortField +
                 ", sortDir=" + sortDir +

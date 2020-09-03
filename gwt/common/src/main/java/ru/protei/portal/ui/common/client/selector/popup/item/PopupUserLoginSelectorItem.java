@@ -10,9 +10,11 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
+import ru.protei.portal.ui.common.client.util.AvatarUtils;
 
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 
@@ -55,6 +57,9 @@ public class PopupUserLoginSelectorItem<T> extends Composite implements Selector
     }
 
     public void setImage( String src ) {
+        if (AvatarUtils.isDefaultAvatar(src)) {
+            image.addClassName("default-image");
+        }
         image.setSrc( src );
     }
 

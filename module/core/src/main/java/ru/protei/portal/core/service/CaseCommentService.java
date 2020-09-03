@@ -12,10 +12,15 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
+import ru.protei.portal.core.model.struct.Pair;
+import ru.protei.portal.core.model.struct.ReplaceNameWithLoginInfo;
 import ru.protei.portal.core.model.view.CaseCommentShortView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
 
 /**
  * Service to get/add/update/remove comments {@link CaseComment}
@@ -116,4 +121,15 @@ public interface CaseCommentService {
     Result<Boolean> updateProjectCommentsFromYoutrack(AuthToken token, CaseComment comment );
 
     Result<Boolean> deleteProjectCommentsFromYoutrack(AuthToken token, String commentRemoteId);
+
+    @Privileged(forCases = {
+            @CasePrivileged(caseType = En_CaseType.CRM_SUPPORT, requireAll = {En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT}),
+    })
+    Result<List<String>> replaceLoginWithUsername(AuthToken token, List<String> texts);
+
+    <T> Result<Map<T, Set<String>>> replaceLoginWithUsername(List<T> texts, Function<T, String> stringFunction, ReplacementMapper<T> replacementMapper);
+
+    interface ReplacementMapper<T> {
+        T replace(T object, String replaceFrom, String replaceTo);
+    }
 }

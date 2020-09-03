@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.protei.portal.core.model.dict.En_AdminState;
 import ru.protei.portal.core.model.ent.UserLoginShortView;
-import ru.protei.portal.core.model.query.AccountQuery;
+import ru.protei.portal.core.model.query.UserLoginShortViewQuery;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.selector.AsyncSearchSelectorModel;
@@ -34,25 +34,19 @@ public abstract class UserLoginModel implements AsyncSearchSelectorModel<UserLog
         cache.setLoadHandler(makeLoadHandler(makeQuery(searchString)));
     }
 
-    private SelectorDataCacheLoadHandler<UserLoginShortView> makeLoadHandler(AccountQuery query) {
+    private SelectorDataCacheLoadHandler<UserLoginShortView> makeLoadHandler(UserLoginShortViewQuery query) {
         return (offset, limit, handler) -> {
             query.setOffset(offset);
             query.setLimit(limit);
             accountService.getUserLoginShortViewList(query, new FluentCallback<List<UserLoginShortView>>()
                     .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR)))
-                    .withSuccess(result -> {
-                        handler.onSuccess(result);
-
-                        if (emptyHandler != null && result.isEmpty()) {
-                            emptyHandler.run();
-                        }
-                    })
+                    .withSuccess(handler::onSuccess)
             );
         };
     }
 
-    private AccountQuery makeQuery(String searchString) {
-        AccountQuery accountQuery = new AccountQuery();
+    private UserLoginShortViewQuery makeQuery(String searchString) {
+        UserLoginShortViewQuery accountQuery = new UserLoginShortViewQuery();
         accountQuery.setSearchString(searchString);
         accountQuery.setAdminState(En_AdminState.UNLOCKED);
 
@@ -65,6 +59,5 @@ public abstract class UserLoginModel implements AsyncSearchSelectorModel<UserLog
     @Inject
     Lang lang;
 
-    private Runnable emptyHandler;
     private SelectorDataCache<UserLoginShortView> cache = new SelectorDataCache<>();
 }

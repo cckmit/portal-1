@@ -4,6 +4,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.ent.UserLoginShortView;
 import ru.protei.portal.core.model.query.AccountQuery;
+import ru.protei.portal.core.model.query.UserLoginShortViewQuery;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
@@ -27,5 +28,5 @@ public interface AccountControllerAsync {
 
     void updateAccountPassword(Long loginId, String currentPassword, String newPassword, AsyncCallback<Void> async);
 
-    void getUserLoginShortViewList(AccountQuery query, AsyncCallback<List<UserLoginShortView>> async);
+    void getUserLoginShortViewList(UserLoginShortViewQuery query, AsyncCallback<List<UserLoginShortView>> async);
 }

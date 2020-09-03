@@ -3,7 +3,6 @@ package ru.protei.portal.core.model.dao.impl;
 import org.apache.commons.lang3.StringUtils;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
-import ru.protei.portal.core.model.dict.En_AdminState;
 import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.UserLogin;
@@ -122,18 +121,6 @@ public class UserLoginDAO_Impl extends PortalBaseJdbcDAO<UserLogin> implements U
 
             if ( query.getCompanyId() != null ) {
                 condition.append(" and person.company_id = " + query.getCompanyId());
-            }
-
-            if (query.getAdminState() != null) {
-                condition
-                        .append(" and user_login.astate = ")
-                        .append(query.getAdminState().getId());
-            }
-
-            if (CollectionUtils.isNotEmpty(query.getLoginList())) {
-                condition
-                        .append(" and user_login.ulogin IN ")
-                        .append(HelperFunc.makeInArg(query.getLoginList(), true));
             }
         });
     }

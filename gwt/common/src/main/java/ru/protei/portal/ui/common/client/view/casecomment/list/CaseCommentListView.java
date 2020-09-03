@@ -28,7 +28,6 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.HasAttachmentListHandlers;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveHandler;
-import ru.protei.portal.ui.common.client.widget.dndautoresizetextarea.DndAutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.imagepastetextarea.event.PasteEvent;
 import ru.protei.portal.ui.common.client.widget.mentioningtextarea.MentioningTextArea;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
@@ -184,6 +183,11 @@ public class CaseCommentListView
     @Override
     public void removeComment(IsWidget comment) {
         commentsContainer.remove( comment.asWidget() );
+    }
+
+    @Override
+    public void disableMentioning() {
+        comment.disableMentioning();
     }
 
     @UiHandler( "send" )

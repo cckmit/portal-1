@@ -15,4 +15,6 @@ public interface TextRenderController extends RemoteService {
     String render(String text, En_TextMarkup textMarkup, boolean needReplace) throws RequestFailedException;
 
     List<String> render(En_TextMarkup textMarkup, List<String> textList) throws RequestFailedException;
+
+    List<String> render(En_TextMarkup textMarkup, List<String> textList, boolean needReplaceLogin) throws RequestFailedException;
 }

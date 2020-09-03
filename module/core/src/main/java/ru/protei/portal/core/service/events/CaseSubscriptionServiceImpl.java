@@ -6,11 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledEmployeeRegistrationEvent;
 import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dict.En_AdminState;
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.query.UserLoginShortViewQuery;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
@@ -42,6 +44,9 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
 
     @Autowired
     PersonDAO personDAO;
+
+    @Autowired
+    UserLoginShortViewDAO userLoginShortViewDAO;
 
     @Autowired
     CaseObjectMetaNotifiersDAO caseObjectMetaNotifiersDAO;
@@ -92,6 +97,19 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
 //        companyGroupHomeDAO.getAll().forEach( hc -> appendCompanySubscriptions(hc.getCompanyIds(), result));
         log.info( "subscribers: AssembledCaseEvent: {}", join( result, NotificationEntry::getAddress, ",") );
         return result;
+    }
+
+    @Override
+    public Set<NotificationEntry> subscribers(Set<String> loginSet) {
+        if (CollectionUtils.isEmpty(loginSet)) {
+            return new HashSet<>();
+        }
+
+        UserLoginShortViewQuery query = new UserLoginShortViewQuery();
+        query.setAdminState(En_AdminState.UNLOCKED);
+        query.setLoginSet(loginSet);
+
+        return subscribers(CollectionUtils.toList(userLoginShortViewDAO.getSearchResult(query).getResults(), UserLoginShortView::getPersonId));
     }
 
     @Override

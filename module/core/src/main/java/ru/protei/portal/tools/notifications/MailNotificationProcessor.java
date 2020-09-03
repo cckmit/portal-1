@@ -93,6 +93,14 @@ public class MailNotificationProcessor {
     public void onCaseChanged(AssembledCaseEvent event){
         Collection<NotificationEntry> notifiers = collectNotifiers(event);
 
+        Map<CaseComment, Set<String>> commentToLoginSet = caseCommentService.replaceLoginWithUsername(
+                event.getAllComments(),
+                CaseComment::getText,
+                this::replaceTextAndGetComment
+        ).getData();
+
+        notifiers.addAll(collectCommentNotifiers(event, commentToLoginSet));
+
         if(CollectionUtils.isEmpty(notifiers)) {
             log.info( "Case notification :: subscribers not found, break notification" );
             return;
@@ -113,7 +121,8 @@ public class MailNotificationProcessor {
             DiffCollectionResult<LinkData> privateLinks = convertToLinkData( event.getLinks(), privateCaseUrl );
             DiffCollectionResult<LinkData> publicLinks = convertToLinkData(selectPublicLinks(event.getLinks()), publicCaseUrl );
 
-            List<CaseComment> comments =  event.getAllComments();
+            List<CaseComment> comments = new ArrayList<>(commentToLoginSet.keySet());
+
             Long lastMessageId = caseService.getAndIncrementEmailLastId(event.getCaseObjectId() ).orElseGet( r-> Result.ok(0L) ).getData();
 
             if ( isPrivateNotification(event) ) {
@@ -130,6 +139,15 @@ public class MailNotificationProcessor {
         } catch (Exception e) {
             log.error( "Can't sent mail notification with case id = {}. Exception: ", event.getCaseObjectId(), e );
         }
+    }
+
+    private CaseComment replaceTextAndGetComment(CaseComment comment, String replaceFrom, String replaceTo) {
+        if (comment.getText() == null) {
+            return comment;
+        }
+
+        comment.setText(comment.getText().replace(replaceFrom, replaceTo));
+        return comment;
     }
 
     private DiffCollectionResult<CaseLink> selectPublicLinks( DiffCollectionResult<CaseLink> mergeLinks ) {
@@ -263,6 +281,33 @@ public class MailNotificationProcessor {
                 event.getInitiator(),
                 event.getCreator(),
                 event.getManager());
+    }
+
+    private Collection<NotificationEntry> collectCommentNotifiers(AssembledCaseEvent event, Map<CaseComment, Set<String>> commentToLoginList) {
+        Set<String> loginSet = new HashSet<>();
+
+        Set<CaseComment> neededCaseCommentsForNotification = getNeededCaseCommentsForNotification(event);
+
+        for (CaseComment nextComment : commentToLoginList.keySet()) {
+            if (neededCaseCommentsForNotification.contains(nextComment)) {
+                loginSet.addAll(commentToLoginList.get(nextComment));
+            }
+        }
+
+        return subscriptionService.subscribers(loginSet);
+    }
+
+    private Set<CaseComment> getNeededCaseCommentsForNotification(AssembledCaseEvent event) {
+        List<CaseComment> addedCaseComments = emptyIfNull(event.getAddedCaseComments());
+        List<CaseComment> changedCaseComments = emptyIfNull(event.getChangedComments());
+        List<CaseComment> removeCaseComments = emptyIfNull(event.getRemovedComments());
+
+        addedCaseComments.removeIf(removeCaseComments::contains);
+
+        Set<CaseComment> neededComments = new HashSet<>(emptyIfNull(addedCaseComments));
+        neededComments.addAll(emptyIfNull(changedCaseComments));
+
+        return neededComments;
     }
 
     /**

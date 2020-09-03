@@ -9,6 +9,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.UserLoginUpdateEvent;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
+import ru.protei.portal.core.model.dao.UserLoginShortViewDAO;
 import ru.protei.portal.core.model.dao.UserRoleDAO;
 import ru.protei.portal.core.model.dict.En_AdminState;
 import ru.protei.portal.core.model.dict.En_AuthType;
@@ -17,6 +18,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AccountQuery;
+import ru.protei.portal.core.model.query.UserLoginShortViewQuery;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.service.events.EventPublisherService;
@@ -43,6 +45,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Autowired
     UserLoginDAO userLoginDAO;
+
+    @Autowired
+    UserLoginShortViewDAO userLoginShortViewDAO;
 
     @Autowired
     UserRoleDAO userRoleDAO;
@@ -88,8 +93,8 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Result<List<UserLoginShortView>> getUserLoginShortViewList(AuthToken token, AccountQuery query) {
-        return ok(userLoginDAO.getSearchResult(query).map(UserLoginShortView::new).getResults());
+    public Result<List<UserLoginShortView>> getUserLoginShortViewList(AuthToken token, UserLoginShortViewQuery query) {
+        return ok(userLoginShortViewDAO.getSearchResult(query).getResults());
     }
 
     @Override
@@ -209,34 +214,6 @@ public class AccountServiceImpl implements AccountService {
         userLogin.setLastPwdChange(new Date());
 
         return userLoginDAO.saveOrUpdate(userLogin) ? ok() : error( En_ResultStatus.INTERNAL_ERROR);
-    }
-
-    @Override
-    public Result<String> replaceLoginWithUsername(String text) {
-        Pattern pattern = Pattern.compile("(^@|\\s+@)(\\w|@)*");
-        Matcher matcher = pattern.matcher(text);
-
-        Set<String> possibleLoginList = new HashSet<>();
-
-        while (matcher.find()) {
-            possibleLoginList.add(matcher.group().replaceAll("\\s+", "").substring(1));
-        }
-
-        if (possibleLoginList.isEmpty()) {
-            return ok(text);
-        }
-
-        AccountQuery query = new AccountQuery();
-        query.setAdminState(En_AdminState.UNLOCKED);
-        query.setLoginList(possibleLoginList);
-
-        SearchResult<UserLogin> searchResult = userLoginDAO.getSearchResult(query);
-
-        for (UserLogin nextUserLogin : searchResult.getResults()) {
-            text = text.replace("@" + nextUserLogin.getUlogin(), "@" + nextUserLogin.getLastName() + " " + nextUserLogin.getFirstName());
-        }
-
-        return ok(text);
     }
 
     private boolean isValidLogin( UserLogin userLogin ) {

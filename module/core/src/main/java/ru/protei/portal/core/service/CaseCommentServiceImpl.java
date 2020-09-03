@@ -10,20 +10,19 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.event.ProjectAttachmentEvent;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.event.CaseCommentSavedClientEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.ProjectCommentEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.exception.RollbackTransactionException;
-import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
-import ru.protei.portal.core.model.dao.CaseCommentDAO;
-import ru.protei.portal.core.model.dao.CaseCommentShortViewDAO;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.event.CaseCommentRemovedClientEvent;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
+import ru.protei.portal.core.model.query.UserLoginShortViewQuery;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseCommentShortView;
@@ -35,12 +34,12 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
-import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public class CaseCommentServiceImpl implements CaseCommentService {
 
@@ -500,6 +499,99 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         return ok(true).publishEvents(events);
     }
 
+    @Override
+    public Result<List<String>> replaceLoginWithUsername(AuthToken token, List<String> texts) {
+        return ok(
+                new ArrayList<>(replaceLoginWithUsername(texts, Function.identity(), String::replace).getData().keySet())
+        );
+    }
+
+    @Override
+    public <T> Result<Map<T, Set<String>>> replaceLoginWithUsername(List<T> objects, Function<T, String> objectToStringFunction, ReplacementMapper<T> replacementMapper) {
+        if (isEmpty(objects)) {
+            return ok(objects.stream().collect(Collectors.toMap(Function.identity(), value -> new HashSet<>())));
+        }
+
+        Set<String> loginSet = new HashSet<>(getPossibleLoginSet(toList(objects, objectToStringFunction)).getData());
+
+        if (loginSet.isEmpty()) {
+            return ok(objects.stream().collect(Collectors.toMap(Function.identity(), value -> new HashSet<>())));
+        }
+
+        UserLoginShortViewQuery query = new UserLoginShortViewQuery();
+        query.setAdminState(En_AdminState.UNLOCKED);
+        query.setLoginSet(loginSet);
+
+        SearchResult<UserLoginShortView> searchResult = userLoginShortViewDAO.getSearchResult(query);
+
+        List<UserLoginShortView> existingLoginList = searchResult.getResults()
+                .stream()
+                .sorted((login1, login2) -> login2.getUlogin().length() - login1.getUlogin().length())
+                .collect(Collectors.toList());
+
+        Map<T, Set<String>> objectToLoginList = new LinkedHashMap<>();
+
+        for (T object : objects) {
+            objectToLoginList.put(object, new HashSet<>());
+        }
+
+        for (UserLoginShortView nextUserLogin : existingLoginList) {
+
+            Set<T> currentObjects = new HashSet<>(objectToLoginList.keySet());
+            for (T object : currentObjects) {
+                T objectWithReplace = replacementMapper
+                        .replace(object, "@" + nextUserLogin.getUlogin(), "@" + nextUserLogin.getLastName() + " " + nextUserLogin.getFirstName());
+
+                boolean isReplaced = !Objects.equals(objectToStringFunction.apply(object), objectToStringFunction.apply(objectWithReplace));
+
+                if (isReplaced) {
+                    Set<String> loginList = objectToLoginList.remove(object);
+                    loginList.add(nextUserLogin.getUlogin());
+                    objectToLoginList.put(objectWithReplace, loginList);
+                }
+            }
+        }
+
+        return ok(objectToLoginList);
+    }
+
+    private Result<Set<String>> getPossibleLoginSet(List<String> texts) {
+        if (isEmpty(texts)) {
+            return ok(new HashSet<>());
+        }
+
+        Set<String> possibleLoginSet = new HashSet<>();
+
+        fillPossibleLoginSet(texts, possibleLoginSet);
+
+        return ok(possibleLoginSet);
+    }
+
+    private void fillPossibleLoginSet(List<String> texts, Set<String> possibleLoginSet) {
+        texts
+                .stream()
+                .filter(StringUtils::isNotBlank)
+                .map(String::trim)
+                .flatMap(text -> Arrays.stream(text.split("\\s+")))
+                .filter(text -> text.startsWith("@"))
+                .filter(text -> text.length() <= CrmConstants.ContactConstants.LOGIN_SIZE)
+                .map(text -> text.substring(1))
+                .forEach(text -> {
+                    possibleLoginSet.add(text);
+                    possibleLoginSet.addAll(subLogins(text));
+                });
+    }
+
+    private List<String> subLogins(String text) {
+        List<String> subLogins = new ArrayList<>();
+
+        for (int i = 1; i < text.toCharArray().length; i++) {
+            subLogins.add(text.substring(0, i));
+        }
+
+        return subLogins;
+    }
+
     private Result<List<CaseComment>> getList(CaseCommentQuery query) {
         List<CaseComment> comments = caseCommentDAO.getCaseComments(query);
         return getList(comments);
@@ -569,15 +661,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         list.forEach(ca -> attachmentService.removeAttachment(token, caseType, ca.getAttachmentId()));
     }
 
-    private CaseObject getNewStateAndFillOldState(Long caseId, CaseObject oldState) {
-        CaseObject newState = caseObjectDAO.get(caseId);
-        jdbcManyRelationsHelper.fill(newState, "attachments");
-        jdbcManyRelationsHelper.fill(newState, "notifiers");
-        oldState.setAttachments(newState.getAttachments());
-        oldState.setNotifiers(newState.getNotifiers());
-        return newState;
-    }
-
     @Autowired
     CaseService caseService;
     @Autowired
@@ -600,6 +683,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     CaseCommentShortViewDAO caseCommentShortViewDAO;
     @Autowired
     CaseAttachmentDAO caseAttachmentDAO;
+    @Autowired
+    UserLoginShortViewDAO userLoginShortViewDAO;
 
     @Autowired
     private ClientEventService clientEventService;

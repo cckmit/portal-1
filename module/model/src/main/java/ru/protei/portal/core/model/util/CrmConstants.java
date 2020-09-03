@@ -81,6 +81,7 @@ public class CrmConstants {
         String CONTRACTOR_KPP = "^\\d{9}$";
         String CONTRACTOR_NAME = "^.{1,100}$";
         String CONTRACTOR_FULL_NAME = "^.{1,250}$";
+        String ANY_WORD_CHARACTER = "[0-9a-zA-Zа-яА-ЯёЁ_]";
     }
 
     public interface Time {

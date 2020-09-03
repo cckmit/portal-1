@@ -3,29 +3,43 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.view.Identifiable;
+import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 
+@JdbcEntity(table = "user_login")
 public class UserLoginShortView implements Identifiable, Serializable {
+
+    @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
-    private Long personId;
+
+    @JdbcColumn(name = "ulogin")
     private String ulogin;
+
+    @JdbcColumn(name = "personId")
+    private Long personId;
+
+    @JdbcJoinedColumn( mappedColumn = "firstname", joinPath = {
+            @JdbcJoinPath( table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "p" ),
+    })
     private String firstName;
+
+    @JdbcJoinedColumn( mappedColumn = "lastname", joinPath = {
+            @JdbcJoinPath( table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "p" ),
+    })
     private String lastName;
+
+    @JdbcJoinedColumn( mappedColumn = "category_id", joinPath = {
+            @JdbcJoinPath( table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "p" ),
+            @JdbcJoinPath( table = "company", localColumn = "company_id", remoteColumn = "id", sqlTableAlias = "c" )
+    })
+    @JdbcEnumerated( EnumType.ID )
     private En_CompanyCategory companyCategory;
-    private En_Gender gender;
+
+    @JdbcJoinedColumn(localColumn = "personId", remoteColumn = "id", table = "person", mappedColumn = "sex")
+    private String genderCode;
 
     public UserLoginShortView() {}
-
-    public UserLoginShortView(UserLogin userLogin) {
-        this.id = userLogin.getId();
-        this.personId = userLogin.getPersonId();
-        this.ulogin = userLogin.getUlogin();
-        this.firstName = userLogin.getFirstName();
-        this.lastName = userLogin.getLastName();
-        this.companyCategory = userLogin.getCompanyCategory();
-        this.gender = En_Gender.parse(userLogin.getGenderCode());
-    }
 
     public Long getId() {
         return id;
@@ -67,14 +81,6 @@ public class UserLoginShortView implements Identifiable, Serializable {
         this.companyCategory = companyCategory;
     }
 
-    public En_Gender getGender() {
-        return gender;
-    }
-
-    public void setGender(En_Gender gender) {
-        this.gender = gender;
-    }
-
     public Long getPersonId() {
         return personId;
     }
@@ -83,15 +89,24 @@ public class UserLoginShortView implements Identifiable, Serializable {
         this.personId = personId;
     }
 
+    public String getGenderCode() {
+        return genderCode;
+    }
+
+    public void setGenderCode(String genderCode) {
+        this.genderCode = genderCode;
+    }
+
     @Override
     public String toString() {
         return "UserLoginShortView{" +
                 "id=" + id +
                 ", ulogin='" + ulogin + '\'' +
+                ", personId=" + personId +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", companyCategory=" + companyCategory +
-                ", gender=" + gender +
+                ", genderCode='" + genderCode + '\'' +
                 '}';
     }
 }

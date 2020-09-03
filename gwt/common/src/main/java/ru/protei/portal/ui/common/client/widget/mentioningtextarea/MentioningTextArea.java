@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.mentioningtextarea;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.Timer;
 import com.google.inject.Inject;
@@ -14,14 +15,13 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
     @Inject
     public void init() {
         initUserLoginSelector();
-        addKeyUpHandler(event -> changeTimer.schedule(200));
+        keyUpHandlerRegistration = addKeyUpHandler(event -> changeTimer.schedule(200));
+        clickHandlerRegistration = addClickHandler(event -> changeTimer.run());
     }
 
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        userLoginSelector.getPopup().getChildContainer().clear();
-        userLoginSelector.getPopup().hide();
+    public void disableMentioning() {
+        keyUpHandlerRegistration.removeHandler();
+        clickHandlerRegistration.removeHandler();
     }
 
     private void initUserLoginSelector() {
@@ -70,6 +70,9 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
     @Inject
     UserLoginSelector userLoginSelector;
 
+    private HandlerRegistration keyUpHandlerRegistration;
+    private HandlerRegistration clickHandlerRegistration;
+
     private Timer changeTimer = new Timer() {
         @Override
         public void run() {
@@ -92,7 +95,7 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
 
     private PossibleLoginInfo possibleLoginInfo;
 
-    private static final RegExp MENTION_REGEXP = RegExp.compile("^\\@(\\w|@)*");
+    private static final RegExp MENTION_REGEXP = RegExp.compile("^\\@.*");
 
     private static final class PossibleLoginInfo {
         private String possibleLogin;

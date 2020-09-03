@@ -12,4 +12,6 @@ public interface TextRenderControllerAsync {
     void render(En_TextMarkup textMarkup, List<String> textList, AsyncCallback<List<String>> async);
 
     void render(String text, En_TextMarkup textMarkup, boolean needReplace, AsyncCallback<String> async);
+
+    void render(En_TextMarkup textMarkup, List<String> textList, boolean needReplaceLogin, AsyncCallback<List<String>> async);
 }

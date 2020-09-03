@@ -3,11 +3,11 @@
     <g:HTMLPanel ui:field="root" tag="li">
         <g:Anchor ui:field="anchor" href='#'>
             <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <span class="image-wrapper">
+                <div class="d-flex align-items-center">
+                    <div class="image-wrapper">
                         <img ui:field="image" src=""/>
-                    </span>
-                    <span ui:field="login"/>
+                    </div>
+                    <span class="m-l-10" ui:field="login"/>
                 </div>
                 <div>
                     <span ui:field="userName"/>

@@ -50,6 +50,8 @@ public interface AbstractCaseCommentListView extends IsWidget {
 
     void setPreviewVisible(boolean isVisible);
 
+    void disableMentioning();
+
     HasVisibility getPrivacyVisibility();
 
     HasValue<Boolean> privateComment();

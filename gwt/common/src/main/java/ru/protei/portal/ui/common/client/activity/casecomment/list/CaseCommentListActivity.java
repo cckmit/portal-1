@@ -385,6 +385,10 @@ public abstract class CaseCommentListActivity
         view.setNewCommentHidden(!isModifyEnabled);
         view.setNewCommentDisabled(!isNewCommentEnabled);
 
+        if (!En_CaseType.CRM_SUPPORT.equals(caseType)) {
+            view.disableMentioning();
+        }
+
         List<AbstractCaseCommentItemView> views = new ArrayList<>();
         List<String> textList = new ArrayList<>();
 
@@ -398,14 +402,15 @@ public abstract class CaseCommentListActivity
             view.addCommentToFront( itemView.asWidget() );
         }
 
-        textRenderController.render(textMarkup, textList, new FluentCallback<List<String>>()
+        textRenderController.render(textMarkup, textList, En_CaseType.CRM_SUPPORT.equals(caseType), new FluentCallback<List<String>>()
                 .withSuccess(converted -> {
                     for (int i = 0; i < converted.size(); i++) {
                         views.get(i).setMessage(converted.get(i));
                     }
                     views.clear();
                     textList.clear();
-                }));
+                })
+        );
     }
 
     private AbstractCaseCommentItemView makeCommentView(CaseComment value) {
@@ -718,7 +723,7 @@ public abstract class CaseCommentListActivity
     }
 
     private void renderTextAsync(String text, En_TextMarkup textMarkup, Consumer<String> consumer) {
-        textRenderController.render(text, textMarkup, true, new FluentCallback<String>()
+        textRenderController.render(text, textMarkup, En_CaseType.CRM_SUPPORT.equals(caseType), new FluentCallback<String>()
                 .withError(throwable -> consumer.accept(text))
                 .withSuccess(consumer));
     }
