@@ -25,7 +25,14 @@ public enum En_ReportType {
     /**
      * Фильтр проектам
      */
-    PROJECT;
+    PROJECT,
+
+    /**
+     * Отчет по контрактам
+     */
+    CONTRACT,
+
+    ;
 
     public static boolean isTimeLimitMandatory(En_ReportType type) {
         if (type == null)

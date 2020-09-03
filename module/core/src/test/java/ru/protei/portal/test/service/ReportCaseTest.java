@@ -123,13 +123,20 @@ public class ReportCaseTest extends BaseServiceTest {
     private Report makeReport( CaseQuery caseQuery ) {
         Report report = new Report();
         report.setLocale( "Ru" );
-        report.setCaseQuery( caseQuery );
+        report.setQuery( serializeAsJson(caseQuery) );
         return report;
     }
 
     private boolean writeReport( Report report ) throws IOException {
         MockStream mockStream = new MockStream();
-        reportCase.writeReport( mockStream, report, new SimpleDateFormat( "dd.MM.yyyy HH:mm" ), new TimeFormatter(), id -> false );
+        reportCase.writeReport(
+                mockStream,
+                report,
+                deserializeFromJson(report.getQuery(), CaseQuery.class),
+                new SimpleDateFormat( "dd.MM.yyyy HH:mm" ),
+                new TimeFormatter(),
+                id -> false
+        );
         return !mockStream.isEmpty();
     }
 

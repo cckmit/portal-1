@@ -22,7 +22,7 @@ public class UiConstants {
         String OFFICIAL = "fa fa-user-plus";
         String DOCUMENT = "fa fa-book";
         String DOCUMENT_TYPE = "fa fa-list-alt";
-        String ISSUE_REPORTS = "fa fa-file-download";
+        String REPORTS = "fa fa-file-download";
         String CASE_STATE = "fa fa-bookmark ";
         String SITE_FOLDER = "fa fa-briefcase"  ;
         String EMPLOYEE = "fa fa-user-circle";

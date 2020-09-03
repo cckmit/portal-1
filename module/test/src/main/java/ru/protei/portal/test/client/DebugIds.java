@@ -79,7 +79,8 @@ public class DebugIds {
         String EQUIPMENT = "sidebar-menu-equipment";
         String ISSUE = "sidebar-menu-issue";
         String ISSUE_ASSIGNMENT = "sidebar-menu-issue-assignment";
-        String ISSUE_REPORTS = "sidebar-menu-issue-reports";
+        String REPORTS = "sidebar-menu-issue-reports";
+        @Deprecated String ISSUE_REPORTS = REPORTS;
         String OFFICIAL = "sidebar-menu-official";
         String PRODUCT = "sidebar-menu-product";
         String PROJECT = "sidebar-menu-project";

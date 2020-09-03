@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Report;
+import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.ReportProjectWithLastComment;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
@@ -102,13 +103,18 @@ public class ReportProjectTest extends BaseServiceTest {
         query.setSearchString(REPORT_PROJECT_TEST);
         query.setStates(new HashSet<>(Collections.singletonList(En_RegionState.FINISHED)));
         Report report = new Report();
-        report.setCaseQuery(query.toCaseQuery(1L));
+        report.setQuery(serializeAsJson(query.toCaseQuery(1L)));
         report.setLocale("ru");
 
         boolean result = false;
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         try {
-            result = reportProject.writeReport(buffer, report, id -> false);
+            result = reportProject.writeReport(
+                    buffer,
+                    report,
+                    deserializeFromJson(report.getQuery(), CaseQuery.class),
+                    id -> false
+            );
         } catch (Exception exception) {
             Assert.fail();
         }
@@ -125,13 +131,18 @@ public class ReportProjectTest extends BaseServiceTest {
         query.setSearchString(REPORT_PROJECT_TEST);
         query.setStates(new HashSet<>(Collections.singletonList(En_RegionState.UNKNOWN)));
         Report report = new Report();
-        report.setCaseQuery(query.toCaseQuery(1L));
+        report.setQuery(serializeAsJson(query.toCaseQuery(1L)));
         report.setLocale("ru");
 
         boolean result = false;
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         try {
-            result = reportProject.writeReport(buffer, report, id -> false);
+            result = reportProject.writeReport(
+                    buffer,
+                    report,
+                    deserializeFromJson(report.getQuery(), CaseQuery.class),
+                    id -> false
+            );
         } catch (Exception exception) {
             Assert.fail();
         }
@@ -149,10 +160,10 @@ public class ReportProjectTest extends BaseServiceTest {
         query.setSearchString(REPORT_PROJECT_TEST);
         query.setStates(new HashSet<>(Collections.singletonList(En_RegionState.PRESALE)));
         Report report = new Report();
-        report.setCaseQuery(query.toCaseQuery(1L));
+        report.setQuery(serializeAsJson(query.toCaseQuery(1L)));
         report.setLocale("ru");
 
-        List<ReportProjectWithLastComment> data = reportProject.createData(report.getCaseQuery());
+        List<ReportProjectWithLastComment> data = reportProject.createData(deserializeFromJson(report.getQuery(), CaseQuery.class));
 
         Assert.assertEquals("Selected 2 cases", 2, data.size());
         Assert.assertEquals("name case #1", REPORT_PROJECT_TEST + " : Test_Project 1", data.get(0).getProject().getName());
@@ -170,10 +181,10 @@ public class ReportProjectTest extends BaseServiceTest {
         query.setSearchString(REPORT_PROJECT_TEST);
         query.setStates(new HashSet<>(Collections.singletonList(En_RegionState.UNKNOWN)));
         Report report = new Report();
-        report.setCaseQuery(query.toCaseQuery(1L));
+        report.setQuery(serializeAsJson(query.toCaseQuery(1L)));
         report.setLocale("ru");
 
-        List<ReportProjectWithLastComment> data = reportProject.createData(report.getCaseQuery());
+        List<ReportProjectWithLastComment> data = reportProject.createData(deserializeFromJson(report.getQuery(), CaseQuery.class));
 
         Assert.assertEquals("no cases", 0, data.size());
     }

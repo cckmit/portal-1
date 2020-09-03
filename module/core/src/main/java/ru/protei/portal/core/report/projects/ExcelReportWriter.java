@@ -1,5 +1,8 @@
 package ru.protei.portal.core.report.projects;
 
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.usermodel.Workbook;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.CaseComment;
@@ -56,7 +59,16 @@ public class ExcelReportWriter implements
     }
 
     @Override
-    public String[] getFormats() {
+    public CellStyle getCellStyle(Workbook workbook, int columnIndex) {
+        return book.makeCellStyle(columnIndex, cs -> {
+            cs.setFont(book.getDefaultFont());
+            cs.setVerticalAlignment(VerticalAlignment.CENTER);
+            cs.setDataFormat(workbook.createDataFormat()
+                    .getFormat(getFormats()[columnIndex]));
+        });
+    }
+
+    private String[] getFormats() {
         return new String[] {
                 ExcelFormat.STANDARD, ExcelFormat.STANDARD, ExcelFormat.STANDARD,
                 ExcelFormat.STANDARD, ExcelFormat.STANDARD, ExcelFormat.STANDARD,

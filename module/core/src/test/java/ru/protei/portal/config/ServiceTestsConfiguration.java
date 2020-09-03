@@ -36,6 +36,8 @@ import ru.protei.portal.core.report.caseobjects.ReportCase;
 import ru.protei.portal.core.report.caseobjects.ReportCaseImpl;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsed;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsedImpl;
+import ru.protei.portal.core.report.contract.ReportContract;
+import ru.protei.portal.core.report.contract.ReportContractImpl;
 import ru.protei.portal.core.report.projects.ReportProject;
 import ru.protei.portal.core.report.projects.ReportProjectImpl;
 import ru.protei.portal.core.service.*;
@@ -395,6 +397,11 @@ public class ServiceTestsConfiguration {
     @Bean
     public ReportAbsence getReportAbsence() {
         return new ReportAbsenceImpl();
+    }
+
+    @Bean
+    public ReportContract getReportContract() {
+        return new ReportContractImpl();
     }
 
     @Bean
