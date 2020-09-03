@@ -127,7 +127,10 @@ public class ProjectServiceImpl implements ProjectService {
 
         Project project = projectDAO.get( projectId );
         if (!Objects.equals( pauseDate, project.getPauseDate() )) {
-            log.info( "onPauseTimeNotification(): Ignore notification: pause date was changed: old {} new {}", simpleDateFormat.format( pauseDate ), simpleDateFormat.format( project.getPauseDate() ) );
+            log.info("onPauseTimeNotification(): Ignore notification: pause date was changed: old {} new {}",
+                    simpleDateFormat.format( pauseDate ),
+                    project.getPauseDate() == null ? null : simpleDateFormat.format( project.getPauseDate() )
+            );
             return;
         }
 

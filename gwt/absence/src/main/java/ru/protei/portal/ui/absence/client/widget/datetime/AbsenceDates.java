@@ -25,7 +25,7 @@ import static com.google.gwt.user.datepicker.client.CalendarUtil.addDaysToDate;
 import static com.google.gwt.user.datepicker.client.CalendarUtil.copyDate;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HAS_ERROR;
-import static ru.protei.portal.ui.common.client.util.DateUtils.resetTime;
+import static ru.protei.portal.ui.common.client.util.DateUtils.*;
 
 public class AbsenceDates extends Composite implements HasValue<List<DateInterval>>, HasEnabled, HasVaryAbility {
 
@@ -139,17 +139,13 @@ public class AbsenceDates extends Composite implements HasValue<List<DateInterva
         if (value.size() > 0) {
             return value;
         }
-        Date date = makeBlankDate();
-        value.add(new DateInterval(date, addHours(date, 1)));
+        Date now = new Date();
+        value.add(new DateInterval(setBeginOfDay(now), setEndOfDay(now)));
         return value;
     }
 
     private void render() {
         setValue(getValue());
-    }
-
-    private Date makeBlankDate() {
-        return addHours(resetTime(new Date()), 1);
     }
 
     private DateInterval addDays(DateInterval interval, int days) {

@@ -10,6 +10,8 @@ import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 
+import static ru.protei.portal.ui.common.client.activity.page.util.AccessUtil.canUseExternalLink;
+
 public abstract class DeliveryPage implements Activity {
 
     @PostConstruct
@@ -20,7 +22,9 @@ public abstract class DeliveryPage implements Activity {
 
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
-        fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.DELIVERY, TAB, DELIVERY_URL, DebugIds.SIDEBAR_MENU.DELIVERY).withParent(CATEGORY));
+        if (canUseExternalLink(event.profile)) {
+            fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.DELIVERY, TAB, DELIVERY_URL, DebugIds.SIDEBAR_MENU.DELIVERY).withParent(CATEGORY));
+        }
     }
 
     @Inject
@@ -28,5 +32,5 @@ public abstract class DeliveryPage implements Activity {
 
     private String CATEGORY;
     private String TAB;
-    private final static String DELIVERY_URL = "http://portal/sd/delivery/delivery.jsp";
+    private final static String DELIVERY_URL = "https://oldportal.protei.ru/sd/delivery/delivery.jsp";
 }

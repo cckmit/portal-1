@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.util.HtmlUtils;
 import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.dao.CaseStateDAO;
+import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.dto.ReportCaseQuery;
@@ -495,6 +496,11 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("oldState", getNullOrElse(oldProjectState, Project::getState));
         templateModel.put("newState", newProjectState.getState());
 
+        templateModel.put("showPauseDate", newProjectState.getState() == En_RegionState.PAUSED);
+        templateModel.put("pauseDateChanged", event.isPauseDateChanged());
+        templateModel.put("oldPauseDate", getNullOrElse(getNullOrElse(oldProjectState, Project::getPauseDate), new SimpleDateFormat("dd.MM.yyyy")::format));
+        templateModel.put("newPauseDate", getNullOrElse(newProjectState.getPauseDate(), new SimpleDateFormat("dd.MM.yyyy")::format));
+
         templateModel.put("regionChanged", event.isRegionChanged());
         templateModel.put("oldRegion", getNullOrElse(getNullOrElse(oldProjectState, Project::getRegion), EntityOption::getDisplayText));
         templateModel.put("newRegion", getNullOrElse(newProjectState.getRegion(), EntityOption::getDisplayText));
@@ -563,7 +569,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("is_updated", action == RoomReservationNotificationEvent.Action.UPDATED);
         templateModel.put("is_removed", action == RoomReservationNotificationEvent.Action.REMOVED);
         templateModel.put("person_responsible", roomReservation.getPersonResponsible() != null
-                ? roomReservation.getPersonResponsible().getDisplayName()
+                ? roomReservation.getPersonResponsible().getName()
                 : "?");
         templateModel.put("room", roomReservation.getRoom() != null
                 ? roomReservation.getRoom().getName()
@@ -595,6 +601,7 @@ public class TemplateServiceImpl implements TemplateService {
     @Override
     public PreparedTemplate getAbsenceNotificationSubject(Person initiator, PersonAbsence absence) {
         Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("is_leave", absence.getReason().isLeave());
         templateModel.put("absentEmployee", absence.getPerson().getName());
         templateModel.put("initiator", initiator.getDisplayName());
 

@@ -98,6 +98,10 @@ public class CrmConstants {
         int LOGIN_SIZE = 64;
     }
 
+    public interface EquipmentConstants {
+        int NAME_SIZE = 128;
+    }
+
     public interface Comment {
         String TIME_ELAPSED_DEFAULT_COMMENT = "затраченное время";
     }

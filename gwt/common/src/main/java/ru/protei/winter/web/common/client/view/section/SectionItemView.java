@@ -111,6 +111,11 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
         anchor.setHref(href);
     }
 
+    @Override
+    public void addClickHandler() {
+        root.addDomHandler(event -> onSectionClicked(), ClickEvent.getType());
+    }
+
     @UiHandler("anchor")
     public void onAnchorClicked( ClickEvent event ) {
         if ( anchor.getHref().endsWith("#") ) {

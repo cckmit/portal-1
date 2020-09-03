@@ -58,7 +58,7 @@ public class ReportCaseImpl implements ReportCase {
         final int limit = config.data().reportConfig().getChunkSize();
         int offset = 0;
         try (ReportWriter<CaseObjectReportRequest> writer =
-                    new ExcelReportWriter(localizedLang, dateFormat, timeFormatter, report.isRestricted(), report.isWithDescription())) {
+                    new ExcelReportWriter(localizedLang, report.isRestricted(), report.isWithDescription())) {
 
             int sheetNumber = writer.createSheet();
 

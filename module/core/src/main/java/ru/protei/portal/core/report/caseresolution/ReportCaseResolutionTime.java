@@ -10,6 +10,8 @@ import ru.protei.portal.core.model.dto.CaseResolutionTimeReportDto;
 import ru.protei.portal.core.model.helper.DateRangeUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.DateRange;
+import ru.protei.portal.core.utils.ExcelFormatUtils;
+import ru.protei.portal.core.utils.ExcelFormatUtils.ExcelFormat;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -81,8 +83,6 @@ public class ReportCaseResolutionTime {
     public static XSSFWorkbook createWorkBook( List<Interval> intervals, List<String> columnNames ) {
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet sheet = workbook.createSheet();
-        XSSFCellStyle dateStyle = workbook.createCellStyle();
-        dateStyle.setDataFormat( HSSFDataFormat.getBuiltinFormat( "yy-m-d" ) );
         int rowid = 0;
         int cellIndex = 0;
 
@@ -94,17 +94,40 @@ public class ReportCaseResolutionTime {
         for (Interval interval : intervals) {
             XSSFRow row = sheet.createRow( rowid++ );
             cellIndex = 0;
+
             XSSFCell dateCell = row.createCell( cellIndex );
-            dateCell.setCellValue( makeDateFormat().format( interval.from ) );
-            dateCell.setCellStyle( dateStyle );
-            row.createCell( ++cellIndex ).setCellValue( calcAverage( interval ) );
-            row.createCell( ++cellIndex ).setCellValue( calcHours( interval.maxTime ) );
-            row.createCell( ++cellIndex ).setCellValue( calcHours( interval.minTime ) );
-            row.createCell( ++cellIndex ).setCellValue( interval.caseNumbers.size() );
-            row.createCell( ++cellIndex ).setCellValue( join(interval.caseNumbers, ", ") );
+            dateCell.setCellStyle( createFormattedCellStyle(workbook, ExcelFormat.REVERSED_DASHED_FULL_DATE) );
+            dateCell.setCellValue(new Date(interval.from));
+
+            XSSFCell averageCell = row.createCell(++cellIndex);
+            averageCell.setCellStyle(createFormattedCellStyle(workbook, ExcelFormat.NUMBER));
+            averageCell.setCellValue( calcAverage( interval ) );
+
+            XSSFCell maxTimeHours = row.createCell(++cellIndex);
+            maxTimeHours.setCellStyle(createFormattedCellStyle(workbook, ExcelFormat.NUMBER));
+            maxTimeHours.setCellValue( calcHours( interval.maxTime ) );
+
+            XSSFCell minTimeHours = row.createCell(++cellIndex);
+            minTimeHours.setCellStyle(createFormattedCellStyle(workbook, ExcelFormat.NUMBER));
+            minTimeHours.setCellValue( calcHours( interval.minTime ) );
+
+            XSSFCell caseNumbersSizeCell = row.createCell(++cellIndex);
+            caseNumbersSizeCell.setCellStyle(createFormattedCellStyle(workbook, ExcelFormat.NUMBER));
+            caseNumbersSizeCell.setCellValue( interval.caseNumbers.size() );
+
+            XSSFCell caseNumberCell = row.createCell(++cellIndex);
+            caseNumberCell.setCellStyle(createFormattedCellStyle(workbook, ExcelFormat.STANDARD));
+            caseNumberCell.setCellValue( join(interval.caseNumbers, ", ") );
         }
         log.info( "createWorkBook() intervals: {}", intervals );
         return workbook;
+    }
+
+    private static XSSFCellStyle createFormattedCellStyle(XSSFWorkbook workbook, String format) {
+        XSSFCellStyle cellStyle = workbook.createCellStyle();
+        cellStyle.setDataFormat(workbook.createDataFormat().getFormat(format));
+
+        return cellStyle;
     }
 
     public List<Case> getCases() {
@@ -161,11 +184,6 @@ public class ReportCaseResolutionTime {
         return aCase;
     }
 
-    private static DateFormat makeDateFormat() {
-        return new SimpleDateFormat( DATE_FORMAT );
-    }
-
-    public static final String DATE_FORMAT = "yyyy-MM-dd" ;
     public static final List<String> DEFAULT_COLUMN_NAMES = Arrays.asList( "Date", "Average", "Maximum", "Minimum", "Case count", "Active cases" );
 
     private List<Case> cases = new ArrayList<>();

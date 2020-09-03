@@ -1,6 +1,8 @@
 package ru.protei.portal.core.report.caseobjects;
 
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.usermodel.Workbook;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseComment;
@@ -11,21 +13,18 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.CaseObjectReportRequest;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.report.ReportWriter;
+import ru.protei.portal.core.utils.ExcelFormatUtils.ExcelFormat;
 import ru.protei.portal.core.utils.JXLSHelper;
-import ru.protei.portal.core.utils.TimeFormatter;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.text.DateFormat;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
-import static org.apache.poi.ss.usermodel.DateUtil.SECONDS_PER_DAY;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.util.TransliterationUtils.transliterate;
+import static ru.protei.portal.core.utils.ExcelFormatUtils.toExcelTimeFormat;
 
 public class ExcelReportWriter implements
         ReportWriter<CaseObjectReportRequest>,
@@ -33,24 +32,15 @@ public class ExcelReportWriter implements
 
     private final JXLSHelper.ReportBook<CaseObjectReportRequest> book;
     private final Lang.LocalizedLang lang;
-    private final DateFormat dateFormat;
-    private final TimeFormatter timeFormatter;
     private final boolean isNotRestricted;
     private final String locale;
     private final boolean withDescription;
 
-    public interface ExcelFormat {
-        String STANDARD = "@";
-        String DATE_TIME = "DD.MM.YY HH:MM";
-        String INFINITE_HOURS_MINUTES = "[H]:MM";
-    }
-
-    public ExcelReportWriter(Lang.LocalizedLang localizedLang, DateFormat dateFormat, TimeFormatter timeFormatter,
-                             boolean isRestricted, boolean withDescription) {
+    public ExcelReportWriter(Lang.LocalizedLang localizedLang,
+                             boolean isRestricted,
+                             boolean withDescription) {
         this.book = new JXLSHelper.ReportBook<>(localizedLang, this);
         this.lang = localizedLang;
-        this.dateFormat = dateFormat;
-        this.timeFormatter = timeFormatter;
         this.isNotRestricted = !isRestricted;
         this.locale = localizedLang.getLanguageTag();
         this.withDescription = withDescription;
@@ -161,18 +151,11 @@ public class ExcelReportWriter implements
     @Override
     public CellStyle getCellStyle(Workbook workbook, int columnIndex) {
         return book.makeCellStyle(columnIndex, cs -> {
-            cs.setFont(book.makeFont(0, f -> {
-                f.setFontName("Calibri");
-                f.setFontHeightInPoints((short) 11);
-            }));
+            cs.setFont(book.getDefaultFont());
             cs.setVerticalAlignment(VerticalAlignment.CENTER);
             cs.setDataFormat(workbook.createDataFormat()
                     .getFormat(getFormats(isNotRestricted, withDescription)[columnIndex]));
         });
-    }
-
-    private double toExcelTimeFormat(Long minutes) {
-        return (double) Duration.ofMinutes(Optional.ofNullable(minutes).orElse(0L)).getSeconds() / SECONDS_PER_DAY;
     }
 
     private Long getDurationBetween(Date from, Date... toList) {

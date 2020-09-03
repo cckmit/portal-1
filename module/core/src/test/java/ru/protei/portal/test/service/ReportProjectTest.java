@@ -113,8 +113,6 @@ public class ReportProjectTest extends BaseServiceTest {
                     buffer,
                     report,
                     deserializeFromJson(report.getQuery(), CaseQuery.class),
-                    new SimpleDateFormat("dd.MM.yyyy HH:mm"),
-                    new SimpleDateFormat("dd.MM.yyyy"),
                     id -> false
             );
         } catch (Exception exception) {
@@ -143,8 +141,6 @@ public class ReportProjectTest extends BaseServiceTest {
                     buffer,
                     report,
                     deserializeFromJson(report.getQuery(), CaseQuery.class),
-                    new SimpleDateFormat("dd.MM.yyyy HH:mm"),
-                    new SimpleDateFormat("dd.MM.yyyy"),
                     id -> false
             );
         } catch (Exception exception) {

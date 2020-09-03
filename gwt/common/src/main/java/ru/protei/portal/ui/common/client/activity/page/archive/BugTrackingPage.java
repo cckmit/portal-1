@@ -10,6 +10,8 @@ import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 
+import static ru.protei.portal.ui.common.client.activity.page.util.AccessUtil.canUseExternalLink;
+
 public abstract class BugTrackingPage implements Activity {
 
     @PostConstruct
@@ -20,7 +22,9 @@ public abstract class BugTrackingPage implements Activity {
 
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
-        fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.BUG_TRACKING, TAB, BUG_TRACKING_URL, DebugIds.SIDEBAR_MENU.BUG_TRACKING).withParent(CATEGORY));
+        if (canUseExternalLink(event.profile)) {
+            fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.BUG_TRACKING, TAB, BUG_TRACKING_URL, DebugIds.SIDEBAR_MENU.BUG_TRACKING).withParent(CATEGORY));
+        }
     }
 
     @Inject
@@ -28,5 +32,5 @@ public abstract class BugTrackingPage implements Activity {
 
     private String CATEGORY;
     private String TAB;
-    private final static String BUG_TRACKING_URL = "http://portal/bt/index.jsp";
+    private final static String BUG_TRACKING_URL = "https://oldportal.protei.ru/bt/index.jsp";
 }

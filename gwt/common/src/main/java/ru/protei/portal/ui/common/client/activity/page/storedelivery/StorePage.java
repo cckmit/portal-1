@@ -10,6 +10,8 @@ import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 
+import static ru.protei.portal.ui.common.client.activity.page.util.AccessUtil.canUseExternalLink;
+
 public abstract class StorePage implements Activity {
 
     @PostConstruct
@@ -20,7 +22,9 @@ public abstract class StorePage implements Activity {
 
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
-        fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.STORE, TAB, STORE_URL, DebugIds.SIDEBAR_MENU.STORE).withParent(CATEGORY));
+        if (canUseExternalLink(event.profile)) {
+            fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.STORE, TAB, STORE_URL, DebugIds.SIDEBAR_MENU.STORE).withParent(CATEGORY));
+        }
     }
 
     @Inject
@@ -28,5 +32,5 @@ public abstract class StorePage implements Activity {
 
     private String CATEGORY;
     private String TAB;
-    private final static String STORE_URL = "http://portal/sd/index.jsp";
+    private final static String STORE_URL = "https://oldportal.protei.ru/sd/index.jsp";
 }

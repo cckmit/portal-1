@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.PhoneUtils;
 import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.ContactInfo;
+import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -37,12 +38,15 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static ru.protei.portal.core.model.dict.En_Gender.UNDEFINED;
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 /**
  * Сервис выполняющий первичную инициализацию, работу с исправлением данных
@@ -83,6 +87,34 @@ public class BootstrapService {
         updateWithCrossLinkColumn();
         transferProjectCrosslinkToYoutrack();
         updateUserDashboardOrders();
+        removeAddressesFromEmployeesContactInfo();
+    }
+
+    private void removeAddressesFromEmployeesContactInfo() {
+        log.info("removeAddressesFromEmployeesContactInfo(): start");
+        List<Person> employees = emptyIfNull(personDAO.getEmployeesAll());
+        if (isEmpty(employees)) {
+            log.info("removeAddressesFromEmployeesContactInfo() : end : no employees");
+            return;
+        }
+        Predicate<ContactItem> sensitiveContactItem = contactItem -> {
+            boolean isAddress = contactItem.isItemOf(En_ContactItemType.ADDRESS);
+            boolean isAddressLegal = contactItem.isItemOf(En_ContactItemType.ADDRESS_LEGAL);
+            return isAddress || isAddressLegal;
+        };
+        int mergedCount = 0;
+        for (Person employee : employees) {
+            boolean needMerge = employee.getContactInfo()
+                    .getItems()
+                    .removeIf(sensitiveContactItem);
+            if (needMerge) {
+                boolean merged = personDAO.partialMerge(employee, "contactInfo");
+                if (merged) {
+                    mergedCount++;
+                }
+            }
+        }
+        log.info("removeAddressesFromEmployeesContactInfo(): end : updated {} employees", mergedCount);
     }
 
     private void updateUserDashboardOrders() {
@@ -624,7 +656,7 @@ if(true) return; //TODO remove
     private void updateManagerFiltersWithoutManagerCompany() {
         List<CaseFilter> allFilters = caseFilterDAO.getAll();
 
-        for (CaseFilter nextFilter : CollectionUtils.emptyIfNull(allFilters)) {
+        for (CaseFilter nextFilter : emptyIfNull(allFilters)) {
             CaseQuery params = nextFilter.getParams();
 
             if (CollectionUtils.isEmpty(params.getManagerIds()) || CollectionUtils.isNotEmpty(params.getManagerCompanyIds())) {
@@ -694,7 +726,7 @@ if(true) return; //TODO remove
 
         List<CaseFilter> allFilters = caseFilterDAO.getAll();
 
-        for (CaseFilter filter : CollectionUtils.emptyIfNull(allFilters)) {
+        for (CaseFilter filter : emptyIfNull(allFilters)) {
             CaseQuery params = filter.getParams();
 
             boolean isCreatedRangeNeedToUpdate = checkDateRangeExists(params.getCreatedRange(), params.getCreatedFrom(), params.getCreatedTo());
@@ -727,7 +759,7 @@ if(true) return; //TODO remove
         ));
         List<Report> reports = reportDAO.getReports(query);
 
-        for (Report report : CollectionUtils.emptyIfNull(reports)) {
+        for (Report report : emptyIfNull(reports)) {
             CaseQuery params;
             try {
                 params = objectMapper.readValue(report.getQuery(), CaseQuery.class);

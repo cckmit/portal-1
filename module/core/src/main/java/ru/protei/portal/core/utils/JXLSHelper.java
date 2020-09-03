@@ -25,9 +25,9 @@ public final class JXLSHelper {
         private final Map<Integer, Integer> sheetRowIndexMap;
         private final Map<Integer, Font> fontsMap;
         private final Map<Integer, CellStyle> cellStylesMap;
-        private final Font defaultFont;
-        private final CellStyle defaultHeaderCellStyle;
-        private final CellStyle defaultCellStyle;
+        private Font defaultFont;
+        private CellStyle defaultHeaderCellStyle;
+        private CellStyle defaultCellStyle;
         private int sheetIndex = 0;
 
         public interface Writer<T> {
@@ -47,9 +47,9 @@ public final class JXLSHelper {
             this.sheetRowIndexMap = new HashMap<>();
             this.fontsMap = new HashMap<>();
             this.cellStylesMap = new HashMap<>();
-            this.defaultFont = getDefaultFont(workbook);
-            this.defaultHeaderCellStyle = getTableHeaderStyle(workbook, defaultFont);
-            this.defaultCellStyle = getDefaultStyle(workbook, defaultFont);
+            this.defaultFont = getDefaultFont();
+            this.defaultHeaderCellStyle = getDefaultTableHeaderStyle(defaultFont);
+            this.defaultCellStyle = getDefaultStyle(defaultFont);
         }
 
         public int createSheet() {
@@ -118,33 +118,37 @@ public final class JXLSHelper {
             return defaultCellStyle;
         }
 
-
-        private static Font getDefaultFont(Workbook workbook) {
-            Font font = workbook.createFont();
-            font.setFontName("Calibri");
-            font.setFontHeightInPoints((short) 11);
-            return font;
+        public Font getDefaultFont() {
+            if (defaultFont != null) {
+                return defaultFont;
+            }
+            defaultFont = workbook.createFont();
+            defaultFont.setFontName("Calibri");
+            defaultFont.setFontHeightInPoints((short) 11);
+            return defaultFont;
         }
 
-        private static CellStyle getTableHeaderStyle(Workbook workbook, Font font) {
-            CellStyle style = workbook.createCellStyle();
-            {
-                style.setFont(font);
-                style.setAlignment(HorizontalAlignment.CENTER);
-                style.setVerticalAlignment(VerticalAlignment.CENTER);
-                style.setFillForegroundColor(IndexedColors.GREY_40_PERCENT.index);
-                style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        public CellStyle getDefaultTableHeaderStyle(Font font) {
+            if (defaultHeaderCellStyle != null) {
+                return defaultHeaderCellStyle;
             }
-            return style;
+            defaultHeaderCellStyle = workbook.createCellStyle();
+            defaultHeaderCellStyle.setFont(font);
+            defaultHeaderCellStyle.setAlignment(HorizontalAlignment.CENTER);
+            defaultHeaderCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            defaultHeaderCellStyle.setFillForegroundColor(IndexedColors.GREY_40_PERCENT.index);
+            defaultHeaderCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            return defaultHeaderCellStyle;
         }
 
-        private static CellStyle getDefaultStyle(Workbook workbook, Font font) {
-            CellStyle style = workbook.createCellStyle();
-            {
-                style.setFont(font);
-                style.setVerticalAlignment(VerticalAlignment.CENTER);
+        public CellStyle getDefaultStyle(Font font) {
+            if (defaultCellStyle != null) {
+                return defaultCellStyle;
             }
-            return style;
+            defaultCellStyle = workbook.createCellStyle();
+            defaultCellStyle.setFont(font);
+            defaultCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            return defaultCellStyle;
         }
 
         private static void setColumnsWidth(Sheet sheet, int[] columnsWidth) {

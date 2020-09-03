@@ -35,10 +35,8 @@ import java.util.stream.Stream;
 import static java.util.Objects.nonNull;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
-import static ru.protei.portal.core.model.helper.CollectionUtils.not;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeDateWithOffset;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 
 /**
@@ -116,6 +114,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     public Result<SearchResult<EmployeeShortView>> employeeList(AuthToken token, EmployeeQuery query) {
 
         SearchResult<EmployeeShortView> sr = employeeShortViewDAO.getSearchResult(query);
+        sr.setResults(stream(sr.getResults())
+                .map(this::removeSensitiveInformation)
+                .collect(Collectors.toList()));
         List<EmployeeShortView> results = sr.getResults();
 
         if (CollectionUtils.isNotEmpty(results)) {
@@ -134,6 +135,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         query.setHomeCompanies(fillHiddenCompaniesIfProteiChosen(query.getHomeCompanies()));
 
         SearchResult<EmployeeShortView> sr = employeeShortViewDAO.getSearchResult(query);
+        sr.setResults(stream(sr.getResults())
+                .map(this::removeSensitiveInformation)
+                .collect(Collectors.toList()));
         List<EmployeeShortView> results = sr.getResults();
 
         if (CollectionUtils.isNotEmpty(results)) {
@@ -165,6 +169,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         EmployeeShortView employeeShortView = employeeShortViewDAO.get(employeeId);
         jdbcManyRelationsHelper.fill(employeeShortView, "workerEntries");
+        employeeShortView = removeSensitiveInformation(employeeShortView);
 
         return ok(employeeShortView);
     }
@@ -187,6 +192,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         EmployeeShortView employeeShortView = employeeShortViewDAO.get(employeeId);
         jdbcManyRelationsHelper.fill(employeeShortView, "workerEntries");
+        employeeShortView = removeSensitiveInformation(employeeShortView);
 
         employeeShortView.setWorkerEntries(changeCompanyNameIfHidden(employeeShortView.getWorkerEntries()));
         employeeShortView.setCurrentAbsence(personAbsenceDAO.currentAbsence(employeeId));
@@ -270,8 +276,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         person.setDisplayName(person.getLastName() + " " + person.getFirstName() + (StringUtils.isNotEmpty(person.getSecondName()) ? " " + person.getSecondName() : ""));
         person.setDisplayShortName(createPersonShortName(person));
-
         person.setCompanyId(CrmConstants.Company.HOME_COMPANY_ID);
+        person.getContactInfo().addItems(getSensitiveContactItems(oldPerson.getContactInfo().getItems()));
+
         boolean success = personDAO.partialMerge(person,  "company_id", "firstname", "lastname", "secondname", "sex", "birthday", "ipaddress", "contactInfo", "displayname", "displayShortName");
 
         if (success) {
@@ -495,6 +502,21 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .collect(Collectors.toList());
     }
 
+    private EmployeeShortView removeSensitiveInformation(EmployeeShortView employeeShortView) {
+        List<ContactItem> sensitive = getSensitiveContactItems(employeeShortView.getContactInfo().getItems());
+        employeeShortView.setContactInfo(new ContactInfo(stream(employeeShortView.getContactInfo().getItems())
+                .filter(item -> !sensitive.contains(item))
+                .collect(Collectors.toList())));
+        return employeeShortView;
+    }
+
+    private List<ContactItem> getSensitiveContactItems(List<ContactItem> contactItems) {
+        List<En_ContactItemType> types = listOf(En_ContactItemType.ADDRESS, En_ContactItemType.ADDRESS_LEGAL);
+        return stream(contactItems)
+                .filter(item -> types.contains(item.type()))
+                .collect(Collectors.toList());
+    }
+
     private void updateAccount(UserLogin userLogin, AuthToken token) {
         if (userLoginDAO.saveOrUpdate(userLogin)) {
             jdbcManyRelationsHelper.persist( userLogin, "roles" );
@@ -573,16 +595,16 @@ public class EmployeeServiceImpl implements EmployeeService {
     private boolean updateEmployeeInOldPortal(Long personId) {
         List<WorkerEntry> workers = workerEntryDAO.getWorkers(new WorkerEntryQuery(personId));
 
-        WorkerEntry activeWorker = workers == null ? null : workers.stream().filter(WorkerEntry::isMain).findFirst().orElse(null);
+        WorkerEntry worker = workers == null ? null : getMainEntry(workers);
 
         Person person = personDAO.get(personId);
 
-        if (activeWorker == null || person == null){
-            log.warn("updateEmployeeInOldPortal(): activeWorker={}, person={}", activeWorker, person);
+        if (worker == null || person == null){
+            log.warn("updateEmployeeInOldPortal(): activeWorker={}, person={}", worker, person);
             return false;
         }
 
-        return migrationManager.saveExternalEmployee(person, activeWorker.getDepartmentName(), activeWorker.getPositionName()).equals(En_ResultStatus.OK);
+        return migrationManager.saveExternalEmployee(person, worker.getDepartmentName(), worker.getPositionName()).equals(En_ResultStatus.OK);
     }
 
     private boolean fireEmployeeInOldPortal(Person person) {
@@ -789,5 +811,13 @@ public class EmployeeServiceImpl implements EmployeeService {
                         .filter(En_AbsenceReason::isActual)
                         .map(En_AbsenceReason::getId)
                         .collect(Collectors.toSet()));
+    }
+
+    private WorkerEntry getMainEntry(List<WorkerEntry> workers) {
+        return workers.stream().filter(WorkerEntry::isMain).findFirst().orElse(getFirstEntry(workers));
+    }
+
+    private WorkerEntry getFirstEntry(List<WorkerEntry> workers) {
+        return workers.stream().findFirst().orElse(null);
     }
 }

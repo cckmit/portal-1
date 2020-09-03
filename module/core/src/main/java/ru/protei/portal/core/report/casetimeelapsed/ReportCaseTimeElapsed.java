@@ -13,7 +13,5 @@ public interface ReportCaseTimeElapsed {
     boolean writeReport(OutputStream buffer,
                         Report report,
                         CaseQuery query,
-                        DateFormat dateFormat,
-                        TimeFormatter timeFormatter,
                         Predicate<Long> isCancel) throws IOException;
 }

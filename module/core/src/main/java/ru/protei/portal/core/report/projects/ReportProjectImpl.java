@@ -51,8 +51,6 @@ public class ReportProjectImpl implements ReportProject {
     public boolean writeReport(OutputStream buffer,
                                Report report,
                                CaseQuery query,
-                               DateFormat dateTimeFormat,
-                               DateFormat dateFormat,
                                Predicate<Long> isCancel) throws IOException {
 
         int count = caseObjectDAO.countByQuery(query);
@@ -61,7 +59,7 @@ public class ReportProjectImpl implements ReportProject {
 
         if (count < 1) {
             log.debug("writeReport : reportId={} has no corresponding case objects", report.getId());
-            ReportWriter<ReportProjectWithLastComment> writer = new ExcelReportWriter(localizedLang, new EnumLangUtil(lang), dateTimeFormat, dateFormat);
+            ReportWriter<ReportProjectWithLastComment> writer = new ExcelReportWriter(localizedLang, new EnumLangUtil(lang));
             writer.createSheet();
             writer.collect(buffer);
             return true;
@@ -69,7 +67,7 @@ public class ReportProjectImpl implements ReportProject {
 
         log.debug("writeReport : reportId={} has {} case objects to process", report.getId(), count);
 
-        try (ReportWriter<ReportProjectWithLastComment> writer = new ExcelReportWriter(localizedLang, new EnumLangUtil(lang), dateTimeFormat, dateFormat)) {
+        try (ReportWriter<ReportProjectWithLastComment> writer = new ExcelReportWriter(localizedLang, new EnumLangUtil(lang))) {
             int sheetNumber = writer.createSheet();
             if (writeReport(writer, sheetNumber, report.getId(), query, count, isCancel)) {
                 writer.collect(buffer);

@@ -43,8 +43,6 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
     public boolean writeReport(OutputStream buffer,
                                Report report,
                                CaseQuery caseQuery,
-                               DateFormat dateFormat,
-                               TimeFormatter timeFormatter,
                                Predicate<Long> isCancel) throws IOException {
         if (caseQuery == null) {
             log.debug("writeReport : reportId={} has invalid queries: caseQuery={}, aborting task",
@@ -61,7 +59,7 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
 
         log.info( "writeReport(): Start report {}", report );
         try (ReportWriter<CaseCommentTimeElapsedSum> writer =
-                    new ExcelReportWriter(localizedLang, dateFormat, timeFormatter)) {
+                    new ExcelReportWriter(localizedLang)) {
 
             while (true) {
                 if (isCancel.test(report.getId())) {

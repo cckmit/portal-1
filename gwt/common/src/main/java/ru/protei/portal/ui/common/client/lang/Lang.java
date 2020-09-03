@@ -420,7 +420,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String goToContacts();
 
-    String contactFieldLengthExceed( String p0, int p1 );
+    String promptFieldLengthExceed(String fieldName, int fieldLength);
 
     String contactGeneratePassword();
 
@@ -2694,7 +2694,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String roomReservationRemoved();
 
-    String errRoomReservationOutdated();
+    String errRoomReservationFinished();
 
     String errRoomReservationRoomNotAccessible();
 
@@ -2886,7 +2886,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String absenceButtonCreate();
 
-    String absenceCreated();
+    String absenceCreated(@PluralCount int count);
 
     String absences();
 
@@ -3027,4 +3027,6 @@ public interface Lang extends Messages, ContactItemLang {
     String attachmentsHeader(String countOfAttachments);
 
     String attachmentAdd();
+
+    String internalResourceVpn();
 }

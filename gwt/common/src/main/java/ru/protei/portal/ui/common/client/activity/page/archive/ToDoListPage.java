@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.common.client.activity.page.archive;
 
-import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -13,6 +12,8 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 import ru.protei.winter.web.common.client.events.SectionEvents;
 
+import static ru.protei.portal.ui.common.client.activity.page.util.AccessUtil.canUseExternalLink;
+
 public abstract class ToDoListPage implements Activity {
 
     @PostConstruct
@@ -23,7 +24,9 @@ public abstract class ToDoListPage implements Activity {
 
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
-        fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.TODO_LIST, TAB, TODO_LIST_URL, DebugIds.SIDEBAR_MENU.TODO_LIST).withParent(CATEGORY));
+        if (canUseExternalLink(event.profile)) {
+            fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.TODO_LIST, TAB, TODO_LIST_URL, DebugIds.SIDEBAR_MENU.TODO_LIST).withParent(CATEGORY));
+        }
     }
 
     @Event
@@ -45,5 +48,5 @@ public abstract class ToDoListPage implements Activity {
 
     private String CATEGORY;
     private String TAB;
-    private final static String TODO_LIST_URL = "http://portal/ct/index.jsp";
+    private final static String TODO_LIST_URL = "https://oldportal.protei.ru/ct/index.jsp";
 }

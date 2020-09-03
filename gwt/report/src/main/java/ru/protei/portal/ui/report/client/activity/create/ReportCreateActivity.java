@@ -48,7 +48,6 @@ public abstract class ReportCreateActivity implements Activity,
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
-        issueFilterWidget.setFilterValidator(cf -> validateCaseQuery(cf.getType(), cf.getParams()));
         issueFilterWidget.getIssueFilterParams().setModel(this);
         issueFilterWidget.clearFooterStyle();
         projectFilterView.clearFooterStyle();
@@ -254,10 +253,6 @@ public abstract class ReportCreateActivity implements Activity,
         validateModifiedRange(
                 true,
                 issueFilterWidget.getIssueFilterParams().isModifiedRangeValid());
-    }
-
-    private boolean validateCaseQuery(En_CaseFilterType filterType, CaseQuery query) {
-        return validateCaseQuery(En_ReportType.valueOf(filterType.name()), query);
     }
 
     private boolean validateCaseQuery(En_ReportType reportType, CaseQuery query) {

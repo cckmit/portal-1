@@ -14,8 +14,6 @@ public interface ReportProject {
     boolean writeReport(OutputStream buffer,
                         Report report,
                         CaseQuery query,
-                        DateFormat dateTimeFormat,
-                        DateFormat dateFormat,
                         Predicate<Long> isCancel) throws IOException;
     List<ReportProjectWithLastComment> createData(CaseQuery query);
 }

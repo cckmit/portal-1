@@ -10,6 +10,8 @@ import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 
+import static ru.protei.portal.ui.common.client.activity.page.util.AccessUtil.canUseExternalLink;
+
 public abstract class YouTrackAdminPage implements Activity {
 
     @PostConstruct
@@ -19,7 +21,9 @@ public abstract class YouTrackAdminPage implements Activity {
 
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
-        fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.YOUTRACK_ADMIN, TAB, YOUTRACK_ADMIN_URL, DebugIds.SIDEBAR_MENU.YOUTRACK_ADMIN));
+        if (canUseExternalLink(event.profile)) {
+            fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.YOUTRACK_ADMIN, TAB, YOUTRACK_ADMIN_URL, DebugIds.SIDEBAR_MENU.YOUTRACK_ADMIN));
+        }
     }
 
     @Inject

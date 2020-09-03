@@ -58,7 +58,6 @@ public class ReportControlServiceImpl implements ReportControlService {
     private static Logger log = LoggerFactory.getLogger(ReportControlServiceImpl.class);
     private final Object sync = new Object();
     private final Set<Long> reportsInProcess = new HashSet<>();
-    private final static DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 
     @Autowired
     Lang lang;
@@ -215,8 +214,6 @@ public class ReportControlServiceImpl implements ReportControlService {
                         buffer,
                         report,
                         getQuery(report, CaseQuery.class),
-                        new SimpleDateFormat("dd.MM.yyyy HH:mm"),
-                        new TimeFormatter(),
                         this::isCancel
                 );
             case CASE_RESOLUTION_TIME:
@@ -233,8 +230,6 @@ public class ReportControlServiceImpl implements ReportControlService {
                         buffer,
                         report,
                         getQuery(report, CaseQuery.class),
-                        new SimpleDateFormat("dd.MM.yyyy HH:mm"),
-                        new SimpleDateFormat("dd.MM.yyyy"),
                         this::isCancel
                 );
             case CONTRACT:
@@ -298,7 +293,7 @@ public class ReportControlServiceImpl implements ReportControlService {
     @Override
     public Result<Void> processAbsenceReport(Person initiator, String title, AbsenceQuery query) {
         try (ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
-            if (reportAbsence.writeReport(buffer, query, dateFormat)) {
+            if (reportAbsence.writeReport(buffer, query)) {
                 publisherService.publishEvent(new AbsenceReportEvent(
                         this,
                         initiator,

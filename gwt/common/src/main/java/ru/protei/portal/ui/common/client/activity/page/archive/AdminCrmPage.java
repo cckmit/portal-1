@@ -10,6 +10,8 @@ import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 
+import static ru.protei.portal.ui.common.client.activity.page.util.AccessUtil.canUseExternalLink;
+
 public abstract class AdminCrmPage implements Activity {
 
     @PostConstruct
@@ -20,7 +22,9 @@ public abstract class AdminCrmPage implements Activity {
 
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
-        fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.ADMIN_CRM, TAB, ADMIN_CRM_URL, DebugIds.SIDEBAR_MENU.ADMIN_CRM).withParent(CATEGORY));
+        if (canUseExternalLink(event.profile)) {
+            fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.ADMIN_CRM, TAB, ADMIN_CRM_URL, DebugIds.SIDEBAR_MENU.ADMIN_CRM).withParent(CATEGORY));
+        }
     }
 
     @Inject
@@ -28,5 +32,5 @@ public abstract class AdminCrmPage implements Activity {
 
     private String CATEGORY;
     private String TAB;
-    private final static String ADMIN_CRM_URL = "http://portal/AdminCRM/session/view_session_admin.jsp";
+    private final static String ADMIN_CRM_URL = "https://oldportal.protei.ru/AdminCRM/session/view_session_admin.jsp";
 }

@@ -1,7 +1,6 @@
 package ru.protei.portal.core.report.contract;
 
 import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import ru.protei.portal.core.Lang;
@@ -81,10 +80,7 @@ public class ExcelReportWriter implements
     @Override
     public CellStyle getCellStyle(Workbook workbook, int columnIndex) {
         return book.makeCellStyle(0, cs -> {
-            cs.setFont(book.makeFont(0, f -> {
-                f.setFontName("Calibri");
-                f.setFontHeightInPoints((short) 11);
-            }));
+            cs.setFont(book.getDefaultFont());
             cs.setVerticalAlignment(VerticalAlignment.CENTER);
             cs.setWrapText(true);
         });
