@@ -27,4 +27,6 @@ public interface AbstractAppView extends IsWidget {
     HasValue<LocaleImage> locale();
 
     void setLogoByLocale(String locale);
+
+    void setExternalLinks();
 }

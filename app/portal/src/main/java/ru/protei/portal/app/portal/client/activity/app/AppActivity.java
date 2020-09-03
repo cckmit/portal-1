@@ -72,6 +72,7 @@ public abstract class AppActivity
         } );
 
         startPingServerTimer();
+        view.setExternalLinks();
     }
 
     @Override
