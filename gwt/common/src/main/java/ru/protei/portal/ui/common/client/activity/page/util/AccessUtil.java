@@ -6,6 +6,6 @@ import ru.protei.portal.ui.common.shared.model.Profile;
 public class AccessUtil {
 
     public static boolean canUseExternalLink(Profile profile) {
-        return profile.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
+        return profile.hasPrivilegeFor(En_Privilege.EMPLOYEE_VIEW);
     }
 }
