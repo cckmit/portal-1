@@ -93,7 +93,7 @@ public class MailNotificationProcessor {
     public void onCaseChanged(AssembledCaseEvent event){
         Collection<NotificationEntry> notifiers = collectNotifiers(event);
 
-        Map<CaseComment, Set<String>> commentToLoginSet = caseCommentService.replaceLoginWithUsernameInComments(event.getAllComments()).getData();
+        Map<CaseComment, Set<String>> commentToLoginSet = caseCommentService.replaceLoginWithUsername(event.getAllComments()).getData();
 
         notifiers.addAll(collectCommentNotifiers(event, commentToLoginSet));
 

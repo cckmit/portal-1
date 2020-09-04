@@ -55,7 +55,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         List<CaseComment> comments = getList(query).getData();
 
         if (needReplaceLoginWithUsername(caseType, token.getRoles())) {
-            return replaceLoginWithUsernameInComments(comments).map(Map::keySet).map(ArrayList::new);
+            return replaceLoginWithUsername(comments).map(Map::keySet).map(ArrayList::new);
         }
 
         return ok(comments);
@@ -518,12 +518,19 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     @Override
-    public Result<Map<CaseComment, Set<String>>> replaceLoginWithUsernameInComments(List<CaseComment> comments) {
+    public Result<Map<CaseComment, Set<String>>> replaceLoginWithUsername(List<CaseComment> comments) {
         return replaceLoginWithUsername(comments, CaseComment::getText, this::replaceTextAndGetComment);
     }
 
-    @Override
-    public <T> Result<Map<T, Set<String>>> replaceLoginWithUsername(List<T> objects, Function<T, String> objectToStringFunction, ReplacementMapper<T> replacementMapper) {
+    /**
+     * Заменяет в списке объектов возможные логины, которые начинаются с символа "@", на Фамилия Имя
+     *
+     * @param  objects                  список объектов
+     * @param  objectToStringFunction   функция, переводящая переданный объект в строку, в которой будет производиться замена
+     * @param  replacementMapper        {@link ReplacementMapper}
+     * @return карта, содержащая в качестве ключей объекты, в качестве значений - набор логинов
+     */
+    private <T> Result<Map<T, Set<String>>> replaceLoginWithUsername(List<T> objects, Function<T, String> objectToStringFunction, ReplacementMapper<T> replacementMapper) {
         if (isEmpty(objects)) {
             return ok(objects.stream().collect(Collectors.toMap(Function.identity(), value -> new HashSet<>())));
         }
@@ -545,15 +552,19 @@ public class CaseCommentServiceImpl implements CaseCommentService {
                 .sorted((login1, login2) -> login2.getUlogin().length() - login1.getUlogin().length())
                 .collect(Collectors.toList());
 
-        Map<T, Set<String>> objectToLoginList = new LinkedHashMap<>();
+        return ok(makeObjectToLoginSetMap(objects, objectToStringFunction, replacementMapper, existingLoginList));
+    }
+
+    private <T> Map<T, Set<String>> makeObjectToLoginSetMap(List<T> objects, Function<T, String> objectToStringFunction, ReplacementMapper<T> replacementMapper, List<UserLoginShortView> existingLoginList) {
+        Map<T, Set<String>> objectToLoginSet = new LinkedHashMap<>();
 
         for (T object : objects) {
-            objectToLoginList.put(object, new HashSet<>());
+            objectToLoginSet.put(object, new HashSet<>());
         }
 
         for (UserLoginShortView nextUserLogin : existingLoginList) {
 
-            List<T> currentObjects = new ArrayList<>(objectToLoginList.keySet());
+            List<T> currentObjects = new ArrayList<>(objectToLoginSet.keySet());
             for (T object : currentObjects) {
                 String textBeforeReplace = objectToStringFunction.apply(object);
 
@@ -565,16 +576,15 @@ public class CaseCommentServiceImpl implements CaseCommentService {
                 boolean isReplaced = !Objects.equals(textBeforeReplace, textAfterReplace);
 
 //                Для сохранения порядка ключей мапы, постоянно удаляем и добавляем заново элемент.
-                Set<String> loginList = objectToLoginList.remove(object);
-                objectToLoginList.put(objectWithReplace, loginList);
+                Set<String> loginSet = objectToLoginSet.remove(object);
+                objectToLoginSet.put(objectWithReplace, loginSet);
 
                 if (isReplaced) {
-                    loginList.add(nextUserLogin.getUlogin());
+                    loginSet.add(nextUserLogin.getUlogin());
                 }
             }
         }
-
-        return ok(objectToLoginList);
+        return objectToLoginSet;
     }
 
     private Result<Set<String>> getPossibleLoginSet(List<String> texts) {

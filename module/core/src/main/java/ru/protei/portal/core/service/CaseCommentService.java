@@ -18,7 +18,6 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 
 /**
  * Service to get/add/update/remove comments {@link CaseComment}
@@ -125,17 +124,7 @@ public interface CaseCommentService {
     })
     Result<List<String>> replaceLoginWithUsername(AuthToken token, List<String> texts);
 
-    /**
-     * Заменяет в списке объектов возможные логины, которые начинаются с символа "@", на Фамилия Имя
-     *
-     * @param  objects            список объектов
-     * @param  stringFunction     функция, переводящая переданный объект в строку, в которой будет производиться замена
-     * @param  replacementMapper  {@link ReplacementMapper}
-     * @return карта, содержащая в качестве ключей объекты, в качестве значений - набор логинов
-     */
-    <T> Result<Map<T, Set<String>>> replaceLoginWithUsername(List<T> objects, Function<T, String> stringFunction, ReplacementMapper<T> replacementMapper);
-
-    Result<Map<CaseComment, Set<String>>> replaceLoginWithUsernameInComments(List<CaseComment> comments);
+    Result<Map<CaseComment, Set<String>>> replaceLoginWithUsername(List<CaseComment> comments);
 
     interface ReplacementMapper<T> {
         /**
