@@ -397,8 +397,11 @@ public abstract class CaseCommentListActivity
         view.setNewCommentHidden(!isModifyEnabled);
         view.setNewCommentDisabled(!isNewCommentEnabled);
 
-        if (!En_CaseType.CRM_SUPPORT.equals(caseType)) {
+        if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
+            view.setCommentPlaceholder(lang.commentAddMessageMentionPlaceholder());
+        } else {
             view.disableMentioning();
+            view.setCommentPlaceholder(lang.commentAddMessagePlaceholder());
         }
 
         List<AbstractCaseCommentItemView> views = new ArrayList<>();

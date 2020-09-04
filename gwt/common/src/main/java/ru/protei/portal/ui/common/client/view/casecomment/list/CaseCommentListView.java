@@ -48,7 +48,6 @@ public class CaseCommentListView
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        comment.getElement().setAttribute("placeholder", lang.commentAddMessagePlaceholder());
         timeElapsedType.setDisplayOptionCreator( type -> new DisplayOption( (type == null || En_TimeElapsedType.NONE.equals( type )) ? lang.issueCommentElapsedTimeTypeLabel() : elapsedTimeTypeLang.getName( type ) ) );
         timeElapsedType.fillOptions();
         comment.setOverlayText(lang.dropFilesHere());
@@ -103,6 +102,7 @@ public class CaseCommentListView
         timeElapsedType.setValue( null );
     }
 
+    @Override
     public void setTimeElapsedVisibility(boolean visible) {
         timeElapsed.setVisible(visible);
         timeElapsedType.setVisible(visible);
@@ -198,6 +198,11 @@ public class CaseCommentListView
     @Override
     public void setCaseCreatorId(Long personId) {
         comment.setPersonId(personId);
+    }
+
+    @Override
+    public void setCommentPlaceholder(String placeholder) {
+        comment.getElement().setAttribute("placeholder", placeholder);
     }
 
     @UiHandler("privateComment")
