@@ -99,6 +99,7 @@ public class AppView extends Composite
 
     @Override
     public void setExternalLinks() {
+/*
 
         HTML html = new HTML("<li>" +
                 "<a href=\"#\" title=\"Test\" id=\"debug-sidebar-menu-store-delivery\">" +
@@ -134,30 +135,8 @@ public class AppView extends Composite
                 addOnAnchorClickListener(anchor, submenu);
             }
         }
+*/
     }
-
-    private native void addOnAnchorClickListener(Element anchor, Element submenu) /*-{
-        anchor.addEventListener("click", function (event) {
-            event.preventDefault();
-            event.stopPropagation();
-            var arrow = anchor.getElementsByClassName("arrow").item(0);
-            var opened = arrow.classList.contains("open");
-            var height = submenu.childElementCount * 38 + 30;
-            if (opened) {
-                arrow.classList.remove("open");
-                submenu.style.margin = '0px';
-                submenu.style.padding = '0px';
-                submenu.style.height = '0px';
-            } else {
-                arrow.classList.add("open");
-                submenu.style.margin = '0px';
-                submenu.style.paddingTop = '18px';
-                submenu.style.paddingBottom = '10px';
-                submenu.style.marginBottom = '10px';
-                submenu.style.height = height + 'px';
-            }
-        })
-    }-*/;
 
     @UiHandler( "logout" )
     public void onLogoutClicked( ClickEvent event ) {
