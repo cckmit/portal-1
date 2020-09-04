@@ -126,7 +126,7 @@ public class CommonClientModule extends AbstractGinModule {
         bind( AdminCrmPage.class ).asEagerSingleton();
         bind( TestZonePage.class ).asEagerSingleton();
 
-        bind( ServerEventBridge.class ).asEagerSingleton();
+        //bind( ServerEventBridge.class ).asEagerSingleton();
 
         bind( ActionBarActivity.class ).asEagerSingleton();
         bind( AbstractSectionItemView.class ).to( SectionItemView.class );

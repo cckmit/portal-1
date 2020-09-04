@@ -123,10 +123,12 @@ public class RedmineTestConfiguration {
         return new CaseLinkServiceImpl();
     }
 
+/*
     @Bean
     public ClientEventService getClientEventService() {
         return new ClientEventServiceImpl();
     }
+*/
 
     @Bean
     public CaseCommentService getCaseCommentService() {
