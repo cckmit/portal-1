@@ -5,7 +5,9 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.Timer;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.ui.common.client.popup.BasePopupView;
 import ru.protei.portal.ui.common.client.widget.dndautoresizetextarea.DndAutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.selector.login.UserLoginModel;
 import ru.protei.portal.ui.common.client.widget.selector.login.UserLoginSelector;
@@ -15,6 +17,8 @@ import static java.util.Optional.ofNullable;
 public class MentioningTextArea extends DndAutoResizeTextArea {
     @Inject
     public MentioningTextArea(UserLoginModel userLoginModel, UserLoginSelector userLoginSelector) {
+        this.userLoginModel = userLoginModel;
+
         initUserLoginSelector(userLoginModel, userLoginSelector);
         final Timer changeTimer = initTimer(userLoginModel, userLoginSelector);
 
@@ -25,6 +29,14 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
     public void disableMentioning() {
         keyUpHandlerRegistration.removeHandler();
         clickHandlerRegistration.removeHandler();
+    }
+
+    public void setPrivate(boolean isPrivate) {
+        this.isPrivate = isPrivate;
+    }
+
+    public void setPersonId(Long personId) {
+        userLoginModel.setPersonFirstId(personId);
     }
 
     private void initUserLoginSelector(final UserLoginModel userLoginModel, final UserLoginSelector userLoginSelector) {
@@ -58,6 +70,7 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
                 }
 
                 updateModel(possibleLoginInfo.possibleLogin, userLoginModel);
+                updateSelectorFilterByPrivacy(userLoginSelector, isPrivate);
                 showPopup(userLoginSelector);
 
                 MentioningTextArea.this.possibleLoginInfo = possibleLoginInfo;
@@ -80,12 +93,16 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
     }
 
     private void showPopup(UserLoginSelector userLoginSelector) {
-        userLoginSelector.getPopup().showNear(this);
+        userLoginSelector.getPopup().showNear(this, BasePopupView.Position.BY_LEFT_SIDE, getOffsetWidth() + (COMMENT_INNER_PADDING + COMMENT_BORDER_SIZE) * 2);
         userLoginSelector.clearAndFill();
     }
 
     private void updateModel(String searchString, UserLoginModel userLoginModel) {
         userLoginModel.setSearchString(searchString);
+    }
+
+    private void updateSelectorFilterByPrivacy(UserLoginSelector userLoginSelector, final boolean isPrivate) {
+        userLoginSelector.setFilter(userLoginShortView -> !isPrivate || En_CompanyCategory.HOME.equals(userLoginShortView.getCompanyCategory()));
     }
 
     private native int pointerPosition(Element textArea) /*-{
@@ -94,6 +111,10 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
 
     private HandlerRegistration keyUpHandlerRegistration;
     private HandlerRegistration clickHandlerRegistration;
+
+    private boolean isPrivate;
+
+    private final UserLoginModel userLoginModel;
 
     private PossibleLoginInfo possibleLoginInfo;
 
@@ -108,4 +129,6 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
     }
 
     private static final RegExp MENTION_REGEXP = RegExp.compile(CrmConstants.Masks.MENTION);
+    private static final Integer COMMENT_BORDER_SIZE = 1;
+    private static final Integer COMMENT_INNER_PADDING = 12;
 }

@@ -7,6 +7,7 @@ import java.util.Set;
 public class UserLoginShortViewQuery extends BaseQuery {
     private En_AdminState adminState;
     private Set<String> loginSet;
+    private Set<Long> personIds;
 
     public En_AdminState getAdminState() {
         return adminState;
@@ -24,11 +25,20 @@ public class UserLoginShortViewQuery extends BaseQuery {
         this.loginSet = loginSet;
     }
 
+    public Set<Long> getPersonIds() {
+        return personIds;
+    }
+
+    public void setPersonIds(Set<Long> personIds) {
+        this.personIds = personIds;
+    }
+
     @Override
     public String toString() {
         return "UserLoginShortViewQuery{" +
                 "adminState=" + adminState +
                 ", loginSet=" + loginSet +
+                ", personIds=" + personIds +
                 ", searchString='" + searchString + '\'' +
                 ", sortField=" + sortField +
                 ", sortDir=" + sortDir +

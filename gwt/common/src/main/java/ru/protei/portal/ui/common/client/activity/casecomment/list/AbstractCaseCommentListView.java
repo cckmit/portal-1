@@ -52,6 +52,10 @@ public interface AbstractCaseCommentListView extends IsWidget {
 
     void disableMentioning();
 
+    void setPrivateMentioning(boolean isPrivate);
+
+    void setCaseCreatorId(Long personId);
+
     HasVisibility getPrivacyVisibility();
 
     HasValue<Boolean> privateComment();

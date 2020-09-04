@@ -14,15 +14,21 @@ public class CaseCommentEvents {
         public Show() {}
 
         public Show(HasWidgets parent, Long caseId, En_CaseType caseType, boolean isModifyEnabled) {
+            this(parent, caseId, caseType, isModifyEnabled, null);
+        }
+
+        public Show(HasWidgets parent, Long caseId, En_CaseType caseType, boolean isModifyEnabled, Long caseCreatorId) {
             this.parent = parent;
             this.caseId = caseId;
             this.caseType = caseType;
             this.isModifyEnabled = isModifyEnabled;
+            this.caseCreatorId = caseCreatorId;
         }
 
         public HasWidgets parent;
         public En_CaseType caseType;
         public Long caseId;
+        public Long caseCreatorId;
         public boolean isElapsedTimeEnabled = false;
         public boolean isModifyEnabled = false;
         public boolean isPrivateVisible = false;

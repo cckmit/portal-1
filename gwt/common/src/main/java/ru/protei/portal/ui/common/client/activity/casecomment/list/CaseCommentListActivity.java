@@ -4,7 +4,6 @@ import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Timer;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Attachment;
@@ -118,6 +117,10 @@ public abstract class CaseCommentListActivity
 
         view.privateComment().setValue(false);
         view.getPrivacyVisibility().setVisible(isPrivateVisible);
+
+        view.setPrivateMentioning(isPrivateCase);
+
+        view.setCaseCreatorId(event.caseCreatorId);
 
         reloadComments(caseType, caseId);
     }
@@ -269,7 +272,11 @@ public abstract class CaseCommentListActivity
         comment = null;
 
         String message = appendQuote(view.message().getValue(), value.getText(), textMarkup);
-        view.message().setValue( message, true );
+
+        textRenderController.replaceLoginWithUsername(Collections.singletonList(message), new FluentCallback<List<String>>()
+                .withSuccess(result -> view.message().setValue(CollectionUtils.getFirst(result), true))
+        );
+
         view.focus();
     }
 
@@ -349,6 +356,11 @@ public abstract class CaseCommentListActivity
     public void onDisplayPreviewChanged( Boolean isDisplayPreview ) {
         storage.set( IS_PREVIEW_DISPLAYED, String.valueOf( isDisplayPreview ) );
         fireChangedPreview();
+    }
+
+    @Override
+    public void onPrivateCommentChanged() {
+        view.setPrivateMentioning(isPrivateCase || view.privateComment().getValue());
     }
 
     private void removeAttachment(Long id, Runnable successAction){

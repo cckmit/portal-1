@@ -190,6 +190,23 @@ public class CaseCommentListView
         comment.disableMentioning();
     }
 
+    @Override
+    public void setPrivateMentioning(boolean isPrivate) {
+        comment.setPrivate(isPrivate);
+    }
+
+    @Override
+    public void setCaseCreatorId(Long personId) {
+        comment.setPersonId(personId);
+    }
+
+    @UiHandler("privateComment")
+    public void onPrivateCommentChanged(ValueChangeEvent<Boolean> event) {
+        if (activity != null) {
+            activity.onPrivateCommentChanged();
+        }
+    }
+
     @UiHandler( "send" )
     public void onSendClicked( ClickEvent event ) {
         if ( activity != null ) {

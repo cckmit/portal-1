@@ -537,7 +537,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
         for (UserLoginShortView nextUserLogin : existingLoginList) {
 
-            Set<T> currentObjects = new HashSet<>(objectToLoginList.keySet());
+            List<T> currentObjects = new ArrayList<>(objectToLoginList.keySet());
             for (T object : currentObjects) {
                 String textBeforeReplace = objectToStringFunction.apply(object);
 
@@ -548,10 +548,12 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
                 boolean isReplaced = !Objects.equals(textBeforeReplace, textAfterReplace);
 
+//                Для сохранения порядка ключей мапы, постоянно удаляем и добавляем заново элемент.
+                Set<String> loginList = objectToLoginList.remove(object);
+                objectToLoginList.put(objectWithReplace, loginList);
+
                 if (isReplaced) {
-                    Set<String> loginList = objectToLoginList.remove(object);
                     loginList.add(nextUserLogin.getUlogin());
-                    objectToLoginList.put(objectWithReplace, loginList);
                 }
             }
         }

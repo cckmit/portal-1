@@ -9,11 +9,13 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.selector.AsyncSearchSelectorModel;
 import ru.protei.portal.ui.common.client.selector.LoadingHandler;
-import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCache;
 import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCacheLoadHandler;
+import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCacheWithFirstElements;
 import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 public abstract class UserLoginModel implements AsyncSearchSelectorModel<UserLoginShortView>, Activity {
@@ -25,13 +27,31 @@ public abstract class UserLoginModel implements AsyncSearchSelectorModel<UserLog
 
     @Override
     public UserLoginShortView get(int elementIndex, LoadingHandler handler) {
-        return cache.get(elementIndex, handler);
+        if (elementIndex == 0) {
+            cache.resetIndex();
+        }
+
+        return cache.getNext(handler);
     }
 
     @Override
     public void setSearchString(String searchString) {
         cache.clearCache();
         cache.setLoadHandler(makeLoadHandler(makeQuery(searchString)));
+    }
+
+    public void setPersonFirstId(Long personId) {
+        if (personId == null) {
+            return;
+        }
+
+        UserLoginShortViewQuery accountQuery = new UserLoginShortViewQuery();
+        accountQuery.setAdminState(En_AdminState.UNLOCKED);
+        accountQuery.setPersonIds(new HashSet<>(Collections.singleton(personId)));
+
+        accountService.getUserLoginShortViewList(accountQuery, new FluentCallback<List<UserLoginShortView>>()
+                .withSuccess(result -> cache.setFirstElements(result))
+        );
     }
 
     private SelectorDataCacheLoadHandler<UserLoginShortView> makeLoadHandler(UserLoginShortViewQuery query) {
@@ -59,5 +79,5 @@ public abstract class UserLoginModel implements AsyncSearchSelectorModel<UserLog
     @Inject
     Lang lang;
 
-    private SelectorDataCache<UserLoginShortView> cache = new SelectorDataCache<>();
+    private SelectorDataCacheWithFirstElements<UserLoginShortView> cache = new SelectorDataCacheWithFirstElements<>();
 }

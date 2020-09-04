@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
+import static ru.protei.portal.ui.common.server.ServiceUtils.getAuthToken;
 
 @Service("TextRenderController")
 public class TextRenderControllerImpl implements TextRenderController {
@@ -41,8 +42,7 @@ public class TextRenderControllerImpl implements TextRenderController {
     @Override
     public List<String> render(En_TextMarkup textMarkup, List<String> textList, boolean needReplaceLoginWithUsername) throws RequestFailedException {
         if (needReplaceLoginWithUsername) {
-            AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-            textList = ServiceUtils.checkResultAndGetData(caseCommentService.replaceLoginWithUsername(token, textList));
+            textList = replaceLoginWithUsername(textList);
         }
 
         List<String> rendered = new ArrayList<>();
@@ -50,6 +50,12 @@ public class TextRenderControllerImpl implements TextRenderController {
             rendered.add(htmlRenderer.plain2html(text, textMarkup));
         }
         return rendered;
+    }
+
+    @Override
+    public List<String> replaceLoginWithUsername(List<String> textList) throws RequestFailedException {
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
+        return checkResultAndGetData(caseCommentService.replaceLoginWithUsername(token, textList));
     }
 
     @Autowired

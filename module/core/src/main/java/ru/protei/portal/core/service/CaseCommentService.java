@@ -127,9 +127,24 @@ public interface CaseCommentService {
     })
     Result<List<String>> replaceLoginWithUsername(AuthToken token, List<String> texts);
 
-    <T> Result<Map<T, Set<String>>> replaceLoginWithUsername(List<T> texts, Function<T, String> stringFunction, ReplacementMapper<T> replacementMapper);
+    /**
+     * Заменяет в списке объектов возможные логины, которые начинаются с символа "@", на Фамилия Имя
+     *
+     * @param  objects            список объектов
+     * @param  stringFunction     функция, переводящая переданный объект в строку, в которой будет производиться замена
+     * @param  replacementMapper  {@link ReplacementMapper}
+     * @return карта, содержащая в качестве ключей объекты, в качестве значений - набор логинов
+     */
+    <T> Result<Map<T, Set<String>>> replaceLoginWithUsername(List<T> objects, Function<T, String> stringFunction, ReplacementMapper<T> replacementMapper);
 
     interface ReplacementMapper<T> {
+        /**
+         * Заменяет в объекте одну строку на другую
+         *
+         * @param replaceFrom подстрока, которая заменяется
+         * @param replaceTo   строка, на которую происходит замена
+         * @return объект, с произведенной заменой
+         */
         T replace(T object, String replaceFrom, String replaceTo);
     }
 }

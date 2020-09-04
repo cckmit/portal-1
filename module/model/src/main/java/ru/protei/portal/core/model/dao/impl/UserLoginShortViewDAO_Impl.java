@@ -58,6 +58,12 @@ public class UserLoginShortViewDAO_Impl extends PortalBaseJdbcDAO<UserLoginShort
                         .append(" and user_login.ulogin IN ")
                         .append(HelperFunc.makeInArg(query.getLoginSet(), true));
             }
+
+            if (CollectionUtils.isNotEmpty(query.getPersonIds())) {
+                condition
+                        .append(" and user_login.personId IN ")
+                        .append(HelperFunc.makeInArg(query.getPersonIds(), false));
+            }
         });
     }
 }

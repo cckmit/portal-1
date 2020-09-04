@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.view.Identifiable;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 @JdbcEntity(table = "user_login")
 public class UserLoginShortView implements Identifiable, Serializable {
@@ -95,6 +96,19 @@ public class UserLoginShortView implements Identifiable, Serializable {
 
     public void setGenderCode(String genderCode) {
         this.genderCode = genderCode;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserLoginShortView that = (UserLoginShortView) o;
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     @Override
