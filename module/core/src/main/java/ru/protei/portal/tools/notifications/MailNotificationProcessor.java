@@ -93,11 +93,7 @@ public class MailNotificationProcessor {
     public void onCaseChanged(AssembledCaseEvent event){
         Collection<NotificationEntry> notifiers = collectNotifiers(event);
 
-        Map<CaseComment, Set<String>> commentToLoginSet = caseCommentService.replaceLoginWithUsername(
-                event.getAllComments(),
-                CaseComment::getText,
-                this::replaceTextAndGetComment
-        ).getData();
+        Map<CaseComment, Set<String>> commentToLoginSet = caseCommentService.replaceLoginWithUsernameInComments(event.getAllComments()).getData();
 
         notifiers.addAll(collectCommentNotifiers(event, commentToLoginSet));
 
@@ -141,14 +137,6 @@ public class MailNotificationProcessor {
         }
     }
 
-    private CaseComment replaceTextAndGetComment(CaseComment comment, String replaceFrom, String replaceTo) {
-        if (comment.getText() == null) {
-            return comment;
-        }
-
-        comment.setText(comment.getText().replace(replaceFrom, replaceTo));
-        return comment;
-    }
 
     private DiffCollectionResult<CaseLink> selectPublicLinks( DiffCollectionResult<CaseLink> mergeLinks ) {
         DiffCollectionResult result = new DiffCollectionResult();

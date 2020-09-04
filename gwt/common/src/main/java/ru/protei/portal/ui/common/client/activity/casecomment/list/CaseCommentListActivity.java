@@ -397,7 +397,7 @@ public abstract class CaseCommentListActivity
         view.setNewCommentHidden(!isModifyEnabled);
         view.setNewCommentDisabled(!isNewCommentEnabled);
 
-        if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
+        if (isMentioningEnabled(caseType)) {
             view.setCommentPlaceholder(lang.commentAddMessageMentionPlaceholder());
         } else {
             view.disableMentioning();
@@ -417,7 +417,7 @@ public abstract class CaseCommentListActivity
             view.addCommentToFront( itemView.asWidget() );
         }
 
-        textRenderController.render(textMarkup, textList, En_CaseType.CRM_SUPPORT.equals(caseType), new FluentCallback<List<String>>()
+        textRenderController.render(textMarkup, textList, isMentioningEnabled(caseType), new FluentCallback<List<String>>()
                 .withSuccess(converted -> {
                     for (int i = 0; i < converted.size(); i++) {
                         views.get(i).setMessage(converted.get(i));
@@ -796,6 +796,18 @@ public abstract class CaseCommentListActivity
         List<Attachment> addList = new ArrayList<>(newAttachments);
         addList.removeIf(newAttachment -> currentAttachments.contains(newAttachment));
         return addList;
+    }
+
+    private boolean isMentioningEnabled(En_CaseType caseType) {
+        if (!En_CaseType.CRM_SUPPORT.equals(caseType)) {
+            return false;
+        }
+
+        if (!policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW)) {
+            return false;
+        }
+
+        return true;
     }
 
     private final Timer changedPreviewTimer = new Timer() {

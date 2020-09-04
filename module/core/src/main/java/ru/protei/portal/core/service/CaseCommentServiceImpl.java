@@ -9,16 +9,16 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
-import ru.protei.portal.core.event.ProjectAttachmentEvent;
-import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.event.CaseCommentSavedClientEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
+import ru.protei.portal.core.event.ProjectAttachmentEvent;
 import ru.protei.portal.core.event.ProjectCommentEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.exception.RollbackTransactionException;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.event.CaseCommentRemovedClientEvent;
+import ru.protei.portal.core.model.event.CaseCommentSavedClientEvent;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
@@ -51,7 +51,14 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
         CaseCommentQuery query = new CaseCommentQuery(caseObjectId);
         applyFilterByScope(token, query);
-        return getList(query);
+
+        List<CaseComment> comments = getList(query).getData();
+
+        if (needReplaceLoginWithUsername(caseType, token.getRoles())) {
+            return replaceLoginWithUsernameInComments(comments).map(Map::keySet).map(ArrayList::new);
+        }
+
+        return ok(comments);
     }
 
     @Override
@@ -61,7 +68,13 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             return error(checkAccessStatus);
         }
         applyFilterByScope(token, query);
-        return ok(caseCommentShortViewDAO.getSearchResult(query));
+        SearchResult<CaseCommentShortView> commentsResult = caseCommentShortViewDAO.getSearchResult(query);
+
+        if (needReplaceLoginWithUsername(caseType, token.getRoles())) {
+            return replaceLoginWithUsernameInCommentsShortView(commentsResult.getResults()).map(SearchResult::new);
+        }
+
+        return ok(commentsResult);
     }
 
     @Override
@@ -501,9 +514,12 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     @Override
     public Result<List<String>> replaceLoginWithUsername(AuthToken token, List<String> texts) {
-        return ok(
-                new ArrayList<>(replaceLoginWithUsername(texts, Function.identity(), String::replace).getData().keySet())
-        );
+        return replaceLoginWithUsername(texts, Function.identity(), String::replace).map(Map::keySet).map(ArrayList::new);
+    }
+
+    @Override
+    public Result<Map<CaseComment, Set<String>>> replaceLoginWithUsernameInComments(List<CaseComment> comments) {
+        return replaceLoginWithUsername(comments, CaseComment::getText, this::replaceTextAndGetComment);
     }
 
     @Override
@@ -596,6 +612,40 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
 
         return subLogins;
+    }
+
+    private Result<List<CaseCommentShortView>> replaceLoginWithUsernameInCommentsShortView(List<CaseCommentShortView> comments) {
+        return replaceLoginWithUsername(comments, CaseCommentShortView::getText, this::replaceTextAndGetComment).map(Map::keySet).map(ArrayList::new);
+    }
+
+    private CaseComment replaceTextAndGetComment(CaseComment comment, String replaceFrom, String replaceTo) {
+        if (comment.getText() == null) {
+            return comment;
+        }
+
+        comment.setText(comment.getText().replace(replaceFrom, replaceTo));
+        return comment;
+    }
+
+    private CaseCommentShortView replaceTextAndGetComment(CaseCommentShortView comment, String replaceFrom, String replaceTo) {
+        if (comment.getText() == null) {
+            return comment;
+        }
+
+        comment.setText(comment.getText().replace(replaceFrom, replaceTo));
+        return comment;
+    }
+
+    private boolean needReplaceLoginWithUsername(En_CaseType caseType, Set<UserRole> roles) {
+        if (!En_CaseType.CRM_SUPPORT.equals(caseType)) {
+            return false;
+        }
+
+        if (policyService.hasScopeForPrivilege(roles, En_Privilege.ISSUE_VIEW, En_Scope.SYSTEM)) {
+            return false;
+        }
+
+        return true;
     }
 
     private Result<List<CaseComment>> getList(CaseCommentQuery query) {

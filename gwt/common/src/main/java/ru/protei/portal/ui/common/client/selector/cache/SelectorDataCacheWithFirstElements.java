@@ -32,7 +32,7 @@ public class SelectorDataCacheWithFirstElements<T> extends SelectorDataCache<T> 
             return firstElements.get(index++);
         }
 
-        T value = get(index++, loadingHandler);
+        T value = super.get(index++, loadingHandler);
 
         if (value == null) {
             index--;
