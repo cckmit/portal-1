@@ -3,7 +3,7 @@ package ru.protei.portal.core.model.event;
 /**
  *
  */
-public class CaseCommentSavedClientEvent implements de.novanic.eventservice.client.event.Event {
+public class CaseCommentSavedClientEvent /*implements de.novanic.eventservice.client.event.Event*/ {
 
     private Long caseObjectId;
     private Long commentId;
