@@ -29,8 +29,8 @@ public class TextRenderControllerImpl implements TextRenderController {
     }
 
     @Override
-    public String render(String text, En_TextMarkup textMarkup, boolean needReplaceLogin) throws RequestFailedException {
-        return CollectionUtils.getFirst(render(textMarkup, Collections.singletonList(text), needReplaceLogin));
+    public String render(String text, En_TextMarkup textMarkup, boolean needReplaceLoginWithUsername) throws RequestFailedException {
+        return CollectionUtils.getFirst(render(textMarkup, Collections.singletonList(text), needReplaceLoginWithUsername));
     }
 
     @Override
@@ -39,8 +39,8 @@ public class TextRenderControllerImpl implements TextRenderController {
     }
 
     @Override
-    public List<String> render(En_TextMarkup textMarkup, List<String> textList, boolean needReplaceLogin) throws RequestFailedException {
-        if (needReplaceLogin) {
+    public List<String> render(En_TextMarkup textMarkup, List<String> textList, boolean needReplaceLoginWithUsername) throws RequestFailedException {
+        if (needReplaceLoginWithUsername) {
             AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
             textList = ServiceUtils.checkResultAndGetData(caseCommentService.replaceLoginWithUsername(token, textList));
         }

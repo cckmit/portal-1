@@ -19,21 +19,21 @@ public class UserLoginShortView implements Identifiable, Serializable {
     @JdbcColumn(name = "personId")
     private Long personId;
 
-    @JdbcJoinedColumn( mappedColumn = "firstname", joinPath = {
-            @JdbcJoinPath( table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "p" ),
+    @JdbcJoinedColumn(mappedColumn = "firstname", joinPath = {
+            @JdbcJoinPath(table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "p"),
     })
     private String firstName;
 
-    @JdbcJoinedColumn( mappedColumn = "lastname", joinPath = {
-            @JdbcJoinPath( table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "p" ),
+    @JdbcJoinedColumn(mappedColumn = "lastname", joinPath = {
+            @JdbcJoinPath(table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "p"),
     })
     private String lastName;
 
-    @JdbcJoinedColumn( mappedColumn = "category_id", joinPath = {
-            @JdbcJoinPath( table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "p" ),
-            @JdbcJoinPath( table = "company", localColumn = "company_id", remoteColumn = "id", sqlTableAlias = "c" )
+    @JdbcJoinedColumn(mappedColumn = "category_id", joinPath = {
+            @JdbcJoinPath(table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "p"),
+            @JdbcJoinPath(table = "company", localColumn = "company_id", remoteColumn = "id", sqlTableAlias = "c")
     })
-    @JdbcEnumerated( EnumType.ID )
+    @JdbcEnumerated(EnumType.ID)
     private En_CompanyCategory companyCategory;
 
     @JdbcJoinedColumn(localColumn = "personId", remoteColumn = "id", table = "person", mappedColumn = "sex")

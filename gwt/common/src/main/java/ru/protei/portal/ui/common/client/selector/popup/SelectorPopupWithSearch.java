@@ -125,11 +125,6 @@ public class SelectorPopupWithSearch extends BasePopupView
         setAddButton(addVisible);
     }
 
-    @Override
-    public HasVisibility searchVisibility() {
-        return search;
-    }
-
     @UiHandler( "search" )
     public void onSearchInputChanged( InputEvent event ) {
         changeSearchTimer.schedule(200);

@@ -5,6 +5,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.Timer;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.widget.dndautoresizetextarea.DndAutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.selector.login.UserLoginModel;
 import ru.protei.portal.ui.common.client.widget.selector.login.UserLoginSelector;
@@ -13,8 +14,10 @@ import static java.util.Optional.ofNullable;
 
 public class MentioningTextArea extends DndAutoResizeTextArea {
     @Inject
-    public void init() {
-        initUserLoginSelector();
+    public MentioningTextArea(UserLoginModel userLoginModel, UserLoginSelector userLoginSelector) {
+        initUserLoginSelector(userLoginModel, userLoginSelector);
+        final Timer changeTimer = initTimer(userLoginModel, userLoginSelector);
+
         keyUpHandlerRegistration = addKeyUpHandler(event -> changeTimer.schedule(200));
         clickHandlerRegistration = addClickHandler(event -> changeTimer.run());
     }
@@ -24,7 +27,7 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
         clickHandlerRegistration.removeHandler();
     }
 
-    private void initUserLoginSelector() {
+    private void initUserLoginSelector(final UserLoginModel userLoginModel, final UserLoginSelector userLoginSelector) {
         userLoginSelector.setAsyncSearchModel(userLoginModel);
         userLoginSelector.setRelative(this);
         userLoginSelector.addValueChangeHandler(event -> {
@@ -41,11 +44,32 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
         });
     }
 
+    private Timer initTimer(final UserLoginModel userLoginModel, final UserLoginSelector userLoginSelector) {
+        return new Timer() {
+            @Override
+            public void run() {
+                PossibleLoginInfo possibleLoginInfo = possibleLogin(pointerPosition(getElement()));
+
+                if (possibleLoginInfo == null) {
+                    userLoginSelector.getPopup().getChildContainer().clear();
+                    userLoginSelector.getPopup().hide();
+
+                    return;
+                }
+
+                updateModel(possibleLoginInfo.possibleLogin, userLoginModel);
+                showPopup(userLoginSelector);
+
+                MentioningTextArea.this.possibleLoginInfo = possibleLoginInfo;
+            }
+        };
+    }
+
     private PossibleLoginInfo possibleLogin(int pointerPosition) {
         String substring = getValue().substring(0, pointerPosition);
         int spacePosition = substring.lastIndexOf(' ');
         int enterPosition = substring.lastIndexOf('\n');
-        final int atPosition = Math.max(spacePosition, enterPosition) + 1;
+        final int atPosition = Math.max(spacePosition, enterPosition) + 1; // "at" means "@"
 
         String possibleMention = getValue().substring(atPosition, pointerPosition);
 
@@ -55,55 +79,33 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
                 .orElse(null);
     }
 
-    private void showPopup(String searchString) {
-        userLoginModel.setSearchString(searchString);
+    private void showPopup(UserLoginSelector userLoginSelector) {
+        userLoginSelector.getPopup().showNear(this);
         userLoginSelector.clearAndFill();
+    }
+
+    private void updateModel(String searchString, UserLoginModel userLoginModel) {
+        userLoginModel.setSearchString(searchString);
     }
 
     private native int pointerPosition(Element textArea) /*-{
         return textArea.selectionStart;
     }-*/;
 
-    @Inject
-    UserLoginModel userLoginModel;
-
-    @Inject
-    UserLoginSelector userLoginSelector;
-
     private HandlerRegistration keyUpHandlerRegistration;
     private HandlerRegistration clickHandlerRegistration;
 
-    private Timer changeTimer = new Timer() {
-        @Override
-        public void run() {
-            PossibleLoginInfo possibleLoginInfo = possibleLogin(pointerPosition(getElement()));
-
-            if (possibleLoginInfo == null) {
-                userLoginSelector.getPopup().getChildContainer().clear();
-                userLoginSelector.getPopup().hide();
-
-                return;
-            }
-
-            userLoginSelector.getPopup().showNear(MentioningTextArea.this);
-
-            MentioningTextArea.this.possibleLoginInfo = possibleLoginInfo;
-
-            showPopup(possibleLoginInfo.possibleLogin);
-        }
-    };
-
     private PossibleLoginInfo possibleLoginInfo;
 
-    private static final RegExp MENTION_REGEXP = RegExp.compile("^\\@.*");
-
     private static final class PossibleLoginInfo {
-        private String possibleLogin;
-        private int index;
+        private final String possibleLogin;
+        private final int index;
 
         PossibleLoginInfo(String possibleLogin, int index) {
             this.possibleLogin = possibleLogin;
             this.index = index;
         }
     }
+
+    private static final RegExp MENTION_REGEXP = RegExp.compile(CrmConstants.Masks.MENTION);
 }

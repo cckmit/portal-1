@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.selector;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
@@ -21,8 +22,6 @@ public interface SelectorPopup {
 
     void showLoading( boolean isLoading );
 
-    HasVisibility searchVisibility();
-
     void setNoElements(boolean isSearchResultEmpty, String noElementsMessage );
 
     HandlerRegistration addAddHandler( AddHandler addhandler );
@@ -32,6 +31,8 @@ public interface SelectorPopup {
     void setAddButton(boolean addVisible, String text);
 
     void addStyleName(String style);
+
+    Element getElement();
 
     void hide();
 }

@@ -539,10 +539,14 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
             Set<T> currentObjects = new HashSet<>(objectToLoginList.keySet());
             for (T object : currentObjects) {
+                String textBeforeReplace = objectToStringFunction.apply(object);
+
                 T objectWithReplace = replacementMapper
                         .replace(object, "@" + nextUserLogin.getUlogin(), "@" + nextUserLogin.getLastName() + " " + nextUserLogin.getFirstName());
 
-                boolean isReplaced = !Objects.equals(objectToStringFunction.apply(object), objectToStringFunction.apply(objectWithReplace));
+                String textAfterReplace = objectToStringFunction.apply(objectWithReplace);
+
+                boolean isReplaced = !Objects.equals(textBeforeReplace, textAfterReplace);
 
                 if (isReplaced) {
                     Set<String> loginList = objectToLoginList.remove(object);
