@@ -27,11 +27,7 @@ public abstract class UserLoginModel implements AsyncSearchSelectorModel<UserLog
 
     @Override
     public UserLoginShortView get(int elementIndex, LoadingHandler handler) {
-        if (elementIndex == 0) {
-            cache.resetIndex();
-        }
-
-        return cache.getNext(handler);
+        return cache.get(elementIndex, handler);
     }
 
     @Override

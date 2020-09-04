@@ -7,7 +7,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SelectorDataCacheWithFirstElements<T> extends SelectorDataCache<T> {
-    public T getNext(LoadingHandler loadingHandler) {
+    @Override
+    public T get(int elementIndex, LoadingHandler loadingHandler) {
+        if (elementIndex == 0) {
+            resetIndex();
+        }
+
+        return getNext(loadingHandler);
+    }
+
+    @Override
+    public void clearCache() {
+        super.clearCache();
+        resetIndex();
+    }
+
+    public void setFirstElements(List<T> firstElements) {
+        this.firstElements.clear();
+        this.firstElements.addAll(CollectionUtils.emptyIfNull(firstElements));
+    }
+
+    private T getNext(LoadingHandler loadingHandler) {
         if (index < firstElements.size()) {
             return firstElements.get(index++);
         }
@@ -26,23 +46,8 @@ public class SelectorDataCacheWithFirstElements<T> extends SelectorDataCache<T> 
         return value;
     }
 
-    public void setTotal(int total) {
-        super.setTotal(total);
-    }
-
-    public void resetIndex() {
+    private void resetIndex() {
         index = 0;
-    }
-
-    @Override
-    public void clearCache() {
-        super.clearCache();
-        resetIndex();
-    }
-
-    public void setFirstElements(List<T> firstElements) {
-        this.firstElements.clear();
-        this.firstElements.addAll(CollectionUtils.emptyIfNull(firstElements));
     }
 
     private int index;
