@@ -168,6 +168,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         EmployeeShortView employeeShortView = employeeShortViewDAO.get(employeeId);
+
+        if (employeeShortView == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
         jdbcManyRelationsHelper.fill(employeeShortView, "workerEntries");
         employeeShortView = removeSensitiveInformation(employeeShortView);
 
@@ -191,6 +196,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         EmployeeShortView employeeShortView = employeeShortViewDAO.get(employeeId);
+
+        if (employeeShortView == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
         jdbcManyRelationsHelper.fill(employeeShortView, "workerEntries");
         employeeShortView = removeSensitiveInformation(employeeShortView);
 
