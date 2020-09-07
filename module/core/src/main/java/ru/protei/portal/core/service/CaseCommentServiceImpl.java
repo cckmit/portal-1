@@ -102,9 +102,11 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             );
         }
 
+/*
         if (resultData.getCaseComment() != null) {
             clientEventService.fireEvent( new CaseCommentSavedClientEvent( token.getPersonId(), comment.getCaseId(), resultData.getCaseComment().getId() ) );
         }
+*/
 
         return okResult;
     }
@@ -206,9 +208,11 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             );
         }
 
+/*
         if (resultData.getCaseComment() != null) {
             clientEventService.fireEvent( new CaseCommentSavedClientEvent( token.getPersonId(), comment.getCaseId(), resultData.getCaseComment().getId() ) );
         }
+*/
 
         return okResult;
     }
@@ -356,9 +360,11 @@ public class CaseCommentServiceImpl implements CaseCommentService {
                     .publishEvent(new CaseCommentEvent(this, ServiceModule.GENERAL, token.getPersonId(), caseId, isEagerEvent, null, null, removedComment));
         }
 
+/*
         if(isRemoved) {
             clientEventService.fireEvent( new CaseCommentRemovedClientEvent( token.getPersonId(), caseId, removedComment.getId() ));
         }
+*/
 
         return okResult;
     }
@@ -601,8 +607,10 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     @Autowired
     CaseAttachmentDAO caseAttachmentDAO;
 
+/*
     @Autowired
     private ClientEventService clientEventService;
+*/
 
 
     private static final long CHANGE_LIMIT_TIME = 300000;  // 5 минут (в мсек)

@@ -81,10 +81,12 @@ public class ServiceTestsConfiguration {
         return executor;
     }
 
+/*
     @Bean
     public ClientEventService getClientEventService() {
         return new ClientEventServiceImpl();
     }
+*/
 
     @Bean
     public FileStorage getFileStorage (@Autowired PortalConfig config){

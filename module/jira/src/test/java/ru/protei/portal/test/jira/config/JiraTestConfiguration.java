@@ -302,10 +302,12 @@ public class JiraTestConfiguration {
         return new CaseCommentServiceImpl();
     }
 
+/*
     @Bean
     public ClientEventService getClientEventService() {
         return new ClientEventServiceImpl();
     }
+*/
 
     @Bean
     public CaseStateWorkflowService getCaseStateWorkflowService() {
