@@ -86,11 +86,11 @@
                         <div class="row">
                             <div class="form-group col-md-3">
                                 <label ui:field="typeLabel"><ui:text from="{lang.contractType}"/></label>
-                                <selector:multi.ContractTypeMultiSelector ui:field="types" searchEnabled="true" validation="true"/>
+                                <contract:type.ContractTypesMultiSelector ui:field="types" searchEnabled="true" validation="true"/>
                             </div>
                             <div class="form-group col-md-3">
                                 <label ui:field="stateLabel"><ui:text from="{lang.contractState}"/></label>
-                                <selector:button.ContractStateSelector ui:field="state" validation="true" hasNullValue="false"/>
+                                <contract:state.ContractStateSelector ui:field="state" validation="true" hasNullValue="false"/>
                             </div>
                             <div class="form-group col-md-3">
                                 <label ui:field="contractParentLabel"><ui:text from="{lang.contractParent}"/></label>
@@ -117,7 +117,7 @@
                                                          styleName="form-control p-0 no-border input-group-element-date"/>
                                 </g:HTMLPanel>
                             </div>
-                            <div class="form-group col-md-3">
+                            <div class="form-group col-md-6">
                                 <label ui:field="costWithCurrencyLabel"><ui:text from="{lang.contractCost}"/></label>
                                 <money:MoneyCurrencyVatWidget ui:field="costWithCurrency" defaultCurrency="RUB"/>
                             </div>

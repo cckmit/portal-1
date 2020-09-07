@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.marker.HasLongId;
 import ru.protei.winter.jdbc.annotations.IdInsertMode;
 import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
@@ -9,7 +10,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @JdbcEntity(table = "contractor")
-public class Contractor implements Serializable {
+public class Contractor implements Serializable, HasLongId {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
@@ -106,14 +107,15 @@ public class Contractor implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Contractor)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         Contractor that = (Contractor) o;
-        return Objects.equals(id, that.id);
+        return Objects.equals(id, that.id) &&
+                Objects.equals(refKey, that.refKey);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, refKey);
     }
 
     @Override

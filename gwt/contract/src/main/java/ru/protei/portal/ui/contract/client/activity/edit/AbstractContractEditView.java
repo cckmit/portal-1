@@ -60,13 +60,11 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasValue<Contractor> contractor();
 
+    HasEnabled contractorEnabled();
+
     HasValue<PersonShortView> manager();
 
     HasValue<ProductDirectionInfo> direction();
-
-    HasEnabled organizationEnabled();
-
-    HasEnabled contractorEnabled();
 
     void setOrganization(String organization);
 
@@ -89,4 +87,8 @@ public interface AbstractContractEditView extends IsWidget {
     HasWidgets expenditureContractsContainer();
 
     HasVisibility expenditureContractsVisibility();
+
+    void setNotAvailableOrganizations(List<Long> organizationsToHide);
+
+    void setSecondContractNotAvailableOrganizations(List<Long> organizationsToHide);
 }

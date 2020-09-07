@@ -1,0 +1,28 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <g:HTMLPanel ui:field="root" styleName="gallery-item attach-col-xl-4 attach-col-md-6 attach-col-sm-12 p-l-5 p-r-5 full-view-attach">
+        <div class="padding-10 h-100 d-flex flex-column justify-content-end">
+            <h6 ui:field="fileName" class="light m-t-0 m-b-5"/>
+            <div class="d-flex flex-row">
+                <div class="thumbnail-wrapper d24 m-1 circular">
+                    <g:Image styleName="thumbnail-photo" ui:field="authorAvatar"/>
+                </div>
+                <div class="inline m-l-5 flex-grow-1">
+                    <p ui:field="authorName" class="no-margin text-truncate fs-12 attachment-author-name"/>
+                    <p ui:field="fileInfo" class="no-margin text-truncate fs-11 attachment-file-info">
+                        <span ui:field="fileSize"/>
+                        <span ui:field="createdDate"/>
+                    </p>
+                </div>
+                <div class="btn-group">
+                    <g:Button ui:field="downloadButton" styleName="btn btn-white btn-xs">
+                        <i class="fas fa-fw fa-cloud-download-alt"/>
+                    </g:Button>
+                    <g:Button ui:field="deleteButton" styleName="btn btn-white btn-xs">
+                        <i class="far fa-fw fa-trash-alt"/>
+                    </g:Button>
+                </div>
+            </div>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

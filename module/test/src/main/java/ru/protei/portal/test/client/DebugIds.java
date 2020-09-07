@@ -79,7 +79,8 @@ public class DebugIds {
         String EQUIPMENT = "sidebar-menu-equipment";
         String ISSUE = "sidebar-menu-issue";
         String ISSUE_ASSIGNMENT = "sidebar-menu-issue-assignment";
-        String ISSUE_REPORTS = "sidebar-menu-issue-reports";
+        String REPORTS = "sidebar-menu-issue-reports";
+        @Deprecated String ISSUE_REPORTS = REPORTS;
         String OFFICIAL = "sidebar-menu-official";
         String PRODUCT = "sidebar-menu-product";
         String PROJECT = "sidebar-menu-project";
@@ -90,11 +91,34 @@ public class DebugIds {
         String EMPLOYEE = "sidebar-menu-employee";
         String CONTRACT = "sidebar-menu-contract";
         String EDUCATION = "sidebar-menu-education";
-        String SUBNET = "sidebar-menu-subnet";
-        String RESERVED_IP = "sidebar-menu-reserved-ip";
+        String IP_RESERVATION = "sidebar-menu-ip-reservation";
         String ROOM_RESERVATION = "sidebar-menu-room-reservation";
         String PLAN = "sidebar-menu-plan";
         String ICON_SUFFIX = "-icon";
+        String TOP_BRASS = "sidebar-menu-employee-top-brass";
+        String EMPLOYEE_LIST = "sidebar-menu-employee-list";
+        String EMPLOYEE_TABLE = "sidebar-menu-employee-table";
+        String EMPLOYEE_BIRTHDAY = "sidebar-menu-employee-birthday";
+        String ABSENCE = "sidebar-menu-employee-absence";
+        String ARCHIVE = "sidebar-menu-archive";
+        String BUG_TRACKING = "sidebar-menu-archive-bug-tracking";
+        String TODO_LIST = "sidebar-menu-archive-todo-list";
+        String FEATURE_REQUEST = "sidebar-menu-archive-feature-request";
+        String CRM = "sidebar-menu-archive-crm";
+        String ADMIN_CRM = "sidebar-menu-archive-admin-crm";
+        String TEST_ZONE = "sidebar-menu-archive-test-zone";
+        String STORE_AND_DELIVERY = "sidebar-menu-store-delivery";
+        String CARD_SEARCH = "sidebar-menu-store-delivery-card-search";
+        String DELIVERY = "sidebar-menu-store-delivery-delivery";
+        String STORE = "sidebar-menu-store-delivery-store";
+        String FLOOR_PLAN = "sidebar-menu-floor-plan";
+        String NOTIFICATION_SYSTEM = "sidebar-menu-notification-system";
+        String YOUTRACK = "sidebar-menu-youtrack";
+        String YOUTRACK_ADMIN = "sidebar-menu-youtrack-admin";
+        String RESERVED_IP = "sidebar-menu-ip-reservation-reserved-ip";
+        String SUBNET = "sidebar-menu-ip-reservation-subnet";
+        String ROOM_RESERVATION_CALENDAR = "sidebar-menu-room-reservation-calendar";
+        String ROOM_RESERVATION_TABLE = "sidebar-menu-room-reservation-table";
     }
 
     public interface SELECTOR {
@@ -295,6 +319,7 @@ public class DebugIds {
         String NOTIFIERS_SELECTOR_LABEL = "issue-notifiers-selector-label";
         String ATTACHMENT_UPLOAD_BUTTON = "issue-attachment-upload-button";
         String ATTACHMENT_LIST_CONTAINER = "issue-attachment-list-container";
+        String ATTACHMENT_COLLAPSE_BUTTON = "issue-attachment-collapse-button";
         String SAVE_BUTTON = "issue-save-button";
         String CANCEL_BUTTON = "issue-cancel-button";
         String COPY_NUMBER_BUTTON = "issue-copy-number-button";
@@ -912,6 +937,9 @@ public class DebugIds {
         String REASON_SELECTOR = "absence-reason-selector";
         String COMMENT_LABEL = "absence-comment-label";
         String COMMENT_INPUT = "absence-comment-input";
+        String DATE_RANGE_CONTAINER = "absence-date-range-container";
+        String DATE_RANGE_CONTAINER_ADD_DAY_BUTTON = "absence-date-range-container-add-day-button";
+        String DATE_RANGE_CONTAINER_ADD_WEEK_BUTTON = "absence-date-range-container-add-week-button";
     }
 
     public interface ABSENCE_REPORT {

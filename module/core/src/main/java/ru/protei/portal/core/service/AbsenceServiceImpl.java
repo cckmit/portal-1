@@ -3,14 +3,17 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.AbsenceNotificationEvent;
 import ru.protei.portal.core.event.EventAction;
+import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.PersonAbsenceDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.PersonNotifierDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.utils.DateUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AbsenceQuery;
@@ -60,6 +63,7 @@ public class AbsenceServiceImpl implements AbsenceService {
     }
 
     @Override
+    @Transactional
     public Result<Long> createAbsence(AuthToken token, PersonAbsence absence) {
 
         if (!validateFields(absence)) {
@@ -89,10 +93,55 @@ public class AbsenceServiceImpl implements AbsenceService {
                         initiator,
                         null,
                         newState,
+                        null,
                         getAbsenceNotifiers(newState)));
     }
 
     @Override
+    @Transactional
+    public Result<List<Long>> createAbsences(AuthToken token, List<PersonAbsence> absences) {
+
+        for (PersonAbsence absence : absences) {
+            if (!validateFields(absence)) {
+                return error( En_ResultStatus.INCORRECT_PARAMS);
+            }
+
+            if (hasAbsenceIntersections(absence.getPersonId(), absence.getFromTime(), absence.getTillTime(), absence.getId())) {
+                return error(En_ResultStatus.ABSENCE_HAS_INTERSECTIONS);
+            }
+        }
+
+        List<Long> ids = stream(absences).map(absence -> {
+            absence.setCreated(new Date());
+            absence.setCreatorId(token.getPersonId());
+
+            Long absenceId = personAbsenceDAO.persist(absence);
+
+            if (absenceId == null) {
+                throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+            }
+
+            return absenceId;
+        }).collect(Collectors.toList());
+
+
+        Person initiator = personDAO.get(token.getPersonId());
+        List<PersonAbsence> multiAddAbsenceList = personAbsenceDAO.getListByKeys(ids);
+        PersonAbsence newState = CollectionUtils.getFirst(multiAddAbsenceList);
+
+        return ok(ids)
+                .publishEvent(new AbsenceNotificationEvent(
+                        this,
+                        EventAction.CREATED,
+                        initiator,
+                        null,
+                        newState,
+                        multiAddAbsenceList,
+                        getAbsenceNotifiers(newState)));
+    }
+
+    @Override
+    @Transactional
     public Result<Long> updateAbsence(AuthToken token, PersonAbsence absence) {
 
         if (!validateFields(absence) || absence.getId() == null) {
@@ -122,10 +171,12 @@ public class AbsenceServiceImpl implements AbsenceService {
                         initiator,
                         oldState,
                         newState,
+                        null,
                         getAbsenceNotifiers(newState)));
     }
 
     @Override
+    @Transactional
     public Result<Boolean> removeAbsence(AuthToken token, PersonAbsence absence) {
 
         if (absence == null || absence.getId() == null) {
@@ -149,10 +200,12 @@ public class AbsenceServiceImpl implements AbsenceService {
                 initiator,
                 null,
                 storedAbsence,
+                null,
                 getAbsenceNotifiers(storedAbsence)));
     }
 
     @Override
+    @Transactional
     public Result<Boolean> completeAbsence(AuthToken token, PersonAbsence absence) {
 
         if (absence == null || absence.getId() == null) {
@@ -184,10 +237,12 @@ public class AbsenceServiceImpl implements AbsenceService {
                         initiator,
                         oldState,
                         newState,
+                        null,
                         getAbsenceNotifiers(newState)));
     }
 
     @Override
+    @Transactional
     public Result createReport(AuthToken token, String name, AbsenceQuery query) {
 
         if (query == null || query.getDateRange() == null) {

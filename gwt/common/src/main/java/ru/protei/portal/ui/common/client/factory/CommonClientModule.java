@@ -3,7 +3,6 @@ package ru.protei.portal.ui.common.client.factory;
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
 import ru.protei.portal.ui.common.client.activity.actionbar.ActionBarActivity;
-import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentView;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
 import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListView;
 import ru.protei.portal.ui.common.client.activity.casecomment.list.CaseCommentListActivity;
@@ -39,6 +38,15 @@ import ru.protei.portal.ui.common.client.activity.info.JiraInfoActivity;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
 import ru.protei.portal.ui.common.client.activity.notify.AbstractNotifyView;
 import ru.protei.portal.ui.common.client.activity.notify.NotifyActivity;
+import ru.protei.portal.ui.common.client.activity.page.FloorPlanPage;
+import ru.protei.portal.ui.common.client.activity.page.YouTrackAdminPage;
+import ru.protei.portal.ui.common.client.activity.page.YouTrackPage;
+import ru.protei.portal.ui.common.client.activity.page.NotificationSystemPage;
+import ru.protei.portal.ui.common.client.activity.page.archive.*;
+import ru.protei.portal.ui.common.client.activity.page.storedelivery.BoardSearchPage;
+import ru.protei.portal.ui.common.client.activity.page.storedelivery.DeliveryPage;
+import ru.protei.portal.ui.common.client.activity.page.storedelivery.StoreDeliveryPage;
+import ru.protei.portal.ui.common.client.activity.page.storedelivery.StorePage;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.pathitem.PathItemActivity;
 import ru.protei.portal.ui.common.client.activity.pathitem.item.AbstractPathItemView;
@@ -53,7 +61,6 @@ import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.eventbridge.ServerEventBridge;
 import ru.protei.portal.ui.common.client.service.HomeCompanyService;
-import ru.protei.portal.ui.common.client.view.attachment.AttachmentView;
 import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemView;
 import ru.protei.portal.ui.common.client.view.casecomment.list.CaseCommentListView;
 import ru.protei.portal.ui.common.client.view.casehistory.item.CaseHistoryItemView;
@@ -99,6 +106,26 @@ public class CommonClientModule extends AbstractGinModule {
 
     @Override
     protected void configure() {
+
+        bind( YouTrackPage.class ).asEagerSingleton();
+        bind( YouTrackAdminPage.class ).asEagerSingleton();
+
+        bind( StoreDeliveryPage.class ).asEagerSingleton();
+        bind( StorePage.class ).asEagerSingleton();
+        bind( DeliveryPage.class ).asEagerSingleton();
+        bind( BoardSearchPage.class ).asEagerSingleton();
+
+        bind( NotificationSystemPage.class ).asEagerSingleton();
+        bind( FloorPlanPage.class ).asEagerSingleton();
+
+        bind( ArchivePage.class ).asEagerSingleton();
+        bind( BugTrackingPage.class ).asEagerSingleton();
+        bind( ToDoListPage.class ).asEagerSingleton();
+        bind( FeatureRequestPage.class ).asEagerSingleton();
+        bind( CrmPage.class ).asEagerSingleton();
+        bind( AdminCrmPage.class ).asEagerSingleton();
+        bind( TestZonePage.class ).asEagerSingleton();
+
         bind( ServerEventBridge.class ).asEagerSingleton();
 
         bind( ActionBarActivity.class ).asEagerSingleton();
@@ -126,8 +153,6 @@ public class CommonClientModule extends AbstractGinModule {
         bind( DateFormatter.class ).in( Singleton.class );
 
         bind( AbstractPagerView.class ).to( PagerView.class );
-
-        bind( AbstractAttachmentView.class ).to( AttachmentView.class );
 
         bind( ConfirmDialogActivity.class ).asEagerSingleton();
         bind( AbstractConfirmDialogView.class ).to( ConfirmDialogView.class ).in( Singleton.class );

@@ -1,22 +1,21 @@
 package ru.protei.portal.core.report.casetimeelapsed;
 
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.usermodel.Workbook;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.ent.CaseCommentTimeElapsedSum;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.report.ReportWriter;
+import ru.protei.portal.core.utils.ExcelFormatUtils.ExcelFormat;
 import ru.protei.portal.core.utils.JXLSHelper;
-import ru.protei.portal.core.utils.TimeFormatter;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.text.DateFormat;
 import java.util.List;
 
-import static java.time.Duration.ofMinutes;
-import static java.util.Optional.ofNullable;
-import static org.apache.poi.ss.usermodel.DateUtil.SECONDS_PER_DAY;
 import static ru.protei.portal.core.model.util.TransliterationUtils.transliterate;
+import static ru.protei.portal.core.utils.ExcelFormatUtils.toExcelTimeFormat;
 
 public class ExcelReportWriter implements
         ReportWriter<CaseCommentTimeElapsedSum>,
@@ -24,15 +23,11 @@ public class ExcelReportWriter implements
 
     private final JXLSHelper.ReportBook<CaseCommentTimeElapsedSum> book;
     private final Lang.LocalizedLang lang;
-    private final DateFormat dateFormat;
-    private final TimeFormatter timeFormatter;
     private final String locale;
 
-    public ExcelReportWriter(Lang.LocalizedLang localizedLang, DateFormat dateFormat, TimeFormatter timeFormatter) {
+    public ExcelReportWriter(Lang.LocalizedLang localizedLang) {
         this.book = new JXLSHelper.ReportBook<>(localizedLang, this);
         this.lang = localizedLang;
-        this.dateFormat = dateFormat;
-        this.timeFormatter = timeFormatter;
         this.locale = localizedLang.getLanguageTag();
     }
 
@@ -59,6 +54,28 @@ public class ExcelReportWriter implements
     @Override
     public void close() throws IOException {
         book.close();
+    }
+
+    @Override
+    public CellStyle getCellStyle(Workbook workbook, int columnIndex) {
+        return book.makeCellStyle(columnIndex, cs -> {
+            cs.setFont(book.getDefaultFont());
+            cs.setVerticalAlignment(VerticalAlignment.CENTER);
+            cs.setDataFormat(workbook.createDataFormat()
+                    .getFormat(getFormats()[columnIndex]));
+        });
+    }
+
+    private String[] getFormats() {
+        return new String[] {
+                ExcelFormat.STANDARD, ExcelFormat.STANDARD, ExcelFormat.STANDARD,
+                ExcelFormat.STANDARD, ExcelFormat.STANDARD, ExcelFormat.STANDARD, ExcelFormat.STANDARD,
+                ExcelFormat.STANDARD, ExcelFormat.STANDARD, ExcelFormat.FULL_DATE_TIME,
+                ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES,
+                ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES,
+                ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES,
+                ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES,
+        };
     }
 
     @Override
@@ -95,7 +112,7 @@ public class ExcelReportWriter implements
                     "", "", "",
                     "", "", "",
                     "", "", "",
-                    "", "", lang.get("summary") + ":", timeFormatter.formatHourMinutes(object.getTimeElapsedSum())
+                    "", "", lang.get("summary") + ":", toExcelTimeFormat(object.getTimeElapsedSum())
             };
         }
         return new Object[] {
@@ -108,20 +125,20 @@ public class ExcelReportWriter implements
                 HelperFunc.isNotEmpty(object.getCaseManagerDisplayName()) ? transliterate(object.getCaseManagerDisplayName(), locale) : "",
                 object.getImportanceLevel() != null ? object.getImportanceLevel().getCode() : "",
                 HelperFunc.isNotEmpty(object.getCaseStateName()) ? object.getCaseStateName() : "",
-                object.getCaseCreated() != null ? dateFormat.format(object.getCaseCreated()) : "",
-                timeFormatter.formatHourMinutes(object.getTimeElapsedNone()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedWatch()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedNightWork()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeSoftInstall()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeSoftUpdate()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeSoftConfig()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeTesting()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeConsultation()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeMeeting()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeDiscussionOfImprovements()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeLogAnalysis()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeSolveProblems()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedSum())
+                object.getCaseCreated() != null ? object.getCaseCreated() : "",
+                toExcelTimeFormat(object.getTimeElapsedNone()),
+                toExcelTimeFormat(object.getTimeElapsedWatch()),
+                toExcelTimeFormat(object.getTimeElapsedNightWork()),
+                toExcelTimeFormat(object.getTimeElapsedTypeSoftInstall()),
+                toExcelTimeFormat(object.getTimeElapsedTypeSoftUpdate()),
+                toExcelTimeFormat(object.getTimeElapsedTypeSoftConfig()),
+                toExcelTimeFormat(object.getTimeElapsedTypeTesting()),
+                toExcelTimeFormat(object.getTimeElapsedTypeConsultation()),
+                toExcelTimeFormat(object.getTimeElapsedTypeMeeting()),
+                toExcelTimeFormat(object.getTimeElapsedTypeDiscussionOfImprovements()),
+                toExcelTimeFormat(object.getTimeElapsedTypeLogAnalysis()),
+                toExcelTimeFormat(object.getTimeElapsedTypeSolveProblems()),
+                toExcelTimeFormat(object.getTimeElapsedSum())
         };
     }
 }

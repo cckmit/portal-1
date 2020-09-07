@@ -1,5 +1,8 @@
 package ru.protei.portal.core.report.projects;
 
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.usermodel.Workbook;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.CaseComment;
@@ -7,11 +10,11 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.ReportProjectWithLastComment;
 import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.EnumLangUtil;
+import ru.protei.portal.core.utils.ExcelFormatUtils.ExcelFormat;
 import ru.protei.portal.core.utils.JXLSHelper;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,16 +25,12 @@ public class ExcelReportWriter implements
 
     private final JXLSHelper.ReportBook<ReportProjectWithLastComment> book;
     private final Lang.LocalizedLang lang;
-    private final DateFormat dateTimeFormat;
     private final EnumLangUtil enumLangUtil;
-    private final DateFormat dateFormat;
 
-    public ExcelReportWriter(Lang.LocalizedLang localizedLang, EnumLangUtil enumLangUtil, DateFormat dateTimeFormat, DateFormat dateFormat) {
+    public ExcelReportWriter(Lang.LocalizedLang localizedLang, EnumLangUtil enumLangUtil) {
         this.book = new JXLSHelper.ReportBook<>(localizedLang, this);
         this.lang = localizedLang;
-        this.dateTimeFormat = dateTimeFormat;
         this.enumLangUtil = enumLangUtil;
-        this.dateFormat = dateFormat;
     }
 
     @Override
@@ -57,6 +56,24 @@ public class ExcelReportWriter implements
     @Override
     public void close() throws IOException {
         book.close();
+    }
+
+    @Override
+    public CellStyle getCellStyle(Workbook workbook, int columnIndex) {
+        return book.makeCellStyle(columnIndex, cs -> {
+            cs.setFont(book.getDefaultFont());
+            cs.setVerticalAlignment(VerticalAlignment.CENTER);
+            cs.setDataFormat(workbook.createDataFormat()
+                    .getFormat(getFormats()[columnIndex]));
+        });
+    }
+
+    private String[] getFormats() {
+        return new String[] {
+                ExcelFormat.STANDARD, ExcelFormat.STANDARD, ExcelFormat.STANDARD,
+                ExcelFormat.STANDARD, ExcelFormat.STANDARD, ExcelFormat.STANDARD,
+                ExcelFormat.STANDARD, ExcelFormat.FULL_DATE, ExcelFormat.FULL_DATE_TIME, ExcelFormat.STANDARD
+        };
     }
 
     @Override
@@ -93,8 +110,8 @@ public class ExcelReportWriter implements
                 project.getRegion().getDisplayText() : "");
         values.add(project.getProductDirection() != null && project.getProductDirection().getDisplayText() != null ?
                 project.getProductDirection().getDisplayText() : "");
-        values.add(project.getPauseDate() != null ? dateFormat.format(new Date(project.getPauseDate())) : "");
-        values.add(comment != null ? dateTimeFormat.format(comment.getCreated()) : "");
+        values.add(project.getPauseDate() != null ? new Date(project.getPauseDate()) : "");
+        values.add(comment != null ? comment.getCreated() : "");
         values.add(comment != null ? comment.getText() : "");
 
         return values.toArray();

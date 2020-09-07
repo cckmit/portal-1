@@ -7,21 +7,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.util.HtmlUtils;
 import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.dao.CaseStateDAO;
+import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.dto.Project;
+import ru.protei.portal.core.model.dto.ReportCaseQuery;
+import ru.protei.portal.core.model.dto.ReportDto;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.util.TransliterationUtils;
+import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.utils.EnumLangUtil;
+import ru.protei.portal.core.utils.DateUtils;
 import ru.protei.portal.core.utils.LinkData;
 import ru.protei.portal.core.utils.WorkTimeFormatter;
 
@@ -46,7 +52,8 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 public class TemplateServiceImpl implements TemplateService {
     public static final String BASE_TEMPLATE_PATH = "notification/email/";
     private static Logger log = getLogger(TemplateServiceImpl.class);
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+    private static final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
 
     Configuration templateConfiguration;
 
@@ -406,15 +413,24 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getMailReportBody(Report report) {
+    public PreparedTemplate getMailReportBody(ReportDto reportDto) {
+        Report report = reportDto.getReport();
+        DateRange createdRange = reportDto instanceof ReportCaseQuery
+                ? ((ReportCaseQuery) reportDto).getQuery().getCreatedRange()
+                : null;
+        DateRange modifiedRange = reportDto instanceof ReportCaseQuery
+                ? ((ReportCaseQuery) reportDto).getQuery().getModifiedRange()
+                : null;
+
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("reportId", report.getId());
         templateModel.put("name", report.getName());
         templateModel.put("created", report.getCreated());
         templateModel.put("creator", report.getCreator().getDisplayShortName());
         templateModel.put("type", report.getReportType());
-        templateModel.put(Report.Columns.STATUS, report.getStatus());
-        templateModel.put("filter", report.getCaseQuery());
+        templateModel.put("status", report.getStatus());
+        templateModel.put("createdRange", createdRange);
+        templateModel.put("modifiedRange", modifiedRange);
 
         PreparedTemplate template = new PreparedTemplate("notification/email/report.body.%s.ftl");
         template.setModel(templateModel);
@@ -423,7 +439,8 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getMailReportSubject(Report report) {
+    public PreparedTemplate getMailReportSubject(ReportDto reportDto) {
+        Report report = reportDto.getReport();
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("reportTitle", report.getName());
         templateModel.put("scheduledType", report.getScheduledType());
@@ -478,6 +495,11 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("stateChanged", event.isStateChanged());
         templateModel.put("oldState", getNullOrElse(oldProjectState, Project::getState));
         templateModel.put("newState", newProjectState.getState());
+
+        templateModel.put("showPauseDate", newProjectState.getState() == En_RegionState.PAUSED);
+        templateModel.put("pauseDateChanged", event.isPauseDateChanged());
+        templateModel.put("oldPauseDate", getNullOrElse(getNullOrElse(oldProjectState, Project::getPauseDate), new SimpleDateFormat("dd.MM.yyyy")::format));
+        templateModel.put("newPauseDate", getNullOrElse(newProjectState.getPauseDate(), new SimpleDateFormat("dd.MM.yyyy")::format));
 
         templateModel.put("regionChanged", event.isRegionChanged());
         templateModel.put("oldRegion", getNullOrElse(getNullOrElse(oldProjectState, Project::getRegion), EntityOption::getDisplayText));
@@ -547,7 +569,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("is_updated", action == RoomReservationNotificationEvent.Action.UPDATED);
         templateModel.put("is_removed", action == RoomReservationNotificationEvent.Action.REMOVED);
         templateModel.put("person_responsible", roomReservation.getPersonResponsible() != null
-                ? roomReservation.getPersonResponsible().getDisplayName()
+                ? roomReservation.getPersonResponsible().getName()
                 : "?");
         templateModel.put("room", roomReservation.getRoom() != null
                 ? roomReservation.getRoom().getName()
@@ -579,6 +601,7 @@ public class TemplateServiceImpl implements TemplateService {
     @Override
     public PreparedTemplate getAbsenceNotificationSubject(Person initiator, PersonAbsence absence) {
         Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("is_leave", absence.getReason().isLeave());
         templateModel.put("absentEmployee", absence.getPerson().getName());
         templateModel.put("initiator", initiator.getDisplayName());
 
@@ -592,6 +615,7 @@ public class TemplateServiceImpl implements TemplateService {
     public PreparedTemplate getAbsenceNotificationBody(AbsenceNotificationEvent event, EventAction action, Collection<String> recipients) {
         PersonAbsence oldState = event.getOldState();
         PersonAbsence newState = event.getNewState();
+        List<PersonAbsence> multiAddAbsenceList = event.getMultiAddAbsenceList();
 
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("is_created", action == EventAction.CREATED);
@@ -601,12 +625,14 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("absentEmployee", newState.getPerson().getName());
 
         templateModel.put("fromTimeChanged", event.isFromTimeChanged());
-        templateModel.put("oldFromTime", oldState == null ? null : dateFormat.format(oldState.getFromTime()));
-        templateModel.put("fromTime", dateFormat.format(newState.getFromTime()));
+        templateModel.put("oldFromTime", oldState == null ? null : dateTimeFormat.format(oldState.getFromTime()));
+        templateModel.put("fromTime", dateTimeFormat.format(newState.getFromTime()));
 
         templateModel.put("tillTimeChanged", event.isTillTimeChanged());
-        templateModel.put("oldTillTime", oldState == null ? null : dateFormat.format(oldState.getTillTime()));
-        templateModel.put("tillTime", dateFormat.format(newState.getTillTime()));
+        templateModel.put("oldTillTime", oldState == null ? null : dateTimeFormat.format(oldState.getTillTime()));
+        templateModel.put("tillTime", dateTimeFormat.format(newState.getTillTime()));
+
+        templateModel.put("multiAddAbsenceList", multiAddAbsenceList);
 
         templateModel.put("reason", newState.getReason().getId());
 
@@ -770,6 +796,34 @@ public class TemplateServiceImpl implements TemplateService {
         return getText(model, "project.pausetime.body.%s.ftl");
     }
 
+    @Override
+    public PreparedTemplate getBirthdaysNotificationSubject( Date from, Date to ) {
+        Map<String, Object> model = new HashMap<>();
+        model.put( "fromDate", dateFormat.format(from));
+        model.put( "toDate", dateFormat.format(to));
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/birthdays.subject.%s.ftl");
+        template.setModel(model);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getBirthdaysNotificationBody(List<EmployeeShortView> employees, Collection<String> recipients) {
+        Map<String, Object> model = new HashMap<>();
+        model.put("employees", employees.stream().collect(Collectors.groupingBy(
+                employee -> DateUtils.resetYear(employee.getBirthday()),
+                LinkedHashMap::new,
+                Collectors.toCollection(() -> new TreeSet<>(
+                        Comparator.comparing(EmployeeShortView::getDisplayName)
+                )))));
+        model.put("recipients", recipients);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/birthdays.body.%s.ftl");
+        template.setModel(model);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
 
     private <T, R> R getNullOrElse(T value, Function<T, R> orElseFunction) {
         return value == null ? null : orElseFunction.apply(value);
@@ -935,6 +989,4 @@ public class TemplateServiceImpl implements TemplateService {
         if (!isEmpty( mergeLinks.getRemovedEntries() )) return true;
         return false;
     }
-
-
 }

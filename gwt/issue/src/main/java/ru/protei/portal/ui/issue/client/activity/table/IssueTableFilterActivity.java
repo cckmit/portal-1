@@ -399,7 +399,7 @@ public abstract class IssueTableFilterActivity
     AttachPopup attachPopup;
 
     @Inject
-    AttachmentServiceAsync attachmentService;
+    AttachmentControllerAsync attachmentService;
 
     @Inject
     IssueFilterControllerAsync filterService;

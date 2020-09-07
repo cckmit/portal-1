@@ -1,0 +1,76 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:sortfield="urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield"
+             xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
+             xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
+             xmlns:contractor="urn:import:ru.protei.portal.ui.common.client.widget.selector.contractor.multicontractor"
+             xmlns:contract="urn:import:ru.protei.portal.ui.common.client.widget.selector.contract"
+             xmlns:productdirection="urn:import:ru.protei.portal.ui.common.client.widget.selector.productdirection"
+             xmlns:homecompany="urn:import:ru.protei.portal.ui.common.client.widget.homecompany"
+             xmlns:threestate="urn:import:ru.protei.portal.ui.common.client.widget.threestate"
+             xmlns:range="urn:import:ru.protei.portal.ui.common.client.widget.typedrangepicker"
+             xmlns:contrac="urn:import:ru.protei.portal.ui.common.client.widget.selector.contract">
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel styleName="card card-default no-border card-fixed">
+        <div class="card-body">
+            <div class="row">
+                <cleanablesearchbox:CleanableSearchBox ui:field="name" placeholder="{lang.contractSearchPlaceholder}"
+                                                       styleName="form-group col-md-12"/>
+
+                <div class="form-group col-md-4 resize-md-12">
+                    <label>
+                        <ui:text from="{lang.sortBy}"/>
+                    </label>
+                    <div class="control-group">
+                        <sortfield:SortFieldSelector ui:field="sortField" type="CONTRACT" hasNullValue="false"/>
+                        <g:ToggleButton ui:field="sortDir" styleName="btn btn-default sorting_button"/>
+                    </div>
+                </div>
+
+                <contractor:MultiContractorSelector ui:field="contractors"
+                                                    header="{lang.contractContractor}"
+                                                    addStyleNames="form-group col-md-4 resize-md-12"/>
+
+                <range:TypedSelectorRangePicker ui:field="dateSigningRange" formatValue="dd.MM.yyyy HH:mm"
+                                                header="{lang.contractDateSigning}"
+                                                addStyleNames="form-group col-md-4 resize-md-12"/>
+
+                <range:TypedSelectorRangePicker ui:field="dateValidRange" formatValue="dd.MM.yyyy HH:mm"
+                                                header="{lang.contractDateValid}"
+                                                addStyleNames="form-group col-md-4 resize-md-12"/>
+
+                <contrac:type.ContractTypesMultiSelector ui:field="types"
+                                             header="{lang.contractType}" addStyleNames="form-group col-md-4 resize-md-12"/>
+
+                <contract:state.ContractStatesMultiSelector ui:field="states"
+                                              header="{lang.contractState}" addStyleNames="form-group col-md-4 resize-md-12"/>
+
+                <div class="form-group col-md-4 resize-md-12">
+                    <label><ui:text from="{lang.contractKind}"/></label>
+                    <threestate:ThreeStateButton ui:field="kind" yesText="{lang.contractKindReceipt}" noText="{lang.contractKindExpenditure}"/>
+                </div>
+
+                <homecompany:HomeCompanyMultiSelector ui:field="organizations"
+                                                      header="{lang.contractOrganization}"
+                                                      reverseOrder="true"
+                                                      addStyleNames="form-group col-md-4 resize-md-12"/>
+
+                <productdirection:ProductDirectionButtonSelector ui:field="direction"
+                                                                 header="{lang.productDirection}"
+                                                                 hasNullValue="true" defaultValue="{lang.selectorAny}"
+                                                                 addStyleNames="form-group col-md-4 resize-md-12"/>
+
+                <person:EmployeeMultiSelector ui:field="managers"
+                                              header="{lang.contractManager}"
+                                              addStyleNames="form-group col-md-4 resize-md-12"
+                                              firedEmployeesVisible="true"/>
+
+            </div>
+        </div>
+        <div ui:field="footer" class="card-footer text-right">
+            <g:Button ui:field="resetBtn" styleName="btn btn-default" text="{lang.buttonReset}"/>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

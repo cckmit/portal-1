@@ -20,18 +20,18 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
+import ru.protei.portal.ui.common.client.service.AttachmentControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
-import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
-import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
+import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.impl.PasteInfo;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
 import java.util.function.Consumer;
 
-public abstract class PlatformEditActivity implements Activity, AbstractPlatformEditActivity {
+public abstract class PlatformEditActivity implements AbstractPlatformEditActivity {
 
     @PostConstruct
     public void onInit() {
@@ -308,7 +308,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
     @Inject
     PolicyService policyService;
     @Inject
-    AttachmentServiceAsync attachmentService;
+    AttachmentControllerAsync attachmentService;
     @Inject
     RegionControllerAsync regionService;
 

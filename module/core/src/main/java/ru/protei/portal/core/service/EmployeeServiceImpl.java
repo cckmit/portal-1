@@ -6,22 +6,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.event.BirthdaysNotificationEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.query.AbsenceQuery;
-import ru.protei.portal.core.model.query.CompanyQuery;
-import ru.protei.portal.core.model.query.EmployeeQuery;
-import ru.protei.portal.core.model.query.WorkerEntryQuery;
+import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.*;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.WorkerEntryShortView;
+import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.utils.DateUtils;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -31,12 +30,14 @@ import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Objects.nonNull;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.helper.DateRangeUtils.makeDateWithOffset;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+
 
 /**
  * Реализация сервиса управления сотрудниками
@@ -93,6 +94,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     AuditObjectDAO auditObjectDAO;
 
+    @Autowired
+    EventPublisherService publisherService;
+
     @Override
     public Result<List<PersonShortView>> shortViewList( EmployeeQuery query) {
         List<Person> list = personDAO.getEmployees(query);
@@ -110,6 +114,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     public Result<SearchResult<EmployeeShortView>> employeeList(AuthToken token, EmployeeQuery query) {
 
         SearchResult<EmployeeShortView> sr = employeeShortViewDAO.getSearchResult(query);
+        sr.setResults(stream(sr.getResults())
+                .map(this::removeSensitiveInformation)
+                .collect(Collectors.toList()));
         List<EmployeeShortView> results = sr.getResults();
 
         if (CollectionUtils.isNotEmpty(results)) {
@@ -128,6 +135,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         query.setHomeCompanies(fillHiddenCompaniesIfProteiChosen(query.getHomeCompanies()));
 
         SearchResult<EmployeeShortView> sr = employeeShortViewDAO.getSearchResult(query);
+        sr.setResults(stream(sr.getResults())
+                .map(this::removeSensitiveInformation)
+                .collect(Collectors.toList()));
         List<EmployeeShortView> results = sr.getResults();
 
         if (CollectionUtils.isNotEmpty(results)) {
@@ -158,7 +168,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         EmployeeShortView employeeShortView = employeeShortViewDAO.get(employeeId);
+
+        if (employeeShortView == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
         jdbcManyRelationsHelper.fill(employeeShortView, "workerEntries");
+        employeeShortView = removeSensitiveInformation(employeeShortView);
 
         return ok(employeeShortView);
     }
@@ -180,7 +196,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         EmployeeShortView employeeShortView = employeeShortViewDAO.get(employeeId);
+
+        if (employeeShortView == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
         jdbcManyRelationsHelper.fill(employeeShortView, "workerEntries");
+        employeeShortView = removeSensitiveInformation(employeeShortView);
 
         employeeShortView.setWorkerEntries(changeCompanyNameIfHidden(employeeShortView.getWorkerEntries()));
         employeeShortView.setCurrentAbsence(personAbsenceDAO.currentAbsence(employeeId));
@@ -264,8 +286,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         person.setDisplayName(person.getLastName() + " " + person.getFirstName() + (StringUtils.isNotEmpty(person.getSecondName()) ? " " + person.getSecondName() : ""));
         person.setDisplayShortName(createPersonShortName(person));
-
         person.setCompanyId(CrmConstants.Company.HOME_COMPANY_ID);
+        person.getContactInfo().addItems(getSensitiveContactItems(oldPerson.getContactInfo().getItems()));
+
         boolean success = personDAO.partialMerge(person,  "company_id", "firstname", "lastname", "secondname", "sex", "birthday", "ipaddress", "contactInfo", "displayname", "displayShortName");
 
         if (success) {
@@ -439,6 +462,71 @@ public class EmployeeServiceImpl implements EmployeeService {
         return ok(birthdays);
     }
 
+    /**
+     * Уведомление о грядущих датах рождения
+     * @return
+     */
+    @Override
+    public Result<Void> notifyAboutBirthdays() {
+
+        Date from = makeDateWithOffset(-2);
+        Date to = makeDateWithOffset(9);
+
+        log.info("notifyAboutBirthdays(): start");
+
+        EmployeeQuery query = new EmployeeQuery();
+        query.setFired(false);
+        query.setDeleted(false);
+        query.setBirthdayRange(new DateRange(En_DateIntervalType.FIXED, from, to));
+        query.setSortField(En_SortField.birthday);
+        query.setSortDir(En_SortDir.ASC);
+        List<EmployeeShortView> employees = employeeShortViewDAO.getEmployees(query);
+
+        if (CollectionUtils.isEmpty(employees)) {
+            log.info("notifyAboutBirthdays(): employees birthdays list is empty for period {} - {}", from, to);
+            return ok();
+        }
+
+        List<NotificationEntry> notifiers = makeNotificationListFromConfiguration();
+
+        if (CollectionUtils.isEmpty(notifiers)) {
+            log.info("notifyAboutBirthdays(): no entries to be notified");
+            return ok();
+        }
+
+        log.info("notifyAboutBirthdays(): birthdays notification: entries to be notified: {}", notifiers);
+
+        publisherService.publishEvent(new BirthdaysNotificationEvent(this, employees, from, to, notifiers));
+
+        log.info("notifyAboutBirthdays(): done");
+        return ok();
+    }
+
+    private List<NotificationEntry> makeNotificationListFromConfiguration() {
+        return Stream.of(
+                portalConfig.data().getMailNotificationConfig().getCrmBirthdaysNotificationsRecipients()
+        )
+                .filter(Objects::nonNull)
+                .filter(not(String::isEmpty))
+                .map(address -> NotificationEntry.email(address, CrmConstants.DEFAULT_LOCALE))
+                .collect(Collectors.toList());
+    }
+
+    private EmployeeShortView removeSensitiveInformation(EmployeeShortView employeeShortView) {
+        List<ContactItem> sensitive = getSensitiveContactItems(employeeShortView.getContactInfo().getItems());
+        employeeShortView.setContactInfo(new ContactInfo(stream(employeeShortView.getContactInfo().getItems())
+                .filter(item -> !sensitive.contains(item))
+                .collect(Collectors.toList())));
+        return employeeShortView;
+    }
+
+    private List<ContactItem> getSensitiveContactItems(List<ContactItem> contactItems) {
+        List<En_ContactItemType> types = listOf(En_ContactItemType.ADDRESS, En_ContactItemType.ADDRESS_LEGAL);
+        return stream(contactItems)
+                .filter(item -> types.contains(item.type()))
+                .collect(Collectors.toList());
+    }
+
     private void updateAccount(UserLogin userLogin, AuthToken token) {
         if (userLoginDAO.saveOrUpdate(userLogin)) {
             jdbcManyRelationsHelper.persist( userLogin, "roles" );
@@ -517,16 +605,16 @@ public class EmployeeServiceImpl implements EmployeeService {
     private boolean updateEmployeeInOldPortal(Long personId) {
         List<WorkerEntry> workers = workerEntryDAO.getWorkers(new WorkerEntryQuery(personId));
 
-        WorkerEntry activeWorker = workers == null ? null : workers.stream().filter(WorkerEntry::isMain).findFirst().orElse(null);
+        WorkerEntry worker = workers == null ? null : getMainEntry(workers);
 
         Person person = personDAO.get(personId);
 
-        if (activeWorker == null || person == null){
-            log.warn("updateEmployeeInOldPortal(): activeWorker={}, person={}", activeWorker, person);
+        if (worker == null || person == null){
+            log.warn("updateEmployeeInOldPortal(): activeWorker={}, person={}", worker, person);
             return false;
         }
 
-        return migrationManager.saveExternalEmployee(person, activeWorker.getDepartmentName(), activeWorker.getPositionName()).equals(En_ResultStatus.OK);
+        return migrationManager.saveExternalEmployee(person, worker.getDepartmentName(), worker.getPositionName()).equals(En_ResultStatus.OK);
     }
 
     private boolean fireEmployeeInOldPortal(Person person) {
@@ -623,7 +711,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeQuery.setFirstName(person.getFirstName());
         employeeQuery.setLastName(person.getLastName());
         employeeQuery.setSecondName(person.getSecondName());
-        employeeQuery.setBirthday(person.getBirthday());
+        employeeQuery.setBirthdayRange(person.getBirthday() == null ? null :
+                new DateRange(En_DateIntervalType.FIXED, person.getBirthday(), person.getBirthday()));
 
         List<EmployeeShortView> employee = employeeShortViewDAO.getEmployees(employeeQuery);
 
@@ -732,5 +821,13 @@ public class EmployeeServiceImpl implements EmployeeService {
                         .filter(En_AbsenceReason::isActual)
                         .map(En_AbsenceReason::getId)
                         .collect(Collectors.toSet()));
+    }
+
+    private WorkerEntry getMainEntry(List<WorkerEntry> workers) {
+        return workers.stream().filter(WorkerEntry::isMain).findFirst().orElse(getFirstEntry(workers));
+    }
+
+    private WorkerEntry getFirstEntry(List<WorkerEntry> workers) {
+        return workers.stream().findFirst().orElse(null);
     }
 }

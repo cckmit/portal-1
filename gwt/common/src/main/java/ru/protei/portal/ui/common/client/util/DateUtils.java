@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.google.gwt.user.datepicker.client.CalendarUtil.copyDate;
+import static ru.protei.portal.core.model.util.CrmConstants.Time.DAY;
 
 public class DateUtils {
 
@@ -190,7 +191,7 @@ public class DateUtils {
     }
 
     public static Date makeDate(int year, int month, int dayOfMonth) {
-        Date date = resetTime(new Date());
+        Date date = setBeginOfMonth(resetTime(new Date()));
         date.setYear(getYearDeNormalized(year));
         date.setMonth(getMonthDeNormalized(month));
         date.setDate(dayOfMonth);
@@ -305,6 +306,26 @@ public class DateUtils {
             return false;
         }
         return ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0);
+    }
+
+    public static Long getDaysBetween(Date from, Date until) {
+        if (from == null || until == null) {
+            return null;
+        }
+        long fromTs = from.getTime();
+        long untilTs = until.getTime();
+        long diffTs = untilTs - fromTs;
+        long days = diffTs / DAY;
+        return days;
+    }
+
+    public static Date addDays(Date base, Long days) {
+        if (base == null || days == null) {
+            return null;
+        }
+        long daysMs = days * DAY;
+        long diffTs = base.getTime() + daysMs;
+        return new Date(diffTs);
     }
 
     private static void setMilliseconds(Date date, long millis) {

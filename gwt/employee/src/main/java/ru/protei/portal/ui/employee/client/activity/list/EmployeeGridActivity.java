@@ -27,7 +27,6 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
         filterView.setActivity(this);
         filterView.resetFilter();
         query = makeQuery();
-        currentViewType = ViewType.valueOf(localStorageService.getOrDefault(EMPLOYEE_CURRENT_VIEW_TYPE, ViewType.LIST.toString()));
     }
 
     @Event
@@ -42,65 +41,17 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
             return;
         }
 
+        if (event.view != null) {
+            currentViewType = event.view;
+        }
+        fireEvent(new EmployeeEvents.SelectTab(currentViewType));
+
         fireEvent(new ActionBarEvents.Clear());
-
-        fireEvent(new ActionBarEvents.Add(lang.employeeTopBrassBtn(), "", UiConstants.ActionBarIdentity.TOP_BRASS));
-
-        boolean isListCurrent = currentViewType == ViewType.LIST;
-        fireEvent(new ActionBarEvents.Add(
-                isListCurrent ? lang.table() : lang.list(),
-                isListCurrent ? UiConstants.ActionBarIcons.TABLE : UiConstants.ActionBarIcons.LIST,
-                UiConstants.ActionBarIdentity.EMPLOYEE_TYPE_VIEW
-        ));
-
         if (policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_CREATE)) {
             fireEvent(new ActionBarEvents.Add(lang.buttonCreate(), "", UiConstants.ActionBarIdentity.EMPLOYEE_CREATE));
         }
 
-        if (policyService.hasPrivilegeFor(En_Privilege.ABSENCE_CREATE)) {
-            fireEvent(new ActionBarEvents.Add(lang.absenceButtonCreate(), "", UiConstants.ActionBarIdentity.ABSENCE));
-        }
-
-        if (policyService.hasPrivilegeFor(En_Privilege.ABSENCE_REPORT)) {
-            fireEvent(new ActionBarEvents.Add(lang.absenceButtonReport(), "", UiConstants.ActionBarIdentity.ABSENCE_REPORT));
-        }
-
-        if (policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_VIEW)) {
-            fireEvent(new ActionBarEvents.Add(lang.employeeBirthdays(), "", UiConstants.ActionBarIdentity.EMPLOYEE_BIRTHDAYS));
-        }
-
         fireEvent(new EmployeeEvents.ShowDefinite(currentViewType, filterView.asWidget(), query, event.preScroll));
-
-        if (policyService.hasPrivilegeFor(En_Privilege.ABSENCE_VIEW)) {
-            fireEvent(new ActionBarEvents.Add(lang.absenceButtonSummaryTable(), "", UiConstants.ActionBarIdentity.ABSENCE_SUMMARY_TABLE));
-        }
-    }
-
-    @Event
-    public void onChangeViewClicked(ActionBarEvents.Clicked event) {
-        if (!(UiConstants.ActionBarIdentity.EMPLOYEE_TYPE_VIEW.equals(event.identity))) {
-            return;
-        }
-
-        currentViewType = currentViewType == ViewType.TABLE ? ViewType.LIST : ViewType.TABLE;
-        onShow(new EmployeeEvents.Show(false));
-
-        localStorageService.set(EMPLOYEE_CURRENT_VIEW_TYPE, currentViewType.toString());
-    }
-
-    @Event
-    public void onTopBrassClicked(ActionBarEvents.Clicked event) {
-        if (!(UiConstants.ActionBarIdentity.TOP_BRASS.equals(event.identity))) {
-            return;
-        }
-
-        if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_VIEW)) {
-            fireEvent(new ErrorPageEvents.ShowForbidden());
-            return;
-        }
-
-        fireEvent(new ActionBarEvents.Clear());
-        fireEvent(new EmployeeEvents.ShowTopBrass());
     }
 
     @Event
@@ -119,82 +70,21 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
     }
 
     @Event
-    public void onAbsenceCreateClicked(ActionBarEvents.Clicked event) {
-        if (!UiConstants.ActionBarIdentity.ABSENCE.equals(event.identity)) {
-            return;
-        }
-
-        if (!policyService.hasPrivilegeFor(En_Privilege.ABSENCE_CREATE)) {
-            fireEvent(new ErrorPageEvents.ShowForbidden());
-            return;
-        }
-
-        fireEvent(new AbsenceEvents.Edit());
-    }
-
-    @Event
-    public void onAbsenceReportClicked(ActionBarEvents.Clicked event) {
-        if (!UiConstants.ActionBarIdentity.ABSENCE_REPORT.equals(event.identity)) {
-            return;
-        }
-
-        if (!policyService.hasPrivilegeFor(En_Privilege.ABSENCE_REPORT)) {
-            fireEvent(new ErrorPageEvents.ShowForbidden());
-            return;
-        }
-
-        fireEvent(new AbsenceEvents.CreateReport());
-    }
-
-    @Event
-    public void onEmployeeBirthdaysClicked(ActionBarEvents.Clicked event) {
-        if (!UiConstants.ActionBarIdentity.EMPLOYEE_BIRTHDAYS.equals(event.identity)) {
-            return;
-        }
-
-        if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_VIEW)) {
-            fireEvent(new ErrorPageEvents.ShowForbidden());
-            return;
-        }
-
-        fireEvent(new EmployeeEvents.ShowBirthdays());
-    }
-
-    @Event
-    public void onAbsenceSummaryTableClicked(ActionBarEvents.Clicked event) {
-        if (!UiConstants.ActionBarIdentity.ABSENCE_SUMMARY_TABLE.equals(event.identity)) {
-            return;
-        }
-
-        if (!policyService.hasPrivilegeFor(En_Privilege.ABSENCE_VIEW)) {
-            fireEvent(new ErrorPageEvents.ShowForbidden());
-            return;
-        }
-
-        fireEvent(new ActionBarEvents.Clear());
-        fireEvent(new AbsenceEvents.ShowSummaryTable());
-    }
-
-    @Event
-    public void onEmployeeViewClicked(ActionBarEvents.Clicked event) {
-        if (!UiConstants.ActionBarIdentity.EMPLOYEE_VIEW.equals(event.identity)) {
-            return;
-        }
-
-        if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_VIEW)) {
-            fireEvent(new ErrorPageEvents.ShowForbidden());
-            return;
-        }
-
-        fireEvent(new EmployeeEvents.Show(false));
-    }
-
-    @Event
     public void onUpdate(EmployeeEvents.Update event) {
         if(event.id == null || !policyService.hasPrivilegeFor(En_Privilege.ABSENCE_VIEW))
             return;
 
         fireEvent(new EmployeeEvents.UpdateDefinite(currentViewType, event.id));
+    }
+
+    @Event
+    public void onEdit(EmployeeEvents.Edit event) {
+        fireEvent(new EmployeeEvents.SelectTab(currentViewType));
+    }
+
+    @Event
+    public void onShowFullScreen(EmployeeEvents.ShowFullScreen event) {
+        fireEvent(new EmployeeEvents.SelectTab(currentViewType));
     }
 
     @Override
@@ -224,11 +114,8 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
     @Inject
     Lang lang;
     @Inject
-    LocalStorageService localStorageService;
-    @Inject
     PolicyService policyService;
 
-    private ViewType currentViewType;
+    private ViewType currentViewType = ViewType.LIST;
     private EmployeeQuery query;
-    private static final String EMPLOYEE_CURRENT_VIEW_TYPE = "employeeCurrentViewType";
 }

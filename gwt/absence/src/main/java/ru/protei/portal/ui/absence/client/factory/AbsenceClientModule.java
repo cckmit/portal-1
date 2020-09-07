@@ -2,6 +2,8 @@ package ru.protei.portal.ui.absence.client.factory;
 
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
+import ru.protei.portal.ui.absence.client.activity.create.AbsenceCreateActivity;
+import ru.protei.portal.ui.absence.client.activity.create.AbstractAbsenceCreateView;
 import ru.protei.portal.ui.absence.client.activity.edit.AbsenceEditActivity;
 import ru.protei.portal.ui.absence.client.activity.edit.AbstractAbsenceEditView;
 import ru.protei.portal.ui.absence.client.activity.summarytable.AbsenceSummaryTableActivity;
@@ -11,10 +13,11 @@ import ru.protei.portal.ui.absence.client.activity.report.AbstractAbsenceReportC
 import ru.protei.portal.ui.absence.client.activity.report.paramview.AbstractAbsenceFilterParamWidget;
 import ru.protei.portal.ui.absence.client.activity.table.AbsenceTableActivity;
 import ru.protei.portal.ui.absence.client.activity.table.AbstractAbsenceTableView;
+import ru.protei.portal.ui.absence.client.view.create.AbsenceCreateView;
 import ru.protei.portal.ui.absence.client.view.edit.AbsenceEditView;
 import ru.protei.portal.ui.absence.client.view.summarytable.AbsenceSummaryTableView;
 import ru.protei.portal.ui.absence.client.view.report.AbsenceReportCreateView;
-import ru.protei.portal.ui.absence.client.widget.paramview.AbsenceFilterParamWidget;
+import ru.protei.portal.ui.absence.client.widget.filter.paramview.AbsenceFilterParamWidget;
 import ru.protei.portal.ui.absence.client.view.table.AbsenceTableView;
 import ru.protei.portal.ui.common.client.widget.selector.absencereason.AbsenceReasonModel;
 
@@ -36,6 +39,9 @@ public class AbsenceClientModule extends AbstractGinModule {
 
         bind(AbsenceEditActivity.class).asEagerSingleton();
         bind(AbstractAbsenceEditView.class).to(AbsenceEditView.class).in(Singleton.class);
+
+        bind(AbsenceCreateActivity.class).asEagerSingleton();
+        bind(AbstractAbsenceCreateView.class).to(AbsenceCreateView.class).in(Singleton.class);
 
         bind(AbsenceReportCreateActivity.class).asEagerSingleton();
         bind(AbstractAbsenceReportCreateView.class).to(AbsenceReportCreateView.class).in(Singleton.class);

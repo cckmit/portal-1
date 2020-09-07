@@ -44,8 +44,8 @@ import ru.protei.portal.ui.contract.client.activity.edit.AbstractContractEditVie
 import ru.protei.portal.ui.contract.client.widget.contractdates.list.ContractDatesList;
 import ru.protei.portal.ui.contract.client.widget.contractor.ContractorWidget;
 import ru.protei.portal.ui.contract.client.widget.contractspecification.list.ContractSpecificationList;
-import ru.protei.portal.ui.contract.client.widget.selector.button.ContractStateSelector;
-import ru.protei.portal.ui.contract.client.widget.selector.multi.ContractTypeMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.contract.state.ContractStateSelector;
+import ru.protei.portal.ui.common.client.widget.selector.contract.type.ContractTypesMultiSelector;
 
 import java.util.*;
 
@@ -170,17 +170,14 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
-    public HasValue<ProductDirectionInfo> direction() {
-        return direction;
-    }
-
-    @Override
     public HasEnabled contractorEnabled() {
         return contractorWidget;
     }
 
     @Override
-    public HasEnabled organizationEnabled() { return organization; }
+    public HasValue<ProductDirectionInfo> direction() {
+        return direction;
+    }
 
     @Override
     public void setOrganization(String organization) {
@@ -235,6 +232,16 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Override
     public HasVisibility expenditureContractsVisibility() {
         return tabs.tabVisibility(lang.contractListOfExpenditureHeader());
+    }
+
+    @Override
+    public void setNotAvailableOrganizations(List<Long> organizationsToHide) {
+        organization.setIdsToHide(organizationsToHide);
+    }
+
+    @Override
+    public void setSecondContractNotAvailableOrganizations(List<Long> organizationsToHide) {
+        secondContractOrganization.setIdsToHide(organizationsToHide);
     }
 
     @UiHandler("saveButton")
@@ -395,7 +402,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     ContractStateSelector state;
     @Inject
     @UiField(provided = true)
-    ContractTypeMultiSelector types;
+    ContractTypesMultiSelector types;
     @UiField
     TextBox kind;
     @Inject

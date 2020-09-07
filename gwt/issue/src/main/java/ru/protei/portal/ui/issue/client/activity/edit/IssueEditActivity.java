@@ -26,11 +26,11 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
+import ru.protei.portal.ui.common.client.service.AttachmentControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.util.ClipboardUtils;
-import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
-import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
+import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.impl.PasteInfo;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
@@ -45,13 +45,13 @@ import java.util.logging.Logger;
 
 import static ru.protei.portal.core.model.helper.CaseCommentUtils.addImageInMessage;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.util.CaseStateUtil.isTerminalState;
 
 public abstract class IssueEditActivity implements
         AbstractIssueEditActivity,
-        AbstractIssueNameDescriptionEditWidgetActivity,
-        Activity
+        AbstractIssueNameDescriptionEditWidgetActivity
 {
 
     @PostConstruct
@@ -68,6 +68,9 @@ public abstract class IssueEditActivity implements
                     issueNameDescriptionEditWidget.addTempAttachment(attachment);
                 }
                 addAttachmentsToCase( Collections.singleton( attachment ) );
+
+                issueInfoWidget.attachmentsVisibility().setVisible(!issueInfoWidget.attachmentsListContainer().isEmpty());
+                issueInfoWidget.setCountOfAttachments(size(issueInfoWidget.attachmentsListContainer().getAll()));
             }
 
             @Override
@@ -76,8 +79,8 @@ public abstract class IssueEditActivity implements
             }
         };
 
-        issueInfoWidget.setFileUploadHandler( uploadHandler );
-        issueNameDescriptionEditWidget.setFileUploader(issueInfoWidget.getFileUploader());
+        view.setFileUploadHandler( uploadHandler );
+        issueNameDescriptionEditWidget.setFileUploader(view.getFileUploader());
     }
 
     @Event
@@ -140,15 +143,21 @@ public abstract class IssueEditActivity implements
     public void onAddingAttachments( AttachmentEvents.Add event ) {
         if(view.isAttached() && issue.getId().equals(event.issueId)) {
             addAttachmentsToCase(event.attachments);
+
+            issueInfoWidget.setCountOfAttachments(size(issueInfoWidget.attachmentsListContainer().getAll()));
+            issueInfoWidget.attachmentsVisibility().setVisible(!issueInfoWidget.attachmentsListContainer().isEmpty());
         }
     }
 
     @Event
     public void onRemovingAttachments( AttachmentEvents.Remove event ) {
         if(view.isAttached() && issue.getId().equals(event.issueId)) {
-            event.attachments.forEach( issueInfoWidget.attachmentsContainer()::remove);
+            event.attachments.forEach( issueInfoWidget.attachmentsListContainer()::remove);
             issue.getAttachments().removeAll(event.attachments);
             issue.setAttachmentExists(!issue.getAttachments().isEmpty());
+
+            issueInfoWidget.setCountOfAttachments(size(issueInfoWidget.attachmentsListContainer().getAll()));
+            issueInfoWidget.attachmentsVisibility().setVisible(!issueInfoWidget.attachmentsListContainer().isEmpty());
         }
     }
 
@@ -223,9 +232,13 @@ public abstract class IssueEditActivity implements
         attachmentController.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, attachment.getId(), new FluentCallback<Boolean>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR)))
                 .withSuccess(result -> {
-                    issueInfoWidget.attachmentsContainer().remove(attachment);
+                    issueInfoWidget.attachmentsListContainer().remove(attachment);
                     issue.getAttachments().remove(attachment);
                     issue.setAttachmentExists(!issue.getAttachments().isEmpty());
+
+                    issueInfoWidget.setCountOfAttachments(size(issueInfoWidget.attachmentsListContainer().getAll()));
+                    issueInfoWidget.attachmentsVisibility().setVisible(!issueInfoWidget.attachmentsListContainer().isEmpty());
+
                     showComments( issue );
                 }));
     }
@@ -423,11 +436,17 @@ public abstract class IssueEditActivity implements
         view.setName(makeName(issue.getName(), issue.getJiraUrl(), issue.getExtAppType()));
         view.setIntegration(makeIntegrationName(issue));
 
-        issueInfoWidget.setCaseNumber( issue.getCaseNumber() );
+        view.setCaseNumber( issue.getCaseNumber() );
         issueInfoWidget.setDescription(issue.getInfo(), CaseTextMarkupUtil.recognizeTextMarkup(issue));
-        issueInfoWidget.attachmentsContainer().clear();
-        issueInfoWidget.attachmentsContainer().add(issue.getAttachments());
-        issueInfoWidget.attachmentUploaderVisibility().setVisible(!readOnly);
+        issueInfoWidget.attachmentsListContainer().clear();
+        issueInfoWidget.attachmentsListContainer().add(issue.getAttachments());
+
+        boolean isAttachmentsEmpty = isEmpty(issue.getAttachments());
+
+        issueInfoWidget.attachmentsVisibility().setVisible(!isAttachmentsEmpty);
+        issueInfoWidget.setCountOfAttachments(size(issue.getAttachments()));
+
+        view.addAttachmentUploaderVisibility().setVisible(!readOnly);
         view.getInfoContainer().clear();
         view.getInfoContainer().add(issueInfoWidget);
 
@@ -446,7 +465,7 @@ public abstract class IssueEditActivity implements
         jiraUrl = En_ExtAppType.JIRA.getCode().equals( extAppType ) ? jiraUrl : "";
 
         if (jiraUrl.isEmpty() || !issueName.startsWith( "CLM" )) {
-            return issueName;
+            return SimpleHtmlSanitizer.sanitizeHtml(issueName).asString();
         } else {
             String idCLM = issueName.split( " " )[0];
             String remainingName = "&nbsp;" + issueName.substring( idCLM.length() );
@@ -456,15 +475,16 @@ public abstract class IssueEditActivity implements
         }
     }
 
-    private void addAttachmentsToCase(Collection<Attachment> attachments){
-        if (issue.getAttachments() == null || issue.getAttachments().isEmpty())
+    private void addAttachmentsToCase(Collection<Attachment> attachments) {
+        if (issue.getAttachments() == null || issue.getAttachments().isEmpty()) {
             issue.setAttachments(new ArrayList<>());
+        }
 
         if (isEmpty(attachments)) {
             return;
         }
 
-        issueInfoWidget.attachmentsContainer().add(attachments);
+        issueInfoWidget.attachmentsListContainer().add(attachments);
         issue.getAttachments().addAll(attachments);
         issue.setAttachmentExists(true);
     }
@@ -515,7 +535,7 @@ public abstract class IssueEditActivity implements
     @Inject
     IssueControllerAsync issueController;
     @Inject
-    AttachmentServiceAsync attachmentController;
+    AttachmentControllerAsync attachmentController;
 
     @Inject
     Lang lang;

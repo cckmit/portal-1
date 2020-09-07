@@ -17,7 +17,10 @@ public interface PersonService {
     Result<Person> getPerson(AuthToken token, Long personId);
     Result<PersonShortView> getPersonShortView(AuthToken token, Long personId);
     Result<List<PersonShortView>> shortViewList(AuthToken authToken, PersonQuery query);
+
+    Result<List<Person>> getPersonsByIds(AuthToken token, Collection<Long> ids);
+
     Result<List<PersonShortView>> shortViewListByIds(List<Long> ids);
-    Result<Map<Long, String>> getPersonNames(Collection<Long> ids);
+    Result<Map<Long, String>> getPersonNames(AuthToken token, Collection<Long> ids);
     Result<Person> getCommonManagerByProductId(AuthToken authToken, Long productId);
 }

@@ -3,6 +3,7 @@ package ru.protei.portal.ui.contract.client.widget.contractor.search;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.ent.Contractor;
+import ru.protei.portal.core.model.ent.ContractorCountry;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.List;
@@ -16,7 +17,11 @@ public interface AbstractContractorSearchView extends IsWidget, HasValidable {
 
     HasValue<String> contractorKpp();
 
+    HasValue<String> contractorName();
+
     HasValue<String> contractorFullName();
+
+    HasValue<ContractorCountry> contractorCountry();
 
     HasValue<Contractor> contractor();
 

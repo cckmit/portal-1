@@ -47,7 +47,7 @@ public class ReportAbsenceTest extends BaseServiceTest {
 
         AbsenceQuery query = makeAbsenceQuery();
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        boolean result = reportAbsence.writeReport(buffer, query, new SimpleDateFormat( "dd.MM.yyyy HH:mm" ));
+        boolean result = reportAbsence.writeReport(buffer, query);
 
         Assert.assertTrue("Report failed", result);
         Assert.assertTrue("Expected not empty report data", buffer.size() > 0);

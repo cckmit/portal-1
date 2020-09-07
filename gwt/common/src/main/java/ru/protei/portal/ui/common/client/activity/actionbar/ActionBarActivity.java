@@ -49,6 +49,7 @@ public abstract class ActionBarActivity
         itemView.setText( header );
         itemView.setEnsureDebugId( debugId );
         itemView.asWidget().addStyleName("btn m-r-15");
+        itemView.addClickHandler();
 
         init.parent.add( itemView.asWidget() );
         itemViewToIdentity.put(itemView, identity);

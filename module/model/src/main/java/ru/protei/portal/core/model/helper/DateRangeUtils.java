@@ -9,6 +9,11 @@ import java.util.Date;
 
 public class DateRangeUtils {
 
+    public static Date makeDateWithOffset(int dayOffset) {
+        LocalDate localDate = LocalDate.now().plusDays(dayOffset);
+        return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+    }
+
     public static Interval makeToday() {
         Interval interval = new Interval();
         LocalDate local = LocalDate.now();

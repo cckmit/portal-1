@@ -137,10 +137,6 @@ public class IssueFilterWidget extends Composite {
         }
         filledUserFilter.getParams().setCheckImportanceHistory( null );//don`t save CheckImportanceHistory
 
-        if (filterValidator != null && !filterValidator.apply(filledUserFilter)) {
-            return;
-        }
-
         model.onOkSavingFilterClicked(filterName.getValue(), filledUserFilter,
                 filter -> {
                     editBtnVisibility().setVisible(true);
@@ -326,7 +322,6 @@ public class IssueFilterWidget extends Composite {
 
     private boolean isCreateFilterAction = true;
     private En_CaseFilterType filterType = En_CaseFilterType.CASE_OBJECTS;
-    private Function<CaseFilter, Boolean> filterValidator;
     private static IssueFilterWidget.IssueFilterViewUiBinder ourUiBinder = GWT.create( IssueFilterWidget.IssueFilterViewUiBinder.class );
     interface IssueFilterViewUiBinder extends UiBinder<HTMLPanel, IssueFilterWidget> {}
 }

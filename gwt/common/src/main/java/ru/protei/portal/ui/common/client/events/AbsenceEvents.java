@@ -6,7 +6,7 @@ import ru.brainworm.factory.context.client.annotation.Url;
 
 public class AbsenceEvents {
 
-    @Url(value = "summarytable")
+    @Url(value = "absences", primary = true)
     public static class ShowSummaryTable {
         public ShowSummaryTable() {
         }
@@ -38,6 +38,14 @@ public class AbsenceEvents {
             this.id = id;
         }
         public Edit withEmployee(EmployeeShortView employee) {
+            this.employee = employee;
+            return this;
+        }
+    }
+
+    public static class Create {
+        public EmployeeShortView employee;
+        public Create withEmployee(EmployeeShortView employee) {
             this.employee = employee;
             return this;
         }

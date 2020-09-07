@@ -14,6 +14,7 @@ import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.mail.MailMessageFactory;
 import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.core.model.dict.En_CaseLink;
+import ru.protei.portal.core.model.dto.ReportDto;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -26,6 +27,7 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.CaseCommentService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.EmployeeService;
+import ru.protei.portal.core.service.ReportService;
 import ru.protei.portal.core.service.events.CaseSubscriptionService;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 import ru.protei.portal.core.service.template.TemplateService;
@@ -41,7 +43,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
-import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.partitioningBy;
 import static ru.protei.portal.core.model.dict.En_CaseLink.CRM;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
@@ -59,31 +60,24 @@ public class MailNotificationProcessor {
 
     @Autowired
     CaseSubscriptionService subscriptionService;
-
     @Autowired
     TemplateService templateService;
-
     @Autowired
     CaseService caseService;
-
     @Autowired
     CaseCommentService caseCommentService;
-
     @Autowired
     EmployeeService employeeService;
-
     @Autowired
     MailSendChannel mailSendChannel;
-
     @Autowired
     MailMessageFactory messageFactory;
-
     @Autowired
     LockService lockService;
-
+    @Autowired
+    ReportService reportService;
     @Autowired
     PortalConfig config;
-
     @Autowired
     Lang lang;
 
@@ -627,26 +621,30 @@ public class MailNotificationProcessor {
 
     @EventListener
     public void onMailReportEvent(MailReportEvent event) {
-        Report report = event.getReport();
+        ReportDto reportDto = event.getReport();
+        Report report = reportDto.getReport();
 
-        PreparedTemplate bodyTemplate = templateService.getMailReportBody(report);
+        PreparedTemplate bodyTemplate = templateService.getMailReportBody(reportDto);
         if (bodyTemplate == null) {
             log.error("Failed to prepare body template for reporId={}", report.getId());
             return;
         }
 
-        PreparedTemplate subjectTemplate = templateService.getMailReportSubject(report);
+        PreparedTemplate subjectTemplate = templateService.getMailReportSubject(reportDto);
         if (subjectTemplate == null) {
             log.error("Failed to prepare subject template for reporId={}", report.getId());
             return;
         }
 
         if (event.getContent() != null) {
+            String filename = reportService.getReportFilename(report.getId(), reportDto).getData();
             sendMailToRecipientWithAttachment(
                     fetchNotificationEntryFromPerson(report.getCreator()),
                     bodyTemplate, subjectTemplate,
                     true,
-                    event.getContent(), report.getName() + ".xlsx");
+                    event.getContent(),
+                    filename
+            );
         } else {
             sendMailToRecipients(Collections.singletonList(fetchNotificationEntryFromPerson(report.getCreator())),
                     bodyTemplate, subjectTemplate,
@@ -905,6 +903,36 @@ public class MailNotificationProcessor {
         }
     }
 
+    // -----------------------
+    // Birthdays notifications
+    // -----------------------
+
+    @EventListener
+    public void onBirthdaysNotificationEvent( BirthdaysNotificationEvent event) {
+        log.info( "onBirthdaysNotificationEvent(): {}", event );
+
+        if (CollectionUtils.isEmpty(event.getEmployees()) || CollectionUtils.isEmpty(event.getNotifiers())) {
+            log.error("Failed to send birthdays notification: empty data or notifiers");
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.getBirthdaysNotificationSubject( event.getFromDate(), event.getToDate() );
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for PersonCaseFilter notification");
+            return;
+        }
+
+        List<String> recipients = getNotifiersAddresses(event.getNotifiers());
+
+        PreparedTemplate bodyTemplate = templateService.getBirthdaysNotificationBody( event.getEmployees(), recipients );
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for release PersonCaseFilter notification");
+            return;
+        }
+
+        sendMailToRecipients(event.getNotifiers(), bodyTemplate, subjectTemplate, true);
+    }
+
     // -----
     // Utils
     // -----
@@ -1055,6 +1083,7 @@ public class MailNotificationProcessor {
         return event.isNameChanged()
                 || event.isDescriptionChanged()
                 || event.isStateChanged()
+                || event.isPauseDateChanged()
                 || event.isRegionChanged()
                 || event.isCompanyChanged()
                 || event.isCustomerTypeChanged()

@@ -12,14 +12,15 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Contract;
-import ru.protei.portal.core.model.helper.NullUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
+import ru.protei.portal.ui.common.client.lang.En_ContractKindLang;
 import ru.protei.portal.ui.common.client.lang.En_ContractStateLang;
 import ru.protei.portal.ui.common.client.lang.En_ContractTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.shared.util.HtmlUtils;
 import ru.protei.portal.ui.contract.client.activity.table.concise.AbstractContractConciseTableActivity;
 import ru.protei.portal.ui.contract.client.activity.table.concise.AbstractContractConciseTableView;
 
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 import static com.google.gwt.safehtml.shared.SimpleHtmlSanitizer.sanitizeHtml;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.StringUtils.emptyIfNull;
+import static ru.protei.portal.core.model.util.ContractSupportService.getContractKind;
 
 public class ContractConciseTableView extends Composite implements AbstractContractConciseTableView {
 
@@ -65,9 +67,9 @@ public class ContractConciseTableView extends Composite implements AbstractContr
         columnInfo.setHandler(activity);
         columnInfo.setColumnProvider(columnProvider);
 
-        table.addColumn(columnWorkGroup.header, columnWorkGroup.values);
-        columnWorkGroup.setHandler(activity);
-        columnWorkGroup.setColumnProvider(columnProvider);
+        table.addColumn(columnContractor.header, columnContractor.values);
+        columnContractor.setHandler(activity);
+        columnContractor.setColumnProvider(columnProvider);
 
         editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.CONTRACT_EDIT) );
         table.addColumn(editClickColumn.header, editClickColumn.values);
@@ -98,29 +100,33 @@ public class ContractConciseTableView extends Composite implements AbstractContr
         public void fillColumnValue(Element cell, Contract contract) {
             Element root = DOM.createDiv();
             StringBuilder sb = new StringBuilder();
-            sb.append("<b>").append(sanitizeHtml(lang.contractNum(contract.getNumber())).asString()).append("</b>");
+            sb.append("<b>")
+                    .append(HtmlUtils.sanitizeHtml(stream(contract.getContractTypes())
+                            .map(typeLang::getName)
+                            .collect(Collectors.joining(", "))))
+                    .append(" ")
+                    .append(HtmlUtils.sanitizeHtml(contract.getNumber()))
+                    .append("</b>");
             sb.append("<br/>");
             sb.append("<small>");
-            sb.append(stream(contract.getContractTypes())
-                    .map(typeLang::getName)
-                    .collect(Collectors.joining(", ")));
+            sb.append(kindLang.getName(getContractKind(contract)));
             sb.append("</small>");
             root.setInnerHTML(sb.toString());
             cell.appendChild(root);
         }
     };
 
-    private final ClickColumn<Contract> columnWorkGroup = new ClickColumn<Contract>(){
-        protected String getColumnClassName() { return "column-work-group"; }
+    private final ClickColumn<Contract> columnContractor = new ClickColumn<Contract>(){
+        protected String getColumnClassName() { return "column-contractor"; }
         protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setInnerText(lang.contractWorkGroup());
+            columnHeader.setInnerText(lang.contractContractor());
         }
         public void fillColumnValue(Element cell, Contract contract) {
             Element root = DOM.createDiv();
             StringBuilder sb = new StringBuilder();
-            sb.append("<b>").append(lang.contractOrganization()).append(":</b> ").append(emptyIfNull(contract.getOrganizationName())).append("</b>");
-            sb.append("<br/>");
-            sb.append("<b>").append(lang.contractContractor()).append(":</b> ").append(NullUtils.emptyIfNull(() -> contract.getContractor().getName())).append("</b>");
+            sb.append(HtmlUtils.sanitizeHtml(contract.getContractor() != null
+                    ? contract.getContractor().getName()
+                    : ""));
             root.setInnerHTML(sb.toString());
             cell.appendChild(root);
         }
@@ -134,6 +140,8 @@ public class ContractConciseTableView extends Composite implements AbstractContr
     En_ContractStateLang stateLang;
     @Inject
     En_ContractTypeLang typeLang;
+    @Inject
+    En_ContractKindLang kindLang;
 
     @Inject
     @UiField

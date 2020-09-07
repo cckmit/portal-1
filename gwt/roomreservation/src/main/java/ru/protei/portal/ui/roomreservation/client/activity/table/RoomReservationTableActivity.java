@@ -38,6 +38,10 @@ public abstract class RoomReservationTableActivity implements AbstractRoomReserv
 
     @Event
     public void onAuthSuccess (AuthEvents.Success event) {
+        if (!hasAccessToRoomView(policyService)) {
+            return;
+        }
+
         view.getFilterWidget().resetFilter();
     }
 

@@ -11,6 +11,8 @@ import com.google.inject.Inject;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.caselink.list.AbstractCaseLinkListActivity;
 import ru.protei.portal.ui.common.client.activity.caselink.list.AbstractCaseLinkListView;
+import ru.protei.portal.ui.common.client.common.UiConstants;
+import ru.protei.portal.ui.common.client.widget.accordion.AccordionWidget;
 import ru.protei.portal.ui.common.client.widget.caselink.popup.CreateCaseLinkPopup;
 
 public class CaseLinkListView
@@ -23,6 +25,9 @@ public class CaseLinkListView
         initDebugIds();
 
         createCaseLinkPopup.addValueChangeHandler(event -> activity.onAddLinkClicked(event.getValue()));
+
+        accordionWidget.setLocalStorageKey(UiConstants.LINKS_PANEL_VISIBILITY);
+        accordionWidget.setMaxHeight(UiConstants.Accordion.LINKS_MAX_HEIGHT);
     }
 
     @Override
@@ -33,15 +38,6 @@ public class CaseLinkListView
     @Override
     public void showSelector(IsWidget target) {
         createCaseLinkPopup.resetValueAndShow(target.asWidget());
-    }
-
-    @Override
-    public void setLinksContainerVisible(boolean isVisible) {
-        if (isVisible) {
-            getElement().replaceClassName("collapsed", "expanded");
-        } else {
-            getElement().replaceClassName( "expanded", "collapsed");
-        }
     }
 
     @Override
@@ -56,19 +52,14 @@ public class CaseLinkListView
 
     @Override
     public void setHeader(String value) {
-        headerLabel.setInnerText(value);
-    }
-
-    @UiHandler("collapse")
-    public void onChangeFormStateClicked(ClickEvent event) {
-        event.preventDefault();
-        activity.onLinksContainerStateChanged(!getStyleName().contains("expanded"));
+        accordionWidget.setHeader(value);
     }
 
     private void initDebugIds() {
-        headerLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.LINKS);
         linksPanel.ensureDebugId(DebugIds.ISSUE.LINKS_CONTAINER);
-        collapse.ensureDebugId(DebugIds.ISSUE.LINKS_COLLAPSE_BUTTON);
+
+        accordionWidget.setHeaderLabelDebugId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.LINKS);
+        accordionWidget.setCollapseButtonDebugId(DebugIds.ISSUE.LINKS_COLLAPSE_BUTTON);
 
         createCaseLinkPopup.setEnsureDebugIdSelector(DebugIds.ISSUE.LINKS_TYPE_SELECTOR);
         createCaseLinkPopup.setEnsureDebugIdTextBox(DebugIds.ISSUE.LINKS_INPUT);
@@ -79,10 +70,9 @@ public class CaseLinkListView
     HTMLPanel root;
     @UiField
     HTMLPanel linksPanel;
-    @UiField
-    Anchor collapse;
-    @UiField
-    LabelElement headerLabel;
+    @Inject
+    @UiField(provided = true)
+    AccordionWidget accordionWidget;
     @Inject
     CreateCaseLinkPopup createCaseLinkPopup;
 

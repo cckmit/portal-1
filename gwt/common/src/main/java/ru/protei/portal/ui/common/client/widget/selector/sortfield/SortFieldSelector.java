@@ -77,7 +77,8 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
                 addOption(En_SortField.creation_date);
                 break;
             case CONTRACT:
-                addOption(En_SortField.creation_date);
+                addOption(En_SortField.contract_creation_date);
+                addOption(En_SortField.contract_signing_date);
                 break;
             case PROJECT:
                 addOption( En_SortField.project_name );

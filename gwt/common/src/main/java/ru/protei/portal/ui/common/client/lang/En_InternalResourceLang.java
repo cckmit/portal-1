@@ -25,6 +25,8 @@ public class En_InternalResourceLang {
                 return lang.internalResourceStoreDelivery();
             case EMAIL:
                 return lang.internalResourceEmail();
+            case VPN:
+                return lang.internalResourceVpn();
         }
         return lang.unknownField();
     }

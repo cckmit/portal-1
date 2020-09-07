@@ -7,6 +7,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.RoomReservationNotificationEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
+import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.RoomReservableDAO;
 import ru.protei.portal.core.model.dao.RoomReservationDAO;
 import ru.protei.portal.core.model.dict.En_Privilege;
@@ -17,6 +18,7 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.RoomReservationQuery;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -58,9 +60,9 @@ public class RoomReservationServiceImpl implements RoomReservationService {
                 return error(En_ResultStatus.INCORRECT_PARAMS);
             }
 
-            boolean outdated = isReservationFinished(reservation);
-            if (outdated) {
-                return error(En_ResultStatus.ROOM_RESERVATION_OUTDATED);
+            boolean finished = isReservationFinished(reservation);
+            if (finished) {
+                return error(En_ResultStatus.ROOM_RESERVATION_FINISHED);
             }
 
             boolean hasAccessToRoom = hasAccessToRoom(token, En_Privilege.ROOM_RESERVATION_CREATE, findRoom(getActiveRooms(), reservation.getRoom()));
@@ -76,7 +78,7 @@ public class RoomReservationServiceImpl implements RoomReservationService {
 
         List<RoomReservation> result = stream(reservations)
             .map(reservation -> {
-                Long id = persistReservation(reservation, new Person(token.getPersonId()));
+                Long id = persistReservation(reservation, new PersonShortView(token.getPersonId()));
                 if (id == null) {
                     throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
                 }
@@ -117,10 +119,9 @@ public class RoomReservationServiceImpl implements RoomReservationService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        boolean outdated = isReservationStarted(stored)
-                        || isReservationFinished(reservation);
-        if (outdated) {
-            return error(En_ResultStatus.ROOM_RESERVATION_OUTDATED);
+        boolean finished = isReservationFinished(reservation);
+        if (finished) {
+            return error(En_ResultStatus.ROOM_RESERVATION_FINISHED);
         }
 
         boolean hasAccess = hasAccessToReservation(token, En_Privilege.ROOM_RESERVATION_EDIT, stored);
@@ -205,7 +206,7 @@ public class RoomReservationServiceImpl implements RoomReservationService {
         return reservation;
     }
 
-    private Long persistReservation(RoomReservation reservation, Person requester) {
+    private Long persistReservation(RoomReservation reservation, PersonShortView requester) {
         reservation.setId(null);
         reservation.setDateRequested(new Date());
         reservation.setPersonRequester(requester);
@@ -337,11 +338,9 @@ public class RoomReservationServiceImpl implements RoomReservationService {
     }
 
     private List<NotificationEntry> makeNotificationListFromReservation(RoomReservation reservation) {
-        return stream(new ArrayList<Person>() {{
-            addAll(reservation.getPersonsToBeNotified());
-            add(reservation.getPersonRequester());
-            add(reservation.getPersonResponsible());
-        }})
+        List<Long> ids = fetchAllPersonIds(reservation);
+        List<Person> people = personDAO.getListByKeys(ids);
+        return stream(people)
             .filter(Objects::nonNull)
             .map(person -> {
                 PlainContactInfoFacade contact = new PlainContactInfoFacade(person.getContactInfo());
@@ -359,12 +358,27 @@ public class RoomReservationServiceImpl implements RoomReservationService {
             .collect(Collectors.toList());
     }
 
+    private List<Long> fetchAllPersonIds(RoomReservation reservation) {
+        return stream(new ArrayList<PersonShortView>() {{
+            addAll(reservation.getPersonsToBeNotified());
+            add(reservation.getPersonRequester());
+            add(reservation.getPersonResponsible());
+        }})
+                .filter(Objects::nonNull)
+                .map(PersonShortView::getId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
     @Autowired
     PortalConfig config;
     @Autowired
     RoomReservationDAO roomReservationDAO;
     @Autowired
     RoomReservableDAO roomReservableDAO;
+    @Autowired
+    PersonDAO personDAO;
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
     @Autowired

@@ -14,10 +14,7 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.renderer.MarkdownRenderer;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MarkdownRendererImpl implements MarkdownRenderer {
 
@@ -90,7 +87,7 @@ public class MarkdownRendererImpl implements MarkdownRenderer {
         @Override
         public void setAttributes(Node node, String tagName, Map<String, String> attributes) {
             if (node instanceof Image) {
-                attributes.put("src", DOWNLOAD_PATH + attributes.get("src"));
+                attributes.put("src", DOWNLOAD_PATH + attributes.get("src") + "?" + new Date().getTime());
             }
         }
     }

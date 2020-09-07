@@ -2,7 +2,6 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
              xmlns:contractor="urn:import:ru.protei.portal.ui.common.client.widget.selector.contractor"
-             xmlns:country="urn:import:ru.protei.portal.ui.common.client.widget.selector.contractor.country"
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -40,8 +39,6 @@
                     </label>
                     <validablefield:ValidableTextBox ui:field="contractorName" styleName="form-control"/>
                 </div>
-                <div class="row">
-                </div>
                 <div class="form-group col-md-12">
                     <label>
                         <ui:text from="{lang.contractContractorFullName}"/>
@@ -54,7 +51,7 @@
                     <label>
                         <ui:text from="{lang.contractContractorCountry}"/>
                     </label>
-                    <country:ContractorCountrySelector ui:field="contractorCountry"/>
+                    <contractor:country.ContractorCountrySelector ui:field="contractorCountry"/>
                 </div>
             </div>
         </div>

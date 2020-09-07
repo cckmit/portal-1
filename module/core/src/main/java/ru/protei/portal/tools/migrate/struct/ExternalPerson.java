@@ -52,7 +52,6 @@ public class ExternalPerson implements LegacyEntity {
         setFirstName (person.getFirstName ());
         setLastName (person.getLastName ());
         setSecondName (person.getSecondName () == null ? "" : person.getSecondName ());
-        setPassportInfo (person.getPassportInfo () == null ? "" : person.getPassportInfo ());
         setInfo (person.getInfo () == null ? "" : person.getInfo ());
         setBirthday (person.getBirthday ());
         setSex (person.getGender() != null ? person.getGender().getLegacyId() : null);

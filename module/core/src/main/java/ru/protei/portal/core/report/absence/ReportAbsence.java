@@ -7,5 +7,5 @@ import java.io.OutputStream;
 import java.text.DateFormat;
 
 public interface ReportAbsence {
-    boolean writeReport(OutputStream buffer, AbsenceQuery query, DateFormat dateFormat) throws IOException;
+    boolean writeReport(OutputStream buffer, AbsenceQuery query) throws IOException;
 }

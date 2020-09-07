@@ -7,15 +7,16 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasEnabled;
+import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_Currency;
 import ru.protei.portal.core.model.struct.Money;
 import ru.protei.portal.core.model.struct.MoneyWithCurrency;
 import ru.protei.portal.ui.common.client.widget.selector.currency.CurrencyButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableLongBox;
-
-import static ru.protei.portal.core.model.helper.NullUtils.defaultIfNull;
 
 public class MoneyCurrencyWidget extends Composite implements HasValue<MoneyWithCurrency>, HasEnabled {
 
@@ -39,9 +40,15 @@ public class MoneyCurrencyWidget extends Composite implements HasValue<MoneyWith
 
     @Override
     public void setValue(MoneyWithCurrency value, boolean fireEvents) {
-        moneyNatural.setValue(defaultIfNull(() -> value.getMoney().getNatural(), 0L));
-        moneyDecimal.setValue(defaultIfNull(() -> value.getMoney().getDecimal(), 0L));
-        currency.setValue(defaultIfNull(value::getCurrency, defaultCurrency));
+        Money vMoney = value.getMoney() != null
+                ? value.getMoney()
+                : new Money(0L);
+        En_Currency vCurrency = value.getCurrency() != null
+                ? value.getCurrency()
+                : defaultCurrency;
+        moneyNatural.setValue(vMoney.getNatural());
+        moneyDecimal.setValue(vMoney.getDecimal());
+        currency.setValue(vCurrency);
         if (fireEvents) {
             ValueChangeEvent.fire(this, value);
         }
