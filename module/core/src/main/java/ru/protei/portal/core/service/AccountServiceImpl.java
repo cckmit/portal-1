@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AccountQuery;
 import ru.protei.portal.core.model.query.UserLoginShortViewQuery;
@@ -211,6 +212,23 @@ public class AccountServiceImpl implements AccountService {
         userLogin.setLastPwdChange(new Date());
 
         return userLoginDAO.saveOrUpdate(userLogin) ? ok() : error( En_ResultStatus.INTERNAL_ERROR);
+    }
+
+    @Override
+    public Result<String> getLoginByPersonId(AuthToken token, Long personId) {
+        if (personId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        List<UserLogin> accounts = userLoginDAO.findByPersonId(personId);
+
+        UserLogin userLogin = accounts
+                .stream()
+                .filter(UserLogin::isLDAP_Auth)
+                .findAny()
+                .orElse(CollectionUtils.getFirst(accounts));
+
+        return ok(userLogin == null ? "" : userLogin.getUlogin());
     }
 
     private boolean isValidLogin( UserLogin userLogin ) {

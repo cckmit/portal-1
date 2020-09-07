@@ -29,4 +29,6 @@ public interface AccountControllerAsync {
     void updateAccountPassword(Long loginId, String currentPassword, String newPassword, AsyncCallback<Void> async);
 
     void getUserLoginShortViewList(UserLoginShortViewQuery query, AsyncCallback<List<UserLoginShortView>> async);
+
+    void getLoginByPersonId(Long personId, AsyncCallback<String> async);
 }

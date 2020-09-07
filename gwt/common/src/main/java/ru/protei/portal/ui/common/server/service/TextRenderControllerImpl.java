@@ -2,15 +2,13 @@ package ru.protei.portal.ui.common.server.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
+import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.service.AccountService;
+import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.service.CaseCommentService;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.TextRenderController;
-import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -52,8 +50,7 @@ public class TextRenderControllerImpl implements TextRenderController {
         return rendered;
     }
 
-    @Override
-    public List<String> replaceLoginWithUsername(List<String> textList) throws RequestFailedException {
+    private List<String> replaceLoginWithUsername(List<String> textList) throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
         return checkResultAndGetData(caseCommentService.replaceLoginWithUsername(token, textList));
     }

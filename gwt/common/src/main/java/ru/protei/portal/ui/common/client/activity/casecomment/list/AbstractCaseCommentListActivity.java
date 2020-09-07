@@ -19,6 +19,4 @@ public interface AbstractCaseCommentListActivity extends Activity {
     void onCommentChanged(String text);
 
     void onDisplayPreviewChanged( Boolean isDisplayPreview );
-
-    void onPrivateCommentChanged();
 }

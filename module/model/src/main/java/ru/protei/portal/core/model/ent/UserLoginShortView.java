@@ -40,6 +40,9 @@ public class UserLoginShortView implements Identifiable, Serializable {
     @JdbcJoinedColumn(localColumn = "personId", remoteColumn = "id", table = "person", mappedColumn = "sex")
     private String genderCode;
 
+    @JdbcJoinedColumn(localColumn = "personId", remoteColumn = "id", table = "person", mappedColumn = "company_id")
+    private Long companyId;
+
     public UserLoginShortView() {}
 
     public Long getId() {
@@ -98,6 +101,14 @@ public class UserLoginShortView implements Identifiable, Serializable {
         this.genderCode = genderCode;
     }
 
+    public Long getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(Long companyId) {
+        this.companyId = companyId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -121,6 +132,7 @@ public class UserLoginShortView implements Identifiable, Serializable {
                 ", lastName='" + lastName + '\'' +
                 ", companyCategory=" + companyCategory +
                 ", genderCode='" + genderCode + '\'' +
+                ", companyId=" + companyId +
                 '}';
     }
 }

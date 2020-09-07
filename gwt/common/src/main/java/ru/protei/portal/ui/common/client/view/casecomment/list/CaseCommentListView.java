@@ -191,8 +191,8 @@ public class CaseCommentListView
     }
 
     @Override
-    public void setPrivateMentioning(boolean isPrivate) {
-        comment.setPrivate(isPrivate);
+    public void setCompanyId(Long companyId) {
+        comment.setCompanyId(companyId);
     }
 
     @Override
@@ -203,13 +203,6 @@ public class CaseCommentListView
     @Override
     public void setCommentPlaceholder(String placeholder) {
         comment.getElement().setAttribute("placeholder", placeholder);
-    }
-
-    @UiHandler("privateComment")
-    public void onPrivateCommentChanged(ValueChangeEvent<Boolean> event) {
-        if (activity != null) {
-            activity.onPrivateCommentChanged();
-        }
     }
 
     @UiHandler( "send" )

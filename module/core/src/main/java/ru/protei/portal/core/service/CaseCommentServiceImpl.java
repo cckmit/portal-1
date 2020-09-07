@@ -24,7 +24,7 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.UserLoginShortViewQuery;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
-import ru.protei.portal.core.model.struct.ReplacementInfo;
+import ru.protei.portal.core.model.struct.ReplaceLoginWithUsernameInfo;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseCommentShortView;
 import ru.protei.portal.core.service.auth.AuthService;
@@ -55,7 +55,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
         List<CaseComment> comments = getList(query).getData();
 
-        if (needReplaceLoginWithUsername(caseType, token.getRoles())) {
+        if (needReplaceLoginWithUsername(caseType)) {
             return replaceLoginWithUsername(comments).map(this::objectListFromReplacementInfoList);
         }
 
@@ -69,13 +69,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             return error(checkAccessStatus);
         }
         applyFilterByScope(token, query);
-        SearchResult<CaseCommentShortView> commentsResult = caseCommentShortViewDAO.getSearchResult(query);
 
-        if (needReplaceLoginWithUsername(caseType, token.getRoles())) {
-            return replaceLoginWithUsernameInCommentsShortView(commentsResult.getResults()).map(SearchResult::new);
-        }
-
-        return ok(commentsResult);
+        return ok(caseCommentShortViewDAO.getSearchResult(query));
     }
 
     @Override
@@ -519,7 +514,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     @Override
-    public Result<List<ReplacementInfo<CaseComment>>> replaceLoginWithUsername(List<CaseComment> comments) {
+    public Result<List<ReplaceLoginWithUsernameInfo<CaseComment>>> replaceLoginWithUsername(List<CaseComment> comments) {
         return replaceLoginWithUsername(comments, CaseComment::getText, this::replaceTextAndGetComment);
     }
 
@@ -529,17 +524,17 @@ public class CaseCommentServiceImpl implements CaseCommentService {
      * @param  objects                  список объектов
      * @param  objectToStringFunction   функция, переводящая переданный объект в строку, в которой будет производиться замена
      * @param  replacementMapper        {@link ReplacementMapper}
-     * @return список {@link ReplacementInfo}, содержащий объект и набор логинов в объекте
+     * @return список {@link ReplaceLoginWithUsernameInfo}, содержащий объект и набор логинов в объекте
      */
-    private <T> Result<List<ReplacementInfo<T>>> replaceLoginWithUsername(List<T> objects, Function<T, String> objectToStringFunction, ReplacementMapper<T> replacementMapper) {
+    private <T> Result<List<ReplaceLoginWithUsernameInfo<T>>> replaceLoginWithUsername(List<T> objects, Function<T, String> objectToStringFunction, ReplacementMapper<T> replacementMapper) {
         if (isEmpty(objects)) {
-            return ok(objects.stream().map(ReplacementInfo::new).collect(Collectors.toList()));
+            return ok(objects.stream().map(ReplaceLoginWithUsernameInfo::new).collect(Collectors.toList()));
         }
 
         Set<String> loginSet = new HashSet<>(getPossibleLoginSet(toList(objects, objectToStringFunction)).getData());
 
         if (loginSet.isEmpty()) {
-            return ok(objects.stream().map(ReplacementInfo::new).collect(Collectors.toList()));
+            return ok(objects.stream().map(ReplaceLoginWithUsernameInfo::new).collect(Collectors.toList()));
         }
 
         UserLoginShortViewQuery query = new UserLoginShortViewQuery();
@@ -556,15 +551,15 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         return ok(makeReplacementInfoList(objects, objectToStringFunction, replacementMapper, existingLoginList));
     }
 
-    private <T> List<ReplacementInfo<T>> makeReplacementInfoList(List<T> objects, Function<T, String> objectToStringFunction, ReplacementMapper<T> replacementMapper, List<UserLoginShortView> existingLoginList) {
-        List<ReplacementInfo<T>> replacementInfoList = new ArrayList<>();
+    private <T> List<ReplaceLoginWithUsernameInfo<T>> makeReplacementInfoList(List<T> objects, Function<T, String> objectToStringFunction, ReplacementMapper<T> replacementMapper, List<UserLoginShortView> existingLoginList) {
+        List<ReplaceLoginWithUsernameInfo<T>> replacementInfoList = new ArrayList<>();
 
         for (T object : objects) {
-            replacementInfoList.add(new ReplacementInfo<>(object));
+            replacementInfoList.add(new ReplaceLoginWithUsernameInfo<>(object));
         }
 
         for (UserLoginShortView nextUserLogin : existingLoginList) {
-            for (ReplacementInfo<T> info : replacementInfoList) {
+            for (ReplaceLoginWithUsernameInfo<T> info : replacementInfoList) {
                 String textBeforeReplace = objectToStringFunction.apply(info.getObject());
 
                 T objectWithReplace = replacementMapper
@@ -575,7 +570,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
                 boolean isReplaced = !Objects.equals(textBeforeReplace, textAfterReplace);
 
                 if (isReplaced) {
-                    info.addData(nextUserLogin.getUlogin());
+                    info.setObject(objectWithReplace);
+                    info.addData(nextUserLogin);
                 }
             }
         }
@@ -620,10 +616,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         return subLoginList;
     }
 
-    private Result<List<CaseCommentShortView>> replaceLoginWithUsernameInCommentsShortView(List<CaseCommentShortView> comments) {
-        return replaceLoginWithUsername(comments, CaseCommentShortView::getText, this::replaceTextAndGetComment).map(this::objectListFromReplacementInfoList);
-    }
-
     private CaseComment replaceTextAndGetComment(CaseComment comment, String replaceFrom, String replaceTo) {
         if (comment.getText() == null) {
             return comment;
@@ -633,29 +625,12 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         return comment;
     }
 
-    private CaseCommentShortView replaceTextAndGetComment(CaseCommentShortView comment, String replaceFrom, String replaceTo) {
-        if (comment.getText() == null) {
-            return comment;
-        }
-
-        comment.setText(comment.getText().replace(replaceFrom, replaceTo));
-        return comment;
+    private <T> List<T> objectListFromReplacementInfoList(List<ReplaceLoginWithUsernameInfo<T>> infos) {
+        return infos.stream().map(ReplaceLoginWithUsernameInfo::getObject).collect(Collectors.toList());
     }
 
-    private <T> List<T> objectListFromReplacementInfoList(List<ReplacementInfo<T>> infos) {
-        return infos.stream().map(ReplacementInfo::getObject).collect(Collectors.toList());
-    }
-
-    private boolean needReplaceLoginWithUsername(En_CaseType caseType, Set<UserRole> roles) {
-        if (!En_CaseType.CRM_SUPPORT.equals(caseType)) {
-            return false;
-        }
-
-        if (policyService.hasScopeForPrivilege(roles, En_Privilege.ISSUE_VIEW, En_Scope.SYSTEM)) {
-            return false;
-        }
-
-        return true;
+    private boolean needReplaceLoginWithUsername(En_CaseType caseType) {
+        return En_CaseType.CRM_SUPPORT.equals(caseType);
     }
 
     private Result<List<CaseComment>> getList(CaseCommentQuery query) {

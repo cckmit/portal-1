@@ -20,7 +20,7 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
-import ru.protei.portal.core.model.struct.ReplacementInfo;
+import ru.protei.portal.core.model.struct.ReplaceLoginWithUsernameInfo;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -94,9 +94,9 @@ public class MailNotificationProcessor {
     public void onCaseChanged(AssembledCaseEvent event){
         Collection<NotificationEntry> notifiers = collectNotifiers(event);
 
-        List<ReplacementInfo<CaseComment>> commentToLoginSet = caseCommentService.replaceLoginWithUsername(event.getAllComments()).getData();
+        List<ReplaceLoginWithUsernameInfo<CaseComment>> commentReplacementInfoList = caseCommentService.replaceLoginWithUsername(event.getAllComments()).getData();
 
-        notifiers.addAll(collectCommentNotifiers(event, commentToLoginSet));
+        notifiers.addAll(collectCommentNotifiers(event, commentReplacementInfoList));
 
         if(CollectionUtils.isEmpty(notifiers)) {
             log.info( "Case notification :: subscribers not found, break notification" );
@@ -118,7 +118,7 @@ public class MailNotificationProcessor {
             DiffCollectionResult<LinkData> privateLinks = convertToLinkData( event.getLinks(), privateCaseUrl );
             DiffCollectionResult<LinkData> publicLinks = convertToLinkData(selectPublicLinks(event.getLinks()), publicCaseUrl );
 
-            List<CaseComment> comments = commentToLoginSet.stream().map(ReplacementInfo::getObject).collect(Collectors.toList());
+            List<CaseComment> comments = toList(commentReplacementInfoList, ReplaceLoginWithUsernameInfo::getObject);
 
             Long lastMessageId = caseService.getAndIncrementEmailLastId(event.getCaseObjectId() ).orElseGet( r-> Result.ok(0L) ).getData();
 
@@ -272,17 +272,32 @@ public class MailNotificationProcessor {
                 event.getManager());
     }
 
-    private Collection<NotificationEntry> collectCommentNotifiers(AssembledCaseEvent event, List<ReplacementInfo<CaseComment>> commentToLoginList) {
-        Set<String> loginSet = new HashSet<>();
-
+    private Collection<NotificationEntry> collectCommentNotifiers(AssembledCaseEvent event, List<ReplaceLoginWithUsernameInfo<CaseComment>> commentToLoginList) {
         Set<CaseComment> neededCaseCommentsForNotification = getNeededCaseCommentsForNotification(event);
 
-        commentToLoginList
+        List<Long> personIdsFromNeededComments = getPersonIdsFromNeededComments(commentToLoginList, neededCaseCommentsForNotification);
+
+        return subscriptionService.subscribers(personIdsFromNeededComments);
+    }
+
+    private List<Long> getPersonIdsFromNeededComments(List<ReplaceLoginWithUsernameInfo<CaseComment>> commentToLoginList, Set<CaseComment> neededCaseCommentsForNotification) {
+        return commentToLoginList
                 .stream()
                 .filter(replacementInfo -> neededCaseCommentsForNotification.contains(replacementInfo.getObject()))
-                .forEach(replacementInfo -> loginSet.addAll(replacementInfo.getDataSet()));
+                .filter(replacementInfo -> replacementInfo.getObject() != null)
+                .filter(replacementInfo -> replacementInfo.getObject().getAuthor() != null)
+                .filter(replacementInfo -> !replacementInfo.getUserLoginShortViews().isEmpty())
+                .map(replacementInfo -> new ReplaceLoginWithUsernameInfo<>(replacementInfo.getObject(), getLoginSetByAuthorCompany(replacementInfo)))
+                .flatMap(replacementInfo -> replacementInfo.getUserLoginShortViews().stream())
+                .map(UserLoginShortView::getPersonId)
+                .collect(Collectors.toList());
+    }
 
-        return subscriptionService.subscribers(loginSet);
+    private Set<UserLoginShortView> getLoginSetByAuthorCompany(ReplaceLoginWithUsernameInfo<CaseComment> replacementInfo) {
+        return replacementInfo.getUserLoginShortViews()
+                .stream()
+                .filter(userLoginShortView -> userLoginShortView.getCompanyId().equals(replacementInfo.getObject().getAuthor().getCompanyId()))
+                .collect(Collectors.toSet());
     }
 
     private Set<CaseComment> getNeededCaseCommentsForNotification(AssembledCaseEvent event) {

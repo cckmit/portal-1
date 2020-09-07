@@ -100,7 +100,7 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
     }
 
     @Override
-    public Set<NotificationEntry> subscribers(Set<String> loginSet) {
+    public Set<NotificationEntry> subscribers(Set<String> loginSet, Long companyId) {
         if (CollectionUtils.isEmpty(loginSet)) {
             return new HashSet<>();
         }
@@ -108,6 +108,7 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
         UserLoginShortViewQuery query = new UserLoginShortViewQuery();
         query.setAdminState(En_AdminState.UNLOCKED);
         query.setLoginSet(loginSet);
+        query.setCompanyIds(Collections.singleton(companyId));
 
         return subscribers(CollectionUtils.toList(userLoginShortViewDAO.getSearchResult(query).getResults(), UserLoginShortView::getPersonId));
     }

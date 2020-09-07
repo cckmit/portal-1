@@ -27,6 +27,7 @@ import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.lang.TimeElapsedTypeLang;
+import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
 import ru.protei.portal.ui.common.client.service.AttachmentControllerAsync;
 import ru.protei.portal.ui.common.client.util.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.CaseCommentControllerAsync;
@@ -117,8 +118,7 @@ public abstract class CaseCommentListActivity
 
         view.privateComment().setValue(false);
         view.getPrivacyVisibility().setVisible(isPrivateVisible);
-
-        view.setPrivateMentioning(isPrivateCase);
+        view.setCompanyId(profile.getCompany().getId());
 
         view.setCaseCreatorId(event.caseCreatorId);
 
@@ -250,8 +250,19 @@ public abstract class CaseCommentListActivity
             tempAttachments.addAll(commentAttachments);
         }
 
-        String editedMessage = caseComment.getText();
-        view.message().setValue( editedMessage, true );
+        if (isMentioningEnabled(caseType)) {
+//        Дозапрашиваем комментарий, для восстановления логинов при редактировании
+            caseCommentController.getCaseComment(caseComment.getId(), new FluentCallback<CaseComment>()
+                    .withSuccess(comment -> {
+                        this.comment.setText(comment.getText());
+                        view.message().setValue(comment.getText(), true);
+                    })
+            );
+        } else {
+            String editedMessage = caseComment.getText();
+            view.message().setValue( editedMessage, true );
+        }
+
         if (isElapsedTimeEnabled && comment.getTimeElapsed() != null) {
             view.timeElapsed().setTime(comment.getTimeElapsed());
             view.timeElapsedType().setValue(comment.getTimeElapsedType());
@@ -271,11 +282,13 @@ public abstract class CaseCommentListActivity
 
         comment = null;
 
-        String message = appendQuote(view.message().getValue(), value.getText(), textMarkup);
-
-        textRenderController.replaceLoginWithUsername(Collections.singletonList(message), new FluentCallback<List<String>>()
-                .withSuccess(result -> view.message().setValue(CollectionUtils.getFirst(result), true))
-        );
+        if (isMentioningEnabled(caseType)) {
+            accountService.getLoginByPersonId(value.getAuthorId(), new FluentCallback<String>()
+                    .withSuccess(login -> view.message().setValue(appendLogin(view.message().getValue(), login), true))
+            );
+        } else {
+            view.message().setValue(appendQuote(view.message().getValue(), value.getText(), textMarkup), true);
+        }
 
         view.focus();
     }
@@ -358,11 +371,6 @@ public abstract class CaseCommentListActivity
         fireChangedPreview();
     }
 
-    @Override
-    public void onPrivateCommentChanged() {
-        view.setPrivateMentioning(isPrivateCase || view.privateComment().getValue());
-    }
-
     private void removeAttachment(Long id, Runnable successAction){
         attachmentService.removeAttachmentEverywhere(caseType, id, new RequestCallback<Boolean>() {
             @Override
@@ -417,7 +425,7 @@ public abstract class CaseCommentListActivity
             view.addCommentToFront( itemView.asWidget() );
         }
 
-        textRenderController.render(textMarkup, textList, isMentioningEnabled(caseType), new FluentCallback<List<String>>()
+        textRenderController.render(textMarkup, textList, new FluentCallback<List<String>>()
                 .withSuccess(converted -> {
                     for (int i = 0; i < converted.size(); i++) {
                         views.get(i).setMessage(converted.get(i));
@@ -738,7 +746,7 @@ public abstract class CaseCommentListActivity
     }
 
     private void renderTextAsync(String text, En_TextMarkup textMarkup, Consumer<String> consumer) {
-        textRenderController.render(text, textMarkup, En_CaseType.CRM_SUPPORT.equals(caseType), new FluentCallback<String>()
+        textRenderController.render(text, textMarkup, isMentioningEnabled(caseType), new FluentCallback<String>()
                 .withError(throwable -> consumer.accept(text))
                 .withSuccess(consumer));
     }
@@ -799,15 +807,7 @@ public abstract class CaseCommentListActivity
     }
 
     private boolean isMentioningEnabled(En_CaseType caseType) {
-        if (!En_CaseType.CRM_SUPPORT.equals(caseType)) {
-            return false;
-        }
-
-        if (!policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW)) {
-            return false;
-        }
-
-        return true;
+        return En_CaseType.CRM_SUPPORT.equals(caseType);
     }
 
     private final Timer changedPreviewTimer = new Timer() {
@@ -835,6 +835,8 @@ public abstract class CaseCommentListActivity
     CaseLinkProvider caseLinkProvider;
     @Inject
     private LocalStorageService storage;
+    @Inject
+    AccountControllerAsync accountService;
 
     @Inject
     ConfigStorage configStorage;

@@ -31,8 +31,8 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
         clickHandlerRegistration.removeHandler();
     }
 
-    public void setPrivate(boolean isPrivate) {
-        this.isPrivate = isPrivate;
+    public void setCompanyId(Long companyId) {
+        this.companyId = companyId;
     }
 
     public void setPersonId(Long personId) {
@@ -70,7 +70,7 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
                 }
 
                 updateModel(possibleLoginInfo.possibleLogin, userLoginModel);
-                updateSelectorFilterByPrivacy(userLoginSelector, isPrivate);
+                updateSelectorFilterByCompanyId(userLoginSelector, companyId);
                 showPopup(userLoginSelector);
 
                 MentioningTextArea.this.possibleLoginInfo = possibleLoginInfo;
@@ -101,8 +101,8 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
         userLoginModel.setSearchString(searchString);
     }
 
-    private void updateSelectorFilterByPrivacy(UserLoginSelector userLoginSelector, final boolean isPrivate) {
-        userLoginSelector.setFilter(userLoginShortView -> !isPrivate || En_CompanyCategory.HOME.equals(userLoginShortView.getCompanyCategory()));
+    private void updateSelectorFilterByCompanyId(UserLoginSelector userLoginSelector, final Long companyId) {
+        userLoginSelector.setFilter(userLoginShortView -> companyId.equals(userLoginShortView.getCompanyId()));
     }
 
     private native int pointerPosition(Element textArea) /*-{
@@ -112,7 +112,7 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
     private HandlerRegistration keyUpHandlerRegistration;
     private HandlerRegistration clickHandlerRegistration;
 
-    private boolean isPrivate;
+    private Long companyId;
 
     private final UserLoginModel userLoginModel;
 

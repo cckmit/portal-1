@@ -46,4 +46,6 @@ public interface AccountService {
     Result< Boolean > removeAccount( AuthToken authToken, Long accountId );
 
     Result<?> updateAccountPassword( AuthToken token, Long loginId, String currentPassword, String newPassword );
+
+    Result<String> getLoginByPersonId(AuthToken token, Long personId);
 }

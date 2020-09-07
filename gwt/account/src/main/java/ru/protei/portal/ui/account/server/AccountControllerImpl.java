@@ -138,6 +138,13 @@ public class AccountControllerImpl implements AccountController {
         }
     }
 
+    @Override
+    public String getLoginByPersonId(Long personId) throws RequestFailedException {
+        log.info("getLoginByPersonId(): personId={}", personId);
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
+        return checkResultAndGetData(accountService.getLoginByPersonId(token, personId));
+    }
+
     @Autowired
     AccountService accountService;
 

@@ -8,6 +8,7 @@ public class UserLoginShortViewQuery extends BaseQuery {
     private En_AdminState adminState;
     private Set<String> loginSet;
     private Set<Long> personIds;
+    private Set<Long> companyIds;
 
     public En_AdminState getAdminState() {
         return adminState;
@@ -31,6 +32,14 @@ public class UserLoginShortViewQuery extends BaseQuery {
 
     public void setPersonIds(Set<Long> personIds) {
         this.personIds = personIds;
+    }
+
+    public Set<Long> getCompanyIds() {
+        return companyIds;
+    }
+
+    public void setCompanyIds(Set<Long> companyIds) {
+        this.companyIds = companyIds;
     }
 
     @Override
