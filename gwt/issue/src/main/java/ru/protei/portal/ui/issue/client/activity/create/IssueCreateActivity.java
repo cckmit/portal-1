@@ -195,26 +195,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     @Override
-    public void onProductChanged() {
-        setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(filterByPlatformAndProduct(subscriptionsList), subscriptionsListEmptyMessage));
-    }
-
-    @Override
-    public void onPlatformChanged() {
-        requestSla(
-                issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId(),
-                slaList -> fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue().getId()))
-        );
-
-        if (isCompanyWithAutoOpenIssues(currentCompany)) {
-            issueMetaView.product().setValue(null);
-            updateProductsFilter(issueMetaView, issueMetaView.getCompany().getId(), issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId());
-        }
-
-        setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(filterByPlatformAndProduct(subscriptionsList), subscriptionsListEmptyMessage));
-    }
-
-    @Override
     public void onCompanyChanged() {
         Company companyOption = issueMetaView.getCompany();
 
@@ -300,6 +280,34 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         boolean stateValid = isPauseDateValid(issueMetaView.state().getValue().getId(), issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime());
         issueMetaView.setPauseDateValid(stateValid);
+
+        updateProductMandatory(issueMetaView, isCompanyWithAutoOpenIssues(issueMetaView.getCompany()));
+        updateManagerMandatory(issueMetaView);
+    }
+
+    @Override
+    public void onProductChanged() {
+        setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(filterByPlatformAndProduct(subscriptionsList), subscriptionsListEmptyMessage));
+    }
+
+    @Override
+    public void onPlatformChanged() {
+        requestSla(
+                issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId(),
+                slaList -> fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue().getId()))
+        );
+
+        if (isCompanyWithAutoOpenIssues(currentCompany)) {
+            issueMetaView.product().setValue(null);
+            updateProductsFilter(issueMetaView, issueMetaView.getCompany().getId(), issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId());
+        }
+
+        setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(filterByPlatformAndProduct(subscriptionsList), subscriptionsListEmptyMessage));
+    }
+
+    @Override
+    public void onManagerChanged() {
+        updateProductMandatory(issueMetaView, isCompanyWithAutoOpenIssues(issueMetaView.getCompany()));
     }
 
     @Override
@@ -404,7 +412,10 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         issueMetaView.setInitiator(caseObjectMeta.getInitiator());
 
-        updateProductModelAndMandatory(issueMetaView, isCompanyWithAutoOpenIssues(caseObjectMeta.getInitiatorCompany()));
+        boolean isCompanyWithAutoOpenIssues = isCompanyWithAutoOpenIssues(caseObjectMeta.getInitiatorCompany());
+
+        updateProductModel(issueMetaView, isCompanyWithAutoOpenIssues);
+        updateProductMandatory(issueMetaView, isCompanyWithAutoOpenIssues);
         issueMetaView.product().setValue(ProductShortView.fromProduct(caseObjectMeta.getProduct()));
 
         issueMetaView.setTimeElapsed(caseObjectMeta.getTimeElapsed());
@@ -480,9 +491,12 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     private void updateProductsFilter(PlatformOption selectedPlatform, List<PlatformOption> platforms, Company company) {
-        updateProductModelAndMandatory(issueMetaView, isCompanyWithAutoOpenIssues(company));
+        boolean isCompanyWithAutoOpenIssues = isCompanyWithAutoOpenIssues(company);
 
-        if (!isCompanyWithAutoOpenIssues(company)) {
+        updateProductModel(issueMetaView, isCompanyWithAutoOpenIssues);
+        updateProductMandatory(issueMetaView, isCompanyWithAutoOpenIssues);
+
+        if (!isCompanyWithAutoOpenIssues) {
             issueMetaView.updateProductsByPlatformIds(new HashSet<>());
         } else {
             updateProductsFilter(
@@ -570,6 +584,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         }
 
         issueMetaView.setManager(caseObjectMeta.getManager());
+        updateManagerMandatory(issueMetaView);
     }
 
     private void requestSla(Long platformId, Consumer<List<ProjectSla>> slaConsumer) {
@@ -718,6 +733,11 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
             return false;
         }
 
+        if (issueMetaView.getManager() != null && issueMetaView.product().getValue() == null) {
+            fireEvent(new NotifyEvents.Show(lang.errProductNotSelected(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
         boolean isFieldsValid = view.nameValidator().isValid() &&
                 issueMetaView.stateValidator().isValid() &&
                 issueMetaView.importanceValidator().isValid() &&
@@ -847,9 +867,22 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         this.currentCompany = company;
     }
 
-    private void updateProductModelAndMandatory(AbstractIssueMetaView metaView, boolean isCompanyWithAutoOpenIssues) {
+    private void updateProductModel(AbstractIssueMetaView metaView, boolean isCompanyWithAutoOpenIssues) {
         metaView.setProductModel(isCompanyWithAutoOpenIssues ? productWithChildrenModel : productModel);
-        metaView.setProductMandatory(isCompanyWithAutoOpenIssues);
+    }
+
+    private void updateProductMandatory(AbstractIssueMetaView metaView, boolean isCompanyWithAutoOpenIssues) {
+        Long stateId = metaView.state().getValue() == null ? null : metaView.state().getValue().getId();
+        boolean isStateWithRestrictions = stateId != null && isStateWithRestrictions(stateId);
+
+        metaView.setProductMandatory(isCompanyWithAutoOpenIssues || metaView.getManager() != null || isStateWithRestrictions);
+    }
+
+    private void updateManagerMandatory(AbstractIssueMetaView metaView) {
+        Long stateId = metaView.state().getValue() == null ? null : metaView.state().getValue().getId();
+        boolean isStateWithRestrictions = stateId != null && isStateWithRestrictions(stateId);
+
+        metaView.setManagerMandatory(isStateWithRestrictions);
     }
 
     @Inject

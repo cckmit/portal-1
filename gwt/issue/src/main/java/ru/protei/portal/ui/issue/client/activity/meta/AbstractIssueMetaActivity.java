@@ -13,7 +13,7 @@ public interface AbstractIssueMetaActivity {
     void onPauseDateChanged();
     void onStateChange();
     void onPlansChanged();
-    default void onManagerChanged(){};
+    void onManagerChanged();
     default void onInitiatorChanged(){};
     default void onTimeElapsedChanged(){};
 }

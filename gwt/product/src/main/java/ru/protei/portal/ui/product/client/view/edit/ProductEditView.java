@@ -206,17 +206,17 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
     @Override
     public HasVisibility parentsContainerVisibility() {
-        return parentsContainer;
+        return parents;
     }
 
     @Override
     public void makeChildrenContainerShortView() {
-        childrenContainer.getElement().replaceClassName(UiConstants.Styles.FULL_VIEW, UiConstants.Styles.SHORT_VIEW);
+        children.getElement().replaceClassName(UiConstants.Styles.FULL_VIEW, UiConstants.Styles.SHORT_VIEW);
     }
 
     @Override
     public void makeChildrenContainerFullView() {
-        childrenContainer.getElement().replaceClassName(UiConstants.Styles.SHORT_VIEW, UiConstants.Styles.FULL_VIEW);
+        children.getElement().replaceClassName(UiConstants.Styles.SHORT_VIEW, UiConstants.Styles.FULL_VIEW);
     }
 
     @Override
@@ -251,7 +251,7 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
     @Override
     public void setChildrenContainerLabel(String label) {
-        childrenContainerLabel.setInnerText(label);
+        children.setHeader(label);
     }
 
     @UiHandler("saveBtn")
@@ -326,10 +326,6 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @Inject
     @UiField(provided = true)
     ProductTypeBtnGroup type;
-    @UiField
-    HTMLPanel parentsContainer;
-    @UiField
-    HTMLPanel childrenContainer;
     @Inject
     @UiField(provided = true)
     DevUnitMultiSelector parents;
@@ -373,8 +369,6 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     MarkdownAreaWithPreview cdrDescription;
     @UiField
     TextBox wikiLink;
-    @UiField
-    LabelElement childrenContainerLabel;
     @Inject
     @UiField(provided = true)
     StringSelectInput aliases;

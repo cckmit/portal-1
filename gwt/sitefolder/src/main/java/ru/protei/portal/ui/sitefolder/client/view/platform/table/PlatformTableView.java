@@ -50,6 +50,7 @@ public class PlatformTableView extends Composite implements AbstractPlatformTabl
     @Override
     public void setAnimation(TableAnimation animation) {
         animation.setContainers(tableContainer, previewContainer, filterContainer);
+        columnProvider.setChangeSelectionIfSelectedPredicate(platform -> animation.isPreviewShow());
     }
 
     @Override

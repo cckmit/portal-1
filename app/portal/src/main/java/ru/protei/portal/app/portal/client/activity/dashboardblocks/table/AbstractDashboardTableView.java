@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.events.Draggable;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 public interface AbstractDashboardTableView extends IsWidget, Draggable {
 
@@ -27,4 +28,6 @@ public interface AbstractDashboardTableView extends IsWidget, Draggable {
     void hideTableOverflow();
 
     void setEnsureDebugId(String debugId);
+
+    void setChangeSelectionIfSelectedPredicate(Predicate<CaseShortView> changeSelectionIfSelectedPredicate);
 }
