@@ -67,8 +67,10 @@ public class AttachmentServiceImpl implements AttachmentService {
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
+/*
     @Autowired
     private ClientEventService clientEventService;
+*/
 
     /**
      * remove attachment from fileStorage, DataBase (item and relations)
@@ -96,9 +98,11 @@ public class AttachmentServiceImpl implements AttachmentService {
 
             if(result.isOk() && token != null) {
 
+/*
                 if (caseAttachment.getCommentId() != null) {
                     clientEventService.fireEvent( new CaseCommentSavedClientEvent( token.getPersonId(), caseAttachment.getCaseId(), caseAttachment.getCommentId() ) );
                 }
+*/
 
                 if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
                     publisherService.onCaseAttachmentEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL,
