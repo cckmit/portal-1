@@ -284,11 +284,8 @@ public class MailNotificationProcessor {
         return commentToLoginList
                 .stream()
                 .filter(replacementInfo -> neededCaseCommentsForNotification.contains(replacementInfo.getObject()))
-                .filter(replacementInfo -> replacementInfo.getObject() != null)
-                .filter(replacementInfo -> replacementInfo.getObject().getAuthor() != null)
                 .filter(replacementInfo -> !replacementInfo.getUserLoginShortViews().isEmpty())
-                .map(replacementInfo -> new ReplaceLoginWithUsernameInfo<>(replacementInfo.getObject(), getLoginSetByAuthorCompany(replacementInfo)))
-                .flatMap(replacementInfo -> replacementInfo.getUserLoginShortViews().stream())
+                .flatMap(replacementInfo -> getLoginSetByAuthorCompany(replacementInfo).stream())
                 .map(UserLoginShortView::getPersonId)
                 .collect(Collectors.toList());
     }
