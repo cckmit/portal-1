@@ -235,7 +235,7 @@ public class MarkdownRendererTest {
     }
 
     private void doTest(String input, String expected) {
-        String actual = htmlRenderer.plain2html(input, En_TextMarkup.MARKDOWN).trim();
+        String actual = htmlRenderer.plain2html(input, En_TextMarkup.MARKDOWN).trim().replaceAll("\\?\\d+", "");
         Assert.assertEquals("Not matched", expected, actual);
     }
 
