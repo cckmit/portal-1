@@ -3065,4 +3065,6 @@ public interface Lang extends Messages, ContactItemLang {
     String dutyLogDateFrom();
 
     String dutyLogValidationDateRange();
+
+    String dutyLogValidationEmployee();
 }

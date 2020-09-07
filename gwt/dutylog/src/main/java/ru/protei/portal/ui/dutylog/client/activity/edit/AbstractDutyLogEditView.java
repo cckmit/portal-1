@@ -17,5 +17,4 @@ public interface AbstractDutyLogEditView extends IsWidget {
     HasVisibility contentVisibility();
     HasVisibility loadingVisibility();
     HasValidable employeeValidator();
-    void setDateRangeValid(boolean isValid);
 }

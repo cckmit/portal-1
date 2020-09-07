@@ -76,13 +76,6 @@ public class DutyLogTableView extends Composite implements AbstractDutyLogTableV
             }
         };
 
-        StaticTextColumn<DutyLog> dutyColumn = new StaticTextColumn<DutyLog>(lang.dutyLogDuty()) {
-            @Override
-            public String getColumnValue(DutyLog dutyLog) {
-                return StringUtils.emptyIfNull(dutyLog.getPersonDisplayName());
-            }
-        };
-
         StaticTextColumn<DutyLog> typeColumn = new StaticTextColumn<DutyLog>(lang.dutyLogType()) {
             @Override
             public String getColumnValue(DutyLog dutyLog) {
@@ -92,7 +85,6 @@ public class DutyLogTableView extends Composite implements AbstractDutyLogTableV
 
         table.addColumn(dateColumn.header, dateColumn.values);
         table.addColumn(employeeColumn.header, employeeColumn.values);
-        table.addColumn(dutyColumn.header, dutyColumn.values);
         table.addColumn(typeColumn.header, typeColumn.values);
         table.addColumn(editClickColumn.header, editClickColumn.values);
     }

@@ -70,11 +70,6 @@ public class DutyLogEditView extends Composite implements AbstractDutyLogEditVie
         return employee;
     }
 
-    @Override
-    public void setDateRangeValid(boolean isValid) {
-        dateRange.markInputValid(isValid);
-    }
-
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;

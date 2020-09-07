@@ -45,10 +45,11 @@ public abstract class DutyLogEditActivity implements AbstractDutyLogEditActivity
         if (event.id == null) {
             DutyLog dutyLog = new DutyLog();
             dutyLog.setPersonId(policyService.getProfileId());
-            dutyLog.setPersonDisplayName(policyService.getProfile().getShortName());
-            dutyLog.setFrom(DateUtils.setBeginOfDay(new Date()));
-            dutyLog.setTo(DateUtils.setEndOfDay(new Date()));
+            dutyLog.setPersonDisplayName(policyService.getProfile().getFullName());
             dutyLog.setType(DutyType.BG);
+            // дефолтный период дежурства – с пятницы по пятницу (PORTAL-1377)
+            dutyLog.setFrom(getCurrentWeekFriday());
+            dutyLog.setTo(DateUtils.addDays(dutyLog.getFrom(), 7L));
 
             showView(dutyLog);
         } else {
@@ -107,20 +108,14 @@ public abstract class DutyLogEditActivity implements AbstractDutyLogEditActivity
     }
 
     private boolean validateView() {
-//        if (!view.employeeValidator().isValid()) {
-//            fireEvent(new NotifyEvents.Show(lang.dutyLogValidationEmployee(), NotifyEvents.NotifyType.ERROR));
-//            return false;
-//        }
-//
+        if (!view.employeeValidator().isValid()) {
+            fireEvent(new NotifyEvents.Show(lang.dutyLogValidationEmployee(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
         if (!isDateRangeValid(view.dateRange().getValue())) {
             fireEvent(new NotifyEvents.Show(lang.dutyLogValidationDateRange(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
-//
-//        if (!view.reasonValidator().isValid()) {
-//            fireEvent(new NotifyEvents.Show(lang.dutyLogValidationReason(), NotifyEvents.NotifyType.ERROR));
-//            return false;
-//        }
         return true;
     }
 
@@ -171,6 +166,17 @@ public abstract class DutyLogEditActivity implements AbstractDutyLogEditActivity
                 dateInterval.from != null &&
                 dateInterval.to != null &&
                 dateInterval.from.before(dateInterval.to);
+    }
+
+    private Date getCurrentWeekFriday() {
+        Date dateFrom = DateUtils.setBeginOfDay(new Date());
+        int dayOfWeek = DateUtils.getDayOfWeekNormalized(dateFrom);
+        if (dayOfWeek > 5) {
+            dateFrom = DateUtils.addDays(dateFrom, 5L - dayOfWeek);
+        } else {
+            dateFrom = DateUtils.subsctractDays(dateFrom,  dayOfWeek - 5L);
+        }
+        return dateFrom;
     }
 
     @Inject
