@@ -60,6 +60,8 @@ public class En_PrivilegeEntityLang {
                 return lang.plans();
             case ABSENCE:
                 return lang.absences();
+            case DUTY_LOG:
+                return lang.dutyLog();
             default:
                 return lang.unknownField();
         }

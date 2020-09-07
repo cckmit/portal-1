@@ -3025,4 +3025,44 @@ public interface Lang extends Messages, ContactItemLang {
     String attachmentsHeader(String countOfAttachments);
 
     String attachmentAdd();
+
+    String dutyLogCreation();
+
+    String dutyLogEditing();
+
+    String dutyLogDutyDate();
+
+    String dutyLogEmployee();
+
+    String dutyLogRange();
+
+    String dutyLogDuty();
+
+    String dutyLogCreated();
+
+    String dutyLogUpdated();
+
+    String dutyTypeBG();
+
+    String dutyTypeIP();
+
+    String dutyTypeBilling();
+
+    String dutyTypeMobile();
+
+    String dutyTypeDPI();
+
+    String dutyTypeMKSP_VKS();
+
+    String dutyTypeNGN();
+
+    String dutyTypeSORM();
+
+    String dutyLogType();
+
+    String dutyLog();
+
+    String dutyLogDateFrom();
+
+    String dutyLogValidationDateRange();
 }
