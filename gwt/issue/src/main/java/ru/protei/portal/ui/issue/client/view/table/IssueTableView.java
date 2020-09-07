@@ -10,6 +10,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.AbstractColumn;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
@@ -25,6 +26,8 @@ import ru.protei.portal.ui.issue.client.view.table.columns.ContactColumn;
 import ru.protei.portal.ui.issue.client.view.table.columns.InfoColumn;
 import ru.protei.portal.ui.issue.client.view.table.columns.ManagerColumn;
 import ru.protei.portal.ui.issue.client.view.table.columns.NumberColumn;
+
+import java.util.function.Predicate;
 
 
 /**
@@ -130,6 +133,11 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     @Override
     public void setTotalRecords(int totalRecords) {
         table.setTotalRecords(totalRecords);
+    }
+
+    @Override
+    public void setChangeSelectionIfSelectedPredicate(Predicate<CaseShortView> changeSelectionIfSelectedPredicate) {
+        columnProvider.setChangeSelectionIfSelectedPredicate(changeSelectionIfSelectedPredicate);
     }
 
     private void initTable () {

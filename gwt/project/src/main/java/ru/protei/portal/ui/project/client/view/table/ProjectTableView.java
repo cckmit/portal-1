@@ -60,6 +60,7 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
     @Override
     public void setAnimation ( TableAnimation animation ) {
         animation.setContainers( tableContainer, previewContainer, filterContainer );
+        columnProvider.setChangeSelectionIfSelectedPredicate(project -> animation.isPreviewShow());
     }
 
     @Override
@@ -109,11 +110,6 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
     @Override
     public void scrollTo( int page ) {
         table.scrollToPage( page );
-    }
-
-    @Override
-    public void setChangeSelectionIfSelectedPredicate(Predicate<Project> changeSelectionIfSelectedPredicate) {
-        columnProvider.setChangeSelectionIfSelectedPredicate(changeSelectionIfSelectedPredicate);
     }
 
     private void initTable () {

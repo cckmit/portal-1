@@ -186,10 +186,13 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         table.setEnsureDebugId(DebugIds.DASHBOARD.TABLE + order);
         table.setName(name);
         table.setCollapsed(dashboard.getCollapsed() == null ? false : dashboard.getCollapsed());
+        table.setChangeSelectionIfSelectedPredicate(caseShortView -> view.isQuickviewShow());
         table.setActivity(new AbstractDashboardTableActivity() {
             @Override
             public void onItemClicked(CaseShortView value) {
-                showIssuePreview(value.getCaseNumber());
+                if (value != null) {
+                    showIssuePreview(value.getCaseNumber());
+                }
             }
             @Override
             public void onOpenClicked() {

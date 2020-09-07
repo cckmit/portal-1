@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 public interface AbstractTableView extends IsWidget {
 

@@ -31,6 +31,4 @@ public interface AbstractProjectTableView extends IsWidget {
     int getPageCount();
 
     void scrollTo( int page );
-
-    void setChangeSelectionIfSelectedPredicate(Predicate<Project> changeSelectionIfSelectedPredicate);
 }

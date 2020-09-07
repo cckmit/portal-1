@@ -49,7 +49,6 @@ public abstract class ProjectTableActivity
         view.getFilterContainer().add( filterView.asWidget() );
 
         pagerView.setActivity( this );
-        view.setChangeSelectionIfSelectedPredicate(project -> animation.detailsShow());
     }
 
     @Event

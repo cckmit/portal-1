@@ -49,6 +49,7 @@ public class EmployeeRegistrationTableView extends Composite implements Abstract
     @Override
     public void setAnimation(TableAnimation animation) {
         animation.setContainers(tableContainer, previewContainer, filterContainer);
+        columnProvider.setChangeSelectionIfSelectedPredicate(employeeRegistration -> animation.isPreviewShow());
     }
 
     @Override

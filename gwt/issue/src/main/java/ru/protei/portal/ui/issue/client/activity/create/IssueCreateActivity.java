@@ -875,10 +875,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         Long stateId = metaView.state().getValue() == null ? null : metaView.state().getValue().getId();
         boolean isStateWithRestrictions = stateId != null && isStateWithRestrictions(stateId);
 
-        boolean b = metaView.getManager() != null;
-
-
-        metaView.setProductMandatory(isCompanyWithAutoOpenIssues || b || isStateWithRestrictions);
+        metaView.setProductMandatory(isCompanyWithAutoOpenIssues || metaView.getManager() != null || isStateWithRestrictions);
     }
 
     private void updateManagerMandatory(AbstractIssueMetaView metaView) {

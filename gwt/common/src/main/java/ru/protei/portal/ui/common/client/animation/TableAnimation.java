@@ -80,7 +80,7 @@ public class TableAnimation {
         applyTableStyleNoFilter();
     }
 
-    public boolean detailsShow() {
+    public boolean isPreviewShow() {
         return tableContainer.getElement().hasClassName(styleTableWithDetails);
     }
 

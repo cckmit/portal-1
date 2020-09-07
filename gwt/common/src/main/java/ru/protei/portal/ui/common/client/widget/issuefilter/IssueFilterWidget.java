@@ -99,10 +99,6 @@ public class IssueFilterWidget extends Composite {
         footer.removeClassName("card-footer");
     }
 
-    public void setFilterValidator(Function<CaseFilter, Boolean> filterValidator) {
-        this.filterValidator = filterValidator;
-    }
-
     public HasValue<CaseFilterShortView> userFilter() {
         return userFilter;
     }

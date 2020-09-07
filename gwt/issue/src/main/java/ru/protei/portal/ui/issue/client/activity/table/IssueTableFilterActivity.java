@@ -60,6 +60,8 @@ public abstract class IssueTableFilterActivity
         view.getFilterContainer().add( collapseFilterView.asWidget() );
         pagerView.setActivity( this );
 
+        view.setChangeSelectionIfSelectedPredicate(caseShortView -> animation.isPreviewShow());
+
         toggleFilterCollapseState();
     }
 
