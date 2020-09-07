@@ -531,15 +531,15 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             return ok(objects.stream().map(ReplaceLoginWithUsernameInfo::new).collect(Collectors.toList()));
         }
 
-        Set<String> loginSet = new HashSet<>(getPossibleLoginSet(toList(objects, objectToStringFunction)).getData());
+        Set<String> possibleLoginSet = new HashSet<>(getPossibleLoginSet(toList(objects, objectToStringFunction)).getData());
 
-        if (loginSet.isEmpty()) {
+        if (possibleLoginSet.isEmpty()) {
             return ok(objects.stream().map(ReplaceLoginWithUsernameInfo::new).collect(Collectors.toList()));
         }
 
         UserLoginShortViewQuery query = new UserLoginShortViewQuery();
         query.setAdminState(En_AdminState.UNLOCKED);
-        query.setLoginSet(loginSet);
+        query.setLoginSet(possibleLoginSet);
 
         SearchResult<UserLoginShortView> searchResult = userLoginShortViewDAO.getSearchResult(query);
 
@@ -571,7 +571,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
                 if (isReplaced) {
                     info.setObject(objectWithReplace);
-                    info.addData(nextUserLogin);
+                    info.addUserLoginShortView(nextUserLogin);
                 }
             }
         }

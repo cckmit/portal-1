@@ -30,11 +30,11 @@ public class ReplaceLoginWithUsernameInfo<T> {
         return userLoginShortViews == null ? new HashSet<>() : userLoginShortViews;
     }
 
-    public void addData(UserLoginShortView data) {
+    public void addUserLoginShortView(UserLoginShortView userLoginShortView) {
         if (userLoginShortViews == null) {
             userLoginShortViews = new HashSet<>();
         }
 
-        userLoginShortViews.add(data);
+        userLoginShortViews.add(userLoginShortView);
     }
 }
