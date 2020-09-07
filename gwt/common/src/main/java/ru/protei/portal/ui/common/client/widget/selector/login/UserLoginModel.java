@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.protei.portal.core.model.dict.En_AdminState;
 import ru.protei.portal.core.model.ent.UserLoginShortView;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.UserLoginShortViewQuery;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -32,6 +33,8 @@ public abstract class UserLoginModel implements AsyncSearchSelectorModel<UserLog
 
     @Override
     public void setSearchString(String searchString) {
+        cache.setIgnoreFirstElements(StringUtils.isNotBlank(searchString));
+
         cache.clearCache();
         cache.setLoadHandler(makeLoadHandler(makeQuery(searchString)));
     }

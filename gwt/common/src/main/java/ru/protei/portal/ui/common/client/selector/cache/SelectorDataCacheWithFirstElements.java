@@ -9,6 +9,10 @@ import java.util.List;
 public class SelectorDataCacheWithFirstElements<T> extends SelectorDataCache<T> {
     @Override
     public T get(int elementIndex, LoadingHandler loadingHandler) {
+        if (ignoreFirstElements) {
+            return super.get(elementIndex, loadingHandler);
+        }
+
         if (elementIndex == 0) {
             resetIndex();
         }
@@ -27,12 +31,17 @@ public class SelectorDataCacheWithFirstElements<T> extends SelectorDataCache<T> 
         this.firstElements.addAll(CollectionUtils.emptyIfNull(firstElements));
     }
 
+    public void setIgnoreFirstElements(boolean ignoreFirstElements) {
+        this.ignoreFirstElements = ignoreFirstElements;
+    }
+
     private T getNext(LoadingHandler loadingHandler) {
         if (index < firstElements.size()) {
             return firstElements.get(index++);
         }
 
-        T value = super.get(index++, loadingHandler);
+        T value = super.get(index - firstElements.size(), loadingHandler);
+        index++;
 
         if (value == null) {
             index--;
@@ -51,5 +60,6 @@ public class SelectorDataCacheWithFirstElements<T> extends SelectorDataCache<T> 
     }
 
     private int index;
+    private boolean ignoreFirstElements;
     private List<T> firstElements = new ArrayList<>();
 }
