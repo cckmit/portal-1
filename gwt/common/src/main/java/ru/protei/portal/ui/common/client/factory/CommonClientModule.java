@@ -29,6 +29,7 @@ import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactIte
 import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactItemView;
 import ru.protei.portal.ui.common.client.activity.contactitem.ContactItemActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
+import ru.protei.portal.ui.common.client.activity.externallink.ExternalLinkActivity;
 import ru.protei.portal.ui.common.client.activity.filter.IssueFilterWidgetModel;
 import ru.protei.portal.ui.common.client.activity.errorpage.AbstractErrorPageView;
 import ru.protei.portal.ui.common.client.activity.errorpage.ErrorPageActivity;
@@ -107,6 +108,7 @@ public class CommonClientModule extends AbstractGinModule {
     @Override
     protected void configure() {
 
+        bind( ExternalLinkActivity.class ).asEagerSingleton();
         bind( YouTrackPage.class ).asEagerSingleton();
         bind( YouTrackAdminPage.class ).asEagerSingleton();
 

@@ -35,8 +35,6 @@ public abstract class AppActivity
     @PostConstruct
     public void onInit() {
         view.setActivity( this );
-
-        fireEvent( new MenuEvents.Init( view.getMenuContainer() ) );
     }
 
     @Event
@@ -99,6 +97,7 @@ public abstract class AppActivity
     }
 
     private void initApp() {
+        fireEvent( new MenuEvents.Init( view.getMenuContainer() ) );
         fireEvent( new AppEvents.InitDetails( view.getDetailsContainer() ) );
         fireEvent( new NotifyEvents.Init( view.getNotifyContainer() ) );
         fireEvent( new ActionBarEvents.Init( view.getActionBarContainer() ) );

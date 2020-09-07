@@ -99,8 +99,8 @@ public class AppView extends Composite
 
     @Override
     public void setExternalLinks() {
-/*
 
+/*
         HTML html = new HTML("<li>" +
                 "<a href=\"#\" title=\"Test\" id=\"debug-sidebar-menu-store-delivery\">" +
                 "<span class=\"title\">Test</span>" +

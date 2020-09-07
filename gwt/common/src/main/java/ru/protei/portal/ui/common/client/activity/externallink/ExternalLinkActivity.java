@@ -3,7 +3,10 @@ package ru.protei.portal.ui.common.client.activity.externallink;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NodeList;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.UIObject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
@@ -19,7 +22,8 @@ public abstract class ExternalLinkActivity implements Activity {
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
 
-        init.parent.add(html.asWidget());
+
+        init.parent.add(html);
 
         NodeList<Element> anchors = html.getElement().getElementsByTagName("a");
         for (int i = 0; i < anchors.getLength(); i++) {
