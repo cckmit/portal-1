@@ -31,6 +31,8 @@ public interface AbstractIssueMetaView extends IsWidget {
 
     EntityOption getManagerCompany();
 
+    void setManagerMandatory(boolean isMandatory);
+
     void setCaseMetaNotifiers(Set<Person> caseObjectMetaNotifiers);
     void setCaseMetaJira(CaseObjectMetaJira caseObjectMetaJira);
     Set<Person> getCaseMetaNotifiers();

@@ -77,6 +77,7 @@ public class ReservedIpTableView extends Composite implements AbstractReservedIp
     public void setAnimation ( TableAnimation animation ) {
         animation.setContainers( tableContainer, previewContainer, filterContainer );
         animation.setStyles("col-md-12", "col-md-9", "col-md-3", "col-md-6", "col-md-6");
+        columnProvider.setChangeSelectionIfSelectedPredicate(reservedIp -> animation.isPreviewShow());
     }
 
     @Override

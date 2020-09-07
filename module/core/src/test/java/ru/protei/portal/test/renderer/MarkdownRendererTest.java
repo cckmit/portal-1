@@ -10,6 +10,7 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.config.PortalConfigTestConfiguration;
 import ru.protei.portal.config.RendererTestConfiguration;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 
 @RunWith(SpringJUnit4ClassRunner.class)

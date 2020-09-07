@@ -67,14 +67,8 @@
                         </div>
 
                         <div class="row">
-                            <g:HTMLPanel ui:field="parentsContainer" styleName="form-group col-md-6">
-                                <label><ui:text from="{lang.belongsTo}"/></label>
-                                <devunit:DevUnitMultiSelector ui:field="parents" hasNullValue="false"/>
-                            </g:HTMLPanel>
-                            <g:HTMLPanel ui:field="childrenContainer" styleName="form-group col-md-6">
-                                <label ui:field="childrenContainerLabel"/>
-                                <devunit:DevUnitMultiSelector ui:field="children" hasNullValue="false"/>
-                            </g:HTMLPanel>
+                            <devunit:DevUnitMultiSelector ui:field="parents" hasNullValue="false" header="{lang.belongsTo}" styleName="form-group col-md-6"/>
+                            <devunit:DevUnitMultiSelector ui:field="children" hasNullValue="false" styleName="form-group col-md-6"/>
                         </div>
 
                         <g:HTMLPanel ui:field="aliasesContainer" styleName="row">

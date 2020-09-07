@@ -99,6 +99,10 @@ public class IssueFilterWidget extends Composite {
         footer.removeClassName("card-footer");
     }
 
+    public HasValue<CaseFilterShortView> userFilter() {
+        return userFilter;
+    }
+
     @UiHandler( "resetBtn" )
     public void onResetClicked ( ClickEvent event ) {
         onUserFilterChanged(null);
