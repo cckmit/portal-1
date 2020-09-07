@@ -2996,6 +2996,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String projectPauseDate(String date);
 
+    String errDashboardChooseFilter();
+
+    String errDashboardTableNameEmpty();
+
     String errContractOrganizationShouldBeDifferentFromParent();
 
     String topBrass();

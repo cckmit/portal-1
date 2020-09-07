@@ -21,5 +21,7 @@ public interface AbstractDashboardView extends IsWidget {
 
     void showQuickview(boolean isShow);
 
+    boolean isQuickviewShow();
+
     void setFailedViewText(String text);
 }

@@ -56,6 +56,7 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
     @Override
     public void setAnimation(TableAnimation animation) {
         animation.setContainers( tableContainer, previewContainer, filterContainer );
+        columnProvider.setChangeSelectionIfSelectedPredicate(company -> animation.isPreviewShow());
     }
 
     @Override
