@@ -342,6 +342,8 @@ public abstract class CaseCommentListActivity
             if(itemView.attachmentContainer().getAll().isEmpty()){
                 itemView.showAttachments(false);
             }
+
+            reloadComments(caseType, caseId);
         });
     }
 
