@@ -24,6 +24,7 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.UserLoginShortViewQuery;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
+import ru.protei.portal.core.model.struct.ReplacementInfo;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseCommentShortView;
 import ru.protei.portal.core.service.auth.AuthService;
@@ -55,7 +56,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         List<CaseComment> comments = getList(query).getData();
 
         if (needReplaceLoginWithUsername(caseType, token.getRoles())) {
-            return replaceLoginWithUsername(comments).map(Map::keySet).map(ArrayList::new);
+            return replaceLoginWithUsername(comments).map(this::objectListFromReplacementInfoList);
         }
 
         return ok(comments);
@@ -514,11 +515,11 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     @Override
     public Result<List<String>> replaceLoginWithUsername(AuthToken token, List<String> texts) {
-        return replaceLoginWithUsername(texts, Function.identity(), String::replace).map(Map::keySet).map(ArrayList::new);
+        return replaceLoginWithUsername(texts, Function.identity(), String::replace).map(this::objectListFromReplacementInfoList);
     }
 
     @Override
-    public Result<Map<CaseComment, Set<String>>> replaceLoginWithUsername(List<CaseComment> comments) {
+    public Result<List<ReplacementInfo<CaseComment>>> replaceLoginWithUsername(List<CaseComment> comments) {
         return replaceLoginWithUsername(comments, CaseComment::getText, this::replaceTextAndGetComment);
     }
 
@@ -528,17 +529,17 @@ public class CaseCommentServiceImpl implements CaseCommentService {
      * @param  objects                  список объектов
      * @param  objectToStringFunction   функция, переводящая переданный объект в строку, в которой будет производиться замена
      * @param  replacementMapper        {@link ReplacementMapper}
-     * @return карта, содержащая в качестве ключей объекты, в качестве значений - набор логинов
+     * @return список {@link ReplacementInfo}, содержащий объект и набор логинов в объекте
      */
-    private <T> Result<Map<T, Set<String>>> replaceLoginWithUsername(List<T> objects, Function<T, String> objectToStringFunction, ReplacementMapper<T> replacementMapper) {
+    private <T> Result<List<ReplacementInfo<T>>> replaceLoginWithUsername(List<T> objects, Function<T, String> objectToStringFunction, ReplacementMapper<T> replacementMapper) {
         if (isEmpty(objects)) {
-            return ok(objects.stream().collect(Collectors.toMap(Function.identity(), value -> new HashSet<>())));
+            return ok(objects.stream().map(ReplacementInfo::new).collect(Collectors.toList()));
         }
 
         Set<String> loginSet = new HashSet<>(getPossibleLoginSet(toList(objects, objectToStringFunction)).getData());
 
         if (loginSet.isEmpty()) {
-            return ok(objects.stream().collect(Collectors.toMap(Function.identity(), value -> new HashSet<>())));
+            return ok(objects.stream().map(ReplacementInfo::new).collect(Collectors.toList()));
         }
 
         UserLoginShortViewQuery query = new UserLoginShortViewQuery();
@@ -552,39 +553,34 @@ public class CaseCommentServiceImpl implements CaseCommentService {
                 .sorted((login1, login2) -> login2.getUlogin().length() - login1.getUlogin().length())
                 .collect(Collectors.toList());
 
-        return ok(makeObjectToLoginSetMap(objects, objectToStringFunction, replacementMapper, existingLoginList));
+        return ok(makeReplacementInfoList(objects, objectToStringFunction, replacementMapper, existingLoginList));
     }
 
-    private <T> Map<T, Set<String>> makeObjectToLoginSetMap(List<T> objects, Function<T, String> objectToStringFunction, ReplacementMapper<T> replacementMapper, List<UserLoginShortView> existingLoginList) {
-        Map<T, Set<String>> objectToLoginSet = new LinkedHashMap<>();
+    private <T> List<ReplacementInfo<T>> makeReplacementInfoList(List<T> objects, Function<T, String> objectToStringFunction, ReplacementMapper<T> replacementMapper, List<UserLoginShortView> existingLoginList) {
+        List<ReplacementInfo<T>> replacementInfoList = new ArrayList<>();
 
         for (T object : objects) {
-            objectToLoginSet.put(object, new HashSet<>());
+            replacementInfoList.add(new ReplacementInfo<>(object));
         }
 
         for (UserLoginShortView nextUserLogin : existingLoginList) {
-
-            List<T> currentObjects = new ArrayList<>(objectToLoginSet.keySet());
-            for (T object : currentObjects) {
-                String textBeforeReplace = objectToStringFunction.apply(object);
+            for (ReplacementInfo<T> info : replacementInfoList) {
+                String textBeforeReplace = objectToStringFunction.apply(info.getObject());
 
                 T objectWithReplace = replacementMapper
-                        .replace(object, "@" + nextUserLogin.getUlogin(), "@" + nextUserLogin.getLastName() + " " + nextUserLogin.getFirstName());
+                        .replace(info.getObject(), "@" + nextUserLogin.getUlogin(), "@" + nextUserLogin.getLastName() + " " + nextUserLogin.getFirstName());
 
                 String textAfterReplace = objectToStringFunction.apply(objectWithReplace);
 
                 boolean isReplaced = !Objects.equals(textBeforeReplace, textAfterReplace);
 
-//                Для сохранения порядка ключей мапы, постоянно удаляем и добавляем заново элемент.
-                Set<String> loginSet = objectToLoginSet.remove(object);
-                objectToLoginSet.put(objectWithReplace, loginSet);
-
                 if (isReplaced) {
-                    loginSet.add(nextUserLogin.getUlogin());
+                    info.addData(nextUserLogin.getUlogin());
                 }
             }
         }
-        return objectToLoginSet;
+
+        return replacementInfoList;
     }
 
     private Result<Set<String>> getPossibleLoginSet(List<String> texts) {
@@ -604,28 +600,28 @@ public class CaseCommentServiceImpl implements CaseCommentService {
                 .stream()
                 .filter(StringUtils::isNotBlank)
                 .map(String::trim)
-                .flatMap(text -> Arrays.stream(text.split("\\s+")))
+                .flatMap(text -> Arrays.stream(text.split(CrmConstants.Masks.ONE_OR_MORE_SPACES)))
                 .filter(text -> text.startsWith("@"))
-                .filter(text -> text.length() <= CrmConstants.ContactConstants.LOGIN_SIZE)
                 .map(text -> text.substring(1))
+                .filter(text -> text.length() <= CrmConstants.ContactConstants.LOGIN_SIZE)
                 .forEach(text -> {
                     possibleLoginSet.add(text);
-                    possibleLoginSet.addAll(subLogins(text));
+                    possibleLoginSet.addAll(subLoginList(text));
                 });
     }
 
-    private List<String> subLogins(String text) {
-        List<String> subLogins = new ArrayList<>();
+    private List<String> subLoginList(String text) {
+        List<String> subLoginList = new ArrayList<>();
 
         for (int i = 1; i < text.toCharArray().length; i++) {
-            subLogins.add(text.substring(0, i));
+            subLoginList.add(text.substring(0, i));
         }
 
-        return subLogins;
+        return subLoginList;
     }
 
     private Result<List<CaseCommentShortView>> replaceLoginWithUsernameInCommentsShortView(List<CaseCommentShortView> comments) {
-        return replaceLoginWithUsername(comments, CaseCommentShortView::getText, this::replaceTextAndGetComment).map(Map::keySet).map(ArrayList::new);
+        return replaceLoginWithUsername(comments, CaseCommentShortView::getText, this::replaceTextAndGetComment).map(this::objectListFromReplacementInfoList);
     }
 
     private CaseComment replaceTextAndGetComment(CaseComment comment, String replaceFrom, String replaceTo) {
@@ -644,6 +640,10 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
         comment.setText(comment.getText().replace(replaceFrom, replaceTo));
         return comment;
+    }
+
+    private <T> List<T> objectListFromReplacementInfoList(List<ReplacementInfo<T>> infos) {
+        return infos.stream().map(ReplacementInfo::getObject).collect(Collectors.toList());
     }
 
     private boolean needReplaceLoginWithUsername(En_CaseType caseType, Set<UserRole> roles) {

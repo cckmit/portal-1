@@ -20,6 +20,7 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.model.struct.ReplacementInfo;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -93,7 +94,7 @@ public class MailNotificationProcessor {
     public void onCaseChanged(AssembledCaseEvent event){
         Collection<NotificationEntry> notifiers = collectNotifiers(event);
 
-        Map<CaseComment, Set<String>> commentToLoginSet = caseCommentService.replaceLoginWithUsername(event.getAllComments()).getData();
+        List<ReplacementInfo<CaseComment>> commentToLoginSet = caseCommentService.replaceLoginWithUsername(event.getAllComments()).getData();
 
         notifiers.addAll(collectCommentNotifiers(event, commentToLoginSet));
 
@@ -117,7 +118,7 @@ public class MailNotificationProcessor {
             DiffCollectionResult<LinkData> privateLinks = convertToLinkData( event.getLinks(), privateCaseUrl );
             DiffCollectionResult<LinkData> publicLinks = convertToLinkData(selectPublicLinks(event.getLinks()), publicCaseUrl );
 
-            List<CaseComment> comments = new ArrayList<>(commentToLoginSet.keySet());
+            List<CaseComment> comments = commentToLoginSet.stream().map(ReplacementInfo::getObject).collect(Collectors.toList());
 
             Long lastMessageId = caseService.getAndIncrementEmailLastId(event.getCaseObjectId() ).orElseGet( r-> Result.ok(0L) ).getData();
 
@@ -271,16 +272,15 @@ public class MailNotificationProcessor {
                 event.getManager());
     }
 
-    private Collection<NotificationEntry> collectCommentNotifiers(AssembledCaseEvent event, Map<CaseComment, Set<String>> commentToLoginList) {
+    private Collection<NotificationEntry> collectCommentNotifiers(AssembledCaseEvent event, List<ReplacementInfo<CaseComment>> commentToLoginList) {
         Set<String> loginSet = new HashSet<>();
 
         Set<CaseComment> neededCaseCommentsForNotification = getNeededCaseCommentsForNotification(event);
 
-        for (CaseComment nextComment : commentToLoginList.keySet()) {
-            if (neededCaseCommentsForNotification.contains(nextComment)) {
-                loginSet.addAll(commentToLoginList.get(nextComment));
-            }
-        }
+        commentToLoginList
+                .stream()
+                .filter(replacementInfo -> neededCaseCommentsForNotification.contains(replacementInfo.getObject()))
+                .forEach(replacementInfo -> loginSet.addAll(replacementInfo.getDataSet()));
 
         return subscriptionService.subscribers(loginSet);
     }

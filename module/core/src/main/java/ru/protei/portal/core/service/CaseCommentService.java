@@ -12,12 +12,11 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
+import ru.protei.portal.core.model.struct.ReplacementInfo;
 import ru.protei.portal.core.model.view.CaseCommentShortView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Service to get/add/update/remove comments {@link CaseComment}
@@ -124,7 +123,7 @@ public interface CaseCommentService {
     })
     Result<List<String>> replaceLoginWithUsername(AuthToken token, List<String> texts);
 
-    Result<Map<CaseComment, Set<String>>> replaceLoginWithUsername(List<CaseComment> comments);
+    Result<List<ReplacementInfo<CaseComment>>> replaceLoginWithUsername(List<CaseComment> comments);
 
     interface ReplacementMapper<T> {
         /**
