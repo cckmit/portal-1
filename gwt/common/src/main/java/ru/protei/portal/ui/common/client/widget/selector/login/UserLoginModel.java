@@ -2,10 +2,12 @@ package ru.protei.portal.ui.common.client.widget.selector.login;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
+import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_AdminState;
 import ru.protei.portal.core.model.ent.UserLoginShortView;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.UserLoginShortViewQuery;
+import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.selector.AsyncSearchSelectorModel;
@@ -20,10 +22,12 @@ import java.util.HashSet;
 import java.util.List;
 
 public abstract class UserLoginModel implements AsyncSearchSelectorModel<UserLoginShortView>, Activity {
-    @Inject
-    public void init() {
+    @Event
+    public void onAuthSuccess(AuthEvents.Success event) {
+        this.personCompanyId = event.profile.getCompany().getId();
+
         cache.clearCache();
-        cache.setLoadHandler(makeLoadHandler(makeQuery(null)));
+        cache.setLoadHandler(makeLoadHandler(makeQuery(null, personCompanyId)));
     }
 
     @Override
@@ -36,7 +40,7 @@ public abstract class UserLoginModel implements AsyncSearchSelectorModel<UserLog
         cache.setIgnoreFirstElements(StringUtils.isNotBlank(searchString));
 
         cache.clearCache();
-        cache.setLoadHandler(makeLoadHandler(makeQuery(searchString)));
+        cache.setLoadHandler(makeLoadHandler(makeQuery(searchString, personCompanyId)));
     }
 
     public void setPersonFirstId(Long personId) {
@@ -44,8 +48,7 @@ public abstract class UserLoginModel implements AsyncSearchSelectorModel<UserLog
             return;
         }
 
-        UserLoginShortViewQuery accountQuery = new UserLoginShortViewQuery();
-        accountQuery.setAdminState(En_AdminState.UNLOCKED);
+        UserLoginShortViewQuery accountQuery = makeQuery(null, personCompanyId);
         accountQuery.setPersonIds(new HashSet<>(Collections.singleton(personId)));
 
         accountService.getUserLoginShortViewList(accountQuery, new FluentCallback<List<UserLoginShortView>>()
@@ -64,10 +67,11 @@ public abstract class UserLoginModel implements AsyncSearchSelectorModel<UserLog
         };
     }
 
-    private UserLoginShortViewQuery makeQuery(String searchString) {
+    private UserLoginShortViewQuery makeQuery(String searchString, Long personCompanyId) {
         UserLoginShortViewQuery accountQuery = new UserLoginShortViewQuery();
         accountQuery.setSearchString(searchString);
         accountQuery.setAdminState(En_AdminState.UNLOCKED);
+        accountQuery.setCompanyIds(new HashSet<>(Collections.singleton(personCompanyId)));
 
         return accountQuery;
     }
@@ -77,6 +81,8 @@ public abstract class UserLoginModel implements AsyncSearchSelectorModel<UserLog
 
     @Inject
     Lang lang;
+
+    private Long personCompanyId;
 
     private SelectorDataCacheWithFirstElements<UserLoginShortView> cache = new SelectorDataCacheWithFirstElements<>();
 }

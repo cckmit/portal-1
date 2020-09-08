@@ -41,12 +41,12 @@ public class SelectorDataCacheWithFirstElements<T> extends SelectorDataCache<T> 
         }
 
         T value = super.get(index - firstElements.size(), loadingHandler);
-        index++;
 
         if (value == null) {
-            index--;
             return null;
         }
+
+        index++;
 
         if (firstElements.contains(value)) {
             return getNext(loadingHandler);

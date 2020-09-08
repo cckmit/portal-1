@@ -32,7 +32,6 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
     }
 
     public void setCompanyId(Long companyId) {
-        this.companyId = companyId;
     }
 
     public void setPersonId(Long personId) {
@@ -70,7 +69,6 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
                 }
 
                 updateModel(possibleLoginInfo.possibleLogin, userLoginModel);
-                updateSelectorFilterByCompanyId(userLoginSelector, companyId);
                 showPopup(userLoginSelector);
 
                 MentioningTextArea.this.possibleLoginInfo = possibleLoginInfo;
@@ -101,18 +99,12 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
         userLoginModel.setSearchString(searchString);
     }
 
-    private void updateSelectorFilterByCompanyId(UserLoginSelector userLoginSelector, final Long companyId) {
-        userLoginSelector.setFilter(userLoginShortView -> companyId.equals(userLoginShortView.getCompanyId()));
-    }
-
     private native int pointerPosition(Element textArea) /*-{
         return textArea.selectionStart;
     }-*/;
 
     private HandlerRegistration keyUpHandlerRegistration;
     private HandlerRegistration clickHandlerRegistration;
-
-    private Long companyId;
 
     private final UserLoginModel userLoginModel;
 

@@ -25,20 +25,22 @@ public class UserLoginSelector extends PopupSingleSelector<UserLoginShortView> {
     }
 
     @Override
+    public void onLoadingComplete() {
+        super.onLoadingComplete();
+
+        Iterator<Widget> iterator = getPopup().getChildContainer().iterator();
+
+        if (!iterator.hasNext()) {
+            getPopup().hide();
+        }
+    }
+
+    @Override
     protected SelectorItem<UserLoginShortView> makeSelectorItem(UserLoginShortView element, String elementHtml) {
         PopupUserLoginSelectorItem<UserLoginShortView> popupSelectorItem = new PopupUserLoginSelectorItem<>();
         popupSelectorItem.setLogin(element.getUlogin());
         popupSelectorItem.setUserName(element.getLastName() + " " + element.getFirstName());
         popupSelectorItem.setImage(AvatarUtils.getAvatarUrl(element.getPersonId(), element.getCompanyCategory(), En_Gender.parse(element.getGenderCode())));
         return popupSelectorItem;
-    }
-
-    @Override
-    protected void checkNoElements() {
-        Iterator<Widget> iterator = getPopup().getChildContainer().iterator();
-
-        if (!iterator.hasNext()) {
-            getPopup().hide();
-        }
     }
 }
