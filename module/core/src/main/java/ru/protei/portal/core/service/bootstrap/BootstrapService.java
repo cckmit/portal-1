@@ -536,7 +536,6 @@ public class BootstrapService {
 //    }
 
     private void documentBuildFullIndex() { // Данный метод создаст индексы для всех существующих документов
-if(true) return; //TODO remove
         try {
             if (!Objects.equals(config.data().getCommonConfig().getCrmUrlCurrent(), config.data().getCommonConfig().getCrmUrlInternal())) {
                 // disable index at non internal stand
