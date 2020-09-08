@@ -177,7 +177,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         fillCaseLinks(project.getId());
 
         if(!isNew( project )) {
-            fireEvent( new CaseCommentEvents.Show( view.getCommentsContainer(), project.getId(), En_CaseType.PROJECT, hasPrivileges( project.getId() ) ) );
+            fireEvent( new CaseCommentEvents.Show( view.getCommentsContainer(), project.getId(), En_CaseType.PROJECT, hasPrivileges( project.getId() ), project.getCreatorId() ) );
         }
 
         fireEvent(new ProjectEvents.ShowProjectDocuments(view.getDocumentsContainer(), this.project.getId()));

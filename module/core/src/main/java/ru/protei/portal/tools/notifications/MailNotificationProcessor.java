@@ -1,7 +1,6 @@
 package ru.protei.portal.tools.notifications;
 
 import org.apache.commons.io.IOUtils;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +39,6 @@ import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
@@ -99,7 +97,7 @@ public class MailNotificationProcessor {
 
         List<ReplaceLoginWithUsernameInfo<CaseComment>> commentReplacementInfoList = caseCommentService.replaceLoginWithUsername(event.getAllComments()).getData();
 
-        notifiers.addAll(collectCommentNotifiers(event, commentReplacementInfoList));
+        notifiers.addAll(collectCommentNotifiers(event, commentReplacementInfoList, event.getCaseObject().isPrivateCase()));
 
         if(CollectionUtils.isEmpty(notifiers)) {
             log.info( "Case notification :: subscribers not found, break notification" );
@@ -273,65 +271,6 @@ public class MailNotificationProcessor {
                 event.getInitiator(),
                 event.getCreator(),
                 event.getManager());
-    }
-
-    private Collection<NotificationEntry> collectCommentNotifiers(AssembledCaseEvent event, List<ReplaceLoginWithUsernameInfo<CaseComment>> commentToLoginList) {
-        List<NotificationEntry> result = new ArrayList<>();
-
-        Set<CaseComment> neededCaseCommentsForNotification = getNeededCaseCommentsForNotification(event);
-
-        if (event.getCaseObject().isPrivateCase()) {
-            List<Long> personIds = getPersonIdsFromNeededComments(commentToLoginList, neededCaseCommentsForNotification);
-            result.addAll(filterNotificationEntries(subscriptionService.subscribers(personIds), this::isProteiRecipient));
-        } else {
-            List<Long> privateCommentPersonIds = getPersonIdsFromNeededComments(getPrivateCommentsReplacementInfoList(commentToLoginList), neededCaseCommentsForNotification);
-            result.addAll(filterNotificationEntries(subscriptionService.subscribers(privateCommentPersonIds), this::isProteiRecipient));
-
-            List<Long> publicCommentPersonIds = getPersonIdsFromNeededComments(getPublicCommentReplacementInfoList(commentToLoginList), neededCaseCommentsForNotification);
-            result.addAll(subscriptionService.subscribers(publicCommentPersonIds));
-        }
-
-        return result;
-    }
-
-    private List<Long> getPersonIdsFromNeededComments(List<ReplaceLoginWithUsernameInfo<CaseComment>> commentToLoginList, Set<CaseComment> neededCaseCommentsForNotification) {
-        return commentToLoginList
-                .stream()
-                .filter(replacementInfo -> neededCaseCommentsForNotification.contains(replacementInfo.getObject()))
-                .flatMap(replacementInfo -> replacementInfo.getUserLoginShortViews().stream())
-                .map(UserLoginShortView::getPersonId)
-                .collect(Collectors.toList());
-    }
-
-    private Set<CaseComment> getNeededCaseCommentsForNotification(AssembledCaseEvent event) {
-        List<CaseComment> addedCaseComments = emptyIfNull(event.getAddedCaseComments());
-        List<CaseComment> changedCaseComments = emptyIfNull(event.getChangedComments());
-        List<CaseComment> removeCaseComments = emptyIfNull(event.getRemovedComments());
-
-        addedCaseComments.removeIf(removeCaseComments::contains);
-
-        Set<CaseComment> neededComments = new HashSet<>(emptyIfNull(addedCaseComments));
-        neededComments.addAll(emptyIfNull(changedCaseComments));
-
-        return neededComments;
-    }
-
-    private List<ReplaceLoginWithUsernameInfo<CaseComment>> getPrivateCommentsReplacementInfoList(List<ReplaceLoginWithUsernameInfo<CaseComment>> commentToLoginList) {
-        return commentToLoginList
-                .stream()
-                .filter(replacementInfo -> replacementInfo.getObject().isPrivateComment())
-                .collect(Collectors.toList());
-    }
-
-    private List<ReplaceLoginWithUsernameInfo<CaseComment>> getPublicCommentReplacementInfoList(List<ReplaceLoginWithUsernameInfo<CaseComment>> commentToLoginList) {
-        return commentToLoginList
-                .stream()
-                .filter(replacementInfo -> !replacementInfo.getObject().isPrivateComment())
-                .collect(Collectors.toList());
-    }
-
-    private List<NotificationEntry> filterNotificationEntries(Collection<NotificationEntry> entries, Predicate<NotificationEntry> notificationEntryPredicate) {
-        return stream(entries).filter(notificationEntryPredicate).collect(Collectors.toList());
     }
 
     /**
@@ -740,11 +679,15 @@ public class MailNotificationProcessor {
 
         Set<NotificationEntry> recipients = subscriptionService.subscribers(recipientsIds);
 
+        List<ReplaceLoginWithUsernameInfo<CaseComment>> commentReplacementInfoList = caseCommentService.replaceLoginWithUsername(event.getAllComments()).getData();
+        recipients.addAll(collectCommentNotifiers(event, commentReplacementInfoList, false));
+
         DiffCollectionResult<LinkData> links = convertToLinkData(event.getLinks(), getCrmCaseUrl(true));
 
         Set<String> addresses = recipients.stream().map(NotificationEntry::getAddress).collect(Collectors.toSet());
         PreparedTemplate bodyTemplate = templateService.getMailProjectBody(
                 event,
+                commentReplacementInfoList.stream().map(ReplaceLoginWithUsernameInfo::getObject).collect(Collectors.toList()),
                 addresses,
                 links,
                 makeCrmProjectUrl(config.data().getMailNotificationConfig().getCrmUrlInternal(), event.getProjectId()),
@@ -1194,6 +1137,66 @@ public class MailNotificationProcessor {
     private String makeCrmProjectUrl( String crmUrl, Long projectId ) {
         String crmProjectUrl = crmUrl + config.data().getMailNotificationConfig().getCrmProjectUrl();
         return String.format( crmProjectUrl, projectId );
+    }
+
+    private Collection<NotificationEntry> collectCommentNotifiers(HasCaseComments hasCaseComments, List<ReplaceLoginWithUsernameInfo<CaseComment>> commentToLoginList, boolean isPrivateCase) {
+        List<NotificationEntry> result = new ArrayList<>();
+
+        Set<CaseComment> neededCaseCommentsForNotification = getNeededCaseCommentsForNotification(hasCaseComments);
+
+        if (isPrivateCase) {
+            List<Long> personIds = getPersonIdsFromNeededComments(commentToLoginList, neededCaseCommentsForNotification);
+            result.addAll(filterNotificationEntries(subscriptionService.subscribers(personIds), this::isProteiRecipient));
+        } else {
+            List<Long> privateCommentPersonIds = getPersonIdsFromNeededComments(getPrivateCommentsReplacementInfoList(commentToLoginList), neededCaseCommentsForNotification);
+            result.addAll(filterNotificationEntries(subscriptionService.subscribers(privateCommentPersonIds), this::isProteiRecipient));
+
+            List<Long> publicCommentPersonIds = getPersonIdsFromNeededComments(getPublicCommentReplacementInfoList(commentToLoginList), neededCaseCommentsForNotification);
+            result.addAll(subscriptionService.subscribers(publicCommentPersonIds));
+        }
+
+        return result;
+    }
+
+    private List<Long> getPersonIdsFromNeededComments(List<ReplaceLoginWithUsernameInfo<CaseComment>> commentToLoginList, Set<CaseComment> neededCaseCommentsForNotification) {
+        return commentToLoginList
+                .stream()
+                .filter(replacementInfo -> neededCaseCommentsForNotification.contains(replacementInfo.getObject()))
+                .flatMap(replacementInfo -> replacementInfo.getUserLoginShortViews().stream())
+                .map(UserLoginShortView::getPersonId)
+                .collect(Collectors.toList());
+    }
+
+    private Set<CaseComment> getNeededCaseCommentsForNotification(HasCaseComments hasCaseComments) {
+        List<CaseComment> addedCaseComments = emptyIfNull(hasCaseComments.getAddedCaseComments());
+        List<CaseComment> changedCaseComments = emptyIfNull(hasCaseComments.getChangedCaseComments());
+        List<CaseComment> removeCaseComments = emptyIfNull(hasCaseComments.getRemovedCaseComments());
+
+        addedCaseComments.removeIf(removeCaseComments::contains);
+        changedCaseComments.removeIf(removeCaseComments::contains);
+
+        Set<CaseComment> neededComments = new HashSet<>(addedCaseComments);
+        neededComments.addAll(changedCaseComments);
+
+        return neededComments;
+    }
+
+    private List<ReplaceLoginWithUsernameInfo<CaseComment>> getPrivateCommentsReplacementInfoList(List<ReplaceLoginWithUsernameInfo<CaseComment>> commentToLoginList) {
+        return commentToLoginList
+                .stream()
+                .filter(replacementInfo -> replacementInfo.getObject().isPrivateComment())
+                .collect(Collectors.toList());
+    }
+
+    private List<ReplaceLoginWithUsernameInfo<CaseComment>> getPublicCommentReplacementInfoList(List<ReplaceLoginWithUsernameInfo<CaseComment>> commentToLoginList) {
+        return commentToLoginList
+                .stream()
+                .filter(replacementInfo -> !replacementInfo.getObject().isPrivateComment())
+                .collect(Collectors.toList());
+    }
+
+    private List<NotificationEntry> filterNotificationEntries(Collection<NotificationEntry> entries, Predicate<NotificationEntry> notificationEntryPredicate) {
+        return stream(entries).filter(notificationEntryPredicate).collect(Collectors.toList());
     }
 
     private class MimeMessageHeadersFacade {

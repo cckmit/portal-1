@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.widget.selector.login;
 
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.Widget;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.UserLoginShortView;
@@ -12,7 +13,7 @@ import java.util.Iterator;
 
 import static ru.protei.portal.core.model.util.CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE;
 
-public class UserLoginSelector extends PopupSingleSelector<UserLoginShortView> {
+public class UserLoginSelector extends PopupSingleSelector<UserLoginShortView> implements HasVisibility {
     public UserLoginSelector() {
         setPageSize(DEFAULT_SELECTOR_PAGE_SIZE);
         setSearchEnabled(false);

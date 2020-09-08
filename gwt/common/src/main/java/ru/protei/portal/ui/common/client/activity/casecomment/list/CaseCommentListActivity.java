@@ -118,7 +118,6 @@ public abstract class CaseCommentListActivity
 
         view.privateComment().setValue(false);
         view.getPrivacyVisibility().setVisible(isPrivateVisible);
-        view.setCompanyId(profile.getCompany().getId());
 
         view.setCaseCreatorId(event.caseCreatorId);
 
@@ -250,18 +249,13 @@ public abstract class CaseCommentListActivity
             tempAttachments.addAll(commentAttachments);
         }
 
-        if (isMentioningEnabled(caseType)) {
 //        Дозапрашиваем комментарий, для восстановления логинов при редактировании
-            caseCommentController.getCaseComment(caseComment.getId(), new FluentCallback<CaseComment>()
-                    .withSuccess(comment -> {
-                        this.comment.setText(comment.getText());
-                        view.message().setValue(comment.getText(), true);
-                    })
-            );
-        } else {
-            String editedMessage = caseComment.getText();
-            view.message().setValue( editedMessage, true );
-        }
+        caseCommentController.getCaseComment(caseComment.getId(), new FluentCallback<CaseComment>()
+                .withSuccess(comment -> {
+                    this.comment.setText(comment.getText());
+                    view.message().setValue(comment.getText(), true);
+                })
+        );
 
         if (isElapsedTimeEnabled && comment.getTimeElapsed() != null) {
             view.timeElapsed().setTime(comment.getTimeElapsed());
@@ -282,13 +276,9 @@ public abstract class CaseCommentListActivity
 
         comment = null;
 
-        if (isMentioningEnabled(caseType)) {
-            accountService.getLoginByPersonId(value.getAuthorId(), new FluentCallback<String>()
-                    .withSuccess(login -> view.message().setValue(appendLogin(view.message().getValue(), login), true))
-            );
-        } else {
-            view.message().setValue(appendQuote(view.message().getValue(), value.getText(), textMarkup), true);
-        }
+        accountService.getLoginByPersonId(value.getAuthorId(), new FluentCallback<String>()
+                .withSuccess(login -> view.message().setValue(appendLogin(view.message().getValue(), login), true))
+        );
 
         view.focus();
     }
@@ -405,12 +395,7 @@ public abstract class CaseCommentListActivity
         view.setNewCommentHidden(!isModifyEnabled);
         view.setNewCommentDisabled(!isNewCommentEnabled);
 
-        if (isMentioningEnabled(caseType)) {
-            view.setCommentPlaceholder(lang.commentAddMessageMentionPlaceholder());
-        } else {
-            view.disableMentioning();
-            view.setCommentPlaceholder(lang.commentAddMessagePlaceholder());
-        }
+        view.setCommentPlaceholder(lang.commentAddMessageMentionPlaceholder());
 
         List<AbstractCaseCommentItemView> views = new ArrayList<>();
         List<String> textList = new ArrayList<>();
@@ -746,7 +731,7 @@ public abstract class CaseCommentListActivity
     }
 
     private void renderTextAsync(String text, En_TextMarkup textMarkup, Consumer<String> consumer) {
-        textRenderController.render(text, textMarkup, isMentioningEnabled(caseType), new FluentCallback<String>()
+        textRenderController.render(text, textMarkup, true, new FluentCallback<String>()
                 .withError(throwable -> consumer.accept(text))
                 .withSuccess(consumer));
     }
@@ -804,10 +789,6 @@ public abstract class CaseCommentListActivity
         List<Attachment> addList = new ArrayList<>(newAttachments);
         addList.removeIf(newAttachment -> currentAttachments.contains(newAttachment));
         return addList;
-    }
-
-    private boolean isMentioningEnabled(En_CaseType caseType) {
-        return En_CaseType.CRM_SUPPORT.equals(caseType);
     }
 
     private final Timer changedPreviewTimer = new Timer() {

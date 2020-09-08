@@ -22,16 +22,8 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
         initUserLoginSelector(userLoginModel, userLoginSelector);
         final Timer changeTimer = initTimer(userLoginModel, userLoginSelector);
 
-        keyUpHandlerRegistration = addKeyUpHandler(event -> changeTimer.schedule(200));
-        clickHandlerRegistration = addClickHandler(event -> changeTimer.run());
-    }
-
-    public void disableMentioning() {
-        keyUpHandlerRegistration.removeHandler();
-        clickHandlerRegistration.removeHandler();
-    }
-
-    public void setCompanyId(Long companyId) {
+        addKeyUpHandler(event -> changeTimer.schedule(200));
+        addClickHandler(event -> changeTimer.run());
     }
 
     public void setPersonId(Long personId) {
@@ -102,9 +94,6 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
     private native int pointerPosition(Element textArea) /*-{
         return textArea.selectionStart;
     }-*/;
-
-    private HandlerRegistration keyUpHandlerRegistration;
-    private HandlerRegistration clickHandlerRegistration;
 
     private final UserLoginModel userLoginModel;
 

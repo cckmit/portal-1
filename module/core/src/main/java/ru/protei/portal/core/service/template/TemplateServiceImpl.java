@@ -117,7 +117,7 @@ public class TemplateServiceImpl implements TemplateService {
                         event.getRemovedAttachments())
         );
 
-        templateModel.put( "caseComments",  getCommentsModelKeys(caseComments, event.getAddedCaseComments(), event.getChangedComments(), event.getRemovedComments(), textMarkup));
+        templateModel.put( "caseComments",  getCommentsModelKeys(caseComments, event.getAddedCaseComments(), event.getChangedCaseComments(), event.getRemovedCaseComments(), textMarkup));
 
         PreparedTemplate template = new PreparedTemplate( "notification/email/crm.body.%s.ftl" );
         template.setModel( templateModel );
@@ -453,7 +453,7 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getMailProjectBody(AssembledProjectEvent event, Collection<String> recipients, DiffCollectionResult<LinkData> links, String crmProjectUrl, EnumLangUtil enumLangUtil) {
+    public PreparedTemplate getMailProjectBody(AssembledProjectEvent event, List<CaseComment> comments, Collection<String> recipients, DiffCollectionResult<LinkData> links, String crmProjectUrl, EnumLangUtil enumLangUtil) {
         Project oldProjectState = event.getOldProjectState();
         Project newProjectState = event.getNewProjectState();
 
@@ -517,8 +517,8 @@ public class TemplateServiceImpl implements TemplateService {
 
         templateModel.put( "caseComments",
                 getProjectCommentsModelKeys(
-                        event.getAllComments(), event.getAddedComments(), event.getChangedComments(),
-                        event.getRemovedComments(), event.getCommentToAttachmentDiffs(), event.getExistingAttachments(), En_TextMarkup.MARKDOWN)
+                        comments, event.getAddedCaseComments(), event.getChangedCaseComments(),
+                        event.getRemovedCaseComments(), event.getCommentToAttachmentDiffs(), event.getExistingAttachments(), En_TextMarkup.MARKDOWN)
         );
 
         templateModel.put("hasLinks", hasLinks(links));

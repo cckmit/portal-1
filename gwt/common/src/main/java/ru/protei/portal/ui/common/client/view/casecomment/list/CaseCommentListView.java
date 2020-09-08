@@ -186,16 +186,6 @@ public class CaseCommentListView
     }
 
     @Override
-    public void disableMentioning() {
-        comment.disableMentioning();
-    }
-
-    @Override
-    public void setCompanyId(Long companyId) {
-        comment.setCompanyId(companyId);
-    }
-
-    @Override
     public void setCaseCreatorId(Long personId) {
         comment.setPersonId(personId);
     }

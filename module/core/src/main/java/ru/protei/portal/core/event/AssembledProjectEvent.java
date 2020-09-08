@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 import static java.lang.System.currentTimeMillis;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
-public class AssembledProjectEvent extends ApplicationEvent {
+public class AssembledProjectEvent extends ApplicationEvent implements HasCaseComments {
     private Project oldProjectState;
     private Project newProjectState;
     private Long projectId;
@@ -379,11 +379,11 @@ public class AssembledProjectEvent extends ApplicationEvent {
         links.putSameEntries(sameLinks);
     }
 
-    public List<CaseComment> getAddedComments() {
+    public List<CaseComment> getAddedCaseComments() {
         return CollectionUtils.emptyIfNull(comments.getAddedEntries());
     }
 
-    public List<CaseComment> getChangedComments() {
+    public List<CaseComment> getChangedCaseComments() {
         if (CollectionUtils.isEmpty(comments.getChangedEntries())) {
             return Collections.emptyList();
         }
@@ -391,7 +391,7 @@ public class AssembledProjectEvent extends ApplicationEvent {
         return comments.getChangedEntries().stream().map(DiffResult::getInitialState).collect(Collectors.toList());
     }
 
-    public List<CaseComment> getRemovedComments() {
+    public List<CaseComment> getRemovedCaseComments() {
         return CollectionUtils.emptyIfNull(comments.getRemovedEntries());
     }
 
