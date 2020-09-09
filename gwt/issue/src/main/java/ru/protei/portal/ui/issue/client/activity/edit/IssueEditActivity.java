@@ -386,7 +386,7 @@ public abstract class IssueEditActivity implements
 
     private void showComments(CaseObject issue) {
         CaseCommentEvents.Show show = new CaseCommentEvents.Show( issueInfoWidget.getCommentsContainer(),
-                issue.getId(), En_CaseType.CRM_SUPPORT, hasAccess() && !isReadOnly() );
+                issue.getId(), En_CaseType.CRM_SUPPORT, hasAccess() && !isReadOnly(), issue.getCreatorId() );
         show.isElapsedTimeEnabled = policyService.hasPrivilegeFor( En_Privilege.ISSUE_WORK_TIME_VIEW );
         show.isPrivateVisible = !issue.isPrivateCase() && policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW );
         show.isPrivateCase = issue.isPrivateCase();

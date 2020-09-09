@@ -5,6 +5,7 @@ import com.google.gwt.core.client.GWT;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.shared.model.Profile;
 
 import java.util.Objects;
@@ -48,6 +49,24 @@ public class AvatarUtils {
             default:
                 return NOGENDER_AVATAR_URL;
         }
+    }
+
+    public static boolean isDefaultAvatar(String url) {
+        url = StringUtils.emptyIfNull(url);
+
+        if (url.contains(NOGENDER_AVATAR_URL)) {
+            return true;
+        }
+
+        if (url.contains(MALE_AVATAR_URL)) {
+            return true;
+        }
+
+        if (url.contains(FEMALE_AVATAR_URL)) {
+            return true;
+        }
+
+        return false;
     }
 
     public static final String NOGENDER_AVATAR_URL = "./images/user-icon.svg";

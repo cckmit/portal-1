@@ -5,9 +5,7 @@ import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseComment;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -179,8 +177,8 @@ public class AssembledCaseEventTest {
 
         assertTrue( "Expected existing comments", !isEmpty( assembled.getAllComments() ) );
         assertEquals( old, assembled.getAllComments() );
-        assertTrue( isEmpty( assembled.getChangedComments() ) );
-        assertTrue( isEmpty( assembled.getRemovedComments() ) );
+        assertTrue( isEmpty( assembled.getChangedCaseComments() ) );
+        assertTrue( isEmpty( assembled.getRemovedCaseComments() ) );
         assertTrue( isEmpty( assembled.getAddedCaseComments() ) );
     }
 
@@ -201,8 +199,8 @@ public class AssembledCaseEventTest {
         assertTrue( "Expected existing comments", !isEmpty( assembled.getAllComments() ) );
         assertEquals( "Expected existing all", all, assembled.getAllComments() );
         assertEquals( "Expected existing added", listOf( add1, add2 ), assembled.getAddedCaseComments() );
-        assertTrue( isEmpty( assembled.getChangedComments() ) );
-        assertTrue( isEmpty( assembled.getRemovedComments() ) );
+        assertTrue( isEmpty( assembled.getChangedCaseComments() ) );
+        assertTrue( isEmpty( assembled.getRemovedCaseComments() ) );
     }
 
     @Test
@@ -222,8 +220,8 @@ public class AssembledCaseEventTest {
         assertTrue( "Expected existing comments", !isEmpty( assembled.getAllComments() ) );
         assertEquals( "Expected existing old and removed", all, assembled.getAllComments() );
         assertTrue( isEmpty( assembled.getAddedCaseComments() ) );
-        assertTrue( isEmpty( assembled.getChangedComments() ) );
-        assertEquals( "Expected existing removed", listOf( rem1, rem2 ), assembled.getRemovedComments() );
+        assertTrue( isEmpty( assembled.getChangedCaseComments() ) );
+        assertEquals( "Expected existing removed", listOf( rem1, rem2 ), assembled.getRemovedCaseComments() );
     }
 
 
@@ -246,8 +244,8 @@ public class AssembledCaseEventTest {
         assertTrue( "Expected existing comments", !isEmpty( assembled.getAllComments() ) );
         assertEquals( "Expected existing only initial comments", old, assembled.getAllComments() );
         assertTrue( isEmpty( assembled.getAddedCaseComments() ) );
-        assertEquals( "Expected existing changed", listOf( chang1, chang2 ), assembled.getChangedComments() );
-        assertTrue( isEmpty( assembled.getRemovedComments() ) );
+        assertEquals( "Expected existing changed", listOf( chang1, chang2 ), assembled.getChangedCaseComments() );
+        assertTrue( isEmpty( assembled.getRemovedCaseComments() ) );
     }
 
     @Test
@@ -282,8 +280,8 @@ public class AssembledCaseEventTest {
         assertTrue( "Expected existing comments", !isEmpty( assembled.getAllComments() ) );
         assertEquals( "Expected existing old and removed", all, assembled.getAllComments() );
         assertEquals( "Expected existing added", listOf( add1, add2 ), assembled.getAddedCaseComments() );
-        assertEquals( "Expected existing changed", listOf( chang1, chang2 ), assembled.getChangedComments() );
-        assertEquals( "Expected existing removed", listOf( rem1, rem2 ), assembled.getRemovedComments() );
+        assertEquals( "Expected existing changed", listOf( chang1, chang2 ), assembled.getChangedCaseComments() );
+        assertEquals( "Expected existing removed", listOf( rem1, rem2 ), assembled.getRemovedCaseComments() );
     }
 
 

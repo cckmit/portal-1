@@ -2,25 +2,47 @@ package ru.protei.portal.ui.common.server.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
+import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.renderer.HTMLRenderer;
+import ru.protei.portal.core.service.CaseCommentService;
+import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.TextRenderController;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
+import static ru.protei.portal.ui.common.server.ServiceUtils.getAuthToken;
 
 @Service("TextRenderController")
 public class TextRenderControllerImpl implements TextRenderController {
 
     @Override
     public String render(String text, En_TextMarkup textMarkup) throws RequestFailedException {
-        return htmlRenderer.plain2html(text, textMarkup);
+        return render(text, textMarkup, false);
+    }
+
+    @Override
+    public String render(String text, En_TextMarkup textMarkup, boolean needReplaceLoginWithUsername) throws RequestFailedException {
+        return CollectionUtils.getFirst(render(textMarkup, Collections.singletonList(text), needReplaceLoginWithUsername));
     }
 
     @Override
     public List<String> render(En_TextMarkup textMarkup, List<String> textList) throws RequestFailedException {
+        return render(textMarkup, textList, false);
+    }
+
+    @Override
+    public List<String> render(En_TextMarkup textMarkup, List<String> textList, boolean needReplaceLoginWithUsername) throws RequestFailedException {
+        if (needReplaceLoginWithUsername) {
+            textList = replaceLoginWithUsername(textList);
+        }
+
         List<String> rendered = new ArrayList<>();
         for (String text : CollectionUtils.emptyIfNull(textList)) {
             rendered.add(htmlRenderer.plain2html(text, textMarkup));
@@ -28,6 +50,20 @@ public class TextRenderControllerImpl implements TextRenderController {
         return rendered;
     }
 
+    private List<String> replaceLoginWithUsername(List<String> textList) throws RequestFailedException {
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
+        return checkResultAndGetData(caseCommentService.replaceLoginWithUsername(token, textList));
+    }
+
     @Autowired
     HTMLRenderer htmlRenderer;
+
+    @Autowired
+    CaseCommentService caseCommentService;
+
+    @Autowired
+    SessionService sessionService;
+
+    @Autowired
+    HttpServletRequest httpServletRequest;
 }
