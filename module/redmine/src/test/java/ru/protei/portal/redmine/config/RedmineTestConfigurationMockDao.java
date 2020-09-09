@@ -8,7 +8,6 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockingDetails;
 
 @Configuration
 public class RedmineTestConfigurationMockDao {
@@ -141,6 +140,11 @@ public class RedmineTestConfigurationMockDao {
     @Bean
     public UserLoginDAO getUserLoginDAO() {
         return mock( UserLoginDAO.class );
+    }
+
+    @Bean
+    public UserLoginShortViewDAO getUserLoginShortViewDAO() {
+        return mock(UserLoginShortViewDAO.class);
     }
 
     @Bean

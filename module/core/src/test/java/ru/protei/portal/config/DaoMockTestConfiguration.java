@@ -120,6 +120,11 @@ public class DaoMockTestConfiguration {
     }
 
     @Bean
+    public UserLoginShortViewDAO getUserLoginShortViewDAO() {
+        return mock(UserLoginShortViewDAO.class);
+    }
+
+    @Bean
     public UserDashboardDAO getUserDashboardDAO() {
         return mock(UserDashboardDAO.class);
     }

@@ -73,8 +73,8 @@ public class SelectorDataCache<T> implements DataCache.DataCacheHandler<T>, Infi
         total = Integer.MAX_VALUE;
     }
 
+    protected int total = Integer.MAX_VALUE;
     private LoadingHandler loadingHandler;
-    private int total = Integer.MAX_VALUE;
     private DataCache<T> cache;
     private SelectorDataCacheLoadHandler<T> loadHandler;
 }

@@ -9,19 +9,22 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.UserLoginUpdateEvent;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
+import ru.protei.portal.core.model.dao.UserLoginShortViewDAO;
 import ru.protei.portal.core.model.dao.UserRoleDAO;
 import ru.protei.portal.core.model.dict.En_AdminState;
 import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AccountQuery;
+import ru.protei.portal.core.model.query.UserLoginShortViewQuery;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
-import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -40,6 +43,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Autowired
     UserLoginDAO userLoginDAO;
+
+    @Autowired
+    UserLoginShortViewDAO userLoginShortViewDAO;
 
     @Autowired
     UserRoleDAO userRoleDAO;
@@ -82,6 +88,11 @@ public class AccountServiceImpl implements AccountService {
         jdbcManyRelationsHelper.fill( userLogin, "roles" );
 
         return ok( userLogin );
+    }
+
+    @Override
+    public Result<List<UserLoginShortView>> getUserLoginShortViewList(AuthToken token, UserLoginShortViewQuery query) {
+        return ok(userLoginShortViewDAO.getSearchResult(query).getResults());
     }
 
     @Override
@@ -201,6 +212,23 @@ public class AccountServiceImpl implements AccountService {
         userLogin.setLastPwdChange(new Date());
 
         return userLoginDAO.saveOrUpdate(userLogin) ? ok() : error( En_ResultStatus.INTERNAL_ERROR);
+    }
+
+    @Override
+    public Result<String> getLoginByPersonId(AuthToken token, Long personId) {
+        if (personId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        List<UserLogin> accounts = userLoginDAO.findByPersonId(personId);
+
+        UserLogin userLogin = accounts
+                .stream()
+                .filter(UserLogin::isLDAP_Auth)
+                .findAny()
+                .orElse(CollectionUtils.getFirst(accounts));
+
+        return ok(userLogin == null ? "" : userLogin.getUlogin());
     }
 
     private boolean isValidLogin( UserLogin userLogin ) {

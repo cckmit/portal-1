@@ -1,0 +1,18 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <g:HTMLPanel ui:field="root" tag="li">
+        <g:Anchor ui:field="anchor" href='#'>
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <div class="image-wrapper">
+                        <img ui:field="image" src=""/>
+                    </div>
+                    <span class="m-l-10" ui:field="login"/>
+                </div>
+                <div>
+                    <span ui:field="userName"/>
+                </div>
+            </div>
+        </g:Anchor>
+    </g:HTMLPanel>
+</ui:UiBinder>

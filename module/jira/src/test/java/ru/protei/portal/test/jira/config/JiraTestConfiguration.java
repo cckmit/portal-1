@@ -208,6 +208,11 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public UserLoginShortViewDAO getUserLoginShortViewDAO() {
+        return new UserLoginShortViewDAO_Impl();
+    }
+
+    @Bean
     public CaseLinkDAO getCaseLinkDAO() {
         return new CaseLinkDAO_Impl();
     }
