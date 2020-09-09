@@ -528,7 +528,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
      */
     private <T> Result<List<ReplaceLoginWithUsernameInfo<T>>> replaceLoginWithUsername(List<T> objects, Function<T, String> objectToStringFunction, ReplacementMapper<T> replacementMapper) {
         if (isEmpty(objects)) {
-            return ok(objects.stream().map(ReplaceLoginWithUsernameInfo::new).collect(Collectors.toList()));
+            return ok(new ArrayList<>());
         }
 
         Set<String> possibleLoginSet = new HashSet<>(getPossibleLoginSet(toList(objects, objectToStringFunction)).getData());

@@ -88,6 +88,11 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
     }
 
     @Bean
+    public UserLoginShortViewDAO getUserLoginShortViewDAO() {
+        return new UserLoginShortViewDAO_Impl();
+    }
+
+    @Bean
     public UserRoleDAO getUserRoleDAO() {
         return new UserRoleDAO_impl();
     }

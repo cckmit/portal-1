@@ -127,6 +127,11 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
+    public UserLoginShortViewDAO getUserLoginShortViewDAO() {
+        return new UserLoginShortViewDAO_Impl();
+    }
+
+    @Bean
     public UserCaseAssignmentDAO getUserCaseAssignmentDAO() {
         return new UserCaseAssignmentDAO_Impl();
     }

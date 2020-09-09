@@ -680,7 +680,7 @@ public class MailNotificationProcessor {
         Set<NotificationEntry> recipients = subscriptionService.subscribers(recipientsIds);
 
         List<ReplaceLoginWithUsernameInfo<CaseComment>> commentReplacementInfoList = caseCommentService.replaceLoginWithUsername(event.getAllComments()).getData();
-        recipients.addAll(collectCommentNotifiers(event, commentReplacementInfoList, false));
+        recipients.addAll(collectCommentNotifiers(event, commentReplacementInfoList, true));
 
         DiffCollectionResult<LinkData> links = convertToLinkData(event.getLinks(), getCrmCaseUrl(true));
 

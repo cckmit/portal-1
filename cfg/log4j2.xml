@@ -89,6 +89,9 @@
             <AppenderRef ref="APP"/>
         </Logger>
 
+        <!-- Excludes -->
+        <Logger name="org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor" level="OFF"/>
+
     </Loggers>
 
     <Appenders>
