@@ -71,6 +71,8 @@ public class En_SortFieldLang {
                 return lang.absenceReason();
             case contract_signing_date:
                 return lang.signingDate();
+            case duty_log_date_from:
+                return lang.dutyLogDateFrom();
 
             default:
                 return lang.unknownField();

@@ -195,6 +195,11 @@ public enum En_SortField {
      */
     contract_signing_date("contract.date_signing"),
 
+
+    /**
+     * Журнал дежурств date from
+     */
+    duty_log_date_from("duty_log.date_from"),
     ;
 
     private String fieldName;

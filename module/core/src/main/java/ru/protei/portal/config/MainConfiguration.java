@@ -693,6 +693,11 @@ public class MainConfiguration {
         return new PersonFavoriteIssuesDAO_Impl();
     }
 
+    @Bean
+    public DutyLogDAO getDutyLogDAO() {
+        return new DutyLogDAO_Impl();
+    }
+
     /* SERVICES */
 
     @Bean
@@ -1003,6 +1008,11 @@ public class MainConfiguration {
     @Bean
     public PersonSubscriptionService getPersonSubscriptionService() {
         return new PersonSubscriptionServiceImpl();
+    }
+
+    @Bean
+    public DutyLogService getDutyLogService() {
+        return new DutyLogServiceImpl();
     }
 
     @Bean

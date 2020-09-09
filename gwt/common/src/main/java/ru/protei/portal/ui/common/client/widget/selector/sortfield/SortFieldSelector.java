@@ -107,6 +107,9 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
                 addOption(En_SortField.absence_date_till);
                 addOption(En_SortField.absence_reason);
                 break;
+            case DUTY_LOG:
+                addOption(En_SortField.duty_log_date_from);
+                break;
         }
     }
 
