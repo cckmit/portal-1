@@ -1,16 +1,16 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.DutyType;
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Запись журнала дежурств
  */
 @JdbcEntity(table = "duty_log")
-public class DutyLog implements Serializable{
+public class DutyLog extends AuditableObject {
 
     @JdbcId
     private Long id;
@@ -36,6 +36,11 @@ public class DutyLog implements Serializable{
 
     @JdbcJoinedColumn(localColumn = "person_id", remoteColumn = "id", table = "person", mappedColumn = "displayname")
     private String personDisplayName;
+
+    @Override
+    public String getAuditType() {
+        return AUDIT_TYPE;
+    }
 
     public Long getId() {
         return id;
@@ -105,6 +110,8 @@ public class DutyLog implements Serializable{
         return from != null && to != null && to.after(from)
                 && type != null && personId != null;
     }
+
+    public static final String AUDIT_TYPE = "DutyLog";
 
     @Override
     public String toString() {
