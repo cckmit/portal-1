@@ -328,6 +328,15 @@ public class DateUtils {
         return new Date(diffTs);
     }
 
+    public static Date subsctractDays(Date base, Long days) {
+        if (base == null || days == null) {
+            return null;
+        }
+        long daysMs = days * DAY;
+        long diffTs = base.getTime() - daysMs;
+        return new Date(diffTs);
+    }
+
     private static void setMilliseconds(Date date, long millis) {
         long timeWithoutMilliseconds = (date.getTime() / 1000) * 1000;
         date.setTime(timeWithoutMilliseconds + millis);

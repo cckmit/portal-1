@@ -56,7 +56,7 @@ public class UiConstants {
         String SUBNET = "fas fa-project-diagram";
         String ROOM_RESERVATION_CALENDAR = "fas fa-calendar-day";
         String ROOM_RESERVATION_TABLE = "fas fa-th-list";
-
+        String DUTY_LOG = "fas fa-book";
     }
     public interface Icons {
         String APPROVED = "fa-clipboard-check";
@@ -118,6 +118,7 @@ public class UiConstants {
         String ROOM_RESERVATION_CALENDAR = "room_reservation_calendar";
         String ROOM_RESERVATION_TABLE = "room_reservation_table";
         String ROOM_RESERVATION_CREATE = "room_reservation_create";
+        String DUTY_LOG = "duty_log";
     }
 
     public interface Styles {

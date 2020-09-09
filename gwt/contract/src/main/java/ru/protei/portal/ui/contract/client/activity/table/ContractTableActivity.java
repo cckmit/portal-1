@@ -198,7 +198,7 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
     @Inject
     private DefaultErrorHandler errorHandler;
     @Inject
-    AbstractPagerView pagerView;
+    private AbstractPagerView pagerView;
 
     private Integer scrollTo = 0;
     private Boolean preScroll = false;

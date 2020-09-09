@@ -1,0 +1,44 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="create-duty_log-table" author="ponomareva">
+        <createTable  tableName="duty_log">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="created" type="DATETIME" defaultValueDate="CURRENT_TIMESTAMP"/>
+            <column name="creator_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="person_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_from" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_to" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-duty_log_creator_fk" author="ponomareva">
+        <addForeignKeyConstraint constraintName="duty_log_creator_fk"
+                                 baseTableName="duty_log" baseColumnNames="creator_id"
+                                 referencedTableName="person" referencedColumnNames="id"
+                                 onDelete="NO ACTION"/>
+    </changeSet>
+
+    <changeSet id="add-duty_log_person_fk" author="ponomareva">
+        <addForeignKeyConstraint constraintName="duty_log_person_fk"
+                                 baseTableName="duty_log" baseColumnNames="person_id"
+                                 referencedTableName="person" referencedColumnNames="id"
+                                 onDelete="NO ACTION"/>
+    </changeSet>
+</databaseChangeLog>
