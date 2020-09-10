@@ -32,6 +32,8 @@ import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyButtonSel
 import ru.protei.portal.ui.common.client.widget.money.MoneyCurrencyVatWidget;
 import ru.protei.portal.ui.common.client.widget.project.ProjectWidget;
 import ru.protei.portal.ui.common.client.widget.selector.contract.ContractButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.contract.state.ContractStateSelector;
+import ru.protei.portal.ui.common.client.widget.selector.contract.type.ContractTypeSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeCustomButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
@@ -44,10 +46,11 @@ import ru.protei.portal.ui.contract.client.activity.edit.AbstractContractEditVie
 import ru.protei.portal.ui.contract.client.widget.contractdates.list.ContractDatesList;
 import ru.protei.portal.ui.contract.client.widget.contractor.ContractorWidget;
 import ru.protei.portal.ui.contract.client.widget.contractspecification.list.ContractSpecificationList;
-import ru.protei.portal.ui.common.client.widget.selector.contract.state.ContractStateSelector;
-import ru.protei.portal.ui.common.client.widget.selector.contract.type.ContractTypesMultiSelector;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
 import static ru.protei.portal.core.model.struct.Vat.*;
@@ -85,8 +88,8 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
-    public HasValue<Set<En_ContractType>> types() {
-        return types;
+    public HasValue<En_ContractType> type() {
+        return type;
     }
 
     @Override
@@ -258,8 +261,8 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         }
     }
 
-    @UiHandler("types")
-    public void onTypeChanged(ValueChangeEvent<Set<En_ContractType>> event) {
+    @UiHandler("type")
+    public void onTypeChanged(ValueChangeEvent<En_ContractType> event) {
         if ( activity != null ) {
             activity.onTypeChanged();
         }
@@ -338,7 +341,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         number.ensureDebugId(DebugIds.CONTRACT.NUMBER_INPUT);
 
         typeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.TYPE);
-        types.ensureDebugId(DebugIds.CONTRACT.TYPE_SELECTOR);
+        type.ensureDebugId(DebugIds.CONTRACT.TYPE_SELECTOR);
 
         stateLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.STATE);
         state.setEnsureDebugId(DebugIds.CONTRACT.STATE_SELECTOR);
@@ -402,7 +405,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     ContractStateSelector state;
     @Inject
     @UiField(provided = true)
-    ContractTypesMultiSelector types;
+    ContractTypeSelector type;
     @UiField
     TextBox kind;
     @Inject

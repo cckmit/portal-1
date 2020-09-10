@@ -98,12 +98,8 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
             }
 
             if (CollectionUtils.isNotEmpty(query.getTypes())) {
-                // Filter by comma-separated value
-                condition.append(" and (");
-                condition.append(stream(query.getTypes())
-                        .map(type -> "contract.contract_types REGEXP '(^|,)" + type.getId() + "(,|$)'")
-                        .collect(Collectors.joining(" or ")));
-                condition.append(")");
+                String inArg = HelperFunc.makeInArg(query.getTypes(), type -> String.valueOf(type.getId()));
+                condition.append(" and contract.contract_type in ").append(inArg);
             }
 
             if (query.getDirectionId() != null) {
