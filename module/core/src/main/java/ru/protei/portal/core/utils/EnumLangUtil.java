@@ -155,6 +155,7 @@ public class EnumLangUtil {
             case SUPPLY_FRAMEWORK_CONTRACT: return localizedLang.get("contractTypeSupplyFrameworkContract");
             case WORK_CONTRACT: return localizedLang.get("contractTypeWorkContract");
             case HARDWARE_SOFTWARE_SERVICE: return localizedLang.get("contractTypeHardwareSoftwareService");
+            case REQUEST: return localizedLang.get("contractTypeRequest");
         }
         return "";
     }

@@ -86,6 +86,11 @@ public enum En_ContractType implements HasId {
      * Оборудование, ПО и услуги
      */
     HARDWARE_SOFTWARE_SERVICE(15),
+
+    /**
+     * Заявка
+     */
+    REQUEST(16),
     ;
 
     En_ContractType(int id) {

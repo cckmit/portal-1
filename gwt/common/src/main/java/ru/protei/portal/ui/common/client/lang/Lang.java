@@ -2022,6 +2022,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractTypeHardwareSoftwareService();
 
+    String contractTypeRequest();
+
     String goToContracts();
 
     String contractStateAgreement();
