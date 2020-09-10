@@ -3033,4 +3033,12 @@ public interface Lang extends Messages, ContactItemLang {
     String attachmentAdd();
 
     String internalResourceVpn();
+
+    String issueReportWithTags();
+
+    String issueReportWithTagsTitle();
+
+    String issueReportWithLinkedIssues();
+
+    String issueReportWithLinkedIssuesTitle();
 }

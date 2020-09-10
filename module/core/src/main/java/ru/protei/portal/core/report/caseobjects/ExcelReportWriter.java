@@ -6,11 +6,13 @@ import org.apache.poi.ss.usermodel.Workbook;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.CaseObjectReportRequest;
+import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.ExcelFormatUtils.ExcelFormat;
@@ -35,15 +37,22 @@ public class ExcelReportWriter implements
     private final boolean isNotRestricted;
     private final String locale;
     private final boolean withDescription;
+    private final boolean withTags;
+    private final boolean withLinkedIssues;
 
     public ExcelReportWriter(Lang.LocalizedLang localizedLang,
                              boolean isRestricted,
-                             boolean withDescription) {
+                             boolean withDescription,
+                             boolean withTags,
+                             boolean withLinkedIssues) {
+
         this.book = new JXLSHelper.ReportBook<>(localizedLang, this);
         this.lang = localizedLang;
         this.isNotRestricted = !isRestricted;
         this.locale = localizedLang.getLanguageTag();
         this.withDescription = withDescription;
+        this.withTags = withTags;
+        this.withLinkedIssues = withLinkedIssues;
     }
 
     @Override
@@ -73,12 +82,12 @@ public class ExcelReportWriter implements
 
     @Override
     public int[] getColumnsWidth() {
-        return getColumnsWidth(isNotRestricted, withDescription);
+        return getColumnsWidth(isNotRestricted, withDescription, withTags, withLinkedIssues);
     }
 
     @Override
     public String[] getColumnNames() {
-        return getColumns(isNotRestricted, withDescription);
+        return getColumns(isNotRestricted, withDescription, withTags, withLinkedIssues);
     }
 
     @Override
@@ -117,6 +126,16 @@ public class ExcelReportWriter implements
             created = issue.getCreated();
         }
 
+        long timeElapsedInSelectedDuration = 0;
+
+        if (isNotRestricted) {
+            timeElapsedInSelectedDuration = object.getCaseComments()
+                    .stream()
+                    .filter(comment -> isDateInRange(comment.getCreated(), object.getCreatedRange()))
+                    .mapToLong(CaseComment::getTimeElapsed)
+                    .sum();
+        }
+
         Long solutionDurationFirst = isNotRestricted ? null : getDurationBetween(created, customerTest, workaround, done);
         Long solutionDurationFull = isNotRestricted ? null : getDurationBetween(created, done, verified);
 
@@ -132,7 +151,8 @@ public class ExcelReportWriter implements
         values.add(issue.getProduct() != null && HelperFunc.isNotEmpty(issue.getProduct().getName()) ? issue.getProduct().getName() : "");
         values.add(issue.getImportanceLevel() != null ? issue.getImportanceLevel().getCode() : "");
         values.add(HelperFunc.isNotEmpty(issue.getStateName()) ? issue.getStateName() : "");
-        values.add(String.join(",", toList(emptyIfNull(object.getCaseTags()), CaseTag::getName)));
+        if (withTags) values.add(String.join(",", toList(emptyIfNull(object.getCaseTags()), CaseTag::getName)));
+        if (withLinkedIssues) values.add(String.join(",", toList(emptyIfNull(object.getCaseLinks()), CaseLink::getRemoteId)));
         values.add(created != null ? created : "");
         values.add(opened != null ? opened : "");
         values.add(workaround != null ? workaround : "");
@@ -144,6 +164,7 @@ public class ExcelReportWriter implements
         if (isNotRestricted) values.add(toExcelTimeFormat(solutionDurationFirst));
         if (isNotRestricted) values.add(toExcelTimeFormat(solutionDurationFull));
         if (isNotRestricted) values.add(issue.getTimeElapsed() != null && issue.getTimeElapsed() > 0 ? toExcelTimeFormat(issue.getTimeElapsed()) : "");
+        if (isNotRestricted) values.add(toExcelTimeFormat(timeElapsedInSelectedDuration));
 
         return values.toArray();
     }
@@ -154,8 +175,20 @@ public class ExcelReportWriter implements
             cs.setFont(book.getDefaultFont());
             cs.setVerticalAlignment(VerticalAlignment.CENTER);
             cs.setDataFormat(workbook.createDataFormat()
-                    .getFormat(getFormats(isNotRestricted, withDescription)[columnIndex]));
+                    .getFormat(getFormats(isNotRestricted, withDescription, withTags, withLinkedIssues)[columnIndex]));
         });
+    }
+
+    private boolean isDateInRange(Date date, DateRange dateRange) {
+        if (date.before(dateRange.getFrom())) {
+            return false;
+        }
+
+        if (date.after(dateRange.getTo())) {
+            return false;
+        }
+
+        return true;
     }
 
     private Long getDurationBetween(Date from, Date... toList) {
@@ -181,43 +214,46 @@ public class ExcelReportWriter implements
         return null;
     }
 
-    private String[] getFormats(boolean isNotRestricted, boolean withDescription) {
+    private String[] getFormats(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues) {
         List<String> formatList = new ColumnsListBuilder<String>()
                 .add(ExcelFormat.STANDARD).addIf(ExcelFormat.STANDARD, isNotRestricted).add(ExcelFormat.STANDARD).addIf(ExcelFormat.STANDARD, withDescription)
-                .add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD)
+                .add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).addIf(ExcelFormat.STANDARD, withTags).addIf(ExcelFormat.STANDARD, withLinkedIssues)
                 .add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD)
                 .add(ExcelFormat.DATE_TIME).add(ExcelFormat.DATE_TIME).add(ExcelFormat.DATE_TIME)
                 .add(ExcelFormat.DATE_TIME).add(ExcelFormat.DATE_TIME).add(ExcelFormat.DATE_TIME)
                 .add(ExcelFormat.DATE_TIME).add(ExcelFormat.DATE_TIME)
                 .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted).addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted).addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted)
+                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted)
                 .build();
 
         return formatList.toArray(new String[]{});
     }
 
-    private int[] getColumnsWidth(boolean isNotRestricted, boolean withDescription) {
+    private int[] getColumnsWidth(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues) {
         List<Integer> columnsWidthList = new ColumnsListBuilder<Integer>()
                 .add(3650).addIf(3430, isNotRestricted).add(8570).addIf(9000, withDescription)
                 .add(4590).add(4200).add(4200).add(4200)
-                .add(6000).add(3350).add(4600).add(4600)
+                .add(6000).add(3350).add(4600).addIf(4600, withTags).addIf(6000, withLinkedIssues)
                 .add(4200).add(5800).add(5800)
                 .add(5800).add(5800).add(5800)
                 .add(5800).add(5800)
                 .addIf(5800, isNotRestricted).addIf(5800, isNotRestricted).addIf(5800, isNotRestricted)
+                .addIf(8570, isNotRestricted)
                 .build();
 
         return toPrimitiveIntegerArray(columnsWidthList);
     }
 
-    private String[] getColumns(boolean isNotRestricted, boolean withDescription) {
+    private String[] getColumns(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues) {
         List<String> columnsList = new ColumnsListBuilder<String>()
                 .add("ir_caseno").addIf("ir_private", isNotRestricted).add("ir_name").addIf("ir_description", withDescription)
                 .add("ir_company").add("ir_initiator").add("ir_manager").add("ir_manager_company")
-                .add("ir_product").add("ir_importance").add("ir_state").add("ir_tags")
+                .add("ir_product").add("ir_importance").add("ir_state").addIf("ir_tags", withTags).addIf("ir_links", withLinkedIssues)
                 .add("ir_date_created").add("ir_date_opened").add("ir_date_workaround")
                 .add("ir_date_customer_test").add("ir_date_done").add("ir_date_verify")
                 .add("ir_date_important").add("ir_date_critical")
                 .addIf("ir_time_solution_first", isNotRestricted).addIf("ir_time_solution_full", isNotRestricted).addIf("ir_time_elapsed", isNotRestricted)
+                .addIf("ir_time_elapsed", isNotRestricted)
                 .build();
 
         return columnsList.toArray(new String[]{});

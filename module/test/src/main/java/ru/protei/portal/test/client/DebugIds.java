@@ -360,6 +360,8 @@ public class DebugIds {
         String REPORT_SCHEDULED_TYPE = "issue-report-scheduled-type";
         String IMPORTANCE_CHECK_HISTORY ="issue-report-importance-check-history";
         String WITH_DESCRIPTION = "issue-report-with-description";
+        String WITH_TAGS = "issue-report-with-tags";
+        String WITH_LINKED_ISSUES = "issue-report-with-linked-issues";
         String CREATE_BUTTON = "issue-report-create-button";
         String CANCEL_BUTTON = "issue-report-cancel-button";
     }

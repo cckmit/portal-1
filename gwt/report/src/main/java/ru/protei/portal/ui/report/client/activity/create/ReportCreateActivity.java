@@ -95,6 +95,8 @@ public abstract class ReportCreateActivity implements Activity,
         view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
         view.checkImportanceHistory().setValue(false);
         view.withDescription().setValue(false);
+        view.withTags().setValue(false);
+        view.withLinkedIssues().setValue(false);
     }
 
     private void presetCompanyAtFilter() {
@@ -134,6 +136,8 @@ public abstract class ReportCreateActivity implements Activity,
         report.setName(view.name().getValue());
         report.setLocale(LocaleInfo.getCurrentLocale().getLocaleName());
         report.setWithDescription(view.withDescription().getValue());
+        report.setWithTags(view.withTags().getValue());
+        report.setWithLinkedIssues(view.withLinkedIssues().getValue());
         return report;
     }
 
@@ -187,8 +191,12 @@ public abstract class ReportCreateActivity implements Activity,
                 view.scheduledTypeContainerVisibility().setVisible(false);
                 view.checkImportanceHistoryContainerVisibility().setVisible(false);
                 view.withDescriptionContainerVisibility().setVisible(false);
+                view.withTagsContainerVisibility().setVisible(false);
+                view.withLinkedIssuesContainerVisibility().setVisible(false);
                 view.checkImportanceHistory().setValue(false);
                 view.withDescription().setValue(false);
+                view.withTags().setValue(false);
+                view.withLinkedIssues().setValue(false);
                 break;
             }
             case CONTRACT: {
@@ -199,8 +207,12 @@ public abstract class ReportCreateActivity implements Activity,
                 view.scheduledTypeContainerVisibility().setVisible(false);
                 view.checkImportanceHistoryContainerVisibility().setVisible(false);
                 view.withDescriptionContainerVisibility().setVisible(false);
+                view.withTagsContainerVisibility().setVisible(false);
+                view.withLinkedIssuesContainerVisibility().setVisible(false);
                 view.checkImportanceHistory().setValue(false);
                 view.withDescription().setValue(false);
+                view.withTags().setValue(false);
+                view.withLinkedIssues().setValue(false);
                 break;
             }
             case CASE_OBJECTS:
@@ -209,9 +221,13 @@ public abstract class ReportCreateActivity implements Activity,
                 view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
                 view.checkImportanceHistory().setValue(false);
                 view.withDescription().setValue(false);
+                view.withTags().setValue(false);
+                view.withLinkedIssues().setValue(false);
                 view.scheduledTypeContainerVisibility().setVisible(isScheduledEnabled(reportType));
                 view.checkImportanceHistoryContainerVisibility().setVisible(reportType == En_ReportType.CASE_OBJECTS);
                 view.withDescriptionContainerVisibility().setVisible(reportType == En_ReportType.CASE_OBJECTS);
+                view.withTagsContainerVisibility().setVisible(reportType == En_ReportType.CASE_OBJECTS);
+                view.withLinkedIssuesContainerVisibility().setVisible(reportType == En_ReportType.CASE_OBJECTS);
                 issueFilterWidget.updateFilterType(En_CaseFilterType.valueOf(reportType.name()));
                 validateDateRanges(reportType);
                 applyIssueFilterVisibilityByPrivileges();

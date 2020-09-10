@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.struct;
 
 import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.CaseTag;
 
@@ -11,13 +12,17 @@ public class CaseObjectReportRequest {
     private CaseObject caseObject;
     private List<CaseComment> caseComments;
     private List<CaseTag> caseTags;
+    private List<CaseLink> caseLinks;
+    private DateRange createdRange;
 
     public CaseObjectReportRequest() {}
 
-    public CaseObjectReportRequest(CaseObject caseObject, List<CaseComment> caseComments, List<CaseTag> caseTags) {
+    public CaseObjectReportRequest(CaseObject caseObject, List<CaseComment> caseComments, List<CaseTag> caseTags, List<CaseLink> caseLinks, DateRange createdRange) {
         this.caseObject = caseObject;
         this.caseComments = caseComments;
         this.caseTags = caseTags;
+        this.caseLinks = caseLinks;
+        this.createdRange = createdRange;
     }
 
     public CaseObject getCaseObject() {
@@ -40,8 +45,12 @@ public class CaseObjectReportRequest {
         return caseTags;
     }
 
-    public void setCaseTags(List<CaseTag> caseTags) {
-        this.caseTags = caseTags;
+    public List<CaseLink> getCaseLinks() {
+        return caseLinks;
+    }
+
+    public DateRange getCreatedRange() {
+        return createdRange;
     }
 
     @Override

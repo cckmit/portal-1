@@ -24,13 +24,21 @@
                                 <label><ui:text from="{lang.reportScheduledType}"/></label>
                                 <reporttype:ReportScheduledTypeButtonSelector ui:field="scheduledType"/>
                             </g:HTMLPanel>
-                            <g:HTMLPanel ui:field="checkImportanceHistoryContainer" styleName="form-group col-md-4" title="{lang.issueImportanceCheckHistoryTitle}">
+                            <g:HTMLPanel ui:field="checkImportanceHistoryContainer" styleName="form-group col-md-6" title="{lang.issueImportanceCheckHistoryTitle}">
                                 <switcher:Switcher ui:field="checkImportanceHistory"/>
                                 <label class="m-l-5"><ui:text from="{lang.issueImportanceCheckHistory}"/></label>
                             </g:HTMLPanel>
-                            <g:HTMLPanel ui:field="withDescriptionContainer" styleName="form-group col-md-4" title="{lang.issueReportWithDescriptionTitle}">
+                            <g:HTMLPanel ui:field="withDescriptionContainer" styleName="form-group col-md-6" title="{lang.issueReportWithDescriptionTitle}">
                                 <switcher:Switcher ui:field="withDescription"/>
                                 <label class="m-l-5"><ui:text from="{lang.issueReportWithDescription}"/></label>
+                            </g:HTMLPanel>
+                            <g:HTMLPanel ui:field="withTagsContainer" styleName="form-group col-md-6" title="{lang.issueReportWithTagsTitle}">
+                                <switcher:Switcher ui:field="withTags"/>
+                                <label class="m-l-5"><ui:text from="{lang.issueReportWithTags}"/></label>
+                            </g:HTMLPanel>
+                            <g:HTMLPanel ui:field="withLinkedIssuesContainer" styleName="form-group col-md-6" title="{lang.issueReportWithLinkedIssuesTitle}">
+                                <switcher:Switcher ui:field="withLinkedIssues"/>
+                                <label class="m-l-5"><ui:text from="{lang.issueReportWithLinkedIssues}"/></label>
                             </g:HTMLPanel>
                         </div>
                     </div>

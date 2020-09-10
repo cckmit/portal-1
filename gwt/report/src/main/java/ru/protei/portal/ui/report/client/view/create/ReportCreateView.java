@@ -85,8 +85,28 @@ public class ReportCreateView extends Composite implements AbstractReportCreateV
     }
 
     @Override
+    public HasValue<Boolean> withTags() {
+        return withTags;
+    }
+
+    @Override
+    public HasValue<Boolean> withLinkedIssues() {
+        return withLinkedIssues;
+    }
+
+    @Override
     public HasVisibility withDescriptionContainerVisibility() {
-        return withDescriptionContainer;
+        return withTagsContainer;
+    }
+
+    @Override
+    public HasVisibility withTagsContainerVisibility() {
+        return withTagsContainer;
+    }
+
+    @Override
+    public HasVisibility withLinkedIssuesContainerVisibility() {
+        return withLinkedIssuesContainer;
     }
 
     @UiHandler("reportType")
@@ -116,6 +136,8 @@ public class ReportCreateView extends Composite implements AbstractReportCreateV
         scheduledType.ensureDebugId(DebugIds.ISSUE_REPORT.REPORT_SCHEDULED_TYPE);
         checkImportanceHistory.ensureDebugId(DebugIds.ISSUE_REPORT.IMPORTANCE_CHECK_HISTORY);
         withDescription.ensureDebugId(DebugIds.ISSUE_REPORT.WITH_DESCRIPTION);
+        withTags.ensureDebugId(DebugIds.ISSUE_REPORT.WITH_TAGS);
+        withLinkedIssues.ensureDebugId(DebugIds.ISSUE_REPORT.WITH_LINKED_ISSUES);
         createButton.ensureDebugId(DebugIds.ISSUE_REPORT.CREATE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.ISSUE_REPORT.CANCEL_BUTTON);
     }
@@ -135,9 +157,17 @@ public class ReportCreateView extends Composite implements AbstractReportCreateV
     @UiField
     HTMLPanel withDescriptionContainer;
     @UiField
+    HTMLPanel withTagsContainer;
+    @UiField
+    HTMLPanel withLinkedIssuesContainer;
+    @UiField
     Switcher checkImportanceHistory;
     @UiField
     Switcher withDescription;
+    @UiField
+    Switcher withTags;
+    @UiField
+    Switcher withLinkedIssues;
     @UiField
     HTMLPanel filterContainer;
     @UiField

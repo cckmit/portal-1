@@ -33,5 +33,13 @@ public interface AbstractReportCreateView extends IsWidget {
 
     HasValue<Boolean> withDescription();
 
+    HasValue<Boolean> withTags();
+
+    HasValue<Boolean> withLinkedIssues();
+
     HasVisibility withDescriptionContainerVisibility();
+
+    HasVisibility withTagsContainerVisibility();
+
+    HasVisibility withLinkedIssuesContainerVisibility();
 }
