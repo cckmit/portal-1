@@ -167,13 +167,11 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         }
 
         List<WorkerEntry> workers = fillWorkers();
-
         if (personId == null) {
             createPersonAndUpdateWorkers(workers);
+        } else if (isEditablePerson) {
+            updatePersonAndUpdateWorkers(workers);
         } else {
-            if (isEditablePerson){
-                updatePerson();
-            }
             updateEmployeeWorkers(workers);
         }
     }
@@ -526,7 +524,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         view.ipAddressEnabled().setEnabled(isEnabled);
     }
 
-    private void updateEmployeeWorkers (List<WorkerEntry> workers){
+    private void updateEmployeeWorkers (List<WorkerEntry> workers) {
         employeeService.updateEmployeeWorkers(workers, new FluentCallback<Boolean>()
                 .withError(throwable -> {
                     if ((throwable instanceof RequestFailedException) && En_ResultStatus.EMPLOYEE_MIGRATION_FAILED.equals(((RequestFailedException) throwable).status)) {
@@ -540,7 +538,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
                 }));
     }
 
-    private void createPersonAndUpdateWorkers(List<WorkerEntry> workers){
+    private void createPersonAndUpdateWorkers(List<WorkerEntry> workers) {
         employeeService.createEmployeePerson(applyChangesEmployee(), new FluentCallback<Person>()
                 .withSuccess(person -> {
                     workers.forEach(workerEntry -> workerEntry.setPersonId(person.getId()));
@@ -548,9 +546,11 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
                 }));
     }
 
-    private void updatePerson(){
+    private void updatePersonAndUpdateWorkers(List<WorkerEntry> workers) {
         employeeService.updateEmployeePerson(applyChangesEmployee(), view.changeAccount().getValue(), new FluentCallback<Boolean>()
-                .withSuccess(success -> {}));
+                .withSuccess(success -> {
+                    updateEmployeeWorkers(workers);
+                }));
     }
 
     private boolean isAnyWorkerInSyncCompany(List<WorkerEntryShortView> workerEntryShortViews) {
