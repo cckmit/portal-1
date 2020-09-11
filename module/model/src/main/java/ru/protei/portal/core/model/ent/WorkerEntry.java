@@ -20,9 +20,6 @@ public class WorkerEntry extends AuditableObject {
     @JdbcColumn(name="personId")
     private Long personId;
 
-    @JdbcJoinedObject(localColumn = "personId", remoteColumn = "id")
-    private Person person;
-
     @JdbcColumn(name="dep_id")
     private Long departmentId;
 
@@ -85,14 +82,6 @@ public class WorkerEntry extends AuditableObject {
 
     public void setPersonId(Long personId) {
         this.personId = personId;
-    }
-
-    public Person getPerson() {
-        return person;
-    }
-
-    public void setPerson(Person person) {
-        this.person = person;
     }
 
     public Long getDepartmentId() {
