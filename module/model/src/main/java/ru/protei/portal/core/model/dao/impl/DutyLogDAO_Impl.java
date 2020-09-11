@@ -49,4 +49,9 @@ public class DutyLogDAO_Impl extends PortalBaseJdbcDAO<DutyLog> implements DutyL
         });
     }
 
+    @Override
+    public boolean checkExists(DutyLog value) {
+        return checkExistsByCondition("duty_log.date_from = ? and duty_log.date_to = ? and duty_log.person_id = ?" +
+                " and duty_log.type = ?", value.getFrom(), value.getTo(), value.getPersonId(), value.getType().getId());
+    }
 }

@@ -38,11 +38,10 @@ import ru.protei.portal.ui.plan.client.factory.PlanClientModule;
         EmployeeRegistrationClientModule.class, EmployeeClientModule.class,
         CompanyClientModule.class, ContactClientModule.class, ProductClientModule.class,
         ProjectClientModule.class, RegionClientModule.class, SiteFolderClientModule.class,
-        EquipmentClientModule.class, DocumentClientModule.class, DocumentTypeClientModule.class, ContractClientModule.class,
+        DutyLogClientModule.class, EquipmentClientModule.class, DocumentClientModule.class, DocumentTypeClientModule.class, ContractClientModule.class,
         IpReservationClientModule.class, RoomReservationClientModule.class, EducationClientModule.class,
         RoleClientModule.class, AccountClientModule.class,
-        AbsenceClientModule.class, CommonClientModule.class,
-        DutyLogClientModule.class
+        AbsenceClientModule.class, CommonClientModule.class
 })
 public interface ClientFactory
         extends FactoryInjector
