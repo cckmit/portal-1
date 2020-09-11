@@ -524,7 +524,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         view.ipAddressEnabled().setEnabled(isEnabled);
     }
 
-    private void updateEmployeeWorkers (List<WorkerEntry> workers){
+    private void updateEmployeeWorkers (List<WorkerEntry> workers) {
         employeeService.updateEmployeeWorkers(workers, new FluentCallback<Boolean>()
                 .withError(throwable -> {
                     if ((throwable instanceof RequestFailedException) && En_ResultStatus.EMPLOYEE_MIGRATION_FAILED.equals(((RequestFailedException) throwable).status)) {
@@ -538,7 +538,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
                 }));
     }
 
-    private void createPersonAndUpdateWorkers(List<WorkerEntry> workers){
+    private void createPersonAndUpdateWorkers(List<WorkerEntry> workers) {
         employeeService.createEmployeePerson(applyChangesEmployee(), new FluentCallback<Person>()
                 .withSuccess(person -> {
                     workers.forEach(workerEntry -> workerEntry.setPersonId(person.getId()));
@@ -546,7 +546,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
                 }));
     }
 
-    private void updatePersonAndUpdateWorkers(List<WorkerEntry> workers){
+    private void updatePersonAndUpdateWorkers(List<WorkerEntry> workers) {
         employeeService.updateEmployeePerson(applyChangesEmployee(), view.changeAccount().getValue(), new FluentCallback<Boolean>()
                 .withSuccess(success -> {
                     updateEmployeeWorkers(workers);
