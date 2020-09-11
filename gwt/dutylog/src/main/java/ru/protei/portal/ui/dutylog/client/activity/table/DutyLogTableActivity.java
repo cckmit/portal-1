@@ -103,6 +103,11 @@ public abstract class DutyLogTableActivity
     }
 
     @Override
+    public void onResetFilterClicked() {
+        filterView.resetFilter();
+    }
+
+    @Override
     public void onPageSelected( int page ) {
         this.page = page;
         requestData( this.page );

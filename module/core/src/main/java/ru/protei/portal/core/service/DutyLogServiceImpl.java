@@ -14,6 +14,7 @@ import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.Date;
+import java.util.Objects;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
@@ -55,6 +56,10 @@ public class DutyLogServiceImpl implements DutyLogService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
+        if (dutyLogDAO.checkExists(value)) {
+            return error(En_ResultStatus.ALREADY_EXIST);
+        }
+
         boolean result = dutyLogDAO.merge(value);
         return result ? ok(value.getId()) : error(En_ResultStatus.INTERNAL_ERROR);
     }
@@ -63,6 +68,10 @@ public class DutyLogServiceImpl implements DutyLogService {
     public Result<Long> createDutyLog(AuthToken authToken, DutyLog value) {
         if (value.getId() != null || !value.isValid()) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (dutyLogDAO.checkExists(value)) {
+            return error(En_ResultStatus.ALREADY_EXIST);
         }
 
         return ok(dutyLogDAO.persist(value));
