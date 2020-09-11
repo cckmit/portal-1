@@ -167,13 +167,11 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         }
 
         List<WorkerEntry> workers = fillWorkers();
-
         if (personId == null) {
             createPersonAndUpdateWorkers(workers);
+        } else if (isEditablePerson) {
+            updatePersonAndUpdateWorkers(workers);
         } else {
-            if (isEditablePerson){
-                updatePerson();
-            }
             updateEmployeeWorkers(workers);
         }
     }
@@ -548,9 +546,11 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
                 }));
     }
 
-    private void updatePerson(){
+    private void updatePersonAndUpdateWorkers(List<WorkerEntry> workers){
         employeeService.updateEmployeePerson(applyChangesEmployee(), view.changeAccount().getValue(), new FluentCallback<Boolean>()
-                .withSuccess(success -> {}));
+                .withSuccess(success -> {
+                    updateEmployeeWorkers(workers);
+                }));
     }
 
     private boolean isAnyWorkerInSyncCompany(List<WorkerEntryShortView> workerEntryShortViews) {

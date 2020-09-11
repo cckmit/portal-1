@@ -287,7 +287,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         person.setDisplayName(person.getLastName() + " " + person.getFirstName() + (StringUtils.isNotEmpty(person.getSecondName()) ? " " + person.getSecondName() : ""));
         person.setDisplayShortName(createPersonShortName(person));
         person.setCompanyId(CrmConstants.Company.HOME_COMPANY_ID);
-        person.getContactInfo().addItems(getSensitiveContactItems(oldPerson.getContactInfo().getItems()));
+        removeSensitiveInformation(person);
 
         boolean success = personDAO.partialMerge(person,  "company_id", "firstname", "lastname", "secondname", "sex", "birthday", "ipaddress", "contactInfo", "displayname", "displayShortName");
 
@@ -518,6 +518,13 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .filter(item -> !sensitive.contains(item))
                 .collect(Collectors.toList())));
         return employeeShortView;
+    }
+
+    private void removeSensitiveInformation(Person person) {
+        List<ContactItem> sensitive = getSensitiveContactItems(person.getContactInfo().getItems());
+        person.setContactInfo(new ContactInfo(stream(person.getContactInfo().getItems())
+                .filter(item -> !sensitive.contains(item))
+                .collect(Collectors.toList())));
     }
 
     private List<ContactItem> getSensitiveContactItems(List<ContactItem> contactItems) {

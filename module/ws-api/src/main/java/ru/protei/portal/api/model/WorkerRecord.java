@@ -57,8 +57,9 @@ public class WorkerRecord {
         copy (p);
     }
 
-    public WorkerRecord(WorkerEntry w, EmployeeRegistration r) {
-        copy (w);
+    public WorkerRecord(Person p, WorkerEntry w, EmployeeRegistration r) {
+        copy(p);
+        copy(w);
         setRegistrationId(r == null ? null : r.getId());
     }
 
@@ -338,7 +339,6 @@ public class WorkerRecord {
 
     public void copy (WorkerEntry w) {
         setCompanyCode(w.getExternalCode());
-        copy(w.getPerson());
         setWorkerId(w.getExternalId());
         setDepartmentId(w.getDepartmentExternalId());
         setPositionName(w.getPositionName());

@@ -152,8 +152,9 @@ public class WorkerController {
             return withHomeCompany(companyCode,
                     item -> {
                         WorkerEntry entry = workerEntryDAO.getByExternalId(id.trim(), item.getCompanyId());
+                        Person person = personDAO.get(entry.getPersonId());
                         EmployeeRegistration registration = employeeRegistrationDAO.getByPersonId(entry.getPersonId());
-                        return  ok(new WorkerRecord(entry, registration));
+                        return  ok(new WorkerRecord(person, entry, registration));
                     });
 
         } catch (NullPointerException e){
