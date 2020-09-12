@@ -358,10 +358,11 @@ public class DebugIds {
         String NAME_INPUT = "issue-report-name-input";
         String REPORT_TYPE = "issue-report-type";
         String REPORT_SCHEDULED_TYPE = "issue-report-scheduled-type";
-        String IMPORTANCE_CHECK_HISTORY ="issue-report-importance-check-history";
-        String WITH_DESCRIPTION = "issue-report-with-description";
-        String WITH_TAGS = "issue-report-with-tags";
-        String WITH_LINKED_ISSUES = "issue-report-with-linked-issues";
+        String ADDITIONAL_PARAMS = "issue-report-additional-params";
+        String ADDITIONAL_PARAMS_ADD_BUTTON = "issue-report-additional-params-add-button";
+        String ADDITIONAL_PARAMS_CLEAR_BUTTON = "issue-report-additional-params-clear-button";
+        String ADDITIONAL_PARAMS_ITEM_CONTAINER = "issue-report-additional-params-item-container";
+        String ADDITIONAL_PARAMS_LABEL = "issue-report-additional-params-label";
         String CREATE_BUTTON = "issue-report-create-button";
         String CANCEL_BUTTON = "issue-report-cancel-button";
     }

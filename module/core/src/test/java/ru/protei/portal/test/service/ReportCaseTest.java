@@ -69,7 +69,7 @@ public class ReportCaseTest extends BaseServiceTest {
         CaseQuery caseQuery = makeCaseQuery();
         caseQuery.setCheckImportanceHistory(false);
 
-        List<CaseObjectReportRequest> caseObjectComments = ((ReportCaseImpl) reportCase).processChunk( caseQuery, false );
+        List<CaseObjectReportRequest> caseObjectComments = ((ReportCaseImpl) reportCase).processChunk( caseQuery, new Report() );
 
         assertTrue(  "Expected not empty report data", !isEmpty(caseObjectComments)  );
         List<CaseObject> reportCases = toList( caseObjectComments, CaseObjectReportRequest::getCaseObject );
@@ -85,7 +85,7 @@ public class ReportCaseTest extends BaseServiceTest {
         CaseQuery caseQuery = makeCaseQuery();
         caseQuery.setCheckImportanceHistory(true);
 
-        List<CaseObjectReportRequest> caseObjectComments = ((ReportCaseImpl) reportCase).processChunk( caseQuery, false );
+        List<CaseObjectReportRequest> caseObjectComments = ((ReportCaseImpl) reportCase).processChunk( caseQuery, new Report() );
 
         assertTrue(  "Expected not empty report data", !isEmpty(caseObjectComments)  );
         List<CaseObject> reportCases = toList( caseObjectComments, CaseObjectReportRequest::getCaseObject );

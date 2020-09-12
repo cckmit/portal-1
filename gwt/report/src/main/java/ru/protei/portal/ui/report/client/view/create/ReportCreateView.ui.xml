@@ -2,6 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:switcher="urn:import:ru.protei.portal.ui.common.client.widget.switcher"
              xmlns:reporttype='urn:import:ru.protei.portal.ui.report.client.widget.reporttype'
+             xmlns:additionalparams="urn:import:ru.protei.portal.ui.common.client.widget.selector.report.additionalparams"
         >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
@@ -12,33 +13,20 @@
                 <div class="card card-transparent no-margin">
                     <div class="card-body">
                         <div class="row">
-                            <div class="form-group col-md-4">
+                            <div class="form-group col">
                                 <label><ui:text from="{lang.issueReportsType}"/></label>
                                 <reporttype:ReportTypeButtonSelector ui:field="reportType"/>
                             </div>
-                            <div class="form-group col-md-4">
+                            <div class="form-group col">
                                 <label><ui:text from="{lang.issueReportsTitle}"/></label>
                                 <g:TextBox ui:field="name" styleName="form-control"/>
                             </div>
-                            <g:HTMLPanel ui:field="scheduledTypeContainer" styleName="form-group col-md-4">
+                            <g:HTMLPanel ui:field="scheduledTypeContainer" styleName="form-group col">
                                 <label><ui:text from="{lang.reportScheduledType}"/></label>
                                 <reporttype:ReportScheduledTypeButtonSelector ui:field="scheduledType"/>
                             </g:HTMLPanel>
-                            <g:HTMLPanel ui:field="checkImportanceHistoryContainer" styleName="form-group col-md-6" title="{lang.issueImportanceCheckHistoryTitle}">
-                                <switcher:Switcher ui:field="checkImportanceHistory"/>
-                                <label class="m-l-5"><ui:text from="{lang.issueImportanceCheckHistory}"/></label>
-                            </g:HTMLPanel>
-                            <g:HTMLPanel ui:field="withDescriptionContainer" styleName="form-group col-md-6" title="{lang.issueReportWithDescriptionTitle}">
-                                <switcher:Switcher ui:field="withDescription"/>
-                                <label class="m-l-5"><ui:text from="{lang.issueReportWithDescription}"/></label>
-                            </g:HTMLPanel>
-                            <g:HTMLPanel ui:field="withTagsContainer" styleName="form-group col-md-6" title="{lang.issueReportWithTagsTitle}">
-                                <switcher:Switcher ui:field="withTags"/>
-                                <label class="m-l-5"><ui:text from="{lang.issueReportWithTags}"/></label>
-                            </g:HTMLPanel>
-                            <g:HTMLPanel ui:field="withLinkedIssuesContainer" styleName="form-group col-md-6" title="{lang.issueReportWithLinkedIssuesTitle}">
-                                <switcher:Switcher ui:field="withLinkedIssues"/>
-                                <label class="m-l-5"><ui:text from="{lang.issueReportWithLinkedIssues}"/></label>
+                            <g:HTMLPanel ui:field="additionalParamsContainer" styleName="form-group col">
+                                <additionalparams:ReportAdditionalParamsMultiSelector ui:field="additionalParams" header="Дополнительные параметры"/>
                             </g:HTMLPanel>
                         </div>
                     </div>

@@ -93,13 +93,19 @@ public class ReportCaseImpl implements ReportCase {
         for (CaseObject caseObject : emptyIfNull(cases)) {
             CaseCommentQuery commentQuery = new CaseCommentQuery();
             commentQuery.addCaseObjectId( caseObject.getId() );
-            commentQuery.setCaseStateNotNull( query.isCheckImportanceHistory() == null || !query.isCheckImportanceHistory() );
+
+            if (query.isCheckImportanceHistory() == null || !query.isCheckImportanceHistory()) {
+                commentQuery.addCommentType(CaseCommentQuery.CommentType.CASE_STATE);
+            }
+
+            commentQuery.addCommentType(CaseCommentQuery.CommentType.TIME_ELAPSED);
+
             List<CaseComment> caseComments = caseCommentDAO.getCaseComments( commentQuery );
 
             List<CaseTag> caseTags = report.isWithTags() ? caseTagDAO.getListByQuery(new CaseTagQuery(caseObject.getId())) : Collections.emptyList();
             List<CaseLink> caseLinks = report.isWithLinkedIssues() ? caseLinkDAO.getListByQuery(new CaseLinkQuery(caseObject.getId(), report.isRestricted())) : Collections.emptyList();
 
-            data.add( new CaseObjectReportRequest( caseObject, caseComments, caseTags, caseLinks, query.getCreatedRange() ) );
+            data.add( new CaseObjectReportRequest( caseObject, caseComments, caseTags, caseLinks, query.getCreatedRange(), query.getModifiedRange() ) );
         }
         return data;
     }

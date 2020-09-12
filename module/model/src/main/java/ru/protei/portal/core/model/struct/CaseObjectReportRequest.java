@@ -14,15 +14,18 @@ public class CaseObjectReportRequest {
     private List<CaseTag> caseTags;
     private List<CaseLink> caseLinks;
     private DateRange createdRange;
+    private DateRange modifiedRange;
 
     public CaseObjectReportRequest() {}
 
-    public CaseObjectReportRequest(CaseObject caseObject, List<CaseComment> caseComments, List<CaseTag> caseTags, List<CaseLink> caseLinks, DateRange createdRange) {
+    public CaseObjectReportRequest(CaseObject caseObject, List<CaseComment> caseComments, List<CaseTag> caseTags,
+                                   List<CaseLink> caseLinks, DateRange createdRange, DateRange modifiedRange) {
         this.caseObject = caseObject;
         this.caseComments = caseComments;
         this.caseTags = caseTags;
         this.caseLinks = caseLinks;
         this.createdRange = createdRange;
+        this.modifiedRange = modifiedRange;
     }
 
     public CaseObject getCaseObject() {
@@ -51,6 +54,10 @@ public class CaseObjectReportRequest {
 
     public DateRange getCreatedRange() {
         return createdRange;
+    }
+
+    public DateRange getModifiedRange() {
+        return modifiedRange;
     }
 
     @Override

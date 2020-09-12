@@ -3,6 +3,7 @@ package ru.protei.portal.core.report.caseobjects;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.jetbrains.annotations.NotNull;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseComment;
@@ -12,7 +13,7 @@ import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.CaseObjectReportRequest;
-import ru.protei.portal.core.model.struct.DateRange;
+import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.ExcelFormatUtils.ExcelFormat;
@@ -20,11 +21,10 @@ import ru.protei.portal.core.utils.JXLSHelper;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
 import static ru.protei.portal.core.model.util.TransliterationUtils.transliterate;
 import static ru.protei.portal.core.utils.ExcelFormatUtils.toExcelTimeFormat;
 
@@ -131,7 +131,8 @@ public class ExcelReportWriter implements
         if (isNotRestricted) {
             timeElapsedInSelectedDuration = object.getCaseComments()
                     .stream()
-                    .filter(comment -> isDateInRange(comment.getCreated(), object.getCreatedRange()))
+                    .filter(comment -> comment.getTimeElapsed() != null)
+                    .filter(comment -> isDateInAnyRange(comment.getCreated(), makeInterval(object.getCreatedRange()), makeInterval(object.getModifiedRange())))
                     .mapToLong(CaseComment::getTimeElapsed)
                     .sum();
         }
@@ -179,7 +180,15 @@ public class ExcelReportWriter implements
         });
     }
 
-    private boolean isDateInRange(Date date, DateRange dateRange) {
+    private boolean isDateInAnyRange(final Date date, Interval... intervals) {
+        return Arrays.stream(intervals).anyMatch(interval -> isDateInRange(date, interval));
+    }
+
+    private boolean isDateInRange(@NotNull Date date, Interval dateRange) {
+        if (dateRange == null) {
+            return false;
+        }
+
         if (date.before(dateRange.getFrom())) {
             return false;
         }
@@ -238,7 +247,7 @@ public class ExcelReportWriter implements
                 .add(5800).add(5800).add(5800)
                 .add(5800).add(5800)
                 .addIf(5800, isNotRestricted).addIf(5800, isNotRestricted).addIf(5800, isNotRestricted)
-                .addIf(8570, isNotRestricted)
+                .addIf(12000, isNotRestricted)
                 .build();
 
         return toPrimitiveIntegerArray(columnsWidthList);
@@ -253,7 +262,7 @@ public class ExcelReportWriter implements
                 .add("ir_date_customer_test").add("ir_date_done").add("ir_date_verify")
                 .add("ir_date_important").add("ir_date_critical")
                 .addIf("ir_time_solution_first", isNotRestricted).addIf("ir_time_solution_full", isNotRestricted).addIf("ir_time_elapsed", isNotRestricted)
-                .addIf("ir_time_elapsed", isNotRestricted)
+                .addIf("ir_time_elapsed_selected_range", isNotRestricted)
                 .build();
 
         return columnsList.toArray(new String[]{});

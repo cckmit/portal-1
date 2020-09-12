@@ -4,10 +4,12 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.core.model.dict.En_ReportAdditionalParamType;
 import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.dict.En_ReportType;
 
 import java.util.List;
+import java.util.Set;
 
 public interface AbstractReportCreateView extends IsWidget {
 
@@ -27,19 +29,7 @@ public interface AbstractReportCreateView extends IsWidget {
 
     HasVisibility scheduledTypeContainerVisibility();
 
-    HasVisibility checkImportanceHistoryContainerVisibility();
+    HasVisibility additionalParamsVisibility();
 
-    HasValue<Boolean> checkImportanceHistory();
-
-    HasValue<Boolean> withDescription();
-
-    HasValue<Boolean> withTags();
-
-    HasValue<Boolean> withLinkedIssues();
-
-    HasVisibility withDescriptionContainerVisibility();
-
-    HasVisibility withTagsContainerVisibility();
-
-    HasVisibility withLinkedIssuesContainerVisibility();
+    HasValue<Set<En_ReportAdditionalParamType>> additionalParams();
 }
