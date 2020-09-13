@@ -420,7 +420,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String goToContacts();
 
-    String contactFieldLengthExceed( String p0, int p1 );
+    String promptFieldLengthExceed(String fieldName, int fieldLength);
 
     String contactGeneratePassword();
 
@@ -2196,6 +2196,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reportTypeProject();
 
+    String reportTypeContract();
+
     String reportScheduledType();
 
     String reportScheduledTypeNone();
@@ -2994,6 +2996,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String projectPauseDate(String date);
 
+    String errDashboardChooseFilter();
+
+    String errDashboardTableNameEmpty();
+
     String errContractOrganizationShouldBeDifferentFromParent();
 
     String topBrass();
@@ -3025,4 +3031,50 @@ public interface Lang extends Messages, ContactItemLang {
     String attachmentsHeader(String countOfAttachments);
 
     String attachmentAdd();
+
+    String internalResourceVpn();
+
+    String commentAddMessageMentionPlaceholder();
+
+    String dutyLogCreation();
+
+    String dutyLogEditing();
+
+    String dutyLogDutyDate();
+
+    String dutyLogEmployee();
+
+    String dutyLogRange();
+
+    String dutyLogDuty();
+
+    String dutyLogCreated();
+
+    String dutyLogUpdated();
+
+    String dutyTypeBG();
+
+    String dutyTypeIP();
+
+    String dutyTypeBilling();
+
+    String dutyTypeMobile();
+
+    String dutyTypeDPI();
+
+    String dutyTypeMKSP_VKS();
+
+    String dutyTypeNGN();
+
+    String dutyTypeSORM();
+
+    String dutyLogType();
+
+    String dutyLog();
+
+    String dutyLogDateFrom();
+
+    String dutyLogValidationDateRange();
+
+    String dutyLogValidationEmployee();
 }

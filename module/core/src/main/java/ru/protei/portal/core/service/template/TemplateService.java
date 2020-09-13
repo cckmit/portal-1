@@ -2,6 +2,7 @@ package ru.protei.portal.core.service.template;
 
 import freemarker.template.TemplateException;
 import ru.protei.portal.core.event.*;
+import ru.protei.portal.core.model.dto.ReportDto;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
@@ -43,9 +44,9 @@ public interface TemplateService {
 
     PreparedTemplate getDocumentDocFileUpdatedByMemberSubject(String documentName);
 
-    PreparedTemplate getMailReportBody(Report report);
+    PreparedTemplate getMailReportBody(ReportDto reportDto);
 
-    PreparedTemplate getMailReportSubject(Report report);
+    PreparedTemplate getMailReportSubject(ReportDto reportDto);
 
     String getEmployeeRegistrationProbationHeadOfDepartmentEmailNotificationBody( Long employeeRegistrationId, String employeeFullName, String urlTemplate, String recipientName ) throws IOException, TemplateException;
 
@@ -65,7 +66,7 @@ public interface TemplateService {
 
     PreparedTemplate getMailProjectSubject(Project project, Person initiator);
 
-    PreparedTemplate getMailProjectBody(AssembledProjectEvent event, Collection<String> recipients, DiffCollectionResult<LinkData> links, String crmProjectUrl, EnumLangUtil roleTypeLang);
+    PreparedTemplate getMailProjectBody(AssembledProjectEvent event, List<CaseComment> comments, Collection<String> recipients, DiffCollectionResult<LinkData> links, String crmProjectUrl, EnumLangUtil roleTypeLang);
 
     PreparedTemplate getRoomReservationNotificationSubject(RoomReservation roomReservation, RoomReservationNotificationEvent.Action action);
 

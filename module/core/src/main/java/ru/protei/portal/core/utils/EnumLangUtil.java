@@ -1,9 +1,7 @@
 package ru.protei.portal.core.utils;
 
 import ru.protei.portal.core.Lang;
-import ru.protei.portal.core.model.dict.En_CustomerType;
-import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
-import ru.protei.portal.core.model.dict.En_RegionState;
+import ru.protei.portal.core.model.dict.*;
 
 import java.util.Locale;
 
@@ -131,5 +129,65 @@ public class EnumLangUtil {
         }
 
         return localizedLang.get("customerTypeUnknown");
+    }
+
+    public String contractTypeLang(En_ContractType contractType, String langCode) {
+        if (contractType == null) {
+            return "";
+        }
+        if (localizedLang == null) {
+            localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
+        }
+        switch (contractType) {
+            case AFTER_SALES_SERVICE_CONTRACT: return localizedLang.get("contractTypeAfterSalesServiceContract");
+            case EXPORT_OF_SERVICE_CONTRACT: return localizedLang.get("contractTypeExportOfServiceContract");
+            case GOVERNMENT_CONTRACT: return localizedLang.get("contractTypeGovernmentContract");
+            case LEASE_CONTRACT: return localizedLang.get("contractTypeLeaseContract");
+            case LICENSE_CONTRACT: return localizedLang.get("contractTypeLicenseContract");
+            case LICENSE_FRAMEWORK_CONTRACT: return localizedLang.get("contractTypeLicenseFrameworkContract");
+            case MUNICIPAL_CONTRACT: return localizedLang.get("contractTypeMunicipalContract");
+            case ORDER: return localizedLang.get("contractTypeOrder");
+            case PURCHASE_CONTRACT: return localizedLang.get("contractTypePurchaseContract");
+            case SUBCONTRACT: return localizedLang.get("contractTypeSubcontract");
+            case SUPPLY_AND_WORK_CONTRACT: return localizedLang.get("contractTypeSupplyAndWorkContract");
+            case SUPPLY_AND_WORK_FRAMEWORK_CONTRACT: return localizedLang.get("contractTypeSupplyAndWorkFrameworkContract");
+            case SUPPLY_CONTRACT: return localizedLang.get("contractTypeSupplyContract");
+            case SUPPLY_FRAMEWORK_CONTRACT: return localizedLang.get("contractTypeSupplyFrameworkContract");
+            case WORK_CONTRACT: return localizedLang.get("contractTypeWorkContract");
+            case HARDWARE_SOFTWARE_SERVICE: return localizedLang.get("contractTypeHardwareSoftwareService");
+        }
+        return "";
+    }
+
+    public String contractStateLang(En_ContractState contractState, String langCode) {
+        if (contractState == null) {
+            return "";
+        }
+        if (localizedLang == null) {
+            localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
+        }
+        switch (contractState) {
+            case AGREEMENT: return localizedLang.get("contractStateAgreement");
+            case COPIES_SEND_TO_CUSTOMER: return localizedLang.get("contractStateCopiesSendToCustomer");
+            case HAVE_ORIGINAL: return localizedLang.get("contractStateHaveOriginal");
+            case WAIT_ORIGINAL: return localizedLang.get("contractStateWaitOriginal");
+            case WAITING_COPIES_FROM_CUSTOMER: return localizedLang.get("contractWaitingCopiesFromCustomer");
+            case CANCELLED: return localizedLang.get("contractCancelled");
+        }
+        return "";
+    }
+
+    public String contractDatesTypeLang(En_ContractDatesType contractDatesType, String langCode) {
+        if (contractDatesType == null) {
+            return "";
+        }
+        if (localizedLang == null) {
+            localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
+        }
+        switch (contractDatesType) {
+            case PAYMENT: return localizedLang.get("contractPayment");
+            case SUPPLY: return localizedLang.get("contractSupply");
+        }
+        return "";
     }
 }

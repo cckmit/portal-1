@@ -1,15 +1,16 @@
 package ru.protei.portal.core.event;
 
 import org.springframework.context.ApplicationEvent;
+import ru.protei.portal.core.model.dto.ReportDto;
 import ru.protei.portal.core.model.ent.Report;
 
 import java.io.InputStream;
 
 public class MailReportEvent extends ApplicationEvent {
 
-    public MailReportEvent(Object source, Report report, InputStream content) {
+    public MailReportEvent(Object source, ReportDto reportDto, InputStream content) {
         super(source);
-        this.report = report;
+        this.reportDto = reportDto;
         this.content = content;
     }
 
@@ -17,10 +18,10 @@ public class MailReportEvent extends ApplicationEvent {
         return content;
     }
 
-    public Report getReport() {
-        return report;
+    public ReportDto getReport() {
+        return reportDto;
     }
 
-    private Report report;
+    private ReportDto reportDto;
     private InputStream content;
 }

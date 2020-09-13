@@ -27,6 +27,7 @@ import ru.protei.portal.ui.issueassignment.client.activity.table.AbstractTableVi
 import ru.protei.portal.ui.issueassignment.client.view.table.columns.IssueColumn;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 public class TableView extends Composite implements AbstractTableView {
 
@@ -87,6 +88,7 @@ public class TableView extends Composite implements AbstractTableView {
     private void initTable() {
 
         columnProvider = new ClickColumnProvider<>();
+        columnProvider.setChangeSelectionIfSelectedPredicate(caseShortView -> false);
 
         IssueColumn number = new IssueColumn(lang);
         table.addColumn(number.header, number.values);

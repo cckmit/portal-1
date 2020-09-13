@@ -124,6 +124,11 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
+    public void setManagerMandatory(boolean isMandatory) {
+        manager.setMandatory(isMandatory);
+    }
+
+    @Override
     public void setCaseMetaNotifiers( Set<Person> caseObjectMetaNotifiers) {
         notifiers.setValue(transliterateNotifiers(caseObjectMetaNotifiers));
     }

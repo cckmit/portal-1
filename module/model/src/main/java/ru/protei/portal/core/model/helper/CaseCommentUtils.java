@@ -34,6 +34,16 @@ public class CaseCommentUtils {
         }
     }
 
+    public static String appendLogin(String text, String login) {
+        String result = AT_SYMBOL + login + SPACE_SYMBOL;
+
+        if (StringUtils.isNotBlank(text)) {
+            result = text + NEW_LINE_SYMBOL + result;
+        }
+
+        return result;
+    }
+
     public static String quoteMessage( String message, En_TextMarkup textMarkup ) {
         StringBuilder sb = new StringBuilder();
         switch (textMarkup) {
@@ -88,4 +98,6 @@ public class CaseCommentUtils {
 
     private static final long EDIT_PERIOD = 300000;
     private final static String NEW_LINE_SYMBOL = "\n";
+    private static final String SPACE_SYMBOL = " ";
+    private static final String AT_SYMBOL = "@";
 }

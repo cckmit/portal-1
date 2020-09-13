@@ -49,6 +49,7 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
     @Override
     public void setAnimation(TableAnimation animation) {
         animation.setContainers(tableContainer, previewContainer, filterContainer);
+        columnProvider.setChangeSelectionIfSelectedPredicate(server -> animation.isPreviewShow());
     }
 
     @Override

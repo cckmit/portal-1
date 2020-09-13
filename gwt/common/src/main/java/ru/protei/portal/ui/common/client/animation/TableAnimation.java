@@ -80,6 +80,10 @@ public class TableAnimation {
         applyTableStyleNoFilter();
     }
 
+    public boolean isPreviewShow() {
+        return tableContainer.getElement().hasClassName(styleTableWithDetails);
+    }
+
     private void applyTableStyleNoFilter() {
         if (noFilter) {
             tableStyleWithoutDetails = styleTableFull;

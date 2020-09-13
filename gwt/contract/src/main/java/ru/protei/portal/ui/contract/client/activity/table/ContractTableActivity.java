@@ -11,10 +11,9 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.ent.Contract;
-import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.query.ContractQuery;
-import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.activity.contractfilter.AbstractContractFilterActivity;
+import ru.protei.portal.ui.common.client.activity.contractfilter.AbstractContractFilterView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -25,16 +24,11 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.contract.client.activity.filter.AbstractContractFilterActivity;
-import ru.protei.portal.ui.contract.client.activity.filter.AbstractContractFilterView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.listOfOrNull;
-import static ru.protei.portal.core.model.helper.CollectionUtils.nullIfEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.toDateRange;
 
 public abstract class ContractTableActivity implements AbstractContractTableActivity,
@@ -152,9 +146,9 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         query.searchString = filterView.searchString().getValue();
         query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
         query.setSortField(filterView.sortField().getValue());
-        query.setContractorIds(getContractorIdList(filterView.contractors().getValue()));
-        query.setOrganizationIds(getCompaniesIdList(filterView.organizations().getValue()));
-        query.setManagerIds(getManagersIdList(filterView.managers().getValue()));
+        query.setContractorIds(collectIds(filterView.contractors().getValue()));
+        query.setOrganizationIds(collectIds(filterView.organizations().getValue()));
+        query.setManagerIds(collectIds(filterView.managers().getValue()));
         query.setTypes(nullIfEmpty(listOfOrNull(filterView.types().getValue())));
         query.setStates(nullIfEmpty(listOfOrNull(filterView.states().getValue())));
         ProductDirectionInfo value = filterView.direction().getValue();
@@ -189,40 +183,6 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         scrollTo = 0;
     }
 
-    public static List< Long > getCompaniesIdList( Set<EntityOption> companySet ) {
-
-        if ( companySet == null || companySet.isEmpty() ) {
-            return null;
-        }
-        return companySet
-                .stream()
-                .map( EntityOption::getId )
-                .collect( Collectors.toList() );
-    }
-
-    public static List< Long > getManagersIdList( Set<PersonShortView> personSet ) {
-
-        if ( personSet == null || personSet.isEmpty() ) {
-            return null;
-        }
-
-        return personSet
-                .stream()
-                .map( PersonShortView::getId )
-                .collect( Collectors.toList() );
-    }
-
-    public static List< Long > getContractorIdList( Set<Contractor> companySet ) {
-
-        if ( companySet == null || companySet.isEmpty() ) {
-            return null;
-        }
-        return companySet
-                .stream()
-                .map( Contractor::getId )
-                .collect( Collectors.toList() );
-    }
-
     @Inject
     private Lang lang;
     @Inject
@@ -238,7 +198,7 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
     @Inject
     private DefaultErrorHandler errorHandler;
     @Inject
-    AbstractPagerView pagerView;
+    private AbstractPagerView pagerView;
 
     private Integer scrollTo = 0;
     private Boolean preScroll = false;

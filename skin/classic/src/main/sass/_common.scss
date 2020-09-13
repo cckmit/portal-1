@@ -698,6 +698,10 @@ label.bordered:after {
             overflow: hidden;
             text-overflow: ellipsis;
           }
+
+          &.equipment-name-column {
+            word-break: break-word;
+          }
         }
 
         .equipment-type-column {
@@ -2818,10 +2822,9 @@ div.select2-container {
       padding-left: 0;
       margin-bottom: 5px;
       li.select2-search-choice {
-        display: inline !important;
         padding-right: 10px;
         .selected-value {
-          max-width: 85%;
+          max-width: 100px;
           text-overflow: ellipsis;
           overflow: hidden;
           white-space: nowrap;
@@ -2865,6 +2868,13 @@ div.select2-container {
     padding: 15px;
   }
 
+  .resize-md-12 {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+.contract-filter {
   .resize-md-12 {
     flex: 0 0 100% !important;
     max-width: 100% !important;
@@ -4999,6 +5009,34 @@ table {
   font-size: large !important;
 }
 
+.selectable-item.selectable-item-text {
+  width: inherit;
+  .checkbox {
+    width: inherit;
+    label {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      bottom: -5px;
+      width: inherit;
+    }
+  }
+}
+
+.selector-popup {
+  .dropdown-menu {
+    ul {
+      li {
+        a {
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+        }
+      }
+    }
+  }
+}
+
 // Accordion
 
 .accordion {
@@ -5064,5 +5102,36 @@ table {
 .card-links {
   .card-body {
     padding: 0;
+  }
+}
+
+.user-login-selector {
+  li {
+    height: 40px;
+
+    .image-wrapper {
+      width: 30px;
+      height: 30px;
+      -webkit-border-radius: 50%;
+      -moz-border-radius: 50%;
+      border-radius: 50%;
+      overflow: hidden;
+      margin-top: 3px;
+
+      img {
+        max-width: 100%;
+        margin-top: -3px;
+
+        &.default-image {
+          margin-top: 0;
+        }
+      }
+    }
+  }
+
+  .dropdown-menu {
+    // 1px - граница комментария;
+    // 12px - внутренний паддинг комментария
+    margin-left: -13px;
   }
 }

@@ -6,6 +6,7 @@
     <source path='view'/>
     <source path='struct'/>
     <source path='helper'/>
+    <source path='marker'/>
     <source path='query'/>
     <source path='util'/>
     <source path='event'/>

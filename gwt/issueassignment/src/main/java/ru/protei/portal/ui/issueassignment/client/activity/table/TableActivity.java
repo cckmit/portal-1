@@ -72,7 +72,9 @@ public abstract class TableActivity implements Activity, AbstractTableActivity {
 
     @Override
     public void onItemClicked(CaseShortView value) {
-        fireEvent(new IssueAssignmentEvents.ShowIssuePreview(value.getCaseNumber()));
+        if (value != null) {
+            fireEvent(new IssueAssignmentEvents.ShowIssuePreview(value.getCaseNumber()));
+        }
     }
 
     @Override

@@ -13,6 +13,8 @@ import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.dto.Project;
+import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.util.CrmConstants.EquipmentConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
@@ -30,6 +32,8 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.List;
 import java.util.Objects;
+
+import static ru.protei.portal.core.model.helper.StringUtils.emptyIfNull;
 
 /**
  * Активность карточки редактирования единицы оборудования
@@ -106,6 +110,11 @@ public abstract class EquipmentEditActivity
             return;
         }
 
+        if (equipment.getName().length() > EquipmentConstants.NAME_SIZE) {
+            fireEvent(new NotifyEvents.Show(lang.promptFieldLengthExceed(lang.equipmentNameBySpecification(), EquipmentConstants.NAME_SIZE), NotifyEvents.NotifyType.ERROR));
+            return;
+        }
+
         equipmentService.saveEquipment(equipment, new FluentCallback<Equipment>()
                 .withError(t -> {
                     if (t instanceof RequestFailedException) {
@@ -129,9 +138,6 @@ public abstract class EquipmentEditActivity
     public void onCancelClicked() {
         fireEvent(new EquipmentEvents.Show(!isNew(this.equipment)));
     }
-
-    @Override
-    public void onDecimalNumbersChanged() {}
 
     @Override
     public void onProjectChanged() {
@@ -216,6 +222,13 @@ public abstract class EquipmentEditActivity
                         (equipmentShortView -> true) :
                         (equipmentShortView -> !Objects.equals(equipmentShortView.getId(), equipment.getId()))
         );
+
+        view.setNameSizeValidationFunction(name -> {
+            boolean isValidSize = emptyIfNull(name).length() <= CrmConstants.EquipmentConstants.NAME_SIZE;
+
+            view.nameErrorLabelVisibility().setVisible(!isValidSize);
+            return isValidSize;
+        });
 
         fireEvent(new EquipmentEvents.ShowDocumentList(view.documents(), equipment.getId()));
     }

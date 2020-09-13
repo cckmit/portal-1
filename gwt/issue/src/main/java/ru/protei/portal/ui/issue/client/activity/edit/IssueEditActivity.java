@@ -6,6 +6,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
+import org.springframework.context.event.EventListener;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -174,6 +175,15 @@ public abstract class IssueEditActivity implements
 
     @Event
     public void onImportanceChanged( IssueEvents.IssueImportanceChanged event ) {
+        if (isReadOnly()) return;
+        if (view.isAttached()) {
+            reloadComments();
+        }
+        fireEvent( new IssueEvents.ChangeIssue(event.issueId) );
+    }
+
+    @Event
+    public void onProductChanged(IssueEvents.IssueProductChanged event) {
         if (isReadOnly()) return;
         if (view.isAttached()) {
             reloadComments();
@@ -376,7 +386,7 @@ public abstract class IssueEditActivity implements
 
     private void showComments(CaseObject issue) {
         CaseCommentEvents.Show show = new CaseCommentEvents.Show( issueInfoWidget.getCommentsContainer(),
-                issue.getId(), En_CaseType.CRM_SUPPORT, hasAccess() && !isReadOnly() );
+                issue.getId(), En_CaseType.CRM_SUPPORT, hasAccess() && !isReadOnly(), issue.getCreatorId() );
         show.isElapsedTimeEnabled = policyService.hasPrivilegeFor( En_Privilege.ISSUE_WORK_TIME_VIEW );
         show.isPrivateVisible = !issue.isPrivateCase() && policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW );
         show.isPrivateCase = issue.isPrivateCase();

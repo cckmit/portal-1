@@ -4,8 +4,8 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.TimeZone;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.context.client.events.Back;
@@ -155,26 +155,23 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
     @Override
     public void onSaveClicked() {
+        if (employee.isFired() && positionMap.isEmpty()){
+            fireEvent(new Back());
+            return;
+        }
+
         String errorMsg = validate();
-
         if (errorMsg != null) {
-            if (employee.isFired()){
-                fireEvent(new Back());
-                return;
-            }
-
             fireErrorMessage(errorMsg);
             return;
         }
 
         List<WorkerEntry> workers = fillWorkers();
-
         if (personId == null) {
             createPersonAndUpdateWorkers(workers);
+        } else if (isEditablePerson) {
+            updatePersonAndUpdateWorkers(workers);
         } else {
-            if (isEditablePerson){
-                updatePerson();
-            }
             updateEmployeeWorkers(workers);
         }
     }
@@ -266,6 +263,9 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
             worker.setPositionName(view.workerPosition().getValue().getDisplayText());
 
             view.getPositionsContainer().add(makePositionView(worker).asWidget());
+
+            boolean isWorkerInSyncCompany = isAnyWorkerInSyncCompany(new ArrayList<>(positionMap.values()));
+            setPersonFieldsEnabled (!isWorkerInSyncCompany);
 
             view.company().setValue(null);
             view.companyDepartment().setValue(null);
@@ -365,6 +365,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         infoFacade.setEmail(view.workEmail().getValue());
         employee.setIpAddress(view.ipAddress().getValue());
 
+        employee.setFired(false, null);
         return employee;
     }
 
@@ -443,10 +444,6 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         view.companyDepartment().setValue(null);
         view.workerPosition().setValue(null);
         onCompanySelected();
-
-        view.firstNameErrorLabel().setText(lang.contactFieldLengthExceed(view.firstNameLabel(), FIRST_NAME_SIZE));
-        view.secondNameErrorLabel().setText(lang.contactFieldLengthExceed(view.secondNameLabel(), SECOND_NAME_SIZE));
-        view.lastNameErrorLabel().setText(lang.contactFieldLengthExceed(view.lastNameLabel(), LAST_NAME_SIZE));
 
         boolean isEnabled = !employee.isFired() && (employee.getWorkerEntries() == null || employee.getWorkerEntries().size() == 0 || !isWorkerInSyncCompany);
         view.fireBtnVisibility().setVisible(personId != null & isEnabled & !employee.isFired());
@@ -527,7 +524,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         view.ipAddressEnabled().setEnabled(isEnabled);
     }
 
-    private void updateEmployeeWorkers (List<WorkerEntry> workers){
+    private void updateEmployeeWorkers (List<WorkerEntry> workers) {
         employeeService.updateEmployeeWorkers(workers, new FluentCallback<Boolean>()
                 .withError(throwable -> {
                     if ((throwable instanceof RequestFailedException) && En_ResultStatus.EMPLOYEE_MIGRATION_FAILED.equals(((RequestFailedException) throwable).status)) {
@@ -541,7 +538,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
                 }));
     }
 
-    private void createPersonAndUpdateWorkers(List<WorkerEntry> workers){
+    private void createPersonAndUpdateWorkers(List<WorkerEntry> workers) {
         employeeService.createEmployeePerson(applyChangesEmployee(), new FluentCallback<Person>()
                 .withSuccess(person -> {
                     workers.forEach(workerEntry -> workerEntry.setPersonId(person.getId()));
@@ -549,9 +546,11 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
                 }));
     }
 
-    private void updatePerson(){
+    private void updatePersonAndUpdateWorkers(List<WorkerEntry> workers) {
         employeeService.updateEmployeePerson(applyChangesEmployee(), view.changeAccount().getValue(), new FluentCallback<Boolean>()
-                .withSuccess(success -> {}));
+                .withSuccess(success -> {
+                    updateEmployeeWorkers(workers);
+                }));
     }
 
     private boolean isAnyWorkerInSyncCompany(List<WorkerEntryShortView> workerEntryShortViews) {

@@ -100,14 +100,6 @@ public interface AbstractContactEditView extends IsWidget {
 
     HasVisibility shortNameErrorLabelVisibility();
 
-    HasText firstNameErrorLabel();
-
-    HasText secondNameErrorLabel();
-
-    HasText lastNameErrorLabel();
-
-    HasText shortNameErrorLabel();
-
     String firstNameLabel();
 
     String secondNameLabel();
@@ -121,8 +113,6 @@ public interface AbstractContactEditView extends IsWidget {
     String workEmailLabel();
 
     String loginLabel();
-
-    HasText loginErrorLabel();
 
     HasEnabled saveEnabled();
 

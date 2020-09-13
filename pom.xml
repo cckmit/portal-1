@@ -56,7 +56,7 @@
                 <module>gwt/contact</module>
                 <module>gwt/issue</module>
                 <module>gwt/issueassignment</module>
-                <module>gwt/issuereport</module>
+                <module>gwt/report</module>
                 <module>gwt/region</module>
                 <module>gwt/project</module>
                 <module>gwt/equipment</module>
@@ -74,6 +74,7 @@
                 <module>gwt/roomreservation</module>
                 <module>gwt/plan</module>
                 <module>gwt/absence</module>
+                <module>gwt/dutylog</module>
 
                 <module>app/portal</module>
             </modules>

@@ -9,22 +9,22 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
-import ru.protei.portal.core.event.ProjectAttachmentEvent;
-import ru.protei.portal.core.model.event.CaseCommentSavedClientEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
+import ru.protei.portal.core.event.ProjectAttachmentEvent;
 import ru.protei.portal.core.event.ProjectCommentEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.exception.RollbackTransactionException;
-import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
-import ru.protei.portal.core.model.dao.CaseCommentDAO;
-import ru.protei.portal.core.model.dao.CaseCommentShortViewDAO;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.event.CaseCommentRemovedClientEvent;
+import ru.protei.portal.core.model.event.CaseCommentSavedClientEvent;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
+import ru.protei.portal.core.model.query.UserLoginShortViewQuery;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
+import ru.protei.portal.core.model.struct.ReplaceLoginWithUsernameInfo;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseCommentShortView;
 import ru.protei.portal.core.service.auth.AuthService;
@@ -35,12 +35,12 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
-import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public class CaseCommentServiceImpl implements CaseCommentService {
 
@@ -52,7 +52,14 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
         CaseCommentQuery query = new CaseCommentQuery(caseObjectId);
         applyFilterByScope(token, query);
-        return getList(query);
+
+        List<CaseComment> comments = getList(query).getData();
+
+        if (needReplaceLoginWithUsername(caseType)) {
+            return replaceLoginWithUsername(comments).map(this::objectListFromReplacementInfoList);
+        }
+
+        return ok(comments);
     }
 
     @Override
@@ -62,6 +69,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             return error(checkAccessStatus);
         }
         applyFilterByScope(token, query);
+
         return ok(caseCommentShortViewDAO.getSearchResult(query));
     }
 
@@ -506,6 +514,131 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         return ok(true).publishEvents(events);
     }
 
+    @Override
+    public Result<List<String>> replaceLoginWithUsername(AuthToken token, List<String> texts) {
+        return replaceLoginWithUsername(texts, Function.identity(), String::replace).map(this::objectListFromReplacementInfoList);
+    }
+
+    @Override
+    public Result<List<ReplaceLoginWithUsernameInfo<CaseComment>>> replaceLoginWithUsername(List<CaseComment> comments) {
+        return replaceLoginWithUsername(comments, CaseComment::getText, this::replaceTextAndGetComment);
+    }
+
+    /**
+     * Заменяет в списке объектов возможные логины, которые начинаются с символа "@", на Фамилия Имя
+     *
+     * @param  objects                  список объектов
+     * @param  objectToStringFunction   функция, переводящая переданный объект в строку, в которой будет производиться замена
+     * @param  replacementMapper        {@link ReplacementMapper}
+     * @return список {@link ReplaceLoginWithUsernameInfo}, содержащий объект и набор логинов в объекте
+     */
+    private <T> Result<List<ReplaceLoginWithUsernameInfo<T>>> replaceLoginWithUsername(List<T> objects, Function<T, String> objectToStringFunction, ReplacementMapper<T> replacementMapper) {
+        if (isEmpty(objects)) {
+            return ok(new ArrayList<>());
+        }
+
+        Set<String> possibleLoginSet = new HashSet<>(getPossibleLoginSet(toList(objects, objectToStringFunction)).getData());
+
+        if (possibleLoginSet.isEmpty()) {
+            return ok(objects.stream().map(ReplaceLoginWithUsernameInfo::new).collect(Collectors.toList()));
+        }
+
+        UserLoginShortViewQuery query = new UserLoginShortViewQuery();
+        query.setAdminState(En_AdminState.UNLOCKED);
+        query.setLoginSet(possibleLoginSet);
+
+        SearchResult<UserLoginShortView> searchResult = userLoginShortViewDAO.getSearchResult(query);
+
+        List<UserLoginShortView> existingLoginList = searchResult.getResults()
+                .stream()
+                .sorted((login1, login2) -> login2.getUlogin().length() - login1.getUlogin().length())
+                .collect(Collectors.toList());
+
+        return ok(makeReplacementInfoList(objects, objectToStringFunction, replacementMapper, existingLoginList));
+    }
+
+    private <T> List<ReplaceLoginWithUsernameInfo<T>> makeReplacementInfoList(List<T> objects, Function<T, String> objectToStringFunction, ReplacementMapper<T> replacementMapper, List<UserLoginShortView> existingLoginList) {
+        List<ReplaceLoginWithUsernameInfo<T>> replacementInfoList = new ArrayList<>();
+
+        for (T object : objects) {
+            replacementInfoList.add(new ReplaceLoginWithUsernameInfo<>(object));
+        }
+
+        for (UserLoginShortView nextUserLogin : existingLoginList) {
+            for (ReplaceLoginWithUsernameInfo<T> info : replacementInfoList) {
+                String textBeforeReplace = objectToStringFunction.apply(info.getObject());
+
+                T objectWithReplace = replacementMapper
+                        .replace(info.getObject(), "@" + nextUserLogin.getUlogin(), "@" + nextUserLogin.getLastName() + " " + nextUserLogin.getFirstName());
+
+                String textAfterReplace = objectToStringFunction.apply(objectWithReplace);
+
+                boolean isReplaced = !Objects.equals(textBeforeReplace, textAfterReplace);
+
+                if (isReplaced) {
+                    info.setObject(objectWithReplace);
+                    info.addUserLoginShortView(nextUserLogin);
+                }
+            }
+        }
+
+        return replacementInfoList;
+    }
+
+    private Result<Set<String>> getPossibleLoginSet(List<String> texts) {
+        if (isEmpty(texts)) {
+            return ok(new HashSet<>());
+        }
+
+        Set<String> possibleLoginSet = new HashSet<>();
+
+        fillPossibleLoginSet(texts, possibleLoginSet);
+
+        return ok(possibleLoginSet);
+    }
+
+    private void fillPossibleLoginSet(List<String> texts, Set<String> possibleLoginSet) {
+        texts
+                .stream()
+                .filter(StringUtils::isNotBlank)
+                .map(String::trim)
+                .flatMap(text -> Arrays.stream(text.split(CrmConstants.Masks.ONE_OR_MORE_SPACES)))
+                .filter(text -> text.startsWith("@"))
+                .map(text -> text.substring(1))
+                .filter(text -> text.length() <= CrmConstants.ContactConstants.LOGIN_SIZE)
+                .forEach(text -> {
+                    possibleLoginSet.add(text);
+                    possibleLoginSet.addAll(subLoginList(text));
+                });
+    }
+
+    private List<String> subLoginList(String text) {
+        List<String> subLoginList = new ArrayList<>();
+
+        for (int i = 1; i < text.toCharArray().length; i++) {
+            subLoginList.add(text.substring(0, i));
+        }
+
+        return subLoginList;
+    }
+
+    private CaseComment replaceTextAndGetComment(CaseComment comment, String replaceFrom, String replaceTo) {
+        if (comment.getText() == null) {
+            return comment;
+        }
+
+        comment.setText(comment.getText().replace(replaceFrom, replaceTo));
+        return comment;
+    }
+
+    private <T> List<T> objectListFromReplacementInfoList(List<ReplaceLoginWithUsernameInfo<T>> infos) {
+        return infos.stream().map(ReplaceLoginWithUsernameInfo::getObject).collect(Collectors.toList());
+    }
+
+    private boolean needReplaceLoginWithUsername(En_CaseType caseType) {
+        return En_CaseType.CRM_SUPPORT.equals(caseType);
+    }
+
     private Result<List<CaseComment>> getList(CaseCommentQuery query) {
         List<CaseComment> comments = caseCommentDAO.getCaseComments(query);
         return getList(comments);
@@ -575,15 +708,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         list.forEach(ca -> attachmentService.removeAttachment(token, caseType, ca.getAttachmentId()));
     }
 
-    private CaseObject getNewStateAndFillOldState(Long caseId, CaseObject oldState) {
-        CaseObject newState = caseObjectDAO.get(caseId);
-        jdbcManyRelationsHelper.fill(newState, "attachments");
-        jdbcManyRelationsHelper.fill(newState, "notifiers");
-        oldState.setAttachments(newState.getAttachments());
-        oldState.setNotifiers(newState.getNotifiers());
-        return newState;
-    }
-
     @Autowired
     CaseService caseService;
     @Autowired
@@ -606,6 +730,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     CaseCommentShortViewDAO caseCommentShortViewDAO;
     @Autowired
     CaseAttachmentDAO caseAttachmentDAO;
+    @Autowired
+    UserLoginShortViewDAO userLoginShortViewDAO;
 
 /*
     @Autowired

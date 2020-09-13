@@ -53,6 +53,10 @@ public class QuickView extends Composite implements HasWidgets {
         show(isShow);
     }
 
+    public boolean isShow() {
+        return quickview.getElement().hasClassName("open");
+    }
+
     public void show(boolean isShow) {
         quickview.removeStyleName("open");
         if (isShow) {

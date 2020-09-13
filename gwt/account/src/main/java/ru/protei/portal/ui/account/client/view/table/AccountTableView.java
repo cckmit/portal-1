@@ -65,6 +65,7 @@ public class AccountTableView extends Composite implements AbstractAccountTableV
     @Override
     public void setAnimation ( TableAnimation animation ) {
         animation.setContainers( tableContainer, previewContainer, filterContainer );
+        columnProvider.setChangeSelectionIfSelectedPredicate(account -> animation.isPreviewShow());
     }
 
     @Override

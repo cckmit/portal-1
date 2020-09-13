@@ -81,6 +81,7 @@ public class CrmConstants {
         String CONTRACTOR_KPP = "^\\d{9}$";
         String CONTRACTOR_NAME = "^.{1,100}$";
         String CONTRACTOR_FULL_NAME = "^.{1,250}$";
+        String MENTION = "^\\@.*";
     }
 
     public interface Time {
@@ -96,6 +97,10 @@ public class CrmConstants {
         int LAST_NAME_SIZE = 80;
         int SHORT_NAME_SIZE = 128;
         int LOGIN_SIZE = 64;
+    }
+
+    public interface EquipmentConstants {
+        int NAME_SIZE = 128;
     }
 
     public interface Comment {

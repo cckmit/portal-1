@@ -2,12 +2,15 @@ package ru.protei.portal.core.model.query;
 
 import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.dict.En_ReportStatus;
+import ru.protei.portal.core.model.dict.En_ReportType;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 public class ReportQuery extends BaseQuery {
+
+    private List<En_ReportType> types;
 
     private List<En_ReportStatus> statuses;
 
@@ -45,6 +48,14 @@ public class ReportQuery extends BaseQuery {
         this.toCreated = toCreated;
         this.offset = offset;
         this.limit = limit;
+    }
+
+    public List<En_ReportType> getTypes() {
+        return types;
+    }
+
+    public void setTypes(List<En_ReportType> types) {
+        this.types = types;
     }
 
     public List<En_ReportStatus> getStatuses() {
@@ -139,6 +150,7 @@ public class ReportQuery extends BaseQuery {
     public String toString () {
         return "ReportQuery{" +
                 "statuses=" + statuses +
+                ", types=" + types +
                 ", name=" + searchString +
                 ", locale=" + locale +
                 ", fromCreated=" + fromCreated +

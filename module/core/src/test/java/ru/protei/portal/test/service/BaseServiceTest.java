@@ -1,5 +1,7 @@
 package ru.protei.portal.test.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
@@ -14,6 +16,7 @@ import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.mock.AuthServiceMock;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
@@ -285,6 +288,22 @@ public class BaseServiceTest {
         return absence;
     }
 
+    protected String serializeAsJson(Object object) {
+        try {
+            return objectMapper.writeValueAsString(object);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected <T> T deserializeFromJson(String json, Class<T> clazz) {
+        try {
+            return objectMapper.readValue(json, clazz);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     // Remove
 
     protected boolean removeCaseObjectAndComments(CaseObject caseObject) {
@@ -350,4 +369,6 @@ public class BaseServiceTest {
     protected PersonAbsenceDAO personAbsenceDAO;
     @Autowired
     protected PortalConfig config;
+    @Autowired
+    protected ObjectMapper objectMapper;
 }

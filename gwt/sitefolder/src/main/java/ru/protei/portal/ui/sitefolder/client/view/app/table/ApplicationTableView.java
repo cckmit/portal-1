@@ -48,6 +48,7 @@ public class ApplicationTableView extends Composite implements AbstractApplicati
     @Override
     public void setAnimation(TableAnimation animation) {
         animation.setContainers(tableContainer, previewContainer, filterContainer);
+        columnProvider.setChangeSelectionIfSelectedPredicate(application -> animation.isPreviewShow());
     }
 
     @Override

@@ -79,7 +79,8 @@ public class DebugIds {
         String EQUIPMENT = "sidebar-menu-equipment";
         String ISSUE = "sidebar-menu-issue";
         String ISSUE_ASSIGNMENT = "sidebar-menu-issue-assignment";
-        String ISSUE_REPORTS = "sidebar-menu-issue-reports";
+        String REPORTS = "sidebar-menu-issue-reports";
+        @Deprecated String ISSUE_REPORTS = REPORTS;
         String OFFICIAL = "sidebar-menu-official";
         String PRODUCT = "sidebar-menu-product";
         String PROJECT = "sidebar-menu-project";
@@ -118,6 +119,7 @@ public class DebugIds {
         String SUBNET = "sidebar-menu-ip-reservation-subnet";
         String ROOM_RESERVATION_CALENDAR = "sidebar-menu-room-reservation-calendar";
         String ROOM_RESERVATION_TABLE = "sidebar-menu-room-reservation-table";
+        String DUTY_LOG = "sidebar-menu-duty-log";
     }
 
     public interface SELECTOR {
@@ -970,4 +972,17 @@ public class DebugIds {
         }
     }
 
+    public interface DUTY_LOG {
+        interface EDIT {
+            String EMPLOYEE_SELECTOR = "duty-log-employee-selector";
+            String DATE_RANGE_INPUT = "duty-log-date-range-input";
+            String TYPE_SELECTOR = "duty-log-type-selector";
+        }
+
+        interface FILTER {
+            String DATE_RANGE = "duty-log-filter-date-range-input";
+            String EMPLOYEE = "duty-log-filter-employee-selector";
+            String TYPE = "duty-log-filter-type-selector";
+        }
+    }
 }

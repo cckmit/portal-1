@@ -301,7 +301,7 @@ public class CaseServiceImpl implements CaseService {
             throw new ResultStatusException(En_ResultStatus.VALIDATION_ERROR);
         }
 
-        boolean isStateTransitionValidNoWorkflow = workflow != En_CaseStateWorkflow.NO_WORKFLOW || !isStateReopenNotAllowed(token, oldCaseMeta, caseMeta);
+        boolean isStateTransitionValidNoWorkflow = workflow != En_CaseStateWorkflow.NO_WORKFLOW || !isStateReopenNotAllowed(oldCaseMeta, caseMeta);
         if (!isStateTransitionValidNoWorkflow) {
             log.info("Wrong state transition for the issue {}: {} -> {}",
                     caseMeta.getId(), oldCaseMeta.getStateId(), caseMeta.getStateId());
@@ -776,10 +776,9 @@ public class CaseServiceImpl implements CaseService {
     }
 
 
-    private boolean isStateReopenNotAllowed(AuthToken token, CaseObjectMeta oldMeta, CaseObjectMeta newMeta) {
+    private boolean isStateReopenNotAllowed(CaseObjectMeta oldMeta, CaseObjectMeta newMeta) {
         return isTerminalState(oldMeta.getStateId()) &&
-              !isTerminalState(newMeta.getStateId()) &&
-              !isPersonHasGrantAccess(token, En_Privilege.ISSUE_EDIT);
+              !isTerminalState(newMeta.getStateId());
     }
 
     private boolean isPersonHasGrantAccess(AuthToken token, En_Privilege privilege) {
@@ -861,6 +860,7 @@ public class CaseServiceImpl implements CaseService {
         if (!isStateValid(caseMeta.getStateId(), caseMeta.getManagerId(), caseMeta.getPauseDate())) return false;
         if (caseMeta.getManagerCompanyId() == null) return false;
         if (caseMeta.getManagerId() != null && !personBelongsToCompany(caseMeta.getManagerId(), caseMeta.getManagerCompanyId())) return false;
+        if (caseMeta.getManagerId() != null && caseMeta.getProductId() == null) return false;
         if (caseMeta.getInitiatorCompanyId() == null) return false;
         if (caseMeta.getInitiatorId() != null && !personBelongsToCompany( caseMeta.getInitiatorId(), caseMeta.getInitiatorCompanyId() )) return false;
         if (caseMeta.getPlatformId() != null && !platformBelongsToCompany(token, caseMeta.getPlatformId(), caseMeta.getInitiatorCompanyId())) return false;

@@ -53,6 +53,7 @@ public class ProductTableView extends Composite implements AbstractProductTableV
     @Override
     public void setAnimation(TableAnimation animation) {
         animation.setContainers( tableContainer, previewContainer, filterContainer );
+        columnProvider.setChangeSelectionIfSelectedPredicate(product -> animation.isPreviewShow());
     }
 
     @Override

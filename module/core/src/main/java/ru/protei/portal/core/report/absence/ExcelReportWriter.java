@@ -1,16 +1,17 @@
 package ru.protei.portal.core.report.absence;
 
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.usermodel.Workbook;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.ent.PersonAbsence;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.report.ReportWriter;
-import ru.protei.portal.core.utils.ExcelFormatUtils;
 import ru.protei.portal.core.utils.ExcelFormatUtils.ExcelFormat;
 import ru.protei.portal.core.utils.JXLSHelper;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,7 +53,16 @@ public class ExcelReportWriter implements
     }
 
     @Override
-    public String[] getFormats() {
+    public CellStyle getCellStyle(Workbook workbook, int columnIndex) {
+        return book.makeCellStyle(columnIndex, cs -> {
+            cs.setFont(book.getDefaultFont());
+            cs.setVerticalAlignment(VerticalAlignment.CENTER);
+            cs.setDataFormat(workbook.createDataFormat()
+                    .getFormat(getFormats()[columnIndex]));
+        });
+    }
+
+    private String[] getFormats() {
         return new String[] {
                 ExcelFormat.STANDARD, ExcelFormat.FULL_DATE_TIME, ExcelFormat.FULL_DATE_TIME, ExcelFormat.STANDARD, ExcelFormat.STANDARD
         };

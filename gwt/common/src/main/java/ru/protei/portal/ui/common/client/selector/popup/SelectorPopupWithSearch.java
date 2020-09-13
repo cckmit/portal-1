@@ -95,7 +95,7 @@ public class SelectorPopupWithSearch extends BasePopupView
         }, ScrollEvent.getType() );
     }
 
-   @Override
+    @Override
     public void showLoading(boolean isLoading) {
         loading.setVisible(isLoading);
     }
