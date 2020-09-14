@@ -2,6 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:selector="urn:import:ru.protei.portal.ui.contract.client.widget.selector"
              xmlns:single="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
+             xmlns:validatefield="urn:import:ru.protei.portal.ui.common.client.widget.validatefield"
              xmlns:money="urn:import:ru.protei.portal.ui.common.client.widget.money">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -12,10 +13,18 @@
             <single:SinglePicker ui:field="date" type="DATE" formatValue="dd.MM.yyyy" mandatory="false" styleName="form-group m-b-0"/>
             <g:CheckBox ui:field="notify" styleName="checkbox m-t-5" text="{lang.contractDatesNotify}"/>
         </div>
-        <div class="col-md-2">
-            <money:MoneyCurrencyWidget ui:field="moneyWithCurrency" defaultCurrency="RUB"/>
+        <div class="col-md-3">
+            <div class="input-group">
+                <validatefield:ValidableDoubleBox ui:field="moneyPercent" styleName="form-control" placeholder="{lang.percent}"/>
+                <div class="input-group-prepend input-group-append">
+                    <span class="input-group-text"/>
+                </div>
+                <div class="form-control p-0 no-border">
+                    <money:MoneyCurrencyWidget ui:field="moneyWithCurrency" defaultCurrency="RUB"/>
+                </div>
+            </div>
         </div>
-        <div class="col-md-5">
+        <div class="col-md-4">
             <g:TextBox ui:field="comment" styleName="form-control"/>
         </div>
         <div class="col-md-1">

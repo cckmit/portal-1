@@ -13,12 +13,14 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_ContractDatesType;
 import ru.protei.portal.core.model.ent.ContractDate;
+import ru.protei.portal.core.model.struct.Money;
 import ru.protei.portal.ui.contract.client.widget.contractdates.item.ContractDateItem;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class ContractDatesList
         extends Composite
@@ -51,6 +53,10 @@ public class ContractDatesList
         }
     }
 
+    public void setContractCostSupplier(Supplier<Money> contractCostSupplier) {
+        this.contractCostSupplier = contractCostSupplier;
+    }
+
     public void clear() {
         container.clear();
         modelToView.clear();
@@ -80,6 +86,7 @@ public class ContractDatesList
 
     private void makeItemAndFillValue(final ContractDate value ) {
         ContractDateItem itemWidget = itemFactory.get();
+        itemWidget.setContractCostSupplier(contractCostSupplier);
         itemWidget.setValue( value );
         itemWidget.addCloseHandler(event -> {
             container.remove( event.getTarget() );
@@ -105,6 +112,7 @@ public class ContractDatesList
     Provider<ContractDateItem> itemFactory;
     List<ContractDate> value;
     Map<ContractDateItem, ContractDate> modelToView = new HashMap<>();
+    private Supplier<Money> contractCostSupplier;
 
     interface ContractPeriodListUiBinder extends UiBinder< HTMLPanel, ContractDatesList> {}
     private static ContractPeriodListUiBinder ourUiBinder = GWT.create( ContractPeriodListUiBinder.class );

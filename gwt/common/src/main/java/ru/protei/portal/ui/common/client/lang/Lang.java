@@ -3081,4 +3081,6 @@ public interface Lang extends Messages, ContactItemLang {
     String dutyLogValidationDateRange();
 
     String dutyLogValidationEmployee();
+
+    String percent();
 }

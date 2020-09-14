@@ -16,13 +16,18 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.En_ContractDatesType;
+import ru.protei.portal.core.model.dict.En_Currency;
 import ru.protei.portal.core.model.ent.ContractDate;
+import ru.protei.portal.core.model.struct.Money;
+import ru.protei.portal.core.model.struct.MoneyWithCurrency;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.money.MoneyCurrencyWidget;
+import ru.protei.portal.ui.common.client.widget.validatefield.ValidableDoubleBox;
 import ru.protei.portal.ui.contract.client.widget.selector.ContractDatesTypeSelector;
 
 import java.util.Date;
+import java.util.function.Supplier;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
@@ -53,6 +58,12 @@ public class ContractDateItem
         date.setValue( value.getDate() );
         comment.setValue( value.getComment() );
         notify.setValue( value.isNotify() );
+        moneyWithCurrency.setValue(new MoneyWithCurrency(value.getCost(), value.getCurrency()));
+        moneyPercent.setValue(calculatePercent(value.getCost()));
+    }
+
+    public void setContractCostSupplier(Supplier<Money> contractCostSupplier) {
+        this.contractCostSupplier = contractCostSupplier;
     }
 
     @Override
@@ -76,6 +87,27 @@ public class ContractDateItem
         value.setDate(date.getValue());
     }
 
+    @UiHandler( "moneyWithCurrency" )
+    public void onChangeMoneyWithCurrency(ValueChangeEvent<MoneyWithCurrency> event) {
+        MoneyWithCurrency mwc = moneyWithCurrency.getValue();
+        Money cost = mwc != null ? mwc.getMoney() : null;
+        En_Currency currency = mwc != null ? mwc.getCurrency() : null;
+        Double costPercent = calculatePercent(cost);
+        value.setCost(cost);
+        value.setCurrency(currency);
+        moneyPercent.setValue(costPercent, false);
+    }
+
+    @UiHandler( "moneyPercent" )
+    public void onChangeMoneyPercent(ValueChangeEvent<Double> event) {
+        Double costPercent = moneyPercent.getValue();
+        Money cost = calculateCost(costPercent);
+        value.setCost(cost);
+        MoneyWithCurrency mwc = moneyWithCurrency.getValue();
+        mwc.setMoney(cost);
+        moneyWithCurrency.setValue(mwc, false);
+    }
+
     @UiHandler( "type" )
     public void onChangeType(ValueChangeEvent<En_ContractDatesType> event) {
         value.setType(type.getValue());
@@ -95,6 +127,24 @@ public class ContractDateItem
         remove.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.DATE_ITEM.REMOVE_BUTTON);
     }
 
+    private Double calculatePercent(Money cost) {
+        if (cost == null) {
+            return null;
+        }
+        double ratio = (double) cost.getFull() / (double) contractCostSupplier.get().getFull();
+        double percent = ratio * 100;
+        return percent;
+    }
+
+    private Money calculateCost(Double percent) {
+        if (percent == null) {
+            return null;
+        }
+        double ratio = percent / 100;
+        long cost = (long) ((double) contractCostSupplier.get().getFull() * ratio);
+        return new Money(cost);
+    }
+
     @UiField
     TextBox comment;
     @UiField
@@ -107,6 +157,8 @@ public class ContractDateItem
     SinglePicker date;
     @UiField
     CheckBox notify;
+    @UiField
+    ValidableDoubleBox moneyPercent;
     @Inject
     @UiField(provided = true)
     MoneyCurrencyWidget moneyWithCurrency;
@@ -117,6 +169,7 @@ public class ContractDateItem
     HTMLPanel root;
 
     private ContractDate value = new ContractDate();
+    private Supplier<Money> contractCostSupplier;
 
     interface PairItemUiBinder extends UiBinder< HTMLPanel, ContractDateItem> {}
     private static PairItemUiBinder ourUiBinder = GWT.create( PairItemUiBinder.class );
