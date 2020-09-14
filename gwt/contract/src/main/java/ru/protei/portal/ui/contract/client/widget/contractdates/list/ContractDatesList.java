@@ -11,12 +11,14 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import ru.brainworm.factory.core.datetimepicker.client.util.DateUtils;
 import ru.protei.portal.core.model.dict.En_ContractDatesType;
 import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.ui.contract.client.widget.contractdates.item.ContractDateItem;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ContractDatesList
         extends Composite
@@ -69,7 +71,7 @@ public class ContractDatesList
     private void addEmptyItem() {
         ContractDate item = new ContractDate();
         item.setType(En_ContractDatesType.values()[0]);
-        item.setDate(DateUtils.setBeginOfDay(new Date()));
+        item.setDate(null);
 
         value.add( item );
 

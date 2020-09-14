@@ -112,11 +112,18 @@ public class ContractServiceImpl implements ContractService {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
-        if (contract == null)
+        if (contract == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
 
         if (contract.getProjectId() == null) {
             return error(En_ResultStatus.PROJECT_NOT_SELECTED);
+        }
+
+        boolean invalidContractDates = stream(contract.getContractDates())
+                .anyMatch(not(this::isValidContractDate));
+        if (invalidContractDates) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         if (contract.getParentContractId() != null) {
@@ -129,28 +136,37 @@ public class ContractServiceImpl implements ContractService {
         }
 
         CaseObject caseObject = fillCaseObjectFromContract(null, contract);
-        Long id = caseObjectDAO.persist(caseObject);
-        if (id == null)
+        Long contractId = caseObjectDAO.persist(caseObject);
+        if (contractId == null) {
             return error(En_ResultStatus.NOT_CREATED);
-
-        contract.setId(id);
+        }
+        contract.setId(contractId);
 
         Contractor contractor = contract.getContractor();
         if (contractor != null) {
             Result<Long> result = saveContractor(contractor);
-            if (result.isOk()) {
-                contract.setContractorId(result.getData());
-            } else {
-                return result;
+            if (result.isError()) {
+                log.error("createContract(): id = {} | failed to save contractor to db with result = {}", contractId, result);
+                throw new ResultStatusException(result.getStatus());
             }
+            contract.setContractorId(result.getData());
         } else {
             contract.setContractorId(null);
         }
 
-        Long contractId = contractDAO.persist(contract);
+        boolean contractPersisted = contractDAO.persist(contract) != null;
+        if (!contractPersisted) {
+            log.error("createContract(): id = {} | failed to persist contract to db", contractId);
+            throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+        }
 
-        if (contractId == null)
-            return error(En_ResultStatus.INTERNAL_ERROR);
+        try {
+            jdbcManyRelationsHelper.persist(contract, "contractDates");
+            jdbcManyRelationsHelper.persist(contract, "contractSpecifications");
+        } catch (Exception e) {
+            log.error("createContract(): id = {} | failed to save contract's relations to db", contractId, e);
+            throw new ResultStatusException(En_ResultStatus.NOT_CREATED, e);
+        }
 
         boolean sync1cEnabled = config.data().enterprise1C().isContractSyncEnabled();
         boolean contractorDefined = contract.getContractor() != null;
@@ -158,23 +174,20 @@ public class ContractServiceImpl implements ContractService {
         boolean is1cSync = sync1cEnabled && contractorDefined && !stateAgreement;
         if (is1cSync) {
             Result<Contract1C> result = saveContract1C(contract);
-            if (result.isOk()) {
-                contract.setRefKey(result.getData().getRefKey());
-            } else {
-                return error(En_ResultStatus.INTERNAL_ERROR);
+            if (result.isError()) {
+                log.error("createContract(): id = {} | failed to save contract to 1c with result = {}", contractId, result);
+                throw new ResultStatusException(result.getStatus());
             }
+            contract.setRefKey(result.getData().getRefKey());
             boolean contractUpdated = contractDAO.mergeRefKey(contractId, contract.getRefKey());
             if (!contractUpdated) {
                 // Not rollback-able error
                 log.error("createContract(): id = {} | NO-ROLLBACK | failed to save contract's refKey to db", contractId);
-                return error(En_ResultStatus.NOT_UPDATED);
+                return error(En_ResultStatus.NOT_CREATED);
             }
         }
 
-        jdbcManyRelationsHelper.persist(contract, "contractDates");
-        jdbcManyRelationsHelper.persist(contract, "contractSpecifications");
-
-        return ok(id);
+        return ok(contractId);
     }
 
     @Override
@@ -195,6 +208,12 @@ public class ContractServiceImpl implements ContractService {
 
         if (contract.getProjectId() == null) {
             return error(En_ResultStatus.PROJECT_NOT_SELECTED);
+        }
+
+        boolean invalidContractDates = stream(contract.getContractDates())
+                .anyMatch(not(this::isValidContractDate));
+        if (invalidContractDates) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         if (isNotBlank(contract.getRefKey()) && contract.getContractor() == null) {
@@ -553,6 +572,14 @@ public class ContractServiceImpl implements ContractService {
             return false;
         }
 
+        return true;
+    }
+
+    private boolean isValidContractDate(ContractDate contractDate) {
+        boolean isNotifyInvalid = contractDate.isNotify() && contractDate.getDate() == null;
+        if (isNotifyInvalid) {
+            return false;
+        }
         return true;
     }
 
