@@ -10,6 +10,7 @@ import ru.protei.portal.core.client.enterprise1c.api.Api1C;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
@@ -151,15 +152,23 @@ public class ContractServiceImpl implements ContractService {
         if (contractId == null)
             return error(En_ResultStatus.INTERNAL_ERROR);
 
-        if (config.data().enterprise1C().isContractSyncEnabled() && contract.getContractor() != null) {
+        boolean sync1cEnabled = config.data().enterprise1C().isContractSyncEnabled();
+        boolean contractorDefined = contract.getContractor() != null;
+        boolean stateAgreement = contract.getState() == En_ContractState.AGREEMENT;
+        boolean is1cSync = sync1cEnabled && contractorDefined && !stateAgreement;
+        if (is1cSync) {
             Result<Contract1C> result = saveContract1C(contract);
             if (result.isOk()) {
                 contract.setRefKey(result.getData().getRefKey());
             } else {
                 return error(En_ResultStatus.INTERNAL_ERROR);
             }
-
-            contractDAO.merge(contract);
+            boolean contractUpdated = contractDAO.mergeRefKey(contractId, contract.getRefKey());
+            if (!contractUpdated) {
+                // Not rollback-able error
+                log.error("createContract(): id = {} | NO-ROLLBACK | failed to save contract's refKey to db", contractId);
+                return error(En_ResultStatus.NOT_UPDATED);
+            }
         }
 
         jdbcManyRelationsHelper.persist(contract, "contractDates");
@@ -236,7 +245,9 @@ public class ContractServiceImpl implements ContractService {
             throw new ResultStatusException(En_ResultStatus.NOT_UPDATED, e);
         }
 
-        boolean is1cSync = config.data().enterprise1C().isContractSyncEnabled();
+        boolean sync1cEnabled = config.data().enterprise1C().isContractSyncEnabled();
+        boolean stateAgreement = contract.getState() == En_ContractState.AGREEMENT;
+        boolean is1cSync = sync1cEnabled && !stateAgreement;
         if (is1cSync) {
 
             boolean isRefKeySet = isNotEmpty(contract.getRefKey());
