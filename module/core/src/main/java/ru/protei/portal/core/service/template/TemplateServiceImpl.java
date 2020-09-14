@@ -10,7 +10,6 @@ import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.dto.Project;
-import ru.protei.portal.core.model.dto.ReportCaseQuery;
 import ru.protei.portal.core.model.dto.ReportDto;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -45,7 +44,6 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
-import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
 
 /**
  * Реализация сервиса управления проектами
@@ -414,14 +412,8 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getMailReportBody(ReportDto reportDto) {
+    public PreparedTemplate getMailReportBody(ReportDto reportDto, Interval createdInterval, Interval modifiedInterval) {
         Report report = reportDto.getReport();
-        Interval createdInterval = reportDto instanceof ReportCaseQuery
-                ? makeInterval(((ReportCaseQuery) reportDto).getQuery().getCreatedRange())
-                : null;
-        Interval modifiedInterval = reportDto instanceof ReportCaseQuery
-                ? makeInterval(((ReportCaseQuery) reportDto).getQuery().getModifiedRange())
-                : null;
 
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("reportId", report.getId());

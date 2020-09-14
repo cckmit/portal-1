@@ -5,6 +5,7 @@ import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.dto.ReportDto;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.dto.Project;
+import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.utils.EnumLangUtil;
@@ -44,7 +45,7 @@ public interface TemplateService {
 
     PreparedTemplate getDocumentDocFileUpdatedByMemberSubject(String documentName);
 
-    PreparedTemplate getMailReportBody(ReportDto reportDto);
+    PreparedTemplate getMailReportBody(ReportDto reportDto, Interval createdInterval, Interval modifiedInterval);
 
     PreparedTemplate getMailReportSubject(ReportDto reportDto);
 
