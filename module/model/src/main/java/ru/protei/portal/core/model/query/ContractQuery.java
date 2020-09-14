@@ -21,6 +21,8 @@ public class ContractQuery extends BaseQuery {
 
     private List<En_ContractType> types;
 
+    private List<Long> caseTagsIds;
+
     private List<En_ContractState> states;
 
     private List<Long> managerIds;
@@ -69,6 +71,14 @@ public class ContractQuery extends BaseQuery {
 
     public void setTypes(List<En_ContractType> types) {
         this.types = types;
+    }
+
+    public List<Long> getCaseTagsIds() {
+        return caseTagsIds;
+    }
+
+    public void setCaseTagsIds(List<Long> caseTagsIds) {
+        this.caseTagsIds = caseTagsIds;
     }
 
     public List<Long> getManagerIds() {
@@ -120,6 +130,7 @@ public class ContractQuery extends BaseQuery {
                 kind != null ||
                 isNotEmpty(types) ||
                 isNotEmpty(states) ||
+                isNotEmpty(caseTagsIds) ||
                 isNotEmpty(managerIds) ||
                 isNotEmpty(contractorIds) ||
                 isNotEmpty(organizationIds) ||
@@ -135,6 +146,7 @@ public class ContractQuery extends BaseQuery {
                 ", kind=" + kind +
                 ", types=" + types +
                 ", states=" + states +
+                ", caseTagsIds=" + caseTagsIds +
                 ", managerIds=" + managerIds +
                 ", contractorIds=" + contractorIds +
                 ", organizationIds=" + organizationIds +
