@@ -247,6 +247,16 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         secondContractOrganization.setIdsToHide(organizationsToHide);
     }
 
+    @Override
+    public HasVisibility tagsVisibility() {
+        return tags;
+    }
+
+    @Override
+    public HasWidgets tagsContainer() {
+        return tagsContainer;
+    }
+
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {
@@ -321,6 +331,13 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     public void onDateValidDaysChanged(KeyUpEvent event) {
         if (activity != null) {
             activity.onDateValidChanged(dateValidDays.getValue());
+        }
+    }
+
+    @UiHandler("tagsAddButton")
+    public void tagsAddButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onAddTagsClicked(tagsAddButton);
         }
     }
 
@@ -452,6 +469,12 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Inject
     @UiField(provided = true)
     ContractorWidget contractorWidget;
+    @UiField
+    HTMLPanel tags;
+    @UiField
+    HTMLPanel tagsContainer;
+    @UiField
+    Button tagsAddButton;
     @UiField
     LabelElement numberLabel;
     @UiField

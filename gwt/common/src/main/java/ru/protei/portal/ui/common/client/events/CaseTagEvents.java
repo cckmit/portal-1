@@ -14,16 +14,18 @@ public class CaseTagEvents {
     public static class ShowList {
         public ShowList() {}
 
-        public ShowList(HasWidgets parent, Long caseId, boolean isReadOnly, Consumer<AbstractCaseTagListActivity> tagListActivityConsumer) {
+        public ShowList(HasWidgets parent, En_CaseType caseType, Long caseId, boolean isReadOnly, Consumer<AbstractCaseTagListActivity> tagListActivityConsumer) {
             this.parent = parent;
+            this.caseType = caseType;
             this.caseId = caseId;
             this.caseTags = null;
             this.isReadOnly = isReadOnly;
             this.tagListActivityConsumer = tagListActivityConsumer;
         }
 
-        public ShowList(HasWidgets parent, List<CaseTag> caseTags, boolean isReadOnly, Consumer<AbstractCaseTagListActivity> tagListActivityConsumer) {
+        public ShowList(HasWidgets parent, En_CaseType caseType, List<CaseTag> caseTags, boolean isReadOnly, Consumer<AbstractCaseTagListActivity> tagListActivityConsumer) {
             this.parent = parent;
+            this.caseType = caseType;
             this.caseId = null;
             this.caseTags = caseTags;
             this.isReadOnly = isReadOnly;
@@ -31,6 +33,7 @@ public class CaseTagEvents {
         }
 
         public HasWidgets parent;
+        public En_CaseType caseType;
         public Long caseId;
         public List<CaseTag> caseTags;
         public boolean isReadOnly = false;

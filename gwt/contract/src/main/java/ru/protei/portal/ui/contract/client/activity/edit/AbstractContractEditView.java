@@ -90,4 +90,8 @@ public interface AbstractContractEditView extends IsWidget {
     void setNotAvailableOrganizations(List<Long> organizationsToHide);
 
     void setSecondContractNotAvailableOrganizations(List<Long> organizationsToHide);
+
+    HasVisibility tagsVisibility();
+
+    HasWidgets tagsContainer();
 }

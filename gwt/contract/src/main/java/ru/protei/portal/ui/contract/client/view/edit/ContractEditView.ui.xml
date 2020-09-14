@@ -29,6 +29,17 @@
                         </p>
                     </div>
                     <div class="card-body">
+                        <g:HTMLPanel ui:field="tags" styleName="row">
+                            <div class="col-md-12 m-b-10">
+                                <label><ui:text from="{lang.tags}"/></label>
+                                <div class="d-flex">
+                                    <g:Button ui:field="tagsAddButton" styleName="btn bg-transparent no-border px-1 py-0 mb-1 mr-2 align-self-center">
+                                        <i class="fas fa-plus-circle"/>
+                                    </g:Button>
+                                    <g:HTMLPanel ui:field="tagsContainer" styleName="clearfix align-self-center"/>
+                                </div>
+                            </div>
+                        </g:HTMLPanel>
                         <div class="row">
                             <div class="form-group col-md-3">
                                 <label ui:field="numberLabel"><ui:text from="{lang.contractNumber}"/></label>

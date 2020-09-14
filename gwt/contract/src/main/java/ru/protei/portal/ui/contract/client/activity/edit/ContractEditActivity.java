@@ -3,6 +3,7 @@ package ru.protei.portal.ui.contract.client.activity.edit;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -18,6 +19,7 @@ import ru.protei.portal.core.model.struct.MoneyWithCurrencyWithVat;
 import ru.protei.portal.core.model.util.ContractSupportService;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.activity.casetag.taglist.AbstractCaseTagListActivity;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -161,6 +163,12 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.dateValidDate().setValue(date);
     }
 
+    @Override
+    public void onAddTagsClicked(IsWidget target) {
+        boolean isCanEditTags = true;
+        fireEvent(new CaseTagEvents.ShowSelector(target.asWidget(), En_CaseType.CONTRACT, isCanEditTags, tagListActivity));
+    }
+
     private void requestContract(Long contractId, Consumer<Contract> consumer) {
         contractService.getContract(contractId, new FluentCallback<Contract>().withSuccess(consumer));
     }
@@ -232,8 +240,24 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
             view.expenditureContractsVisibility().setVisible(false);
         }
 
+        if (isNew) {
+            showTags(null);
+        } else {
+            showTags(contract.getId());
+        }
+
         updateOrganizationBasedOnParentContract(contract.getParentContractId(), makePrimaryContractEditContractorView());
         syncSecondContractView(isNew, false);
+    }
+
+    private void showTags(Long contractId) {
+        view.tagsVisibility().setVisible(true);
+        if (contractId == null) {
+            view.tagsVisibility().setVisible(false);
+            return;
+        }
+        boolean readOnly = false;
+        fireEvent(new CaseTagEvents.ShowList(view.tagsContainer(), En_CaseType.CONTRACT, contractId, readOnly, a -> tagListActivity = a));
     }
 
     private void fillDto() {
@@ -524,5 +548,6 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     DefaultErrorHandler defaultErrorHandler;
 
     private Contract contract;
+    private AbstractCaseTagListActivity tagListActivity;
     private AppEvents.InitDetails initDetails;
 }
