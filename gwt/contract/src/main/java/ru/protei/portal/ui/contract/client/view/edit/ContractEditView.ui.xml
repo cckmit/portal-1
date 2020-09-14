@@ -128,7 +128,7 @@
                                                          styleName="form-control p-0 no-border input-group-element-date"/>
                                 </g:HTMLPanel>
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-3">
                                 <label ui:field="costWithCurrencyLabel"><ui:text from="{lang.contractCost}"/></label>
                                 <money:MoneyCurrencyVatWidget ui:field="costWithCurrency" defaultCurrency="RUB"/>
                             </div>

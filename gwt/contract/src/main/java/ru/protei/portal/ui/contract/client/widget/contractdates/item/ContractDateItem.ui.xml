@@ -2,24 +2,22 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:selector="urn:import:ru.protei.portal.ui.contract.client.widget.selector"
              xmlns:single="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
-             xmlns:switcher="urn:import:ru.protei.portal.ui.common.client.widget.switcher">
+             xmlns:money="urn:import:ru.protei.portal.ui.common.client.widget.money">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel ui:field="root" styleName="form-group row">
         <selector:ContractDatesTypeSelector ui:field="type" addStyleNames="col-md-2"/>
-
-        <single:SinglePicker ui:field="date" type="DATE" formatValue="dd.MM.yyyy" styleName="col-md-2" mandatory="false"/>
-
+        <div class="col-md-2">
+            <single:SinglePicker ui:field="date" type="DATE" formatValue="dd.MM.yyyy" mandatory="false" styleName="form-group m-b-0"/>
+            <g:CheckBox ui:field="notify" styleName="checkbox m-t-5" text="{lang.contractDatesNotify}"/>
+        </div>
+        <div class="col-md-2">
+            <money:MoneyCurrencyWidget ui:field="moneyWithCurrency" defaultCurrency="RUB"/>
+        </div>
         <div class="col-md-5">
             <g:TextBox ui:field="comment" styleName="form-control"/>
         </div>
-
-        <div class="col-md-2">
-            <label ui:field="notifyLabel" class="m-r-5"><ui:text from="{lang.contractDatesNotify}"/></label>
-            <switcher:Switcher ui:field="notify"/>
-        </div>
-
         <div class="col-md-1">
             <g:Button ui:field="remove" styleName="btn btn-danger pull-right">
                 <i class="fa fa-trash"/>
