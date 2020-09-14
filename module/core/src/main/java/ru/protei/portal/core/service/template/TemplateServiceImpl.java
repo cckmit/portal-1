@@ -338,8 +338,11 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getContractRemainingOneDayNotificationBody(Contract contract, ContractDate contractDate, String urlTemplate, Collection<String> recipients) {
+    public PreparedTemplate getContractRemainingOneDayNotificationBody(Contract contract, ContractDate contractDate, String urlTemplate, Collection<String> recipients, EnumLangUtil enumLangUtil) {
         Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("EnumLangUtil", enumLangUtil);
+
+        templateModel.put("contractType", contract.getContractType());
         templateModel.put("contractNumber", contract.getNumber());
         templateModel.put("contractDateType", contractDate.getType());
         templateModel.put("contractDateDate", contractDate.getDate());
@@ -355,8 +358,11 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getContractRemainingOneDayNotificationSubject(Contract contract, ContractDate contractDate) {
+    public PreparedTemplate getContractRemainingOneDayNotificationSubject(Contract contract, ContractDate contractDate, EnumLangUtil enumLangUtil) {
         Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("EnumLangUtil", enumLangUtil);
+
+        templateModel.put("contractType", contract.getContractType());
         templateModel.put("contractNumber", contract.getNumber());
 
         PreparedTemplate template = new PreparedTemplate("notification/email/contract.remaining.one.day.subject.%s.ftl");

@@ -68,7 +68,7 @@ public class ContractDatesList
 
     private void addEmptyItem() {
         ContractDate item = new ContractDate();
-        item.setType(En_ContractDatesType.PAYMENT);
+        item.setType(En_ContractDatesType.values()[0]);
         item.setDate(DateUtils.setBeginOfDay(new Date()));
 
         value.add( item );

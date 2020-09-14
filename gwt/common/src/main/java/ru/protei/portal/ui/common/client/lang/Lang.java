@@ -2134,7 +2134,9 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractDateValid();
 
-    String contractPayment();
+    String contractPrePayment();
+
+    String contractPostPayment();
 
     String contractSupply();
 

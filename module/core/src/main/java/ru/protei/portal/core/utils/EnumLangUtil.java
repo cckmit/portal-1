@@ -186,7 +186,8 @@ public class EnumLangUtil {
             localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
         }
         switch (contractDatesType) {
-            case PAYMENT: return localizedLang.get("contractPayment");
+            case PREPAYMENT: return localizedLang.get("contractPrePayment");
+            case POSTPAYMENT: return localizedLang.get("contractPostPayment");
             case SUPPLY: return localizedLang.get("contractSupply");
         }
         return "";
