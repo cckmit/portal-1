@@ -16,7 +16,7 @@ public class ContractToApiMapper {
         ApiContract apiContract = new ApiContract();
         apiContract.setRefKey(contract.getRefKey());
         apiContract.setDateSigning(contract.getDateSigning());
-        apiContract.setCost(contract.getCost().getFull());
+        apiContract.setCost(contract.getCost() != null ? contract.getCost().getFull() : null);
         apiContract.setCurrency(contract.getCurrency());
         apiContract.setVat(contract.getVat());
         apiContract.setDescription(contract.getDescription());
@@ -32,6 +32,8 @@ public class ContractToApiMapper {
         ApiContractDate apiContractDate = new ApiContractDate();
         apiContractDate.setType(contractDate.getType());
         apiContractDate.setDate(contractDate.getDate());
+        apiContractDate.setCost(contractDate.getCost() != null ? contractDate.getCost().getFull() : null);
+        apiContractDate.setCurrency(contractDate.getCurrency());
         apiContractDate.setComment(contractDate.getComment());
         return apiContractDate;
     }

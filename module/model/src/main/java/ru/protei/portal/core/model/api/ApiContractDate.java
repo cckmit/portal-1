@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.api;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.protei.portal.core.model.dict.En_ContractDatesType;
+import ru.protei.portal.core.model.dict.En_Currency;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -16,6 +17,12 @@ public class ApiContractDate implements Serializable {
 
     @JsonProperty("date")
     private Date date;
+
+    @JsonProperty("cost")
+    private Long cost;
+
+    @JsonProperty("cost_currency")
+    private En_Currency currency;
 
     @JsonProperty("comment")
     private String comment;
@@ -32,6 +39,22 @@ public class ApiContractDate implements Serializable {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public Long getCost() {
+        return cost;
+    }
+
+    public void setCost(Long cost) {
+        this.cost = cost;
+    }
+
+    public En_Currency getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(En_Currency currency) {
+        this.currency = currency;
     }
 
     public String getComment() {
@@ -54,6 +77,8 @@ public class ApiContractDate implements Serializable {
     public String toString() {
         return "ApiContractDate{" +
                 "date=" + date +
+                ", cost=" + cost +
+                ", currency=" + currency +
                 ", comment='" + comment + '\'' +
                 ", type=" + type +
                 '}';
