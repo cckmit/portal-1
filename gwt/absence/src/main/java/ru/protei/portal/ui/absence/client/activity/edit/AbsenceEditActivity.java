@@ -54,8 +54,6 @@ public abstract class AbsenceEditActivity extends AbsenceCommonActivity {
                     fillView(absence);
                     editView.dateRange().setValue(new DateInterval(copyDate(absence.getFromTime()), copyDate(absence.getTillTime())));
                     editView.setDateRangeValid(isDateRangeValid(editView.dateRange().getValue()));
-
-                    dialogView.saveButtonVisibility().setVisible(true);
                 }));
     }
 

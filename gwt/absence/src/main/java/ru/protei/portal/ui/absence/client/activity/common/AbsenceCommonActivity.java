@@ -46,12 +46,16 @@ public abstract class AbsenceCommonActivity implements AbstractAbsenceCommonActi
 
     protected void showLoading() {
         view.loadingVisibility().setVisible(true);
-        dialogView.removeButtonVisibility().setVisible(false);
+        view.contentVisibility().setVisible(false);
+        dialogView.cancelButtonVisibility().setVisible(false);
         dialogView.saveButtonVisibility().setVisible(false);
     }
 
     protected void hideLoading() {
         view.loadingVisibility().setVisible(false);
+        view.contentVisibility().setVisible(true);
+        dialogView.cancelButtonVisibility().setVisible(true);
+        dialogView.saveButtonVisibility().setVisible(true);
     }
 
     protected void fillView(PersonAbsence absence) {
@@ -114,7 +118,7 @@ public abstract class AbsenceCommonActivity implements AbstractAbsenceCommonActi
     }
 
     private void enableButtons(boolean isEnable) {
-        dialogView.removeButtonEnabled().setEnabled(isEnable);
+        dialogView.cancelButtonEnabled().setEnabled(isEnable);
         dialogView.saveButtonProcessable().setProcessing(!isEnable);
     }
 
