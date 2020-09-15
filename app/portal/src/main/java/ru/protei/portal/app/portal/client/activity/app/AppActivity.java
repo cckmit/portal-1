@@ -69,8 +69,9 @@ public abstract class AppActivity
             }
         } );
 
+        view.setExternalLinks(configStorage.getConfigData().externalLinksHtml);
+
         startPingServerTimer();
-        view.setExternalLinks();
     }
 
     @Override
