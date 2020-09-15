@@ -18,6 +18,8 @@ public interface AbstractContractEditActivity {
 
     void onProjectChanged();
 
+    void onCostChanged();
+
     void onCreateSecondContractToggle(boolean enabled);
 
     void onSecondContractOrganizationChanged();

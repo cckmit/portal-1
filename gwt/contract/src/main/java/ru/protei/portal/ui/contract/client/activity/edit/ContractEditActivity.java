@@ -138,6 +138,16 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     }
 
     @Override
+    public void onCostChanged() {
+        MoneyWithCurrencyWithVat cost = view.cost().getValue();
+        if (cost == null) {
+            return;
+        }
+        Money money = cost.getMoney();
+        view.contractDatesList().onContractCostChanged(money);
+    }
+
+    @Override
     public void onDateSigningChanged(Date date) {
         Date validDate = view.dateValidDate().getValue();
         if (validDate != null) {
@@ -214,6 +224,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.dateSigning().setValue(contract.getDateSigning());
         view.dateValidDate().setValue(contract.getDateValid());
         view.dateValidDays().setValue(getDaysBetween(contract.getDateSigning(), contract.getDateValid()));
+        view.contractDatesList().setContractCostSupplier(() -> view.cost().getValue().getMoney());
         view.contractDates().setValue(contract.getContractDates());
         view.contractSpecifications().setValue(contract.getContractSpecifications());
 

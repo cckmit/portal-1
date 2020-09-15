@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.struct.MoneyWithCurrencyWithVat;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
+import ru.protei.portal.ui.contract.client.widget.contractdates.list.ContractDatesList;
 
 import java.util.Date;
 import java.util.List;
@@ -42,6 +43,8 @@ public interface AbstractContractEditView extends IsWidget {
     HasValue<Date> dateValidDate();
 
     HasValue<Long> dateValidDays();
+
+    ContractDatesList contractDatesList();
 
     HasValue<List<ContractDate>> contractDates();
 

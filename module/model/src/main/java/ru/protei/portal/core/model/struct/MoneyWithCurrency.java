@@ -12,7 +12,7 @@ public class MoneyWithCurrency implements Serializable {
     public MoneyWithCurrency() {}
 
     public MoneyWithCurrency(Money money, En_Currency currency) {
-        this.money = safeMoney(money);
+        this.money = money;
         this.currency = currency;
     }
 
@@ -21,7 +21,7 @@ public class MoneyWithCurrency implements Serializable {
     }
 
     public void setMoney(Money money) {
-        this.money = safeMoney(money);
+        this.money = money;
     }
 
     public En_Currency getCurrency() {
@@ -30,9 +30,5 @@ public class MoneyWithCurrency implements Serializable {
 
     public void setCurrency(En_Currency currency) {
         this.currency = currency;
-    }
-
-    private Money safeMoney(Money money) {
-        return money != null ? money : new Money(0L);
     }
 }

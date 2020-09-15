@@ -14,8 +14,8 @@
             <g:CheckBox ui:field="notify" styleName="checkbox m-t-5" text="{lang.contractDatesNotify}"/>
         </div>
         <div class="col-md-3">
-            <div class="input-group">
-                <validatefield:ValidableDoubleBox ui:field="moneyPercent" styleName="form-control" placeholder="{lang.percent}"/>
+            <div class="input-group input-group-money">
+                <validatefield:ValidableDoubleBox ui:field="moneyPercent" styleName="form-control input-group-money-percent" placeholder="{lang.percent}"/>
                 <div class="input-group-prepend input-group-append">
                     <span class="input-group-text"/>
                 </div>

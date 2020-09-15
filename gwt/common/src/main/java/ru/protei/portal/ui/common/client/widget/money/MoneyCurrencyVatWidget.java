@@ -51,9 +51,7 @@ public class MoneyCurrencyVatWidget extends Composite implements HasValue<MoneyW
 
     @Override
     public void setValue(MoneyWithCurrencyWithVat value, boolean fireEvents) {
-        Money vMoney = value.getMoney() != null
-                ? value.getMoney()
-                : new Money(0L);
+        Money vMoney = value.getMoney();
         En_Currency vCurrency = value.getCurrency() != null
                 ? value.getCurrency()
                 : defaultCurrency;

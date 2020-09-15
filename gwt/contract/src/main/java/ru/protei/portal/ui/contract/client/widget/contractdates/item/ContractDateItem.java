@@ -27,6 +27,7 @@ import ru.protei.portal.ui.common.client.widget.validatefield.ValidableDoubleBox
 import ru.protei.portal.ui.contract.client.widget.selector.ContractDatesTypeSelector;
 
 import java.util.Date;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
@@ -49,21 +50,19 @@ public class ContractDateItem
 
     @Override
     public void setValue( ContractDate value ) {
-         if ( value == null ) {
+        if (value == null) {
             value = new ContractDate();
         }
         this.value = value;
-
-        type.setValue( value.getType() );
-        date.setValue( value.getDate() );
-        comment.setValue( value.getComment() );
-        notify.setValue( value.isNotify() );
-        moneyWithCurrency.setValue(new MoneyWithCurrency(value.getCost(), value.getCurrency()));
-        moneyPercent.setValue(calculatePercent(value.getCost()));
+        show(value);
     }
 
     public void setContractCostSupplier(Supplier<Money> contractCostSupplier) {
         this.contractCostSupplier = contractCostSupplier;
+    }
+
+    public void setCostChangeListener(Consumer<Money> onCostChanged) {
+        this.onCostChanged = onCostChanged;
     }
 
     @Override
@@ -84,7 +83,12 @@ public class ContractDateItem
 
     @UiHandler( "date" )
     public void onChangeDate(ValueChangeEvent<Date> event) {
-        value.setDate(date.getValue());
+        Date vDate = date.getValue();
+        value.setDate(vDate);
+        if (vDate == null) {
+            value.setNotify(false);
+        }
+        show(value);
     }
 
     @UiHandler( "moneyWithCurrency" )
@@ -96,6 +100,9 @@ public class ContractDateItem
         value.setCost(cost);
         value.setCurrency(currency);
         moneyPercent.setValue(costPercent, false);
+        if (onCostChanged != null) {
+            onCostChanged.accept(cost);
+        }
     }
 
     @UiHandler( "moneyPercent" )
@@ -106,16 +113,61 @@ public class ContractDateItem
         MoneyWithCurrency mwc = moneyWithCurrency.getValue();
         mwc.setMoney(cost);
         moneyWithCurrency.setValue(mwc, false);
+        if (onCostChanged != null) {
+            onCostChanged.accept(cost);
+        }
     }
 
     @UiHandler( "type" )
     public void onChangeType(ValueChangeEvent<En_ContractDatesType> event) {
-        value.setType(type.getValue());
+        En_ContractDatesType vType = type.getValue();
+        value.setType(vType);
+        if (isTypeWithPayment(vType)) {
+            if (value.getCost() == null) {
+                Money cost = new Money(0L);
+                value.setCost(cost);
+                if (onCostChanged != null) {
+                    onCostChanged.accept(cost);
+                }
+            }
+        } else {
+            Money cost = null;
+            value.setCost(cost);
+            if (onCostChanged != null) {
+                onCostChanged.accept(cost);
+            }
+        }
+        show(value);
     }
 
     @UiHandler( "notify" )
     public void onChangeNotify(ValueChangeEvent<Boolean> event) {
         value.setNotify(notify.getValue());
+    }
+
+    private void show(ContractDate value) {
+        type.setValue(value.getType());
+        date.setValue(value.getDate());
+        notify.setValue(value.isNotify());
+        notify.setEnabled(value.getDate() != null);
+        comment.setValue(value.getComment());
+        moneyWithCurrency.setMoneyValidationFunction(cost -> {
+            boolean isCostEnabled = isTypeWithPayment(value.getType());
+            if (isCostEnabled) {
+                return cost != null && cost.getFull() >= 0;
+            } else {
+                return cost == null;
+            }
+        });
+        moneyWithCurrency.setValue(new MoneyWithCurrency(value.getCost(), value.getCurrency()));
+        moneyWithCurrency.setEnabled(isTypeWithPayment(value.getType()));
+        moneyPercent.setValue(calculatePercent(value.getCost()));
+        moneyPercent.setEnabled(isTypeWithPayment(value.getType()));
+    }
+
+    private boolean isTypeWithPayment(En_ContractDatesType type) {
+        return type == En_ContractDatesType.PREPAYMENT ||
+               type == En_ContractDatesType.POSTPAYMENT;
     }
 
     private void setTestAttributes() {
@@ -170,6 +222,7 @@ public class ContractDateItem
 
     private ContractDate value = new ContractDate();
     private Supplier<Money> contractCostSupplier;
+    private Consumer<Money> onCostChanged;
 
     interface PairItemUiBinder extends UiBinder< HTMLPanel, ContractDateItem> {}
     private static PairItemUiBinder ourUiBinder = GWT.create( PairItemUiBinder.class );

@@ -63,7 +63,6 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         dateValidDays.getElement().setAttribute("placeholder", lang.days());
         dateValidDays.setValidationFunction(value -> value == null || value >= 0);
         costWithCurrency.setVatOptions(listOf(Vat20, Vat0, NoVat));
-        dateList.setContractCostSupplier(() -> costWithCurrency.getValue().getMoney());
         initCuratorSelector();
         ensureDebugIds();
     }
@@ -126,6 +125,11 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Override
     public HasValue<Long> dateValidDays() {
         return dateValidDays;
+    }
+
+    @Override
+    public ContractDatesList contractDatesList() {
+        return dateList;
     }
 
     @Override
@@ -339,6 +343,13 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     public void tagsAddButtonClick(ClickEvent event) {
         if (activity != null) {
             activity.onAddTagsClicked(tagsAddButton);
+        }
+    }
+
+    @UiHandler("costWithCurrency")
+    public void onChangeCostWithCurrency(ValueChangeEvent<MoneyWithCurrencyWithVat> event) {
+        if (activity != null) {
+            activity.onCostChanged();
         }
     }
 

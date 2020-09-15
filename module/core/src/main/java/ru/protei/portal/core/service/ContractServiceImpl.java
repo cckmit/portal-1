@@ -9,10 +9,7 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.client.enterprise1c.api.Api1C;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_ContractState;
-import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.enterprise1c.dto.Contract1C;
 import ru.protei.portal.core.model.enterprise1c.dto.Contractor1C;
@@ -580,6 +577,15 @@ public class ContractServiceImpl implements ContractService {
         if (isNotifyInvalid) {
             return false;
         }
+
+        boolean isTypeWithPayment = contractDate.getType() == En_ContractDatesType.PREPAYMENT ||
+                contractDate.getType() == En_ContractDatesType.POSTPAYMENT;
+        boolean isCostInvalid = (isTypeWithPayment && contractDate.getCost() == null) ||
+                (!isTypeWithPayment && contractDate.getCost() != null);
+        if (isCostInvalid) {
+            return false;
+        }
+
         return true;
     }
 

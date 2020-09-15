@@ -12,11 +12,14 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
+import org.apache.poi.ss.formula.functions.T;
 import ru.protei.portal.core.model.dict.En_Currency;
 import ru.protei.portal.core.model.struct.Money;
 import ru.protei.portal.core.model.struct.MoneyWithCurrency;
 import ru.protei.portal.ui.common.client.widget.selector.currency.CurrencyButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableMoneyBox;
+
+import java.util.function.Function;
 
 public class MoneyCurrencyWidget extends Composite implements HasValue<MoneyWithCurrency>, HasEnabled {
 
@@ -40,9 +43,7 @@ public class MoneyCurrencyWidget extends Composite implements HasValue<MoneyWith
 
     @Override
     public void setValue(MoneyWithCurrency value, boolean fireEvents) {
-        Money vMoney = value.getMoney() != null
-                ? value.getMoney()
-                : new Money(0L);
+        Money vMoney = value.getMoney();
         En_Currency vCurrency = value.getCurrency() != null
                 ? value.getCurrency()
                 : defaultCurrency;
@@ -78,6 +79,10 @@ public class MoneyCurrencyWidget extends Composite implements HasValue<MoneyWith
         root.ensureDebugId(debugId);
     }
 
+    public void setMoneyValidationFunction(Function<Money, Boolean> validationFunction) {
+        money.setValidationFunction(validationFunction);
+    }
+
     @UiHandler("money")
     public void onMoneyChanged(ValueChangeEvent<Money> event) {
         MoneyWithCurrency value = getValue();
@@ -91,7 +96,7 @@ public class MoneyCurrencyWidget extends Composite implements HasValue<MoneyWith
     }
 
     private void initValidation() {
-        money.setValidationFunction(value -> value != null && value.getFull() >= 0);
+        setMoneyValidationFunction(value -> value != null && value.getFull() >= 0);
     }
 
     @UiField

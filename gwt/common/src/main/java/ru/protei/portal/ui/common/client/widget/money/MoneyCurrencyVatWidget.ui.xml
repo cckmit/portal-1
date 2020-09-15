@@ -4,7 +4,7 @@
              xmlns:currency='urn:import:ru.protei.portal.ui.common.client.widget.selector.currency'
              xmlns:vat='urn:import:ru.protei.portal.ui.common.client.widget.selector.vat'>
 
-    <g:HTMLPanel ui:field="root" styleName="input-group input-group-money">
+    <g:HTMLPanel ui:field="root" styleName="input-group">
         <validatefield:ValidableMoneyBox ui:field="money" styleName="form-control"/>
         <currency:CurrencyButtonSelector ui:field="currency" styleName="input-group-btn"/>
         <vat:VatButtonSelector ui:field="vat" styleName="input-group-btn" />

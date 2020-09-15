@@ -16,11 +16,10 @@ import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.struct.Money;
 import ru.protei.portal.ui.contract.client.widget.contractdates.item.ContractDateItem;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Supplier;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 public class ContractDatesList
         extends Composite
@@ -44,17 +43,19 @@ public class ContractDatesList
     public void setValue(List<ContractDate> value, boolean fireEvents ) {
         clear();
         this.value = value == null ? new ArrayList<>() : value;
-        for ( ContractDate items : this.value ) {
-            makeItemAndFillValue(items);
-        }
-
-        if ( fireEvents ) {
-            ValueChangeEvent.fire( this, this.value );
+        showItems(this.value);
+        showCostOverflowWarning(this.value);
+        if (fireEvents) {
+            ValueChangeEvent.fire(this, this.value);
         }
     }
 
     public void setContractCostSupplier(Supplier<Money> contractCostSupplier) {
         this.contractCostSupplier = contractCostSupplier;
+    }
+
+    public void onContractCostChanged(Money contractCost) {
+        setValue(getValue());
     }
 
     public void clear() {
@@ -70,33 +71,53 @@ public class ContractDatesList
     @UiHandler( "add" )
     public void onAddClicked( ClickEvent event ) {
         event.preventDefault();
-        addEmptyItem();
-        ValueChangeEvent.fire( this, value );
+        ContractDate item = makeEmptyItem();
+        value.add(item);
+        ContractDateItem itemWidget = makeItemWidget(item);
+        modelToView.put(itemWidget, item);
+        container.add(itemWidget);
+        ValueChangeEvent.fire(this, value);
     }
 
-    private void addEmptyItem() {
+    private void showItems(List<ContractDate> value) {
+        for (ContractDate item : value) {
+            ContractDateItem itemWidget = makeItemWidget(item);
+            modelToView.put(itemWidget, item);
+            container.add(itemWidget);
+        }
+    }
+
+    private void showCostOverflowWarning(List<ContractDate> value) {
+        long costOfPayments = stream(value)
+            .map(ContractDate::getCost)
+            .filter(Objects::nonNull)
+            .mapToLong(Money::getFull)
+            .sum();
+        long costOfContract = contractCostSupplier.get().getFull();
+        boolean isOverflow = costOfPayments > costOfContract;
+        costOverflowWarning.setVisible(isOverflow);
+    }
+
+    private ContractDate makeEmptyItem() {
         ContractDate item = new ContractDate();
         item.setType(En_ContractDatesType.values()[0]);
         item.setDate(null);
-
-        value.add( item );
-
-        makeItemAndFillValue( item );
+        return item;
     }
 
-    private void makeItemAndFillValue(final ContractDate value ) {
+    private ContractDateItem makeItemWidget(ContractDate contractDate) {
         ContractDateItem itemWidget = itemFactory.get();
         itemWidget.setContractCostSupplier(contractCostSupplier);
-        itemWidget.setValue( value );
-        itemWidget.addCloseHandler(event -> {
-            container.remove( event.getTarget() );
-
-            ContractDate remove = modelToView.remove( event.getTarget() );
-            ContractDatesList.this.value.remove( remove );
+        itemWidget.setCostChangeListener(cost -> {
+            showCostOverflowWarning(value);
         });
-
-        modelToView.put( itemWidget, value );
-        container.add( itemWidget );
+        itemWidget.setValue(contractDate);
+        itemWidget.addCloseHandler(event -> {
+            container.remove(event.getTarget());
+            ContractDate remove = modelToView.remove(event.getTarget());
+            ContractDatesList.this.value.remove(remove);
+        });
+        return itemWidget;
     }
 
     public void setEnsureDebugId(String debugId) {
@@ -107,6 +128,8 @@ public class ContractDatesList
     FlowPanel container;
     @UiField
     Button add;
+    @UiField
+    HTMLPanel costOverflowWarning;
 
     @Inject
     Provider<ContractDateItem> itemFactory;

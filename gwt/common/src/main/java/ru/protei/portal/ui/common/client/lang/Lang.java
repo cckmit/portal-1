@@ -3083,4 +3083,8 @@ public interface Lang extends Messages, ContactItemLang {
     String dutyLogValidationEmployee();
 
     String percent();
+
+    String attention();
+
+    String contractDatesWarningCostOverflow();
 }
