@@ -15,6 +15,8 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.animation.DialogAnimation;
+import ru.protei.portal.ui.common.client.model.marker.HasProcessable;
+import ru.protei.portal.ui.common.client.widget.button.ButtonProcessable;
 
 /**
  * Вид для карточки
@@ -61,6 +63,11 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
 
     @Override
     public HasVisibility saveButtonVisibility() {
+        return save;
+    }
+
+    @Override
+    public HasProcessable saveButtonProcessable() {
         return save;
     }
 
@@ -194,7 +201,7 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
     @UiField
     HTMLPanel bodyContainer;
     @UiField
-    Anchor save;
+    ButtonProcessable save;
     @UiField
     Anchor cancel;
     @UiField

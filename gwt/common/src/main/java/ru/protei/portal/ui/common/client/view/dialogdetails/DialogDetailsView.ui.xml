@@ -1,5 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:button='urn:import:ru.protei.portal.ui.common.client.widget.button'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -20,7 +21,7 @@
                     <div class="remove-button">
                         <g:Anchor href='#' ui:field="remove" styleName="btn btn-danger" visible="false"><ui:text from="{lang.buttonRemove}"/></g:Anchor>
                     </div>
-                    <g:Anchor href='#' ui:field="save" styleName="btn btn-complete"><ui:text from="{lang.buttonSave}"/></g:Anchor>
+                    <button:ButtonProcessable ui:field="save" styleName="btn btn-complete"><ui:text from="{lang.buttonSave}"/></button:ButtonProcessable>
                     <g:Anchor href='#' ui:field="cancel" styleName="btn btn-default"><ui:text from="{lang.buttonCancel}"/></g:Anchor>
                 </div>
             </div>

@@ -4,6 +4,7 @@ import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.ui.common.client.model.marker.HasProcessable;
 
 /**
  * Абстрактный вид для карточки диалогового окна
@@ -24,6 +25,8 @@ public interface AbstractDialogDetailsView extends IsWidget {
     HasVisibility removeButtonVisibility();
 
     HasVisibility saveButtonVisibility();
+
+    HasProcessable saveButtonProcessable();
 
     HasEnabled removeButtonEnabled();
 

@@ -14,6 +14,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public abstract class AbsenceCreateActivity extends AbsenceCommonActivity {
@@ -65,7 +66,7 @@ public abstract class AbsenceCreateActivity extends AbsenceCommonActivity {
     }
 
     @Override
-    protected void performSave(Runnable afterSave) {
+    protected void performSave(Consumer<Throwable> onError, Runnable onSuccess) {
         List<DateInterval> value = createView.dateRange().getValue();
         List<PersonAbsence> collect = value.stream().map(date -> {
             PersonAbsence personAbsence = fillDTO();
@@ -75,10 +76,14 @@ public abstract class AbsenceCreateActivity extends AbsenceCommonActivity {
         }).collect(Collectors.toList());
 
         absenceController.saveAbsences(collect, new FluentCallback<List<Long>>()
+                .withError(throwable -> {
+                    defaultErrorHandler.accept(throwable);
+                    onError.accept(throwable);
+                })
                 .withSuccess(absence -> {
                     fireEvent(new NotifyEvents.Show(lang.absenceCreated(collect.size()), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new EmployeeEvents.Update(collect.get(0).getPersonId()));
-                    afterSave.run();
+                    onSuccess.run();
                 }));
     }
 
