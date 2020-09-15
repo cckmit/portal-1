@@ -10,14 +10,13 @@ import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.dto.Project;
-import ru.protei.portal.core.model.dto.ReportCaseQuery;
 import ru.protei.portal.core.model.dto.ReportDto;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.struct.DateRange;
+import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
@@ -26,8 +25,8 @@ import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.renderer.HTMLRenderer;
-import ru.protei.portal.core.utils.EnumLangUtil;
 import ru.protei.portal.core.utils.DateUtils;
+import ru.protei.portal.core.utils.EnumLangUtil;
 import ru.protei.portal.core.utils.LinkData;
 import ru.protei.portal.core.utils.WorkTimeFormatter;
 
@@ -413,14 +412,8 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getMailReportBody(ReportDto reportDto) {
+    public PreparedTemplate getMailReportBody(ReportDto reportDto, Interval createdInterval, Interval modifiedInterval) {
         Report report = reportDto.getReport();
-        DateRange createdRange = reportDto instanceof ReportCaseQuery
-                ? ((ReportCaseQuery) reportDto).getQuery().getCreatedRange()
-                : null;
-        DateRange modifiedRange = reportDto instanceof ReportCaseQuery
-                ? ((ReportCaseQuery) reportDto).getQuery().getModifiedRange()
-                : null;
 
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("reportId", report.getId());
@@ -429,8 +422,8 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("creator", report.getCreator().getDisplayShortName());
         templateModel.put("type", report.getReportType());
         templateModel.put("status", report.getStatus());
-        templateModel.put("createdRange", createdRange);
-        templateModel.put("modifiedRange", modifiedRange);
+        templateModel.put("createdInterval", createdInterval);
+        templateModel.put("modifiedInterval", modifiedInterval);
 
         PreparedTemplate template = new PreparedTemplate("notification/email/report.body.%s.ftl");
         template.setModel(templateModel);

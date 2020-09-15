@@ -14,11 +14,13 @@ import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.mail.MailMessageFactory;
 import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.core.model.dict.En_CaseLink;
+import ru.protei.portal.core.model.dto.ReportCaseQuery;
 import ru.protei.portal.core.model.dto.ReportDto;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.struct.ReplaceLoginWithUsernameInfo;
@@ -49,6 +51,7 @@ import static java.util.stream.Collectors.partitioningBy;
 import static ru.protei.portal.core.model.dict.En_CaseLink.CRM;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
 import static ru.protei.portal.core.model.helper.StringUtils.join;
 
 /**
@@ -632,7 +635,14 @@ public class MailNotificationProcessor {
         ReportDto reportDto = event.getReport();
         Report report = reportDto.getReport();
 
-        PreparedTemplate bodyTemplate = templateService.getMailReportBody(reportDto);
+        Interval createdInterval = reportDto instanceof ReportCaseQuery
+                ? makeInterval(((ReportCaseQuery) reportDto).getQuery().getCreatedRange())
+                : null;
+        Interval modifiedInterval = reportDto instanceof ReportCaseQuery
+                ? makeInterval(((ReportCaseQuery) reportDto).getQuery().getModifiedRange())
+                : null;
+
+        PreparedTemplate bodyTemplate = templateService.getMailReportBody(reportDto, createdInterval, modifiedInterval);
         if (bodyTemplate == null) {
             log.error("Failed to prepare body template for reporId={}", report.getId());
             return;
