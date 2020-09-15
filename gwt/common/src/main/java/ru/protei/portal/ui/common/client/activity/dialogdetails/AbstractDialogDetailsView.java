@@ -26,11 +26,15 @@ public interface AbstractDialogDetailsView extends IsWidget {
 
     HasVisibility saveButtonVisibility();
 
+    HasVisibility cancelButtonVisibility();
+
     HasProcessable saveButtonProcessable();
 
     HasEnabled removeButtonEnabled();
 
     HasEnabled saveButtonEnabled();
+
+    HasEnabled cancelButtonEnabled();
 
     /**
      * Установить заголовок окна детализации

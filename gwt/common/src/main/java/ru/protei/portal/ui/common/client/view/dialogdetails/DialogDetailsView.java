@@ -67,6 +67,11 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
     }
 
     @Override
+    public HasVisibility cancelButtonVisibility() {
+        return cancel;
+    }
+
+    @Override
     public HasProcessable saveButtonProcessable() {
         return save;
     }
@@ -79,6 +84,11 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
     @Override
     public HasEnabled saveButtonEnabled() {
         return save;
+    }
+
+    @Override
+    public HasEnabled cancelButtonEnabled() {
+        return cancel;
     }
 
     public DialogAnimation getDialogAnimation() {
@@ -203,11 +213,11 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
     @UiField
     ButtonProcessable save;
     @UiField
-    Anchor cancel;
+    Button cancel;
     @UiField
-    Anchor remove;
+    Button remove;
     @UiField
-    Anchor additional;
+    Button additional;
     @UiField
     HeadingElement header;
     @UiField

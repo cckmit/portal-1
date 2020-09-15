@@ -16,13 +16,13 @@
 
                 <div class="modal-footer">
                     <div class="additional-button">
-                        <g:Anchor href='#' ui:field="additional" styleName="btn btn-success" visible="false"><ui:text from="{lang.buttonCreate}"/></g:Anchor>
+                        <g:Button ui:field="additional" styleName="btn btn-success" visible="false"><ui:text from="{lang.buttonCreate}"/></g:Button>
                     </div>
                     <div class="remove-button">
-                        <g:Anchor href='#' ui:field="remove" styleName="btn btn-danger" visible="false"><ui:text from="{lang.buttonRemove}"/></g:Anchor>
+                        <g:Button ui:field="remove" styleName="btn btn-danger" visible="false"><ui:text from="{lang.buttonRemove}"/></g:Button>
                     </div>
                     <button:ButtonProcessable ui:field="save" styleName="btn btn-complete"><ui:text from="{lang.buttonSave}"/></button:ButtonProcessable>
-                    <g:Anchor href='#' ui:field="cancel" styleName="btn btn-default"><ui:text from="{lang.buttonCancel}"/></g:Anchor>
+                    <g:Button ui:field="cancel" styleName="btn btn-default"><ui:text from="{lang.buttonCancel}"/></g:Button>
                 </div>
             </div>
         </div>
