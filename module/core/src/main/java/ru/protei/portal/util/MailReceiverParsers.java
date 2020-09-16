@@ -1,7 +1,6 @@
 package ru.protei.portal.util;
 
 import org.apache.commons.io.IOUtils;
-import ru.protei.portal.core.model.struct.receivedmail.MailReceiveContentAndType;
 
 import javax.mail.*;
 import javax.mail.internet.ContentType;
@@ -9,9 +8,6 @@ import javax.mail.internet.InternetAddress;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,42 +15,52 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class MailReceiverParsers {
-    static public List<MailReceiveContentAndType> parseContent(Part part) throws IOException, MessagingException {
-        List<MailReceiveContentAndType> list = new ArrayList<>();
+    static public String parseContent(Part part) throws IOException, MessagingException {
         Object content = part.getContent();
         if (content == null) {
-            return list;
+            return null;
         } else if (part.getContentType().startsWith(MIME_TEXT)) {
-            list.add(new MailReceiveContentAndType((String)content, part.getContentType()));
+            return (String)content;
         } else if (content instanceof Part) {
             return parseContent((Part)content);
         } else if (content instanceof Multipart) {
             return parseContent((Multipart) content);
         } else if (content instanceof InputStream) {
-            String s = IOUtils.toString((InputStream) content, StandardCharsets.UTF_8);
-            list.add(new MailReceiveContentAndType(s, part.getContentType()));
+            return IOUtils.toString((InputStream) content, StandardCharsets.UTF_8);
         }
-        return list;
+        return null;
     }
 
-    static private List<MailReceiveContentAndType> parseContent(Multipart multipart) throws MessagingException {
-        return extractContentAll(multipart, new ContentType(multipart.getContentType()).match(MIME_MULTIPART_ALTERNATIVE));
+    static private String parseContent(Multipart multipart) throws MessagingException {
+        if (new ContentType(multipart.getContentType()).match(MIME_MULTIPART_ALTERNATIVE)) {
+            return extractMostRichAlternativeContent(multipart);
+        } else {
+            return extractContentAll(multipart);
+        }
     }
 
-    static private List<MailReceiveContentAndType> extractContentAll(Multipart multipart, boolean alternative) throws MessagingException {
+    static private String extractContentAll(Multipart multipart) throws MessagingException {
         return IntStream.range(0, multipart.getCount())
                 .mapToObj(i -> parseContentBodyPart(multipart, i))
                 .filter(Objects::nonNull)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
+                .collect(Collectors.joining("\n"));
     }
 
-    static private List<MailReceiveContentAndType> parseContentBodyPart(Multipart multipart, int i) {
+    static private String extractMostRichAlternativeContent(Multipart multipart) throws MessagingException {
+        int size = multipart.getCount();
+        return IntStream.range(0, size)
+                .mapToObj(i -> parseContentBodyPart(multipart, (size-1) - i))
+                .filter(Objects::nonNull)
+                .findAny()
+                .orElse(null);
+    }
+
+    static private String parseContentBodyPart(Multipart multipart, int i) {
         try {
             return parseContent(multipart.getBodyPart(i));
         } catch (MessagingException | IOException e) {
             e.printStackTrace();
-            return new ArrayList<>();
+            return null;
         }
     }
 

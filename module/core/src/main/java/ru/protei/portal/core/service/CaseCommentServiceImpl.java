@@ -552,7 +552,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
 
         log.info("addCommentsReceivedByMail(): process receivedMail={}", receivedMail);
-        CaseComment comment = createComment(caseObject, person, makeCommentText(receivedMail.getContentAndTypes()));
+        CaseComment comment = createComment(caseObject, person, cleanHTMLContent(receivedMail.getContent()));
         caseCommentDAO.persist(comment);
 
         boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( comment.getCaseId() ) );
@@ -578,25 +578,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         caseComment.setPrivateComment(caseObject.isPrivateCase());
 
         return caseComment;
-    }
-
-    private String makeCommentText(List<MailReceiveContentAndType> contentAndTypes) {
-        return stream(contentAndTypes)
-                .reduce(findSimplestContent())
-                .map(c -> c.getContentType().startsWith("TEXT/HTML") ?
-                        cleanHTMLContent(c.getContent()) : c.getContent())
-                .orElse("");
-    }
-
-    private BinaryOperator<MailReceiveContentAndType> findSimplestContent() {
-        return BinaryOperator.minBy(
-                Comparator.comparing((MailReceiveContentAndType item) -> contentTypeWeight(item.getContentType())));
-    }
-
-    private int contentTypeWeight(String contentType) {
-        if (contentType.startsWith("TEXT/PLAIN")) return 1;
-        if (contentType.startsWith("TEXT/HTML")) return 2;
-        return 3;
     }
 
     private String cleanHTMLContent(String htmlContent) {

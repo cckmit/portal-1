@@ -88,7 +88,7 @@ public class MailReceiverServiceImpl implements MailReceiverService {
     private boolean hasFullInfo(ReceivedMail receivedMail) {
         return receivedMail.getCaseNo() != null &&
                 receivedMail.getSenderEmail() != null &&
-                !receivedMail.getContentAndTypes().isEmpty();
+                !receivedMail.getContent().isEmpty();
     }
 
     private void setSeen(Folder folder, Message message) {
