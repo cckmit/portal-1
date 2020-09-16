@@ -14,6 +14,8 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AbsenceControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 
+import java.util.function.Consumer;
+
 public abstract class AbsenceCommonActivity implements AbstractAbsenceCommonActivity, AbstractDialogDetailsActivity, Activity {
 
     @Override
@@ -44,12 +46,16 @@ public abstract class AbsenceCommonActivity implements AbstractAbsenceCommonActi
 
     protected void showLoading() {
         view.loadingVisibility().setVisible(true);
-        dialogView.removeButtonVisibility().setVisible(false);
+        view.contentVisibility().setVisible(false);
+        dialogView.cancelButtonVisibility().setVisible(false);
         dialogView.saveButtonVisibility().setVisible(false);
     }
 
     protected void hideLoading() {
         view.loadingVisibility().setVisible(false);
+        view.contentVisibility().setVisible(true);
+        dialogView.cancelButtonVisibility().setVisible(true);
+        dialogView.saveButtonVisibility().setVisible(true);
     }
 
     protected void fillView(PersonAbsence absence) {
@@ -67,7 +73,7 @@ public abstract class AbsenceCommonActivity implements AbstractAbsenceCommonActi
         return absence;
     }
 
-    protected abstract void performSave(Runnable afterSave);
+    protected abstract void performSave(Consumer<Throwable> onError, Runnable onSuccess);
     protected abstract void performFillView();
     protected abstract boolean additionalValidate();
 
@@ -99,16 +105,21 @@ public abstract class AbsenceCommonActivity implements AbstractAbsenceCommonActi
 
     private void save() {
         enableButtons(false);
-        performSave(() -> {
-            enableButtons(true);
-            fireEvent(new AbsenceEvents.Update());
-            onCancelClicked();}
-            );
+        performSave(
+            (throwable) -> {
+                enableButtons(true);
+            },
+            () -> {
+                enableButtons(true);
+                fireEvent(new AbsenceEvents.Update());
+                onCancelClicked();
+            }
+        );
     }
 
     private void enableButtons(boolean isEnable) {
-        dialogView.removeButtonEnabled().setEnabled(isEnable);
-        dialogView.saveButtonEnabled().setEnabled(isEnable);
+        dialogView.cancelButtonEnabled().setEnabled(isEnable);
+        dialogView.saveButtonProcessable().setProcessing(!isEnable);
     }
 
     @Inject
