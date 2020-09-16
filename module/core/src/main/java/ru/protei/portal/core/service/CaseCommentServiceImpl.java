@@ -26,7 +26,6 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
-import ru.protei.portal.core.model.struct.receivedmail.MailReceiveContentAndType;
 import ru.protei.portal.core.model.struct.receivedmail.ReceivedMail;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseCommentShortView;
@@ -39,7 +38,6 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
-import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
