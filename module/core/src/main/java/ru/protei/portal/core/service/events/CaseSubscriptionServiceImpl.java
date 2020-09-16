@@ -23,6 +23,7 @@ import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.StringUtils.join;
 
 /**
@@ -77,7 +78,11 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
         HashSet<NotificationEntry> notifiers = new HashSet<>(employeeRegistrationEventSubscribers);
         Optional.ofNullable(event.getNewState())
                 .map(EmployeeRegistration::getCreatorId)
-                .map(personDAO::get)
+                .map(Person::new)
+                .map(person -> {
+                    jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
+                    return person;
+                })
                 .map(Person::getContactInfo)
                 .map(contactInfo -> new PlainContactInfoFacade(contactInfo).getEmail())
                 .map(email -> new NotificationEntry(email, En_ContactItemType.EMAIL, "ru"))
@@ -115,8 +120,12 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
 
     @Override
     public Set<NotificationEntry> subscribers(List<Long> personIds) {
-        return CollectionUtils.stream(personIds)
-                .map(personDAO::get)
+        return stream(personIds)
+                .map(Person::new)
+                .map(person -> {
+                    jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
+                    return person;
+                })
                 .map(Person::getContactInfo)
                 .map(PlainContactInfoFacade::new)
                 .map(PlainContactInfoFacade::getEmail)
@@ -170,7 +179,9 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
     private void appendNotifiers(Long caseId, Set<NotificationEntry> result) {
         CaseObjectMetaNotifiers caseMetaNotifiers = caseObjectMetaNotifiersDAO.get(caseId);
         jdbcManyRelationsHelper.fill(caseMetaNotifiers, "notifiers");
-        for (Person notifier : CollectionUtils.emptyIfNull(caseMetaNotifiers.getNotifiers())) {
+        Set<Person> notifiers = CollectionUtils.emptyIfNull(caseMetaNotifiers.getNotifiers());
+        jdbcManyRelationsHelper.fill(notifiers, Person.Fields.CONTACT_ITEMS);
+        for (Person notifier : notifiers) {
             ContactItem email = notifier.getContactInfo().findFirst(En_ContactItemType.EMAIL, En_ContactDataAccess.PUBLIC);
             if (email == null) continue;
             result.add(NotificationEntry.email(email.value(), CrmConstants.LocaleTags.RU));
@@ -184,15 +195,18 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
             return;
         }
 
-        for (Person person : personDAO.getListByKeys(personIdsByFavoriteIssueId)) {
-            ContactItem email = person.getContactInfo().findFirst(En_ContactItemType.EMAIL, En_ContactDataAccess.PUBLIC);
-
-            if (email == null) {
-                continue;
-            }
-
-            result.add(NotificationEntry.email(email.value(), CrmConstants.LocaleTags.RU));
-        }
+        result.addAll(stream(personIdsByFavoriteIssueId)
+            .map(Person::new)
+            .map(person -> {
+                jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
+                return person;
+            })
+            .map(Person::getContactInfo)
+            .map(contactInfo -> contactInfo.findFirst(En_ContactItemType.EMAIL, En_ContactDataAccess.PUBLIC))
+            .filter(Objects::nonNull)
+            .map(email -> NotificationEntry.email(email.value(), CrmConstants.LocaleTags.RU))
+            .collect(Collectors.toList())
+        );
     }
 
     private static final Logger log = LoggerFactory.getLogger( CaseSubscriptionServiceImpl.class );

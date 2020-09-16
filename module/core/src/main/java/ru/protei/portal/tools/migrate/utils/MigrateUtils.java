@@ -162,7 +162,7 @@ public class MigrateUtils {
         infoFacade.addItem(En_ContactItemType.ADDRESS_LEGAL, imp.getLegalAddress());
         infoFacade.addItem(En_ContactItemType.ADDRESS, imp.getAddress());
         infoFacade.addItem(En_ContactItemType.EMAIL, imp.getEmail());
-        infoFacade.addItem(En_ContactItemType.WEB_SITE, imp.getWebsite());
+//        infoFacade.addItem(En_ContactItemType.WEB_SITE, imp.getWebsite()); // deprecated
         return x;
     }
 
@@ -204,10 +204,10 @@ public class MigrateUtils {
             contactInfoFacade.addWorkPhone(info.proteiExtension.getWorkTel(), "Рабочий");
             contactInfoFacade.addMobilePhone(info.proteiExtension.getMobileTel(), "Мобильный");
 
-            contactInfoFacade.addFax(info.proteiExtension.getFax(), "");
-            contactInfoFacade.addLegalAddress(info.proteiExtension.getOfficialAddress(), "Официальный адрес");
-            contactInfoFacade.addAddress(info.proteiExtension.getActualAddress(), "Фактический адрес");
-            contactInfoFacade.addIcq(info.proteiExtension.getIcq(), "");
+//            contactInfoFacade.addFax(info.proteiExtension.getFax(), ""); // deprecated
+//            contactInfoFacade.addLegalAddress(info.proteiExtension.getOfficialAddress(), "Официальный адрес"); // deprecated
+//            contactInfoFacade.addAddress(info.proteiExtension.getActualAddress(), "Фактический адрес"); // deprecated
+//            contactInfoFacade.addIcq(info.proteiExtension.getIcq(), ""); // deprecated
         }
         else {
             // contact person
@@ -229,17 +229,17 @@ public class MigrateUtils {
             contactInfoFacade.addMobilePhone(info.contactField("Телефон мобильный"), "мобильный");
             contactInfoFacade.addHomePhone(info.contactField("Телефон домашний"), "домашний");
 
-            contactInfoFacade.addJabber(
-                    nvlt(
-                            info.contactField("Интернет рабочий"),
-                            nvlt(info.contactField("Интернет без категории"),
-                                    info.contactField("Интернет домашний"))
-                    ), "");
-
-            contactInfoFacade.addIcq(
-                    nvlt(info.contactField("ICQ рабочий"),
-                        nvlt(info.contactField("ICQ без категории"), info.contactField("ICQ домашний"))
-            ), "");
+//            contactInfoFacade.addJabber( // deprecated
+//                    nvlt(
+//                            info.contactField("Интернет рабочий"),
+//                            nvlt(info.contactField("Интернет без категории"),
+//                                    info.contactField("Интернет домашний"))
+//                    ), "");
+//
+//            contactInfoFacade.addIcq( // deprecated
+//                    nvlt(info.contactField("ICQ рабочий"),
+//                        nvlt(info.contactField("ICQ без категории"), info.contactField("ICQ домашний"))
+//            ), "");
         }
 
         return person;

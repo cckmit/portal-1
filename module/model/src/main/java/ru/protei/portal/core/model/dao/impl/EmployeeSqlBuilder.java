@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.dao.impl;
 
 import ru.protei.portal.core.model.dict.En_AbsenceReason;
+import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.DateRangeUtils;
@@ -118,27 +119,29 @@ public class EmployeeSqlBuilder {
             }
 
             if (HelperFunc.isLikeRequired(query.getWorkPhone()) || HelperFunc.isLikeRequired(query.getMobilePhone()) || HelperFunc.isLikeRequired(query.getEmail())) {
-                condition.append(" and info.a = 'PUBLIC' and (");
+                condition.append(" AND person.id IN (");
+                condition.append(" SELECT cip.person_id FROM contact_item_person AS cip WHERE cip.contact_item_id IN (");
+                condition.append(" SELECT ci.id FROM contact_item AS ci WHERE 1=1");
 
                 List<String> orCondition = new ArrayList<>();
-
                 if (HelperFunc.isLikeRequired(query.getWorkPhone())) {
-                    orCondition.add("(info.t = 'GENERAL_PHONE' and info.v like ?)");
+                    orCondition.add("(ci.item_type = ? and ci.value like ?)");
+                    args.add(En_ContactItemType.GENERAL_PHONE.getId());
                     args.add(HelperFunc.makeLikeArg(query.getWorkPhone(), true));
                 }
-
                 if (HelperFunc.isLikeRequired(query.getMobilePhone())) {
-                    orCondition.add("(info.t = 'MOBILE_PHONE' and info.v like ?)");
+                    orCondition.add("(ci.item_type = ? and ci.value like ?)");
+                    args.add(En_ContactItemType.MOBILE_PHONE.getId());
                     args.add(HelperFunc.makeLikeArg(query.getMobilePhone(), true));
                 }
-
                 if (HelperFunc.isLikeRequired(query.getEmail())) {
-                    orCondition.add("(info.t = 'EMAIL' and info.v like ?)");
+                    orCondition.add("(ci.item_type = ? and ci.value like ?)");
+                    args.add(En_ContactItemType.EMAIL.getId());
                     args.add(HelperFunc.makeLikeArg(query.getEmail().trim(), true));
                 }
 
-                condition.append(String.join(" or ", orCondition));
-                condition.append(")");
+                condition.append(" AND (").append(String.join(" OR ", orCondition)).append(")");
+                condition.append(" ))");
             }
 
             if (HelperFunc.isLikeRequired(query.getDepartment())) {

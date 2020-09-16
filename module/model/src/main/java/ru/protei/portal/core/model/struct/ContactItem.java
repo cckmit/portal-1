@@ -5,36 +5,41 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
+import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 
-/**
- * Created by michael on 07.11.16.
- */
 @JsonAutoDetect
+@JdbcEntity(table = "contact_item")
 public class ContactItem implements Serializable {
 
+    @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
+    private Long id;
+
+    @JsonProperty("t")
+    @JdbcColumn(name = "item_type")
+    @JdbcEnumerated(EnumType.ID)
+    private En_ContactItemType itemType;
+
+    @JsonProperty("a")
+    @JdbcColumn(name = "access_type")
+    @JdbcEnumerated(EnumType.ID)
+    private En_ContactDataAccess accessType;
+
     @JsonProperty("v")
+    @JdbcColumn(name = "value")
     private String value;
 
     @JsonProperty("c")
+    // not db column (legacy field from json)
     private String comment;
 
-    @JsonProperty("a")
-    private En_ContactDataAccess accessType;
-
-    @JsonProperty("t")
-    private En_ContactItemType itemType;
+    public ContactItem() {}
 
     public ContactItem (String value, String comment, En_ContactItemType type) {
         this.value = value;
         this.comment = comment;
         this.itemType = type;
-    }
-
-    public ContactItem () {
-        this.accessType = En_ContactDataAccess.PUBLIC;
-        this.itemType = En_ContactItemType.UNDEFINED;
     }
 
     public ContactItem (En_ContactItemType type) {

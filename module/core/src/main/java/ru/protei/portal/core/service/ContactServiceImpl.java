@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.CompanySubscriptionDAO;
+import ru.protei.portal.core.model.dao.ContactItemDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
 import ru.protei.portal.core.model.dict.En_Gender;
@@ -20,6 +21,7 @@ import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.Date;
 import java.util.List;
@@ -37,19 +39,21 @@ public class ContactServiceImpl implements ContactService {
 
     @Autowired
     PersonDAO personDAO;
-
     @Autowired
     UserLoginDAO userLoginDAO;
-
     @Autowired
     CompanySubscriptionDAO companySubscriptionDAO;
-
+    @Autowired
+    ContactItemDAO contactItemDAO;
     @Autowired
     PolicyService policyService;
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Override
     public Result<SearchResult<Person>> getContactsSearchResult( AuthToken token, ContactQuery query) {
         SearchResult<Person> sr = personDAO.getContactsSearchResult(query);
+        jdbcManyRelationsHelper.fill(sr.getResults(), Person.Fields.CONTACT_ITEMS);
         return ok(sr);
     }
 
@@ -69,6 +73,7 @@ public class ContactServiceImpl implements ContactService {
     public Result<Person> getContact( AuthToken token, long id ) {
 
         Person person = personDAO.getContact(id);
+        jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
 
         return person != null ? ok( person)
                 : error( En_ResultStatus.NOT_FOUND);
@@ -111,11 +116,15 @@ public class ContactServiceImpl implements ContactService {
         if (person.getGender() == null)
             person.setGender(En_Gender.UNDEFINED);
 
-        if (personDAO.saveOrUpdate(person)) {
-            return ok(person);
+
+        if (!personDAO.saveOrUpdate(person)) {
+            return error(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        return error(En_ResultStatus.INTERNAL_ERROR);
+        contactItemDAO.saveOrUpdateBatch(person.getContactItems());
+        jdbcManyRelationsHelper.persist(person, Person.Fields.CONTACT_ITEMS);
+
+        return ok(person);
     }
 
     @Override
@@ -133,6 +142,7 @@ public class ContactServiceImpl implements ContactService {
         boolean result = personDAO.merge(person);
 
         if (result) {
+            jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
             removePersonEmailsFromCompany(person);
             userLoginDAO.removeByPersonId(id);
         }
@@ -155,6 +165,7 @@ public class ContactServiceImpl implements ContactService {
         boolean result = personDAO.merge(person);
 
         if (result) {
+            jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
             removePersonEmailsFromCompany(person);
             userLoginDAO.removeByPersonId(id);
         }

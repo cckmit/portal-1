@@ -736,10 +736,11 @@ public class IpReservationServiceImpl implements IpReservationService {
     }
 
     private NotificationEntry makeNotificationEntryFromPersonId(Long personId) {
-        Person person = personDAO.get(personId);
+        Person person = personDAO.partialGet(personId, "locale");
         if (person == null) {
             return null;
         }
+        helper.fill(person, Person.Fields.CONTACT_ITEMS);
 
         PlainContactInfoFacade contact = new PlainContactInfoFacade(person.getContactInfo());
         return NotificationEntry.email(contact.getEmail(), person.getLocale());

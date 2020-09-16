@@ -90,6 +90,9 @@ public class WorkerController {
     private EmployeeRegistrationDAO employeeRegistrationDAO;
 
     @Autowired
+    ContactItemDAO contactItemDAO;
+
+    @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Autowired
@@ -931,11 +934,8 @@ public class WorkerController {
         contactInfoFacade.setWorkPhone(HelperFunc.isEmpty(rec.getPhoneWork()) ? null : normalizePhoneNumber(rec.getPhoneWork().trim()));
         contactInfoFacade.setMobilePhone(HelperFunc.isEmpty(rec.getPhoneMobile()) ? null : normalizePhoneNumber(rec.getPhoneMobile().trim()));
         contactInfoFacade.setHomePhone(HelperFunc.isEmpty(rec.getPhoneHome()) ? null : normalizePhoneNumber(rec.getPhoneHome().trim()));
-        contactInfoFacade.setLegalAddress(HelperFunc.isEmpty(rec.getAddress()) ? null : rec.getAddress().trim());
-        contactInfoFacade.setHomeAddress(HelperFunc.isEmpty(rec.getAddressHome()) ? null : rec.getAddressHome().trim());
         contactInfoFacade.setEmail(HelperFunc.isEmpty(rec.getEmail()) ? null : rec.getEmail().trim());
         contactInfoFacade.setEmail_own(HelperFunc.isEmpty(rec.getEmailOwn()) ? null : rec.getEmailOwn().trim());
-        contactInfoFacade.setFax(HelperFunc.isEmpty(rec.getFax()) ? null : rec.getFax().trim());
     }
 
     private WorkerPosition getValidPosition(String positionName, Long companyId) throws Exception {
@@ -989,11 +989,15 @@ public class WorkerController {
 
     private void persistPerson(Person person) throws Exception {
         personDAO.persist(person);
+        contactItemDAO.saveOrUpdateBatch(person.getContactItems());
+        jdbcManyRelationsHelper.persist(person, Person.Fields.CONTACT_ITEMS);
         makeAudit(person, En_AuditType.EMPLOYEE_CREATE);
     }
 
     private void mergePerson(Person person) throws Exception {
         personDAO.merge(person);
+        contactItemDAO.saveOrUpdateBatch(person.getContactItems());
+        jdbcManyRelationsHelper.persist(person, Person.Fields.CONTACT_ITEMS);
         makeAudit(person, En_AuditType.EMPLOYEE_MODIFY);
     }
 

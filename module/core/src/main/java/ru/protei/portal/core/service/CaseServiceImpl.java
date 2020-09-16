@@ -160,12 +160,7 @@ public class CaseServiceImpl implements CaseService {
                             .collect(Collectors.toList()));
 
             // update partially filled objects
-            caseObject.setNotifiers(new HashSet<>(personDAO.partialGetListByKeys(
-                            caseObject.getNotifiers()
-                                    .stream()
-                                    .map(person ->  person.getId())
-                                    .collect(Collectors.toList()), "id", "contactInfo"))
-            );
+            jdbcManyRelationsHelper.fill(caseObject.getNotifiers(), Person.Fields.CONTACT_ITEMS);
         }
 
         if (isNotEmpty(caseObjectCreateRequest.getTags())) {
@@ -384,8 +379,9 @@ public class CaseServiceImpl implements CaseService {
                     caseMetaNotifiers.getNotifiers().stream()
                         .map(Person::getId)
                         .collect(Collectors.toList()),
-                    "id", "contactInfo", "displayShortName")
+                    "id", "displayShortName")
             ));
+            jdbcManyRelationsHelper.fill(caseMetaNotifiers.getNotifiers(), Person.Fields.CONTACT_ITEMS);
         }
         caseMetaNotifiers.setModified(new Date());
 

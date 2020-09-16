@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.events.EventPublisherService;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -88,7 +89,8 @@ public class ContractReminderServiceImpl implements ContractReminderService {
 
     private Set<NotificationEntry> getNotificationEntries(Set<Long> personIdList) {
         Set<NotificationEntry> notificationEntries = new HashSet<>();
-        List<Person> personList = personDAO.partialGetListByKeys(personIdList, "contactInfo", "locale");
+        List<Person> personList = personDAO.partialGetListByKeys(personIdList, "locale");
+        jdbcManyRelationsHelper.fill(personList, Person.Fields.CONTACT_ITEMS);
         for (Person person : personList) {
             ContactInfo contactInfo = person.getContactInfo();
             if (contactInfo == null) {
@@ -121,6 +123,8 @@ public class ContractReminderServiceImpl implements ContractReminderService {
     ContractDateDAO contractDateDAO;
     @Autowired
     PersonDAO personDAO;
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
     @Autowired
     EventPublisherService publisherService;
 

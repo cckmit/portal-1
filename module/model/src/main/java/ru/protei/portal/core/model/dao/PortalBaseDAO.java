@@ -52,6 +52,13 @@ public interface PortalBaseDAO<T> extends JdbcDAO<Long,T> {
     boolean saveOrUpdate(T entity);
 
     /**
+     * Делает проверку ID записи и выполняет либо обновление (update), либо вставку
+     * @param entities
+     * @return
+     */
+    Long saveOrUpdateBatch(Collection<T> entities);
+
+    /**
      * Максимальное значение поля field по заданному условию cond, с ожидаемым типом itemType
      * @param field
      * @param type

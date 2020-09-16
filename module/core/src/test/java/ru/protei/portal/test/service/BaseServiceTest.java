@@ -340,7 +340,7 @@ public class BaseServiceTest {
     @Autowired
     protected CaseTypeDAO caseTypeDAO;
     @Autowired
-    protected PersonDAO personDAO;
+    protected PersonDAO personDAO; // TODO ci tests
     @Autowired
     protected DevUnitDAO devUnitDAO;
     @Autowired

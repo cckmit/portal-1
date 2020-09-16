@@ -3,11 +3,13 @@ package ru.protei.portal.redmine.utils;
 import com.taskadapter.redmineapi.bean.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.protei.portal.core.model.dao.ContactItemDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -17,13 +19,17 @@ import java.util.Objects;
 public class CachedPersonMapper {
 
     private PersonDAO personDAO;
+    private ContactItemDAO contactItemDAO;
+    private JdbcManyRelationsHelper jdbcManyRelationsHelper;
     private Long companyId;
     private Long defaultUserLocalId;
     private Person defaultEntryPointUser;
     private final Map<String, Person> index;
 
-    public CachedPersonMapper(PersonDAO personDAO, Long companyId, Long defaultUserLocalId, Person defUser) {
+    public CachedPersonMapper(PersonDAO personDAO, ContactItemDAO contactItemDAO, JdbcManyRelationsHelper jdbcManyRelationsHelper, Long companyId, Long defaultUserLocalId, Person defUser) {
         this.personDAO = personDAO;
+        this.contactItemDAO = contactItemDAO;
+        this.jdbcManyRelationsHelper = jdbcManyRelationsHelper;
         this.companyId = companyId;
         this.defaultUserLocalId = defaultUserLocalId;
         this.defaultEntryPointUser = defUser;
@@ -121,16 +127,17 @@ public class CachedPersonMapper {
             }
 
             PlainContactInfoFacade contactInfoFacade = new PlainContactInfoFacade();
-
-            if (user.getMail() != null)
+            if (user.getMail() != null) {
                 contactInfoFacade.setEmail(user.getMail());
-
+            }
             person.setContactInfo(contactInfoFacade.editInfo());
 
             person.setGender(En_Gender.UNDEFINED);
             person.setDeleted(false);
             person.setFired(false);
             personDAO.persist(person);
+            contactItemDAO.saveOrUpdateBatch(person.getContactItems());
+            jdbcManyRelationsHelper.persist(person, Person.Fields.CONTACT_ITEMS);
         }
 
         return person;

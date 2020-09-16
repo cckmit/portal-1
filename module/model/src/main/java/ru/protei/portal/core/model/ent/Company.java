@@ -3,16 +3,17 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.ContactInfo;
+import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EntityOptionSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * @author michael
- */
 @JdbcEntity(table = "company")
 public class Company extends AuditableObject implements EntityOptionSupport {
 
@@ -41,8 +42,8 @@ public class Company extends AuditableObject implements EntityOptionSupport {
     @JdbcColumn(name = "cname")
     private String cname;
 
-    @JdbcColumn(name = "contactInfo", converterType = ConverterType.JSON)
-    private ContactInfo contactInfo;
+    @JdbcManyToMany(linkTable = "contact_item_company", localLinkColumn = "company_id", remoteLinkColumn = "contact_item_id")
+    private List<ContactItem> contactItems;
 
     @JdbcColumn(name = "info")
     private String info;
@@ -82,7 +83,6 @@ public class Company extends AuditableObject implements EntityOptionSupport {
     }
 
     public Company(Long id) {
-        this.contactInfo = new ContactInfo();
         this.id = id;
     }
 
@@ -126,12 +126,16 @@ public class Company extends AuditableObject implements EntityOptionSupport {
         this.created = created;
     }
 
+    public List<ContactItem> getContactItems() {
+        return contactItems;
+    }
+
     public ContactInfo getContactInfo() {
-        return contactInfo;
+        return new ContactInfo(contactItems);
     }
 
     public void setContactInfo(ContactInfo contactInfo) {
-        this.contactInfo = contactInfo;
+        this.contactItems = contactInfo != null ? contactInfo.getItems() : null;
     }
 
     public Long getGroupId() {
@@ -265,7 +269,7 @@ public class Company extends AuditableObject implements EntityOptionSupport {
                 ", parentCompanyName='" + parentCompanyName + '\'' +
                 ", childCompanies=" + childCompanies +
                 ", cname='" + cname + '\'' +
-                ", contactInfo=" + contactInfo +
+                ", contactItems=" + contactItems +
                 ", info='" + info + '\'' +
                 ", created=" + created +
                 ", oldId=" + oldId +
@@ -275,5 +279,9 @@ public class Company extends AuditableObject implements EntityOptionSupport {
                 ", isArchived=" + isArchived +
                 ", autoOpenIssue=" + autoOpenIssue +
                 '}';
+    }
+
+    public interface Fields {
+        String CONTACT_ITEMS = "contactItems";
     }
 }

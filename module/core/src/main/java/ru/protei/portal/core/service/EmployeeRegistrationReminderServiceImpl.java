@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.service.events.EventPublisherService;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
 
@@ -136,7 +137,8 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
             notifyIds.addAll( emptyIfNull( er.getCuratorsIds() ) );
         }
 
-        List<Person> persons = personDAO.partialGetListByKeys( notifyIds, "id", "displayname", "contactInfo" );
+        List<Person> persons = personDAO.partialGetListByKeys( notifyIds, "id", "displayname");
+        jdbcManyRelationsHelper.fill(persons, Person.Fields.CONTACT_ITEMS);
         return toMap( persons, Person::getId, person -> person );
     }
 
@@ -154,6 +156,8 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
     CaseCommentService caseCommentService;
     @Autowired
     PersonDAO personDAO;
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
     @Autowired
     EventPublisherService publisherService;
 

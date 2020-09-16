@@ -11,9 +11,6 @@ import static ru.protei.portal.core.model.helper.HelperFunc.isNotEmpty;
 import static ru.protei.portal.core.model.helper.PhoneUtils.prettyPrintPhoneNumber;
 import static ru.protei.portal.core.model.helper.PhoneUtils.prettyPrintWorkPhoneNumber;
 
-/**
- * Created by Mike on 09.11.2016.
- */
 public class PlainContactInfoFacade extends CustomContactInfoFacade {
 
     public PlainContactInfoFacade() {
@@ -168,22 +165,6 @@ public class PlainContactInfoFacade extends CustomContactInfoFacade {
         contactInfo.findOrCreate(En_ContactItemType.FAX, En_ContactDataAccess.PRIVATE).modify(faxHome);
     }
 
-    public String getIcq() {
-        return findItemValue(En_ContactItemType.ICQ, En_ContactDataAccess.PUBLIC);
-    }
-
-    public void setIcq(String icq) {
-        contactInfo.findOrCreate(En_ContactItemType.ICQ, En_ContactDataAccess.PUBLIC).modify(icq);
-    }
-
-    public String getJabber() {
-        return findItemValue(En_ContactItemType.JABBER, En_ContactDataAccess.PUBLIC);
-    }
-
-    public void setJabber(String jabber) {
-        contactInfo.findOrCreate(En_ContactItemType.JABBER,En_ContactDataAccess.PUBLIC).modify(jabber);
-    }
-
     public String getWebSite () {
         return findItemValue(En_ContactItemType.WEB_SITE, En_ContactDataAccess.PUBLIC);
     }
@@ -191,7 +172,6 @@ public class PlainContactInfoFacade extends CustomContactInfoFacade {
     public void setWebSite (String webSite) {
         contactInfo.findOrCreate(En_ContactItemType.WEB_SITE, En_ContactDataAccess.PUBLIC).modify(webSite);
     }
-
 
     public String getLegalAddress () {
         return findItemValue(En_ContactItemType.ADDRESS_LEGAL, En_ContactDataAccess.PUBLIC);

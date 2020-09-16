@@ -44,8 +44,8 @@ public class PersonDAOTest {
         p.getContactInfo().addItem(En_ContactItemType.FAX).modify("999-22-33-11", "work fax");
         p.getContactInfo().addItem(En_ContactItemType.MOBILE_PHONE).modify("+7-921-555-44-33", "main phone");
         p.getContactInfo().addItem(En_ContactItemType.GENERAL_PHONE).modify("8(812)-4494727", "protei");
-        p.getContactInfo().addItem(En_ContactItemType.ICQ).modify("00000000001");
-        p.getContactInfo().addItem(En_ContactItemType.JABBER).modify("dev@jabber.protei.ru");
+        p.getContactInfo().addItem(En_ContactItemType.ICQ).modify("00000000001"); // TODO ci
+        p.getContactInfo().addItem(En_ContactItemType.JABBER).modify("dev@jabber.protei.ru"); // TODO ci
         p.getContactInfo().addItem(En_ContactItemType.WEB_SITE).modify("http://www.protei.ru");
 
         personDAO.persist(p);
@@ -103,7 +103,6 @@ public class PersonDAOTest {
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(readPerson.getContactInfo());
 
         Assert.assertEquals("junit@test.org", infoFacade.getEmail());
-        Assert.assertEquals("dev@jabber.protei.ru", infoFacade.getJabber());
         Assert.assertEquals("8(812)-4494727", infoFacade.getWorkPhone());
         Assert.assertEquals("+7-921-555-44-33", infoFacade.getMobilePhone());
 

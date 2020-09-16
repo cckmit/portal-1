@@ -80,6 +80,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     PersonAbsenceDAO personAbsenceDAO;
 
     @Autowired
+    ContactItemDAO contactItemDAO;
+
+    @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Autowired
@@ -250,6 +253,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         Long personId = personDAO.persist(person);
 
         if (personId != null) {
+
+            person.setId(personId);
+            contactItemDAO.saveOrUpdateBatch(person.getContactItems());
+            jdbcManyRelationsHelper.persist(person, Person.Fields.CONTACT_ITEMS);
+
             person.setId(personId);
             return createLDAPAccount(person)
                     .flatMap(userLogin -> {
@@ -263,6 +271,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
     public Result<Boolean> updateEmployeePerson(AuthToken token, Person person, boolean needToChangeAccount) {
         if (person == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -289,13 +298,15 @@ public class EmployeeServiceImpl implements EmployeeService {
         person.setCompanyId(CrmConstants.Company.HOME_COMPANY_ID);
         person.setContactInfo(removeSensitiveInformation(person.getContactInfo()));
 
-        boolean success = personDAO.partialMerge(person,  "company_id", "firstname", "lastname", "secondname", "sex", "birthday", "ipaddress", "contactInfo", "displayname", "displayShortName");
-
-        if (success) {
-            return ok(true);
+        boolean success = personDAO.partialMerge(person,  "company_id", "firstname", "lastname", "secondname", "sex", "birthday", "ipaddress", "displayname", "displayShortName");
+        if (!success) {
+            return error(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        return error(En_ResultStatus.INTERNAL_ERROR);
+        contactItemDAO.saveOrUpdateBatch(person.getContactItems());
+        jdbcManyRelationsHelper.persist(person, Person.Fields.CONTACT_ITEMS);
+
+        return ok(true);
     }
 
     @Override
@@ -352,6 +363,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         personFromDb.setIpAddress(personFromDb.getIpAddress() == null ? null : personFromDb.getIpAddress().replace(".", "_"));
         PlainContactInfoFacade contactInfoFacade = new PlainContactInfoFacade(personFromDb.getContactInfo());
         contactInfoFacade.setEmail(null);
+        // TODO ci remove info by condition
 
         boolean result = personDAO.merge(personFromDb);
 

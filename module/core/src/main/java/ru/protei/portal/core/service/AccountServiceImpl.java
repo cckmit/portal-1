@@ -147,6 +147,7 @@ public class AccountServiceImpl implements AccountService {
             if (sendWelcomeEmail) {
 
                 Person person = personDAO.get(userLogin.getPersonId());
+                jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
                 userLogin.setPerson(person);
 
                 PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(person.getContactInfo());

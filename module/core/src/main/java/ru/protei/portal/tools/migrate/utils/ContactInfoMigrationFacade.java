@@ -5,9 +5,6 @@ import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.ContactInfo;
 
-/**
- * Created by michael on 11.11.16.
- */
 public class ContactInfoMigrationFacade {
 
     ContactInfo info;
@@ -54,14 +51,6 @@ public class ContactInfoMigrationFacade {
 
     public void addLegalAddress (String v, String comment) {
         addItem(En_ContactItemType.ADDRESS_LEGAL, En_ContactDataAccess.PUBLIC, v, comment);
-    }
-
-    public void addIcq (String v, String comment) {
-        addItem(En_ContactItemType.ICQ, En_ContactDataAccess.PUBLIC, v, comment);
-    }
-
-    public void addJabber (String v, String comment) {
-        addItem(En_ContactItemType.JABBER, En_ContactDataAccess.PUBLIC, v, comment);
     }
 
 
