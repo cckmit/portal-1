@@ -89,7 +89,6 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
         if (isSubSectionVisible) {
             arrow.addClassName("open active");
             openSubSection();
-            closeExternalSections(root.getElement().getParentElement());
         } else {
             arrow.removeClassName("open active");
             closeSubSection();
@@ -121,6 +120,7 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
     public void onAnchorClicked( ClickEvent event ) {
         if ( anchor.getHref().endsWith("#") ) {
             event.preventDefault();
+            closeExternalSections(root.getElement().getParentElement());
             onSectionClicked();
         }
     }
