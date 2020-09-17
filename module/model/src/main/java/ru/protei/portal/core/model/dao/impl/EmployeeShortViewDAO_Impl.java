@@ -74,38 +74,6 @@ public class EmployeeShortViewDAO_Impl extends PortalBaseJdbcDAO<EmployeeShortVi
                 .withOffset(query.getOffset())
                 .withLimit(query.getLimit());
 
-        String havingCondition = makeHavingCondition(query);
-
-        if (StringUtils.isNotEmpty(havingCondition)) {
-            parameters
-                    .withGroupBy("id")
-                    .withHaving(havingCondition);
-        }
-
         return parameters;
-    }
-
-    private String makeHavingCondition(EmployeeQuery query) {
-        String result = "";
-
-        int countId = 0;
-
-        if (HelperFunc.isLikeRequired(query.getWorkPhone())) {
-            countId++;
-        }
-
-        if (HelperFunc.isLikeRequired(query.getMobilePhone())) {
-            countId++;
-        }
-
-        if (HelperFunc.isLikeRequired(query.getEmail())) {
-            countId++;
-        }
-
-        if (countId > 0) {
-            result = "count(id) = " + countId;
-        }
-
-        return result;
     }
 }

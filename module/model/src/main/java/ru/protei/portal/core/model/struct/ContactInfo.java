@@ -28,7 +28,7 @@ public class ContactInfo implements Serializable, AbstractContactInfo {
     }
 
     public ContactInfo(List<ContactItem> itemList) {
-        this.itemList = emptyIfNull(itemList);
+        this.itemList = itemList == null ? new ArrayList<>() : itemList;
     }
 
 

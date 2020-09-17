@@ -107,7 +107,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
             view.setEmail("");
             view.emailContainerVisibility().setVisible(false);
         } else {
-            view.setEmail(EmailRender.renderToHtml(infoFacade.publicEmailsStream(), false));
+            view.setEmail(EmailRender.renderToHtml(infoFacade.publicEmailsStream()));
             view.emailContainerVisibility().setVisible(true);
         }
         if (StringUtils.isEmpty(infoFacade.publicPhonesAsString())) {

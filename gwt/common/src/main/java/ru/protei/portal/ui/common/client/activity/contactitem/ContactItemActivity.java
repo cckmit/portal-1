@@ -31,13 +31,8 @@ public abstract class ContactItemActivity implements Activity, AbstractContactIt
     }
 
     @Override
-    public void onChangeComment(AbstractContactItemView item) {
-        onChangeValueComment(item);
-    }
-
-    @Override
     public void onChangeValue(AbstractContactItemView item) {
-        onChangeValueComment(item);
+        onChangeValue0(item);
     }
 
     @Override
@@ -66,7 +61,7 @@ public abstract class ContactItemActivity implements Activity, AbstractContactIt
     }
 
     private void addNewEmptyItem(HasWidgets parent, List<En_ContactItemType> allowedTypes, List<ContactItem> dataList){
-        addNewItem(new ContactItem("", "", allowedTypes.get(0)), parent, allowedTypes, dataList);
+        addNewItem(new ContactItem("", allowedTypes.get(0)), parent, allowedTypes, dataList);
     }
 
     private void removeItem(AbstractContactItemView item){
@@ -76,24 +71,21 @@ public abstract class ContactItemActivity implements Activity, AbstractContactIt
         viewToModel.remove(item);
     }
 
-    private void onChangeValueComment(AbstractContactItemView item){
+    private void onChangeValue0(AbstractContactItemView item){
         ContactItemModel model = viewToModel.get(item);
 
         String prevValue = model.contactItem.value();
-        String prevComment = model.contactItem.comment();
         String newValue = item.value().getText().trim();
-        String newComment = item.comment().getText().trim();
 
-
-        if(newValue.equals(prevValue) && newComment.equals(prevComment))
+        if (newValue.equals(prevValue)) {
             return;
+        }
 
-        if(prevComment.isEmpty() && prevValue.isEmpty()) {
+        if (prevValue.isEmpty()) {
             model.data.add(model.contactItem);
             addNewEmptyItem(model.parent, model.allowedTypes, model.data);
         }
-
-        else if(newValue.isEmpty() && newComment.isEmpty()){
+        else if (newValue.isEmpty()) {
             AbstractContactItemView emptyItem = findEmptyItem(model.parent);
             if(emptyItem != null) {
                 removeItem(item); // delete current, leave empty
@@ -102,14 +94,14 @@ public abstract class ContactItemActivity implements Activity, AbstractContactIt
             }
         }
 
-        model.contactItem.modify(newValue, newComment);
+        model.contactItem.modify(newValue);
     }
 
     private AbstractContactItemView findEmptyItem(HasWidgets parent){
 
         for(Map.Entry<AbstractContactItemView, ContactItemModel> entry: viewToModel.entrySet()){
             ContactItemModel model = entry.getValue();
-            if(model.parent == parent && model.contactItem.value().isEmpty() && model.contactItem.comment().isEmpty())
+            if(model.parent == parent && model.contactItem.value().isEmpty())
                 return entry.getKey();
         }
 
@@ -129,8 +121,6 @@ public abstract class ContactItemActivity implements Activity, AbstractContactIt
 
     private void fillItemView(AbstractContactItemView itemView, ContactItem ci){
         itemView.value().setText(ci.value());
-        itemView.comment().setText(ci.comment());
-
         if(itemView.typeVisibility().isVisible())
             itemView.type().setValue(ci.type());
     }

@@ -30,15 +30,15 @@ public class ContactItem implements Serializable {
     @JdbcColumn(name = "value")
     private String value;
 
+    @Deprecated
     @JsonProperty("c")
     // not db column (legacy field from json)
     private String comment;
 
     public ContactItem() {}
 
-    public ContactItem (String value, String comment, En_ContactItemType type) {
+    public ContactItem (String value, En_ContactItemType type) {
         this.value = value;
-        this.comment = comment;
         this.itemType = type;
     }
 
@@ -52,11 +52,9 @@ public class ContactItem implements Serializable {
     }
 
 
-    /*
-     *
-     *   readers
-     *
-     */
+    public Long id() {
+        return this.id;
+    }
 
     public String value () {
         return this.value;
@@ -66,29 +64,13 @@ public class ContactItem implements Serializable {
         return itemType;
     }
 
-    public String comment() {
-        return comment;
-    }
-
     public En_ContactDataAccess accessType () {
         return this.accessType;
     }
 
 
-    /*
-     *
-     *   writers
-     *
-     */
-
     public ContactItem modify (String value) {
         this.value = value;
-        return this;
-    }
-
-    public ContactItem modify (String value, String comment) {
-        this.value = value;
-        this.comment = comment;
         return this;
     }
 
@@ -102,17 +84,6 @@ public class ContactItem implements Serializable {
         return this;
     }
 
-    public ContactItem toggleAccessType () {
-        this.accessType = (this.accessType == En_ContactDataAccess.PRIVATE ? En_ContactDataAccess.PUBLIC : En_ContactDataAccess.PRIVATE);
-        return this;
-    }
-
-
-    /*
-     *
-     *   predicates
-     *
-     */
 
     @JsonIgnore
     public boolean isItemOf (En_ContactItemType type) {
@@ -125,13 +96,8 @@ public class ContactItem implements Serializable {
     }
 
     @JsonIgnore
-    public boolean isEmptyComment () {
-        return this.comment == null || this.comment.trim().isEmpty();
-    }
-
-    @JsonIgnore
     public boolean isEmpty () {
-        return isEmptyValue() && isEmptyComment();
+        return isEmptyValue();
     }
 
     @JsonIgnore

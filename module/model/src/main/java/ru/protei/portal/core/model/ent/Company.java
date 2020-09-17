@@ -131,6 +131,9 @@ public class Company extends AuditableObject implements EntityOptionSupport {
     }
 
     public ContactInfo getContactInfo() {
+        if (contactItems == null) {
+            contactItems = new ArrayList<>();
+        }
         return new ContactInfo(contactItems);
     }
 

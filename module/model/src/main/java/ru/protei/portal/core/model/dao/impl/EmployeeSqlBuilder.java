@@ -120,8 +120,8 @@ public class EmployeeSqlBuilder {
 
             if (HelperFunc.isLikeRequired(query.getWorkPhone()) || HelperFunc.isLikeRequired(query.getMobilePhone()) || HelperFunc.isLikeRequired(query.getEmail())) {
                 condition.append(" AND person.id IN (");
-                condition.append(" SELECT cip.person_id FROM contact_item_person AS cip WHERE cip.contact_item_id IN (");
-                condition.append(" SELECT ci.id FROM contact_item AS ci WHERE 1=1");
+                condition.append(" SELECT DISTINCT cip.person_id FROM contact_item_person AS cip WHERE cip.contact_item_id IN (");
+                condition.append(" SELECT DISTINCT ci.id FROM contact_item AS ci WHERE 1=1");
 
                 List<String> orCondition = new ArrayList<>();
                 if (HelperFunc.isLikeRequired(query.getWorkPhone())) {

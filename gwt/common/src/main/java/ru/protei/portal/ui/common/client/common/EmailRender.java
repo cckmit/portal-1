@@ -30,7 +30,7 @@ public class EmailRender {
             i.setClassName(icon);
             div.appendChild(i);
         }
-        String emailsHtml = showComments ? renderToHtml(stream) : renderToHtml(stream, false);
+        String emailsHtml = showComments ? renderToHtml(stream) : renderToHtml(stream);
 
         Element span = DOM.createSpan();
         span.setInnerHTML(emailsHtml);
@@ -42,37 +42,24 @@ public class EmailRender {
         if (stream == null)
             return null;
 
-        return stream.map(
-                e -> isNotEmpty(e.value()) ? "<a href='mailto:" + e.value() + "'>" + e.value() + (isNotEmpty(e.comment()) ? " (" + e.comment() + ")</a>" : "</a>") : ""
-        ).collect(Collectors.joining("<span>, </span>"));
-    }
-
-    public static String renderToHtml(Stream <ContactItem> stream, boolean showComments){
-        if (stream == null)
-            return null;
-
-        if (showComments) return renderToHtml(stream);
-
-        return stream.map(
-                e -> isNotEmpty(e.value()) ? "<a href='mailto:" + e.value() + "'>" + e.value() +  "</a>" : ""
-        ).collect(Collectors.joining("<span>, </span>"));
+        return stream
+                .map(e -> isNotEmpty(e.value()) ? "<a href='mailto:" + e.value() + "'>" + e.value() + "</a>" : "")
+                .collect(Collectors.joining("<span>, </span>"));
     }
 
     public static List<Widget> renderToHtmlWidget(Stream <ContactItem> stream){
-        return renderToHtmlWidget(stream, true);
-    }
-
-    public static List<Widget> renderToHtmlWidget(Stream <ContactItem> stream, boolean showComments){
         if (stream == null)
             return null;
 
-        return stream.map(item -> createMailLinkWithComments(item, showComments)).collect(Collectors.toList());
+        return stream
+                .map(EmailRender::createMailLinkWithComments)
+                .collect(Collectors.toList());
     }
 
-    public static Widget createMailLinkWithComments(ContactItem item, boolean isComments) {
+    public static Widget createMailLinkWithComments(ContactItem item) {
         Anchor a = new Anchor();
         a.setHref("mailto:" + item.value());
-        a.setText(item.value() + (isComments ? ((isNotEmpty(item.comment()) ? " (" + item.comment() + ")" : "")) : ""));
+        a.setText(item.value());
         return a;
     }
 }

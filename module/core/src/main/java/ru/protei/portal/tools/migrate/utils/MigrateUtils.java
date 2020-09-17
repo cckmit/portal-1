@@ -198,36 +198,36 @@ public class MigrateUtils {
             person.setFired(info.proteiExtension.isFired());
             person.setIpAddress(info.proteiExtension.getIpAddress());
 
-            contactInfoFacade.addEmail(info.proteiExtension.getEmail(), "Основной");
-            contactInfoFacade.addPrivateEmail(info.proteiExtension.getOtherEmail(), "Персональный");
-            contactInfoFacade.addHomePhone(info.proteiExtension.getHomeTel(), "Домашний");
-            contactInfoFacade.addWorkPhone(info.proteiExtension.getWorkTel(), "Рабочий");
-            contactInfoFacade.addMobilePhone(info.proteiExtension.getMobileTel(), "Мобильный");
+            contactInfoFacade.addEmail(info.proteiExtension.getEmail());
+            contactInfoFacade.addPrivateEmail(info.proteiExtension.getOtherEmail());
+            contactInfoFacade.addHomePhone(info.proteiExtension.getHomeTel());
+            contactInfoFacade.addWorkPhone(info.proteiExtension.getWorkTel());
+            contactInfoFacade.addMobilePhone(info.proteiExtension.getMobileTel());
 
-//            contactInfoFacade.addFax(info.proteiExtension.getFax(), ""); // deprecated
-//            contactInfoFacade.addLegalAddress(info.proteiExtension.getOfficialAddress(), "Официальный адрес"); // deprecated
-//            contactInfoFacade.addAddress(info.proteiExtension.getActualAddress(), "Фактический адрес"); // deprecated
-//            contactInfoFacade.addIcq(info.proteiExtension.getIcq(), ""); // deprecated
+//            contactInfoFacade.addFax(info.proteiExtension.getFax()); // deprecated
+//            contactInfoFacade.addLegalAddress(info.proteiExtension.getOfficialAddress()); // deprecated
+//            contactInfoFacade.addAddress(info.proteiExtension.getActualAddress()); // deprecated
+//            contactInfoFacade.addIcq(info.proteiExtension.getIcq()); // deprecated
         }
         else {
             // contact person
-            contactInfoFacade.addAddress(info.contactField("Адрес рабочий"), "Адрес рабочий");
-            contactInfoFacade.addAddress(info.contactField("Адрес без категории"), "Адрес без категории");
-            contactInfoFacade.addPrivateAddress(info.contactField("Адрес домашний"), "Адрес домашний");
+            contactInfoFacade.addAddress(info.contactField("Адрес рабочий"));
+            contactInfoFacade.addAddress(info.contactField("Адрес без категории"));
+            contactInfoFacade.addPrivateAddress(info.contactField("Адрес домашний"));
 
-            contactInfoFacade.addEmail(info.contactField("E-mail рабочий"), "рабочий");
-            contactInfoFacade.addEmail(info.contactField("E-mail без категории"), "без категории");
-            contactInfoFacade.addPrivateEmail(info.contactField("E-mail домашний"), "персональный");
+            contactInfoFacade.addEmail(info.contactField("E-mail рабочий"));
+            contactInfoFacade.addEmail(info.contactField("E-mail без категории"));
+            contactInfoFacade.addPrivateEmail(info.contactField("E-mail домашний"));
 
 
-            contactInfoFacade.addFax(info.contactField("Факс рабочий"), "Факс рабочий");
-            contactInfoFacade.addFax(info.contactField("Факс без категории"), "Факс без категории");
-            contactInfoFacade.addHomeFax(info.contactField("Факс домашний"), "Факс домашний");
+            contactInfoFacade.addFax(info.contactField("Факс рабочий"));
+            contactInfoFacade.addFax(info.contactField("Факс без категории"));
+            contactInfoFacade.addHomeFax(info.contactField("Факс домашний"));
 
-            contactInfoFacade.addWorkPhone(info.contactField("Телефон рабочий"), "рабочий");
-            contactInfoFacade.addWorkPhone(info.contactField("Телефон без категории"), "без категории");
-            contactInfoFacade.addMobilePhone(info.contactField("Телефон мобильный"), "мобильный");
-            contactInfoFacade.addHomePhone(info.contactField("Телефон домашний"), "домашний");
+            contactInfoFacade.addWorkPhone(info.contactField("Телефон рабочий"));
+            contactInfoFacade.addWorkPhone(info.contactField("Телефон без категории"));
+            contactInfoFacade.addMobilePhone(info.contactField("Телефон мобильный"));
+            contactInfoFacade.addHomePhone(info.contactField("Телефон домашний"));
 
 //            contactInfoFacade.addJabber( // deprecated
 //                    nvlt(

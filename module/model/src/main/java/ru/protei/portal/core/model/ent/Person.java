@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.PersonShortViewSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -231,6 +232,9 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
     }
 
     public ContactInfo getContactInfo() {
+        if (contactItems == null) {
+            contactItems = new ArrayList<>();
+        }
         return new ContactInfo(contactItems);
     }
 

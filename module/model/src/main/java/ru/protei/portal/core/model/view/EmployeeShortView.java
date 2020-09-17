@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -110,6 +111,9 @@ public class EmployeeShortView implements Serializable {
     }
 
     public ContactInfo getContactInfo() {
+        if (contactItems == null) {
+            contactItems = new ArrayList<>();
+        }
         return new ContactInfo(contactItems);
     }
 
