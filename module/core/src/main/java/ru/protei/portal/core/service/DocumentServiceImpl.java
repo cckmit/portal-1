@@ -387,6 +387,7 @@ public class DocumentServiceImpl implements DocumentService {
             removeDuplicatedDocFilesFromSvn(formatsAtSvn, docFormat, documentId, projectId, commitMessageRemove);
             List<Person> personList = getDocumentDocFileUpdatedByMember( document );
             Person initiator = personDAO.get(token.getPersonId());
+            jdbcManyRelationsHelper.fill(initiator, Person.Fields.CONTACT_ITEMS);
 
             return ok(document)
                     .publishEvent( new DocumentDocFileUpdatedByMemberEvent(this, initiator, document, personList, comment));
@@ -486,7 +487,9 @@ public class DocumentServiceImpl implements DocumentService {
         if (document == null || CollectionUtils.isEmpty(personIds)) {
             return null;
         }
-        return personDAO.getListByKeys(personIds);
+        List<Person> people = personDAO.getListByKeys(personIds);
+        jdbcManyRelationsHelper.fill(people, Person.Fields.CONTACT_ITEMS);
+        return people;
     }
 
     private List<Person> getDocumentDocFileUpdatedByMember( Document document ) {
@@ -501,6 +504,7 @@ public class DocumentServiceImpl implements DocumentService {
                 .map(Project::getLeader);
         if (result.isOk() && result.getData() != null) {
             Person leader = personDAO.get(result.getData().getId());
+            jdbcManyRelationsHelper.fill(leader, Person.Fields.CONTACT_ITEMS);
             personList.add(leader);
         }
         personList.addAll(document.getMembers());

@@ -136,6 +136,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     public CompletableFuture<AssembledCaseEvent> updateOrCreate(JiraEndpoint endpoint, JiraHookEventData event) {
         final Issue issue = event.getIssue();
         final Person defaultPerson = personDAO.get(endpoint.getPersonId());
+        jdbcManyRelationsHelper.fill(defaultPerson, Person.Fields.CONTACT_ITEMS);
         final PersonMapper personMapper = new CachedPersonMapper(personDAO, contactItemDAO, jdbcManyRelationsHelper, endpoint, defaultPerson);
 
         User user = event.getUser();

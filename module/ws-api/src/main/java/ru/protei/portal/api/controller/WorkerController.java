@@ -46,8 +46,7 @@ import java.util.function.Supplier;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.PhoneUtils.normalizePhoneNumber;
 
 @RestController
@@ -127,7 +126,9 @@ public class WorkerController {
         if (!checkAuth(request, response)) return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
 
         try {
-            return ok(new WorkerRecord(personDAO.get(id)));
+            Person person = personDAO.get(id);
+            jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
+            return ok(new WorkerRecord(person));
         } catch (Throwable e) {
             logger.error("error while get worker", e);
             return error(En_ResultStatus.INTERNAL_ERROR,  e.getMessage());
@@ -156,6 +157,7 @@ public class WorkerController {
                     item -> {
                         WorkerEntry entry = workerEntryDAO.getByExternalId(id.trim(), item.getCompanyId());
                         Person person = personDAO.get(entry.getPersonId());
+                        jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
                         EmployeeRegistration registration = employeeRegistrationDAO.getByPersonId(entry.getPersonId());
                         return  ok(new WorkerRecord(person, entry, registration));
                     });
@@ -225,9 +227,12 @@ public class WorkerController {
 
             query.setHomeCompanies(homeCompanies);
 
-            personDAO.getEmployees(query).forEach(
-                    p -> persons.append(new WorkerRecord(p))
-            );
+            stream(personDAO.getEmployees(query))
+                .map(person -> {
+                    jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
+                    return person;
+                })
+                .forEach(person -> persons.append(new WorkerRecord(person)));
 
         } catch (Exception e) {
             logger.error("error while get persons", e);
@@ -285,6 +290,9 @@ public class WorkerController {
                         person = personDAO.get(rec.getId());
                         if (person == null) {
                             person = personDAO.getByCondition("company_id=1 and isfired=0 and isdeleted=0 and firstname=? and lastname=? and birthday=?", rec.getFirstName().trim(), rec.getLastName().trim(), rec.getBirthday() );
+                        }
+                        if (person != null) {
+                            jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
                         }
                     }
 
@@ -509,6 +517,7 @@ public class WorkerController {
 
                     if (!workerEntryDAO.checkExistsByPersonId(personId)) {
                         Person person = personDAO.get(personId);
+                        jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
                         person.setDeleted(true);
                         person.setIpAddress(person.getIpAddress() == null ? null : person.getIpAddress().replace(".", "_"));
 
@@ -1618,6 +1627,7 @@ public class WorkerController {
                             List<Person> personList = personDAO.getListByCondition(
                                     "person.isdeleted=false and person.isfired=true and person.lastname=? and person.firstname=? and person.birthday=?",
                                     rec.getLastName(), rec.getFirstName(), rec.getBirthday());
+                            jdbcManyRelationsHelper.fill(personList, Person.Fields.CONTACT_ITEMS);
 
                             if (personList.isEmpty()) return ok();
 

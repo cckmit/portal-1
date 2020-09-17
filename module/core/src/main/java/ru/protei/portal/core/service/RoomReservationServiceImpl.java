@@ -339,7 +339,8 @@ public class RoomReservationServiceImpl implements RoomReservationService {
 
     private List<NotificationEntry> makeNotificationListFromReservation(RoomReservation reservation) {
         List<Long> ids = fetchAllPersonIds(reservation);
-        List<Person> people = personDAO.getListByKeys(ids);
+        List<Person> people = personDAO.partialGetListByKeys(ids, "locale");
+        jdbcManyRelationsHelper.fill(people, Person.Fields.CONTACT_ITEMS);
         return stream(people)
             .filter(Objects::nonNull)
             .map(person -> {

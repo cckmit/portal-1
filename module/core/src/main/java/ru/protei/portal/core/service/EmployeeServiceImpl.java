@@ -361,11 +361,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         personFromDb.setFired(new Date());
         personFromDb.setIpAddress(personFromDb.getIpAddress() == null ? null : personFromDb.getIpAddress().replace(".", "_"));
+
+        jdbcManyRelationsHelper.fill(personFromDb, Person.Fields.CONTACT_ITEMS);
         PlainContactInfoFacade contactInfoFacade = new PlainContactInfoFacade(personFromDb.getContactInfo());
         contactInfoFacade.setEmail(null);
-        // TODO ci remove info by condition
-
         boolean result = personDAO.merge(personFromDb);
+        jdbcManyRelationsHelper.persist(personFromDb, Person.Fields.CONTACT_ITEMS);
 
         if (result) {
             boolean isRemoved = removeWorkerEntriesByPersonId(personFromDb.getId());
@@ -627,11 +628,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         WorkerEntry worker = workers == null ? null : getMainEntry(workers);
 
         Person person = personDAO.get(personId);
-
         if (worker == null || person == null){
             log.warn("updateEmployeeInOldPortal(): activeWorker={}, person={}", worker, person);
             return false;
         }
+        jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
 
         return migrationManager.saveExternalEmployee(person, worker.getDepartmentName(), worker.getPositionName()).equals(En_ResultStatus.OK);
     }

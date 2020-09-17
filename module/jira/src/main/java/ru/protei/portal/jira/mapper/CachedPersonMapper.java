@@ -47,6 +47,7 @@ public class CachedPersonMapper implements PersonMapper {
         if (jiraUser == null) {
             if (defaultEntryPointUser == null) {
                 defaultEntryPointUser = personDAO.get(endpoint.getPersonId());
+                jdbcManyRelationsHelper.fill(defaultEntryPointUser, Person.Fields.CONTACT_ITEMS);
             }
             return defaultEntryPointUser;
         }

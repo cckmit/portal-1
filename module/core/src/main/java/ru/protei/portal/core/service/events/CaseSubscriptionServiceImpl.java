@@ -44,9 +44,6 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
     CompanyGroupHomeDAO companyGroupHomeDAO;
 
     @Autowired
-    PersonDAO personDAO;
-
-    @Autowired
     UserLoginShortViewDAO userLoginShortViewDAO;
 
     @Autowired

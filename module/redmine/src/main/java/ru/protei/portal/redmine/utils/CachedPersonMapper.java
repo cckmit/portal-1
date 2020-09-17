@@ -40,6 +40,7 @@ public class CachedPersonMapper {
         if (user == null) {
             if (defaultEntryPointUser == null) {
                 defaultEntryPointUser = personDAO.get(defaultUserLocalId);
+                jdbcManyRelationsHelper.fill(defaultEntryPointUser, Person.Fields.CONTACT_ITEMS);
             }
             return defaultEntryPointUser;
         }
