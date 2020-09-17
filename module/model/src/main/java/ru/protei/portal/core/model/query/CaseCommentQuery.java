@@ -10,14 +10,13 @@ import java.util.List;
 public class CaseCommentQuery extends BaseQuery {
 
     private Date createdBefore;
-    private Boolean timeElapsedNotNull;
     private Boolean caseStateNotNull;
     private List<Long> caseObjectIds;
     private Long caseNumber;
     private List<Long> authorIds;
     private Boolean viewPrivate = null;
-    private Boolean textNotNull;
     private String remoteId;
+    private List<CommentType> commentTypes;
 
     public CaseCommentQuery() {
         this(null, null, En_SortField.creation_date, En_SortDir.ASC);
@@ -43,14 +42,6 @@ public class CaseCommentQuery extends BaseQuery {
 
     public void setCreatedBefore(Date createdBefore) {
         this.createdBefore = createdBefore;
-    }
-
-    public Boolean isTimeElapsedNotNull() {
-        return timeElapsedNotNull;
-    }
-
-    public void setTimeElapsedNotNull(Boolean timeElapsedNotNull) {
-        this.timeElapsedNotNull = timeElapsedNotNull;
     }
 
     public void setCaseStateNotNull(Boolean caseStateNotNull) {
@@ -113,19 +104,27 @@ public class CaseCommentQuery extends BaseQuery {
         this.caseNumber = caseNumber;
     }
 
-    public Boolean isTextNotNull() {
-        return textNotNull;
-    }
-
-    public void setTextNotNull(Boolean textNotNull) {
-        this.textNotNull = textNotNull;
-    }
-
     public String getRemoteId() {
         return remoteId;
     }
 
     public void setRemoteId(String remoteId) {
         this.remoteId = remoteId;
+    }
+
+    public void addCommentType(CommentType commentType) {
+        if (commentTypes == null) {
+            commentTypes = new ArrayList<>();
+        }
+
+        commentTypes.add(commentType);
+    }
+
+    public List<CommentType> getCommentTypes() {
+        return commentTypes;
+    }
+
+    public enum CommentType {
+        CASE_STATE, TIME_ELAPSED, TEXT
     }
 }

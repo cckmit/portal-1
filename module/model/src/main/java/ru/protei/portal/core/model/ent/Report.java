@@ -59,6 +59,12 @@ public class Report implements Serializable {
     @JdbcColumn(name = "with_description")
     private boolean withDescription;
 
+    @JdbcColumn(name = "with_tags")
+    private boolean withTags;
+
+    @JdbcColumn(name = "with_linked_issues")
+    private boolean withLinkedIssues;
+
     @JdbcColumn(name = Columns.REMOVED)
     private boolean isRemoved = false;
 
@@ -174,6 +180,22 @@ public class Report implements Serializable {
         this.withDescription = withDescription;
     }
 
+    public boolean isWithTags() {
+        return withTags;
+    }
+
+    public void setWithTags(boolean withTags) {
+        this.withTags = withTags;
+    }
+
+    public boolean isWithLinkedIssues() {
+        return withLinkedIssues;
+    }
+
+    public void setWithLinkedIssues(boolean withLinkedIssues) {
+        this.withLinkedIssues = withLinkedIssues;
+    }
+
     public boolean isRemoved() {
         return isRemoved;
     }
@@ -189,7 +211,7 @@ public class Report implements Serializable {
                 ", name='" + name + '\'' +
                 ", reportType=" + reportType +
                 ", status=" + status +
-                ", query=" + query +
+                ", query='" + query + '\'' +
                 ", creatorId=" + creatorId +
                 ", creator=" + creator +
                 ", created=" + created +
@@ -198,6 +220,8 @@ public class Report implements Serializable {
                 ", isRestricted=" + isRestricted +
                 ", scheduledType=" + scheduledType +
                 ", withDescription=" + withDescription +
+                ", withTags=" + withTags +
+                ", withLinkedIssues=" + withLinkedIssues +
                 ", isRemoved=" + isRemoved +
                 '}';
     }

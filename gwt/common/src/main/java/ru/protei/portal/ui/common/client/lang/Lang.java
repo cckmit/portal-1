@@ -3077,4 +3077,14 @@ public interface Lang extends Messages, ContactItemLang {
     String dutyLogValidationDateRange();
 
     String dutyLogValidationEmployee();
+
+    String issueReportWithTags();
+
+    String issueReportWithTagsTitle();
+
+    String issueReportWithLinkedIssues();
+
+    String issueReportWithLinkedIssuesTitle();
+
+    String issueReportAdditionalParams();
 }

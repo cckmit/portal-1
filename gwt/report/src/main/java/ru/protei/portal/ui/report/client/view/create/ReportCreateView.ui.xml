@@ -2,6 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:switcher="urn:import:ru.protei.portal.ui.common.client.widget.switcher"
              xmlns:reporttype='urn:import:ru.protei.portal.ui.report.client.widget.reporttype'
+             xmlns:additionalparams="urn:import:ru.protei.portal.ui.common.client.widget.selector.report.additionalparams"
         >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
@@ -24,13 +25,8 @@
                                 <label><ui:text from="{lang.reportScheduledType}"/></label>
                                 <reporttype:ReportScheduledTypeButtonSelector ui:field="scheduledType"/>
                             </g:HTMLPanel>
-                            <g:HTMLPanel ui:field="checkImportanceHistoryContainer" styleName="form-group col-md-4" title="{lang.issueImportanceCheckHistoryTitle}">
-                                <switcher:Switcher ui:field="checkImportanceHistory"/>
-                                <label class="m-l-5"><ui:text from="{lang.issueImportanceCheckHistory}"/></label>
-                            </g:HTMLPanel>
-                            <g:HTMLPanel ui:field="withDescriptionContainer" styleName="form-group col-md-4" title="{lang.issueReportWithDescriptionTitle}">
-                                <switcher:Switcher ui:field="withDescription"/>
-                                <label class="m-l-5"><ui:text from="{lang.issueReportWithDescription}"/></label>
+                            <g:HTMLPanel ui:field="additionalParamsContainer" styleName="form-group col-md-4">
+                                <additionalparams:ReportAdditionalParamsMultiSelector ui:field="additionalParams" header="{lang.issueReportAdditionalParams}"/>
                             </g:HTMLPanel>
                         </div>
                     </div>
