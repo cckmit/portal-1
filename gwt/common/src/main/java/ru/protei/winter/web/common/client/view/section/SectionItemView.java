@@ -89,11 +89,20 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
         if (isSubSectionVisible) {
             arrow.addClassName("open active");
             openSubSection();
+            closeExternalSections(root.getElement());
         } else {
             arrow.removeClassName("open active");
             closeSubSection();
         }
     }
+
+    private native void closeExternalSections(Element li) /*-{
+        var submenus = li.parentElement.getElementsByClassName("sub-menu external");
+        for (i = 0; i < submenus.length; i++) {
+            submenus[i].parentElement.firstElementChild.getElementsByClassName("arrow").item(0).classList.remove("open");
+            submenus[i].style.cssText = 'margin:0px;padding:0;height:0;';
+        }
+    }-*/;
 
     @Override
     public void setSectionTitle( String title ) {
@@ -131,7 +140,7 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
     }
 
     private void openSubSection() {
-        int height = subSection.getElement().getChildCount() * 38 + 30;
+        int height = subSection.getElement().getChildCount() * subSection.getElement().getFirstChildElement().getClientHeight() + 30;
         subSection.getElement().getStyle().setHeight(height, Style.Unit.PX);
         subSection.getElement().getStyle().setPaddingTop(18, Style.Unit.PX);
         subSection.getElement().getStyle().setPaddingBottom(10, Style.Unit.PX);

@@ -100,38 +100,20 @@ public class AppView extends Composite
     @Override
     public void setExternalLinks(String htmlString) {
 
-        HTML html = new HTML(htmlString);
+        NodeList<Node> list = new HTML(htmlString).getElement().getChildNodes();
+        for (int i = 0; i < list.getLength(); i++) {
+            menuContainer.getElement().appendChild(list.getItem(i));
+        }
 
-        menuContainer.getElement().setInnerHTML(menuContainer.getElement().getInnerHTML() + html.getHTML());
-
-        NodeList<Element> anchors = html.getElement().getElementsByTagName("a");
+        NodeList<Element> anchors = new HTML(htmlString).getElement().getElementsByTagName("a");
         for (int i = 0; i < anchors.getLength(); i++) {
             if (anchors.getItem(i).getPropertyString("href").endsWith("#")) {
                 Element anchor = Document.get().getElementById(anchors.getItem(i).getId());
                 Element submenu = Document.get().getElementById(anchor.getParentElement().getElementsByTagName("ul").getItem(0).getId());
-                addOnAnchorClickListener(anchor, submenu);
+                addOnAnchorClickListener(anchor, submenu, this);
             }
         }
     }
-
-    private native void addOnAnchorClickListener(Element anchor, Element submenu) /*-{
-        anchor.addEventListener("click", function (event) {
-            event.preventDefault();
-            event.stopPropagation();
-            var arrow = anchor.getElementsByClassName("arrow").item(0);
-            var opened = arrow.classList.contains("open");
-            var height = submenu.childElementCount * 38 + 30;
-            console.log(submenu.firstChild.height);
-            if (opened) {
-                arrow.classList.remove("open");
-                submenu.style.cssText = 'margin:0px;padding:0;height:0;';
-            } else {
-                arrow.classList.add("open");
-                submenu.style.cssText = 'margin:0px;padding-top:18px;padding-bottom:10px;margin-bottom:10px;height:' + height + 'px';
-            }
-        })
-    }-*/;
-
 
     @UiHandler( "logout" )
     public void onLogoutClicked( ClickEvent event ) {
@@ -293,6 +275,42 @@ public class AppView extends Composite
         headerDiv.removeClassName("header-padding");
         brandDiv.removeClassName("hide");
     }
+
+    private void closeMenuSections() {
+        if (activity != null) {
+            activity.onMenuSectionsClose();
+        }
+    }
+
+    private native void addOnAnchorClickListener(Element anchor, Element submenu, AppView view) /*-{
+        anchor.addEventListener("click", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            var arrow = anchor.getElementsByClassName("arrow").item(0);
+            var opened = arrow.classList.contains("open");
+            var height = submenu.childElementCount * submenu.firstElementChild.clientHeight + 30;
+            if (opened) {
+                arrow.classList.remove("open");
+                submenu.style.cssText = 'margin:0px;padding:0;height:0;';
+            } else {
+                arrow.classList.add("open");
+                submenu.style.cssText = 'margin:0px;padding-top:18px;padding-bottom:10px;margin-bottom:10px;height:' + height + 'px';
+
+                closeExternalSections();
+                view.@ru.protei.portal.app.portal.client.view.app.AppView::closeMenuSections()();
+            }
+        })
+
+        function closeExternalSections() {
+            var submenus = anchor.parentElement.parentElement.getElementsByClassName("sub-menu external");
+            for (i = 0; i < submenus.length; i++) {
+                if (submenus[i].id != submenu.id) {
+                    submenus[i].parentElement.firstElementChild.getElementsByClassName("arrow").item(0).classList.remove("open");
+                    submenus[i].style.cssText = 'margin:0px;padding:0;height:0;';
+                }
+            }
+        }
+    }-*/;
 
     @UiField
     Anchor toggleButton;

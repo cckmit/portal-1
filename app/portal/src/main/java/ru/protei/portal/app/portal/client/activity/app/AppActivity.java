@@ -35,6 +35,7 @@ public abstract class AppActivity
     @PostConstruct
     public void onInit() {
         view.setActivity( this );
+        requestsClientConfigAndSetAppVersion();
     }
 
     @Event
@@ -42,7 +43,6 @@ public abstract class AppActivity
         this.init = event;
 
         initApp();
-        requestsClientConfigAndSetAppVersion();
 
         initialToken = History.getToken();
         fireEvent( new AuthEvents.Show() );
@@ -69,9 +69,12 @@ public abstract class AppActivity
             }
         } );
 
-        view.setExternalLinks(configStorage.getConfigData().externalLinksHtml);
-
         startPingServerTimer();
+    }
+
+    @Event
+    public void onInitExternalLinks(AppEvents.InitExternalLinks event) {
+        view.setExternalLinks(configStorage.getConfigData().externalLinksHtml);
     }
 
     @Override
@@ -87,6 +90,12 @@ public abstract class AppActivity
     @Override
     public void onSettingsClicked() {
         fireEvent( new AppEvents.ShowProfile());
+    }
+
+    @Override
+    public void onMenuSectionsClose() {
+        fireEvent(new MenuEvents.CloseAll());
+
     }
 
     public void onLogoutClicked() {

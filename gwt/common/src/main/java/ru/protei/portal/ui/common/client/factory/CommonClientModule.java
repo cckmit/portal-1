@@ -108,14 +108,16 @@ public class CommonClientModule extends AbstractGinModule {
     @Override
     protected void configure() {
 
-        //bind( ExternalLinkActivity.class ).asEagerSingleton();
+        bind( ExternalLinkActivity.class ).asEagerSingleton();
         bind( YouTrackPage.class ).asEagerSingleton();
         bind( YouTrackAdminPage.class ).asEagerSingleton();
 
+/*
         bind( StoreDeliveryPage.class ).asEagerSingleton();
         bind( StorePage.class ).asEagerSingleton();
         bind( DeliveryPage.class ).asEagerSingleton();
         bind( BoardSearchPage.class ).asEagerSingleton();
+*/
 
         bind( NotificationSystemPage.class ).asEagerSingleton();
         bind( FloorPlanPage.class ).asEagerSingleton();
