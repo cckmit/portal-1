@@ -8,9 +8,6 @@ import ru.protei.portal.core.model.query.SqlCondition;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by michael on 01.04.16.
- */
 public interface CompanyDAO extends PortalBaseDAO<Company> {
 
     Company getCompanyByName( String name );

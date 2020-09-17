@@ -9,10 +9,8 @@ import protei.sql.query.IQuery;
 import protei.sql.query.IQueryCmd;
 import protei.sql.query.Tm_BaseQueryCmd;
 import protei.sql.utils.Tm_QueryExecutor;
-import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.LegacyEntity;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -22,7 +20,10 @@ import ru.protei.portal.tools.migrate.struct.*;
 import javax.annotation.PostConstruct;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -36,9 +37,6 @@ public class LegacySystemDAO {
 
     @Autowired
     private SybConnProvider connProvider;
-
-    @Autowired
-    CompanyDAO companyDAO;
 
     @Autowired
     PersonDAO personDAO;

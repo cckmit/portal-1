@@ -781,13 +781,24 @@ public class ImportDataServiceImpl implements ImportDataService {
             });
 
             companyDAO.mergeBatch(forUpate);
+            for (Company company : forUpate) {
+                contactItemDAO.saveOrUpdateBatch(company.getContactItems());
+            }
+            jdbcManyRelationsHelper.persist(forUpate, Company.Fields.CONTACT_ITEMS);
 
             // excludes already existing
             src.removeIf(imp -> compIdSet.contains(imp.getId()));
 
-            HelperFunc.splitBatch(src, 100, importList ->
-                    companyDAO.persistBatch(importList.stream().map(imp -> MigrateUtils.fromExternalCompany(imp)).collect(Collectors.toList()))
-            );
+            HelperFunc.splitBatch(src, 100, importList -> {
+                List<Company> companies = importList.stream()
+                        .map(MigrateUtils::fromExternalCompany)
+                        .collect(Collectors.toList());
+                companyDAO.persistBatch(companies);
+                for (Company company : companies) {
+                    contactItemDAO.saveOrUpdateBatch(company.getContactItems());
+                }
+                jdbcManyRelationsHelper.persist(companies, Company.Fields.CONTACT_ITEMS);
+            });
 
             return src.size();
         }

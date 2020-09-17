@@ -18,7 +18,6 @@ import ru.protei.portal.core.event.CaseObjectMetaEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.utils.DateUtils;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.struct.FileStream;
 import ru.protei.portal.core.model.struct.JiraExtAppData;
@@ -26,6 +25,7 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.service.AttachmentService;
 import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.core.utils.DateUtils;
 import ru.protei.portal.core.utils.EntityCache;
 import ru.protei.portal.jira.dto.JiraHookEventData;
 import ru.protei.portal.jira.factory.JiraClientFactory;
@@ -56,8 +56,6 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
     @Autowired
     CaseService caseService;
-    @Autowired
-    CompanyDAO companyDAO;
     @Autowired
     PersonDAO personDAO;
     @Autowired
