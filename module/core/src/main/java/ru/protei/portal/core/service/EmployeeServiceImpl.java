@@ -117,6 +117,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public Result<SearchResult<EmployeeShortView>> employeeList(AuthToken token, EmployeeQuery query) {
 
         SearchResult<EmployeeShortView> sr = employeeShortViewDAO.getSearchResult(query);
+        jdbcManyRelationsHelper.fill(sr.getResults(), EmployeeShortView.Fields.CONTACT_ITEMS);
         sr.setResults(stream(sr.getResults())
                 .map(this::removeSensitiveInformation)
                 .collect(Collectors.toList()));
@@ -138,6 +139,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         query.setHomeCompanies(fillHiddenCompaniesIfProteiChosen(query.getHomeCompanies()));
 
         SearchResult<EmployeeShortView> sr = employeeShortViewDAO.getSearchResult(query);
+        jdbcManyRelationsHelper.fill(sr.getResults(), EmployeeShortView.Fields.CONTACT_ITEMS);
         sr.setResults(stream(sr.getResults())
                 .map(this::removeSensitiveInformation)
                 .collect(Collectors.toList()));
@@ -176,6 +178,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
+        jdbcManyRelationsHelper.fill(employeeShortView, EmployeeShortView.Fields.CONTACT_ITEMS);
         jdbcManyRelationsHelper.fill(employeeShortView, "workerEntries");
         employeeShortView = removeSensitiveInformation(employeeShortView);
 
@@ -204,6 +207,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
+        jdbcManyRelationsHelper.fill(employeeShortView, EmployeeShortView.Fields.CONTACT_ITEMS);
         jdbcManyRelationsHelper.fill(employeeShortView, "workerEntries");
         employeeShortView = removeSensitiveInformation(employeeShortView);
 
@@ -494,6 +498,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         query.setSortField(En_SortField.birthday);
         query.setSortDir(En_SortDir.ASC);
         List<EmployeeShortView> employees = employeeShortViewDAO.getEmployees(query);
+        jdbcManyRelationsHelper.fill(employees, EmployeeShortView.Fields.CONTACT_ITEMS);
 
         if (CollectionUtils.isEmpty(employees)) {
             log.info("notifyAboutBirthdays(): employees birthdays list is empty for period {} - {}", from, to);

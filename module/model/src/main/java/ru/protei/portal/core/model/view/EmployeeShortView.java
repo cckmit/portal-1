@@ -193,4 +193,8 @@ public class EmployeeShortView implements Serializable {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+    public interface Fields {
+        String CONTACT_ITEMS = "contactItems";
+    }
 }
