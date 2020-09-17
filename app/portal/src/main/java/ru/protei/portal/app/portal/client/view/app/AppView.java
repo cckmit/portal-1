@@ -276,7 +276,8 @@ public class AppView extends Composite
         brandDiv.removeClassName("hide");
     }
 
-    private void closeMenuSections() {
+    private void closeMenuSections(String exclusionId) {
+        closeExternalSections(menuContainer.getElement(), exclusionId);
         if (activity != null) {
             activity.onMenuSectionsClose();
         }
@@ -288,26 +289,28 @@ public class AppView extends Composite
             event.stopPropagation();
             var arrow = anchor.getElementsByClassName("arrow").item(0);
             var opened = arrow.classList.contains("open");
-            var height = submenu.childElementCount * submenu.firstElementChild.clientHeight + 30;
+            var height = submenu.childElementCount * (submenu.firstElementChild.clientHeight + 1) + 28;
             if (opened) {
                 arrow.classList.remove("open");
                 submenu.style.cssText = 'margin:0px;padding:0;height:0;';
             } else {
                 arrow.classList.add("open");
-                submenu.style.cssText = 'margin:0px;padding-top:18px;padding-bottom:10px;margin-bottom:10px;height:' + height + 'px';
+                submenu.style.cssText = 'padding-top:18px;padding-bottom:10px;margin-bottom:10px;height:' + height + 'px';
 
-                closeExternalSections();
-                view.@ru.protei.portal.app.portal.client.view.app.AppView::closeMenuSections()();
+                view.@ru.protei.portal.app.portal.client.view.app.AppView::closeMenuSections(Ljava/lang/String;)(submenu.id);
             }
         })
 
-        function closeExternalSections() {
-            var submenus = anchor.parentElement.parentElement.getElementsByClassName("sub-menu external");
-            for (i = 0; i < submenus.length; i++) {
-                if (submenus[i].id != submenu.id) {
-                    submenus[i].parentElement.firstElementChild.getElementsByClassName("arrow").item(0).classList.remove("open");
-                    submenus[i].style.cssText = 'margin:0px;padding:0;height:0;';
-                }
+    }-*/;
+
+    private native void closeExternalSections(Element menu, String exclusionId) /*-{
+        var sections = menu.getElementsByClassName("external");
+        for (i = 0; i < sections.length; i++) {
+            var anchor = sections[i].firstElementChild;
+            var submenu = sections[i].lastElementChild;
+            if (submenu && submenu.id != exclusionId) {
+                anchor.getElementsByClassName("arrow").item(0).classList.remove("open");
+                submenu.style.cssText = 'margin:0px;padding:0;height:0;';
             }
         }
     }-*/;
