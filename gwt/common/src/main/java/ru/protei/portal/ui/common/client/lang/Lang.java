@@ -3041,4 +3041,6 @@ public interface Lang extends Messages, ContactItemLang {
     String issueReportWithLinkedIssues();
 
     String issueReportWithLinkedIssuesTitle();
+
+    String issueReportAdditionalParams();
 }

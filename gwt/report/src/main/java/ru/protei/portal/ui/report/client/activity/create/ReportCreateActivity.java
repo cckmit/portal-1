@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.dto.ReportCaseQuery;
 import ru.protei.portal.core.model.dto.ReportContractQuery;
 import ru.protei.portal.core.model.dto.ReportDto;
 import ru.protei.portal.core.model.ent.Report;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
@@ -132,9 +133,9 @@ public abstract class ReportCreateActivity implements Activity,
         report.setScheduledType(view.reportScheduledType().getValue());
         report.setName(view.name().getValue());
         report.setLocale(LocaleInfo.getCurrentLocale().getLocaleName());
-        report.setWithDescription(view.additionalParams().getValue().contains(En_ReportAdditionalParamType.DESCRIPTION));
-        report.setWithTags(view.additionalParams().getValue().contains(En_ReportAdditionalParamType.TAGS));
-        report.setWithLinkedIssues(view.additionalParams().getValue().contains(En_ReportAdditionalParamType.LINKED_ISSUES));
+        report.setWithDescription(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.DESCRIPTION));
+        report.setWithTags(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.TAGS));
+        report.setWithLinkedIssues(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.LINKED_ISSUES));
         return report;
     }
 
@@ -358,7 +359,7 @@ public abstract class ReportCreateActivity implements Activity,
 
     private CaseQuery getIssueQuery() {
         CaseQuery query = issueFilterWidget.getFilterFieldsByFilterType();
-        query.setCheckImportanceHistory(view.additionalParams().getValue().contains(En_ReportAdditionalParamType.IMPORTANCE_HISTORY));
+        query.setCheckImportanceHistory(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.IMPORTANCE_HISTORY));
         return query;
     }
 

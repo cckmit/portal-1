@@ -6,13 +6,13 @@
 
     <changeSet id="add-with_tags-column-to-report-table" author="fomin">
         <addColumn tableName="report">
-            <column name="with_tags" type="bit" defaultValue="0"/>
+            <column name="with_tags" type="boolean" defaultValueBoolean="false"/>
         </addColumn>
     </changeSet>
 
     <changeSet id="add-with_linked_issues-column-to-report-table" author="fomin">
         <addColumn tableName="report">
-            <column name="with_linked_issues" type="bit" defaultValue="0"/>
+            <column name="with_linked_issues" type="boolean" defaultValueBoolean="false"/>
         </addColumn>
     </changeSet>
 </databaseChangeLog>

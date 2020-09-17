@@ -13,20 +13,20 @@
                 <div class="card card-transparent no-margin">
                     <div class="card-body">
                         <div class="row">
-                            <div class="form-group col">
+                            <div class="form-group col-md-4">
                                 <label><ui:text from="{lang.issueReportsType}"/></label>
                                 <reporttype:ReportTypeButtonSelector ui:field="reportType"/>
                             </div>
-                            <div class="form-group col">
+                            <div class="form-group col-md-4">
                                 <label><ui:text from="{lang.issueReportsTitle}"/></label>
                                 <g:TextBox ui:field="name" styleName="form-control"/>
                             </div>
-                            <g:HTMLPanel ui:field="scheduledTypeContainer" styleName="form-group col">
+                            <g:HTMLPanel ui:field="scheduledTypeContainer" styleName="form-group col-md-4">
                                 <label><ui:text from="{lang.reportScheduledType}"/></label>
                                 <reporttype:ReportScheduledTypeButtonSelector ui:field="scheduledType"/>
                             </g:HTMLPanel>
-                            <g:HTMLPanel ui:field="additionalParamsContainer" styleName="form-group col">
-                                <additionalparams:ReportAdditionalParamsMultiSelector ui:field="additionalParams" header="Дополнительные параметры"/>
+                            <g:HTMLPanel ui:field="additionalParamsContainer" styleName="form-group col-md-4">
+                                <additionalparams:ReportAdditionalParamsMultiSelector ui:field="additionalParams" header="{lang.issueReportAdditionalParams}"/>
                             </g:HTMLPanel>
                         </div>
                     </div>
