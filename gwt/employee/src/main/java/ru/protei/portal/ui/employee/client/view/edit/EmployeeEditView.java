@@ -11,6 +11,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
@@ -59,6 +60,8 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         firstNameErrorLabel.setText(lang.promptFieldLengthExceed(firstNameLabel(), FIRST_NAME_SIZE));
         secondNameErrorLabel.setText(lang.promptFieldLengthExceed(secondNameLabel(), SECOND_NAME_SIZE));
         lastNameErrorLabel.setText(lang.promptFieldLengthExceed(lastNameLabel(), LAST_NAME_SIZE));
+
+        company.setSynchronizeWith1C(false);
     }
 
     @Override
@@ -119,6 +122,11 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @Override
     public HasValue<String> lastName() {
         return lastName;
+    }
+
+    @Override
+    public HasValue<Boolean> contractAgreement() {
+        return contractAgreement;
     }
 
     @Override
@@ -333,6 +341,13 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         imageLabel.setText(text);
     }
 
+    @Override
+    public void refreshHomeCompanies(Boolean isSynchronize){
+        company.setSynchronizeWith1C(isSynchronize);
+        company.setValue(null);
+        activity.onCompanySelected();
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -377,6 +392,13 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     public void onGenderSelected(ValueChangeEvent<En_Gender> event) {
         if (activity != null) {
             activity.onGenderSelected();
+        }
+    }
+
+    @UiHandler("contractAgreement")
+    public void onContractAgreementChanged(ValueChangeEvent<Boolean> event) {
+        if (activity != null) {
+            activity.onContractAgreementChanged(event.getValue());
         }
     }
 
@@ -488,6 +510,9 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
 
     @UiField
     Button addPositionBtn;
+
+    @UiField
+    CheckBox contractAgreement;
 
     @UiField
     Lang lang;

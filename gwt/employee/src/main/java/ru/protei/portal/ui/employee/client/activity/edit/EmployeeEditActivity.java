@@ -261,26 +261,34 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
             worker.setPositionId(view.workerPosition().getValue().getId());
             worker.setPositionName(view.workerPosition().getValue().getDisplayText());
+            worker.setContractAgreement(view.contractAgreement().getValue());
 
             view.getPositionsContainer().add(makePositionView(worker).asWidget());
 
-            boolean isWorkerInSyncCompany = isAnyWorkerInSyncCompany(new ArrayList<>(positionMap.values()));
+            boolean isWorkerInSyncCompany = isAnyWorkerInSyncCompanyWithoutContractAgreement(new ArrayList<>(positionMap.values()));
             setPersonFieldsEnabled (!isWorkerInSyncCompany);
 
             view.company().setValue(null);
             view.companyDepartment().setValue(null);
             view.workerPosition().setValue(null);
+            view.contractAgreement().setValue(false);
+            onContractAgreementChanged(false);
         }
     }
 
     @Override
     public void onRemovePositionClicked(IsWidget positionItem) {
-        if (workerOfSyncCompany(positionMap.get(positionItem))){
+        if (workerOfSyncCompanyWithoutContractAgreement(positionMap.get(positionItem))){
             return;
         }
 
         view.getPositionsContainer().remove(positionItem.asWidget());
         positionMap.remove(positionItem);
+    }
+
+    @Override
+    public void onContractAgreementChanged(Boolean isContractAgreement) {
+        view.refreshHomeCompanies(isContractAgreement ? null : false);
     }
 
     private List<WorkerEntry> fillWorkers () {
@@ -294,6 +302,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
             worker.setId(value.getId());
             worker.setPersonId(personId);
             worker.setActiveFlag(value.getActiveFlag());
+            worker.setContractAgreement(value.getContractAgreement());
             workers.add(worker);
         }
 
@@ -438,7 +447,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
         view.firedMsgVisibility().setVisible(employee.isFired());
         view.fireBtnVisibility().setVisible(employee.getId() != null && !employee.isFired());
-        boolean isWorkerInSyncCompany = isAnyWorkerInSyncCompany(employee.getWorkerEntries());
+        boolean isWorkerInSyncCompany = isAnyWorkerInSyncCompanyWithoutContractAgreement(employee.getWorkerEntries());
 
         view.company().setValue(null);
         view.companyDepartment().setValue(null);
@@ -454,6 +463,9 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         view.changeAccountVisibility().setVisible(false);
 
         view.getPositionsContainer().clear();
+
+        view.contractAgreement().setValue(false);
+        onContractAgreementChanged(false);
 
         positionMap.clear();
         if (employee.getWorkerEntries() != null && !employee.getWorkerEntries().isEmpty()) {
@@ -472,21 +484,26 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         AbstractPositionEditItemView itemView = positionEditProvider.get();
         itemView.setActivity(this);
 
-        if (workerOfSyncCompany(workerEntry)){
+        if (workerOfSyncCompanyWithoutContractAgreement(workerEntry)){
             itemView.setRemovePositionEnable(false);
         }
 
         itemView.setDepartment(workerEntry.getDepartmentName());
         itemView.setPosition(workerEntry.getPositionName());
         itemView.setCompany(workerEntry.getCompanyName());
+        itemView.setContractAgreement(workerEntry.getContractAgreement());
 
         positionMap.put(itemView, workerEntry);
         return itemView;
     }
 
-    private boolean workerOfSyncCompany(WorkerEntryShortView workerEntry) {
+    private boolean workerOfSyncCompanyWithoutContractAgreement(WorkerEntryShortView workerEntry) {
         if (workerEntry == null || workerEntry.getCompanyId() == null){
             return true;
+        }
+
+        if (workerEntry.getContractAgreement()){
+            return false;
         }
 
         for (EntityOption entityOption : companiesWithoutSync) {
@@ -553,7 +570,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
                 }));
     }
 
-    private boolean isAnyWorkerInSyncCompany(List<WorkerEntryShortView> workerEntryShortViews) {
+    private boolean isAnyWorkerInSyncCompanyWithoutContractAgreement(List<WorkerEntryShortView> workerEntryShortViews) {
         boolean isInSyncCompany = true;
         if (workerEntryShortViews != null){
             for (WorkerEntryShortView workerEntryShortView : workerEntryShortViews) {
@@ -564,7 +581,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
                     }
                 }
 
-                if (isInSyncCompany){
+                if (isInSyncCompany && !workerEntryShortView.getContractAgreement()){
                     return true;
                 }
                 isInSyncCompany = true;

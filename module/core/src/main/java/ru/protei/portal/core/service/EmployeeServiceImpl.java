@@ -304,7 +304,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        if (isSyncCompanyWorker(worker)){
+        if (isWorkerFrom1C(worker)){
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -323,7 +323,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        if (isSyncCompanyWorker(worker)){
+        if (isWorkerFrom1C(worker)){
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -545,7 +545,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         for (WorkerEntry worker : oldWorkerEntries) {
             boolean isActualWorkerEntry = false;
 
-            if (isSyncCompanyWorker(worker)){
+            if (isWorkerFrom1C(worker)){
                 continue;
             }
 
@@ -577,7 +577,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 continue;
             }
 
-            if (isSyncCompanyWorker(workerEntry)){
+            if (isWorkerFrom1C(workerEntry)){
                 workerEntryIterator.remove();
             }
         }
@@ -682,7 +682,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         List<WorkerEntry> workers = workerEntryDAO.getWorkers(workerEntryQuery);
 
         for (WorkerEntry worker : workers) {
-            if (isSyncCompanyWorker(worker)){
+            if (isWorkerFrom1C(worker)){
                 return false;
             }
         }
@@ -698,7 +698,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     private Result<Boolean> removeWorkerEntry (WorkerEntry worker){
-        if (isSyncCompanyWorker(worker)){
+        if (isWorkerFrom1C(worker)){
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -707,8 +707,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         return result ? ok(result) : error(En_ResultStatus.INTERNAL_ERROR);
     }
 
-    private boolean isSyncCompanyWorker (WorkerEntry worker){
-        return !companyDAO.getAllHomeCompanyIdsWithoutSync().contains(worker.getCompanyId());
+    private boolean isWorkerFrom1C(WorkerEntry worker){
+        return !(worker.getContractAgreement() || companyDAO.getAllHomeCompanyIdsWithoutSync().contains(worker.getCompanyId()));
     }
 
     private boolean checkExistEmployee (Person person){

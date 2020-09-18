@@ -15,4 +15,6 @@ public interface AbstractEmployeeEditActivity {
 
     void onAddWorkerPositionClicked();
     void onEditWorkerPositionClicked(Long id, String name);
+
+    void onContractAgreementChanged(Boolean isContractAgreement);
 }

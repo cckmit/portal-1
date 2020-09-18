@@ -12,6 +12,7 @@ import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.size;
@@ -49,6 +50,16 @@ public abstract class HomeCompanyModel implements Activity, AsyncSelectorModel<E
 
     public void clear(  ) {
         list = null;
+    }
+
+    public void refreshOptions() {
+        list = new ArrayList<>(  );
+        companyService.getCompanyOptionListIgnorePrivileges(new CompanyQuery(true, false).onlyVisibleFields().reverseOrder(reverseOrder).synchronizeWith1C(synchronizeWith1C),
+                new FluentCallback<List<EntityOption>>()
+                        .withSuccess(companies -> {
+                            list.clear();
+                            list.addAll(companies);
+                        }));
     }
 
     private void refreshOptions( boolean reverseOrder, LoadingHandler handler, Boolean synchronizeWith1C) {

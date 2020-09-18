@@ -56,6 +56,16 @@ public class WorkerEntry extends AuditableObject {
     @JdbcColumn(name = "worker_extId")
     private String externalId;
 
+    @JdbcColumn(name = "is_contract_agreement")
+    private Boolean isContractAgreement;
+
+
+    @Override
+    public String getAuditType() {
+        return "Worker";
+    }
+
+
     public WorkerEntry () {
         this.activeFlag = 1;
     }
@@ -172,11 +182,6 @@ public class WorkerEntry extends AuditableObject {
         this.externalId = externalId;
     }
 
-    @Override
-    public String getAuditType() {
-        return "Worker";
-    }
-
     public String getCompanyName() {
         return companyName;
     }
@@ -187,5 +192,13 @@ public class WorkerEntry extends AuditableObject {
 
     public boolean isMain() {
         return activeFlag > 0;
+    }
+
+    public Boolean getContractAgreement() {
+        return isContractAgreement;
+    }
+
+    public void setContractAgreement(Boolean contractAgreement) {
+        isContractAgreement = contractAgreement;
     }
 }
