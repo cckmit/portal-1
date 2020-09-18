@@ -29,6 +29,8 @@ public class ExternalLinksHtml implements InitializingBean {
         try (InputStream in = path.openStream()) {
             html = IOUtils.toString(in, Charset.defaultCharset());
             log.info("{} loaded successful from {}", fileName, path);
+        } catch (Exception e) {
+            log.warn("{} not found", fileName);
         }
     }
 
