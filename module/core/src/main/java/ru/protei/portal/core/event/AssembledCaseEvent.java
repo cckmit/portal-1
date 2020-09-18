@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 import static java.lang.System.currentTimeMillis;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
-public class AssembledCaseEvent extends ApplicationEvent {
+public class AssembledCaseEvent extends ApplicationEvent implements HasCaseComments {
 
     private Long caseObjectId;
     private CaseObject lastState;
@@ -202,12 +202,12 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return comments.getAddedEntries();
     }
 
-    public List<CaseComment> getChangedComments() {
+    public List<CaseComment> getChangedCaseComments() {
         if(!comments.hasChanged()) return Collections.EMPTY_LIST;
         return comments.getChangedEntries().stream().map( dr->dr.getInitialState() ).collect( Collectors.toList());
     }
 
-    public List<CaseComment> getRemovedComments() {
+    public List<CaseComment> getRemovedCaseComments() {
         return comments.getRemovedEntries();
     }
 
@@ -370,11 +370,11 @@ public class AssembledCaseEvent extends ApplicationEvent {
         timeElapsedChanging +=
                 stream(existingComments)
                 .filter(caseComment -> emptyIfNull(getAddedCaseComments()).contains(caseComment) ||
-                        (getChangedComments().contains(caseComment) && !Objects.equals(getChangedComments().get(getChangedComments().indexOf(caseComment)).getTimeElapsed(), caseComment.getTimeElapsed())))
+                        (getChangedCaseComments().contains(caseComment) && !Objects.equals(getChangedCaseComments().get(getChangedCaseComments().indexOf(caseComment)).getTimeElapsed(), caseComment.getTimeElapsed())))
                 .mapToLong(this::getTimeElapsedFromComment)
                 .sum();
 
-        timeElapsedChanging -= CollectionUtils.emptyIfNull(getRemovedComments())
+        timeElapsedChanging -= CollectionUtils.emptyIfNull(getRemovedCaseComments())
                 .stream()
                 .mapToLong(this::getTimeElapsedFromComment)
                 .sum();

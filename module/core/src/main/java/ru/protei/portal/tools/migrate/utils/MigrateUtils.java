@@ -183,7 +183,6 @@ public class MigrateUtils {
         person.setGender(impPerson.getGender());
         person.setInfo(impPerson.getInfo());
         person.setLastName(impPerson.getLastName());
-        person.setPassportInfo(impPerson.getPassportInfo());
         person.setPosition(impPerson.getPosition());
         person.setSecondName(person.getSecondName());
         person.setCompanyId(impPerson.getCompanyId());

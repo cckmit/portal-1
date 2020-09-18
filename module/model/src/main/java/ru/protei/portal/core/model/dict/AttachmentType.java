@@ -1,5 +1,7 @@
 package ru.protei.portal.core.model.dict;
 
+import ru.protei.portal.core.model.helper.StringUtils;
+
 /**
  * Created by bondarenko on 12.01.17.
  */
@@ -43,13 +45,17 @@ public enum AttachmentType {
         this.category = category;
     }
 
-    public static AttachmentType getType(String mimeType){
-        if(mimeType != null && !mimeType.isEmpty()) {
-            for (AttachmentType type : values()) {
-                if (mimeType.equalsIgnoreCase(type.mimeType))
-                    return type;
+    public static AttachmentType getType(String mimeType) {
+        if (StringUtils.isEmpty(mimeType)) {
+            return UNKNOWN;
+        }
+
+        for (AttachmentType type : values()) {
+            if (mimeType.equalsIgnoreCase(type.mimeType)) {
+                return type;
             }
         }
+
         return UNKNOWN;
     }
 

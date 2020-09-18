@@ -22,6 +22,7 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.InputEvent;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.view.passwordgen.popup.PasswordGenPopup;
 import ru.protei.portal.ui.common.client.widget.passwordbox.PasswordTextBox;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
@@ -35,6 +36,8 @@ import ru.protei.portal.ui.contact.client.activity.edit.AbstractContactEditView;
 
 import java.util.Arrays;
 import java.util.Date;
+
+import static ru.protei.portal.core.model.util.CrmConstants.ContactConstants.*;
 
 /**
  * Представление создания и редактирования контактного лица
@@ -53,6 +56,12 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         personalEmail.setRegexp( CrmConstants.Masks.EMAIL );
         workEmail.setMaxLength( CrmConstants.EMAIL_MAX_SIZE );
         personalEmail.setMaxLength( CrmConstants.EMAIL_MAX_SIZE );
+
+        firstNameErrorLabel.setText(lang.promptFieldLengthExceed(firstNameLabel(), FIRST_NAME_SIZE));
+        secondNameErrorLabel.setText(lang.promptFieldLengthExceed(secondNameLabel(), SECOND_NAME_SIZE));
+        lastNameErrorLabel.setText(lang.promptFieldLengthExceed(lastNameLabel(), LAST_NAME_SIZE));
+        shortNameErrorLabel.setText(lang.promptFieldLengthExceed(shortNameLabel(), SHORT_NAME_SIZE));
+        loginErrorLabel.setText(lang.promptFieldLengthExceed(loginLabel(), LOGIN_SIZE));
 
         passwordGenPopup.addApproveHandler(event -> activity.onPasswordGenerationClicked());
         passwordGenPopup.addRejectHandler(event -> password.setFocus(true));
@@ -286,31 +295,6 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
 
     @Override
     public HasVisibility loginErrorLabelVisibility() {
-        return loginErrorLabel;
-    }
-
-    @Override
-    public HasText firstNameErrorLabel() {
-        return firstNameErrorLabel;
-    }
-
-    @Override
-    public HasText secondNameErrorLabel() {
-        return secondNameErrorLabel;
-    }
-
-    @Override
-    public HasText lastNameErrorLabel() {
-        return lastNameErrorLabel;
-    }
-
-    @Override
-    public HasText shortNameErrorLabel() {
-        return shortNameErrorLabel;
-    }
-
-    @Override
-    public HasText loginErrorLabel() {
         return loginErrorLabel;
     }
 
@@ -577,6 +561,9 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
 
     @Inject
     CompanyModel companyModel;
+
+    @UiField
+    Lang lang;
 
     private Timer changeContactLoginTimer = new Timer() {
         @Override

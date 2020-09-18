@@ -1,5 +1,6 @@
 package ru.protei.portal.core.service.bootstrap;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
@@ -13,14 +14,13 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.PhoneUtils;
-import ru.protei.portal.core.model.query.CaseLinkQuery;
-import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.query.EmployeeQuery;
-import ru.protei.portal.core.model.query.ReservedIpQuery;
+import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.ContactInfo;
+import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.service.EmployeeService;
 import ru.protei.portal.core.service.YoutrackService;
 import ru.protei.portal.core.svn.document.DocumentSvnApi;
 import ru.protei.portal.tools.migrate.struct.ExternalPersonAbsence;
@@ -38,11 +38,15 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static ru.protei.portal.core.model.dict.En_Gender.UNDEFINED;
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 /**
  * Сервис выполняющий первичную инициализацию, работу с исправлением данных
@@ -83,6 +87,34 @@ public class BootstrapService {
         updateWithCrossLinkColumn();
         transferProjectCrosslinkToYoutrack();
         updateUserDashboardOrders();
+        removeAddressesFromEmployeesContactInfo();
+    }
+
+    private void removeAddressesFromEmployeesContactInfo() {
+        log.info("removeAddressesFromEmployeesContactInfo(): start");
+        List<Person> employees = emptyIfNull(personDAO.getEmployeesAll());
+        if (isEmpty(employees)) {
+            log.info("removeAddressesFromEmployeesContactInfo() : end : no employees");
+            return;
+        }
+        Predicate<ContactItem> sensitiveContactItem = contactItem -> {
+            boolean isAddress = contactItem.isItemOf(En_ContactItemType.ADDRESS);
+            boolean isAddressLegal = contactItem.isItemOf(En_ContactItemType.ADDRESS_LEGAL);
+            return isAddress || isAddressLegal;
+        };
+        int mergedCount = 0;
+        for (Person employee : employees) {
+            boolean needMerge = employee.getContactInfo()
+                    .getItems()
+                    .removeIf(sensitiveContactItem);
+            if (needMerge) {
+                boolean merged = personDAO.partialMerge(employee, "contactInfo");
+                if (merged) {
+                    mergedCount++;
+                }
+            }
+        }
+        log.info("removeAddressesFromEmployeesContactInfo(): end : updated {} employees", mergedCount);
     }
 
     private void updateUserDashboardOrders() {
@@ -305,7 +337,7 @@ public class BootstrapService {
     }
 
     private void removeObsoletePrivileges() {
-        List<En_Privilege> obsoletePrivileges = Arrays.asList(OBSOLETE_DB_PRIVILEGES);
+        List<En_Privilege> obsoletePrivileges = asList(OBSOLETE_DB_PRIVILEGES);
         log.info( "Start remove obsolete privileges from user role = {}", obsoletePrivileges );
         List< UserRole > all = userRoleDAO.getAll();
 
@@ -504,7 +536,6 @@ public class BootstrapService {
 //    }
 
     private void documentBuildFullIndex() { // Данный метод создаст индексы для всех существующих документов
-if(true) return; //TODO remove
         try {
             if (!Objects.equals(config.data().getCommonConfig().getCrmUrlCurrent(), config.data().getCommonConfig().getCrmUrlInternal())) {
                 // disable index at non internal stand
@@ -624,7 +655,7 @@ if(true) return; //TODO remove
     private void updateManagerFiltersWithoutManagerCompany() {
         List<CaseFilter> allFilters = caseFilterDAO.getAll();
 
-        for (CaseFilter nextFilter : CollectionUtils.emptyIfNull(allFilters)) {
+        for (CaseFilter nextFilter : emptyIfNull(allFilters)) {
             CaseQuery params = nextFilter.getParams();
 
             if (CollectionUtils.isEmpty(params.getManagerIds()) || CollectionUtils.isNotEmpty(params.getManagerCompanyIds())) {
@@ -694,7 +725,7 @@ if(true) return; //TODO remove
 
         List<CaseFilter> allFilters = caseFilterDAO.getAll();
 
-        for (CaseFilter filter : CollectionUtils.emptyIfNull(allFilters)) {
+        for (CaseFilter filter : emptyIfNull(allFilters)) {
             CaseQuery params = filter.getParams();
 
             boolean isCreatedRangeNeedToUpdate = checkDateRangeExists(params.getCreatedRange(), params.getCreatedFrom(), params.getCreatedTo());
@@ -718,10 +749,22 @@ if(true) return; //TODO remove
     private void updateIssueReportDateRanges() {
         log.info("updateIssueReportDateRanges started");
 
-        List<Report> reports = reportDAO.getAll();
+        ReportQuery query = new ReportQuery();
+        query.setTypes(asList(
+                En_ReportType.CASE_OBJECTS,
+                En_ReportType.CASE_RESOLUTION_TIME,
+                En_ReportType.CASE_TIME_ELAPSED,
+                En_ReportType.PROJECT
+        ));
+        List<Report> reports = reportDAO.getReports(query);
 
-        for (Report report : CollectionUtils.emptyIfNull(reports)) {
-            CaseQuery params = report.getCaseQuery();
+        for (Report report : emptyIfNull(reports)) {
+            CaseQuery params;
+            try {
+                params = objectMapper.readValue(report.getQuery(), CaseQuery.class);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
             boolean isCreatedRangeNeedToUpdate = checkDateRangeExists(params.getCreatedRange(), params.getCreatedFrom(), params.getCreatedTo());
             boolean isModifiedRangeNeedToUpdate = checkDateRangeExists(params.getModifiedRange(), params.getModifiedFrom(), params.getModifiedTo());
@@ -961,6 +1004,8 @@ if(true) return; //TODO remove
     PersonAbsenceDAO personAbsenceDAO;
     @Autowired
     UserDashboardDAO userDashboardDAO;
+    @Autowired
+    ObjectMapper objectMapper;
 
     SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd");
 

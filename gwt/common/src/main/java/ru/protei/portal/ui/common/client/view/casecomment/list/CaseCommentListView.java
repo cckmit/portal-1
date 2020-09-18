@@ -28,13 +28,13 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.HasAttachmentListHandlers;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveHandler;
-import ru.protei.portal.ui.common.client.widget.dndautoresizetextarea.DndAutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.imagepastetextarea.event.PasteEvent;
+import ru.protei.portal.ui.common.client.widget.mentioningtextarea.MentioningTextArea;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeTextBox;
-import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
-import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
+import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.impl.PasteInfo;
 
 import static ru.protei.portal.core.model.util.CrmConstants.Style.HIDE;
 
@@ -48,7 +48,6 @@ public class CaseCommentListView
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        comment.getElement().setAttribute("placeholder", lang.commentAddMessagePlaceholder());
         timeElapsedType.setDisplayOptionCreator( type -> new DisplayOption( (type == null || En_TimeElapsedType.NONE.equals( type )) ? lang.issueCommentElapsedTimeTypeLabel() : elapsedTimeTypeLang.getName( type ) ) );
         timeElapsedType.fillOptions();
         comment.setOverlayText(lang.dropFilesHere());
@@ -59,6 +58,7 @@ public class CaseCommentListView
     @Override
     public void setActivity(AbstractCaseCommentListActivity activity) {
         this.activity = activity;
+        attachmentList.setActivity(activity);
     }
 
     @Override
@@ -102,6 +102,7 @@ public class CaseCommentListView
         timeElapsedType.setValue( null );
     }
 
+    @Override
     public void setTimeElapsedVisibility(boolean visible) {
         timeElapsed.setVisible(visible);
         timeElapsedType.setVisible(visible);
@@ -182,6 +183,16 @@ public class CaseCommentListView
     @Override
     public void removeComment(IsWidget comment) {
         commentsContainer.remove( comment.asWidget() );
+    }
+
+    @Override
+    public void setCaseCreatorId(Long personId) {
+        comment.setPersonId(personId);
+    }
+
+    @Override
+    public void setCommentPlaceholder(String placeholder) {
+        comment.getElement().setAttribute("placeholder", placeholder);
     }
 
     @UiHandler( "send" )
@@ -290,8 +301,9 @@ public class CaseCommentListView
 
     @UiField
     HTMLPanel root;
-    @UiField
-    DndAutoResizeTextArea comment;
+    @Inject
+    @UiField(provided = true)
+    MentioningTextArea comment;
     @UiField
     FlowPanel commentsContainer;
     @UiField

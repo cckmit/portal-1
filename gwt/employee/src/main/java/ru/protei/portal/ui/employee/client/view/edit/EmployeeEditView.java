@@ -19,6 +19,7 @@ import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.InputEvent;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.companydepartment.CompanyDepartmentSelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.GenderButtonSelector;
@@ -29,6 +30,8 @@ import ru.protei.portal.ui.employee.client.activity.edit.AbstractEmployeeEditAct
 import ru.protei.portal.ui.employee.client.activity.edit.AbstractEmployeeEditView;
 
 import java.util.Date;
+
+import static ru.protei.portal.core.model.util.CrmConstants.ContactConstants.*;
 
 public class EmployeeEditView extends Composite implements AbstractEmployeeEditView {
 
@@ -52,6 +55,10 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         form.setEncoding(FormPanel.ENCODING_MULTIPART);
         form.setMethod(FormPanel.METHOD_POST);
         fileUpload.getElement().setAttribute("accept", AttachmentType.JPEG.mimeType);
+
+        firstNameErrorLabel.setText(lang.promptFieldLengthExceed(firstNameLabel(), FIRST_NAME_SIZE));
+        secondNameErrorLabel.setText(lang.promptFieldLengthExceed(secondNameLabel(), SECOND_NAME_SIZE));
+        lastNameErrorLabel.setText(lang.promptFieldLengthExceed(lastNameLabel(), LAST_NAME_SIZE));
     }
 
     @Override
@@ -226,21 +233,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
 
     @Override
     public HasVisibility lastNameErrorLabelVisibility() {
-        return lastNameErrorLabel;
-    }
-
-    @Override
-    public HasText firstNameErrorLabel() {
-        return firstNameErrorLabel;
-    }
-
-    @Override
-    public HasText secondNameErrorLabel() {
-        return secondNameErrorLabel;
-    }
-
-    @Override
-    public HasText lastNameErrorLabel() {
         return lastNameErrorLabel;
     }
 
@@ -496,6 +488,9 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
 
     @UiField
     Button addPositionBtn;
+
+    @UiField
+    Lang lang;
 
     private Timer limitedFieldsValidationTimer = new Timer() {
         @Override

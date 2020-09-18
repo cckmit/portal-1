@@ -17,11 +17,14 @@ import ru.protei.portal.config.RendererTestConfiguration;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.dao.CaseStateDAO;
+import ru.protei.portal.core.model.dao.EmployeeShortViewDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.struct.NotificationEntry;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.util.DiffResult;
+import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 import ru.protei.portal.core.service.template.TemplateService;
@@ -34,17 +37,15 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static ru.protei.portal.core.event.AssembledEventFactory.makeComment;
 import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
+import static ru.protei.portal.core.model.helper.DateRangeUtils.makeDateWithOffset;
 import static ru.protei.portal.core.utils.WorkTimeFormatter.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -64,6 +65,47 @@ public class TemplateServiceImplTest {
         public CaseStateDAO getStateDAO() {
             return mock( CaseStateDAO.class );
         }
+        @Bean
+        public EmployeeShortViewDAO getEmployeeShortViewDAO() {
+            return mock( EmployeeShortViewDAO.class );
+        }
+    }
+
+    @Test
+    public void getBirthdayNotificationBodyTest() {
+        assertNotNull( templateService );
+
+        Date from = makeDateWithOffset(-2);
+        Date to = makeDateWithOffset(9);
+
+        List<EmployeeShortView> employees = Arrays.asList(
+                createEmployee("Иванов Иван Иванович", makeDateWithOffset(1)),
+                createEmployee("Петров Петр Петрович", makeDateWithOffset(4)),
+                createEmployee("Сидоров Сидор Сидорович", makeDateWithOffset(1)),
+                createEmployee("Анжела", makeDateWithOffset(5)),
+                createEmployee("Кристина", makeDateWithOffset(14))
+        );
+
+        NotificationEntry entry = createNewNotificationEntry("frost@protei.ru");
+        List<NotificationEntry> notifiers = Arrays.asList(entry);
+
+        BirthdaysNotificationEvent event = new BirthdaysNotificationEvent( new Object(), employees, from, to, Arrays.asList(entry));
+
+         assertNotNull( event );
+
+        PreparedTemplate subjectTemplate = templateService.getBirthdaysNotificationSubject(from, to);
+        PreparedTemplate bodyTemplate = templateService.getBirthdaysNotificationBody(
+                employees,
+                notifiers.stream().map(NotificationEntry::getAddress).collect( Collectors.toList()));
+
+        assertNotNull( subjectTemplate );
+        assertNotNull( bodyTemplate );
+
+        String subject = subjectTemplate.getText(entry.getAddress(), entry.getLangCode(), true);
+        String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), true);
+
+        assertNotNull( subject );
+        assertNotNull( body );
     }
 
     @Test
@@ -251,6 +293,17 @@ public class TemplateServiceImplTest {
         return new SimpleDateFormat( "dd-MM-yyyy HH:mm:ss" ).parse( dateString );
     }
 
+    private EmployeeShortView createEmployee (String displayName, Date birthday) {
+        EmployeeShortView employee = new EmployeeShortView();
+        employee.setDisplayName(displayName);
+        employee.setBirthday(birthday);
+        return employee;
+    }
+
+    private NotificationEntry createNewNotificationEntry(String email) {
+        return NotificationEntry.email(email, CrmConstants.DEFAULT_LOCALE);
+    }
+
     private NotificationEntry createNewNotificationEntry() {
         NotificationEntry notificationEntry = new NotificationEntry();
         notificationEntry.setAddress( "notificationEntry Address" );
@@ -290,6 +343,8 @@ public class TemplateServiceImplTest {
     HTMLRenderer htmlRenderer;
     @Autowired
     CaseStateDAO caseStateDAO;
+    @Autowired
+    EmployeeShortViewDAO employeeShortViewDAO;
 
     private String commentTextWithBreaks = " ```\n" +
             "ls -l\n" +

@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.HelperFunc.isNotEmpty;
+import static ru.protei.portal.ui.common.shared.util.HtmlUtils.sanitizeHtml;
 
 public abstract class ContractPreviewActivity implements AbstractContractPreviewActivity, Activity {
 
@@ -105,33 +106,31 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
     }
 
     private void fillView( Contract value ) {
-        view.setHeader(lang.contractNum(value.getNumber()));
-        String stateImage = null;
-        if ( value.getState() != null ) {
-            stateImage = "./images/contract_" + value.getState().name().toLowerCase() + ".png";
-        }
-        view.setState( stateImage );
-
-        view.setTypes(stream(value.getContractTypes())
+        view.setHeader(stream(value.getContractTypes())
                 .map(typeLang::getName)
-                .collect(Collectors.joining(", ")));
+                .collect(Collectors.joining(", ")) + " " + sanitizeHtml(value.getNumber()));
+        view.setState(value.getState() != null
+                ? "./images/contract_" + value.getState().name().toLowerCase() + ".png"
+                : null);
         view.setDateSigning(formatDate(value.getDateSigning()));
         view.setDateValid(formatDate(value.getDateValid()));
-        view.setDescription(StringUtils.emptyIfNull(value.getDescription()));
-        view.setContractor(value.getContractor() == null ? "" : StringUtils.emptyIfNull(value.getContractor().getName()));
-        view.setOrganization(StringUtils.emptyIfNull(value.getOrganizationName()));
-        view.setManager(value.getProjectId() == null ? StringUtils.emptyIfNull(value.getCaseManagerShortName()) : StringUtils.emptyIfNull(value.getManagerShortName()));
-        view.setCurator(StringUtils.emptyIfNull(value.getCuratorShortName()));
-        view.setDirection(value.getProjectId() == null ? StringUtils.emptyIfNull(value.getCaseDirectionName()) : StringUtils.emptyIfNull(value.getDirectionName()));
+        view.setDescription(sanitizeHtml(value.getDescription()));
+        view.setContractor(value.getContractor() == null ? "" : sanitizeHtml(value.getContractor().getName()));
+        view.setOrganization(sanitizeHtml(value.getOrganizationName()));
+        view.setManager(value.getProjectId() == null ? sanitizeHtml(value.getCaseManagerShortName()) : sanitizeHtml(value.getManagerShortName()));
+        view.setCurator(sanitizeHtml(value.getCuratorShortName()));
+        view.setDirection(value.getProjectId() == null ? sanitizeHtml(value.getCaseDirectionName()) : sanitizeHtml(value.getDirectionName()));
         view.setDates(getAllDatesAsWidget(value.getContractDates()));
         view.setSpecifications(getAllSpecificationsAsWidgets(value.getContractSpecifications()));
         view.setParentContract(value.getParentContractNumber() == null ? "" : lang.contractNum(value.getParentContractNumber()));
         view.setChildContracts(stream(value.getChildContracts())
-                .map(contract -> lang.contractNum(contract.getNumber()))
+                .map(contract -> stream(contract.getContractTypes())
+                        .map(typeLang::getName)
+                        .collect(Collectors.joining(",")) + " " + sanitizeHtml(value.getNumber()))
                 .collect(Collectors.joining(", ")));
         view.setProject(StringUtils.emptyIfNull(value.getProjectName()), LinkUtils.makePreviewLink(Project.class, value.getProjectId()));
 
-        fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer(), value.getId(), En_CaseType.CONTRACT, true));
+        fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer(), value.getId(), En_CaseType.CONTRACT, true, value.getCreatorId()));
     }
 
     private List<Widget> getAllDatesAsWidget(List<ContractDate> dates) {

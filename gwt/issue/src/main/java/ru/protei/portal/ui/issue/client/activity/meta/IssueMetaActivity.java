@@ -133,7 +133,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     public void onProductChanged() {
         meta.setProduct(DevUnit.fromProductShortView(metaView.product().getValue()));
         onCaseMetaChanged( meta, () -> {
-            fireEvent(new IssueEvents.ChangeIssue(meta.getId()));
+            fireEvent(new IssueEvents.IssueProductChanged(meta.getId()));
             fireEvent(new IssueEvents.IssueMetaChanged(meta));
         });
     }

@@ -89,7 +89,7 @@ public class RoomReservationTableView extends Composite implements AbstractRoomR
         removeClickColumn.setDisplayPredicate(value -> AccessUtil.canRemove(policyService, value));
 
         DynamicColumn<RoomReservation> person = new DynamicColumn<>(lang.roomReservationPersonResponsible(), "person",
-                value -> value.getPersonResponsible().getDisplayName());
+                value -> value.getPersonResponsible().getName());
 
         DynamicColumn<RoomReservation> time = new DynamicColumn<>(lang.roomReservationTime(), "time",
                 value -> DateFormatter.formatTimeOnly(value.getDateFrom()) + " - " +  DateFormatter.formatTimeOnly(value.getDateUntil()));

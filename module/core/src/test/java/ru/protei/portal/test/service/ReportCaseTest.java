@@ -69,7 +69,7 @@ public class ReportCaseTest extends BaseServiceTest {
         CaseQuery caseQuery = makeCaseQuery();
         caseQuery.setCheckImportanceHistory(false);
 
-        List<CaseObjectReportRequest> caseObjectComments = ((ReportCaseImpl) reportCase).processChunk( caseQuery );
+        List<CaseObjectReportRequest> caseObjectComments = ((ReportCaseImpl) reportCase).processChunk( caseQuery, new Report() );
 
         assertTrue(  "Expected not empty report data", !isEmpty(caseObjectComments)  );
         List<CaseObject> reportCases = toList( caseObjectComments, CaseObjectReportRequest::getCaseObject );
@@ -85,7 +85,7 @@ public class ReportCaseTest extends BaseServiceTest {
         CaseQuery caseQuery = makeCaseQuery();
         caseQuery.setCheckImportanceHistory(true);
 
-        List<CaseObjectReportRequest> caseObjectComments = ((ReportCaseImpl) reportCase).processChunk( caseQuery );
+        List<CaseObjectReportRequest> caseObjectComments = ((ReportCaseImpl) reportCase).processChunk( caseQuery, new Report() );
 
         assertTrue(  "Expected not empty report data", !isEmpty(caseObjectComments)  );
         List<CaseObject> reportCases = toList( caseObjectComments, CaseObjectReportRequest::getCaseObject );
@@ -123,13 +123,20 @@ public class ReportCaseTest extends BaseServiceTest {
     private Report makeReport( CaseQuery caseQuery ) {
         Report report = new Report();
         report.setLocale( "Ru" );
-        report.setCaseQuery( caseQuery );
+        report.setQuery( serializeAsJson(caseQuery) );
         return report;
     }
 
     private boolean writeReport( Report report ) throws IOException {
         MockStream mockStream = new MockStream();
-        reportCase.writeReport( mockStream, report, new SimpleDateFormat( "dd.MM.yyyy HH:mm" ), new TimeFormatter(), id -> false );
+        reportCase.writeReport(
+                mockStream,
+                report,
+                deserializeFromJson(report.getQuery(), CaseQuery.class),
+                new SimpleDateFormat( "dd.MM.yyyy HH:mm" ),
+                new TimeFormatter(),
+                id -> false
+        );
         return !mockStream.isEmpty();
     }
 

@@ -21,6 +21,7 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -47,15 +48,18 @@ public class ReportProjectImpl implements ReportProject {
     ReportDAO reportDAO;
 
     @Override
-    public boolean writeReport(OutputStream buffer, Report report, DateFormat dateFormat, Predicate<Long> isCancel) throws IOException {
+    public boolean writeReport(OutputStream buffer,
+                               Report report,
+                               CaseQuery query,
+                               Predicate<Long> isCancel) throws IOException {
 
-        int count = caseObjectDAO.countByQuery(report.getCaseQuery());
+        int count = caseObjectDAO.countByQuery(query);
 
         Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
 
         if (count < 1) {
             log.debug("writeReport : reportId={} has no corresponding case objects", report.getId());
-            ReportWriter<ReportProjectWithLastComment> writer = new ExcelReportWriter(localizedLang, new EnumLangUtil(lang), dateFormat);
+            ReportWriter<ReportProjectWithLastComment> writer = new ExcelReportWriter(localizedLang, new EnumLangUtil(lang));
             writer.createSheet();
             writer.collect(buffer);
             return true;
@@ -63,40 +67,44 @@ public class ReportProjectImpl implements ReportProject {
 
         log.debug("writeReport : reportId={} has {} case objects to process", report.getId(), count);
 
-        try (ReportWriter<ReportProjectWithLastComment> writer = new ExcelReportWriter(localizedLang, new EnumLangUtil(lang), dateFormat)) {
+        try (ReportWriter<ReportProjectWithLastComment> writer = new ExcelReportWriter(localizedLang, new EnumLangUtil(lang))) {
             int sheetNumber = writer.createSheet();
-            if (writeReport(writer, sheetNumber, report, count, isCancel)) {
+            if (writeReport(writer, sheetNumber, report.getId(), query, count, isCancel)) {
                 writer.collect(buffer);
+                return true;
             }
-            return true;
+            return false;
         } catch (Exception ex) {
-            log.warn("writeReport : fail to process reportId={} query: {} ",
-                    report.getId(), report.getCaseQuery(), ex);
+            log.error("writeReport : fail to process reportId={} query: {} ",
+                    report.getId(), query, ex);
             return false;
         }
     }
 
-    private boolean writeReport(ReportWriter<ReportProjectWithLastComment> writer, int sheetNumber, Report report, int count,
-                                    Predicate<Long> isCancel) {
+    private boolean writeReport(ReportWriter<ReportProjectWithLastComment> writer,
+                                int sheetNumber,
+                                Long reportId,
+                                CaseQuery query,
+                                int count,
+                                Predicate<Long> isCancel) {
 
         final int step = config.data().reportConfig().getChunkSize();
         final int limit = count;
         int offset = 0;
 
         while (offset < limit) {
-            if (isCancel.test(report.getId())) {
-                log.info( "writeReport(): Cancel processing of report {}", report.getId() );
+            if (isCancel.test(reportId)) {
+                log.info("writeReport(): Cancel processing of report {}", reportId);
                 return true;
             }
             int amount = offset + step < limit ? step : limit - offset;
-            CaseQuery query = report.getCaseQuery();
             query.setOffset(offset);
             query.setLimit(amount);
             List<ReportProjectWithLastComment> data = createData(query);
             try {
                 writer.write(sheetNumber, data);
             } catch (Throwable th) {
-                log.warn("writeReport : fail to process chunk [{} - {}] : reportId={} {}", offset, amount, report.getId(), th);
+                log.error("writeReport : fail to process chunk [{} - {}] : reportId={}", offset, amount, reportId, th);
                 return false;
             }
             offset += step;

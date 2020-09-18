@@ -40,48 +40,43 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     }
 
     @Override
-    public void setTypes(String value) {
-        this.types.setInnerText(value);
-    }
-
-    @Override
     public void setState(String value) {
         this.state.setSrc(value);
     }
 
     @Override
     public void setDateSigning(String value) {
-        this.dateSigning.setInnerText(value);
+        this.dateSigning.setInnerHTML(value);
     }
 
     @Override
     public void setDateValid(String value) {
-        this.dateValid.setInnerText(value);
+        this.dateValid.setInnerHTML(value);
     }
 
     @Override
     public void setDescription(String value) {
-        this.description.setText(value);
+        this.description.setInnerHTML(value);
     }
 
     @Override
     public void setDirection(String value) {
-        this.direction.setInnerText(value);
+        this.direction.setInnerHTML(value);
     }
 
     @Override
     public void setContractor(String value) {
-        this.contractor.setInnerText(value);
+        this.contractor.setInnerHTML(value);
     }
 
     @Override
     public void setCurator(String value) {
-        this.curator.setInnerText(value);
+        this.curator.setInnerHTML(value);
     }
 
     @Override
     public void setManager(String value) {
-        this.manager.setInnerText(value);
+        this.manager.setInnerHTML(value);
     }
 
     @Override
@@ -98,17 +93,17 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
 
     @Override
     public void setOrganization(String value) {
-        this.organization.setInnerText(value);
+        this.organization.setInnerHTML(value);
     }
 
     @Override
     public void setParentContract(String value) {
-        this.contractParent.setInnerText(value);
+        this.contractParent.setInnerHTML(value);
     }
 
     @Override
     public void setChildContracts(String value) {
-        this.contractChild.setInnerText(value);
+        this.contractChild.setInnerHTML(value);
     }
 
     @Override
@@ -150,13 +145,11 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     @UiField
     HTMLPanel commentContainer;
     @UiField
-    Element types;
-    @UiField
     SpanElement dateSigning;
     @UiField
     SpanElement dateValid;
     @UiField
-    InlineLabel description;
+    SpanElement description;
     @UiField
     SpanElement direction;
     @UiField

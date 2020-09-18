@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<module rename-to='issuereport'>
-    <inherits name="ru.protei.portal.ui.common.Common"/>
-    <inherits name="ru.protei.portal.ui.issue.Issue"/>
-
-    <source path='client'/>
-</module>

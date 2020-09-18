@@ -82,12 +82,6 @@ public interface AbstractEmployeeEditView extends IsWidget {
 
     HasVisibility lastNameErrorLabelVisibility();
 
-    HasText firstNameErrorLabel();
-
-    HasText secondNameErrorLabel();
-
-    HasText lastNameErrorLabel();
-
     String firstNameLabel();
 
     String secondNameLabel();

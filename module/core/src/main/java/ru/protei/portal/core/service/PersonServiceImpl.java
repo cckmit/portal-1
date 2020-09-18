@@ -56,12 +56,17 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
+    public Result<List<Person>> getPersonsByIds(AuthToken token, Collection<Long> ids) {
+        return ok(personDAO.getListByKeys(ids));
+    }
+
+    @Override
     public Result<List<PersonShortView>> shortViewListByIds( List<Long> ids ) {
         return makeListPersonShortView(personDAO.getListByKeys( ids ));
     }
 
     @Override
-    public Result<Map<Long, String>> getPersonNames( Collection<Long> ids) {
+    public Result<Map<Long, String>> getPersonNames(AuthToken token, Collection<Long> ids) {
         Collection<Person> list = personDAO.partialGetListByKeys(ids, "id", "displayname");
 
         if ( list == null )

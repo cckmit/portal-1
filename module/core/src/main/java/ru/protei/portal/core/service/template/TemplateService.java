@@ -2,9 +2,12 @@ package ru.protei.portal.core.service.template;
 
 import freemarker.template.TemplateException;
 import ru.protei.portal.core.event.*;
+import ru.protei.portal.core.model.dto.ReportDto;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.dto.Project;
+import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
+import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.utils.EnumLangUtil;
 import ru.protei.portal.core.utils.LinkData;
 
@@ -42,9 +45,9 @@ public interface TemplateService {
 
     PreparedTemplate getDocumentDocFileUpdatedByMemberSubject(String documentName);
 
-    PreparedTemplate getMailReportBody(Report report);
+    PreparedTemplate getMailReportBody(ReportDto reportDto, Interval createdInterval, Interval modifiedInterval);
 
-    PreparedTemplate getMailReportSubject(Report report);
+    PreparedTemplate getMailReportSubject(ReportDto reportDto);
 
     String getEmployeeRegistrationProbationHeadOfDepartmentEmailNotificationBody( Long employeeRegistrationId, String employeeFullName, String urlTemplate, String recipientName ) throws IOException, TemplateException;
 
@@ -64,7 +67,7 @@ public interface TemplateService {
 
     PreparedTemplate getMailProjectSubject(Project project, Person initiator);
 
-    PreparedTemplate getMailProjectBody(AssembledProjectEvent event, Collection<String> recipients, DiffCollectionResult<LinkData> links, String crmProjectUrl, EnumLangUtil roleTypeLang);
+    PreparedTemplate getMailProjectBody(AssembledProjectEvent event, List<CaseComment> comments, Collection<String> recipients, DiffCollectionResult<LinkData> links, String crmProjectUrl, EnumLangUtil roleTypeLang);
 
     PreparedTemplate getRoomReservationNotificationSubject(RoomReservation roomReservation, RoomReservationNotificationEvent.Action action);
 
@@ -86,11 +89,14 @@ public interface TemplateService {
 
     PreparedTemplate getAbsenceNotificationSubject(Person initiator, PersonAbsence absence);
 
-
     PreparedTemplate getAbsenceNotificationBody(AbsenceNotificationEvent event, EventAction action, Collection<String> recipients);
 
     PreparedTemplate getAbsenceReportSubject(String title);
 
     String getProjectPauseTimeNotificationSubject( Long projectNumber, String projectName ) throws IOException, TemplateException;
     String getProjectPauseTimeNotificationBody( String subscriberName, Long aLong, String displayNam, String projectUrl, Date pauseTimeDate ) throws IOException, TemplateException;
+
+    PreparedTemplate getBirthdaysNotificationSubject(Date from, Date to);
+    PreparedTemplate getBirthdaysNotificationBody(List<EmployeeShortView> employees, Collection<String> recipients);
+
 }

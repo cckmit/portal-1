@@ -1,0 +1,1 @@
+${birthdaysSubject} <#noparse>[${fromDate} -${toDate}]</#noparse>

@@ -6,10 +6,12 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.PersonAbsence;
 import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -24,12 +26,18 @@ public abstract class AbsenceSummaryTableActivity implements AbstractAbsenceSumm
 
     @PostConstruct
     public void onInit() {
+        CREATE_ACTION = lang.buttonCreate();
+        REPORT_ACTION = lang.buttonReport();
         view.setActivity(this);
         pagerView.setActivity( this );
     }
 
     @Event
     public void onAuthSuccess (AuthEvents.Success event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.ABSENCE_VIEW)) {
+            return;
+        }
+
         view.getFilterWidget().resetFilter();
     }
 
@@ -40,14 +48,51 @@ public abstract class AbsenceSummaryTableActivity implements AbstractAbsenceSumm
 
     @Event
     public void onShow(AbsenceEvents.ShowSummaryTable event) {
-        fireEvent(new ActionBarEvents.Add(lang.backToEmployees(), "", UiConstants.ActionBarIdentity.EMPLOYEE_VIEW));
 
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
         view.getPagerContainer().add( pagerView.asWidget() );
 
+        fireEvent(new ActionBarEvents.Clear());
+
+        if (policyService.hasPrivilegeFor(En_Privilege.ABSENCE_CREATE)) {
+            fireEvent(new ActionBarEvents.Add(CREATE_ACTION, "", UiConstants.ActionBarIdentity.ABSENCE));
+        }
+
+        if (policyService.hasPrivilegeFor(En_Privilege.ABSENCE_REPORT)) {
+            fireEvent(new ActionBarEvents.Add(REPORT_ACTION, "", UiConstants.ActionBarIdentity.ABSENCE_REPORT));
+        }
+
         loadTable();
+    }
+
+    @Event
+    public void onAbsenceCreateClicked(ActionBarEvents.Clicked event) {
+        if (!UiConstants.ActionBarIdentity.ABSENCE.equals(event.identity)) {
+            return;
+        }
+
+        if (!policyService.hasPrivilegeFor(En_Privilege.ABSENCE_CREATE)) {
+            fireEvent(new ErrorPageEvents.ShowForbidden());
+            return;
+        }
+
+        fireEvent(new AbsenceEvents.Create());
+    }
+
+    @Event
+    public void onAbsenceReportClicked(ActionBarEvents.Clicked event) {
+        if (!UiConstants.ActionBarIdentity.ABSENCE_REPORT.equals(event.identity)) {
+            return;
+        }
+
+        if (!policyService.hasPrivilegeFor(En_Privilege.ABSENCE_REPORT)) {
+            fireEvent(new ErrorPageEvents.ShowForbidden());
+            return;
+        }
+
+        fireEvent(new AbsenceEvents.CreateReport());
     }
 
     @Event
@@ -157,6 +202,11 @@ public abstract class AbsenceSummaryTableActivity implements AbstractAbsenceSumm
     @Inject
     Lang lang;
 
+    @Inject
+    PolicyService policyService;
+
+    private static String CREATE_ACTION;
+    private static String REPORT_ACTION;
     private AppEvents.InitDetails initDetails;
     private AbsenceQuery query = null;
 }

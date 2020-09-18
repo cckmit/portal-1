@@ -3,81 +3,55 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.dict.En_ReportType;
-import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.dto.ReportCaseQuery;
+import ru.protei.portal.core.model.dto.ReportContractQuery;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 import java.util.Date;
 
+/**
+ * @see ReportCaseQuery
+ * @see ReportContractQuery
+ */
 @JdbcEntity(table = "report")
 public class Report implements Serializable {
 
-    /**
-     * Уникальный идентификатор отчета
-     * Идентификатор содержимого файла в хранилище (Имеет смысл только при En_ReportStatus.READY)
-     */
     @JdbcId(name = "id")
     private Long id;
 
-    /**
-     * Название отчета
-     */
     @JdbcColumn(name = "name")
     private String name;
 
-    /**
-     * Тип отчета
-     */
     @JdbcColumn(name = "type")
     @JdbcEnumerated(EnumType.STRING)
     private En_ReportType reportType;
 
-    /**
-     * Текущее состояние отчета
-     */
     @JdbcColumn(name = Columns.STATUS)
     @JdbcEnumerated(EnumType.STRING)
     private En_ReportStatus status;
 
-    /**
-     * Фильтр по обращениям
-     */
-    @JdbcColumn(name = "case_query", converterType = ConverterType.JSON)
-    private CaseQuery caseQuery;
+    @JdbcColumn(name = "case_query")
+    private String query;
 
-    /**
-     * Профиль пользователя, создавшего отчет
-     */
     @JdbcColumn(name = "creator")
     private Long creatorId;
 
     @JdbcJoinedObject(localColumn = "creator", remoteColumn = "id")
     private Person creator;
 
-    /**
-     * Дата запроса отчета
-     */
     @JdbcColumn(name = "created")
     private Date created;
 
-    /**
-     * Дата последней смены состояния отчета
-     */
     @JdbcColumn(name = Columns.MODIFIED)
     private Date modified;
 
-    /**
-     * Язык отчета
-     */
-    @JdbcColumn
+    @JdbcColumn(name = "locale")
     private String locale;
 
     @JdbcColumn(name = "is_restricted")
     private boolean isRestricted;
 
-    /**
-     * Запланированность отчета
-     */
     @JdbcColumn(name = "scheduled_type")
     @JdbcEnumerated(EnumType.STRING)
     private En_ReportScheduledType scheduledType;
@@ -85,7 +59,13 @@ public class Report implements Serializable {
     @JdbcColumn(name = "with_description")
     private boolean withDescription;
 
-    @JdbcColumn(name = "is_removed")
+    @JdbcColumn(name = "with_tags")
+    private boolean withTags;
+
+    @JdbcColumn(name = "with_linked_issues")
+    private boolean withLinkedIssues;
+
+    @JdbcColumn(name = Columns.REMOVED)
     private boolean isRemoved = false;
 
     public Long getId() {
@@ -120,12 +100,20 @@ public class Report implements Serializable {
         this.status = status;
     }
 
-    public CaseQuery getCaseQuery() {
-        return caseQuery;
+//    public CaseQuery getCaseQuery() {
+//        return caseQuery;
+//    }
+//
+//    public void setCaseQuery(CaseQuery filter) {
+//        this.caseQuery = filter;
+//    }
+
+    public String getQuery() {
+        return query;
     }
 
-    public void setCaseQuery(CaseQuery filter) {
-        this.caseQuery = filter;
+    public void setQuery(String query) {
+        this.query = query;
     }
 
     public Long getCreatorId() {
@@ -192,6 +180,22 @@ public class Report implements Serializable {
         this.withDescription = withDescription;
     }
 
+    public boolean isWithTags() {
+        return withTags;
+    }
+
+    public void setWithTags(boolean withTags) {
+        this.withTags = withTags;
+    }
+
+    public boolean isWithLinkedIssues() {
+        return withLinkedIssues;
+    }
+
+    public void setWithLinkedIssues(boolean withLinkedIssues) {
+        this.withLinkedIssues = withLinkedIssues;
+    }
+
     public boolean isRemoved() {
         return isRemoved;
     }
@@ -207,7 +211,7 @@ public class Report implements Serializable {
                 ", name='" + name + '\'' +
                 ", reportType=" + reportType +
                 ", status=" + status +
-                ", caseQuery=" + caseQuery +
+                ", query='" + query + '\'' +
                 ", creatorId=" + creatorId +
                 ", creator=" + creator +
                 ", created=" + created +
@@ -216,6 +220,8 @@ public class Report implements Serializable {
                 ", isRestricted=" + isRestricted +
                 ", scheduledType=" + scheduledType +
                 ", withDescription=" + withDescription +
+                ", withTags=" + withTags +
+                ", withLinkedIssues=" + withLinkedIssues +
                 ", isRemoved=" + isRemoved +
                 '}';
     }
@@ -223,6 +229,7 @@ public class Report implements Serializable {
     public interface Columns{
         String STATUS = "status";
         String MODIFIED = "modified";
+        String REMOVED = "is_removed";
     }
 
 }

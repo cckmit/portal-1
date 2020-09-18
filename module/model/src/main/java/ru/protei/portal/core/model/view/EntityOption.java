@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.view;
 
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
+import ru.protei.portal.core.model.marker.HasLongId;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -9,7 +10,7 @@ import java.util.Objects;
 /**
  * Created by michael on 08.11.16.
  */
-public class EntityOption implements Serializable {
+public class EntityOption implements Serializable, HasLongId {
 
     private String displayText;
     private Long id;

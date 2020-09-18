@@ -698,6 +698,10 @@ label.bordered:after {
             overflow: hidden;
             text-overflow: ellipsis;
           }
+
+          &.equipment-name-column {
+            word-break: break-word;
+          }
         }
 
         .equipment-type-column {
@@ -2246,11 +2250,11 @@ a {
     tbody {
       tr {
         td {
-          height: 70px;
+          height: 74px;
 
           div {
-            height: 70px;
-            max-height: 70px;
+            height: 74px;
+            max-height: 74px;
             white-space: pre-line;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -2818,10 +2822,9 @@ div.select2-container {
       padding-left: 0;
       margin-bottom: 5px;
       li.select2-search-choice {
-        display: inline !important;
         padding-right: 10px;
         .selected-value {
-          max-width: 85%;
+          max-width: 100px;
           text-overflow: ellipsis;
           overflow: hidden;
           white-space: nowrap;
@@ -2865,6 +2868,13 @@ div.select2-container {
     padding: 15px;
   }
 
+  .resize-md-12 {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+.contract-filter {
   .resize-md-12 {
     flex: 0 0 100% !important;
     max-width: 100% !important;
@@ -3406,26 +3416,52 @@ label {
   max-height: 30px;
 }
 
-.contracts {
-  .contract-type-column {
-    width: 45px;
+.table-contracts {
+  .contract-column-state {
+    width: 5%;
   }
-  .num-column {
+  .contract-column-info {
     width: 20%;
   }
-
-  .work-group-column {
+  .contract-column-contractor {
+    width: 20%;
+  }
+  .contract-column-description {
     width: 25%;
+  }
+  .contract-column-work-group {
+    width: 20%;
+  }
+  .contract-column-cost {
+    width: 10%;
+  }
+  tr > td > div {
+    height: 5rem;
+    max-height: 5rem;
+    white-space: pre-line;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 
 .short-table-view {
-  .contracts {
-    .work-group-column {
+  .table-contracts {
+    .contract-column-state {
+      width: 5%;
+    }
+    .contract-column-info {
+      width: 50%;
+    }
+    .contract-column-contractor {
+      width: 50%;
+    }
+    .contract-column-description {
       display: none;
     }
-
-    .cost-column {
+    .contract-column-work-group {
+      display: none;
+    }
+    .contract-column-cost {
       display: none;
     }
   }
@@ -3438,7 +3474,7 @@ label {
   .column-info {
     width: 40%;
   }
-  .column-work-group {
+  .column-contractor {
     width: 55%;
   }
 }
@@ -4004,65 +4040,9 @@ table {
   text-decoration: line-through;
 }
 
-/**** card links panel ****/
-.card-links {
-  .collapse-btn {
-    font-family: "Font Awesome 5 Free";
-    font-weight: 900;
-  }
-  .card-header {
-    padding-top: 10px !important;
-    padding-bottom: 0px !important;
-    min-height: unset;
-
-    label {
-      margin-bottom: 0px !important;
-    }
-  }
-
-  &.collapsed {
-    .card-header {
-      padding-bottom: 10px !important;
-    }
-    .card-body {
-      display: none;
-    }
-    .collapse-btn {
-      &:after {
-        content: "\f078";
-      }
-    }
-  }
-
-  &.expanded {
-    .collapse-btn {
-      &:after {
-        content: "\f077";
-      }
-    }
-    .card-header {
-      &:after {
-        content: "";
-        height: 1px;
-        background: rgba(0, 0, 0, .08);
-        left: 16px;
-        right: 16px;
-        position: absolute;
-        bottom: 0;
-      }
-
-      label {
-        border-bottom: 2px solid;
-      }
-    }
-  }
-}
-
-
 /**** case links ****/
 .case-links {
   padding: 5px 10px !important;
-  max-height: 120px;
   overflow: auto;
 
   .case-link {
@@ -4947,22 +4927,6 @@ table {
 /**** ROOM-RESERVATION ****/
 .room-reservations {
   table {
-    tbody {
-      tr {
-        td {
-          height: 40px;
-
-          div {
-            height: 40px;
-            max-height: 40px;
-            white-space: pre-line;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
-        }
-      }
-    }
-
     .separator-cell {
       background-color: $bg_light_gray;
       font-weight: bold;
@@ -5047,6 +5011,133 @@ table {
 
 .font-large {
   font-size: large !important;
+}
+
+.selectable-item.selectable-item-text {
+  width: inherit;
+  .checkbox {
+    width: inherit;
+    label {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      bottom: -5px;
+      width: inherit;
+    }
+  }
+}
+
+.selector-popup {
+  .dropdown-menu {
+    ul {
+      li {
+        a {
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+        }
+      }
+    }
+  }
+}
+
+// Accordion
+
+.accordion {
+  .collapse-btn {
+    font-family: "Font Awesome 5 Free", serif;
+    font-weight: 900;
+  }
+
+  .collapse-btn {
+    &:after {
+      content: "\f078";
+    }
+  }
+
+  .card-header {
+    padding-bottom: 10px;
+    padding-top: 10px;
+    min-height: auto;
+  }
+
+  .accordion-body {
+    transition: max-height .35s ease;
+    overflow: hidden;
+
+    .card-body {
+      overflow: hidden;
+      position: relative;
+    }
+  }
+
+
+  &.show {
+    .collapse-btn {
+      &:after {
+        content: "\f077";
+      }
+    }
+
+    .card-body {
+      overflow: auto;
+    }
+
+    .card-header {
+      label {
+        border-bottom: 2px solid;
+      }
+
+      padding-bottom: 0;
+
+      &:after {
+        content: "";
+        height: 1px;
+        background: rgba(0, 0, 0, .08);
+        left: 20px;
+        right: 16px;
+        position: absolute;
+        bottom: 2px;
+      }
+    }
+  }
+}
+
+.card-links {
+  .card-body {
+    padding: 0;
+  }
+}
+
+.user-login-selector {
+  li {
+    height: 40px;
+
+    .image-wrapper {
+      width: 30px;
+      height: 30px;
+      -webkit-border-radius: 50%;
+      -moz-border-radius: 50%;
+      border-radius: 50%;
+      overflow: hidden;
+      margin-top: 3px;
+
+      img {
+        max-width: 100%;
+        margin-top: -3px;
+
+        &.default-image {
+          margin-top: 0;
+        }
+      }
+    }
+  }
+
+  .dropdown-menu {
+    // 1px - граница комментария;
+    // 12px - внутренний паддинг комментария
+    margin-left: -13px;
+  }
 }
 
 .time-elapsed-popup {

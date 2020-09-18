@@ -13,11 +13,11 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.selector.AbstractPopupSelector;
-import ru.protei.portal.ui.common.client.selector.pageable.AbstractPageableSelector;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
+import ru.protei.portal.ui.common.client.selector.pageable.AbstractPageableSelector;
 import ru.protei.portal.ui.common.client.selector.pageable.MultiValuePageableSelector;
 import ru.protei.portal.ui.common.client.widget.selector.item.PopupSelectableItem;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectItemView;
@@ -167,6 +167,7 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         PopupSelectableItem<T> item = new PopupSelectableItem<>();
         item.setElementHtml( elementHtml );
         item.setSelected( isSelected( element ) );
+        item.setTitle(elementHtml);
         return item;
     }
 

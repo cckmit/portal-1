@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_AdminState;
 import ru.protei.portal.core.model.dict.En_AuthType;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -222,16 +223,18 @@ public class UserLogin extends AuditableObject {
     }
 
     @Override
-    public String toString () {
+    public String toString() {
         return "UserLogin{" +
                 "id=" + id +
                 ", ulogin='" + ulogin + '\'' +
+                ", upass='" + upass + '\'' +
                 ", created=" + created +
                 ", lastPwdChange=" + lastPwdChange +
                 ", pwdExpired=" + pwdExpired +
                 ", adminStateId=" + adminStateId +
                 ", personId=" + personId +
                 ", displayName='" + displayName + '\'' +
+                ", displayShortName='" + displayShortName + '\'' +
                 ", isFired=" + isFired +
                 ", companyId=" + companyId +
                 ", companyName='" + companyName + '\'' +

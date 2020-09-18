@@ -8,7 +8,6 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.struct.Interval;
-import ru.protei.portal.core.utils.DateUtils;
 
 import java.time.ZoneId;
 import java.util.*;
@@ -16,6 +15,7 @@ import java.util.stream.Collectors;
 
 import static java.time.temporal.TemporalAdjusters.firstDayOfYear;
 import static java.time.temporal.TemporalAdjusters.lastDayOfYear;
+import static ru.protei.portal.core.utils.DateUtils.resetSeconds;
 
 public class EmployeeSqlBuilder {
     public SqlCondition createSqlCondition(EmployeeQuery query) {
@@ -44,11 +44,6 @@ public class EmployeeSqlBuilder {
             if (query.getLastName() != null) {
                 condition.append(" and person.lastname=?");
                 args.add(query.getLastName());
-            }
-
-            if (query.getBirthday() != null) {
-                condition.append(" and person.birthday=?");
-                args.add(query.getBirthday());
             }
 
             if (query.getBirthdayRange() != null) {
@@ -169,8 +164,8 @@ public class EmployeeSqlBuilder {
             if (query.getAbsent() != null && query.getAbsent()) {
                 condition.append(" and person.id in ")
                         .append("(select person_id from person_absence where from_time <= ? and till_time >= ?)");
-                args.add(DateUtils.resetSeconds(new Date()));
-                args.add(DateUtils.resetSeconds(new Date()));
+                args.add(resetSeconds(new Date()));
+                args.add(resetSeconds(new Date()));
             }
 
             if (CollectionUtils.isNotEmpty(query.getDepartmentIds())) {
@@ -187,8 +182,8 @@ public class EmployeeSqlBuilder {
                                         .filter(En_AbsenceReason::isActual)
                                         .map(En_AbsenceReason::getId)
                                         .collect(Collectors.toSet()))).append(")");
-                args.add(DateUtils.resetSeconds(new Date()));
-                args.add(DateUtils.resetSeconds(new Date()));
+                args.add(resetSeconds(new Date()));
+                args.add(resetSeconds(new Date()));
             }
         });
     }

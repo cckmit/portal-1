@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.protei.portal.core.model.ent.Contractor;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.ContractorQuery;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
@@ -30,7 +31,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.core.model.helper.NullUtils.defaultIfNull;
+import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
@@ -217,7 +218,7 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
     private AbstractContractorSearchActivity makeSearchViewActivity() {
         return () -> {
             ContractorQuery query = makeContractorQuery(searchView);
-            if (!isSearchValid(searchView, query)) {
+            if (!searchView.isValid() || !isValidContractorQuery(query)) {
                 fireEvent(new NotifyEvents.Show(lang.contractContractorValidationError(), NotifyEvents.NotifyType.ERROR));
                 return;
             }
@@ -239,14 +240,26 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
         ContractorQuery query = new ContractorQuery();
         query.setInn(searchView.contractorInn().getValue());
         query.setKpp(searchView.contractorKpp().getValue());
+        query.setName(searchView.contractorName().getValue());
         query.setFullName(searchView.contractorFullName().getValue());
+        query.setRegistrationCountryKey(searchView.contractorCountry().getValue() != null
+                ? searchView.contractorCountry().getValue().getRefKey()
+                : null);
         return query;
     }
 
-    private boolean isSearchValid(AbstractContractorSearchView searchView, ContractorQuery query) {
-        boolean validByView = searchView.isValid();
-        boolean queryValid = isNotEmpty(query.getInn()) || isNotEmpty(query.getKpp()) || isNotEmpty(query.getFullName());
-        return validByView && queryValid;
+    private boolean isValidContractorQuery(ContractorQuery query) {
+        if (query == null) {
+            return false;
+        }
+        if (isNotEmpty(query.getKpp()) && isEmpty(query.getInn())) {
+            return false;
+        }
+        return isNotEmpty(query.getInn())
+                || isNotEmpty(query.getKpp())
+                || isNotEmpty(query.getName())
+                || isNotEmpty(query.getFullName())
+                || isNotEmpty(query.getRegistrationCountryKey());
     }
 
     private Runnable removeContractorAction(Contractor contractor) {
@@ -258,7 +271,9 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
             controller.removeContractor(organization, refKey, new FluentCallback<Long>()
                     .withSuccess(id -> {
                         fireEvent(new NotifyEvents.Show(lang.contractorRemoved(), NotifyEvents.NotifyType.SUCCESS));
-                        String refKeySelected = defaultIfNull(() -> getValue().getRefKey(), "");
+                        String refKeySelected = getValue() != null
+                                ? getValue().getRefKey()
+                                : null;
                         if (Objects.equals(refKeySelected, refKey)) {
                             setValue(null);
                         }

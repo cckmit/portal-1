@@ -25,6 +25,7 @@ import ru.protei.portal.ui.project.client.activity.table.AbstractProjectTableVie
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 
 /**
@@ -59,6 +60,7 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
     @Override
     public void setAnimation ( TableAnimation animation ) {
         animation.setContainers( tableContainer, previewContainer, filterContainer );
+        columnProvider.setChangeSelectionIfSelectedPredicate(project -> animation.isPreviewShow());
     }
 
     @Override
@@ -133,9 +135,12 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
                 });
         columns.add(numberColumn);
 
-        DynamicColumn<Project> customerColumn = new DynamicColumn<>(lang.projectCustomerType(), "customers",
+        DynamicColumn<Project> customerColumn = new DynamicColumn<>(lang.projectCustomer(), "customers",
                 value -> {
                     StringBuilder content = new StringBuilder();
+                    if ( value.getCustomer() != null && value.getCustomer().toEntityOption() != null) {
+                        content.append("<b>").append(value.getCustomer().toEntityOption().getDisplayText()).append("</b>").append("<br/>");
+                    }
                     if (value.getCustomerType() != null) {
                         content.append("<i>").append(customerTypeLang.getName(value.getCustomerType())).append("</i>").append("<br/>");
                     }

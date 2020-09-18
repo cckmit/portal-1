@@ -4,7 +4,6 @@ import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Timer;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Attachment;
@@ -28,14 +27,15 @@ import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.lang.TimeElapsedTypeLang;
-import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
+import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
+import ru.protei.portal.ui.common.client.service.AttachmentControllerAsync;
 import ru.protei.portal.ui.common.client.util.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.CaseCommentControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
 import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemView;
 import ru.protei.portal.ui.common.client.widget.timefield.WorkTimeFormatter;
-import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
-import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
+import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.impl.PasteInfo;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -53,8 +53,7 @@ import static ru.protei.portal.core.model.helper.CaseCommentUtils.*;
  * Активность списка комментариев
  */
 public abstract class CaseCommentListActivity
-        implements Activity,
-        AbstractCaseCommentListActivity, AbstractCaseCommentItemActivity {
+        implements AbstractCaseCommentListActivity, AbstractCaseCommentItemActivity {
 
     @Inject
     public void onInit() {
@@ -121,6 +120,8 @@ public abstract class CaseCommentListActivity
         view.privateComment().setValue(false);
         view.getPrivacyVisibility().setVisible(isPrivateVisible);
 
+        view.setCaseCreatorId(event.caseCreatorId);
+
         reloadComments(caseType, caseId);
     }
 
@@ -166,7 +167,7 @@ public abstract class CaseCommentListActivity
                             newView.displayUpdatedAnimation();
                             itemViewToModel.remove( oldView );
                             itemViewToModel.put( newView, comment );
-                            if (CollectionUtils.isEmpty(oldView.attachmentContainer())){
+                            if (CollectionUtils.isEmpty(oldView.attachmentContainer().getAll())){
                                 updateCaseAttachment(Collections.emptyList(), comment.getCaseAttachments());
                             } else {
                                 updateCaseAttachment(new ArrayList<>(oldView.attachmentContainer().getAll()), comment.getCaseAttachments());
@@ -249,8 +250,14 @@ public abstract class CaseCommentListActivity
             tempAttachments.addAll(commentAttachments);
         }
 
-        String editedMessage = caseComment.getText();
-        view.message().setValue( editedMessage, true );
+//        Дозапрашиваем комментарий, для восстановления логинов при редактировании
+        caseCommentController.getCaseComment(caseComment.getId(), new FluentCallback<CaseComment>()
+                .withSuccess(comment -> {
+                    this.comment.setText(comment.getText());
+                    view.message().setValue(comment.getText(), true);
+                })
+        );
+
         if (isElapsedTimeEnabled && comment.getTimeElapsed() != null) {
             view.timeElapsed().setTime(comment.getTimeElapsed());
             view.timeElapsedType().setValue(comment.getTimeElapsedType());
@@ -270,8 +277,10 @@ public abstract class CaseCommentListActivity
 
         comment = null;
 
-        String message = appendQuote(view.message().getValue(), value.getText(), textMarkup);
-        view.message().setValue( message, true );
+        accountService.getLoginByPersonId(value.getAuthorId(), new FluentCallback<String>()
+                .withSuccess(login -> view.message().setValue(appendLogin(view.message().getValue(), login), true))
+        );
+
         view.focus();
     }
 
@@ -344,6 +353,8 @@ public abstract class CaseCommentListActivity
             if(itemView.attachmentContainer().getAll().isEmpty()){
                 itemView.showAttachments(false);
             }
+
+            reloadComments(caseType, caseId);
         });
     }
 
@@ -402,6 +413,8 @@ public abstract class CaseCommentListActivity
         view.setNewCommentHidden(!isModifyEnabled);
         view.setNewCommentDisabled(!isNewCommentEnabled);
 
+        view.setCommentPlaceholder(lang.commentAddMessageMentionPlaceholder());
+
         List<AbstractCaseCommentItemView> views = new ArrayList<>();
         List<String> textList = new ArrayList<>();
 
@@ -422,7 +435,8 @@ public abstract class CaseCommentListActivity
                     }
                     views.clear();
                     textList.clear();
-                }));
+                })
+        );
     }
 
     private AbstractCaseCommentItemView makeCommentView(CaseComment value) {
@@ -734,7 +748,7 @@ public abstract class CaseCommentListActivity
     }
 
     private void renderTextAsync(String text, En_TextMarkup textMarkup, Consumer<String> consumer) {
-        textRenderController.render(text, textMarkup, new FluentCallback<String>()
+        textRenderController.render(text, textMarkup, true, new FluentCallback<String>()
                 .withError(throwable -> consumer.accept(text))
                 .withSuccess(consumer));
     }
@@ -812,13 +826,15 @@ public abstract class CaseCommentListActivity
     @Inject
     Provider<AbstractCaseCommentItemView> issueProvider;
     @Inject
-    AttachmentServiceAsync attachmentService;
+    AttachmentControllerAsync attachmentService;
     @Inject
     TextRenderControllerAsync textRenderController;
     @Inject
     CaseLinkProvider caseLinkProvider;
     @Inject
     private LocalStorageService storage;
+    @Inject
+    AccountControllerAsync accountService;
 
     @Inject
     ConfigStorage configStorage;

@@ -43,13 +43,17 @@ public class AssemblerProjectServiceImpl implements AssemblerProjectService {
                 .ifOk(filledEvent -> publisherService.publishEvent(filledEvent));
     }
 
-    private Result<AssembledProjectEvent> schedulePauseTime( AssembledProjectEvent event ) {
-        if(event.isCreateEvent() && event.getNewProjectState()!=null && event.getNewProjectState().getPauseDate()!=null){
+    private Result<AssembledProjectEvent> schedulePauseTime(AssembledProjectEvent event) {
+        if (event.getNewProjectState().getPauseDate() == null) {
+            return ok(event);
+        }
+
+        if (event.isCreateEvent() && event.getNewProjectState() != null) {
             schedulePauseTimeNotification(event.getProjectId(), event.getNewProjectState().getPauseDate());
             return ok(event);
         }
 
-        if(event.isEditEvent() && event.isPauseDateChanged()){
+        if (event.isEditEvent() && event.isPauseDateChanged()) {
             schedulePauseTimeNotification(event.getProjectId(), event.getNewProjectState().getPauseDate());
             return ok(event);
         }

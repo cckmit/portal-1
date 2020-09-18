@@ -19,6 +19,7 @@ import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectF
 import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectFilterView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.region.RegionMultiSelector;
@@ -90,6 +91,11 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
     }
 
     @Override
+    public HasValue<Set<EntityOption>> initiatorCompanies() {
+        return initiatorCompanies;
+    }
+
+    @Override
     public void resetFilter() {
         sortField.setValue( En_SortField.project_name );
         sortDir.setValue( true );
@@ -100,6 +106,7 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
         headManagers.setValue(new HashSet<>());
         caseMembers.setValue(new HashSet<>());
         onlyMineProjects.setValue( false );
+        initiatorCompanies.setValue( null );
     }
 
     @Override
@@ -177,6 +184,13 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
         }
     }
 
+    @UiHandler( "initiatorCompanies" )
+    public void onInitiatorCompaniesSelected( ValueChangeEvent<Set<EntityOption>> event ) {
+        if ( activity != null ) {
+            activity.onProjectFilterChanged();
+        }
+    }
+
     Timer timer = new Timer() {
         @Override
         public void run() {
@@ -222,6 +236,10 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
     @Inject
     @UiField( provided = true )
     ProductDirectionMultiSelector direction;
+
+    @Inject
+    @UiField( provided = true )
+    CompanyMultiSelector initiatorCompanies;
 
     @UiField
     CheckBox onlyMineProjects;

@@ -25,11 +25,10 @@ import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
-import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductWithChildrenModel;
-import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
-import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
+import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.impl.PasteInfo;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
@@ -51,8 +50,7 @@ import static ru.protei.portal.ui.common.client.common.UiConstants.ISSUE_CREATE_
 /**
  * Активность создания обращения
  */
-public abstract class IssueCreateActivity implements AbstractIssueCreateActivity, AbstractIssueMetaActivity, Activity {
-
+public abstract class IssueCreateActivity implements AbstractIssueCreateActivity, AbstractIssueMetaActivity {
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
@@ -65,7 +63,10 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
                 if (pasteInfo != null && attachment.getMimeType().startsWith("image/")) {
                     addImageToMessage(pasteInfo.strPosition, attachment);
                 }
-                view.attachmentsContainer().add(attachment);
+                view.attachmentsListContainer().add(attachment);
+
+                view.attachmentsVisibility().setVisible(!view.attachmentsListContainer().isEmpty());
+                view.setCountOfAttachments(size(view.attachmentsListContainer().getAll()));
             }
 
             @Override
@@ -185,27 +186,12 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     public void removeAttachment(Attachment attachment) {
         attachmentService.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, attachment.getId(), new FluentCallback<Boolean>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR)))
-                .withSuccess(result -> view.attachmentsContainer().remove(attachment)));
-    }
-
-    @Override
-    public void onProductChanged() {
-        setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(filterByPlatformAndProduct(subscriptionsList), subscriptionsListEmptyMessage));
-    }
-
-    @Override
-    public void onPlatformChanged() {
-        requestSla(
-                issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId(),
-                slaList -> fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue().getId()))
+                .withSuccess(result -> {
+                    view.attachmentsListContainer().remove(attachment);
+                    view.setCountOfAttachments(size(view.attachmentsListContainer().getAll()));
+                    view.attachmentsVisibility().setVisible(!view.attachmentsListContainer().isEmpty());
+                })
         );
-
-        if (isCompanyWithAutoOpenIssues(currentCompany)) {
-            issueMetaView.product().setValue(null);
-            updateProductsFilter(issueMetaView, issueMetaView.getCompany().getId(), issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId());
-        }
-
-        setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(filterByPlatformAndProduct(subscriptionsList), subscriptionsListEmptyMessage));
     }
 
     @Override
@@ -294,6 +280,34 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         boolean stateValid = isPauseDateValid(issueMetaView.state().getValue().getId(), issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime());
         issueMetaView.setPauseDateValid(stateValid);
+
+        updateProductMandatory(issueMetaView, isCompanyWithAutoOpenIssues(issueMetaView.getCompany()));
+        updateManagerMandatory(issueMetaView);
+    }
+
+    @Override
+    public void onProductChanged() {
+        setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(filterByPlatformAndProduct(subscriptionsList), subscriptionsListEmptyMessage));
+    }
+
+    @Override
+    public void onPlatformChanged() {
+        requestSla(
+                issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId(),
+                slaList -> fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue().getId()))
+        );
+
+        if (isCompanyWithAutoOpenIssues(currentCompany)) {
+            issueMetaView.product().setValue(null);
+            updateProductsFilter(issueMetaView, issueMetaView.getCompany().getId(), issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId());
+        }
+
+        setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(filterByPlatformAndProduct(subscriptionsList), subscriptionsListEmptyMessage));
+    }
+
+    @Override
+    public void onManagerChanged() {
+        updateProductMandatory(issueMetaView, isCompanyWithAutoOpenIssues(issueMetaView.getCompany()));
     }
 
     @Override
@@ -364,7 +378,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         fillMetaView(new CaseObjectMeta(caseObject), caseObject.getNotifiers(), caseObject.getTimeElapsedType(), createRequest.getPlans());
 
-        fillAttachmentsContainer(view.attachmentsContainer(), caseObject.getAttachments());
+        fillAttachmentsContainer(view, caseObject.getAttachments());
 
         fireEvent(new CaseLinkEvents.Show(view.getLinksContainer()).withCaseType(En_CaseType.CRM_SUPPORT).withLinks(createRequest.getLinks()));
         fireEvent(new CaseTagEvents.ShowList(view.getTagsContainer(), createRequest.getTags(), false, a -> tagListActivity = a));
@@ -398,7 +412,10 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         issueMetaView.setInitiator(caseObjectMeta.getInitiator());
 
-        updateProductModelAndMandatory(issueMetaView, isCompanyWithAutoOpenIssues(caseObjectMeta.getInitiatorCompany()));
+        boolean isCompanyWithAutoOpenIssues = isCompanyWithAutoOpenIssues(caseObjectMeta.getInitiatorCompany());
+
+        updateProductModel(issueMetaView, isCompanyWithAutoOpenIssues);
+        updateProductMandatory(issueMetaView, isCompanyWithAutoOpenIssues);
         issueMetaView.product().setValue(ProductShortView.fromProduct(caseObjectMeta.getProduct()));
 
         issueMetaView.setTimeElapsed(caseObjectMeta.getTimeElapsed());
@@ -474,9 +491,12 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     private void updateProductsFilter(PlatformOption selectedPlatform, List<PlatformOption> platforms, Company company) {
-        updateProductModelAndMandatory(issueMetaView, isCompanyWithAutoOpenIssues(company));
+        boolean isCompanyWithAutoOpenIssues = isCompanyWithAutoOpenIssues(company);
 
-        if (!isCompanyWithAutoOpenIssues(company)) {
+        updateProductModel(issueMetaView, isCompanyWithAutoOpenIssues);
+        updateProductMandatory(issueMetaView, isCompanyWithAutoOpenIssues);
+
+        if (!isCompanyWithAutoOpenIssues) {
             issueMetaView.updateProductsByPlatformIds(new HashSet<>());
         } else {
             updateProductsFilter(
@@ -506,11 +526,15 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         }
     }
 
-    private void fillAttachmentsContainer(HasAttachments attachmentsContainer, List<Attachment> attachments) {
-        attachmentsContainer.clear();
+    private void fillAttachmentsContainer(AbstractIssueCreateView view, List<Attachment> attachments) {
+        boolean isAttachmentsEmpty = isEmpty(attachments);
 
-        if (isNotEmpty(attachments)) {
-            attachmentsContainer.add(attachments);
+        view.attachmentsListContainer().clear();
+        view.attachmentsVisibility().setVisible(!isAttachmentsEmpty);
+        view.setCountOfAttachments(size(attachments));
+
+        if (!isAttachmentsEmpty) {
+            view.attachmentsListContainer().add(attachments);
         }
     }
 
@@ -560,6 +584,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         }
 
         issueMetaView.setManager(caseObjectMeta.getManager());
+        updateManagerMandatory(issueMetaView);
     }
 
     private void requestSla(Long platformId, Consumer<List<ProjectSla>> slaConsumer) {
@@ -647,8 +672,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         caseObject.setNotifiers(caseMetaNotifiers);
         caseObject.setPlatformId(issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId());
         caseObject.setPlatformName(issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getDisplayText());
-        caseObject.setAttachmentExists(!isEmpty(view.attachmentsContainer().getAll()));
-        caseObject.setAttachments(new ArrayList<>(view.attachmentsContainer().getAll()));
+        caseObject.setAttachmentExists(!isEmpty(view.attachmentsListContainer().getAll()));
+        caseObject.setAttachments(new ArrayList<>(view.attachmentsListContainer().getAll()));
         caseObject.setManagerCompanyId(issueMetaView.getManagerCompany().getId());
         caseObject.setManagerCompanyName(issueMetaView.getManagerCompany().getDisplayText());
         caseObject.setFavorite(view.isFavoriteButtonActive());
@@ -705,6 +730,11 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         if (!isPauseDateValid(issueMetaView.state().getValue().getId(), issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime())) {
             fireEvent(new NotifyEvents.Show(lang.errPauseDateError(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
+        if (issueMetaView.getManager() != null && issueMetaView.product().getValue() == null) {
+            fireEvent(new NotifyEvents.Show(lang.errProductNotSelected(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
 
@@ -837,9 +867,22 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         this.currentCompany = company;
     }
 
-    private void updateProductModelAndMandatory(AbstractIssueMetaView metaView, boolean isCompanyWithAutoOpenIssues) {
+    private void updateProductModel(AbstractIssueMetaView metaView, boolean isCompanyWithAutoOpenIssues) {
         metaView.setProductModel(isCompanyWithAutoOpenIssues ? productWithChildrenModel : productModel);
-        metaView.setProductMandatory(isCompanyWithAutoOpenIssues);
+    }
+
+    private void updateProductMandatory(AbstractIssueMetaView metaView, boolean isCompanyWithAutoOpenIssues) {
+        Long stateId = metaView.state().getValue() == null ? null : metaView.state().getValue().getId();
+        boolean isStateWithRestrictions = stateId != null && isStateWithRestrictions(stateId);
+
+        metaView.setProductMandatory(isCompanyWithAutoOpenIssues || metaView.getManager() != null || isStateWithRestrictions);
+    }
+
+    private void updateManagerMandatory(AbstractIssueMetaView metaView) {
+        Long stateId = metaView.state().getValue() == null ? null : metaView.state().getValue().getId();
+        boolean isStateWithRestrictions = stateId != null && isStateWithRestrictions(stateId);
+
+        metaView.setManagerMandatory(isStateWithRestrictions);
     }
 
     @Inject
@@ -863,7 +906,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     @Inject
     HomeCompanyService homeCompanyService;
     @Inject
-    AttachmentServiceAsync attachmentService;
+    AttachmentControllerAsync attachmentService;
     @Inject
     CompanyControllerAsync companyService;
     @Inject

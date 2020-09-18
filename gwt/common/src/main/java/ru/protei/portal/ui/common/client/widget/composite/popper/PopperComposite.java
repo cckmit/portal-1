@@ -109,6 +109,7 @@ public abstract class PopperComposite extends PopupLikeComposite {
     private native JavaScriptObject createPopper(Element button, Element popup, String placement, int skidding, int distance) /*-{
         return $wnd.Popper.createPopper(button, popup, {
             placement: placement,
+            strategy: 'fixed',
             modifiers: [
                 {
                     name: 'offset',

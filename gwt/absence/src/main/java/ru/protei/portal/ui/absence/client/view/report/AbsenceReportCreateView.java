@@ -12,9 +12,9 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.inject.Inject;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.absence.client.activity.report.AbstractAbsenceReportCreateView;
-import ru.protei.portal.ui.absence.client.widget.paramview.AbsenceFilterParamWidget;
-import ru.protei.portal.ui.absence.client.widget.AbsenceFilterWidget;
-import ru.protei.portal.ui.absence.client.widget.AbsenceFilterWidgetModel;
+import ru.protei.portal.ui.absence.client.widget.filter.paramview.AbsenceFilterParamWidget;
+import ru.protei.portal.ui.absence.client.widget.filter.AbsenceFilterWidget;
+import ru.protei.portal.ui.absence.client.widget.filter.AbsenceFilterWidgetModel;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 public class AbsenceReportCreateView extends Composite implements AbstractAbsenceReportCreateView {

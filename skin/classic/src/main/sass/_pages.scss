@@ -126,11 +126,6 @@ body.sidebar-visible .page-sidebar .menu-items .icon-thumbnail {
   cursor: pointer;
 }
 
-
-.icon-thumbnail{
-  margin-right: 15px !important;
-}
-
 .card .card-body.no-padding .row:not(.reset-no-padding) {
   margin-right: -15px;
   margin-left: -15px;
@@ -175,4 +170,51 @@ body.sidebar-visible .page-sidebar .menu-items .icon-thumbnail {
 
 .b-warning-light {
   border-color: #f9d975;
+}
+
+.page-sidebar .sidebar-menu .menu-items > li > a > .arrow:before {
+  font-family: "Font Awesome 5 Free";
+  font-weight: 600;
+}
+
+.page-sidebar .sidebar-menu .menu-items > li > a > .arrow {
+  float: left;
+  padding-right: 0;
+}
+
+.page-sidebar .sidebar-menu .menu-items > li ul.sub-menu {
+  display: block;
+  webkit-transition: all 0.5s ease 0s;
+  -moz-transition: all 0.5s ease 0s;
+  -o-transition: all 0.5s ease 0s;
+  transition: all 0.5s ease 0s;
+  overflow: hidden;
+}
+
+.page-sidebar .sidebar-menu .menu-items > li ul.sub-menu > li {
+  padding: 0 20px 0 10px;
+}
+
+.page-sidebar .sidebar-menu .menu-items > li > a > .title,
+.page-sidebar .sidebar-menu .menu-items > li ul.sub-menu > li > a > .title {
+  vertical-align: middle;
+}
+
+.page-sidebar .sidebar-menu .menu-items > li ul.sub-menu > li > a {
+  padding: 0;
+}
+
+.page-sidebar .sidebar-menu .menu-items li:hover > a > .icon-thumbnail,
+.page-sidebar .sidebar-menu .menu-items > li ul.sub-menu > li:hover > a > .icon-thumbnail {
+  color: #fff;
+}
+
+
+.page-sidebar .sidebar-menu .menu-items > li ul.sub-menu > li > a > .title {
+  float: left;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  width: 75%;
+  line-height: 30px;
 }

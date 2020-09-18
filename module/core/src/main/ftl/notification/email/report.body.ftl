@@ -103,21 +103,21 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                         ${_period}
                     </td>
                     <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                        <#if filter.createdFrom?? || filter.createdTo??>
-                            <#if filter.createdFrom??>
-                                ${filter.createdFrom?datetime}
+                        <#if createdInterval??>
+                            <#if createdInterval.from??>
+                                ${createdInterval.from?datetime}
                             </#if> -
-                            <#if filter.createdTo??>
-                                ${filter.createdTo?datetime}
+                            <#if createdInterval.to??>
+                                ${createdInterval.to?datetime}
                             </#if>
                             <br>
                         </#if>
-                        <#if filter.modifiedFrom?? || filter.modifiedTo??>
-                            <#if filter.modifiedFrom??>
-                                ${filter.modifiedFrom?datetime}
+                        <#if modifiedInterval??>
+                            <#if modifiedInterval.from??>
+                                ${modifiedInterval.from?datetime}
                             </#if> -
-                            <#if filter.modifiedTo??>
-                                ${filter.modifiedTo?datetime}
+                            <#if modifiedInterval.to??>
+                                ${modifiedInterval.to?datetime}
                             </#if>
                             <br>
                         </#if>

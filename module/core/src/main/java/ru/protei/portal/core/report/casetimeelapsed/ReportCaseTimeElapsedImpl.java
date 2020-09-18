@@ -40,10 +40,10 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
     ReportDAO reportDAO;
 
     @Override
-    public boolean writeReport(OutputStream buffer, Report report, DateFormat dateFormat, TimeFormatter timeFormatter,
-                                    Predicate<Long> isCancel) throws IOException {
-
-        CaseQuery caseQuery = report.getCaseQuery();
+    public boolean writeReport(OutputStream buffer,
+                               Report report,
+                               CaseQuery caseQuery,
+                               Predicate<Long> isCancel) throws IOException {
         if (caseQuery == null) {
             log.debug("writeReport : reportId={} has invalid queries: caseQuery={}, aborting task",
                     report.getId(), caseQuery);
@@ -59,7 +59,7 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
 
         log.info( "writeReport(): Start report {}", report );
         try (ReportWriter<CaseCommentTimeElapsedSum> writer =
-                    new ExcelReportWriter(localizedLang, dateFormat, timeFormatter)) {
+                    new ExcelReportWriter(localizedLang)) {
 
             while (true) {
                 if (isCancel.test(report.getId())) {

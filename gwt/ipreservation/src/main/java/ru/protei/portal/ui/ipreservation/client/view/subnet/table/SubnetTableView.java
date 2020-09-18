@@ -76,6 +76,7 @@ public class SubnetTableView extends Composite implements AbstractSubnetTableVie
     public void setAnimation ( TableAnimation animation ) {
         animation.setContainers( tableContainer, previewContainer, filterContainer );
         animation.setStyles("col-md-12", "col-md-9", "col-md-3", "col-md-8", "col-md-4");
+        columnProvider.setChangeSelectionIfSelectedPredicate(subnet -> animation.isPreviewShow());
     }
 
     @Override

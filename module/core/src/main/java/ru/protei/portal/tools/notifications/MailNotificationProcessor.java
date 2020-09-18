@@ -14,18 +14,23 @@ import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.mail.MailMessageFactory;
 import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.core.model.dict.En_CaseLink;
+import ru.protei.portal.core.model.dto.ReportCaseQuery;
+import ru.protei.portal.core.model.dto.ReportDto;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.model.struct.ReplaceLoginWithUsernameInfo;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.CaseCommentService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.EmployeeService;
+import ru.protei.portal.core.service.ReportService;
 import ru.protei.portal.core.service.events.CaseSubscriptionService;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 import ru.protei.portal.core.service.template.TemplateService;
@@ -38,14 +43,15 @@ import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
-import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.partitioningBy;
 import static ru.protei.portal.core.model.dict.En_CaseLink.CRM;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
 import static ru.protei.portal.core.model.helper.StringUtils.join;
 
 /**
@@ -59,31 +65,24 @@ public class MailNotificationProcessor {
 
     @Autowired
     CaseSubscriptionService subscriptionService;
-
     @Autowired
     TemplateService templateService;
-
     @Autowired
     CaseService caseService;
-
     @Autowired
     CaseCommentService caseCommentService;
-
     @Autowired
     EmployeeService employeeService;
-
     @Autowired
     MailSendChannel mailSendChannel;
-
     @Autowired
     MailMessageFactory messageFactory;
-
     @Autowired
     LockService lockService;
-
+    @Autowired
+    ReportService reportService;
     @Autowired
     PortalConfig config;
-
     @Autowired
     Lang lang;
 
@@ -93,6 +92,10 @@ public class MailNotificationProcessor {
     @EventListener
     public void onCaseChanged(AssembledCaseEvent event){
         Collection<NotificationEntry> notifiers = collectNotifiers(event);
+
+        List<ReplaceLoginWithUsernameInfo<CaseComment>> commentReplacementInfoList = caseCommentService.replaceLoginWithUsername(event.getAllComments()).getData();
+
+        notifiers.addAll(collectCommentNotifiers(event, commentReplacementInfoList, event.getCaseObject().isPrivateCase()));
 
         if(CollectionUtils.isEmpty(notifiers)) {
             log.info( "Case notification :: subscribers not found, break notification" );
@@ -114,7 +117,8 @@ public class MailNotificationProcessor {
             DiffCollectionResult<LinkData> privateLinks = convertToLinkData( event.getLinks(), privateCaseUrl );
             DiffCollectionResult<LinkData> publicLinks = convertToLinkData(selectPublicLinks(event.getLinks()), publicCaseUrl );
 
-            List<CaseComment> comments =  event.getAllComments();
+            List<CaseComment> comments = toList(commentReplacementInfoList, ReplaceLoginWithUsernameInfo::getObject);
+
             Long lastMessageId = caseService.getAndIncrementEmailLastId(event.getCaseObjectId() ).orElseGet( r-> Result.ok(0L) ).getData();
 
             if ( isPrivateNotification(event) ) {
@@ -132,6 +136,7 @@ public class MailNotificationProcessor {
             log.error( "Can't sent mail notification with case id = {}. Exception: ", event.getCaseObjectId(), e );
         }
     }
+
 
     private DiffCollectionResult<CaseLink> selectPublicLinks( DiffCollectionResult<CaseLink> mergeLinks ) {
         DiffCollectionResult result = new DiffCollectionResult();
@@ -627,26 +632,37 @@ public class MailNotificationProcessor {
 
     @EventListener
     public void onMailReportEvent(MailReportEvent event) {
-        Report report = event.getReport();
+        ReportDto reportDto = event.getReport();
+        Report report = reportDto.getReport();
 
-        PreparedTemplate bodyTemplate = templateService.getMailReportBody(report);
+        Interval createdInterval = reportDto instanceof ReportCaseQuery
+                ? makeInterval(((ReportCaseQuery) reportDto).getQuery().getCreatedRange())
+                : null;
+        Interval modifiedInterval = reportDto instanceof ReportCaseQuery
+                ? makeInterval(((ReportCaseQuery) reportDto).getQuery().getModifiedRange())
+                : null;
+
+        PreparedTemplate bodyTemplate = templateService.getMailReportBody(reportDto, createdInterval, modifiedInterval);
         if (bodyTemplate == null) {
             log.error("Failed to prepare body template for reporId={}", report.getId());
             return;
         }
 
-        PreparedTemplate subjectTemplate = templateService.getMailReportSubject(report);
+        PreparedTemplate subjectTemplate = templateService.getMailReportSubject(reportDto);
         if (subjectTemplate == null) {
             log.error("Failed to prepare subject template for reporId={}", report.getId());
             return;
         }
 
         if (event.getContent() != null) {
+            String filename = reportService.getReportFilename(report.getId(), reportDto).getData();
             sendMailToRecipientWithAttachment(
                     fetchNotificationEntryFromPerson(report.getCreator()),
                     bodyTemplate, subjectTemplate,
                     true,
-                    event.getContent(), report.getName() + ".xlsx");
+                    event.getContent(),
+                    filename
+            );
         } else {
             sendMailToRecipients(Collections.singletonList(fetchNotificationEntryFromPerson(report.getCreator())),
                     bodyTemplate, subjectTemplate,
@@ -672,11 +688,15 @@ public class MailNotificationProcessor {
 
         Set<NotificationEntry> recipients = subscriptionService.subscribers(recipientsIds);
 
+        List<ReplaceLoginWithUsernameInfo<CaseComment>> commentReplacementInfoList = caseCommentService.replaceLoginWithUsername(event.getAllComments()).getData();
+        recipients.addAll(collectCommentNotifiers(event, commentReplacementInfoList, true));
+
         DiffCollectionResult<LinkData> links = convertToLinkData(event.getLinks(), getCrmCaseUrl(true));
 
         Set<String> addresses = recipients.stream().map(NotificationEntry::getAddress).collect(Collectors.toSet());
         PreparedTemplate bodyTemplate = templateService.getMailProjectBody(
                 event,
+                commentReplacementInfoList.stream().map(ReplaceLoginWithUsernameInfo::getObject).collect(Collectors.toList()),
                 addresses,
                 links,
                 makeCrmProjectUrl(config.data().getMailNotificationConfig().getCrmUrlInternal(), event.getProjectId()),
@@ -905,6 +925,36 @@ public class MailNotificationProcessor {
         }
     }
 
+    // -----------------------
+    // Birthdays notifications
+    // -----------------------
+
+    @EventListener
+    public void onBirthdaysNotificationEvent( BirthdaysNotificationEvent event) {
+        log.info( "onBirthdaysNotificationEvent(): {}", event );
+
+        if (CollectionUtils.isEmpty(event.getEmployees()) || CollectionUtils.isEmpty(event.getNotifiers())) {
+            log.error("Failed to send birthdays notification: empty data or notifiers");
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.getBirthdaysNotificationSubject( event.getFromDate(), event.getToDate() );
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for PersonCaseFilter notification");
+            return;
+        }
+
+        List<String> recipients = getNotifiersAddresses(event.getNotifiers());
+
+        PreparedTemplate bodyTemplate = templateService.getBirthdaysNotificationBody( event.getEmployees(), recipients );
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for release PersonCaseFilter notification");
+            return;
+        }
+
+        sendMailToRecipients(event.getNotifiers(), bodyTemplate, subjectTemplate, true);
+    }
+
     // -----
     // Utils
     // -----
@@ -1055,6 +1105,7 @@ public class MailNotificationProcessor {
         return event.isNameChanged()
                 || event.isDescriptionChanged()
                 || event.isStateChanged()
+                || event.isPauseDateChanged()
                 || event.isRegionChanged()
                 || event.isCompanyChanged()
                 || event.isCustomerTypeChanged()
@@ -1095,6 +1146,66 @@ public class MailNotificationProcessor {
     private String makeCrmProjectUrl( String crmUrl, Long projectId ) {
         String crmProjectUrl = crmUrl + config.data().getMailNotificationConfig().getCrmProjectUrl();
         return String.format( crmProjectUrl, projectId );
+    }
+
+    private Collection<NotificationEntry> collectCommentNotifiers(HasCaseComments hasCaseComments, List<ReplaceLoginWithUsernameInfo<CaseComment>> commentToLoginList, boolean isPrivateCase) {
+        List<NotificationEntry> result = new ArrayList<>();
+
+        Set<CaseComment> neededCaseCommentsForNotification = getNeededCaseCommentsForNotification(hasCaseComments);
+
+        if (isPrivateCase) {
+            List<Long> personIds = getPersonIdsFromNeededComments(commentToLoginList, neededCaseCommentsForNotification);
+            result.addAll(filterNotificationEntries(subscriptionService.subscribers(personIds), this::isProteiRecipient));
+        } else {
+            List<Long> privateCommentPersonIds = getPersonIdsFromNeededComments(getPrivateCommentsReplacementInfoList(commentToLoginList), neededCaseCommentsForNotification);
+            result.addAll(filterNotificationEntries(subscriptionService.subscribers(privateCommentPersonIds), this::isProteiRecipient));
+
+            List<Long> publicCommentPersonIds = getPersonIdsFromNeededComments(getPublicCommentReplacementInfoList(commentToLoginList), neededCaseCommentsForNotification);
+            result.addAll(subscriptionService.subscribers(publicCommentPersonIds));
+        }
+
+        return result;
+    }
+
+    private List<Long> getPersonIdsFromNeededComments(List<ReplaceLoginWithUsernameInfo<CaseComment>> commentToLoginList, Set<CaseComment> neededCaseCommentsForNotification) {
+        return commentToLoginList
+                .stream()
+                .filter(replacementInfo -> neededCaseCommentsForNotification.contains(replacementInfo.getObject()))
+                .flatMap(replacementInfo -> replacementInfo.getUserLoginShortViews().stream())
+                .map(UserLoginShortView::getPersonId)
+                .collect(Collectors.toList());
+    }
+
+    private Set<CaseComment> getNeededCaseCommentsForNotification(HasCaseComments hasCaseComments) {
+        List<CaseComment> addedCaseComments = emptyIfNull(hasCaseComments.getAddedCaseComments());
+        List<CaseComment> changedCaseComments = emptyIfNull(hasCaseComments.getChangedCaseComments());
+        List<CaseComment> removeCaseComments = emptyIfNull(hasCaseComments.getRemovedCaseComments());
+
+        addedCaseComments.removeIf(removeCaseComments::contains);
+        changedCaseComments.removeIf(removeCaseComments::contains);
+
+        Set<CaseComment> neededComments = new HashSet<>(addedCaseComments);
+        neededComments.addAll(changedCaseComments);
+
+        return neededComments;
+    }
+
+    private List<ReplaceLoginWithUsernameInfo<CaseComment>> getPrivateCommentsReplacementInfoList(List<ReplaceLoginWithUsernameInfo<CaseComment>> commentToLoginList) {
+        return commentToLoginList
+                .stream()
+                .filter(replacementInfo -> replacementInfo.getObject().isPrivateComment())
+                .collect(Collectors.toList());
+    }
+
+    private List<ReplaceLoginWithUsernameInfo<CaseComment>> getPublicCommentReplacementInfoList(List<ReplaceLoginWithUsernameInfo<CaseComment>> commentToLoginList) {
+        return commentToLoginList
+                .stream()
+                .filter(replacementInfo -> !replacementInfo.getObject().isPrivateComment())
+                .collect(Collectors.toList());
+    }
+
+    private List<NotificationEntry> filterNotificationEntries(Collection<NotificationEntry> entries, Predicate<NotificationEntry> notificationEntryPredicate) {
+        return stream(entries).filter(notificationEntryPredicate).collect(Collectors.toList());
     }
 
     private class MimeMessageHeadersFacade {

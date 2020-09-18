@@ -123,6 +123,9 @@ public enum En_AuditType implements HasId {
     ABSENCE_REMOVE(81),
 
     SUBSCRIPTION_MODIFY(82),
+
+    DUTY_LOG_CREATE(84),
+    DUTY_LOG_MODIFY(85),
     ;
 
     En_AuditType(int id ) {

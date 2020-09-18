@@ -26,6 +26,7 @@ import ru.protei.portal.ui.issue.client.view.table.columns.InfoColumn;
 import ru.protei.portal.ui.issue.client.view.table.columns.NumberColumn;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 public class DashboardTableView extends Composite implements AbstractDashboardTableView {
 
@@ -100,6 +101,11 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     }
 
     @Override
+    public void setChangeSelectionIfSelectedPredicate(Predicate<CaseShortView> changeSelectionIfSelectedPredicate) {
+        columnProvider.setChangeSelectionIfSelectedPredicate(changeSelectionIfSelectedPredicate);
+    }
+
+    @Override
     public HandlerRegistration addDragStartHandler(DragStartHandler handler) {
         return addDomHandler(handler, DragStartEvent.getType());
     }
@@ -160,9 +166,6 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     }
 
     private void initTable() {
-
-        ClickColumnProvider<CaseShortView> columnProvider = new ClickColumnProvider<>();
-
         NumberColumn number = new NumberColumn(lang);
         table.addColumn(number.header, number.values);
         number.setHandler(activity);
@@ -218,6 +221,7 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     Element headerContainer;
 
     private AbstractDashboardTableActivity activity;
+    private ClickColumnProvider<CaseShortView> columnProvider = new ClickColumnProvider<>();
 
     interface CaseTableViewUiBinder extends UiBinder<HTMLPanel, DashboardTableView> {}
     private static CaseTableViewUiBinder ourUiBinder = GWT.create(CaseTableViewUiBinder.class);

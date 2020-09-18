@@ -208,6 +208,11 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public UserLoginShortViewDAO getUserLoginShortViewDAO() {
+        return new UserLoginShortViewDAO_Impl();
+    }
+
+    @Bean
     public CaseLinkDAO getCaseLinkDAO() {
         return new CaseLinkDAO_Impl();
     }
@@ -302,10 +307,12 @@ public class JiraTestConfiguration {
         return new CaseCommentServiceImpl();
     }
 
+/*
     @Bean
     public ClientEventService getClientEventService() {
         return new ClientEventServiceImpl();
     }
+*/
 
     @Bean
     public CaseStateWorkflowService getCaseStateWorkflowService() {

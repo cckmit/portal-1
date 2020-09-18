@@ -92,6 +92,7 @@ public enum En_Privilege {
     CONTRACT_VIEW (CONTRACT, VIEW),
     CONTRACT_EDIT (CONTRACT, EDIT),
     CONTRACT_CREATE (CONTRACT, CREATE),
+    CONTRACT_REPORT (CONTRACT, REPORT),
 
     EDUCATION_VIEW (EDUCATION, VIEW),
     EDUCATION_CREATE (EDUCATION, CREATE),
@@ -120,6 +121,10 @@ public enum En_Privilege {
     ABSENCE_EDIT(ABSENCE, EDIT),
     ABSENCE_REMOVE(ABSENCE, REMOVE),
     ABSENCE_REPORT(ABSENCE, REPORT),
+
+    DUTY_LOG_VIEW(DUTY_LOG, VIEW),
+    DUTY_LOG_CREATE(DUTY_LOG, CREATE),
+    DUTY_LOG_EDIT(DUTY_LOG, EDIT),
 
     // Набор дополнительных привилегий, которые вычисляются по scope и не пишутся в базу. Устанавливаются без action
     ISSUE_COMPANY_EDIT(ISSUE, null),

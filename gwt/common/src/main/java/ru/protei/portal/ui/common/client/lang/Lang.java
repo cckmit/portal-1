@@ -420,7 +420,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String goToContacts();
 
-    String contactFieldLengthExceed( String p0, int p1 );
+    String promptFieldLengthExceed(String fieldName, int fieldLength);
 
     String contactGeneratePassword();
 
@@ -919,6 +919,8 @@ public interface Lang extends Messages, ContactItemLang {
     String projectProducts();
 
     String projectCustomerType();
+
+    String projectCustomer();
 
     String projectTeam();
 
@@ -2040,6 +2042,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractContractorDropped();
 
+    String contractOrganizationDropped();
+
     String contractContractorDescription();
 
     String selectContractContractor();
@@ -2191,6 +2195,8 @@ public interface Lang extends Messages, ContactItemLang {
     String reportTypeCaseTimeElapsedPeriod();
 
     String reportTypeProject();
+
+    String reportTypeContract();
 
     String reportScheduledType();
 
@@ -2556,9 +2562,9 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reservedIpSubnetUnableToRemove();
 
-    String reservedIpSubnetsBtn();
+    String subnets();
 
-    String reservedIpIpsBtn();
+    String reservedIps();
 
     String reservedIpNumber();
 
@@ -2688,7 +2694,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String roomReservationRemoved();
 
-    String errRoomReservationOutdated();
+    String errRoomReservationFinished();
 
     String errRoomReservationRoomNotAccessible();
 
@@ -2868,6 +2874,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String absenceValidationDateRange();
 
+    String absenceValidationDateRanges();
+
+    String absenceValidationDateRangesIntersection();
+
     String absenceValidationReason();
 
     String absenceCreation();
@@ -2876,7 +2886,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String absenceButtonCreate();
 
-    String absenceCreated();
+    String absenceCreated(@PluralCount int count);
 
     String absences();
 
@@ -2913,8 +2923,6 @@ public interface Lang extends Messages, ContactItemLang {
     String absenceReportDateRange();
 
     String absenceReportTitle();
-
-    String absenceButtonReport();
 
     String absenceReportHint();
 
@@ -2985,4 +2993,98 @@ public interface Lang extends Messages, ContactItemLang {
     String contractorRemoveConfirmMessage();
 
     String contractorRemoved();
+
+    String projectPauseDate(String date);
+
+    String errDashboardChooseFilter();
+
+    String errDashboardTableNameEmpty();
+
+    String errContractOrganizationShouldBeDifferentFromParent();
+
+    String topBrass();
+
+    String archive();
+
+    String storeAndDelivery();
+
+    String systemAdministratorLog();
+
+    String floorPlans();
+
+    String boardSearch();
+
+    String delivery();
+
+    String store();
+
+    String supportAndMarketing();
+
+    String notificationSystem();
+
+    String testZones();
+
+    String generalTable();
+
+    String signingDate();
+
+    String attachmentsHeader(String countOfAttachments);
+
+    String attachmentAdd();
+
+    String internalResourceVpn();
+
+    String commentAddMessageMentionPlaceholder();
+
+    String dutyLogCreation();
+
+    String dutyLogEditing();
+
+    String dutyLogDutyDate();
+
+    String dutyLogEmployee();
+
+    String dutyLogRange();
+
+    String dutyLogDuty();
+
+    String dutyLogCreated();
+
+    String dutyLogUpdated();
+
+    String dutyTypeBG();
+
+    String dutyTypeIP();
+
+    String dutyTypeBilling();
+
+    String dutyTypeMobile();
+
+    String dutyTypeDPI();
+
+    String dutyTypeMKSP_VKS();
+
+    String dutyTypeNGN();
+
+    String dutyTypeSORM();
+
+    String dutyLogType();
+
+    String dutyLog();
+
+    String dutyLogDateFrom();
+
+    String dutyLogValidationDateRange();
+
+    String dutyLogValidationEmployee();
+
+    String issueReportWithTags();
+
+    String issueReportWithTagsTitle();
+
+    String issueReportWithLinkedIssues();
+
+    String issueReportWithLinkedIssuesTitle();
+
+    String issueReportAdditionalParams();
 }

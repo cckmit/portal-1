@@ -11,10 +11,14 @@ public class CrmConstants {
     public static final int EMAIL_MAX_SIZE = 254;
     public static final int NAME_MAX_SIZE = 1024;
 
+    public static final float BYTES_IN_MEGABYTE = 1024 * 1024;
+
     public static final String SOME_LINKS_NOT_SAVED = "some links not saved";
     public static final String SOME_PLANS_NOT_UPDATED = "some plans not updated";
 
     public static final String DEFAULT_LOCALE = "ru";
+
+    public static final List<String> CONFIG_EXTENSIONS = Arrays.asList(".config", ".cfg", ".properties", ".xml", ".json");
 
     public interface Session {
         String AUTH_TOKEN = "session-auth-token";
@@ -68,6 +72,7 @@ public class CrmConstants {
     public interface Masks {
         String EMAIL = "^[-a-zA-Z0-9_\\.]+@[-a-zA-Z0-9_\\.]+\\.\\w{2,4}$";
         String ONLY_DIGITS = "^\\d*$";
+        String ONE_OR_MORE_SPACES = "\\s+";
         String IP = "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
         String COMPANY_NAME_ILLEGAL_CHARS = ".*[<>/]+.*";
         String CONTRACT_SPECIFICATION_CLAUSE = "^\\d{1,3}(\\.\\d{1,3})*$";
@@ -76,6 +81,7 @@ public class CrmConstants {
         String CONTRACTOR_KPP = "^\\d{9}$";
         String CONTRACTOR_NAME = "^.{1,100}$";
         String CONTRACTOR_FULL_NAME = "^.{1,250}$";
+        String MENTION = "^\\@.*";
     }
 
     public interface Time {
@@ -91,6 +97,10 @@ public class CrmConstants {
         int LAST_NAME_SIZE = 80;
         int SHORT_NAME_SIZE = 128;
         int LOGIN_SIZE = 64;
+    }
+
+    public interface EquipmentConstants {
+        int NAME_SIZE = 128;
     }
 
     public interface Comment {

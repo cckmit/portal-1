@@ -75,7 +75,7 @@
         </dependency>
         <dependency>
             <groupId>ru.protei</groupId>
-            <artifactId>portal4.ui.issuereport</artifactId>
+            <artifactId>portal4.ui.report</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
@@ -161,6 +161,11 @@
         <dependency>
             <groupId>ru.protei</groupId>
             <artifactId>portal4.ui.absence</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>ru.protei</groupId>
+            <artifactId>portal4.ui.dutylog</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>

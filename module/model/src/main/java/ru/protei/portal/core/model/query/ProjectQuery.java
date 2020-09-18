@@ -45,6 +45,8 @@ public class ProjectQuery extends BaseQuery {
 
     private Boolean platformIndependentProject;
 
+    private Set<EntityOption> initiatorCompanyIds;
+
     public ProjectQuery() {
         sortField = En_SortField.case_name;
         sortDir = En_SortDir.ASC;
@@ -183,6 +185,14 @@ public class ProjectQuery extends BaseQuery {
         this.pauseDate = pauseDate;
     }
 
+    public Set<EntityOption> getInitiatorCompanyIds() {
+        return initiatorCompanyIds;
+    }
+
+    public void setInitiatorCompanyIds(Set<EntityOption> initiatorCompanyIds) {
+        this.initiatorCompanyIds = initiatorCompanyIds;
+    }
+
     @Override
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
@@ -193,6 +203,7 @@ public class ProjectQuery extends BaseQuery {
                 CollectionUtils.isNotEmpty(caseMembers) ||
                 CollectionUtils.isNotEmpty(directions) ||
                 CollectionUtils.isNotEmpty(productIds) ||
+                CollectionUtils.isNotEmpty(initiatorCompanyIds) ||
                 customerType != null ||
                 createdFrom != null ||
                 createdTo != null ||
@@ -220,6 +231,7 @@ public class ProjectQuery extends BaseQuery {
                 ", limit=" + limit +
                 ", offset=" + offset +
                 ", platformIndependentProject=" + platformIndependentProject +
+                ", initiatorCompanyIds=" + initiatorCompanyIds +
                 '}';
     }
 
@@ -240,14 +252,15 @@ public class ProjectQuery extends BaseQuery {
                 customerType == that.customerType &&
                 Objects.equals(createdFrom, that.createdFrom) &&
                 Objects.equals(createdTo, that.createdTo) &&
-                Objects.equals(platformIndependentProject, that.platformIndependentProject);
+                Objects.equals(platformIndependentProject, that.platformIndependentProject) &&
+                Objects.equals(initiatorCompanyIds, that.initiatorCompanyIds);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(caseIds, states, regions, headManagers, caseMembers, directions,
                 districtIds, onlyMineProjects, productIds, customerType, createdFrom, createdTo,
-                platformIndependentProject);
+                platformIndependentProject, initiatorCompanyIds);
     }
 
     public CaseQuery toCaseQuery(Long myPersonId) {
@@ -309,6 +322,13 @@ public class ProjectQuery extends BaseQuery {
         caseQuery.setSortField(this.getSortField());
         caseQuery.setPlatformIndependentProject(this.getPlatformIndependentProject());
         caseQuery.setDistrictIds(this.getDistrictIds());
+
+        if (CollectionUtils.isNotEmpty(this.getInitiatorCompanyIds())) {
+            caseQuery.setCompanyIds(this.getInitiatorCompanyIds().stream()
+                    .map(directionInfo -> directionInfo == null ? null : directionInfo.getId())
+                    .collect(toList())
+            );
+        }
 
         return caseQuery;
     }

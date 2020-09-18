@@ -6,8 +6,5 @@ import ru.protei.portal.core.model.ent.CaseLink;
  * Абстрактная активность списка линков
  */
 public interface AbstractCaseLinkListActivity {
-
     void onAddLinkClicked(CaseLink value);
-
-    void onLinksContainerStateChanged(boolean isVisible);
 }

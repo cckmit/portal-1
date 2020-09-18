@@ -8,7 +8,9 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.UserLogin;
+import ru.protei.portal.core.model.ent.UserLoginShortView;
 import ru.protei.portal.core.model.query.AccountQuery;
+import ru.protei.portal.core.model.query.UserLoginShortViewQuery;
 import ru.protei.portal.core.service.AccountService;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.AccountController;
@@ -33,6 +35,13 @@ public class AccountControllerImpl implements AccountController {
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
         Result<SearchResult<UserLogin>> result = accountService.getAccounts(token, query);
         return checkResultAndGetData(result);
+    }
+
+    @Override
+    public List<UserLoginShortView> getUserLoginShortViewList(UserLoginShortViewQuery query) throws RequestFailedException {
+        log.info("getUserLoginShortViewList(): query={}", query);
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
+        return checkResultAndGetData(accountService.getUserLoginShortViewList(token, query));
     }
 
     @Override
@@ -127,6 +136,13 @@ public class AccountControllerImpl implements AccountController {
         if (!response.isOk()) {
             throw new RequestFailedException(response.getStatus());
         }
+    }
+
+    @Override
+    public String getLoginByPersonId(Long personId) throws RequestFailedException {
+        log.info("getLoginByPersonId(): personId={}", personId);
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
+        return checkResultAndGetData(accountService.getLoginByPersonId(token, personId));
     }
 
     @Autowired

@@ -58,6 +58,11 @@ public class DashboardView extends Composite implements AbstractDashboardView{
     }
 
     @Override
+    public boolean isQuickviewShow() {
+        return quickview.isShow();
+    }
+
+    @Override
     public void setFailedViewText(String text) {
         failedViewText.setInnerText(text);
     }

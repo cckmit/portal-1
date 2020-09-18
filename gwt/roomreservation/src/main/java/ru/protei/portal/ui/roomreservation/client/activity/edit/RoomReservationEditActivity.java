@@ -204,7 +204,7 @@ public abstract class RoomReservationEditActivity implements Activity, AbstractR
                 .map(String::valueOf)
                 .collect(Collectors.toList()));
         view.personResponsible().setValue(reservation.getPersonResponsible() != null
-                ? reservation.getPersonResponsible().toFullNameShortView()
+                ? reservation.getPersonResponsible()
                 : currentPerson);
         view.room().setValue(reservation.getRoom(), true);
         view.reason().setValue(reservation.getReason());
@@ -213,7 +213,6 @@ public abstract class RoomReservationEditActivity implements Activity, AbstractR
                 : String.valueOf(COFFEE_BREAK_OPTIONS.get(0)));
         view.dates().setValue(toDateIntervals(reservation));
         view.notifiers().setValue(stream(reservation.getPersonsToBeNotified())
-                .map(Person::toFullNameShortView)
                 .collect(Collectors.toSet()));
         view.comment().setValue(reservation.getComment());
 
@@ -239,9 +238,7 @@ public abstract class RoomReservationEditActivity implements Activity, AbstractR
                 reservation.setId(base.getId());
                 reservation.setPersonRequester(base.getPersonRequester());
                 reservation.setDateRequested(base.getDateRequested());
-                reservation.setPersonResponsible(view.personResponsible().getValue() != null
-                        ? Person.fromPersonFullNameShortView(view.personResponsible().getValue())
-                        : null);
+                reservation.setPersonResponsible(view.personResponsible().getValue());
                 reservation.setRoom(view.room().getValue());
                 reservation.setReason(view.reason().getValue());
                 reservation.setCoffeeBreakCount(view.coffeeBreakCount().getValue() != null
@@ -250,7 +247,6 @@ public abstract class RoomReservationEditActivity implements Activity, AbstractR
                 reservation.setDateFrom(date.from);
                 reservation.setDateUntil(date.to);
                 reservation.setPersonsToBeNotified(stream(view.notifiers().getValue())
-                        .map(Person::fromPersonFullNameShortView)
                         .collect(Collectors.toList()));
                 reservation.setComment(view.comment().getValue());
                 return reservation;

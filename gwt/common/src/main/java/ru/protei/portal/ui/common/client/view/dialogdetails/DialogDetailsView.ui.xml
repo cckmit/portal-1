@@ -1,5 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:button='urn:import:ru.protei.portal.ui.common.client.widget.button'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -15,13 +16,13 @@
 
                 <div class="modal-footer">
                     <div class="additional-button">
-                        <g:Anchor href='#' ui:field="additional" styleName="btn btn-success" visible="false"><ui:text from="{lang.buttonCreate}"/></g:Anchor>
+                        <g:Button ui:field="additional" styleName="btn btn-success" visible="false"><ui:text from="{lang.buttonCreate}"/></g:Button>
                     </div>
                     <div class="remove-button">
-                        <g:Anchor href='#' ui:field="remove" styleName="btn btn-danger" visible="false"><ui:text from="{lang.buttonRemove}"/></g:Anchor>
+                        <g:Button ui:field="remove" styleName="btn btn-danger" visible="false"><ui:text from="{lang.buttonRemove}"/></g:Button>
                     </div>
-                    <g:Anchor href='#' ui:field="save" styleName="btn btn-complete"><ui:text from="{lang.buttonSave}"/></g:Anchor>
-                    <g:Anchor href='#' ui:field="cancel" styleName="btn btn-default"><ui:text from="{lang.buttonCancel}"/></g:Anchor>
+                    <button:ButtonProcessable ui:field="save" styleName="btn btn-complete"><ui:text from="{lang.buttonSave}"/></button:ButtonProcessable>
+                    <g:Button ui:field="cancel" styleName="btn btn-default"><ui:text from="{lang.buttonCancel}"/></g:Button>
                 </div>
             </div>
         </div>
