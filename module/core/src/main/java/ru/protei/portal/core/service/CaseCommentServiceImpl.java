@@ -17,8 +17,6 @@ import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.event.CaseCommentRemovedClientEvent;
-import ru.protei.portal.core.model.event.CaseCommentSavedClientEvent;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
@@ -30,7 +28,6 @@ import ru.protei.portal.core.model.view.CaseCommentShortView;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
-import ru.protei.portal.core.service.pushevent.ClientEventService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -40,6 +37,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.dict.En_CaseType.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public class CaseCommentServiceImpl implements CaseCommentService {
@@ -88,7 +86,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         CaseCommentSaveOrUpdateResult resultData = result.getData();
 
         Result<CaseComment> okResult = ok( resultData.getCaseComment() );
-        if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
+        if (CRM_SUPPORT.equals(caseType)) {
             okResult.publishEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, token.getPersonId(), comment.getCaseId(),
                     resultData.getAddedAttachments(), null
             ));
@@ -99,7 +97,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
         }
 
-        if (En_CaseType.PROJECT.equals(caseType)) {
+        if (PROJECT.equals(caseType)) {
             okResult.publishEvent(new ProjectCommentEvent(
                     this, null, resultData.getCaseComment(), null,
                     token.getPersonId(), comment.getCaseId())
@@ -132,7 +130,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             throw new ResultStatusException(checkAccessStatus);
         }
 
-        if (caseType == En_CaseType.CRM_SUPPORT && prohibitedPrivateComment(token, comment)) {
+        if (caseType == CRM_SUPPORT && prohibitedPrivateComment(token, comment)) {
             throw new ResultStatusException(En_ResultStatus.PROHIBITED_PRIVATE_COMMENT);
         }
 
@@ -196,7 +194,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         CaseCommentSaveOrUpdateResult resultData = result.getData();
 
         Result<CaseComment> okResult = ok( resultData.getCaseComment() );
-        if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
+        if (CRM_SUPPORT.equals(caseType)) {
             boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( comment.getCaseId() ) );
             okResult.publishEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, token.getPersonId(), comment.getCaseId(),
                     resultData.getAddedAttachments(), resultData.getRemovedAttachments())
@@ -205,7 +203,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
                             isEagerEvent, resultData.getOldCaseComment(), resultData.getCaseComment(), null ));
         }
 
-        if (En_CaseType.PROJECT.equals(caseType)) {
+        if (PROJECT.equals(caseType)) {
             okResult.publishEvent(new ProjectCommentEvent(this,
                     resultData.getOldCaseComment(), resultData.getCaseComment(), null,
                     token.getPersonId(), comment.getCaseId())
@@ -238,7 +236,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             throw new ResultStatusException(checkAccessStatus);
         }
 
-        if (caseType == En_CaseType.CRM_SUPPORT && prohibitedPrivateComment(token, comment)) {
+        if (caseType == CRM_SUPPORT && prohibitedPrivateComment(token, comment)) {
             throw new ResultStatusException(En_ResultStatus.PROHIBITED_PRIVATE_COMMENT);
         }
 
@@ -350,7 +348,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
         Result<Boolean> okResult = ok(isRemoved);
 
-        if (En_CaseType.PROJECT.equals(caseType)) {
+        if (PROJECT.equals(caseType)) {
             okResult.publishEvent(new ProjectCommentEvent(this,
                     null, null, removedComment, token.getPersonId(), caseId)
             );
@@ -360,7 +358,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             );
         }
 
-        if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
+        if (CRM_SUPPORT.equals(caseType)) {
             boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals(caseObjectDAO.getExternalAppName(caseId));
 
             okResult
@@ -636,7 +634,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     private boolean needReplaceLoginWithUsername(En_CaseType caseType) {
-        return En_CaseType.CRM_SUPPORT.equals(caseType);
+        return CRM_SUPPORT.equals(caseType);
     }
 
     private Result<List<CaseComment>> getList(CaseCommentQuery query) {
@@ -683,11 +681,11 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     private En_ResultStatus checkAccessForCaseObjectByNumber(AuthToken token, En_CaseType caseType, Long caseNumber) {
-        return checkAccessForCaseObject(token, caseType, caseObjectDAO.getCaseByCaseno(caseNumber));
+        return checkAccessForCaseObject(token, caseType, caseObjectDAO.getCaseByNumber(CRM_SUPPORT, caseNumber));
     }
 
     private En_ResultStatus checkAccessForCaseObject(AuthToken token, En_CaseType caseType, CaseObject caseObject) {
-        if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
+        if (CRM_SUPPORT.equals(caseType)) {
             if (!policyService.hasAccessForCaseObject(token, En_Privilege.ISSUE_VIEW, caseObject)) {
                 return En_ResultStatus.PERMISSION_DENIED;
             }

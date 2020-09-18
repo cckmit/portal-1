@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.dao;
 
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.view.CaseShortView;
@@ -17,7 +18,7 @@ public interface CaseShortViewDAO extends PortalBaseDAO<CaseShortView> {
 
     List<CaseShortView> partialGetCases(CaseQuery query, String... columns);
 
-    CaseShortView getCase(Long caseNo);
+    CaseShortView getCaseByNumber(En_CaseType type, Long caseNo);
 
     @SqlConditionBuilder
     SqlCondition caseQueryCondition( CaseQuery query );

@@ -3,9 +3,11 @@ package ru.protei.portal.core.model.dao.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.CaseShortViewDAO;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.util.sqlcondition.Query;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -15,6 +17,7 @@ import java.util.List;
 
 import static ru.protei.portal.core.model.helper.StringUtils.length;
 import static ru.protei.portal.core.model.helper.StringUtils.trim;
+import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
 
 /**
  * Created by michael on 19.05.16.
@@ -43,8 +46,12 @@ public class CaseShortViewDAO_Impl extends PortalBaseJdbcDAO<CaseShortView> impl
     }
 
     @Override
-    public CaseShortView getCase(Long caseNo) {
-        return getByCondition("case_object.caseno=?", caseNo);
+    public CaseShortView getCaseByNumber(En_CaseType caseType, Long caseNo) {
+        Query q = query()
+                .where("case_type").equal(caseType.getId())
+                    .and("caseno").equal(caseNo)
+                .asQuery();
+        return getByCondition(q.buildSql(), q.args());
     }
 
     @SqlConditionBuilder
