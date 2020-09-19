@@ -53,13 +53,7 @@ public abstract class HomeCompanyModel implements Activity, AsyncSelectorModel<E
     }
 
     public void refreshOptions() {
-        list = new ArrayList<>(  );
-        companyService.getCompanyOptionListIgnorePrivileges(new CompanyQuery(true, false).onlyVisibleFields().reverseOrder(reverseOrder).synchronizeWith1C(synchronizeWith1C),
-                new FluentCallback<List<EntityOption>>()
-                        .withSuccess(companies -> {
-                            list.clear();
-                            list.addAll(companies);
-                        }));
+       list = null;
     }
 
     private void refreshOptions( boolean reverseOrder, LoadingHandler handler, Boolean synchronizeWith1C) {

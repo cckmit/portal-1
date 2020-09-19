@@ -44,8 +44,6 @@ public class HomeCompanyButtonSelector extends ButtonPopupSingleSelector<EntityO
         clearSelector();
     }
 
-    public void clear(){}
-
     private List<Long> idsToHide = new ArrayList<>();
     private HomeCompanyModel model;
 }

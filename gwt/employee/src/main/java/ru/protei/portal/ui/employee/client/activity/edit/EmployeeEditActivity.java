@@ -265,7 +265,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
             view.getPositionsContainer().add(makePositionView(worker).asWidget());
 
-            boolean isWorkerInSyncCompany = isAnyWorkerInSyncCompanyWithoutContractAgreement(new ArrayList<>(positionMap.values()));
+            boolean isWorkerInSyncCompany = isAnyWorkerFrom1C(new ArrayList<>(positionMap.values()));
             setPersonFieldsEnabled (!isWorkerInSyncCompany);
 
             view.company().setValue(null);
@@ -278,7 +278,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
     @Override
     public void onRemovePositionClicked(IsWidget positionItem) {
-        if (workerOfSyncCompanyWithoutContractAgreement(positionMap.get(positionItem))){
+        if (workerFrom1C(positionMap.get(positionItem))){
             return;
         }
 
@@ -289,6 +289,8 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     @Override
     public void onContractAgreementChanged(Boolean isContractAgreement) {
         view.refreshHomeCompanies(isContractAgreement ? null : false);
+        view.companyDepartment().setValue(null);
+        view.workerPosition().setValue(null);
     }
 
     private List<WorkerEntry> fillWorkers () {
@@ -447,7 +449,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
         view.firedMsgVisibility().setVisible(employee.isFired());
         view.fireBtnVisibility().setVisible(employee.getId() != null && !employee.isFired());
-        boolean isWorkerInSyncCompany = isAnyWorkerInSyncCompanyWithoutContractAgreement(employee.getWorkerEntries());
+        boolean isWorkerInSyncCompany = isAnyWorkerFrom1C(employee.getWorkerEntries());
 
         view.company().setValue(null);
         view.companyDepartment().setValue(null);
@@ -484,7 +486,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         AbstractPositionEditItemView itemView = positionEditProvider.get();
         itemView.setActivity(this);
 
-        if (workerOfSyncCompanyWithoutContractAgreement(workerEntry)){
+        if (workerFrom1C(workerEntry)){
             itemView.setRemovePositionEnable(false);
         }
 
@@ -497,7 +499,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         return itemView;
     }
 
-    private boolean workerOfSyncCompanyWithoutContractAgreement(WorkerEntryShortView workerEntry) {
+    private boolean workerFrom1C(WorkerEntryShortView workerEntry) {
         if (workerEntry == null || workerEntry.getCompanyId() == null){
             return true;
         }
@@ -570,23 +572,12 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
                 }));
     }
 
-    private boolean isAnyWorkerInSyncCompanyWithoutContractAgreement(List<WorkerEntryShortView> workerEntryShortViews) {
-        boolean isInSyncCompany = true;
-        if (workerEntryShortViews != null){
-            for (WorkerEntryShortView workerEntryShortView : workerEntryShortViews) {
-                for (EntityOption entityOption : companiesWithoutSync) {
-                    if (workerEntryShortView.getCompanyId().equals(entityOption.getId())){
-                        isInSyncCompany = false;
-                        break;
-                    }
-                }
-
-                if (isInSyncCompany && !workerEntryShortView.getContractAgreement()){
-                    return true;
-                }
-                isInSyncCompany = true;
-            }
+    private boolean isAnyWorkerFrom1C(List<WorkerEntryShortView> workerEntryShortViews) {
+        for (WorkerEntryShortView workerEntryShortView : workerEntryShortViews) {
+            if (workerFrom1C(workerEntryShortView))
+                return true;
         }
+
         return false;
     }
 
