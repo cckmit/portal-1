@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.dto.ProjectInfo;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -68,6 +69,7 @@ public abstract class PlatformEditActivity implements AbstractPlatformEditActivi
         initDetails.parent.clear();
         Window.scrollTo(0, 0);
         initDetails.parent.add(view.asWidget());
+        previousCompanyName = "";
 
         this.fireBackEvent =
                 event.backEvent == null ?
@@ -146,7 +148,11 @@ public abstract class PlatformEditActivity implements AbstractPlatformEditActivi
     public void onCompanySelected() {
         EntityOption value = view.company().getValue();
 
-        view.name().setValue(value == null ? "" : value.getDisplayText());
+        if (StringUtils.isEmpty(view.name().getValue()) || previousCompanyName.equals(view.name().getValue())) {
+            view.name().setValue(value == null ? "" : value.getDisplayText());
+        }
+
+        previousCompanyName = value == null ? "" : value.getDisplayText();
         fireShowCompanyContacts(value == null ? null : value.getId() );
     }
 
@@ -179,12 +185,11 @@ public abstract class PlatformEditActivity implements AbstractPlatformEditActivi
 
     private void fillProjectSpecificFieldsOnRefresh(ProjectInfo project) {
         view.company().setValue(project.getContragent());
-        view.name().setValue(project.getContragent() == null ? null : project.getContragent().getDisplayText());
+        onCompanySelected();
         view.manager().setValue(project.getManager() == null ? null : new PersonShortView(project.getManager()));
         view.companyEnabled().setEnabled(false);
         view.managerEnabled().setEnabled(false);
         view.companyValidator().setValid(true);
-        fireShowCompanyContacts(project.getContragent().getId());
     }
 
     private void fillProjectSpecificFieldsOnLoad(ProjectInfo project){
@@ -203,8 +208,8 @@ public abstract class PlatformEditActivity implements AbstractPlatformEditActivi
 
     private void clearProjectSpecificFields() {
         view.company().setValue(null);
+        onCompanySelected();
         view.manager().setValue(null);
-        view.name().setValue(null);
         view.companyEnabled().setEnabled(true);
         view.managerEnabled().setEnabled(true);
         view.companyValidator().setValid(false);
@@ -313,6 +318,7 @@ public abstract class PlatformEditActivity implements AbstractPlatformEditActivi
     RegionControllerAsync regionService;
 
     private Platform platform;
+    private String previousCompanyName = "";
     private AppEvents.InitDetails initDetails;
     private Runnable fireBackEvent = () -> fireEvent(new Back());
 }
