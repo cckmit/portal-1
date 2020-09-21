@@ -16,6 +16,8 @@ public interface CompanyDAO extends PortalBaseDAO<Company> {
 
     List<Company> getAllHomeCompanies();
 
+    boolean isEmployeeInHomeCompanies(long companyId);
+
     @SqlConditionBuilder
     SqlCondition createSqlCondition(CompanyQuery query);
 

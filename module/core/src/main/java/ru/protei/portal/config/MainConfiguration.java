@@ -24,47 +24,45 @@ import ru.protei.portal.core.client.enterprise1c.mapper.FieldsMapper1C;
 import ru.protei.portal.core.client.enterprise1c.mapper.FieldsMapper1CImpl;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApiImpl;
-import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
-import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClientImpl;
+import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
+import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.index.document.DocumentStorageIndex;
 import ru.protei.portal.core.index.document.DocumentStorageIndexImpl;
 import ru.protei.portal.core.model.converter.MoneyJdbcConverter;
-import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.renderer.MarkdownRenderer;
-import ru.protei.portal.core.renderer.HTMLRenderer;
-import ru.protei.portal.core.renderer.impl.JiraWikiMarkupRendererImpl;
-import ru.protei.portal.core.renderer.impl.HTMLRendererImpl;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.model.ent.CaseInfo;
+import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.renderer.HTMLRenderer;
+import ru.protei.portal.core.renderer.JiraWikiMarkupRenderer;
+import ru.protei.portal.core.renderer.MarkdownRenderer;
+import ru.protei.portal.core.renderer.impl.HTMLRendererImpl;
+import ru.protei.portal.core.renderer.impl.JiraWikiMarkupRendererImpl;
+import ru.protei.portal.core.renderer.impl.MarkdownRendererImpl;
 import ru.protei.portal.core.report.absence.ReportAbsence;
 import ru.protei.portal.core.report.absence.ReportAbsenceImpl;
+import ru.protei.portal.core.report.caseobjects.ReportCase;
+import ru.protei.portal.core.report.caseobjects.ReportCaseImpl;
+import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsed;
+import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsedImpl;
 import ru.protei.portal.core.report.contract.ReportContract;
 import ru.protei.portal.core.report.contract.ReportContractImpl;
 import ru.protei.portal.core.report.projects.ReportProject;
 import ru.protei.portal.core.report.projects.ReportProjectImpl;
 import ru.protei.portal.core.service.*;
-import ru.protei.portal.core.service.AccountService;
-import ru.protei.portal.core.service.AccountServiceImpl;
-import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
-import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceImpl;
-import ru.protei.portal.core.service.bootstrap.BootstrapService;
-import ru.protei.portal.core.report.caseobjects.ReportCase;
-import ru.protei.portal.core.report.caseobjects.ReportCaseImpl;
-import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsed;
-import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsedImpl;
-import ru.protei.portal.core.service.events.*;
-import ru.protei.portal.core.service.policy.PolicyService;
-import ru.protei.portal.core.service.policy.PolicyServiceImpl;
-import ru.protei.portal.core.service.pushevent.ClientEventService;
-import ru.protei.portal.core.service.pushevent.ClientEventServiceImpl;
-import ru.protei.portal.core.service.template.TemplateService;
-import ru.protei.portal.core.service.template.TemplateServiceImpl;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.auth.AuthServiceImpl;
 import ru.protei.portal.core.service.auth.LDAPAuthProvider;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceImpl;
+import ru.protei.portal.core.service.bootstrap.BootstrapService;
+import ru.protei.portal.core.service.events.*;
+import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.portal.core.service.policy.PolicyServiceImpl;
+import ru.protei.portal.core.service.template.TemplateService;
+import ru.protei.portal.core.service.template.TemplateServiceImpl;
 import ru.protei.portal.core.svn.document.DocumentSvnApi;
 import ru.protei.portal.core.svn.document.DocumentSvnApiImpl;
 import ru.protei.portal.core.utils.SessionIdGen;
@@ -80,8 +78,6 @@ import ru.protei.portal.tools.migrate.imp.MigrationRunner;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.portal.tools.migrate.sybase.SybConnProvider;
 import ru.protei.portal.tools.migrate.sybase.SybConnWrapperImpl;
-import ru.protei.portal.core.renderer.JiraWikiMarkupRenderer;
-import ru.protei.portal.core.renderer.impl.MarkdownRendererImpl;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
@@ -91,7 +87,7 @@ import ru.protei.winter.jdbc.config.JdbcConfigData;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.util.concurrent.*;
+import java.util.concurrent.Executor;
 
 @Configuration
 @EnableAspectJAutoProxy
@@ -1013,6 +1009,11 @@ public class MainConfiguration {
     @Bean
     public PersonSubscriptionService getPersonSubscriptionService() {
         return new PersonSubscriptionServiceImpl();
+    }
+
+    @Bean
+    public MailReceiverService getMailReceiverService() {
+        return new MailReceiverServiceImpl();
     }
 
     @Bean

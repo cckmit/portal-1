@@ -35,6 +35,7 @@ public class PortalConfigData {
     private final LdapConfig ldapConfig;
     private final MarkupHelpLink markupHelpLink;
     private final UiConfig uiConfig;
+    private final MailReceiverConfig mailReceiverConfig;
 
     private final String loginSuffixConfig;
     private final boolean taskSchedulerEnabled;
@@ -60,6 +61,7 @@ public class PortalConfigData {
         ldapConfig = new LdapConfig(wrapper);
         markupHelpLink = new MarkupHelpLink(wrapper);
         uiConfig = new UiConfig(wrapper);
+        mailReceiverConfig = new MailReceiverConfig(wrapper);
 
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
         taskSchedulerEnabled = wrapper.getProperty("task.scheduler.enabled", Boolean.class,false);
@@ -140,6 +142,10 @@ public class PortalConfigData {
 
     public UiConfig getUiConfig() {
         return uiConfig;
+    }
+
+    public MailReceiverConfig getMailReceiver() {
+        return mailReceiverConfig;
     }
 
     public boolean isTaskSchedulerEnabled() {
@@ -775,6 +781,30 @@ public class PortalConfigData {
 
         public Long getIssueAssignmentDeskLimit() {
             return issueAssignmentDeskLimit;
+        }
+    }
+
+    public static class MailReceiverConfig {
+        final String user;
+        final String pass;
+        final String host;
+
+        public MailReceiverConfig(PropertiesWrapper properties) {
+            user = properties.getProperty("imap.user", "portal@protei.ru");
+            pass = properties.getProperty("imap.pass");
+            host = properties.getProperty("imap.host", "imap.protei.ru");
+        }
+
+        public String getUser() {
+            return user;
+        }
+
+        public String getPass() {
+            return pass;
+        }
+
+        public String getHost() {
+            return host;
         }
     }
 

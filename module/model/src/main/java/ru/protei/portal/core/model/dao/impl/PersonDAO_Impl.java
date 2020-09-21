@@ -16,7 +16,6 @@ import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.sqlcondition.Condition;
-import ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder;
 import ru.protei.portal.core.utils.EntityCache;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -86,6 +85,16 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
         });
 
         return findFirst(sql);
+    }
+
+    @Override
+    public List<Person> findContactByEmail(String email) {
+        SqlCondition sql = new SqlCondition().build((condition, args) -> {
+            condition.append("person.contactInfo like ?");
+            args.add(HelperFunc.makeLikeArg(email, true));
+        });
+
+        return getListByCondition(sql.condition, sql.args);
     }
 
     @Override
