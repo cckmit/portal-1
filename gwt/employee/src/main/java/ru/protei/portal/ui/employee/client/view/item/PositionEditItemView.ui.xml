@@ -6,15 +6,19 @@
     <g:HTMLPanel>
         <div class="row">
 
+            <div class="form-group col-md-2">
+                <b><ui:text from="{lang.employeeContractAgreement}: "/></b>
+                <span ui:field="contractAgreement"/>
+            </div>
             <div class="form-group col-md-3">
                 <b><ui:text from="{lang.company}: "/></b>
                 <span ui:field="company"/>
             </div>
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-3">
                 <b><ui:text from="{lang.department}: "/></b>
                 <span ui:field="department"/>
             </div>
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-3">
                 <b><ui:text from="{lang.employeePosition}: "/></b>
                 <span ui:field="position"/>
             </div>

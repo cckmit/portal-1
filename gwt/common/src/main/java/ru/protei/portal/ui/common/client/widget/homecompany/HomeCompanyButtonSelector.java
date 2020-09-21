@@ -34,6 +34,8 @@ public class HomeCompanyButtonSelector extends ButtonPopupSingleSelector<EntityO
 
     public void setSynchronizeWith1C(Boolean synchronizeWith1C) {
         model.setSynchronizeWith1C(synchronizeWith1C);
+        model.refreshOptions();
+
     }
 
     public void setIdsToHide(List<Long> idsToHide) {

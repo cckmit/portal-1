@@ -11,5 +11,7 @@ public interface AbstractPositionEditItemView extends IsWidget {
 
     void setCompany(String position);
 
+    void setContractAgreement(Boolean isContractAgreement);
+
     void setRemovePositionEnable(boolean isEnable);
 }

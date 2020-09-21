@@ -226,6 +226,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         if (isValid) {
             view.updateCompanyDepartments(view.company().getValue().getId());
             view.updateWorkerPositions(view.company().getValue().getId());
+            view.setWorkerPositionsEditable(!isSyncCompany(view.company().getValue().getId()));
         } else {
             view.updateCompanyDepartments(null);
             view.updateWorkerPositions(null);
@@ -261,26 +262,36 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
             worker.setPositionId(view.workerPosition().getValue().getId());
             worker.setPositionName(view.workerPosition().getValue().getDisplayText());
+            worker.setContractAgreement(view.contractAgreement().getValue());
 
             view.getPositionsContainer().add(makePositionView(worker).asWidget());
 
-            boolean isWorkerInSyncCompany = isAnyWorkerInSyncCompany(new ArrayList<>(positionMap.values()));
+            boolean isWorkerInSyncCompany = isAnyPositionFrom1C(new ArrayList<>(positionMap.values()));
             setPersonFieldsEnabled (!isWorkerInSyncCompany);
 
             view.company().setValue(null);
             view.companyDepartment().setValue(null);
             view.workerPosition().setValue(null);
+            view.contractAgreement().setValue(false);
+            onContractAgreementChanged(false);
         }
     }
 
     @Override
     public void onRemovePositionClicked(IsWidget positionItem) {
-        if (workerOfSyncCompany(positionMap.get(positionItem))){
+        if (workerFrom1C(positionMap.get(positionItem))){
             return;
         }
 
         view.getPositionsContainer().remove(positionItem.asWidget());
         positionMap.remove(positionItem);
+    }
+
+    @Override
+    public void onContractAgreementChanged(Boolean isContractAgreement) {
+        view.refreshHomeCompanies(isContractAgreement ? null : false);
+        view.companyDepartment().setValue(null);
+        view.workerPosition().setValue(null);
     }
 
     private List<WorkerEntry> fillWorkers () {
@@ -294,6 +305,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
             worker.setId(value.getId());
             worker.setPersonId(personId);
             worker.setActiveFlag(value.getActiveFlag());
+            worker.setContractAgreement(value.getContractAgreement());
             workers.add(worker);
         }
 
@@ -438,7 +450,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
         view.firedMsgVisibility().setVisible(employee.isFired());
         view.fireBtnVisibility().setVisible(employee.getId() != null && !employee.isFired());
-        boolean isWorkerInSyncCompany = isAnyWorkerInSyncCompany(employee.getWorkerEntries());
+        boolean isWorkerInSyncCompany = isAnyPositionFrom1C(employee.getWorkerEntries());
 
         view.company().setValue(null);
         view.companyDepartment().setValue(null);
@@ -454,6 +466,9 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         view.changeAccountVisibility().setVisible(false);
 
         view.getPositionsContainer().clear();
+
+        view.contractAgreement().setValue(false);
+        onContractAgreementChanged(false);
 
         positionMap.clear();
         if (employee.getWorkerEntries() != null && !employee.getWorkerEntries().isEmpty()) {
@@ -472,25 +487,34 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         AbstractPositionEditItemView itemView = positionEditProvider.get();
         itemView.setActivity(this);
 
-        if (workerOfSyncCompany(workerEntry)){
+        if (workerFrom1C(workerEntry)){
             itemView.setRemovePositionEnable(false);
         }
 
         itemView.setDepartment(workerEntry.getDepartmentName());
         itemView.setPosition(workerEntry.getPositionName());
         itemView.setCompany(workerEntry.getCompanyName());
+        itemView.setContractAgreement(workerEntry.getContractAgreement());
 
         positionMap.put(itemView, workerEntry);
         return itemView;
     }
 
-    private boolean workerOfSyncCompany(WorkerEntryShortView workerEntry) {
+    private boolean workerFrom1C(WorkerEntryShortView workerEntry) {
         if (workerEntry == null || workerEntry.getCompanyId() == null){
             return true;
         }
 
+        if (workerEntry.getContractAgreement()){
+            return false;
+        }
+
+        return isSyncCompany(workerEntry.getCompanyId());
+    }
+
+    private boolean isSyncCompany (Long companyId){
         for (EntityOption entityOption : companiesWithoutSync) {
-            if (workerEntry.getCompanyId().equals(entityOption.getId())){
+            if (companyId.equals(entityOption.getId())){
                 return false;
             }
         }
@@ -553,23 +577,15 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
                 }));
     }
 
-    private boolean isAnyWorkerInSyncCompany(List<WorkerEntryShortView> workerEntryShortViews) {
-        boolean isInSyncCompany = true;
-        if (workerEntryShortViews != null){
-            for (WorkerEntryShortView workerEntryShortView : workerEntryShortViews) {
-                for (EntityOption entityOption : companiesWithoutSync) {
-                    if (workerEntryShortView.getCompanyId().equals(entityOption.getId())){
-                        isInSyncCompany = false;
-                        break;
-                    }
-                }
+    private boolean isAnyPositionFrom1C(List<WorkerEntryShortView> workerEntryShortViews) {
+        if (workerEntryShortViews == null)
+            return false;
 
-                if (isInSyncCompany){
-                    return true;
-                }
-                isInSyncCompany = true;
-            }
+        for (WorkerEntryShortView workerEntryShortView : workerEntryShortViews) {
+            if (workerFrom1C(workerEntryShortView))
+                return true;
         }
+
         return false;
     }
 
