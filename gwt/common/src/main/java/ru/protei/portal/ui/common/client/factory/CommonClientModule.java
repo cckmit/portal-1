@@ -29,6 +29,7 @@ import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactIte
 import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactItemView;
 import ru.protei.portal.ui.common.client.activity.contactitem.ContactItemActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
+import ru.protei.portal.ui.common.client.activity.externallink.ExternalLinkActivity;
 import ru.protei.portal.ui.common.client.activity.filter.IssueFilterWidgetModel;
 import ru.protei.portal.ui.common.client.activity.errorpage.AbstractErrorPageView;
 import ru.protei.portal.ui.common.client.activity.errorpage.ErrorPageActivity;
@@ -38,15 +39,6 @@ import ru.protei.portal.ui.common.client.activity.info.JiraInfoActivity;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
 import ru.protei.portal.ui.common.client.activity.notify.AbstractNotifyView;
 import ru.protei.portal.ui.common.client.activity.notify.NotifyActivity;
-import ru.protei.portal.ui.common.client.activity.page.FloorPlanPage;
-import ru.protei.portal.ui.common.client.activity.page.YouTrackAdminPage;
-import ru.protei.portal.ui.common.client.activity.page.YouTrackPage;
-import ru.protei.portal.ui.common.client.activity.page.NotificationSystemPage;
-import ru.protei.portal.ui.common.client.activity.page.archive.*;
-import ru.protei.portal.ui.common.client.activity.page.storedelivery.BoardSearchPage;
-import ru.protei.portal.ui.common.client.activity.page.storedelivery.DeliveryPage;
-import ru.protei.portal.ui.common.client.activity.page.storedelivery.StoreDeliveryPage;
-import ru.protei.portal.ui.common.client.activity.page.storedelivery.StorePage;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.pathitem.PathItemActivity;
 import ru.protei.portal.ui.common.client.activity.pathitem.item.AbstractPathItemView;
@@ -107,24 +99,7 @@ public class CommonClientModule extends AbstractGinModule {
     @Override
     protected void configure() {
 
-        bind( YouTrackPage.class ).asEagerSingleton();
-        bind( YouTrackAdminPage.class ).asEagerSingleton();
-
-        bind( StoreDeliveryPage.class ).asEagerSingleton();
-        bind( StorePage.class ).asEagerSingleton();
-        bind( DeliveryPage.class ).asEagerSingleton();
-        bind( BoardSearchPage.class ).asEagerSingleton();
-
-        bind( NotificationSystemPage.class ).asEagerSingleton();
-        bind( FloorPlanPage.class ).asEagerSingleton();
-
-        bind( ArchivePage.class ).asEagerSingleton();
-        bind( BugTrackingPage.class ).asEagerSingleton();
-        bind( ToDoListPage.class ).asEagerSingleton();
-        bind( FeatureRequestPage.class ).asEagerSingleton();
-        bind( CrmPage.class ).asEagerSingleton();
-        bind( AdminCrmPage.class ).asEagerSingleton();
-        bind( TestZonePage.class ).asEagerSingleton();
+        bind( ExternalLinkActivity.class ).asEagerSingleton();
 
         //bind( ServerEventBridge.class ).asEagerSingleton();
 

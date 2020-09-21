@@ -100,4 +100,6 @@ public class MenuEvents {
      * Очистить
      */
     public static class Clear {}
+
+    public static class CloseAll {}
 }

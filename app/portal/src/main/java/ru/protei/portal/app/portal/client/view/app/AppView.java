@@ -2,15 +2,18 @@ package ru.protei.portal.app.portal.client.view.app;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
-import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.ImageElement;
-import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.dom.client.*;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.safehtml.shared.SimpleHtmlSanitizer;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.app.portal.client.activity.app.AbstractAppActivity;
@@ -19,6 +22,7 @@ import ru.protei.portal.app.portal.client.widget.locale.LocaleImage;
 import ru.protei.portal.app.portal.client.widget.locale.LocaleSelector;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
+import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 
 /**
  * Вид основной формы приложения
@@ -91,6 +95,24 @@ public class AppView extends Composite
     @Override
     public HasValue<LocaleImage> locale() {
         return locale;
+    }
+
+    @Override
+    public void setExternalLinks(String htmlString) {
+
+        NodeList<Node> list = new HTML(htmlString).getElement().getChildNodes();
+        for (int i = 0; i < list.getLength(); i++) {
+            menuContainer.getElement().appendChild(list.getItem(i));
+        }
+
+        NodeList<Element> anchors = new HTML(htmlString).getElement().getElementsByTagName("a");
+        for (int i = 0; i < anchors.getLength(); i++) {
+            if (anchors.getItem(i).getPropertyString("href").endsWith("#")) {
+                Element anchor = Document.get().getElementById(anchors.getItem(i).getId());
+                Element submenu = Document.get().getElementById(anchor.getParentElement().getElementsByTagName("ul").getItem(0).getId());
+                addOnAnchorClickListener(anchor, submenu, this);
+            }
+        }
     }
 
     @UiHandler( "logout" )
@@ -253,6 +275,45 @@ public class AppView extends Composite
         headerDiv.removeClassName("header-padding");
         brandDiv.removeClassName("hide");
     }
+
+    private void closeMenuSections(String exclusionId) {
+        closeExternalSections(menuContainer.getElement(), exclusionId);
+        if (activity != null) {
+            activity.onMenuSectionsClose();
+        }
+    }
+
+    private native void addOnAnchorClickListener(Element anchor, Element submenu, AppView view) /*-{
+        anchor.addEventListener("click", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            var arrow = anchor.getElementsByClassName("arrow").item(0);
+            var opened = arrow.classList.contains("open");
+            var height = submenu.childElementCount * (submenu.firstElementChild.clientHeight + 1) + 28;
+            if (opened) {
+                arrow.classList.remove("open");
+                submenu.style.cssText = 'margin:0px;padding:0;height:0;';
+            } else {
+                arrow.classList.add("open");
+                submenu.style.cssText = 'padding-top:18px;padding-bottom:10px;margin-bottom:10px;height:' + height + 'px';
+
+                view.@ru.protei.portal.app.portal.client.view.app.AppView::closeMenuSections(Ljava/lang/String;)(submenu.id);
+            }
+        })
+
+    }-*/;
+
+    private native void closeExternalSections(Element menu, String exclusionId) /*-{
+        var sections = menu.getElementsByClassName("external");
+        for (i = 0; i < sections.length; i++) {
+            var anchor = sections[i].firstElementChild;
+            var submenu = sections[i].lastElementChild;
+            if (submenu && submenu.id != exclusionId) {
+                anchor.getElementsByClassName("arrow").item(0).classList.remove("open");
+                submenu.style.cssText = 'margin:0px;padding:0;height:0;';
+            }
+        }
+    }-*/;
 
     @UiField
     Anchor toggleButton;

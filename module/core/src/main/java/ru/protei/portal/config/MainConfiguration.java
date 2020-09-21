@@ -1056,6 +1056,10 @@ public class MainConfiguration {
         return new JiraWikiMarkupRendererImpl();
     }
 
+    @Bean ExternalLinksHtml getExternalLinksHtml() {
+        return new ExternalLinksHtml();
+    }
+
     /* ASPECT/INTERCEPTORS */
 
     @Bean
