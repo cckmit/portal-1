@@ -510,12 +510,18 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        Person person = personDAO.findContactByEmail(receivedMail.getSenderEmail());
-        if (person == null) {
+        List<Person> persons = personDAO.findContactByEmail(receivedMail.getSenderEmail());
+        if (persons.isEmpty()) {
             log.warn("addCommentsReceivedByMail(): no found person person by mail ={}", receivedMail.getSenderEmail());
             return error(En_ResultStatus.NOT_FOUND);
         }
 
+        if (persons.size() > 1) {
+            log.warn("addCommentsReceivedByMail(): more than one found person by mail ={}", receivedMail.getSenderEmail());
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
+        Person person = persons.get(0);
         List<UserLogin> userLogins = userLoginDAO.findByPersonId( person.getId() );
         if (userLogins.isEmpty()) {
             log.warn("addCommentsReceivedByMail(): no found user login by email ={}", receivedMail.getSenderEmail());
