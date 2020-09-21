@@ -54,8 +54,12 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     }
 
     @Override
-    public Long getCaseId(En_CaseType caseType, long number) {
-        CaseObject obj = partialGetByCondition("case_type=? and caseno=?", Arrays.asList(caseType.getId(), number), getIdColumnName());
+    public Long getCaseIdByNumber(En_CaseType caseType, long number) {
+        Query q = query()
+                .where("case_type").equal(caseType.getId())
+                    .and("caseno").equal(number)
+                .asQuery();
+        CaseObject obj = partialGetByCondition(q.buildSql(), Arrays.asList(q.args()), getIdColumnName());
         return obj != null ? obj.getId() : null;
     }
 
@@ -66,13 +70,12 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     }
 
     @Override
-    public CaseObject getCaseByCaseno(long caseno) {
-        return getByCondition("case_object.caseno=?", caseno);
-    }
-
-    @Override
-    public CaseObject getCase(En_CaseType caseType, long number) {
-        return getByCondition("case_type=? and caseno=?", caseType.getId(), number);
+    public CaseObject getCaseByNumber(En_CaseType caseType, long caseNo) {
+        Query q = query()
+                .where("case_type").equal(caseType.getId())
+                    .and("caseno").equal(caseNo)
+                .asQuery();
+        return getByCondition(q.buildSql(), q.args());
     }
 
     @Override
@@ -119,6 +122,7 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
         String sql = "SELECT case_object.CASENO FROM " + getTableName() + " WHERE case_object.platform_id = " + id;
         return jdbcTemplate.queryForList(sql, Long.class);
     }
+
     @Override
     @Transactional
     public Long getAndIncrementEmailLastId( Long caseId ) {

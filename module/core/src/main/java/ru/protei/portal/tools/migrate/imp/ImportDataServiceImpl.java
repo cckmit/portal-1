@@ -395,7 +395,7 @@ public class ImportDataServiceImpl implements ImportDataService {
             List<CaseComment> toInsert = new ArrayList<>();
 
             src.forEach(ext -> {
-                Long ourCaseId = caseIdMap.computeIfAbsent(ext.getSessionId(), extId -> caseObjectDAO.getCaseId(En_CaseType.CRM_SUPPORT,extId));
+                Long ourCaseId = caseIdMap.computeIfAbsent(ext.getSessionId(), extId -> caseObjectDAO.getCaseIdByNumber(En_CaseType.CRM_SUPPORT,extId));
                 if (ourCaseId == null) {
                     logger.debug("unable to map external comment {}, case not found for {}", ext.getId(), ext.getSessionId());
                     return;
@@ -449,7 +449,7 @@ public class ImportDataServiceImpl implements ImportDataService {
             List<CaseObject> toUpdate = new ArrayList<>();
 
             for (ExtCrmSession ext : src) {
-                CaseObject ourObj = caseObjectDAO.getCase(En_CaseType.CRM_SUPPORT, ext.getId());
+                CaseObject ourObj = caseObjectDAO.getCaseByNumber(En_CaseType.CRM_SUPPORT, ext.getId());
                 if (ourObj == null) {
                     // new case
                     ourObj = fromSupportSession(ext);
