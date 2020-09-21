@@ -13,9 +13,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by michael on 04.04.16.
- */
 public interface PersonDAO extends PortalBaseDAO<Person> {
 
 

@@ -22,6 +22,7 @@ import ru.protei.portal.tools.migrate.struct.ExternalPerson;
 import ru.protei.portal.tools.migrate.struct.ExternalProduct;
 import ru.protei.portal.tools.migrate.sybase.LegacyDAO_Transaction;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -51,6 +52,9 @@ public class ActiveExportDataService implements ExportDataService {
 
     @Autowired
     DevUnitDAO devUnitDAO;
+
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     private Map<Class<? extends AuditableObject>, ExportHandler> handlerMap;
 
@@ -181,6 +185,7 @@ public class ActiveExportDataService implements ExportDataService {
 
         try {
             final Company personCompany = companyDAO.get(person.getCompanyId());
+            jdbcManyRelationsHelper.fill(personCompany, Company.Fields.CONTACT_ITEMS);
 
             return legacyDAO.runAction(transaction -> {
                 ExternalCompany externalCompany = transaction.dao(ExternalCompany.class).get(personCompany.getOldId());

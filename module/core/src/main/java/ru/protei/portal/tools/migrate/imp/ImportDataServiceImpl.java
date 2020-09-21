@@ -23,6 +23,8 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+
 public class ImportDataServiceImpl implements ImportDataService {
 
     private static Logger logger = LoggerFactory.getLogger(ImportDataServiceImpl.class);
@@ -62,6 +64,9 @@ public class ImportDataServiceImpl implements ImportDataService {
 
     @Autowired
     CaseStateMatrixDAO caseStateMatrixDAO;
+
+    @Autowired
+    ContactItemDAO contactItemDAO;
 
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
@@ -139,9 +144,16 @@ public class ImportDataServiceImpl implements ImportDataService {
 
         logger.debug("handled {} companies", src.size());
 
-        HelperFunc.splitBatch(src, 100, importList ->
-                companyDAO.persistBatch(importList.stream().map(imp -> MigrateUtils.fromExternalCompany(imp)).collect(Collectors.toList()))
-        );
+        HelperFunc.splitBatch(src, 100, importList -> {
+            List<Company> companies = stream(importList)
+                    .map(MigrateUtils::fromExternalCompany)
+                    .collect(Collectors.toList());
+            companyDAO.persistBatch(companies);
+            for (Company company : companies) {
+                contactItemDAO.saveOrUpdateBatch(company.getContactItems());
+            }
+            jdbcManyRelationsHelper.persist(companies, Company.Fields.CONTACT_ITEMS);
+        });
     }
 
     private void importContacts (LegacyDAO_Transaction transaction) throws SQLException {
@@ -769,13 +781,24 @@ public class ImportDataServiceImpl implements ImportDataService {
             });
 
             companyDAO.mergeBatch(forUpate);
+            for (Company company : forUpate) {
+                contactItemDAO.saveOrUpdateBatch(company.getContactItems());
+            }
+            jdbcManyRelationsHelper.persist(forUpate, Company.Fields.CONTACT_ITEMS);
 
             // excludes already existing
             src.removeIf(imp -> compIdSet.contains(imp.getId()));
 
-            HelperFunc.splitBatch(src, 100, importList ->
-                    companyDAO.persistBatch(importList.stream().map(imp -> MigrateUtils.fromExternalCompany(imp)).collect(Collectors.toList()))
-            );
+            HelperFunc.splitBatch(src, 100, importList -> {
+                List<Company> companies = importList.stream()
+                        .map(MigrateUtils::fromExternalCompany)
+                        .collect(Collectors.toList());
+                companyDAO.persistBatch(companies);
+                for (Company company : companies) {
+                    contactItemDAO.saveOrUpdateBatch(company.getContactItems());
+                }
+                jdbcManyRelationsHelper.persist(companies, Company.Fields.CONTACT_ITEMS);
+            });
 
             return src.size();
         }
@@ -892,10 +915,18 @@ public class ImportDataServiceImpl implements ImportDataService {
 
                 if (!updateBatch.isEmpty()) {
                     personDAO.mergeBatch(updateBatch);
+                    for (Person person : updateBatch) {
+                        contactItemDAO.saveOrUpdateBatch(person.getContactItems());
+                    }
+                    jdbcManyRelationsHelper.persist(updateBatch, Person.Fields.CONTACT_ITEMS);
                 }
 
                 if (!personBatch.isEmpty()) {
                     personDAO.persistBatch(personBatch);
+                    for (Person person : personBatch) {
+                        contactItemDAO.saveOrUpdateBatch(person.getContactItems());
+                    }
+                    jdbcManyRelationsHelper.persist(personBatch, Person.Fields.CONTACT_ITEMS);
                 }
 
                 if (!loginBatch.isEmpty()) {

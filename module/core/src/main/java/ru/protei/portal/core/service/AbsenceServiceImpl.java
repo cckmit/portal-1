@@ -18,6 +18,7 @@ import ru.protei.portal.core.utils.DateUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.winter.core.utils.beans.SearchResult;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -32,13 +33,12 @@ public class AbsenceServiceImpl implements AbsenceService {
 
     @Autowired
     PersonAbsenceDAO personAbsenceDAO;
-
     @Autowired
     PersonDAO personDAO;
-
     @Autowired
     PersonNotifierDAO personNotifierDAO;
-
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
     @Autowired
     ReportControlService reportControlService;
 
@@ -297,10 +297,12 @@ public class AbsenceServiceImpl implements AbsenceService {
     }
 
     private Set<Person> getAbsenceNotifiers(PersonAbsence absence) {
-        return stream(new ArrayList<Person>() {{
+        Set<Person> notifiers = stream(new ArrayList<Person>() {{
             addAll(personNotifierDAO.getByPersonId(absence.getPersonId()).stream().map(PersonNotifier::getNotifier).collect(Collectors.toSet()));
             add(personDAO.get(absence.getCreatorId()));
             add(personDAO.get(absence.getPersonId()));
         }}).collect(Collectors.toSet());
+        jdbcManyRelationsHelper.fill(notifiers, Person.Fields.CONTACT_ITEMS);
+        return notifiers;
     }
 }

@@ -47,5 +47,6 @@
   <include file="2020-08-17-add-order_number-column-to-user_dashboard-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-08-24-add-duty_log-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-09-10-add-with_tags-and-with_linked_issues-columns-to-report-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-09-16-create-contact_item-tables.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

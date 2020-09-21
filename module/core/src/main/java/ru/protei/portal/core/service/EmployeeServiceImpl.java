@@ -13,7 +13,10 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.query.*;
+import ru.protei.portal.core.model.query.AbsenceQuery;
+import ru.protei.portal.core.model.query.CompanyQuery;
+import ru.protei.portal.core.model.query.EmployeeQuery;
+import ru.protei.portal.core.model.query.WorkerEntryQuery;
 import ru.protei.portal.core.model.struct.*;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EmployeeShortView;
@@ -35,8 +38,8 @@ import java.util.stream.Stream;
 import static java.util.Objects.nonNull;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.DateRangeUtils.makeDateWithOffset;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.helper.DateRangeUtils.makeDateWithOffset;
 
 
 /**
@@ -80,6 +83,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     PersonAbsenceDAO personAbsenceDAO;
 
     @Autowired
+    ContactItemDAO contactItemDAO;
+
+    @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Autowired
@@ -114,6 +120,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public Result<SearchResult<EmployeeShortView>> employeeList(AuthToken token, EmployeeQuery query) {
 
         SearchResult<EmployeeShortView> sr = employeeShortViewDAO.getSearchResult(query);
+        jdbcManyRelationsHelper.fill(sr.getResults(), EmployeeShortView.Fields.CONTACT_ITEMS);
         sr.setResults(stream(sr.getResults())
                 .map(this::removeSensitiveInformation)
                 .collect(Collectors.toList()));
@@ -135,6 +142,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         query.setHomeCompanies(fillHiddenCompaniesIfProteiChosen(query.getHomeCompanies()));
 
         SearchResult<EmployeeShortView> sr = employeeShortViewDAO.getSearchResult(query);
+        jdbcManyRelationsHelper.fill(sr.getResults(), EmployeeShortView.Fields.CONTACT_ITEMS);
         sr.setResults(stream(sr.getResults())
                 .map(this::removeSensitiveInformation)
                 .collect(Collectors.toList()));
@@ -173,6 +181,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
+        jdbcManyRelationsHelper.fill(employeeShortView, EmployeeShortView.Fields.CONTACT_ITEMS);
         jdbcManyRelationsHelper.fill(employeeShortView, "workerEntries");
         employeeShortView = removeSensitiveInformation(employeeShortView);
 
@@ -201,6 +210,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
+        jdbcManyRelationsHelper.fill(employeeShortView, EmployeeShortView.Fields.CONTACT_ITEMS);
         jdbcManyRelationsHelper.fill(employeeShortView, "workerEntries");
         employeeShortView = removeSensitiveInformation(employeeShortView);
 
@@ -250,6 +260,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         Long personId = personDAO.persist(person);
 
         if (personId != null) {
+
+            person.setId(personId);
+            contactItemDAO.saveOrUpdateBatch(person.getContactItems());
+            jdbcManyRelationsHelper.persist(person, Person.Fields.CONTACT_ITEMS);
+
             person.setId(personId);
             return createLDAPAccount(person)
                     .flatMap(userLogin -> {
@@ -263,6 +278,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
     public Result<Boolean> updateEmployeePerson(AuthToken token, Person person, boolean needToChangeAccount) {
         if (person == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -289,13 +305,15 @@ public class EmployeeServiceImpl implements EmployeeService {
         person.setCompanyId(CrmConstants.Company.HOME_COMPANY_ID);
         person.setContactInfo(removeSensitiveInformation(person.getContactInfo()));
 
-        boolean success = personDAO.partialMerge(person,  "company_id", "firstname", "lastname", "secondname", "sex", "birthday", "ipaddress", "contactInfo", "displayname", "displayShortName");
-
-        if (success) {
-            return ok(true);
+        boolean success = personDAO.partialMerge(person,  "company_id", "firstname", "lastname", "secondname", "sex", "birthday", "ipaddress", "displayname", "displayShortName");
+        if (!success) {
+            return error(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        return error(En_ResultStatus.INTERNAL_ERROR);
+        contactItemDAO.saveOrUpdateBatch(person.getContactItems());
+        jdbcManyRelationsHelper.persist(person, Person.Fields.CONTACT_ITEMS);
+
+        return ok(true);
     }
 
     @Override
@@ -350,10 +368,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         personFromDb.setFired(new Date());
         personFromDb.setIpAddress(personFromDb.getIpAddress() == null ? null : personFromDb.getIpAddress().replace(".", "_"));
+
+        jdbcManyRelationsHelper.fill(personFromDb, Person.Fields.CONTACT_ITEMS);
         PlainContactInfoFacade contactInfoFacade = new PlainContactInfoFacade(personFromDb.getContactInfo());
         contactInfoFacade.setEmail(null);
-
         boolean result = personDAO.merge(personFromDb);
+        jdbcManyRelationsHelper.persist(personFromDb, Person.Fields.CONTACT_ITEMS);
 
         if (result) {
             boolean isRemoved = removeWorkerEntriesByPersonId(personFromDb.getId());
@@ -615,11 +635,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         WorkerEntry worker = workers == null ? null : getMainEntry(workers);
 
         Person person = personDAO.get(personId);
-
         if (worker == null || person == null){
             log.warn("updateEmployeeInOldPortal(): activeWorker={}, person={}", worker, person);
             return false;
         }
+        jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
 
         return migrationManager.saveExternalEmployee(person, worker.getDepartmentName(), worker.getPositionName()).equals(En_ResultStatus.OK);
     }

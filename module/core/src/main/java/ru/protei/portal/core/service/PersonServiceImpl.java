@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,10 +29,13 @@ public class PersonServiceImpl implements PersonService {
 
     @Autowired
     PersonDAO personDAO;
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Override
     public Result<Person> getPerson(AuthToken token, Long personId) {
         Person person = personDAO.get(personId);
+        jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
         // RESET PRIVACY INFO
         person.resetPrivacyInfo();
         return ok(person);
@@ -57,7 +61,9 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public Result<List<Person>> getPersonsByIds(AuthToken token, Collection<Long> ids) {
-        return ok(personDAO.getListByKeys(ids));
+        List<Person> persons = personDAO.getListByKeys(ids);
+        jdbcManyRelationsHelper.fill(persons, Person.Fields.CONTACT_ITEMS);
+        return ok(persons);
     }
 
     @Override
@@ -83,7 +89,9 @@ public class PersonServiceImpl implements PersonService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        return ok(personDAO.getCommonManagerByProductId(productId));
+        Person person = personDAO.getCommonManagerByProductId(productId);
+        jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
+        return ok(person);
     }
 
     private PersonQuery processQueryByPolicyScope(AuthToken token, PersonQuery personQuery ) {

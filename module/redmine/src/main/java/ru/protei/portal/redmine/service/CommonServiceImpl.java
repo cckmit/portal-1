@@ -21,6 +21,7 @@ import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.redmine.utils.CachedPersonMapper;
 import ru.protei.portal.redmine.utils.HttpInputSource;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.Collections;
 import java.util.Date;
@@ -293,7 +294,7 @@ public final class CommonServiceImpl implements CommonService {
 
     @Override
     public CachedPersonMapper getPersonMapper( RedmineEndpoint endpoint ) {
-        return new CachedPersonMapper(personDAO, endpoint.getCompanyId(), endpoint.getDefaultUserLocalId(), null);
+        return new CachedPersonMapper(personDAO, contactItemDAO, jdbcManyRelationsHelper, endpoint.getCompanyId(), endpoint.getDefaultUserLocalId(), null);
     }
 
     private Integer parseToInteger(String value) {
@@ -348,6 +349,12 @@ public final class CommonServiceImpl implements CommonService {
 
     @Autowired
     private PersonDAO personDAO;
+
+    @Autowired
+    private ContactItemDAO contactItemDAO;
+
+    @Autowired
+    private JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Autowired
     PlatformDAO platformDAO;

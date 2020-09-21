@@ -408,4 +408,9 @@ public class DaoMockTestConfiguration {
     public PersonFavoriteIssuesDAO getPersonFavoriteIssuesDAO() {
         return mock(PersonFavoriteIssuesDAO.class);
     }
+
+    @Bean
+    public ContactItemDAO getContactItemDAO() {
+        return mock(ContactItemDAO.class);
+    }
 }

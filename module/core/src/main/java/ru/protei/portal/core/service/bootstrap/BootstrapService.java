@@ -6,21 +6,23 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.context.ApplicationContext;
 import org.tmatesoft.svn.core.SVNException;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.index.document.DocumentStorageIndex;
 import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dao.impl.PortalBaseJdbcDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.helper.PhoneUtils;
 import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.DateRange;
-import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.service.EmployeeService;
 import ru.protei.portal.core.service.YoutrackService;
 import ru.protei.portal.core.svn.document.DocumentSvnApi;
 import ru.protei.portal.tools.migrate.struct.ExternalPersonAbsence;
@@ -30,6 +32,11 @@ import ru.protei.portal.tools.migrate.struct.ExternalSubnet;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
+import ru.protei.winter.jdbc.JdbcObjectMapperRegistrator;
+import ru.protei.winter.jdbc.annotations.ConverterType;
+import ru.protei.winter.jdbc.annotations.JdbcColumn;
+import ru.protei.winter.jdbc.annotations.JdbcEntity;
+import ru.protei.winter.jdbc.annotations.JdbcId;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -38,15 +45,12 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
-import static ru.protei.portal.core.model.dict.En_Gender.UNDEFINED;
-import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 /**
  * Сервис выполняющий первичную инициализацию, работу с исправлением данных
@@ -87,34 +91,8 @@ public class BootstrapService {
         updateWithCrossLinkColumn();
         transferProjectCrosslinkToYoutrack();
         updateUserDashboardOrders();
-        removeAddressesFromEmployeesContactInfo();
-    }
-
-    private void removeAddressesFromEmployeesContactInfo() {
-        log.info("removeAddressesFromEmployeesContactInfo(): start");
-        List<Person> employees = emptyIfNull(personDAO.getEmployeesAll());
-        if (isEmpty(employees)) {
-            log.info("removeAddressesFromEmployeesContactInfo() : end : no employees");
-            return;
-        }
-        Predicate<ContactItem> sensitiveContactItem = contactItem -> {
-            boolean isAddress = contactItem.isItemOf(En_ContactItemType.ADDRESS);
-            boolean isAddressLegal = contactItem.isItemOf(En_ContactItemType.ADDRESS_LEGAL);
-            return isAddress || isAddressLegal;
-        };
-        int mergedCount = 0;
-        for (Person employee : employees) {
-            boolean needMerge = employee.getContactInfo()
-                    .getItems()
-                    .removeIf(sensitiveContactItem);
-            if (needMerge) {
-                boolean merged = personDAO.partialMerge(employee, "contactInfo");
-                if (merged) {
-                    mergedCount++;
-                }
-            }
-        }
-        log.info("removeAddressesFromEmployeesContactInfo(): end : updated {} employees", mergedCount);
+        ContactInfoPersonMigration.migrate(applicationContext);
+        ContactInfoCompanyMigration.migrate(applicationContext);
     }
 
     private void updateUserDashboardOrders() {
@@ -416,39 +394,6 @@ public class BootstrapService {
             caseTagDAO.merge(caseTag);
         });
         log.info("Correction company id in tags completed successfully");
-    }
-
-    private void patchNormalizeWorkersPhoneNumbers() {
-
-        final String sqlCondition = "sex <> ? AND company_id IN (SELECT id FROM company WHERE category_id = ?)";
-        final List<Object> params = new ArrayList<>();
-        params.add(UNDEFINED.getCode());
-        params.add(5);
-
-        log.info("Patch for workers phone number normalization has started");
-
-        final int limit = 50;
-        int offset = 0;
-        for (;;) {
-            SearchResult<Person> result = personDAO.partialGetListByCondition(sqlCondition, params, offset, limit, "id", "contactInfo");
-            for (Person person : result.getResults()) {
-                ContactInfo ci = person.getContactInfo();
-                PlainContactInfoFacade facade = new PlainContactInfoFacade(ci);
-                facade.allPhonesStream().forEach(cci -> {
-                    String normalized = PhoneUtils.normalizePhoneNumber(cci.value());
-                    cci.modify(normalized);
-                });
-                person.setContactInfo(ci);
-                personDAO.partialMerge(person, "contactInfo");
-            }
-            if (result.getResults().size() < limit) {
-                break;
-            } else {
-                offset += limit;
-            }
-        }
-
-        log.info("Patch for workers phone number normalization has ended");
     }
 
     private void uniteSeveralProductsInProjectToComplex() {
@@ -939,6 +884,180 @@ public class BootstrapService {
                 .collect(Collectors.toList());
     }
 
+    private static class ContactInfoPersonMigration {
+
+        public static void migrate(ApplicationContext applicationContext) {
+            log.info("contactInfoPersonMigration(): start");
+
+            applicationContext.getBean(JdbcObjectMapperRegistrator.class).registerMapper(ContactItemPerson.class);
+            registerBeanDefinition(applicationContext, ContactItemPersonDAO.class);
+            if (applicationContext.getBean(ContactItemPersonDAO.class).getObjectsCount() > 0) {
+                log.info("contactInfoPersonMigration(): stop | 'contact_item_person' table not empty");
+                return;
+            }
+
+            applicationContext.getBean(JdbcObjectMapperRegistrator.class).registerMapper(PersonOld.class);
+            registerBeanDefinition(applicationContext, PersonOldDAO.class);
+            PersonOldDAO personDAOOld = applicationContext.getBean(PersonOldDAO.class);
+            ContactItemDAO contactItemDAO = applicationContext.getBean(ContactItemDAO.class);
+            JdbcManyRelationsHelper jdbcManyRelationsHelper = applicationContext.getBean(JdbcManyRelationsHelper.class);
+
+            List<En_ContactItemType> supportedItemTypes = asList(
+                    En_ContactItemType.EMAIL,
+                    En_ContactItemType.MOBILE_PHONE,
+                    En_ContactItemType.GENERAL_PHONE
+            );
+
+            final int limit = 100;
+            int offset = 0;
+            while (true) {
+                log.info("contactInfoPersonMigration(): step | {}-{}", offset, offset + limit);
+                SearchResult<PersonOld> result = personDAOOld.getAll(offset, limit);
+                for (PersonOld personOld : result.getResults()) {
+                    List<ContactItem> contactItems = stream(personOld.contactInfo != null ? personOld.contactInfo.getItems() : new ArrayList<>())
+                            .filter(not(ContactItem::isEmptyValue))
+                            .filter(contactItem -> supportedItemTypes.contains(contactItem.type()))
+                            .collect(toList());
+                    if (isEmpty(contactItems)) {
+                        continue;
+                    }
+                    contactItemDAO.persistBatch(contactItems);
+                    Person person = new Person();
+                    person.setId(personOld.id);
+                    person.setContactInfo(new ContactInfo(contactItems));
+                    jdbcManyRelationsHelper.persist(person, Person.Fields.CONTACT_ITEMS);
+                }
+                if (result.getResults().size() < limit) {
+                    break;
+                } else {
+                    offset += limit;
+                }
+            }
+
+            removeBeanDefinition(applicationContext, ContactItemPersonDAO.class);
+            removeBeanDefinition(applicationContext, ContactItemPerson.class);
+            removeBeanDefinition(applicationContext, PersonOldDAO.class);
+            removeBeanDefinition(applicationContext, PersonOld.class);
+
+            log.info("contactInfoPersonMigration(): end");
+        }
+
+        @JdbcEntity(table = "person")
+        public static class PersonOld {
+            @JdbcId(name = "id")
+            public Long id;
+            @JdbcColumn(name = "contactInfo", converterType = ConverterType.JSON)
+            public ContactInfo contactInfo;
+        }
+
+        @JdbcEntity(table = "contact_item_person")
+        public static class ContactItemPerson {}
+
+        private static class PersonOldDAO extends PortalBaseJdbcDAO<PersonOld> {}
+        private static class ContactItemPersonDAO extends PortalBaseJdbcDAO<ContactItemPerson> {}
+    }
+
+    private static class ContactInfoCompanyMigration {
+
+        public static void migrate(ApplicationContext applicationContext) {
+            log.info("contactInfoCompanyMigration(): start");
+
+            applicationContext.getBean(JdbcObjectMapperRegistrator.class).registerMapper(ContactItemCompany.class);
+            registerBeanDefinition(applicationContext, ContactItemCompanyDAO.class);
+            if (applicationContext.getBean(ContactItemCompanyDAO.class).getObjectsCount() > 0) {
+                log.info("contactInfoCompanyMigration(): stop | 'contact_item_company' table not empty");
+                return;
+            }
+
+            applicationContext.getBean(JdbcObjectMapperRegistrator.class).registerMapper(CompanyOld.class);
+            registerBeanDefinition(applicationContext, CompanyOldDAO.class);
+            CompanyOldDAO companyDAOOld = applicationContext.getBean(CompanyOldDAO.class);
+            ContactItemDAO contactItemDAO = applicationContext.getBean(ContactItemDAO.class);
+            JdbcManyRelationsHelper jdbcManyRelationsHelper = applicationContext.getBean(JdbcManyRelationsHelper.class);
+
+            List<En_ContactItemType> supportedItemTypes = asList(
+                    En_ContactItemType.EMAIL,
+                    En_ContactItemType.ADDRESS,
+                    En_ContactItemType.ADDRESS_LEGAL,
+                    En_ContactItemType.FAX,
+                    En_ContactItemType.MOBILE_PHONE,
+                    En_ContactItemType.GENERAL_PHONE,
+                    En_ContactItemType.WEB_SITE
+            );
+
+            final int limit = 100;
+            int offset = 0;
+            while (true) {
+                log.info("contactInfoCompanyMigration(): step | {}-{}", offset, offset + limit);
+                SearchResult<CompanyOld> result = companyDAOOld.getAll(offset, limit);
+                for (CompanyOld companyOld : result.getResults()) {
+                    List<ContactItem> contactItems = stream(companyOld.contactInfo != null ? companyOld.contactInfo.getItems() : new ArrayList<>())
+                            .filter(not(ContactItem::isEmptyValue))
+                            .filter(contactItem -> supportedItemTypes.contains(contactItem.type()))
+                            .collect(toList());
+                    if (isEmpty(contactItems)) {
+                        continue;
+                    }
+                    contactItemDAO.persistBatch(contactItems);
+                    Company company = new Company();
+                    company.setId(companyOld.id);
+                    company.setContactInfo(new ContactInfo(contactItems));
+                    jdbcManyRelationsHelper.persist(company, Company.Fields.CONTACT_ITEMS);
+                }
+                if (result.getResults().size() < limit) {
+                    break;
+                } else {
+                    offset += limit;
+                }
+            }
+
+            removeBeanDefinition(applicationContext, ContactItemCompanyDAO.class);
+            removeBeanDefinition(applicationContext, ContactItemCompany.class);
+            removeBeanDefinition(applicationContext, CompanyOldDAO.class);
+            removeBeanDefinition(applicationContext, CompanyOld.class);
+
+            log.info("contactInfoCompanyMigration(): end");
+        }
+
+        @JdbcEntity(table = "company")
+        public static class CompanyOld {
+            @JdbcId(name = "id")
+            public Long id;
+            @JdbcColumn(name = "contactInfo", converterType = ConverterType.JSON)
+            public ContactInfo contactInfo;
+        }
+
+        @JdbcEntity(table = "contact_item_company")
+        public static class ContactItemCompany {}
+
+        private static class CompanyOldDAO extends PortalBaseJdbcDAO<CompanyOld> {}
+        private static class ContactItemCompanyDAO extends PortalBaseJdbcDAO<ContactItemCompany> {}
+    }
+
+
+
+    private static <T> void registerBeanDefinition(ApplicationContext context, Class<T> clazz) {
+        String beanName = clazz.getName();
+        String beanAlias = clazz.getSimpleName();
+        GenericBeanDefinition gbd = new GenericBeanDefinition();
+        gbd.setBeanClass(clazz);
+        AutowireCapableBeanFactory factory = context.getAutowireCapableBeanFactory();
+        BeanDefinitionRegistry registry = (BeanDefinitionRegistry) factory;
+        if (registry.containsBeanDefinition(beanName)) {
+            registry.removeBeanDefinition(beanName);
+        }
+        registry.registerBeanDefinition(beanName, gbd);
+        registry.registerAlias(beanName, beanAlias);
+    }
+
+    private static <T> void removeBeanDefinition(ApplicationContext context, Class<T> clazz) {
+        AutowireCapableBeanFactory factory = context.getAutowireCapableBeanFactory();
+        BeanDefinitionRegistry registry = (BeanDefinitionRegistry) factory;
+        if (registry.containsBeanDefinition(clazz.getName())) {
+            registry.removeBeanDefinition(clazz.getName());
+        }
+    }
+
     @Inject
     UserRoleDAO userRoleDAO;
     @Inject
@@ -1006,6 +1125,8 @@ public class BootstrapService {
     UserDashboardDAO userDashboardDAO;
     @Autowired
     ObjectMapper objectMapper;
+    @Autowired
+    ApplicationContext applicationContext;
 
     SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd");
 

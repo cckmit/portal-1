@@ -155,7 +155,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade( employee.getContactInfo() );
         itemView.setPhone( infoFacade.publicPhonesAsFormattedString(true) );
-        itemView.setEmail( EmailRender.renderToHtml(infoFacade.publicEmailsStream(), false) );
+        itemView.setEmail( EmailRender.renderToHtml(infoFacade.publicEmailsStream()) );
 
         WorkerEntryFacade entryFacade = new WorkerEntryFacade( employee.getWorkerEntries() );
         WorkerEntryShortView mainEntry = entryFacade.getMainEntry();

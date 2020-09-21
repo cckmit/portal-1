@@ -29,6 +29,7 @@ import ru.protei.portal.core.model.dto.DevUnitInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.*;
+import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.youtrack.YtFieldDescriptor;
 import ru.protei.portal.core.model.youtrack.dto.issue.YtIssueComment;
@@ -54,6 +55,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -946,6 +948,10 @@ public class TestPortalApiController extends BaseServiceTest {
         person2.setContactInfo(infoFacade2.editInfo());
 
         personDAO.persistBatch(Arrays.asList(person, person2));
+        contactItemDAO.persistBatch(person.getContactItems());
+        contactItemDAO.persistBatch(person2.getContactItems());
+        jdbcManyRelationsHelper.persist(person, Person.Fields.CONTACT_ITEMS);
+        jdbcManyRelationsHelper.persist(person2, Person.Fields.CONTACT_ITEMS);
 
         Assert.assertNotNull("Expected person id not null", person.getId());
         Assert.assertNotNull("Expected person2 id not null", person2.getId());
@@ -962,6 +968,8 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect(jsonPath("$.data[*].displayName", hasItems(person.getDisplayName(), person2.getDisplayName())))
         ;
 
+        contactItemDAO.removeByKeys(stream(person.getContactItems()).map(ContactItem::id).collect(Collectors.toList()));
+        contactItemDAO.removeByKeys(stream(person2.getContactItems()).map(ContactItem::id).collect(Collectors.toList()));
         personDAO.removeByKey(person.getId());
         personDAO.removeByKey(person2.getId());
     }

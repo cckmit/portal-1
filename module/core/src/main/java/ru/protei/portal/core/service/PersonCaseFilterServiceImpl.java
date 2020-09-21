@@ -45,6 +45,7 @@ public class PersonCaseFilterServiceImpl implements PersonCaseFilterService {
         personWithCaseFilters.setHasCaseFilter(true);
 
         List<Person> persons = personDAO.getPersons(personWithCaseFilters);
+        jdbcManyRelationsHelper.fill(persons, Person.Fields.CONTACT_ITEMS);
         for (Person person : persons) {
             List<CaseFilter> personToCaseFilter = caseFilterDAO.getByPersonId(person.getId());
             for (CaseFilter caseFilter : personToCaseFilter) {

@@ -24,7 +24,6 @@ public class ContactItemView extends Composite implements AbstractContactItemVie
     @Inject
     public void onInit(){
         initWidget(ourUiBinder.createAndBindUi(this));
-        comment.getElement().setPropertyString( "placeholder", lang.comment() );
     }
 
     @Override
@@ -35,11 +34,6 @@ public class ContactItemView extends Composite implements AbstractContactItemVie
     @Override
     public HasText value() {
         return value;
-    }
-
-    @Override
-    public HasText comment() {
-        return comment;
     }
 
     @Override
@@ -63,11 +57,6 @@ public class ContactItemView extends Composite implements AbstractContactItemVie
         value.setFocus(true);
     }
 
-    @UiHandler( "comment" )
-    public void onChangeCommentField( KeyUpEvent event ) {
-        activity.onChangeComment(this);
-    }
-
     @UiHandler( "value" )
     public void onChangeInputField( KeyUpEvent event ) {
         activity.onChangeValue(this);
@@ -81,8 +70,6 @@ public class ContactItemView extends Composite implements AbstractContactItemVie
 
     @UiField
     TextBox value;
-    @UiField
-    TextBox comment;
 
     @Inject
     @UiField(provided = true)

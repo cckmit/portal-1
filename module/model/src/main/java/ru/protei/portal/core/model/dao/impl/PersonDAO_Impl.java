@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.CompanyGroupHomeDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CompanyHomeGroupItem;
@@ -31,9 +32,6 @@ import java.util.concurrent.TimeUnit;
 import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.condition;
 import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
 
-/**
- * Created by michael on 04.04.16.
- */
 public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonDAO {
 
     @Autowired
@@ -78,8 +76,13 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
             condition.append("person.company_id = ?");
             args.add(companyId);
 
-            condition.append(" and person.contactInfo like ?");
+            condition.append(" AND person.id IN (");
+            condition.append(" SELECT cip.person_id FROM contact_item_person AS cip WHERE cip.contact_item_id IN (");
+            condition.append(" SELECT ci.id FROM contact_item AS ci WHERE 1=1");
+            condition.append(" AND (ci.item_type = ? and ci.value like ?)");
+            args.add(En_ContactItemType.EMAIL.getId());
             args.add(HelperFunc.makeLikeArg(email, true));
+            condition.append(" ))");
         });
 
         return findFirst(sql);
@@ -182,8 +185,6 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
                 .and( condition()
                         .or("person.displayName").like( query.getSearchString() )
                         .or("person.displayName").like( query.getAlternativeSearchString() )
-                        .or("person.contactInfo").like( query.getSearchString() )
-                        .or("person.contactInfo").like( query.getAlternativeSearchString() )
                 );
         return new SqlCondition(cnd.getSqlCondition(), cnd.getSqlParameters());
     }
@@ -203,7 +204,7 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
                 .and( "person.company_id" ).in( query.getCompanyIds() )
                 .and( condition()
                         .or( "person.displayName" ).like( query.getSearchString() )
-                        .or( "person.contactInfo" ).like( query.getSearchString() ) )
+                )
                 .and( "person.isfired" ).equal( booleanAsNumber( query.getFired() ) )
                 .and( "person.isdeleted" ).equal( booleanAsNumber( query.getDeleted() ) )
                 .and( "person.sex" ).not( query.getPeople() ).equal( query.getPeople() == null ? null : En_Gender.UNDEFINED.getCode() );

@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
@@ -71,7 +72,9 @@ public class AssemblerProjectServiceImpl implements AssemblerProjectService {
             return ok(event);
         }
 
-        event.setInitiator(personDAO.get(event.getInitiatorId()));
+        Person initiator = personDAO.get(event.getInitiatorId());
+        jdbcManyRelationsHelper.fill(initiator, Person.Fields.CONTACT_ITEMS);
+        event.setInitiator(initiator);
 
         return ok(event);
     }
