@@ -56,6 +56,10 @@ public class CachedPersonMapper {
                 index.put(nameKey(user), person);
         }
 
+        if (person.getId() != null) {
+            jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
+        }
+
         return person;
     }
 

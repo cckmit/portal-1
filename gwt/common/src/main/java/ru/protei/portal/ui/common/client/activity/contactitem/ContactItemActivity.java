@@ -31,11 +31,6 @@ public abstract class ContactItemActivity implements Activity, AbstractContactIt
     }
 
     @Override
-    public void onChangeValue(AbstractContactItemView item) {
-        onChangeValue0(item);
-    }
-
-    @Override
     public void onChangeType(AbstractContactItemView item) {
         viewToModel.get(item)
                 .contactItem.modify(item.type().getValue());
@@ -71,7 +66,8 @@ public abstract class ContactItemActivity implements Activity, AbstractContactIt
         viewToModel.remove(item);
     }
 
-    private void onChangeValue0(AbstractContactItemView item){
+    @Override
+    public void onChangeValue(AbstractContactItemView item) {
         ContactItemModel model = viewToModel.get(item);
 
         String prevValue = model.contactItem.value();

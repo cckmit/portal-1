@@ -495,9 +495,11 @@ public class DocumentServiceImpl implements DocumentService {
     private List<Person> getDocumentDocFileUpdatedByMember( Document document ) {
         List<Person> personList = new ArrayList<>();
         if (document.getContractor() != null) {
+            jdbcManyRelationsHelper.fill(document.getContractor(), Person.Fields.CONTACT_ITEMS);
             personList.add(document.getContractor());
         }
         if (document.getRegistrar() != null) {
+            jdbcManyRelationsHelper.fill(document.getRegistrar(), Person.Fields.CONTACT_ITEMS);
             personList.add(document.getRegistrar());
         }
         Result<PersonProjectMemberView> result = projectService.getProject(null, document.getProjectId())

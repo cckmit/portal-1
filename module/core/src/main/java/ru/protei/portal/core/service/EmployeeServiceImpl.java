@@ -13,7 +13,10 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.query.*;
+import ru.protei.portal.core.model.query.AbsenceQuery;
+import ru.protei.portal.core.model.query.CompanyQuery;
+import ru.protei.portal.core.model.query.EmployeeQuery;
+import ru.protei.portal.core.model.query.WorkerEntryQuery;
 import ru.protei.portal.core.model.struct.*;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EmployeeShortView;
@@ -35,8 +38,8 @@ import java.util.stream.Stream;
 import static java.util.Objects.nonNull;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.DateRangeUtils.makeDateWithOffset;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.helper.DateRangeUtils.makeDateWithOffset;
 
 
 /**
@@ -498,7 +501,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         query.setSortField(En_SortField.birthday);
         query.setSortDir(En_SortDir.ASC);
         List<EmployeeShortView> employees = employeeShortViewDAO.getEmployees(query);
-        jdbcManyRelationsHelper.fill(employees, EmployeeShortView.Fields.CONTACT_ITEMS);
 
         if (CollectionUtils.isEmpty(employees)) {
             log.info("notifyAboutBirthdays(): employees birthdays list is empty for period {} - {}", from, to);

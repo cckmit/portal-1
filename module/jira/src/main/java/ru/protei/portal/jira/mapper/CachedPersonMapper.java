@@ -63,6 +63,10 @@ public class CachedPersonMapper implements PersonMapper {
                 index.put(nameKey(jiraUser), person);
         }
 
+        if (person.getId() != null) {
+            jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
+        }
+
         return person;
     }
 
