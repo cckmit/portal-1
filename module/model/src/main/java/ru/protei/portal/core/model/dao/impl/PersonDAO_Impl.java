@@ -90,8 +90,13 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     @Override
     public List<Person> findContactByEmail(String email) {
         SqlCondition sql = new SqlCondition().build((condition, args) -> {
-            condition.append("person.contactInfo like ?");
+            condition.append(" person.id IN (");
+            condition.append(" SELECT cip.person_id FROM contact_item_person AS cip WHERE cip.contact_item_id IN (");
+            condition.append(" SELECT ci.id FROM contact_item AS ci WHERE 1=1");
+            condition.append(" AND (ci.item_type = ? and ci.value like ?)");
+            args.add(En_ContactItemType.EMAIL.getId());
             args.add(HelperFunc.makeLikeArg(email, true));
+            condition.append(" ))");
         });
 
         return getListByCondition(sql.condition, sql.args);
