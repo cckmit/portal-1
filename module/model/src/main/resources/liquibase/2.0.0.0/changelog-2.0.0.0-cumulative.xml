@@ -48,5 +48,6 @@
   <include file="2020-08-24-add-duty_log-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-09-10-add-with_tags-and-with_linked_issues-columns-to-report-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-09-16-create-contact_item-tables.xml" relativeToChangelogFile="true"/>
+  <include file="2020-09-18-add-is_contract_agreement-column-to-worker_entry-table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

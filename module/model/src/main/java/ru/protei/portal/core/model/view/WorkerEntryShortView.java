@@ -49,6 +49,9 @@ public class WorkerEntryShortView implements Serializable {
     @JdbcColumn(name = "positionId")
     private Long positionId;
 
+    @JdbcColumn(name = "is_contract_agreement")
+    private Boolean isContractAgreement;
+
     public Long getId() {
         return id;
     }
@@ -149,21 +152,30 @@ public class WorkerEntryShortView implements Serializable {
         this.positionName = positionName;
     }
 
+    public Boolean getContractAgreement() {
+        return isContractAgreement;
+    }
+
+    public void setContractAgreement(Boolean contractAgreement) {
+        isContractAgreement = contractAgreement;
+    }
+
     @Override
     public String toString() {
         return "WorkerEntryShortView{" +
                 "id=" + id +
                 ", personId=" + personId +
-                ", personName=" + personName +
+                ", personName='" + personName + '\'' +
                 ", companyId=" + companyId +
                 ", companyName='" + companyName + '\'' +
+                ", companyIsHidden=" + companyIsHidden +
                 ", departmentParentName='" + departmentParentName + '\'' +
                 ", departmentName='" + departmentName + '\'' +
                 ", positionName='" + positionName + '\'' +
                 ", activeFlag=" + activeFlag +
                 ", depId=" + depId +
                 ", positionId=" + positionId +
-                ", companyIsHidden=" + companyIsHidden +
+                ", isContractAgreement=" + isContractAgreement +
                 '}';
     }
 }

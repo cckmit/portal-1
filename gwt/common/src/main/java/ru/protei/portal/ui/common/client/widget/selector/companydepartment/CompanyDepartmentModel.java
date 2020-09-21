@@ -43,7 +43,7 @@ public abstract class CompanyDepartmentModel implements Activity, SelectorModel<
 
     private void fillEntityOptionList (List<CompanyDepartment> companyDepartments) {
         options.clear();
-        companyDepartments.forEach(companyDepartment -> options.add (new EntityOption(companyDepartment.getName(), companyDepartment.getId())));
+        companyDepartments.forEach(companyDepartment -> options.add (new EntityOption(companyDepartment.getName(), companyDepartment.getId(), companyDepartment.getExternalId())));
     }
 
 

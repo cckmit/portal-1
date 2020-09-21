@@ -31,6 +31,7 @@ public class WorkerPositionSelector extends ButtonPopupSingleSelector<EntityOpti
 
         item.setName(elementHtml);
         item.setId(value.getId());
+        item.setEditable(isEditable);
         item.addEditHandler(editHandler);
         return item;
     }
@@ -92,10 +93,19 @@ public class WorkerPositionSelector extends ButtonPopupSingleSelector<EntityOpti
         addAddHandler(handler);
     }
 
+    public boolean isEditable() {
+        return isEditable;
+    }
+
+    public void setEditable(boolean editable) {
+        isEditable = editable;
+    }
+
     @Inject
     Lang lang;
 
     private WorkerPositionModel model;
     private EditHandler editHandler;
     private Long companyId;
+    private boolean isEditable;
 }

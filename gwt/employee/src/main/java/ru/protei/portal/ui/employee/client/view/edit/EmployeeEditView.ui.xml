@@ -149,21 +149,30 @@
                                 <g:HTMLPanel ui:field="positionsContainer"/>
                             </div>
 
+                            <div class="form-group col-md-2">
+                                <label>
+                                    <ui:text from="{lang.employeeContractAgreement}"/>
+                                </label>
+                                <div>
+                                    <g:CheckBox ui:field="contractAgreement" styleName="checkbox contract-agreement-checkbox"/>
+                                </div>
+                            </div>
+
                             <div class="form-group col-md-3">
                                 <label>
                                     <ui:text from="{lang.company}"/>
                                 </label>
-                                <homecompanyselector:HomeCompanyButtonSelector ui:field="company" synchronizeWith1C="false"/>
+                                <homecompanyselector:HomeCompanyButtonSelector ui:field="company"/>
                             </div>
 
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-3">
                                 <label>
                                     <ui:text from="{lang.department}"/>
                                 </label>
                                 <companydepartment:CompanyDepartmentSelector ui:field="companyDepartmentSelector"/>
                             </div>
 
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-3">
                                 <label>
                                     <ui:text from="{lang.employeePosition}"/>
                                 </label>
