@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
 import ru.protei.portal.core.model.struct.ReplaceLoginWithUsernameInfo;
+import ru.protei.portal.core.model.struct.receivedmail.ReceivedMail;
 import ru.protei.portal.core.model.view.CaseCommentShortView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -135,4 +136,6 @@ public interface CaseCommentService {
          */
         T replace(T object, String replaceFrom, String replaceTo);
     }
+
+    Result<Boolean> addCommentReceivedByMail(ReceivedMail receivedMails);
 }

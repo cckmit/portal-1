@@ -27,12 +27,13 @@ import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
 import ru.protei.portal.core.service.events.*;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
-import ru.protei.portal.core.service.pushevent.ClientEventService;
-import ru.protei.portal.core.service.pushevent.ClientEventServiceImpl;
 import ru.protei.portal.jira.aspect.JiraServiceLayerInterceptorLogging;
 import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.jira.factory.JiraClientFactoryImpl;
-import ru.protei.portal.jira.service.*;
+import ru.protei.portal.jira.service.JiraBackchannelHandler;
+import ru.protei.portal.jira.service.JiraBackchannelHandlerImpl;
+import ru.protei.portal.jira.service.JiraIntegrationService;
+import ru.protei.portal.jira.service.JiraIntegrationServiceImpl;
 import ru.protei.portal.jira.utils.JiraQueueSingleThreadPoolTaskExecutor;
 import ru.protei.portal.schedule.PortalScheduleTasks;
 import ru.protei.portal.test.jira.mock.JiraEndpointDAO_ImplMock;
@@ -350,6 +351,11 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public MailReceiverService getMailReceiverService() {
+        return mock(MailReceiverService.class);
+    }
+
+    @Bean
     public YoutrackHttpClient getYoutrackHttpClient() {
         return new YoutrackHttpClientImpl();
     }
@@ -477,5 +483,10 @@ public class JiraTestConfiguration {
     @Bean
     public PersonFavoriteIssuesDAO getPersonFavoritesIssuesDAO() {
         return new PersonFavoriteIssuesDAO_Impl();
+    }
+
+    @Bean
+    public EmployeeShortViewDAO getEmployeeShortViewDAO() {
+        return new EmployeeShortViewDAO_Impl();
     }
 }

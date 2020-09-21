@@ -16,6 +16,7 @@ import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.events.EventPublisherService;
 
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -45,6 +46,8 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         scheduler.schedule(this::processPersonCaseFilterMailNotification, new CronTrigger( "0 0 10 * * ?"));
         // at 09:00:00 am every MONDAY
         scheduler.schedule(this::notifyAboutBirthdays, new CronTrigger( "0 0 9 * * MON"));
+        // every 5 minutes
+        scheduler.scheduleAtFixedRate(mailReceiverService::performReceiveMailAndAddComments, TimeUnit.MINUTES.toMillis(5));
 
         scheduleNotificationsAboutPauseTime();
     }
@@ -133,6 +136,8 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
     PersonCaseFilterService personCaseFilterService;
     @Autowired
     EventPublisherService publisherService;
+    @Autowired
+    MailReceiverService mailReceiverService;
 
     private static AtomicBoolean isPortalStarted = new AtomicBoolean(false);
     private static AtomicInteger contextRefreshedEventCounter = new AtomicInteger(0);

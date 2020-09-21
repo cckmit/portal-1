@@ -16,4 +16,6 @@ public interface EmployeeShortViewDAO extends PortalBaseDAO<EmployeeShortView> {
     SqlCondition createEmployeeSqlCondition(EmployeeQuery query);
 
     SearchResult<EmployeeShortView> getSearchResult(EmployeeQuery query);
+
+    EmployeeShortView getEmployeeByEmail(String email);
 }

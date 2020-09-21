@@ -46,8 +46,6 @@ import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
 import ru.protei.portal.core.service.events.*;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
-import ru.protei.portal.core.service.pushevent.ClientEventService;
-import ru.protei.portal.core.service.pushevent.ClientEventServiceImpl;
 import ru.protei.portal.core.service.template.TemplateService;
 import ru.protei.portal.core.service.template.TemplateServiceImpl;
 import ru.protei.portal.core.svn.document.DocumentSvnApi;
@@ -379,6 +377,11 @@ public class ServiceTestsConfiguration {
     @Bean
     public AbsenceService getAbsenceService() {
         return new AbsenceServiceImpl();
+    }
+
+    @Bean
+    public MailReceiverService getMailReceiverService() {
+        return mock(MailReceiverService.class);
     }
 
     @Bean

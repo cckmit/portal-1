@@ -147,6 +147,11 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
         return new EmployeeRegistrationDAO_Impl();
     }
 
+    @Bean
+    public EmployeeShortViewDAO getEmployeeShortViewDAO() {
+        return new EmployeeShortViewDAO_Impl();
+    }
+
     /**
      * Config
      * @return

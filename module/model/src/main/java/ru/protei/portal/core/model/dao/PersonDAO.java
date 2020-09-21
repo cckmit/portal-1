@@ -40,6 +40,8 @@ public interface PersonDAO extends PortalBaseDAO<Person> {
 
     Person findContactByEmail(long companyId, String email);
 
+    List<Person> findContactByEmail(String email);
+
     Person findContactByName(long companyId, String displayName);
 
     SearchResult<Person> getPersonsSearchResult(PersonQuery query);
