@@ -681,7 +681,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     private En_ResultStatus checkAccessForCaseObjectByNumber(AuthToken token, En_CaseType caseType, Long caseNumber) {
-        return checkAccessForCaseObject(token, caseType, caseObjectDAO.getCaseByNumber(CRM_SUPPORT, caseNumber));
+        return checkAccessForCaseObject(token, caseType, caseObjectDAO.getCaseByNumber(caseType, caseNumber));
     }
 
     private En_ResultStatus checkAccessForCaseObject(AuthToken token, En_CaseType caseType, CaseObject caseObject) {
