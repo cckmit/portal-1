@@ -108,6 +108,8 @@ public interface AbstractEmployeeEditView extends IsWidget {
 
     void updateWorkerPositions(Long companyId);
 
+    void setWorkerPositionsEditable(boolean isEditable);
+
     void setAddButtonWorkerPositionVisible(boolean isVisible);
 
     HandlerRegistration addChangeHandler(ChangeHandler changeHandler);

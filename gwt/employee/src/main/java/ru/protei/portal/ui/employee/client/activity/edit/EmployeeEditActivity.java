@@ -226,6 +226,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         if (isValid) {
             view.updateCompanyDepartments(view.company().getValue().getId());
             view.updateWorkerPositions(view.company().getValue().getId());
+            view.setWorkerPositionsEditable(!isSyncCompany(view.company().getValue().getId()));
         } else {
             view.updateCompanyDepartments(null);
             view.updateWorkerPositions(null);
@@ -265,7 +266,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
             view.getPositionsContainer().add(makePositionView(worker).asWidget());
 
-            boolean isWorkerInSyncCompany = isAnyWorkerFrom1C(new ArrayList<>(positionMap.values()));
+            boolean isWorkerInSyncCompany = isAnyPositionFrom1C(new ArrayList<>(positionMap.values()));
             setPersonFieldsEnabled (!isWorkerInSyncCompany);
 
             view.company().setValue(null);
@@ -449,7 +450,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
         view.firedMsgVisibility().setVisible(employee.isFired());
         view.fireBtnVisibility().setVisible(employee.getId() != null && !employee.isFired());
-        boolean isWorkerInSyncCompany = isAnyWorkerFrom1C(employee.getWorkerEntries());
+        boolean isWorkerInSyncCompany = isAnyPositionFrom1C(employee.getWorkerEntries());
 
         view.company().setValue(null);
         view.companyDepartment().setValue(null);
@@ -508,8 +509,12 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
             return false;
         }
 
+        return isSyncCompany(workerEntry.getCompanyId());
+    }
+
+    private boolean isSyncCompany (Long companyId){
         for (EntityOption entityOption : companiesWithoutSync) {
-            if (workerEntry.getCompanyId().equals(entityOption.getId())){
+            if (companyId.equals(entityOption.getId())){
                 return false;
             }
         }
@@ -572,7 +577,10 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
                 }));
     }
 
-    private boolean isAnyWorkerFrom1C(List<WorkerEntryShortView> workerEntryShortViews) {
+    private boolean isAnyPositionFrom1C(List<WorkerEntryShortView> workerEntryShortViews) {
+        if (workerEntryShortViews == null)
+            return false;
+
         for (WorkerEntryShortView workerEntryShortView : workerEntryShortViews) {
             if (workerFrom1C(workerEntryShortView))
                 return true;

@@ -303,6 +303,11 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     }
 
     @Override
+    public void setWorkerPositionsEditable(boolean isEditable) {
+        workerPositionSelector.setEditable(isEditable);
+    }
+
+    @Override
     public void setAddButtonWorkerPositionVisible(boolean isVisible) {
         workerPositionSelector.setAddButtonVisible(isVisible);
     }
