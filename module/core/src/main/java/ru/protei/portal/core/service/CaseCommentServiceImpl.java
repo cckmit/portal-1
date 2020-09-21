@@ -55,11 +55,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
         List<CaseComment> comments = getList(query).getData();
 
-        if (needReplaceLoginWithUsername(caseType)) {
-            return replaceLoginWithUsername(comments).map(this::objectListFromReplacementInfoList);
-        }
-
-        return ok(comments);
+        return replaceLoginWithUsername(comments).map(this::objectListFromReplacementInfoList);
     }
 
     @Override
@@ -633,10 +629,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     private <T> List<T> objectListFromReplacementInfoList(List<ReplaceLoginWithUsernameInfo<T>> infos) {
         return infos.stream().map(ReplaceLoginWithUsernameInfo::getObject).collect(Collectors.toList());
-    }
-
-    private boolean needReplaceLoginWithUsername(En_CaseType caseType) {
-        return En_CaseType.CRM_SUPPORT.equals(caseType);
     }
 
     private Result<List<CaseComment>> getList(CaseCommentQuery query) {
