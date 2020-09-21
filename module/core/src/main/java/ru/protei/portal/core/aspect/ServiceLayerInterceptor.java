@@ -145,9 +145,11 @@ public class ServiceLayerInterceptor {
             return;
         }
 
-        AuditableObject auditableObject = findAuditableObject( pjp );
+        Map<String, Object> notAuditableContainer = new LinkedHashMap<>();
+
+        AuditableObject auditableObject = findAuditableObject( pjp, notAuditableContainer );
         if ( auditableObject == null ) {
-            makeSimpleAudit(token, auditable.value());
+            makeSimpleAudit(token, auditable.value(), notAuditableContainer);
             return;
         }
 
@@ -179,7 +181,7 @@ public class ServiceLayerInterceptor {
         publisherService.publishEvent(new CreateAuditObjectEvent(this, auditObject));
     }
 
-    private void makeSimpleAudit(AuthToken token, En_AuditType auditType) {
+    private void makeSimpleAudit(AuthToken token, En_AuditType auditType, Map<String, Object> notAuditableContainer) {
         SimpleAuditableObject auditableObject = new SimpleAuditableObject();
         notAuditableContainer.put(AUDITABLE_TYPE, auditType.name());
         auditableObject.setContainer(notAuditableContainer);
@@ -301,7 +303,7 @@ public class ServiceLayerInterceptor {
         return null;
     }
 
-    private AuditableObject findAuditableObject(ProceedingJoinPoint pjp) {
+    private AuditableObject findAuditableObject(ProceedingJoinPoint pjp, Map<String, Object> notAuditableContainer) {
         Method method = ((MethodSignature)pjp.getSignature()).getMethod();
         Parameter[] params = method.getParameters();
         notAuditableContainer.clear();
@@ -331,6 +333,5 @@ public class ServiceLayerInterceptor {
     EventPublisherService publisherService;
 
     private static final String AUDITABLE_TYPE = "AuditableType";
-    private Map<String, Object> notAuditableContainer = new LinkedHashMap<>();
     private static Logger logger = LoggerFactory.getLogger(SERVICE_FACADE_LOGGER_NAME);
 }
