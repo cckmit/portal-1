@@ -43,7 +43,13 @@ public abstract class PopperComposite extends PopupLikeComposite {
     }
 
     public PopperComposite() {
-        addCloseHandler(event -> destroyPopper(popper));
+        addCloseHandler(event -> {
+            destroyPopper(popper);
+
+            if (isAutoResize) {
+                removeResizeHandler();
+            }
+        });
     }
 
     public void show(Element relative) {
@@ -57,6 +63,12 @@ public abstract class PopperComposite extends PopupLikeComposite {
     public void show(Element relative, Placement placement, int skidding, int distance) {
         setVisible(true);
 
+        if (popper != null) {
+            destroyPopper(popper);
+        }
+
+        popper = createPopper(relative, getElement(), placement.getCode(), skidding, distance);
+
         if (isAutoResize) {
             if (resizeHandlerReg != null) {
                 addResizeHandler(relative, getElement());
@@ -64,12 +76,6 @@ public abstract class PopperComposite extends PopupLikeComposite {
 
             resizeWidth(relative, getElement());
         }
-
-        if (popper != null) {
-            destroyPopper(popper);
-        }
-
-        popper = createPopper(relative, getElement(), placement.getCode(), skidding, distance);
     }
 
     public void hide() {
@@ -103,7 +109,7 @@ public abstract class PopperComposite extends PopupLikeComposite {
 
     private void resizeWidth(Element relative, Element popup) {
         int offsetWidth = relative.getOffsetWidth();
-        popup.getStyle().setWidth( offsetWidth < 100 ? 150 : offsetWidth, Style.Unit.PX );
+        popup.getStyle().setWidth( offsetWidth, Style.Unit.PX );
     }
 
     private native JavaScriptObject createPopper(Element button, Element popup, String placement, int skidding, int distance) /*-{
@@ -115,6 +121,11 @@ public abstract class PopperComposite extends PopupLikeComposite {
                     name: 'offset',
                     options: {
                         offset: [skidding, distance]
+                    }
+                }, {
+                    name: 'preventOverflow',
+                    options: {
+                        mainAxis: false // true by default
                     }
                 }
             ]

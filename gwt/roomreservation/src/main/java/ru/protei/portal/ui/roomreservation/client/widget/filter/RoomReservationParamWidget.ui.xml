@@ -6,7 +6,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="card card-body no-margin filter-content">
+    <g:HTMLPanel styleName="card-body no-margin filter-content">
         <div class="row">
             <room:RoomReservationMultiSelector ui:field="room" header="{lang.roomReservationRoom}"
                                            addStyleNames="form-group col-md-12"/>
