@@ -54,6 +54,16 @@ public abstract class MenuActivity implements Activity, AbstractSectionItemActiv
         identityToItemView.get(event.identity).setActive(true);
     }
 
+    @Event
+    public void onCloseAllSections(MenuEvents.CloseAll event) {
+        for (AbstractSectionItemView item : sectionItems) {
+            String identity = itemViewToIdentity.get(item);
+            if (identityToHasSubSections.get(identity)) {
+                item.toggleSubSection(false);
+            }
+        }
+    }
+
     @Override
     public void onSectionClicked(AbstractSectionItemView itemView) {
         if (itemViewToIdentity == null) {

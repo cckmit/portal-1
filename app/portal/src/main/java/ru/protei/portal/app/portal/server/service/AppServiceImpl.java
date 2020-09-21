@@ -8,6 +8,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.app.portal.client.service.AppService;
+import ru.protei.portal.config.ExternalLinksHtml;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.ui.common.shared.model.ClientConfigData;
 
@@ -28,17 +29,20 @@ public class AppServiceImpl extends RemoteServiceServlet implements AppService {
         data.appVersion = properties.getProperty("version", "");
         data.markupHelpLinkMarkdown = portalConfig.data().getMarkupHelpLink().getMarkdown();
         data.markupHelpLinkJiraMarkup = portalConfig.data().getMarkupHelpLink().getJiraMarkup();
+        data.externalLinksHtml = externalLinksHtml.getHtml();
 
         log.info( "getClientConfig, data = {}", data );
         return data;
     }
-
 
     @Autowired
     Environment properties;
 
     @Autowired
     PortalConfig portalConfig;
+
+    @Autowired
+    ExternalLinksHtml externalLinksHtml;
 
     private static final Logger log = LoggerFactory.getLogger(AppServiceImpl.class.getName());
 }
