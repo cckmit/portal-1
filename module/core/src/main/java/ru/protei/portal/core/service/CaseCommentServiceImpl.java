@@ -24,12 +24,10 @@ import ru.protei.portal.core.model.event.CaseCommentRemovedClientEvent;
 import ru.protei.portal.core.model.event.CaseCommentSavedClientEvent;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
-import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
 import ru.protei.portal.core.model.struct.receivedmail.ReceivedMail;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseCommentShortView;
-import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
@@ -512,19 +510,13 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        List<EmployeeShortView> employeeShortViewList = getEmployeeShortViewByMail(receivedMail.getSenderEmail());
-        if (employeeShortViewList.isEmpty()) {
-            log.warn("addCommentsReceivedByMail(): no found employee by email={}", receivedMail.getSenderEmail());
+        Person person = personDAO.findContactByEmail(receivedMail.getSenderEmail());
+        if (person == null) {
+            log.warn("addCommentsReceivedByMail(): no found person person by mail ={}", receivedMail.getSenderEmail());
             return error(En_ResultStatus.NOT_FOUND);
         }
 
-        if (employeeShortViewList.size() > 1) {
-            log.warn("addCommentsReceivedByMail(): more than only one employee found by email={}", receivedMail.getSenderEmail());
-            return error(En_ResultStatus.INTERNAL_ERROR);
-        }
-        Long personId = employeeShortViewList.get(0).getId();
-
-        List<UserLogin> userLogins = userLoginDAO.findByPersonId( personId );
+        List<UserLogin> userLogins = userLoginDAO.findByPersonId( person.getId() );
         if (userLogins.isEmpty()) {
             log.warn("addCommentsReceivedByMail(): no found user login by email ={}", receivedMail.getSenderEmail());
             return error(En_ResultStatus.NOT_FOUND);
@@ -537,16 +529,16 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
-        Person person = personDAO.get(personId);
-        if (person == null) {
-            log.warn("addCommentsReceivedByMail(): no found person person by mail ={}", receivedMail.getSenderEmail());
-            return error(En_ResultStatus.NOT_FOUND);
-        }
-
         CaseObject caseObject = caseObjectDAO.getCaseByCaseno(receivedMail.getCaseNo());
         if (caseObject == null) {
             log.warn("addCommentsReceivedByMail(): no found case for case no ={}", receivedMail.getCaseNo());
             return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        boolean isCustomer = !companyDAO.isEmployeeInHomeCompanies(person.getCompanyId());
+        if (isCustomer && caseObject.isPrivateCase()) {
+            log.warn("addCommentsReceivedByMail(): private case, forbidden for customer company ={}", person.getCompanyId());
+            return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
         log.info("addCommentsReceivedByMail(): process receivedMail={}", receivedMail);
@@ -555,14 +547,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
         boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( comment.getCaseId() ) );
 
-        return ok(true).publishEvent( new CaseCommentEvent( this, ServiceModule.GENERAL, personId, comment.getCaseId(), isEagerEvent,
+        return ok(true).publishEvent( new CaseCommentEvent( this, ServiceModule.GENERAL, person.getId(), comment.getCaseId(), isEagerEvent,
                 null, comment, null) );
-    }
-
-    private List<EmployeeShortView> getEmployeeShortViewByMail(String mail) {
-        EmployeeQuery query = new EmployeeQuery();
-        query.setEmail(mail);
-        return employeeShortViewDAO.getEmployees(query);
     }
 
     private CaseComment createComment(CaseObject caseObject, Person person, String comment) {
@@ -689,6 +675,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     PersonDAO personDAO;
     @Autowired
     UserLoginDAO userLoginDAO;
+    @Autowired
+    CompanyDAO companyDAO;
 
     @Autowired
     private ClientEventService clientEventService;

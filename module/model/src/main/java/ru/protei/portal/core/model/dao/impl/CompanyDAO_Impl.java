@@ -5,15 +5,18 @@ import org.slf4j.LoggerFactory;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.portal.core.model.util.sqlcondition.Query;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
 
 /**
  * Created by michael on 01.04.16.
@@ -53,6 +56,14 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
     public List<Company> getAllHomeCompanies() {
         String sql = "company.id IN (SELECT companyId FROM company_group_home)";
         return getListByCondition(sql);
+    }
+
+    @Override
+    public boolean isEmployeeInHomeCompanies(long companyId) {
+        Query query = query()
+                .where("company.id").equal(companyId)
+                    .and("company.id").in(query().select("companyId").from("company_group_home")).asQuery();
+        return checkExistsByCondition(query.buildSql(), query.args());
     }
 
     @SqlConditionBuilder

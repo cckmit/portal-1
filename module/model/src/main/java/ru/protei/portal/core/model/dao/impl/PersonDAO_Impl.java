@@ -86,6 +86,16 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     }
 
     @Override
+    public Person findContactByEmail(String email) {
+        SqlCondition sql = new SqlCondition().build((condition, args) -> {
+            condition.append("person.contactInfo like ?");
+            args.add(HelperFunc.makeLikeArg(email, true));
+        });
+
+        return findFirst(sql);
+    }
+
+    @Override
     public Person getEmployee(long id) {
         final Person person = get(id);
 

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.config.PortalConfigData;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.receivedmail.ReceivedMail;
 import ru.protei.portal.core.service.events.EventPublisherService;
 
@@ -49,7 +50,6 @@ public class MailReceiverServiceImpl implements MailReceiverService {
             log.error("performReceiveMailAndAddComments(): fail to get store");
             return;
         }
-
         try {
             connect(store, portalConfig.data().getMailReceiver());
 
@@ -88,7 +88,7 @@ public class MailReceiverServiceImpl implements MailReceiverService {
     private boolean hasFullInfo(ReceivedMail receivedMail) {
         return receivedMail.getCaseNo() != null &&
                 receivedMail.getSenderEmail() != null &&
-                !receivedMail.getContent().isEmpty();
+                StringUtils.isNotEmpty(receivedMail.getContent());
     }
 
     private void setSeen(Folder folder, Message message) {
