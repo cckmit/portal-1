@@ -96,5 +96,7 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasVisibility tagsVisibility();
 
+    HasVisibility tagsButtonVisibility();
+
     HasWidgets tagsContainer();
 }
