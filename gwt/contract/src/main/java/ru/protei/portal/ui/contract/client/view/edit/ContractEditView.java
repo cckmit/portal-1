@@ -258,6 +258,11 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
+    public HasVisibility tagsButtonVisibility() {
+        return addTagButton;
+    }
+
+    @Override
     public HasWidgets tagsContainer() {
         return tagsContainer;
     }
