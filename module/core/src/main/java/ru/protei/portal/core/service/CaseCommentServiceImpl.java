@@ -57,13 +57,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         CaseCommentQuery query = new CaseCommentQuery(caseObjectId);
         applyFilterByScope(token, query);
 
-        List<CaseComment> comments = getList(query).getData();
-
-        if (needReplaceLoginWithUsername(caseType)) {
-            return replaceLoginWithUsername(comments).map(this::objectListFromReplacementInfoList);
-        }
-
-        return ok(comments);
+        return getList(query);
     }
 
     @Override
