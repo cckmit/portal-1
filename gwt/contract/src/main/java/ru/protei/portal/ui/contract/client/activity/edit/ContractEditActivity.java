@@ -263,8 +263,10 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
     private void showTags(Long contractId) {
         view.tagsVisibility().setVisible(true);
+        view.tagsButtonVisibility().setVisible(true);
         if (contractId == null) {
             view.tagsVisibility().setVisible(false);
+            view.tagsButtonVisibility().setVisible(false);
             return;
         }
         boolean readOnly = false;
