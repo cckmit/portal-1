@@ -21,18 +21,18 @@ public class UserLoginShortView implements Identifiable, Serializable {
     private Long personId;
 
     @JdbcJoinedColumn(mappedColumn = "firstname", joinPath = {
-            @JdbcJoinPath(table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "p"),
+            @JdbcJoinPath(table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "person"),
     })
     private String firstName;
 
     @JdbcJoinedColumn(mappedColumn = "lastname", joinPath = {
-            @JdbcJoinPath(table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "p"),
+            @JdbcJoinPath(table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "person"),
     })
     private String lastName;
 
     @JdbcJoinedColumn(mappedColumn = "category_id", joinPath = {
-            @JdbcJoinPath(table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "p"),
-            @JdbcJoinPath(table = "company", localColumn = "company_id", remoteColumn = "id", sqlTableAlias = "c")
+            @JdbcJoinPath(table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "person"),
+            @JdbcJoinPath(table = "company", localColumn = "company_id", remoteColumn = "id", sqlTableAlias = "company")
     })
     @JdbcEnumerated(EnumType.ID)
     private En_CompanyCategory companyCategory;
@@ -40,7 +40,7 @@ public class UserLoginShortView implements Identifiable, Serializable {
     @JdbcJoinedColumn(localColumn = "personId", remoteColumn = "id", table = "person", mappedColumn = "sex")
     private String genderCode;
 
-    @JdbcJoinedColumn(localColumn = "personId", remoteColumn = "id", table = "person", mappedColumn = "company_id")
+    @JdbcJoinedColumn(localColumn = "personId", remoteColumn = "id", table = "person", mappedColumn = "company_id", sqlTableAlias = "person")
     private Long companyId;
 
     public UserLoginShortView() {}

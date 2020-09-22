@@ -53,7 +53,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         CaseCommentQuery query = new CaseCommentQuery(caseObjectId);
         applyFilterByScope(token, query);
 
-        return ok(getList(query).getData());
+        return getList(query);
     }
 
     @Override
