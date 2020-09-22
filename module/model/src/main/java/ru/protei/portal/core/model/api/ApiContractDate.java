@@ -19,7 +19,10 @@ public class ApiContractDate implements Serializable {
     private Date date;
 
     @JsonProperty("cost")
-    private Long cost;
+    private Double cost;
+
+    @JsonProperty("cost_percent")
+    private Double costPercent;
 
     @JsonProperty("cost_currency")
     private En_Currency currency;
@@ -41,12 +44,20 @@ public class ApiContractDate implements Serializable {
         this.date = date;
     }
 
-    public Long getCost() {
+    public Double getCost() {
         return cost;
     }
 
-    public void setCost(Long cost) {
+    public void setCost(Double cost) {
         this.cost = cost;
+    }
+
+    public Double getCostPercent() {
+        return costPercent;
+    }
+
+    public void setCostPercent(Double costPercent) {
+        this.costPercent = costPercent;
     }
 
     public En_Currency getCurrency() {
@@ -78,6 +89,7 @@ public class ApiContractDate implements Serializable {
         return "ApiContractDate{" +
                 "date=" + date +
                 ", cost=" + cost +
+                ", costPercent=" + costPercent +
                 ", currency=" + currency +
                 ", comment='" + comment + '\'' +
                 ", type=" + type +

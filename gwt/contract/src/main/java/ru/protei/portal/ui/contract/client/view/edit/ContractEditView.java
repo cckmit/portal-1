@@ -269,7 +269,14 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         }
     }
 
-    @UiHandler("cancelButton")
+    @UiHandler("addTagButton")
+    public void onTagAddClicked(ClickEvent event) {
+        if (activity != null) {
+            activity.onAddTagsClicked(addTagButton);
+        }
+    }
+
+    @UiHandler({"cancelButton", "backButton"})
     public void onCancelClicked(ClickEvent event) {
         if (activity != null) {
             activity.onCancelClicked();
@@ -336,13 +343,6 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     public void onDateValidDaysChanged(KeyUpEvent event) {
         if (activity != null) {
             activity.onDateValidChanged(dateValidDays.getValue());
-        }
-    }
-
-    @UiHandler("tagsAddButton")
-    public void tagsAddButtonClick(ClickEvent event) {
-        if (activity != null) {
-            activity.onAddTagsClicked(tagsAddButton);
         }
     }
 
@@ -486,8 +486,6 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @UiField
     HTMLPanel tagsContainer;
     @UiField
-    Button tagsAddButton;
-    @UiField
     LabelElement numberLabel;
     @UiField
     LabelElement typeLabel;
@@ -539,6 +537,10 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     Button saveButton;
     @UiField
     Button cancelButton;
+    @UiField
+    Button backButton;
+    @UiField
+    Button addTagButton;
 
     private AbstractContractEditActivity activity;
 

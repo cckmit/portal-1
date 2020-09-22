@@ -35,6 +35,11 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     }
 
     @Override
+    public HasWidgets getTagsContainer() {
+        return tagsContainer;
+    }
+
+    @Override
     public void setHeader(String value) {
         this.header.setText(value);
     }
@@ -178,6 +183,8 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     HTMLPanel footerContainer;
     @UiField
     HTMLPanel previewWrapperContainer;
+    @UiField
+    HTMLPanel tagsContainer;
 
     private AbstractContractPreviewActivity activity;
 

@@ -165,10 +165,8 @@ public class ContractServiceImpl implements ContractService {
             throw new ResultStatusException(En_ResultStatus.NOT_CREATED, e);
         }
 
-        boolean sync1cEnabled = config.data().enterprise1C().isContractSyncEnabled();
         boolean contractorDefined = contract.getContractor() != null;
-        boolean stateAgreement = contract.getState() == En_ContractState.AGREEMENT;
-        boolean is1cSync = sync1cEnabled && contractorDefined && !stateAgreement;
+        boolean is1cSync = is1cSyncEnabled(contract) && contractorDefined;
         if (is1cSync) {
             Result<Contract1C> result = saveContract1C(contract);
             if (result.isError()) {
@@ -261,9 +259,7 @@ public class ContractServiceImpl implements ContractService {
             throw new ResultStatusException(En_ResultStatus.NOT_UPDATED, e);
         }
 
-        boolean sync1cEnabled = config.data().enterprise1C().isContractSyncEnabled();
-        boolean stateAgreement = contract.getState() == En_ContractState.AGREEMENT;
-        boolean is1cSync = sync1cEnabled && !stateAgreement;
+        boolean is1cSync = is1cSyncEnabled(contract);
         if (is1cSync) {
 
             boolean isRefKeySet = isNotEmpty(contract.getRefKey());
@@ -529,6 +525,12 @@ public class ContractServiceImpl implements ContractService {
     private boolean hasGrantAccessFor(AuthToken token, En_Privilege privilege) {
         Set<UserRole> roles = token.getRoles();
         return policyService.hasGrantAccessFor(roles, privilege);
+    }
+
+    private boolean is1cSyncEnabled(Contract contract) {
+        boolean sync1cEnabled = config.data().enterprise1C().isContractSyncEnabled();
+        boolean stateAgreement = contract.getState() == En_ContractState.AGREEMENT;
+        return sync1cEnabled && !stateAgreement;
     }
 
     private boolean isValidInn(String inn) {

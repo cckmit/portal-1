@@ -57,11 +57,13 @@ public class CaseTagEvents {
     }
 
     public static class ShowEdit {
-        public ShowEdit(CaseTag caseTag) {
+        public ShowEdit(CaseTag caseTag, En_CaseType caseType) {
             this.caseTag = caseTag;
+            this.caseType = caseType;
         }
 
         public CaseTag caseTag;
+        public En_CaseType caseType;
     }
 
     public static class Created {
