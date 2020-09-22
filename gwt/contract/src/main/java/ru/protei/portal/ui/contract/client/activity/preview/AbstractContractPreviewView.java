@@ -13,6 +13,8 @@ public interface AbstractContractPreviewView extends IsWidget {
 
     HasWidgets getCommentsContainer();
 
+    HasWidgets getTagsContainer();
+
     void setHeader(String value);
 
     void setState(String value);

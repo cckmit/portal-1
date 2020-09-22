@@ -12,11 +12,14 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
+import org.apache.poi.ss.formula.functions.T;
 import ru.protei.portal.core.model.dict.En_Currency;
 import ru.protei.portal.core.model.struct.Money;
 import ru.protei.portal.core.model.struct.MoneyWithCurrency;
 import ru.protei.portal.ui.common.client.widget.selector.currency.CurrencyButtonSelector;
-import ru.protei.portal.ui.common.client.widget.validatefield.ValidableLongBox;
+import ru.protei.portal.ui.common.client.widget.validatefield.ValidableMoneyBox;
+
+import java.util.function.Function;
 
 public class MoneyCurrencyWidget extends Composite implements HasValue<MoneyWithCurrency>, HasEnabled {
 
@@ -28,7 +31,7 @@ public class MoneyCurrencyWidget extends Composite implements HasValue<MoneyWith
 
     @Override
     public MoneyWithCurrency getValue() {
-        Money vMoney = new Money(moneyNatural.getValue(), moneyDecimal.getValue());
+        Money vMoney = money.getValue();
         En_Currency vCurrency = currency.getValue();
         return new MoneyWithCurrency(vMoney, vCurrency);
     }
@@ -40,14 +43,11 @@ public class MoneyCurrencyWidget extends Composite implements HasValue<MoneyWith
 
     @Override
     public void setValue(MoneyWithCurrency value, boolean fireEvents) {
-        Money vMoney = value.getMoney() != null
-                ? value.getMoney()
-                : new Money(0L);
+        Money vMoney = value.getMoney();
         En_Currency vCurrency = value.getCurrency() != null
                 ? value.getCurrency()
                 : defaultCurrency;
-        moneyNatural.setValue(vMoney.getNatural());
-        moneyDecimal.setValue(vMoney.getDecimal());
+        money.setValue(vMoney);
         currency.setValue(vCurrency);
         if (fireEvents) {
             ValueChangeEvent.fire(this, value);
@@ -56,13 +56,12 @@ public class MoneyCurrencyWidget extends Composite implements HasValue<MoneyWith
 
     @Override
     public boolean isEnabled() {
-        return moneyNatural.isEnabled();
+        return money.isEnabled();
     }
 
     @Override
     public void setEnabled(boolean enabled) {
-        moneyNatural.setEnabled(enabled);
-        moneyDecimal.setEnabled(enabled);
+        money.setEnabled(enabled);
         currency.setEnabled(enabled);
     }
 
@@ -80,13 +79,12 @@ public class MoneyCurrencyWidget extends Composite implements HasValue<MoneyWith
         root.ensureDebugId(debugId);
     }
 
-    private void initValidation() {
-        moneyNatural.setValidationFunction(value -> value != null && value >= 0);
-        moneyDecimal.setValidationFunction(value -> value != null && value >= 0 && value < 100);
+    public void setMoneyValidationFunction(Function<Money, Boolean> validationFunction) {
+        money.setValidationFunction(validationFunction);
     }
 
-    @UiHandler({"moneyNatural", "moneyDecimal"})
-    public void onMoneyChanged(ValueChangeEvent<Long> event) {
+    @UiHandler("money")
+    public void onMoneyChanged(ValueChangeEvent<Money> event) {
         MoneyWithCurrency value = getValue();
         ValueChangeEvent.fire(this, value);
     }
@@ -97,10 +95,12 @@ public class MoneyCurrencyWidget extends Composite implements HasValue<MoneyWith
         ValueChangeEvent.fire(this, value);
     }
 
+    private void initValidation() {
+        setMoneyValidationFunction(value -> value != null && value.getFull() >= 0);
+    }
+
     @UiField
-    ValidableLongBox moneyNatural;
-    @UiField
-    ValidableLongBox moneyDecimal;
+    ValidableMoneyBox money;
     @Inject
     @UiField(provided = true)
     CurrencyButtonSelector currency;

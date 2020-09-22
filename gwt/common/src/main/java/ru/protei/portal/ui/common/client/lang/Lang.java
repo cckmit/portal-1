@@ -2024,6 +2024,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractTypeHardwareSoftwareService();
 
+    String contractTypeRequest();
+
     String goToContracts();
 
     String contractStateAgreement();
@@ -2134,7 +2136,9 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractDateValid();
 
-    String contractPayment();
+    String contractPrePayment();
+
+    String contractPostPayment();
 
     String contractSupply();
 
@@ -3093,4 +3097,10 @@ public interface Lang extends Messages, ContactItemLang {
     String yes();
 
     String no();
+
+    String percent();
+
+    String attention();
+
+    String contractDatesWarningCostOverflow();
 }

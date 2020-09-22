@@ -14,6 +14,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -58,6 +59,10 @@ public class CaseTagSelector extends BasePopupView implements HasValueChangeHand
     @Override
     protected UIObject getPositionRoot() {
         return root;
+    }
+
+    public void setCaseType(En_CaseType caseType) {
+        this.caseType = caseType;
     }
 
     public void setTags(List<CaseTag> tags) {
@@ -114,6 +119,7 @@ public class CaseTagSelector extends BasePopupView implements HasValueChangeHand
 
     private void addTagToListView(CaseTag caseTag) {
         CaseTagSelectorItem caseTagSelectorItem = caseTagViewProvider.get();
+        caseTagSelectorItem.setCaseType(caseType);
         caseTagSelectorItem.setValue(caseTag);
         caseTagSelectorItem.editIconVisibility().setVisible(enabled);
         caseTagSelectorItem.tagEditable(Objects.equals(policyService.getProfile().getId(), caseTag.getPersonId()));
@@ -163,6 +169,7 @@ public class CaseTagSelector extends BasePopupView implements HasValueChangeHand
 
     private String searchNameFilter = "";
     private List<CaseTag> caseTags;
+    private En_CaseType caseType;
     private boolean enabled;
 
     interface CaseTagSelectorPopupUiBinder extends UiBinder<HTMLPanel, CaseTagSelector> {}

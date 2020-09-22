@@ -16,12 +16,14 @@ import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
+import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.casetag.CaseTagMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.state.ContractStatesMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.type.ContractTypesMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contractor.multicontractor.MultiContractorSelector;
@@ -63,6 +65,7 @@ public class ContractFilterView extends Composite implements AbstractContractFil
         direction.setValue(null);
         states.setValue(null);
         types.setValue(null);
+        tags.setValue(null);
         kind.setValue(true);
         dateSigningRange.setValue(null);
         dateValidRange.setValue(null);
@@ -107,6 +110,11 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     @Override
     public HasValue<Set<En_ContractType>> types() {
         return types;
+    }
+
+    @Override
+    public HasValue<Set<CaseTag>> tags() {
+        return tags;
     }
 
     @Override
@@ -194,6 +202,11 @@ public class ContractFilterView extends Composite implements AbstractContractFil
         restartChangeTimer();
     }
 
+    @UiHandler("tags")
+    public void onTagChanged(ValueChangeEvent<Set<CaseTag>> event) {
+        restartChangeTimer();
+    }
+
     @UiHandler("direction")
     public void onDirectionChanged(ValueChangeEvent<ProductDirectionInfo> event) {
         restartChangeTimer();
@@ -252,6 +265,9 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     @Inject
     @UiField(provided = true)
     ContractStatesMultiSelector states;
+    @Inject
+    @UiField(provided = true)
+    CaseTagMultiSelector tags;
     @Inject
     @UiField(provided = true)
     ProductDirectionButtonSelector direction;

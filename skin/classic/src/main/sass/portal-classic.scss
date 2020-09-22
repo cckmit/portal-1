@@ -265,9 +265,9 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
 }
 
 .input-group-money {
-  .input-group-element-decimal {
+  .input-group-money-percent {
     flex-grow: initial;
-    width: calc(30px + 3ch);
+    min-width: 30%;
   }
 }
 

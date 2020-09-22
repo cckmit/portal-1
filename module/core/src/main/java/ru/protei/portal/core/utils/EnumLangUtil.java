@@ -155,6 +155,7 @@ public class EnumLangUtil {
             case SUPPLY_FRAMEWORK_CONTRACT: return localizedLang.get("contractTypeSupplyFrameworkContract");
             case WORK_CONTRACT: return localizedLang.get("contractTypeWorkContract");
             case HARDWARE_SOFTWARE_SERVICE: return localizedLang.get("contractTypeHardwareSoftwareService");
+            case REQUEST: return localizedLang.get("contractTypeRequest");
         }
         return "";
     }
@@ -185,7 +186,8 @@ public class EnumLangUtil {
             localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
         }
         switch (contractDatesType) {
-            case PAYMENT: return localizedLang.get("contractPayment");
+            case PREPAYMENT: return localizedLang.get("contractPrePayment");
+            case POSTPAYMENT: return localizedLang.get("contractPostPayment");
             case SUPPLY: return localizedLang.get("contractSupply");
         }
         return "";

@@ -22,7 +22,7 @@ public class ApiContract implements Serializable {
     private Date dateSigning;
 
     @JsonProperty("cost")
-    private Long cost;
+    private Double cost;
 
     @JsonProperty("cost_currency")
     private En_Currency currency;
@@ -61,11 +61,11 @@ public class ApiContract implements Serializable {
         this.dateSigning = dateSigning;
     }
 
-    public Long getCost() {
+    public Double getCost() {
         return cost;
     }
 
-    public void setCost(Long cost) {
+    public void setCost(Double cost) {
         this.cost = cost;
     }
 

@@ -27,10 +27,9 @@ import ru.protei.portal.ui.contract.client.activity.table.concise.AbstractContra
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.google.gwt.safehtml.shared.SimpleHtmlSanitizer.sanitizeHtml;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
-import static ru.protei.portal.core.model.helper.StringUtils.emptyIfNull;
 import static ru.protei.portal.core.model.util.ContractSupportService.getContractKind;
+import static ru.protei.portal.ui.common.shared.util.HtmlUtils.sanitizeHtml;
 
 public class ContractConciseTableView extends Composite implements AbstractContractConciseTableView {
 
@@ -101,9 +100,7 @@ public class ContractConciseTableView extends Composite implements AbstractContr
             Element root = DOM.createDiv();
             StringBuilder sb = new StringBuilder();
             sb.append("<b>")
-                    .append(HtmlUtils.sanitizeHtml(stream(contract.getContractTypes())
-                            .map(typeLang::getName)
-                            .collect(Collectors.joining(", "))))
+                    .append(sanitizeHtml(typeLang.getName(contract.getContractType())))
                     .append(" ")
                     .append(HtmlUtils.sanitizeHtml(contract.getNumber()))
                     .append("</b>");
