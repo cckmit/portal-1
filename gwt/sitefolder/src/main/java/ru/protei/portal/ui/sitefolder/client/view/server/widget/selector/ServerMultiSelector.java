@@ -3,25 +3,14 @@ package ru.protei.portal.ui.sitefolder.client.view.server.widget.selector;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
-import ru.protei.portal.ui.common.client.widget.selector.input.MultipleInputSelector;
+import ru.protei.portal.ui.common.client.widget.selector.input.InputPopupMultiSelector;
 
-import java.util.List;
-
-public class ServerMultiSelector extends MultipleInputSelector<EntityOption> implements SelectorWithModel<EntityOption> {
-
+public class ServerMultiSelector extends InputPopupMultiSelector<EntityOption> {
     @Inject
-    public void init(ServerModel model, Lang lang) {
-        setSelectorModel(model);
+    public void init(AsyncServerModel model, Lang lang) {
+        setAsyncSearchModel(model);
         setAddName(lang.buttonAdd());
-        setClearName( lang.buttonClear() );
-    }
-
-    public void fillOptions(List<EntityOption> options) {
-        clearOptions();
-        for (EntityOption option : options) {
-            addOption(option.getDisplayText(), option);
-        }
-        reselectValuesIfNeeded();
+        setClearName(lang.buttonClear());
+        setItemRenderer(EntityOption::getDisplayText);
     }
 }

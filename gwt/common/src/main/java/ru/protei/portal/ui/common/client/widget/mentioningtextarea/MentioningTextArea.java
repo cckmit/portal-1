@@ -1,13 +1,10 @@
 package ru.protei.portal.ui.common.client.widget.mentioningtextarea;
 
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.Timer;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.ui.common.client.popup.BasePopupView;
 import ru.protei.portal.ui.common.client.widget.dndautoresizetextarea.DndAutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.selector.login.UserLoginModel;
 import ru.protei.portal.ui.common.client.widget.selector.login.UserLoginSelector;
@@ -32,7 +29,7 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
 
     private void initUserLoginSelector(final UserLoginModel userLoginModel, final UserLoginSelector userLoginSelector) {
         userLoginSelector.setAsyncSearchModel(userLoginModel);
-        userLoginSelector.setRelative(getElement());
+        userLoginSelector.setRelative(getElement(), true);
         userLoginSelector.addValueChangeHandler(event -> {
             int pointerPosition = pointerPosition(getElement());
 
@@ -110,6 +107,4 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
     }
 
     private static final RegExp MENTION_REGEXP = RegExp.compile(CrmConstants.Masks.MENTION);
-    private static final Integer COMMENT_BORDER_SIZE = 1;
-    private static final Integer COMMENT_INNER_PADDING = 12;
 }

@@ -79,6 +79,10 @@ public abstract class PopperComposite extends PopupLikeComposite {
     }
 
     public void hide() {
+        if (!isVisible()) {
+            return;
+        }
+
         setVisible(false);
         destroyPopper(popper);
 
@@ -121,11 +125,6 @@ public abstract class PopperComposite extends PopupLikeComposite {
                     name: 'offset',
                     options: {
                         offset: [skidding, distance]
-                    }
-                }, {
-                    name: 'preventOverflow',
-                    options: {
-                        mainAxis: false // true by default
                     }
                 }
             ]

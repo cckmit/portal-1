@@ -9,6 +9,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Application;
+import ru.protei.portal.core.model.ent.Server;
 import ru.protei.portal.core.model.query.ApplicationQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.ProductShortView;
@@ -68,18 +69,16 @@ public abstract class ApplicationTableActivity implements
         initDetails.parent.add(view.asWidget());
         view.getPagerContainer().add(pagerView.asWidget());
 
-        serverId = event.serverId;
+        server = event.server;
 
         fireEvent(new ActionBarEvents.Clear());
         if (policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE)) {
             fireEvent(new ActionBarEvents.Add(lang.siteFolderAppCreate(), null, UiConstants.ActionBarIdentity.SITE_FOLDER_APP));
         }
 
-        if (serverId != null) {
+        if (server != null) {
             Set<EntityOption> options = new HashSet<>();
-            EntityOption option = new EntityOption();
-            option.setId(serverId);
-            options.add(option);
+            options.add(server);
             filterView.servers().setValue(options);
         }
 
@@ -126,7 +125,7 @@ public abstract class ApplicationTableActivity implements
             return;
         }
 
-        fireEvent(new SiteFolderAppEvents.Edit(value.getId()).withBackEvent(() -> fireEvent(new SiteFolderAppEvents.Show(value.getServerId(), true))));
+        fireEvent(new SiteFolderAppEvents.Edit(value.getId()).withBackEvent(() -> fireEvent(new SiteFolderAppEvents.Show(makeEntityOption(value.getServer()), true))));
     }
 
     @Override
@@ -178,6 +177,10 @@ public abstract class ApplicationTableActivity implements
     @Override
     public void onFilterChanged() {
         loadTable();
+    }
+
+    private EntityOption makeEntityOption(Server server) {
+        return server == null ? null : new EntityOption(server.getName(), server.getId());
     }
 
     private void persistScroll() {
@@ -233,7 +236,7 @@ public abstract class ApplicationTableActivity implements
             public void onSuccess(Boolean result) {
                 if (result) {
                     fireEvent(new SiteFolderAppEvents.ChangeModel());
-                    fireEvent(new SiteFolderAppEvents.Show(serverId, false));
+                    fireEvent(new SiteFolderAppEvents.Show(server, false));
                     fireEvent(new NotifyEvents.Show(lang.siteFolderAppRemoved(), NotifyEvents.NotifyType.SUCCESS));
                 } else {
                     fireEvent(new NotifyEvents.Show(lang.siteFolderAppNotRemoved(), NotifyEvents.NotifyType.ERROR));
@@ -257,7 +260,7 @@ public abstract class ApplicationTableActivity implements
     @Inject
     AbstractPagerView pagerView;
 
-    private Long serverId = null;
+    private EntityOption server = null;
     private AppEvents.InitDetails initDetails;
 
     private Integer scrollTo = 0;

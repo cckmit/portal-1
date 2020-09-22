@@ -15,13 +15,11 @@ import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.PlanEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.popup.BasePopupView;
 import ru.protei.portal.ui.common.client.service.PlanControllerAsync;
-import ru.protei.portal.ui.common.client.widget.composite.popper.PopperComposite;
+import ru.protei.portal.ui.common.client.widget.popupselector.RemovablePopupSingleSelector;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.plan.client.popupselector.PopupSingleSelector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -179,20 +177,20 @@ public abstract class PlannedIssuesTableActivity implements AbstractPlannedIssue
     }
 
     private void showPlanSingleSelector(Element relative, Consumer<Plan> onChanged) {
-        PopupSingleSelector<Plan> popup = new PopupSingleSelector<Plan>() {};
-        popup.setModel(index -> index >= plans.size() ? null : plans.get(index));
-        popup.setItemRenderer(Plan::getName);
-        popup.setFilter(value -> !value.getId().equals(planId));
-        popup.setEmptyListText(lang.emptySelectorList());
-        popup.setEmptySearchText(lang.searchNoMatchesFound());
-        popup.setRelative(relative);
-        popup.addValueChangeHandler(event -> {
-            onChanged.accept(popup.getValue());
-            popup.getPopup().hide();
+        RemovablePopupSingleSelector<Plan> selector = new RemovablePopupSingleSelector<>();
+        selector.setModel(index -> index >= plans.size() ? null : plans.get(index));
+        selector.setItemRenderer(Plan::getName);
+        selector.setFilter(value -> !value.getId().equals(planId));
+        selector.setEmptyListText(lang.emptySelectorList());
+        selector.setEmptySearchText(lang.searchNoMatchesFound());
+        selector.setRelative(relative);
+        selector.addValueChangeHandler(event -> {
+            onChanged.accept(selector.getValue());
+            selector.hidePopup();
         });
-        popup.getPopup().getChildContainer().clear();
-        popup.fill();
-        popup.getPopup().showNear(relative, PopperComposite.Placement.BOTTOM, -104, 2);
+        selector.clearPopup();
+        selector.fill();
+        selector.showPopup();
     }
 
     private void swapIssues( CaseShortView src, CaseShortView dst ) {

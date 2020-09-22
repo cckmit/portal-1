@@ -9,6 +9,7 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Server;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -98,7 +99,7 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
     @Override
     public void onOpenClicked() {
         if (server != null) {
-            fireEvent(new SiteFolderAppEvents.Show(server.getId(), false));
+            fireEvent(new SiteFolderAppEvents.Show(makeEntityOption(server), false));
         }
     }
 
@@ -114,6 +115,10 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
         }
 
         fireEvent(SiteFolderAppEvents.Edit.withServer(server));
+    }
+
+    private EntityOption makeEntityOption(Server server) {
+        return server == null ? null : new EntityOption(server.getName(), server.getId());
     }
 
     private void requestServer(Long serverId, Consumer<Server> successConsumer) {

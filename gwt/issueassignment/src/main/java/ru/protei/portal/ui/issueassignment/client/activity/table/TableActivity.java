@@ -1,9 +1,7 @@
 package ru.protei.portal.ui.issueassignment.client.activity.table;
 
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -23,14 +21,12 @@ import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.IssueAssignmentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.popup.BasePopupView;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.client.util.CaseStateUtils;
-import ru.protei.portal.ui.common.client.widget.composite.popper.PopperComposite;
+import ru.protei.portal.ui.common.client.widget.popupselector.RemovablePopupSingleSelector;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.issueassignment.client.widget.popupselector.PopupSingleSelector;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.ArrayList;
@@ -176,7 +172,7 @@ public abstract class TableActivity implements Activity, AbstractTableActivity {
     }
 
     private void showPersonSingleSelector(Element relative, Consumer<PersonShortView> onChanged) {
-        PopupSingleSelector<PersonShortView> popup = new PopupSingleSelector<>();
+        RemovablePopupSingleSelector<PersonShortView> popup = new RemovablePopupSingleSelector<>();
         popup.setModel(index -> index >= people.size() ? null : people.get(index));
         popup.setItemRenderer(PersonShortView::getName);
         popup.setEmptyListText(lang.emptySelectorList());
@@ -184,11 +180,11 @@ public abstract class TableActivity implements Activity, AbstractTableActivity {
         popup.setRelative(relative);
         popup.addValueChangeHandler(event -> {
             onChanged.accept(popup.getValue());
-            popup.getPopup().hide();
+            popup.hidePopup();
         });
-        popup.getPopup().getChildContainer().clear();
+        popup.clearPopup();
         popup.fill();
-        popup.getPopup().showNear(relative, PopperComposite.Placement.BOTTOM, -104, 2);
+        popup.showPopup();
     }
 
     @Inject
