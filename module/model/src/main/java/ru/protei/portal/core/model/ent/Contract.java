@@ -138,11 +138,11 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     private Long vat;
 
     /**
-     * Типы
+     * Тип
      */
     @JdbcEnumerated(EnumType.ID)
-    @JdbcColumnCollection(name = "contract_types", separator = ",")
-    private List<En_ContractType> contractTypes;
+    @JdbcColumn(name = "contract_type")
+    private En_ContractType contractType;
 
     @JdbcColumn(name = "date_signing")
     private Date dateSigning;
@@ -314,12 +314,12 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
         this.number = number;
     }
 
-    public List<En_ContractType> getContractTypes() {
-        return contractTypes;
+    public En_ContractType getContractType() {
+        return contractType;
     }
 
-    public void setContractTypes(List<En_ContractType> contractTypes) {
-        this.contractTypes = contractTypes;
+    public void setContractType(En_ContractType contractType) {
+        this.contractType = contractType;
     }
 
     public String getManagerShortName() {
@@ -503,7 +503,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
                 ", cost=" + cost +
                 ", currency=" + currency +
                 ", vat=" + vat +
-                ", contractTypes=" + contractTypes +
+                ", contractType=" + contractType +
                 ", dateSigning=" + dateSigning +
                 ", dateValid=" + dateValid +
                 ", contractDates=" + contractDates +

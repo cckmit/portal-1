@@ -13,10 +13,10 @@ import ru.protei.portal.core.model.struct.MoneyWithCurrencyWithVat;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
+import ru.protei.portal.ui.contract.client.widget.contractdates.list.ContractDatesList;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 public interface AbstractContractEditView extends IsWidget {
 
@@ -28,7 +28,7 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasValue<String> number();
 
-    HasValue<Set<En_ContractType>> types();
+    HasValue<En_ContractType> type();
 
     void setKind(En_ContractKind kind);
 
@@ -43,6 +43,8 @@ public interface AbstractContractEditView extends IsWidget {
     HasValue<Date> dateValidDate();
 
     HasValue<Long> dateValidDays();
+
+    ContractDatesList contractDatesList();
 
     HasValue<List<ContractDate>> contractDates();
 
@@ -91,4 +93,8 @@ public interface AbstractContractEditView extends IsWidget {
     void setNotAvailableOrganizations(List<Long> organizationsToHide);
 
     void setSecondContractNotAvailableOrganizations(List<Long> organizationsToHide);
+
+    HasVisibility tagsVisibility();
+
+    HasWidgets tagsContainer();
 }

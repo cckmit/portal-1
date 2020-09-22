@@ -47,6 +47,9 @@
                         <span ui:field="contractChild"/>
                     </div>
 
+                    <h5><ui:text from="{lang.tags}"/></h5>
+                    <g:HTMLPanel ui:field="tagsContainer" styleName="clearfix"/>
+
                     <h5><ui:text from="{lang.contractWorkGroup}"/></h5>
 
                     <div class="small">

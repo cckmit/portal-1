@@ -36,9 +36,10 @@ public abstract class ContractModel extends LifecycleSelectorModel<EntityOption>
                     fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
                 })
                 .withSuccess(contracts -> {
-                    notifySubscribers(contracts.getResults().stream()
+                    List<EntityOption> options = contracts.getResults().stream()
                             .map(Contract::toEntityOption)
-                            .collect(Collectors.toList()));
+                            .collect(Collectors.toList());
+                    notifySubscribers(options);
                 })
         );
     }

@@ -9,9 +9,7 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.client.enterprise1c.api.Api1C;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.enterprise1c.dto.Contract1C;
 import ru.protei.portal.core.model.enterprise1c.dto.Contractor1C;
@@ -111,11 +109,18 @@ public class ContractServiceImpl implements ContractService {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
-        if (contract == null)
+        if (contract == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
 
         if (contract.getProjectId() == null) {
             return error(En_ResultStatus.PROJECT_NOT_SELECTED);
+        }
+
+        boolean invalidContractDates = stream(contract.getContractDates())
+                .anyMatch(not(this::isValidContractDate));
+        if (invalidContractDates) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         if (contract.getParentContractId() != null) {
@@ -128,44 +133,56 @@ public class ContractServiceImpl implements ContractService {
         }
 
         CaseObject caseObject = fillCaseObjectFromContract(null, contract);
-        Long id = caseObjectDAO.persist(caseObject);
-        if (id == null)
+        Long contractId = caseObjectDAO.persist(caseObject);
+        if (contractId == null) {
             return error(En_ResultStatus.NOT_CREATED);
-
-        contract.setId(id);
+        }
+        contract.setId(contractId);
 
         Contractor contractor = contract.getContractor();
         if (contractor != null) {
             Result<Long> result = saveContractor(contractor);
-            if (result.isOk()) {
-                contract.setContractorId(result.getData());
-            } else {
-                return result;
+            if (result.isError()) {
+                log.error("createContract(): id = {} | failed to save contractor to db with result = {}", contractId, result);
+                throw new ResultStatusException(result.getStatus());
             }
+            contract.setContractorId(result.getData());
         } else {
             contract.setContractorId(null);
         }
 
-        Long contractId = contractDAO.persist(contract);
-
-        if (contractId == null)
-            return error(En_ResultStatus.INTERNAL_ERROR);
-
-        if (config.data().enterprise1C().isContractSyncEnabled() && contract.getContractor() != null) {
-            Result<Contract1C> result = saveContract1C(contract);
-            if (result.isOk()) {
-                contract.setRefKey(result.getData().getRefKey());
-            } else {
-                return error(En_ResultStatus.INTERNAL_ERROR);
-            }
-
-            contractDAO.merge(contract);
+        boolean contractPersisted = contractDAO.persist(contract) != null;
+        if (!contractPersisted) {
+            log.error("createContract(): id = {} | failed to persist contract to db", contractId);
+            throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
         }
 
-        jdbcManyRelationsHelper.persist(contract, "contractDates");
-        jdbcManyRelationsHelper.persist(contract, "contractSpecifications");
+        try {
+            jdbcManyRelationsHelper.persist(contract, "contractDates");
+            jdbcManyRelationsHelper.persist(contract, "contractSpecifications");
+        } catch (Exception e) {
+            log.error("createContract(): id = {} | failed to save contract's relations to db", contractId, e);
+            throw new ResultStatusException(En_ResultStatus.NOT_CREATED, e);
+        }
 
-        return ok(id);
+        boolean contractorDefined = contract.getContractor() != null;
+        boolean is1cSync = is1cSyncEnabled(contract) && contractorDefined;
+        if (is1cSync) {
+            Result<Contract1C> result = saveContract1C(contract);
+            if (result.isError()) {
+                log.error("createContract(): id = {} | failed to save contract to 1c with result = {}", contractId, result);
+                throw new ResultStatusException(result.getStatus());
+            }
+            contract.setRefKey(result.getData().getRefKey());
+            boolean contractUpdated = contractDAO.mergeRefKey(contractId, contract.getRefKey());
+            if (!contractUpdated) {
+                // Not rollback-able error
+                log.error("createContract(): id = {} | NO-ROLLBACK | failed to save contract's refKey to db", contractId);
+                return error(En_ResultStatus.NOT_CREATED);
+            }
+        }
+
+        return ok(contractId);
     }
 
     @Override
@@ -186,6 +203,12 @@ public class ContractServiceImpl implements ContractService {
 
         if (contract.getProjectId() == null) {
             return error(En_ResultStatus.PROJECT_NOT_SELECTED);
+        }
+
+        boolean invalidContractDates = stream(contract.getContractDates())
+                .anyMatch(not(this::isValidContractDate));
+        if (invalidContractDates) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         if (isNotBlank(contract.getRefKey()) && contract.getContractor() == null) {
@@ -236,7 +259,7 @@ public class ContractServiceImpl implements ContractService {
             throw new ResultStatusException(En_ResultStatus.NOT_UPDATED, e);
         }
 
-        boolean is1cSync = config.data().enterprise1C().isContractSyncEnabled();
+        boolean is1cSync = is1cSyncEnabled(contract);
         if (is1cSync) {
 
             boolean isRefKeySet = isNotEmpty(contract.getRefKey());
@@ -504,6 +527,12 @@ public class ContractServiceImpl implements ContractService {
         return policyService.hasGrantAccessFor(roles, privilege);
     }
 
+    private boolean is1cSyncEnabled(Contract contract) {
+        boolean sync1cEnabled = config.data().enterprise1C().isContractSyncEnabled();
+        boolean stateAgreement = contract.getState() == En_ContractState.AGREEMENT;
+        return sync1cEnabled && !stateAgreement;
+    }
+
     private boolean isValidInn(String inn) {
         return innPattern.matcher(inn).matches() && ContractorUtils.checkInn(inn);
     }
@@ -539,6 +568,23 @@ public class ContractServiceImpl implements ContractService {
         }
 
         if (isNotEmpty(query.getKpp()) && isEmpty(query.getInn())) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean isValidContractDate(ContractDate contractDate) {
+        boolean isNotifyInvalid = contractDate.isNotify() && contractDate.getDate() == null;
+        if (isNotifyInvalid) {
+            return false;
+        }
+
+        boolean isTypeWithPayment = contractDate.getType() == En_ContractDatesType.PREPAYMENT ||
+                contractDate.getType() == En_ContractDatesType.POSTPAYMENT;
+        boolean isCostInvalid = (isTypeWithPayment && contractDate.getCost() == null) ||
+                (!isTypeWithPayment && contractDate.getCost() != null);
+        if (isCostInvalid) {
             return false;
         }
 

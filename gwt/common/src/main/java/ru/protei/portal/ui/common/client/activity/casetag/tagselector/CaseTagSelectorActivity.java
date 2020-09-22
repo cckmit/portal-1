@@ -28,6 +28,7 @@ public abstract class CaseTagSelectorActivity implements Activity, AbstractCaseT
         caseType = event.caseType;
         tagListActivity = event.tagListActivity;
         refreshTagSelector();
+        caseTagSelector.setCaseType(event.caseType);
         caseTagSelector.setAddTagsEnabled(event.isEditTagEnabled);
         caseTagSelector.setEditTagsEnabled(event.isEditTagEnabled);
         caseTagSelector.showUnderLeft(event.relative, null);
@@ -51,11 +52,11 @@ public abstract class CaseTagSelectorActivity implements Activity, AbstractCaseT
     private void onAddNewTag() {
         CaseTag caseTag = new CaseTag();
         caseTag.setCaseType(caseType);
-        fireEvent(new CaseTagEvents.ShowEdit(caseTag));
+        fireEvent(new CaseTagEvents.ShowEdit(caseTag, caseType));
     }
 
     private void onEditTag(CaseTag caseTag) {
-        fireEvent(new CaseTagEvents.ShowEdit(caseTag));
+        fireEvent(new CaseTagEvents.ShowEdit(caseTag, caseType));
     }
 
     private void onSelectTag(CaseTag caseTag) {

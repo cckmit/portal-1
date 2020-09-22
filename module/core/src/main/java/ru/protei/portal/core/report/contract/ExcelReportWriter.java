@@ -119,9 +119,7 @@ public class ExcelReportWriter implements
     }
 
     private String makeContractNumber(Contract contract) {
-        String number = stream(contract.getContractTypes())
-                .map(type -> enumLangUtil.contractTypeLang(type, lang.getLanguageTag()))
-                .collect(Collectors.joining(", ")) + " " + contract.getNumber();
+        String number = enumLangUtil.contractTypeLang(contract.getContractType(), lang.getLanguageTag()) + " " + contract.getNumber();
         String signingDate = contract.getDateSigning() != null
                 ? dateFormat.format(contract.getDateSigning())
                 : "";

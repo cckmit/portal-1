@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.struct.Interval;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.sqlcondition.Query;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -18,8 +19,10 @@ import ru.protei.winter.jdbc.JdbcQueryParameters;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
+import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
 import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
 
 public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements ContractDAO {
@@ -98,12 +101,23 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
             }
 
             if (CollectionUtils.isNotEmpty(query.getTypes())) {
-                // Filter by comma-separated value
-                condition.append(" and (");
-                condition.append(stream(query.getTypes())
-                        .map(type -> "contract.contract_types REGEXP '(^|,)" + type.getId() + "(,|$)'")
-                        .collect(Collectors.joining(" or ")));
-                condition.append(")");
+                String inArg = HelperFunc.makeInArg(query.getTypes(), type -> String.valueOf(type.getId()));
+                condition.append(" and contract.contract_type in ").append(inArg);
+            }
+
+            if (CollectionUtils.isNotEmpty(query.getCaseTagsIds())) {
+                if (query.getCaseTagsIds().remove(CrmConstants.CaseTag.NOT_SPECIFIED)) {
+                    condition.append(" and ( ");
+                    condition.append("CO.id not in (select case_id from case_object_tag) ");
+                    if (CollectionUtils.isNotEmpty(query.getCaseTagsIds())) {
+                        condition.append("or CO.id in ");
+                        condition.append("(select case_id from case_object_tag where tag_id in ").append(makeInArg(query.getCaseTagsIds(), false)).append(") ");
+                    }
+                    condition.append(") ");
+                } else {
+                    condition.append(" and CO.id in ");
+                    condition.append("(select case_id from case_object_tag where tag_id in ").append(makeInArg(query.getCaseTagsIds(), false)).append(") ");
+                }
             }
 
             if (query.getDirectionId() != null) {

@@ -36,6 +36,7 @@ public abstract class CaseTagListActivity implements Activity, AbstractCaseTagLi
 
     // not event listener
     public void onShow(CaseTagEvents.ShowList event) {
+        this.caseType = event.caseType;
         this.caseId = event.caseId;
         this.isReadOnly = event.isReadOnly;
 
@@ -120,7 +121,7 @@ public abstract class CaseTagListActivity implements Activity, AbstractCaseTagLi
 
     private void requestTags(Long caseId, Consumer<List<CaseTag>> onRequested) {
         CaseTagQuery query = new CaseTagQuery();
-        query.setCaseType(En_CaseType.CRM_SUPPORT);
+        query.setCaseType(caseType);
         query.setCaseId(caseId);
         controller.getTags(query, new FluentCallback<List<CaseTag>>()
                 .withSuccess(onRequested));
@@ -179,6 +180,7 @@ public abstract class CaseTagListActivity implements Activity, AbstractCaseTagLi
     @Inject
     private Provider<AbstractCaseTagItemView> itemViewProvider;
 
+    private En_CaseType caseType;
     private Long caseId;
     private boolean isReadOnly = false;
     private List<CaseTag> tags = new ArrayList<>();

@@ -11,12 +11,15 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import ru.brainworm.factory.core.datetimepicker.client.util.DateUtils;
 import ru.protei.portal.core.model.dict.En_ContractDatesType;
 import ru.protei.portal.core.model.ent.ContractDate;
+import ru.protei.portal.core.model.struct.Money;
 import ru.protei.portal.ui.contract.client.widget.contractdates.item.ContractDateItem;
 
 import java.util.*;
+import java.util.function.Supplier;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 public class ContractDatesList
         extends Composite
@@ -40,13 +43,19 @@ public class ContractDatesList
     public void setValue(List<ContractDate> value, boolean fireEvents ) {
         clear();
         this.value = value == null ? new ArrayList<>() : value;
-        for ( ContractDate items : this.value ) {
-            makeItemAndFillValue(items);
+        showItems(this.value);
+        showCostOverflowWarning(this.value);
+        if (fireEvents) {
+            ValueChangeEvent.fire(this, this.value);
         }
+    }
 
-        if ( fireEvents ) {
-            ValueChangeEvent.fire( this, this.value );
-        }
+    public void setContractCostSupplier(Supplier<Money> contractCostSupplier) {
+        this.contractCostSupplier = contractCostSupplier;
+    }
+
+    public void onContractCostChanged(Money contractCost) {
+        setValue(getValue());
     }
 
     public void clear() {
@@ -62,32 +71,53 @@ public class ContractDatesList
     @UiHandler( "add" )
     public void onAddClicked( ClickEvent event ) {
         event.preventDefault();
-        addEmptyItem();
-        ValueChangeEvent.fire( this, value );
+        ContractDate item = makeEmptyItem();
+        value.add(item);
+        ContractDateItem itemWidget = makeItemWidget(item);
+        modelToView.put(itemWidget, item);
+        container.add(itemWidget);
+        ValueChangeEvent.fire(this, value);
     }
 
-    private void addEmptyItem() {
+    private void showItems(List<ContractDate> value) {
+        for (ContractDate item : value) {
+            ContractDateItem itemWidget = makeItemWidget(item);
+            modelToView.put(itemWidget, item);
+            container.add(itemWidget);
+        }
+    }
+
+    private void showCostOverflowWarning(List<ContractDate> value) {
+        long costOfPayments = stream(value)
+            .map(ContractDate::getCost)
+            .filter(Objects::nonNull)
+            .mapToLong(Money::getFull)
+            .sum();
+        long costOfContract = contractCostSupplier.get().getFull();
+        boolean isOverflow = costOfPayments > costOfContract;
+        costOverflowWarning.setVisible(isOverflow);
+    }
+
+    private ContractDate makeEmptyItem() {
         ContractDate item = new ContractDate();
-        item.setType(En_ContractDatesType.PAYMENT);
-        item.setDate(DateUtils.setBeginOfDay(new Date()));
-
-        value.add( item );
-
-        makeItemAndFillValue( item );
+        item.setType(En_ContractDatesType.values()[0]);
+        item.setDate(null);
+        return item;
     }
 
-    private void makeItemAndFillValue(final ContractDate value ) {
+    private ContractDateItem makeItemWidget(ContractDate contractDate) {
         ContractDateItem itemWidget = itemFactory.get();
-        itemWidget.setValue( value );
-        itemWidget.addCloseHandler(event -> {
-            container.remove( event.getTarget() );
-
-            ContractDate remove = modelToView.remove( event.getTarget() );
-            ContractDatesList.this.value.remove( remove );
+        itemWidget.setContractCostSupplier(contractCostSupplier);
+        itemWidget.setCostChangeListener(cost -> {
+            showCostOverflowWarning(value);
         });
-
-        modelToView.put( itemWidget, value );
-        container.add( itemWidget );
+        itemWidget.setValue(contractDate);
+        itemWidget.addCloseHandler(event -> {
+            container.remove(event.getTarget());
+            ContractDate remove = modelToView.remove(event.getTarget());
+            ContractDatesList.this.value.remove(remove);
+        });
+        return itemWidget;
     }
 
     public void setEnsureDebugId(String debugId) {
@@ -98,11 +128,14 @@ public class ContractDatesList
     FlowPanel container;
     @UiField
     Button add;
+    @UiField
+    HTMLPanel costOverflowWarning;
 
     @Inject
     Provider<ContractDateItem> itemFactory;
     List<ContractDate> value;
     Map<ContractDateItem, ContractDate> modelToView = new HashMap<>();
+    private Supplier<Money> contractCostSupplier;
 
     interface ContractPeriodListUiBinder extends UiBinder< HTMLPanel, ContractDatesList> {}
     private static ContractPeriodListUiBinder ourUiBinder = GWT.create( ContractPeriodListUiBinder.class );
