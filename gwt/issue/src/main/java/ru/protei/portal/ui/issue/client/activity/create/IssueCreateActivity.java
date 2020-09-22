@@ -381,7 +381,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         fillAttachmentsContainer(view, caseObject.getAttachments());
 
         fireEvent(new CaseLinkEvents.Show(view.getLinksContainer()).withCaseType(En_CaseType.CRM_SUPPORT).withLinks(createRequest.getLinks()));
-        fireEvent(new CaseTagEvents.ShowList(view.getTagsContainer(), createRequest.getTags(), false, a -> tagListActivity = a));
+        fireEvent(new CaseTagEvents.ShowList(view.getTagsContainer(), En_CaseType.CRM_SUPPORT, createRequest.getTags(), false, a -> tagListActivity = a));
 
         view.saveVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT));
         unlockSave();

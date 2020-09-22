@@ -17,7 +17,7 @@ import ru.protei.portal.core.model.struct.Money;
 import ru.protei.portal.core.model.struct.MoneyWithCurrencyWithVat;
 import ru.protei.portal.ui.common.client.widget.selector.currency.CurrencyButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.vat.VatButtonSelector;
-import ru.protei.portal.ui.common.client.widget.validatefield.ValidableLongBox;
+import ru.protei.portal.ui.common.client.widget.validatefield.ValidableMoneyBox;
 
 import java.util.Arrays;
 import java.util.List;
@@ -38,7 +38,7 @@ public class MoneyCurrencyVatWidget extends Composite implements HasValue<MoneyW
 
     @Override
     public MoneyWithCurrencyWithVat getValue() {
-        Money vMoney = new Money(moneyNatural.getValue(), moneyDecimal.getValue());
+        Money vMoney = money.getValue();
         En_Currency vCurrency = currency.getValue();
         Long vVat = vat.getValue();
         return new MoneyWithCurrencyWithVat(vMoney, vCurrency, vVat);
@@ -51,14 +51,11 @@ public class MoneyCurrencyVatWidget extends Composite implements HasValue<MoneyW
 
     @Override
     public void setValue(MoneyWithCurrencyWithVat value, boolean fireEvents) {
-        Money vMoney = value.getMoney() != null
-                ? value.getMoney()
-                : new Money(0L);
+        Money vMoney = value.getMoney();
         En_Currency vCurrency = value.getCurrency() != null
                 ? value.getCurrency()
                 : defaultCurrency;
-        moneyNatural.setValue(vMoney.getNatural());
-        moneyDecimal.setValue(vMoney.getDecimal());
+        money.setValue(vMoney);
         currency.setValue(vCurrency);
         vat.setValue(value.getVatPercent());
         if (fireEvents) {
@@ -68,13 +65,12 @@ public class MoneyCurrencyVatWidget extends Composite implements HasValue<MoneyW
 
     @Override
     public boolean isEnabled() {
-        return moneyNatural.isEnabled();
+        return money.isEnabled();
     }
 
     @Override
     public void setEnabled(boolean enabled) {
-        moneyNatural.setEnabled(enabled);
-        moneyDecimal.setEnabled(enabled);
+        money.setEnabled(enabled);
         currency.setEnabled(enabled);
         vat.setEnabled(enabled);
     }
@@ -104,8 +100,7 @@ public class MoneyCurrencyVatWidget extends Composite implements HasValue<MoneyW
     }
 
     private void initValidation() {
-        moneyNatural.setValidationFunction(value -> value != null && value >= 0);
-        moneyDecimal.setValidationFunction(value -> value != null && value >= 0 && value < 100);
+        money.setValidationFunction(value -> value != null && value.getFull() >= 0);
     }
 
     private Long parseVat(String vat) {
@@ -114,8 +109,8 @@ public class MoneyCurrencyVatWidget extends Composite implements HasValue<MoneyW
                 : parseLong(vat);
     }
 
-    @UiHandler({"moneyNatural", "moneyDecimal"})
-    public void onMoneyChanged(ValueChangeEvent<Long> event) {
+    @UiHandler("money")
+    public void onMoneyChanged(ValueChangeEvent<Money> event) {
         MoneyWithCurrencyWithVat value = getValue();
         ValueChangeEvent.fire(this, value);
     }
@@ -133,9 +128,7 @@ public class MoneyCurrencyVatWidget extends Composite implements HasValue<MoneyW
     }
 
     @UiField
-    ValidableLongBox moneyNatural;
-    @UiField
-    ValidableLongBox moneyDecimal;
+    ValidableMoneyBox money;
     @Inject
     @UiField(provided = true)
     CurrencyButtonSelector currency;

@@ -1,5 +1,7 @@
 package ru.protei.portal.ui.contract.client.activity.edit;
 
+import com.google.gwt.user.client.ui.IsWidget;
+
 import java.util.Date;
 
 public interface AbstractContractEditActivity {
@@ -16,6 +18,8 @@ public interface AbstractContractEditActivity {
 
     void onProjectChanged();
 
+    void onCostChanged();
+
     void onCreateSecondContractToggle(boolean enabled);
 
     void onSecondContractOrganizationChanged();
@@ -25,5 +29,7 @@ public interface AbstractContractEditActivity {
     void onDateValidChanged(Date date);
 
     void onDateValidChanged(Long days);
+
+    void onAddTagsClicked(IsWidget target);
 
 }

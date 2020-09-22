@@ -100,12 +100,8 @@ public class ContractSpecificationItem
     @UiHandler("costWithCurrency")
     public void onCostWithCurrencyChanged(ValueChangeEvent<MoneyWithCurrency> event) {
         MoneyWithCurrency val = costWithCurrency.getValue();
-        Money cost = val != null
-                ? val.getMoney()
-                : null;
-        En_Currency currency = val != null
-                ? val.getCurrency()
-                : null;
+        Money cost = val != null ? val.getMoney() : null;
+        En_Currency currency = val != null ? val.getCurrency() : null;
         value.setCost(cost);
         value.setCurrency(currency);
     }

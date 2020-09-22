@@ -1,1 +1,1 @@
-${contract_notify_one_day_subject} [${contract_number}<#noparse>${contractNumber}</#noparse>]
+${contract_notify_one_day_subject} [<#noparse>${EnumLangUtil.contractTypeLang(contractType, lang)} ${contractNumber}</#noparse>]

@@ -14,7 +14,7 @@ public class MoneyWithCurrencyWithVat implements Serializable {
     }
 
     public MoneyWithCurrencyWithVat(Money money, En_Currency currency, Long vatPercent) {
-        this.money = safeMoney(money);
+        this.money = money;
         this.currency = currency;
         this.vatPercent = vatPercent;
     }
@@ -24,7 +24,7 @@ public class MoneyWithCurrencyWithVat implements Serializable {
     }
 
     public void setMoney(Money money) {
-        this.money = safeMoney(money);
+        this.money = money;
     }
 
     public En_Currency getCurrency() {
@@ -41,9 +41,5 @@ public class MoneyWithCurrencyWithVat implements Serializable {
 
     public void setVatPercent(Long vatPercent) {
         this.vatPercent = vatPercent;
-    }
-
-    private Money safeMoney(Money money) {
-        return money != null ? money : new Money(0L);
     }
 }

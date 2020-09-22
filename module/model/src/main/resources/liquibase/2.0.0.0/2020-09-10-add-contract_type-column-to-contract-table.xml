@@ -1,0 +1,17 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-contract_type-column-to-contract-table" author="buchmastov">
+        <renameColumn tableName="contract"
+                      oldColumnName="contract_types"
+                      newColumnName="contract_type"
+                      columnDataType="VARCHAR(1024)"/>
+        <modifyDataType tableName="contract"
+                        columnName="contract_type"
+                        newDataType="INT"/>
+    </changeSet>
+
+</databaseChangeLog>

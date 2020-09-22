@@ -373,7 +373,7 @@ public abstract class IssueEditActivity implements
         boolean readOnly = isReadOnly();
         boolean isEditTagEnabled = policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT);
         view.addTagButtonVisibility().setVisible(isEditTagEnabled);
-        fireEvent(new CaseTagEvents.ShowList(view.getTagsContainer(), issue.getId(), readOnly, a -> tagListActivity = a));
+        fireEvent(new CaseTagEvents.ShowList(view.getTagsContainer(), En_CaseType.CRM_SUPPORT, issue.getId(), readOnly, a -> tagListActivity = a));
     }
 
     private void showMeta(CaseObject issue) {
