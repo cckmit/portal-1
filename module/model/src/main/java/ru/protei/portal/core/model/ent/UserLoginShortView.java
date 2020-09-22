@@ -37,7 +37,7 @@ public class UserLoginShortView implements Identifiable, Serializable {
     @JdbcEnumerated(EnumType.ID)
     private En_CompanyCategory companyCategory;
 
-    @JdbcJoinedColumn(localColumn = "personId", remoteColumn = "id", table = "person", mappedColumn = "sex")
+    @JdbcJoinedColumn(localColumn = "personId", remoteColumn = "id", table = "person", mappedColumn = "sex", sqlTableAlias = "person")
     private String genderCode;
 
     @JdbcJoinedColumn(localColumn = "personId", remoteColumn = "id", table = "person", mappedColumn = "company_id", sqlTableAlias = "person")
