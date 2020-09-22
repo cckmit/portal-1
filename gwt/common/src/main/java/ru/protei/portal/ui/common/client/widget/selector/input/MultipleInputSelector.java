@@ -1,12 +1,14 @@
 package ru.protei.portal.ui.common.client.widget.selector.input;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
@@ -29,6 +31,9 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
     public MultipleInputSelector() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         initHandlers();
+        Scheduler.get().scheduleDeferred( (Command) () -> {
+            root.add(popup);
+        });
     }
 
     public void setHeader( String label ) {
@@ -59,7 +64,10 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
         if (!isEnabled) {
             return;
         }
-        showPopup( itemContainer );
+
+        if (!popup.isVisible()) {
+            showPopup( buttonContainer );
+        }
     }
 
     @UiHandler( { "clearButton" } )
@@ -187,6 +195,8 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
     @UiField
     HTMLPanel itemContainer;
     @UiField
+    HTMLPanel buttonContainer;
+    @UiField
     SpanElement addIcon;
     @UiField
     SpanElement add;
@@ -196,6 +206,8 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
     SpanElement clear;
     @UiField
     Button clearButton;
+    @UiField
+    HTMLPanel root;
 
     @Inject
     Provider<SelectItemView> itemViewProvider;

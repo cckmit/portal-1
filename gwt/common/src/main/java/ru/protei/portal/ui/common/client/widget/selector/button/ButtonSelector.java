@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.common.client.widget.selector.button;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.dom.client.SpanElement;
@@ -16,7 +15,6 @@ import com.google.inject.Inject;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
-import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 /**

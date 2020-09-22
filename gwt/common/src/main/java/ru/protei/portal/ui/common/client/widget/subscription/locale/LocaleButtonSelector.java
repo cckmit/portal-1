@@ -13,8 +13,7 @@ import java.util.List;
 public class LocaleButtonSelector extends ButtonSelector<String> {
 
     @Inject
-    public void onInit() {
-        super.onInit();
+    public void init() {
         hasNullValue = false;
         setDisplayOptionCreator( value -> new DisplayOption( value, "selector-option-" + value, null ));
         fillOptions();
