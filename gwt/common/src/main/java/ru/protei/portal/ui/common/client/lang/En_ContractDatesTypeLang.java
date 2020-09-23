@@ -2,7 +2,6 @@ package ru.protei.portal.ui.common.client.lang;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_ContractDatesType;
-import ru.protei.portal.core.model.dict.En_ContractState;
 
 public class En_ContractDatesTypeLang {
 
@@ -12,7 +11,8 @@ public class En_ContractDatesTypeLang {
         }
 
         switch (value) {
-            case PAYMENT: return lang.contractPayment();
+            case PREPAYMENT: return lang.contractPrePayment();
+            case POSTPAYMENT: return lang.contractPostPayment();
             case SUPPLY: return lang.contractSupply();
 
             default: return lang.unknownField();

@@ -479,9 +479,8 @@ public class PortalApiController {
                 .ifError(result -> log.warn("removeCaseTag(): Can't remove tag={}. {}", caseTagId, result));
     }
 
-    @GetMapping(value = "/contracts/byrefs")
-    public Result<List<ApiContract>> getContractsByRefIds(HttpServletRequest request, HttpServletResponse response,
-                                                          @RequestParam("refkey") List<String> refKeys) {
+    @PostMapping(value = "/contracts/byrefs")
+    public Result<List<ApiContract>> getContractsByRefIds(HttpServletRequest request, HttpServletResponse response, @RequestBody List<String> refKeys) {
         log.info("API | getContractsByRefIds(): refKeys={}", refKeys);
 
         return authenticate(request, response, authService, sidGen, log)

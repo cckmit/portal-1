@@ -1,0 +1,14 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-cost-and-currency-columns-to-contract_date-table" author="buchmastov">
+        <addColumn tableName="contract_date">
+            <column name="cost" type="BIGINT"/>
+            <column name="cost_currency" type="INT"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

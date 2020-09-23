@@ -29,7 +29,6 @@ import ru.protei.portal.ui.contract.client.activity.table.AbstractContractTableV
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
-import static ru.protei.portal.core.model.helper.StringUtils.trim;
 import static ru.protei.portal.core.model.util.ContractSupportService.getContractKind;
 import static ru.protei.portal.ui.common.shared.util.HtmlUtils.sanitizeHtml;
 
@@ -160,9 +159,7 @@ public class ContractTableView extends Composite implements AbstractContractTabl
             Element root = DOM.createDiv();
             StringBuilder sb = new StringBuilder();
             sb.append("<b>")
-                    .append(sanitizeHtml(stream(contract.getContractTypes())
-                            .map(contractTypeLang::getName)
-                            .collect(Collectors.joining(", "))))
+                    .append(sanitizeHtml(contractTypeLang.getName(contract.getContractType())))
                     .append(" ")
                     .append(sanitizeHtml(contract.getNumber()))
                     .append("</b>");

@@ -10,6 +10,7 @@ import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dict.En_TableEntity;
 import ru.protei.portal.core.model.ent.CaseTag;
@@ -398,7 +399,7 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
             }
             @Override
             public void showTags(HasWidgets parent, List<CaseTag> caseTags) {
-                fireEvent(new CaseTagEvents.ShowList(parent, caseTags, true, null));
+                fireEvent(new CaseTagEvents.ShowList(parent, En_CaseType.CRM_SUPPORT, caseTags, true, null));
             }
         });
         rowIssueView.setIssues(cellIssues);
