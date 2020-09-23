@@ -3,7 +3,6 @@ package ru.protei.portal.ui.sitefolder.client.activity.plaform.edit;
 import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
-import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
@@ -69,7 +68,7 @@ public abstract class PlatformEditActivity implements AbstractPlatformEditActivi
         initDetails.parent.clear();
         Window.scrollTo(0, 0);
         initDetails.parent.add(view.asWidget());
-        previousCompanyName = "";
+        previousCompanyName = EMPTY_NAME;
 
         this.fireBackEvent =
                 event.backEvent == null ?
@@ -146,14 +145,14 @@ public abstract class PlatformEditActivity implements AbstractPlatformEditActivi
 
     @Override
     public void onCompanySelected() {
-        EntityOption value = view.company().getValue();
+        EntityOption companyValue = view.company().getValue();
 
         if (StringUtils.isEmpty(view.name().getValue()) || previousCompanyName.equals(view.name().getValue())) {
-            view.name().setValue(value == null ? "" : value.getDisplayText());
+            view.name().setValue(companyValue == null ? EMPTY_NAME : companyValue.getDisplayText());
         }
 
-        previousCompanyName = value == null ? "" : value.getDisplayText();
-        fireShowCompanyContacts(value == null ? null : value.getId() );
+        previousCompanyName = companyValue == null ? EMPTY_NAME : companyValue.getDisplayText();
+        fireShowCompanyContacts(companyValue == null ? null : companyValue.getId() );
     }
 
     @Override
@@ -318,7 +317,9 @@ public abstract class PlatformEditActivity implements AbstractPlatformEditActivi
     RegionControllerAsync regionService;
 
     private Platform platform;
-    private String previousCompanyName = "";
+    private String previousCompanyName = EMPTY_NAME;
     private AppEvents.InitDetails initDetails;
     private Runnable fireBackEvent = () -> fireEvent(new Back());
+
+    private static final String EMPTY_NAME = "";
 }
