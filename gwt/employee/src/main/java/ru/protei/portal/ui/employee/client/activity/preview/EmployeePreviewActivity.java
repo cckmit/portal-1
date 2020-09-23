@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.ent.WorkerEntry;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
@@ -27,6 +28,9 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemView;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -119,14 +123,18 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         }
 
         view.positionsContainer().clear();
+
+        Map<WorkerEntryShortView, AbstractPositionItemView> itemViewMap = new HashMap<>();
         WorkerEntryFacade entryFacade = new WorkerEntryFacade(employee.getWorkerEntries());
         entryFacade.getSortedEntries().forEach(workerEntry -> employeeService.getDepartmentHead(workerEntry.getDepId(), new FluentCallback<PersonShortView>()
                 .withSuccess(head -> {
-                    AbstractPositionItemView positionItemView = makePositionView(workerEntry, head);
-                    view.positionsContainer().add(positionItemView.asWidget());
+                    itemViewMap.put(workerEntry, makePositionView(workerEntry, head));
+
+                    if (isAllDepartmentsHeadsReceived(entryFacade.getSortedEntries(), itemViewMap)){
+                        entryFacade.getSortedEntries().forEach(item -> view.positionsContainer().add(itemViewMap.get(item).asWidget()));
+                    }
                 })
         ));
-
         view.setID(employee.getId().toString());
         view.setIP(employee.getIpAddress());
 
@@ -174,6 +182,11 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
 
         return itemView;
     }
+
+    private boolean isAllDepartmentsHeadsReceived (List<WorkerEntryShortView> workerEntries, Map<WorkerEntryShortView, AbstractPositionItemView> itemViewMap){
+        return workerEntries.size() == itemViewMap.size();
+    }
+
 
     @Inject
     AbstractEmployeePreviewView view;
