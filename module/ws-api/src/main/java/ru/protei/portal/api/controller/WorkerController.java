@@ -15,6 +15,7 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
@@ -301,6 +302,12 @@ public class WorkerController {
                     }
 
                     convert(rec, person);
+
+                    String email = new PlainContactInfoFacade(person.getContactInfo()).getEmail();
+                    if (isEmailExists(person.getId(), email)){
+                        logger.debug("addWorker(): worker with email={} already exists", email);
+                        return error(En_ResultStatus.EMPLOYEE_EMAIL_ALREADY_EXIST, En_ErrorCode.EMAIL_ALREADY_EXIST.getMessage());
+                    }
 
                     person.setFired(false);
                     person.setDeleted(false);
@@ -1515,6 +1522,12 @@ public class WorkerController {
 
                     convert(rec, person);
 
+                    String email = new PlainContactInfoFacade(person.getContactInfo()).getEmail();
+                    if (isEmailExists(person.getId(), email)){
+                        logger.debug("addWorker(): worker with email={} already exists", email);
+                        return error(En_ResultStatus.EMPLOYEE_EMAIL_ALREADY_EXIST, En_ErrorCode.EMAIL_ALREADY_EXIST.getMessage());
+                    }
+
                     if (rec.isFired() || rec.isDeleted()) {
 
                         workerEntryDAO.remove(worker);
@@ -1716,4 +1729,27 @@ public class WorkerController {
 
         youtrackService.createIssue( ADMIN_PROJECT_NAME, summary, description );
     }
+
+    private boolean isEmailExists(Long personId, String email) {
+
+        if (email == null) {
+            return false;
+        }
+
+        List<Person> employeeByEmail = personDAO.findEmployeeByEmail(email);
+
+        if (CollectionUtils.isNotEmpty(employeeByEmail)){
+            if (personId == null) {
+                return true;
+            }
+
+            if (employeeByEmail.stream()
+                    .noneMatch(personFromDB -> personFromDB.getId().equals(personId))){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 }
