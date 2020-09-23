@@ -27,7 +27,9 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemView;
 
+import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 
 /**
  * Активность превью сотрудника
@@ -119,14 +121,20 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         }
 
         view.positionsContainer().clear();
+
+        Map<Integer, AbstractPositionItemView> itemViewMap = new TreeMap<>();
         WorkerEntryFacade entryFacade = new WorkerEntryFacade(employee.getWorkerEntries());
         entryFacade.getSortedEntries().forEach(workerEntry -> employeeService.getDepartmentHead(workerEntry.getDepId(), new FluentCallback<PersonShortView>()
                 .withSuccess(head -> {
-                    AbstractPositionItemView positionItemView = makePositionView(workerEntry, head);
-                    view.positionsContainer().add(positionItemView.asWidget());
+                    itemViewMap.put(entryFacade.getSortedEntries().indexOf(workerEntry), makePositionView(workerEntry, head));
+
+                    if (entryFacade.getSortedEntries().size() == itemViewMap.size()){
+                        for (AbstractPositionItemView value : itemViewMap.values()) {
+                            view.positionsContainer().add(value.asWidget());
+                        }
+                    }
                 })
         ));
-
         view.setID(employee.getId().toString());
         view.setIP(employee.getIpAddress());
 
