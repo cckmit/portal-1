@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.dao.impl;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
@@ -325,6 +326,12 @@ public class CaseObjectSqlBuilder {
                         .append(" (SELECT case_object_id FROM person_favorite_issues WHERE person_id = ?)");
 
                 args.add(query.getPersonIdToIsFavorite().getA());
+            }
+
+            if (CollectionUtils.isNotEmpty(query.getTimeElapsedTypeIds())) {
+                condition
+                        .append(" and case_comment.time_elapsed_type IS NOT NULL and case_comment.time_elapsed_type IN ")
+                        .append(HelperFunc.makeInArg(query.getTimeElapsedTypeIds(), false));
             }
         });
     }

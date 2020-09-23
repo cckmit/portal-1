@@ -7,6 +7,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_ReportAdditionalParamType;
 import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.dict.En_ReportType;
+import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 
 import java.util.List;
 import java.util.Set;
@@ -31,5 +32,9 @@ public interface AbstractReportCreateView extends IsWidget {
 
     HasVisibility additionalParamsVisibility();
 
+    HasVisibility timeElapsedContainerVisibility();
+
     HasValue<Set<En_ReportAdditionalParamType>> additionalParams();
+
+    HasValue<Set<En_TimeElapsedType>> timeElapsedTypes();
 }

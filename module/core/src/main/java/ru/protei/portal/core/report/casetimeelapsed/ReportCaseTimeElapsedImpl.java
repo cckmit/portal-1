@@ -58,8 +58,7 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
         int offset = 0;
 
         log.info( "writeReport(): Start report {}", report );
-        try (ReportWriter<CaseCommentTimeElapsedSum> writer =
-                    new ExcelReportWriter(localizedLang)) {
+        try (ReportWriter<CaseCommentTimeElapsedSum> writer = new ExcelReportWriter(localizedLang, report.getTimeElapsedTypes())) {
 
             while (true) {
                 if (isCancel.test(report.getId())) {

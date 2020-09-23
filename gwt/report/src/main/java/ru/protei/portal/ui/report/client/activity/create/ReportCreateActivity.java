@@ -2,6 +2,7 @@ package ru.protei.portal.ui.report.client.activity.create;
 
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
+import org.apache.xmlbeans.impl.validator.ValidatingInfoXMLStreamReader;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -32,9 +33,11 @@ import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidget;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 import static java.util.Arrays.asList;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
@@ -96,6 +99,7 @@ public abstract class ReportCreateActivity implements Activity,
         view.reportType().setValue(availableReportTypes(policyService).get(0), true);
         view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
         view.additionalParams().setValue(null);
+        view.timeElapsedTypes().setValue(null);
     }
 
     private void presetCompanyAtFilter() {
@@ -137,6 +141,7 @@ public abstract class ReportCreateActivity implements Activity,
         report.setWithDescription(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.DESCRIPTION));
         report.setWithTags(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.TAGS));
         report.setWithLinkedIssues(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.LINKED_ISSUES));
+        report.setTimeElapsedTypes(view.timeElapsedTypes().getValue());
         return report;
     }
 
@@ -182,24 +187,17 @@ public abstract class ReportCreateActivity implements Activity,
 
     private void showFilterForReportType(En_ReportType reportType) {
         switch (reportType) {
-            case PROJECT: {
+            case PROJECT:
+            case CONTRACT: {
                 projectFilterView.resetFilter();
                 view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
                 view.getFilterContainer().clear();
                 view.getFilterContainer().add(projectFilterView.asWidget());
                 view.scheduledTypeContainerVisibility().setVisible(false);
                 view.additionalParamsVisibility().setVisible(false);
+                view.timeElapsedContainerVisibility().setVisible(false);
                 view.additionalParams().setValue(null);
-                break;
-            }
-            case CONTRACT: {
-                contractFilterView.resetFilter();
-                view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
-                view.getFilterContainer().clear();
-                view.getFilterContainer().add(contractFilterView.asWidget());
-                view.scheduledTypeContainerVisibility().setVisible(false);
-                view.additionalParamsVisibility().setVisible(false);
-                view.additionalParams().setValue(null);
+                view.timeElapsedTypes().setValue(null);
                 break;
             }
             case CASE_OBJECTS:
@@ -207,8 +205,10 @@ public abstract class ReportCreateActivity implements Activity,
             case CASE_RESOLUTION_TIME: {
                 view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
                 view.additionalParams().setValue(null);
+                view.timeElapsedTypes().setValue(null);
                 view.scheduledTypeContainerVisibility().setVisible(isScheduledEnabled(reportType));
                 view.additionalParamsVisibility().setVisible(reportType == En_ReportType.CASE_OBJECTS);
+                view.timeElapsedContainerVisibility().setVisible(reportType == En_ReportType.CASE_TIME_ELAPSED);
                 issueFilterWidget.updateFilterType(En_CaseFilterType.valueOf(reportType.name()));
                 validateDateRanges(reportType);
                 applyIssueFilterVisibilityByPrivileges();

@@ -3,6 +3,7 @@
              xmlns:switcher="urn:import:ru.protei.portal.ui.common.client.widget.switcher"
              xmlns:reporttype='urn:import:ru.protei.portal.ui.report.client.widget.reporttype'
              xmlns:additionalparams="urn:import:ru.protei.portal.ui.common.client.widget.selector.report.additionalparams"
+             xmlns:timeelapsedtypeselector="urn:import:ru.protei.portal.ui.common.client.view.selector"
         >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
@@ -27,6 +28,9 @@
                             </g:HTMLPanel>
                             <g:HTMLPanel ui:field="additionalParamsContainer" styleName="form-group col-md-4">
                                 <additionalparams:ReportAdditionalParamsMultiSelector ui:field="additionalParams" header="{lang.issueReportAdditionalParams}"/>
+                            </g:HTMLPanel>
+                            <g:HTMLPanel ui:field="timeElapsedTypesContainer" styleName="form-group col-md-4">
+                                <timeelapsedtypeselector:ElapsedTimeTypeMultiSelector ui:field="timeElapsedTypes" header="{lang.timeElapsedType}"/>
                             </g:HTMLPanel>
                         </div>
                     </div>

@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.CaseObjectReportRequest;
+import ru.protei.portal.core.model.struct.ColumnsListBuilder;
 import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.report.ReportWriter;
@@ -266,40 +267,5 @@ public class ExcelReportWriter implements
                 .build();
 
         return columnsList.toArray(new String[]{});
-    }
-
-    private int[] toPrimitiveIntegerArray(List<Integer> elements) {
-        if (isEmpty(elements)) {
-            return new int[0];
-        }
-
-        int[] result = new int[elements.size()];
-
-        for (int i = 0; i < result.length; i++) {
-            result[i] = elements.get(i);
-        }
-
-        return result;
-    }
-
-    private static class ColumnsListBuilder<T> {
-        private List<T> list = new ArrayList<>();
-
-        ColumnsListBuilder<T> add(T element) {
-            list.add(element);
-            return this;
-        }
-
-        ColumnsListBuilder<T> addIf(T element, boolean condition) {
-            if (condition) {
-                list.add(element);
-            }
-
-            return this;
-        }
-
-        List<T> build() {
-            return list;
-        }
     }
 }
