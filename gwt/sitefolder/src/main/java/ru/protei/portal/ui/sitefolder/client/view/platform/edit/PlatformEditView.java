@@ -181,7 +181,7 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
     }
 
     @UiHandler("project")
-    public void onValueChanged(ValueChangeEvent<EntityOption> event) {
+    public void onProjectSelected(ValueChangeEvent<EntityOption> event) {
         if (activity != null) {
             activity.refreshProjectSpecificFields();
         }
