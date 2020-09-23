@@ -804,12 +804,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         return true;
     }
 
-    private List<WorkerEntryShortView> changeCompanyNameIfHidden(List<WorkerEntryShortView> list){
-        list.forEach(workerEntry ->
-                workerEntry.setCompanyName(workerEntry.getCompanyIsHidden() != null && workerEntry.getCompanyIsHidden()
+    private List<WorkerEntryShortView> changeCompanyNameIfHidden(List<WorkerEntryShortView> list) {
+        stream(list).forEach(workerEntry ->
+                workerEntry.setCompanyName(Boolean.TRUE.equals(workerEntry.getCompanyIsHidden())
                         ? CrmConstants.Company.MAIN_HOME_COMPANY_NAME
-                        : workerEntry.getCompanyName())
-                );
+                        : workerEntry.getCompanyName()
+                )
+        );
         return list;
     }
 
