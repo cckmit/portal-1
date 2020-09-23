@@ -205,9 +205,19 @@ public enum En_ResultStatus {
     EMPLOYEE_NOT_FIRED_FROM_THESE_COMPANIES,
 
     /**
+     * отрудник с таким email уже существует
+     */
+    EMPLOYEE_EMAIL_ALREADY_EXIST,
+
+    /**
      * Ошибка миграции сотрудника на старый портал
      */
     EMPLOYEE_MIGRATION_FAILED,
+
+    /**
+     * Логин уже существует
+     */
+    LOGIN_ALREADY_EXIST,
 
     /**
      * Подсеть не существует

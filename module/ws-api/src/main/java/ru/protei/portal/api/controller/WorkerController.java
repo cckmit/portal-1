@@ -314,7 +314,13 @@ public class WorkerController {
 
                     List<UserLogin> userLogins = operationData.account();
                     if (isEmpty(userLogins)) {
-                        UserLogin userLogin = createLDAPAccount(person);
+
+                        Result<UserLogin> userLoginResult = createLDAPAccount(person);
+                        if (userLoginResult.isError()){
+                            return error(userLoginResult.getStatus(), userLoginResult.getMessage());
+                        }
+
+                        UserLogin userLogin = userLoginResult.getData();
                         if (userLogin != null) {
                             userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
                             saveAccount(userLogin);
@@ -963,23 +969,24 @@ public class WorkerController {
         return position;
     }
 
-    private UserLogin createLDAPAccount(Person person) throws Exception {
+    private Result<UserLogin> createLDAPAccount(Person person) throws Exception {
 
         ContactItem email = person.getContactInfo().findFirst(En_ContactItemType.EMAIL, En_ContactDataAccess.PUBLIC);
         if (!email.isEmpty() && HelperFunc.isNotEmpty(email.value())) {
             String login = email.value().substring(0, email.value().indexOf("@"));
             if (!userLoginDAO.isUnique(login.trim())) {
                 logger.debug("error: Login already exist.");
-                return null;
+                return error(En_ResultStatus.LOGIN_ALREADY_EXIST, En_ErrorCode.LOGIN_ALREADY_EXIST.getMessage());
             }
 
             UserLogin userLogin = userLoginDAO.createNewUserLogin(person);
             userLogin.setUlogin(login.trim());
             userLogin.setAuthType(En_AuthType.LDAP);
             userLogin.setRoles(new HashSet<>(userRoleDAO.getDefaultEmployeeRoles()));
-            return userLogin;
+            return ok(userLogin);
         }
-        return null;
+
+        return ok();
     }
 
     private String makeFileName(Long id) {
@@ -1552,7 +1559,13 @@ public class WorkerController {
                     }*/
 
                     if (isEmpty(userLogins)) {
-                        UserLogin userLogin = createLDAPAccount(person);
+                        Result<UserLogin> userLoginResult = createLDAPAccount(person);
+                        if (userLoginResult.isError()){
+                            return error(userLoginResult.getStatus(), userLoginResult.getMessage());
+                        }
+
+                         UserLogin userLogin = userLoginResult.getData();
+
                         if (userLogin != null) {
                             userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
                             saveAccount(userLogin);
