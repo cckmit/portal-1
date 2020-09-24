@@ -665,7 +665,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
         jdbcManyRelationsHelper.fill( userLogins, "roles" );
         if (stream(userLogins)
-                .noneMatch(userlogin -> policyService.hasGrantAccessFor(userlogin.getRoles(), ISSUE_EDIT))) {
+                .noneMatch(userlogin -> policyService.hasPrivilegeFor(ISSUE_EDIT, userlogin.getRoles()))) {
             log.warn("addCommentsReceivedByMail(): no privilege for create comment ={}", receivedMail.getSenderEmail());
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
