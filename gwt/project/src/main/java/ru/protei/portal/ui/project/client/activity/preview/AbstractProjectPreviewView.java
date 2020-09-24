@@ -61,4 +61,10 @@ public interface AbstractProjectPreviewView extends IsWidget {
     HasWidgets getCommentsContainer();
     HasWidgets getDocumentsContainer();
     HasWidgets getLinksContainer();
+
+    void setTechnicalSupportValidityVisible(boolean isVisible);
+
+    void setWorkCompletionDateLabelVisible(boolean isVisible);
+
+    void setPurchaseDateLabelVisible(boolean isVisible);
 }

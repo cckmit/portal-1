@@ -16,7 +16,6 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
 import ru.protei.portal.ui.common.client.lang.En_PersonRoleTypeLang;
@@ -142,6 +141,9 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.slaInputReadOnly().setValue(project.getProjectSlas());
         view.slaContainerVisibility().setVisible(isSlaContainerVisible(project.getProjectSlas()));
         view.setTechnicalSupportValidity(project.getTechnicalSupportValidity() == null ? null : DateTimeFormat.getFormat("dd.MM.yyyy").format(project.getTechnicalSupportValidity()));
+        view.setTechnicalSupportValidityVisible(project.getTechnicalSupportValidity() == null);
+        view.setWorkCompletionDateLabelVisible(project.getWorkCompletionDate() == null);
+        view.setPurchaseDateLabelVisible(project.getPurchaseDate() == null);
         view.setWorkCompletionDate(project.getWorkCompletionDate() == null ? null : DateTimeFormat.getFormat("dd.MM.yyyy").format(project.getWorkCompletionDate()));
         view.setPurchaseDate(project.getPurchaseDate() == null ? null : DateTimeFormat.getFormat("dd.MM.yyyy").format(project.getPurchaseDate()));
         view.setPauseDateValidity(project.getPauseDate() == null ? "" : lang.projectPauseDate(DateTimeFormat.getFormat("dd.MM.yyyy").format(new Date(project.getPauseDate()))));

@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.ent.ProjectSla;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.En_RegionStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -151,6 +152,34 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         }
     }
 
+    @Override
+    public void setTechnicalSupportValidityVisible(boolean isVisible){
+        if (isVisible) {
+            technicalSupportValidityNotSetLabel.removeClassName(CrmConstants.Style.HIDE);
+        } else {
+            technicalSupportValidityNotSetLabel.addClassName(CrmConstants.Style.HIDE);
+        }
+    }
+
+    @Override
+    public void setWorkCompletionDateLabelVisible(boolean isVisible){
+        if (isVisible) {
+            workCompletionDateNotSetLabel.removeClassName(CrmConstants.Style.HIDE);
+        } else {
+            workCompletionDateNotSetLabel.addClassName(CrmConstants.Style.HIDE);
+        }
+    }
+
+    @Override
+    public void setPurchaseDateLabelVisible(boolean isVisible){
+        if (isVisible) {
+            purchaseDateNotSetLabel.removeClassName(CrmConstants.Style.HIDE);
+        } else {
+            purchaseDateNotSetLabel.addClassName(CrmConstants.Style.HIDE);
+        }
+    }
+
+
     @UiHandler( "header" )
     public void onFullScreenClicked ( ClickEvent event) {
         event.preventDefault();
@@ -264,6 +293,13 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     SlaInputReadOnly slaInputReadOnly;
     @UiField
     HTMLPanel slaContainer;
+
+    @UiField
+    SpanElement technicalSupportValidityNotSetLabel;
+    @UiField
+    SpanElement workCompletionDateNotSetLabel;
+    @UiField
+    SpanElement purchaseDateNotSetLabel;
 
     @Inject
     @UiField

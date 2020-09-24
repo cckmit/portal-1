@@ -82,6 +82,7 @@
                                 <ui:text from="{lang.technicalSupportValidity}"/>
                             </label>
                             <div ui:field="technicalSupportValidity"/>
+                            <span ui:field="technicalSupportValidityNotSetLabel" class="hide"><ui:text from="{lang.valueNotSet}"/></span>
                         </div>
                     </div>
                 </div>
@@ -93,6 +94,7 @@
                                 <ui:text from="{lang.workCompletionDate}"/>
                             </label>
                             <div ui:field="workCompletionDate"/>
+                            <span ui:field="workCompletionDateNotSetLabel" class="hide"><ui:text from="{lang.valueNotSet}"/></span>
                         </div>
                     </div>
                 </div>
@@ -104,6 +106,7 @@
                                 <ui:text from="{lang.purchaseDate}"/>
                             </label>
                             <div ui:field="purchaseDate"/>
+                            <span ui:field="purchaseDateNotSetLabel" class="hide"><ui:text from="{lang.valueNotSet}"/></span>
                         </div>
                     </div>
                 </div>
