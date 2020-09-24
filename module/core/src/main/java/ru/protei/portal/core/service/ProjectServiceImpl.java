@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.*;
+import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
@@ -51,43 +52,30 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     CaseObjectDAO caseObjectDAO;
-
     @Autowired
     LocationDAO locationDAO;
-
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
-
     @Autowired
     CaseMemberDAO caseMemberDAO;
-
     @Autowired
     CaseLocationDAO caseLocationDAO;
-
     @Autowired
     CaseTypeDAO caseTypeDAO;
-
     @Autowired
     PolicyService policyService;
-
     @Autowired
     ProjectToProductDAO projectToProductDAO;
-
     @Autowired
     AuthService authService;
-
     @Autowired
     ContractDAO contractDAO;
-
     @Autowired
     PersonDAO personDAO;
-
     @Autowired
     PlatformDAO platformDAO;
-
     @Autowired
     CaseLinkService caseLinkService;
-
     @Autowired
     ProjectDAO projectDAO;
     @Autowired
@@ -192,27 +180,31 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Result<Project> getProject(AuthToken token, Long id ) {
 
-        CaseObject project = caseObjectDAO.get( id );
+        CaseObject projectCO = caseObjectDAO.get( id );
 
-        if (project == null) {
+        if (projectCO == null) {
             return error(En_ResultStatus.NOT_FOUND, "Project was not found");
         }
 
         Platform platform = platformDAO.getByProjectId(id);
 
         if (platform != null) {
-            project.setPlatformId(platform.getId());
-            project.setPlatformName(platform.getName());
+            projectCO.setPlatformId(platform.getId());
+            projectCO.setPlatformName(platform.getName());
         }
 
-        jdbcManyRelationsHelper.fillAll( project );
+        jdbcManyRelationsHelper.fillAll( projectCO );
         List<Contract> contracts = contractDAO.getByProjectId(id);
 
         if (CollectionUtils.isNotEmpty(contracts)) {
-            project.setContracts(contracts.stream().map(contract -> new EntityOption(contract.getNumber(), contract.getId())).collect(toList()));
+            projectCO.setContracts(contracts.stream().map(contract -> new EntityOption(contract.getNumber(), contract.getId())).collect(toList()));
         }
 
-        return ok(Project.fromCaseObject(project));
+        Project project = Project.fromCaseObject(projectCO);
+
+        jdbcManyRelationsHelper.fill(project, Project.Fields.PROJECT_PLANS);
+
+        return ok(project);
     }
 
     @Override
@@ -240,6 +232,7 @@ public class ProjectServiceImpl implements ProjectService {
         jdbcManyRelationsHelper.fillAll( caseObject );
 
         Project oldStateProject = Project.fromCaseObject(caseObject);
+        jdbcManyRelationsHelper.fill(oldStateProject, Project.Fields.PROJECT_PLANS);
 
         if (!Objects.equals(project.getCustomer(), caseObject.getInitiatorCompany())) {
             return error(En_ResultStatus.NOT_ALLOWED_CHANGE_PROJECT_COMPANY);
@@ -276,8 +269,9 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         caseObject.setProjectSlas(project.getProjectSlas());
-
         jdbcManyRelationsHelper.persist(caseObject, "projectSlas");
+
+        jdbcManyRelationsHelper.persist(project, Project.Fields.PROJECT_PLANS);
 
         try {
             updateTeam( caseObject, project.getTeam() );
@@ -285,14 +279,18 @@ public class ProjectServiceImpl implements ProjectService {
             updateProducts( caseObject, project.getProducts() );
         } catch (Throwable e) {
             log.error("error during save project when update one of following parameters: team, location, or products; {}", e.getMessage());
-            return error(En_ResultStatus.INTERNAL_ERROR);
+            throw new ResultStatusException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        caseObjectDAO.merge( caseObject );
+        boolean merged = caseObjectDAO.merge(caseObject);
+        if (!merged) {
+            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+        }
 
         CaseObject updatedCaseObject = caseObjectDAO.get(project.getId());
         jdbcManyRelationsHelper.fillAll(updatedCaseObject);
         Project newStateProject = Project.fromCaseObject(updatedCaseObject);
+        jdbcManyRelationsHelper.fill(newStateProject, Project.Fields.PROJECT_PLANS);
 
         return ok(project).publishEvent(new ProjectUpdateEvent(this, oldStateProject, newStateProject, token.getPersonId()));
     }
@@ -307,12 +305,14 @@ public class ProjectServiceImpl implements ProjectService {
         CaseObject caseObject = createCaseObjectFromProjectInfo(project);
 
         Long id = caseObjectDAO.persist(caseObject);
-        if (id == null)
+        if (id == null) {
             return error(En_ResultStatus.NOT_CREATED);
+        }
 
         project.setId(id);
 
         jdbcManyRelationsHelper.persist(caseObject, "projectSlas");
+        jdbcManyRelationsHelper.persist(project, Project.Fields.PROJECT_PLANS);
 
         try {
             updateTeam(caseObject, project.getTeam());
@@ -320,9 +320,13 @@ public class ProjectServiceImpl implements ProjectService {
             updateProducts(caseObject, project.getProducts());
         } catch (Throwable e) {
             log.error("error during create project when set one of following parameters: team, location, or products; {}", e.getMessage());
-            return error(En_ResultStatus.INTERNAL_ERROR);
+            throw new ResultStatusException(En_ResultStatus.INTERNAL_ERROR);
         }
-        caseObjectDAO.merge( caseObject );
+
+        boolean merged = caseObjectDAO.merge(caseObject);
+        if (!merged) {
+            throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+        }
 
         Result addLinksResult = ok();
 

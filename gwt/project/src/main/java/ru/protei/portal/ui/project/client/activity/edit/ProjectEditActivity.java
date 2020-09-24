@@ -17,6 +17,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
+import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -27,8 +28,10 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.dict.En_RegionState.PAUSED;
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 
 /**
@@ -49,7 +52,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     @Event
     public void onShow (ProjectEvents.Edit event) {
         if (!hasPrivileges(event.id)) {
-            fireEvent(new ErrorPageEvents.ShowForbidden());
+            fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
 
@@ -173,6 +176,9 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.technicalSupportValidity().setValue(project.getTechnicalSupportValidity());
         if (isNew( project )) view.setDateValid( true );
 
+        view.plans().setValue(stream(project.getProjectPlans())
+                .map(PlanOption::fromPlan)
+                .collect(Collectors.toSet()));
 
         fillCaseLinks(project.getId());
 
@@ -199,6 +205,9 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         project.setRegion(view.region().getValue());
         project.setTeam(new ArrayList<>(view.team().getValue()));
         project.setProjectSlas(view.slaInput().getValue());
+        project.setProjectPlans(stream(view.plans().getValue())
+                .map(PlanOption::toPlan)
+                .collect(Collectors.toList()));
         return project;
     }
 

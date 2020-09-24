@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
+import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
@@ -69,4 +70,6 @@ public interface AbstractProjectEditView extends IsWidget {
     HasVisibility pauseDateContainerVisibility();
 
     HasValue<Date> pauseDate();
+
+    HasValue<Set<PlanOption>> plans();
 }
