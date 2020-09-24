@@ -47,7 +47,6 @@ import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWit
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedSelectorRangePicker;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
@@ -56,7 +55,8 @@ import static ru.protei.portal.core.model.util.AlternativeKeyboardLayoutTextServ
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
 import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.searchCaseNumber;
-import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.*;
+import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.fromDateRange;
+import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.toDateRange;
 
 public class IssueFilterParamView extends Composite implements AbstractIssueFilterParamView {
 
@@ -103,21 +103,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public HasValue<Boolean> searchByComments() {
-        return searchByComments;
-    }
-
-    @Override
     public HasVisibility searchByCommentsWarningVisibility() {
         return searchByCommentsWarning;
-    }
-
-    @Override
-    public HasValue<DateIntervalWithType> dateCreatedRange() { return dateCreatedRange; }
-
-    @Override
-    public HasValue<DateIntervalWithType> dateModifiedRange() {
-        return dateModifiedRange;
     }
 
     @Override
@@ -126,18 +113,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public void setCreatedRangeValid(boolean isValid) {
-        dateCreatedRange.setValid(true, isValid);
-    }
-
-    @Override
     public void setCreatedRangeValid(boolean isTypeValid, boolean isRangeValid) {
         dateCreatedRange.setValid(isTypeValid, isRangeValid);
-    }
-
-    @Override
-    public void setModifiedRangeValid(boolean isValid) {
-        dateModifiedRange.setValid(true, isValid);
     }
 
     @Override
@@ -171,38 +148,13 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public HasValue<Set<PersonShortView>> initiators() {
-        return initiators;
-    }
-
-    @Override
     public HasValue<Set<PersonShortView>> managers() {
         return managers;
     }
 
     @Override
-    public HasValue<Set<PersonShortView>> commentAuthors() {
-        return commentAuthors;
-    }
-
-    @Override
-    public HasValue<Set<PersonShortView>> creators() {
-        return creators;
-    }
-
-    @Override
     public HasValue<Set<CaseTag>> tags() {
         return tags;
-    }
-
-    @Override
-    public HasValue<Boolean> searchPrivate() {
-        return searchPrivate;
-    }
-
-    @Override
-    public HasValue<Set<En_ImportanceLevel>> importances() {
-        return importance;
     }
 
     @Override
@@ -218,12 +170,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @Override
     public HasVisibility creatorsVisibility() {
         return creators;
-    }
-
-
-    @Override
-    public HasVisibility managersVisibility() {
-        return managers;
     }
 
     @Override

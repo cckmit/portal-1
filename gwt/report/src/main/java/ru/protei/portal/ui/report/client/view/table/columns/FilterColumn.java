@@ -5,7 +5,6 @@ import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ReportDto;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.struct.DateRange;
@@ -18,9 +17,8 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isNotBlank;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 
 public class FilterColumn extends StaticColumn<ReportDto> {
 
@@ -127,7 +125,7 @@ public class FilterColumn extends StaticColumn<ReportDto> {
         }
 
         // importance
-        if (CollectionUtils.isNotEmpty(caseQuery.getImportanceIds())) {
+        if (isNotEmpty(caseQuery.getImportanceIds())) {
             Element managerElement = DOM.createElement("p");
             managerElement.setInnerText(lang.issueImportance() + ": " +
                     caseQuery.getImportanceIds()
@@ -141,7 +139,7 @@ public class FilterColumn extends StaticColumn<ReportDto> {
 
         // states
         if (en_reportType == En_ReportType.PROJECT) {
-            if (CollectionUtils.isNotEmpty(caseQuery.getStateIds())) {
+            if (isNotEmpty(caseQuery.getStateIds())) {
                 Element managerElement = DOM.createElement("p");
                 managerElement.setInnerText(lang.issueState() + ": " +
                         caseQuery.getStateIds()
@@ -152,51 +150,56 @@ public class FilterColumn extends StaticColumn<ReportDto> {
                 );
                 element.appendChild(managerElement);
             }
-        } else if (CollectionUtils.isNotEmpty(caseQuery.getStateIds())) {
+        } else if (isNotEmpty(caseQuery.getStateIds())) {
             element.appendChild(makeArraySelectedElement(lang.issueState(), caseQuery.getStateIds()));
         }
 
         // companies
-        if (CollectionUtils.isNotEmpty(caseQuery.getCompanyIds())) {
+        if (isNotEmpty(caseQuery.getCompanyIds())) {
             element.appendChild(makeArraySelectedElement(lang.issueCompany(), caseQuery.getCompanyIds()));
         }
 
         // products
-        if (CollectionUtils.isNotEmpty(caseQuery.getProductIds())) {
+        if (isNotEmpty(caseQuery.getProductIds())) {
             element.appendChild(makeArraySelectedElement(lang.issueProduct(), caseQuery.getProductIds()));
         }
 
         // managers
-        if (CollectionUtils.isNotEmpty(caseQuery.getManagerIds())) {
+        if (isNotEmpty(caseQuery.getManagerIds())) {
             element.appendChild(makeArraySelectedElement(lang.issueManager(), caseQuery.getManagerIds()));
         }
 
         // tags
-        if (CollectionUtils.isNotEmpty(caseQuery. getCaseTagsIds())) {
+        if (isNotEmpty(caseQuery. getCaseTagsIds())) {
             element.appendChild(makeArraySelectedElement(lang.tags(), caseQuery.getCaseTagsIds()));
         }
 
         // authors
-        if (CollectionUtils.isNotEmpty(caseQuery.getCommentAuthorIds())) {
+        if (isNotEmpty(caseQuery.getCommentAuthorIds())) {
             element.appendChild(makeArraySelectedElement(lang.issueCommentAuthor(), caseQuery.getCommentAuthorIds()));
         }
 
+        // time elapsed types
+        if (isNotEmpty(caseQuery.getTimeElapsedTypeIds())) {
+            element.appendChild(makeArraySelectedElement(lang.timeElapsedType(), toList(caseQuery.getTimeElapsedTypeIds(), En_TimeElapsedType::findById)));
+        }
+
         // project directions
-        if (CollectionUtils.isNotEmpty(caseQuery.getProductDirectionIds())) {
+        if (isNotEmpty(caseQuery.getProductDirectionIds())) {
             element.appendChild(makeArraySelectedElement(lang.productDirection(), caseQuery.getProductDirectionIds()));
         }
         // project region
-        if (CollectionUtils.isNotEmpty(caseQuery.getRegionIds())) {
+        if (isNotEmpty(caseQuery.getRegionIds())) {
             element.appendChild(makeArraySelectedElement(lang.projectRegion(), caseQuery.getRegionIds()));
         }
 
         // project head manager
-        if (CollectionUtils.isNotEmpty(caseQuery.getHeadManagerIds())) {
+        if (isNotEmpty(caseQuery.getHeadManagerIds())) {
             element.appendChild(makeArraySelectedElement(lang.projectHeadManager(), caseQuery.getHeadManagerIds()));
         }
 
         // project team
-        if (CollectionUtils.isNotEmpty(caseQuery.getCaseMemberIds())) {
+        if (isNotEmpty(caseQuery.getCaseMemberIds())) {
             element.appendChild(makeArraySelectedElement(lang.projectTeam(), caseQuery.getCaseMemberIds()));
         }
     }

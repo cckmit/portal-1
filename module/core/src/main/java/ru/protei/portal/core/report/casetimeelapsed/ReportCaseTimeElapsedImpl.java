@@ -58,7 +58,8 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
         int offset = 0;
 
         log.info( "writeReport(): Start report {}", report );
-        try (ReportWriter<CaseCommentTimeElapsedSum> writer = new ExcelReportWriter(localizedLang, toSet(caseQuery.getTimeElapsedTypeIds(), En_TimeElapsedType::findById))) {
+        try (ReportWriter<CaseCommentTimeElapsedSum> writer =
+                     new ExcelReportWriter(localizedLang, makeTimeElapsedTypes(caseQuery.getTimeElapsedTypeIds()))) {
 
             while (true) {
                 if (isCancel.test(report.getId())) {
@@ -86,6 +87,15 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
             log.warn( "writeReport : fail to process chunk [{} - {}] : reportId={} e: ", offset, offset + step, report.getId(), th );
             return false;
         }
+    }
+
+    private Set<En_TimeElapsedType> makeTimeElapsedTypes(List<Integer> timeElapsedTypeIds) {
+        if (isEmpty(timeElapsedTypeIds)) {
+//            Если фильтр по типам работ не был задан, то учитываем все типы
+            return new HashSet<>(Arrays.asList(En_TimeElapsedType.values()));
+        }
+
+        return toSet(timeElapsedTypeIds, En_TimeElapsedType::findById);
     }
 
     private class Processor {

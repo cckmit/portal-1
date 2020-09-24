@@ -7,7 +7,6 @@ import com.google.gwt.user.client.ui.Widget;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.Company;
@@ -18,9 +17,8 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
-import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.AsyncPersonModel;
-import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
+import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 
 import java.util.List;
 import java.util.Set;
@@ -36,12 +34,6 @@ public interface AbstractIssueFilterParamView extends IsWidget {
 
     HasValue<String> searchPattern();
 
-    HasValue<Boolean> searchByComments();
-
-    HasValue<DateIntervalWithType> dateCreatedRange();
-
-    HasValue<DateIntervalWithType> dateModifiedRange();
-
     HasValue<En_SortField> sortField();
 
     HasValue<Boolean> sortDir();
@@ -52,19 +44,9 @@ public interface AbstractIssueFilterParamView extends IsWidget {
 
     HasValue<Set<EntityOption>> managerCompanies();
 
-    HasValue<Set<PersonShortView>> initiators();
-
     HasValue<Set<PersonShortView>> managers();
 
-    HasValue<Set<PersonShortView>> commentAuthors();
-
-    HasValue<Set<PersonShortView>> creators();
-
     HasValue<Set<CaseTag>> tags();
-
-    HasValue<Boolean> searchPrivate();
-
-    HasValue<Set<En_ImportanceLevel>> importances();
 
     HasValue<Set<CaseState>> states();
 
@@ -73,8 +55,6 @@ public interface AbstractIssueFilterParamView extends IsWidget {
     HasVisibility productsVisibility();
 
     HasVisibility creatorsVisibility();
-
-    HasVisibility managersVisibility();
 
     HasVisibility commentAuthorsVisibility();
 
@@ -111,10 +91,6 @@ public interface AbstractIssueFilterParamView extends IsWidget {
     void stopWatchForScrollOf(Widget widget);
 
     void applyVisibilityByFilterType(En_CaseFilterType filterType);
-
-    void setCreatedRangeValid(boolean isValid);
-
-    void setModifiedRangeValid(boolean isValid);
 
     void setCreatedRangeMandatory(boolean isMandatory);
 

@@ -17,7 +17,6 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Set;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.toPrimitiveIntegerArray;
 import static ru.protei.portal.core.model.util.TransliterationUtils.transliterate;
 import static ru.protei.portal.core.utils.ExcelFormatUtils.toExcelTimeFormat;
@@ -74,18 +73,6 @@ public class ExcelReportWriter implements
     }
 
     private String[] getFormats(Set<En_TimeElapsedType> timeElapsedTypes) {
-        if (isEmpty(timeElapsedTypes)) {
-            return new String[] {
-                    ExcelFormat.STANDARD, ExcelFormat.STANDARD, ExcelFormat.STANDARD,
-                    ExcelFormat.STANDARD, ExcelFormat.STANDARD, ExcelFormat.STANDARD, ExcelFormat.STANDARD,
-                    ExcelFormat.STANDARD, ExcelFormat.STANDARD, ExcelFormat.FULL_DATE_TIME,
-                    ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES,
-                    ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES,
-                    ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES,
-                    ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES,
-            };
-        }
-
         List<String> columnsWidthList = new ListBuilder<String>()
                 .add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD)
                 .add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD)
@@ -114,18 +101,6 @@ public class ExcelReportWriter implements
 
 
     private int[] getColumnsWidth(Set<En_TimeElapsedType> timeElapsedTypes) {
-        if (isEmpty(timeElapsedTypes)) {
-            return new int[] {
-                    3650, 3430, 8570,
-                    4590, 4200, 4200, 4200,
-                    3350, 4600, 4200,
-                    5800, 5800, 5800,
-                    5800, 5800, 5800,
-                    5800, 5800, 5800, 5800,
-                    5800, 5800, 5800
-            };
-        }
-
         List<Integer> columnsWidthList = new ListBuilder<Integer>()
                 .add(3650).add(3430).add(8570)
                 .add(4590).add(4200).add(4200).add(4200)
@@ -153,18 +128,6 @@ public class ExcelReportWriter implements
     }
 
     private String[] getColumnNames(Set<En_TimeElapsedType> timeElapsedTypes) {
-        if (isEmpty(timeElapsedTypes)) {
-            return new String[] {
-                    "ir_caseno", "ir_private", "ir_name",
-                    "ir_company", "ir_product", "ir_performer", "ir_manager",
-                    "ir_importance", "ir_state", "ir_date_created",
-                    "ir_work_time_none", "ir_work_time_watch", "ir_work_time_night_work",
-                    "ir_work_time_SoftInstall", "ir_work_time_SoftUpdate", "ir_work_time_SoftConfig",
-                    "ir_work_time_Testing", "ir_work_time_Consultation", "ir_work_time_Meeting",
-                    "ir_work_time_DiscussionOfImprovements", "ir_work_time_LogAnalysis", "ir_work_time_SolveProblems", "ir_work_time_all"
-            };
-        }
-
         List<String> columnNames = new ListBuilder<String>()
                 .add("ir_caseno").add("ir_private").add("ir_name")
                 .add("ir_company").add("ir_product").add("ir_performer").add("ir_manager")
@@ -199,34 +162,6 @@ public class ExcelReportWriter implements
             values[values.length - 1] = toExcelTimeFormat(object.getTimeElapsedSum());
 
             return values;
-        }
-
-        if (isEmpty(timeElapsedTypes)) {
-            return new Object[] {
-                    "CRM-" + object.getCaseNumber(),
-                    lang.get(object.isCasePrivateCase() ? "yes" : "no"),
-                    HelperFunc.isNotEmpty(object.getCaseName()) ? object.getCaseName() : "",
-                    HelperFunc.isNotEmpty(object.getCaseCompanyName()) ? transliterate(object.getCaseCompanyName(), locale) : "",
-                    HelperFunc.isNotEmpty(object.getProductName()) ? object.getProductName() : "",
-                    HelperFunc.isNotEmpty(object.getAuthorDisplayName()) ? transliterate(object.getAuthorDisplayName(), locale) : "",
-                    HelperFunc.isNotEmpty(object.getCaseManagerDisplayName()) ? transliterate(object.getCaseManagerDisplayName(), locale) : "",
-                    object.getImportanceLevel() != null ? object.getImportanceLevel().getCode() : "",
-                    HelperFunc.isNotEmpty(object.getCaseStateName()) ? object.getCaseStateName() : "",
-                    object.getCaseCreated() != null ? object.getCaseCreated() : "",
-                    toExcelTimeFormat(object.getTimeElapsedNone()),
-                    toExcelTimeFormat(object.getTimeElapsedWatch()),
-                    toExcelTimeFormat(object.getTimeElapsedNightWork()),
-                    toExcelTimeFormat(object.getTimeElapsedTypeSoftInstall()),
-                    toExcelTimeFormat(object.getTimeElapsedTypeSoftUpdate()),
-                    toExcelTimeFormat(object.getTimeElapsedTypeSoftConfig()),
-                    toExcelTimeFormat(object.getTimeElapsedTypeTesting()),
-                    toExcelTimeFormat(object.getTimeElapsedTypeConsultation()),
-                    toExcelTimeFormat(object.getTimeElapsedTypeMeeting()),
-                    toExcelTimeFormat(object.getTimeElapsedTypeDiscussionOfImprovements()),
-                    toExcelTimeFormat(object.getTimeElapsedTypeLogAnalysis()),
-                    toExcelTimeFormat(object.getTimeElapsedTypeSolveProblems()),
-                    toExcelTimeFormat(object.getTimeElapsedSum())
-            };
         }
 
         List<Object> columnValues = new ListBuilder<>()
