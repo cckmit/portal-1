@@ -1,0 +1,13 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-clm-id-in-jira-issue" author="porubov">
+        <update tableName="case_object">
+            <column name="EXT_APP_DATA" valueComputed="JSON_MERGE_PRESERVE(EXT_APP_DATA, JSON_OBJECT('clmId', SUBSTRING(CASE_NAME, 1, 10)))"/>
+            <where>EXT_APP = 'jira' and EXT_APP_DATA is not null and CASE_NAME like 'CLM-%'</where>
+        </update>
+    </changeSet>
+</databaseChangeLog>
