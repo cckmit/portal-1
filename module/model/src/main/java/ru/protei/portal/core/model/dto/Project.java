@@ -116,6 +116,12 @@ public class Project extends AuditableObject {
     @JdbcColumn(name = Project.Columns.PAUSE_DATE)
     private Long pauseDate;
 
+    @JdbcColumn(name = Columns.WORK_COMPLETION_DATE)
+    private Date workCompletionDate;
+
+    @JdbcColumn(name = Columns.PURCHASE_DATE)
+    private Date purchaseDate;
+
     public Long getId() {
         return id;
     }
@@ -319,6 +325,22 @@ public class Project extends AuditableObject {
         this.technicalSupportValidity = technicalSupportValidity;
     }
 
+    public Date getWorkCompletionDate() {
+        return workCompletionDate;
+    }
+
+    public void setWorkCompletionDate(Date workCompletionDate) {
+        this.workCompletionDate = workCompletionDate;
+    }
+
+    public Date getPurchaseDate() {
+        return purchaseDate;
+    }
+
+    public void setPurchaseDate(Date purchaseDate) {
+        this.purchaseDate = purchaseDate;
+    }
+
     public List<ProjectSla> getProjectSlas() {
         return projectSlas;
     }
@@ -386,6 +408,8 @@ public class Project extends AuditableObject {
         }
 
         project.setTechnicalSupportValidity(caseObject.getTechnicalSupportValidity());
+        project.setWorkCompletionDate(caseObject.getWorkCompletionDate());
+        project.setPurchaseDate(caseObject.getPurchaseDate());
 
         project.setProjectSlas(caseObject.getProjectSlas());
 
@@ -464,5 +488,7 @@ public class Project extends AuditableObject {
         String CREATOR = CaseObject.Columns.CREATOR;
         String STATE = CaseObject.Columns.STATE;
         String NAME = CaseObject.Columns.CASE_NAME;
+        String WORK_COMPLETION_DATE = CaseObject.Columns.WORK_COMPLETION_DATE;
+        String PURCHASE_DATE = CaseObject.Columns.PURCHASE_DATE;
     }
 }

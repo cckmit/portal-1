@@ -161,6 +161,16 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     }
 
     @Override
+    public HasValue<Date> workCompletionDate() {
+        return workCompletionDate;
+    }
+
+    @Override
+    public HasValue<Date> purchaseDate() {
+        return purchaseDate;
+    }
+
+    @Override
     public HasValidable slaValidator() {
         return slaInput;
     }
@@ -168,11 +178,6 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     @Override
     public void updateProductDirection(Long directionId) {
         product.setDirectionId(directionId);
-    }
-
-    @Override
-    public void setDateValid(boolean valid) {
-        technicalSupportValidity.markInputValid(valid);
     }
 
     @UiHandler("saveButton")
@@ -258,6 +263,8 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         addLinkButton.ensureDebugId(DebugIds.PROJECT.LINKS_BUTTON);
         slaInput.setEnsureDebugId(DebugIds.PROJECT.SLA_INPUT);
         technicalSupportValidity.setEnsureDebugId(DebugIds.PROJECT.TECHNICAL_SUPPORT_VALIDITY_CONTAINER);
+        workCompletionDate.setEnsureDebugId(DebugIds.PROJECT.WORK_COMPLETION_DATE);
+        purchaseDate.setEnsureDebugId(DebugIds.PROJECT.PURCHASE_DATE);
     }
 
     @UiField
@@ -304,6 +311,14 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     @Inject
     @UiField(provided = true)
     SinglePicker technicalSupportValidity;
+
+    @Inject
+    @UiField(provided = true)
+    SinglePicker workCompletionDate;
+
+    @Inject
+    @UiField(provided = true)
+    SinglePicker purchaseDate;
 
     @UiField
     HTMLPanel pauseDateContainer;

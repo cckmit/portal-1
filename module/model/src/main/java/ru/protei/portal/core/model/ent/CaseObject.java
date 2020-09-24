@@ -143,6 +143,12 @@ public class CaseObject extends AuditableObject {
     @JdbcColumn(name = "technical_support_validity")
     private Date technicalSupportValidity;
 
+    @JdbcColumn(name = WORK_COMPLETION_DATE)
+    private Date workCompletionDate;
+
+    @JdbcColumn(name = PURCHASE_DATE)
+    private Date purchaseDate;
+
     @JdbcJoinedColumn(joinPath = {
             @JdbcJoinPath(localColumn = "id", remoteColumn = "CASE_ID", table = "case_location", sqlTableAlias = "location"),
             @JdbcJoinPath(localColumn = "LOCATION_ID", remoteColumn = "id", table = "location", sqlTableAlias = "region"),
@@ -608,6 +614,22 @@ public class CaseObject extends AuditableObject {
         isFavorite = favorite;
     }
 
+    public Date getWorkCompletionDate() {
+        return workCompletionDate;
+    }
+
+    public void setWorkCompletionDate(Date workCompletionDate) {
+        this.workCompletionDate = workCompletionDate;
+    }
+
+    public Date getPurchaseDate() {
+        return purchaseDate;
+    }
+
+    public void setPurchaseDate(Date purchaseDate) {
+        this.purchaseDate = purchaseDate;
+    }
+
     @Override
     public String getAuditType() {
         return "CaseObject";
@@ -624,6 +646,8 @@ public class CaseObject extends AuditableObject {
         String CREATOR = "CREATOR";
         String STATE = "STATE";
         String CASE_NAME = "CASE_NAME";
+        String WORK_COMPLETION_DATE = "work_completion_date";
+        String PURCHASE_DATE = "purchase_date";
     }
 
     public static final int NOT_DELETED = 0;
@@ -671,6 +695,8 @@ public class CaseObject extends AuditableObject {
                 ", platformName='" + platformName + '\'' +
                 ", projectSlas=" + projectSlas +
                 ", technicalSupportValidity=" + technicalSupportValidity +
+                ", workCompletionDate=" + workCompletionDate +
+                ", purchaseDate=" + purchaseDate +
                 ", regionName='" + regionName + '\'' +
                 ", pauseDate=" + pauseDate +
                 ", managerCompanyId=" + managerCompanyId +

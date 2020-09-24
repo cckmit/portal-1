@@ -50,6 +50,10 @@ public interface AbstractProjectPreviewView extends IsWidget {
 
     void setTechnicalSupportValidity(String value);
 
+    void setWorkCompletionDate(String value);
+
+    void setPurchaseDate(String value);
+
     void setPauseDateValidity(String value);
 
     HasVisibility backButtonVisibility();

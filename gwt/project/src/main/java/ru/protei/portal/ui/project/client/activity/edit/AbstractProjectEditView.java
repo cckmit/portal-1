@@ -57,11 +57,13 @@ public interface AbstractProjectEditView extends IsWidget {
 
     HasValue<List<ProjectSla>> slaInput();
 
+    HasValue<Date> workCompletionDate();
+
+    HasValue<Date> purchaseDate();
+
     HasValidable slaValidator();
 
     void updateProductDirection(Long directionId);
-
-    void setDateValid(boolean valid);
 
     void showComments(boolean isShow);
     void showDocuments(boolean isShow);

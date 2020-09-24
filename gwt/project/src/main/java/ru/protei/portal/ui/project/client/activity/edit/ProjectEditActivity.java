@@ -171,8 +171,8 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.showDocuments(!isNew( project ));
 
         view.technicalSupportValidity().setValue(project.getTechnicalSupportValidity());
-        if (isNew( project )) view.setDateValid( true );
-
+        view.workCompletionDate().setValue(project.getWorkCompletionDate());
+        view.purchaseDate().setValue(project.getPurchaseDate());
 
         fillCaseLinks(project.getId());
 
@@ -195,6 +195,8 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         project.setCustomerType(view.customerType().getValue());
         project.setProducts(new HashSet<>(view.product().getValue() == null ? Collections.emptyList() : Collections.singleton(view.product().getValue())));
         project.setTechnicalSupportValidity(view.technicalSupportValidity().getValue());
+        project.setWorkCompletionDate(view.workCompletionDate().getValue());
+        project.setPurchaseDate(view.purchaseDate().getValue());
         project.setProductDirection(EntityOption.fromProductDirectionInfo( view.direction().getValue() ));
         project.setRegion(view.region().getValue());
         project.setTeam(new ArrayList<>(view.team().getValue()));

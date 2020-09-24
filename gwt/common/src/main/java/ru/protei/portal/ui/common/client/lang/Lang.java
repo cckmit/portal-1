@@ -1748,6 +1748,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String technicalSupportValidity();
 
+    String workCompletionDate();
+
+    String purchaseDate();
+
     String technicalSupportValidityNotFound( String p0 );
 
     String technicalSupportValidityNotDefined();

@@ -142,6 +142,8 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.slaInputReadOnly().setValue(project.getProjectSlas());
         view.slaContainerVisibility().setVisible(isSlaContainerVisible(project.getProjectSlas()));
         view.setTechnicalSupportValidity(project.getTechnicalSupportValidity() == null ? null : DateTimeFormat.getFormat("dd.MM.yyyy").format(project.getTechnicalSupportValidity()));
+        view.setWorkCompletionDate(project.getWorkCompletionDate() == null ? null : DateTimeFormat.getFormat("dd.MM.yyyy").format(project.getWorkCompletionDate()));
+        view.setPurchaseDate(project.getPurchaseDate() == null ? null : DateTimeFormat.getFormat("dd.MM.yyyy").format(project.getPurchaseDate()));
         view.setPauseDateValidity(project.getPauseDate() == null ? "" : lang.projectPauseDate(DateTimeFormat.getFormat("dd.MM.yyyy").format(new Date(project.getPauseDate()))));
 
         if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_VIEW)) {

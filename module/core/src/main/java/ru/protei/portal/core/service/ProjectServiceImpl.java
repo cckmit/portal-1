@@ -257,6 +257,8 @@ public class ProjectServiceImpl implements ProjectService {
         caseObject.setPauseDate( project.getPauseDate() );
 
         caseObject.setTechnicalSupportValidity(project.getTechnicalSupportValidity());
+        caseObject.setWorkCompletionDate(project.getWorkCompletionDate());
+        caseObject.setPurchaseDate(project.getPurchaseDate());
 
         caseObject.setManager(personDAO.get(caseObject.getManagerId()));
 
