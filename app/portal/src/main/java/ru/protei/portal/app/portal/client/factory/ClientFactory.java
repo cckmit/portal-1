@@ -35,7 +35,7 @@ import ru.protei.portal.ui.plan.client.factory.PlanClientModule;
 @GinModules({
         ClientModule.class, IssueClientModule.class, IssueAssignmentClientModule.class,
         PlanClientModule.class, CaseStateClientModule.class, ReportClientModule.class,
-        EmployeeRegistrationClientModule.class, EmployeeClientModule.class,
+        EmployeeClientModule.class, EmployeeRegistrationClientModule.class,
         CompanyClientModule.class, ContactClientModule.class, ProductClientModule.class,
         ProjectClientModule.class, RegionClientModule.class, SiteFolderClientModule.class,
         DutyLogClientModule.class, EquipmentClientModule.class, DocumentClientModule.class, DocumentTypeClientModule.class, ContractClientModule.class,

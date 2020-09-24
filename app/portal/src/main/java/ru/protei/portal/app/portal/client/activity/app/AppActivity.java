@@ -77,6 +77,11 @@ public abstract class AppActivity
         view.setExternalLinks(configStorage.getConfigData().externalLinksHtml);
     }
 
+    @Event
+    public void onMenuClear(MenuEvents.Clear event) {
+        view.clearExternalLinks();
+    }
+
     @Override
     public void onLogoClicked() {
         fireEvent(pageService.getFirstAvailablePageEvent());
@@ -95,7 +100,6 @@ public abstract class AppActivity
     @Override
     public void onMenuSectionsClose() {
         fireEvent(new MenuEvents.CloseAll());
-
     }
 
     public void onLogoutClicked() {
