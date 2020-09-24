@@ -22,13 +22,14 @@ public abstract class EmployeeRegistrationPage
 
     @PostConstruct
     public void onInit() {
+        CATEGORY = lang.employees();
         ТAB = lang.employeeRegistrations();
     }
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.EMPLOYEE_REGISTRATION_VIEW) ) {
-            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.EMPLOYEE_REGISTRATION, ТAB, DebugIds.SIDEBAR_MENU.EMPLOYEE_REGISTRATION) );
+            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.EMPLOYEE_REGISTRATION, ТAB, DebugIds.SIDEBAR_MENU.EMPLOYEE_REGISTRATION).withParent( CATEGORY ) );
             fireEvent(new AppEvents.InitPage(show));
         }
     }
@@ -61,7 +62,7 @@ public abstract class EmployeeRegistrationPage
     private void fireSelectTab() {
         fireEvent( new ActionBarEvents.Clear() );
         if ( policyService.hasPrivilegeFor( En_Privilege.EMPLOYEE_REGISTRATION_VIEW) ) {
-            fireEvent( new MenuEvents.Select( ТAB ) );
+            fireEvent( new MenuEvents.Select( ТAB, CATEGORY ) );
         }
     }
 
@@ -72,7 +73,7 @@ public abstract class EmployeeRegistrationPage
     @Inject
     PolicyService policyService;
 
+    private String CATEGORY;
     private String ТAB;
     private EmployeeRegistrationEvents.Show show = new EmployeeRegistrationEvents.Show(false);
 }
-

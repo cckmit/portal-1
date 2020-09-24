@@ -24,7 +24,7 @@ public abstract class EmployeePage implements Activity {
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
-        if ( policyService.hasAnyPrivilegeOf( En_Privilege.EMPLOYEE_VIEW, En_Privilege.ABSENCE_VIEW ) ) {
+        if ( policyService.hasAnyPrivilegeOf( En_Privilege.EMPLOYEE_VIEW, En_Privilege.ABSENCE_VIEW, En_Privilege.EMPLOYEE_REGISTRATION_VIEW ) ) {
             fireEvent( new MenuEvents.Add( CATEGORY, UiConstants.TabIcons.EMPLOYEE, CATEGORY, DebugIds.SIDEBAR_MENU.EMPLOYEE ) );
         }
     }

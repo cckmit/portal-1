@@ -5,15 +5,10 @@ import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.*;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-import com.google.gwt.safehtml.shared.SimpleHtmlSanitizer;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.app.portal.client.activity.app.AbstractAppActivity;
@@ -22,7 +17,6 @@ import ru.protei.portal.app.portal.client.widget.locale.LocaleImage;
 import ru.protei.portal.app.portal.client.widget.locale.LocaleSelector;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
-import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 
 /**
  * Вид основной формы приложения
@@ -113,6 +107,11 @@ public class AppView extends Composite
                 addOnAnchorClickListener(anchor, submenu, this);
             }
         }
+    }
+
+    @Override
+    public void clearExternalLinks() {
+        removeExternalSections(menuContainer.getElement());
     }
 
     @UiHandler( "logout" )
@@ -312,6 +311,13 @@ public class AppView extends Composite
                 anchor.getElementsByClassName("arrow").item(0).classList.remove("open");
                 submenu.style.cssText = 'margin:0px;padding:0;height:0;';
             }
+        }
+    }-*/;
+
+    private native void removeExternalSections(Element menu) /*-{
+        var sections = menu.getElementsByClassName("external");
+        for (i = 0; i < sections.length; i++) {
+            sections[i].remove();
         }
     }-*/;
 
