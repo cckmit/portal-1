@@ -96,6 +96,11 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
     }
 
     @Override
+    public HasVisibility onlyMineProjectsVisibility() {
+        return onlyMineProjectsContainer;
+    }
+
+    @Override
     public void resetFilter() {
         sortField.setValue( En_SortField.project_name );
         sortDir.setValue( true );
@@ -241,6 +246,8 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
     @UiField( provided = true )
     CompanyMultiSelector initiatorCompanies;
 
+    @UiField
+    HTMLPanel onlyMineProjectsContainer;
     @UiField
     CheckBox onlyMineProjects;
     @UiField

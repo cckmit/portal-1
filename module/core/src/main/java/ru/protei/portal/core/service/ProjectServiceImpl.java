@@ -83,7 +83,6 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     EventPublisherService publisherService;
 
-
     @EventListener
     @Async(BACKGROUND_TASKS)
     @Override
@@ -204,6 +203,10 @@ public class ProjectServiceImpl implements ProjectService {
 
         jdbcManyRelationsHelper.fill(project, Project.Fields.PROJECT_PLANS);
 
+        if (!canAccessProject(token, En_Privilege.PROJECT_VIEW, project.getTeam())) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
         return ok(project);
     }
 
@@ -217,8 +220,14 @@ public class ProjectServiceImpl implements ProjectService {
 
         jdbcManyRelationsHelper.fill(projectFromDb, "locations");
 
-        ProjectInfo project = ProjectInfo.fromCaseObject(projectFromDb);
-        return ok(project);
+        jdbcManyRelationsHelper.fill(projectFromDb, "members");
+        Project project = Project.fromCaseObject(projectFromDb);
+        if (!canAccessProject(token, En_Privilege.PROJECT_VIEW, project.getTeam())) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
+        ProjectInfo projectInfo = ProjectInfo.fromCaseObject(projectFromDb);
+        return ok(projectInfo);
     }
 
     @Override
@@ -233,6 +242,10 @@ public class ProjectServiceImpl implements ProjectService {
 
         Project oldStateProject = Project.fromCaseObject(caseObject);
         jdbcManyRelationsHelper.fill(oldStateProject, Project.Fields.PROJECT_PLANS);
+
+        if (!canAccessProject(token, En_Privilege.PROJECT_EDIT, oldStateProject.getTeam())) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
 
         if (!Objects.equals(project.getCustomer(), caseObject.getInitiatorCompany())) {
             return error(En_ResultStatus.NOT_ALLOWED_CHANGE_PROJECT_COMPANY);
@@ -302,6 +315,10 @@ public class ProjectServiceImpl implements ProjectService {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
+        if (!canAccessProject(token, En_Privilege.PROJECT_CREATE, project.getTeam())) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
         CaseObject caseObject = createCaseObjectFromProjectInfo(project);
 
         Long id = caseObjectDAO.persist(caseObject);
@@ -346,27 +363,40 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    @Transactional
     public Result<Boolean> removeProject( AuthToken token, Long projectId) {
 
         CaseObject caseObject = caseObjectDAO.get(projectId);
-
         if (caseObject == null) {
             return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        jdbcManyRelationsHelper.fill(caseObject, "members");
+        Project project = Project.fromCaseObject(caseObject);
+        if (!canAccessProject(token, En_Privilege.PROJECT_REMOVE, project.getTeam())) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
         caseObject.setDeleted(true);
         boolean result = caseObjectDAO.partialMerge(caseObject, "deleted");
 
-        caseLinkService.getLinks(token, caseObject.getId()).getData()
-                        .forEach(caseLink ->
-                                caseLinkService.deleteLink(token, caseLink.getId()));
-
+        if (result) {
+            caseLinkService.getLinks(token, caseObject.getId())
+                .ifOk(links -> links.forEach(caseLink -> {
+                    caseLinkService.deleteLink(token, caseLink.getId());
+                }));
+        }
         return ok(result);
     }
 
-
     @Override
     public Result<SearchResult<Project>> projects(AuthToken token, ProjectQuery query) {
+
+        En_ProjectAccessType accessType = getAccessType(token, En_Privilege.PROJECT_VIEW);
+        if (accessType == En_ProjectAccessType.SELF_PROJECTS) {
+            query.setOnlyMineProjects(true);
+        }
+
         CaseQuery caseQuery = query.toCaseQuery(token.getPersonId());
 
         SearchResult<CaseObject> projects = caseObjectDAO.getSearchResult(caseQuery);
@@ -375,40 +405,51 @@ public class ProjectServiceImpl implements ProjectService {
         jdbcManyRelationsHelper.fill(projects.getResults(), "products");
         jdbcManyRelationsHelper.fill(projects.getResults(), "locations");
 
-        SearchResult<Project> result = new SearchResult<>(
-                projects.getResults().isEmpty() ?
-                        new ArrayList<>()
-                        : projects.getResults().stream().map(Project::fromCaseObject).collect(toList()),
-                projects.getTotalCount());
+        SearchResult<Project> result = new SearchResult<>(stream(projects.getResults())
+                .map(Project::fromCaseObject)
+                .collect(toList()));
         return ok(result);
     }
 
     @Override
     public Result<List<EntityOption>> listOptionProjects(AuthToken token, ProjectQuery query) {
+
+        En_ProjectAccessType accessType = getAccessType(token, En_Privilege.PROJECT_VIEW);
+        if (accessType == En_ProjectAccessType.SELF_PROJECTS) {
+            query.setOnlyMineProjects(true);
+        }
+
         CaseQuery caseQuery = query.toCaseQuery(token.getPersonId());
         List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
 
-        List<EntityOption> result = projects.stream()
-                .map(CaseObject::toEntityOption).collect(toList());
+        List<EntityOption> result = stream(projects)
+                .map(CaseObject::toEntityOption)
+                .collect(toList());
         return ok(result);
     }
 
     @Override
     public Result<List<ProjectInfo>> listInfoProjects(AuthToken token, ProjectQuery query) {
+
+        En_ProjectAccessType accessType = getAccessType(token, En_Privilege.PROJECT_VIEW);
+        if (accessType == En_ProjectAccessType.SELF_PROJECTS) {
+            query.setOnlyMineProjects(true);
+        }
+
         CaseQuery caseQuery = query.toCaseQuery(token.getPersonId());
         List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
 
         jdbcManyRelationsHelper.fill(projects, "products");
 
-        List<ProjectInfo> result = projects.stream()
-                .map(ProjectInfo::fromCaseObject).collect(toList());
+        List<ProjectInfo> result = stream(projects)
+                .map(ProjectInfo::fromCaseObject)
+                .collect(toList());
         return ok(result);
     }
 
     @Override
     public Result<PersonProjectMemberView> getProjectLeader(AuthToken authToken, Long projectId) {
         Result<Project> projectResult = getProject(authToken, projectId);
-
         if (projectResult.isError()) {
             return error(projectResult.getStatus());
         }
@@ -610,5 +651,34 @@ public class ProjectServiceImpl implements ProjectService {
             locationQuery.setSortDir(En_SortDir.ASC);
         }
         return locationQuery;
+    }
+
+
+    private boolean canAccessProject(AuthToken token, En_Privilege privilege, List<PersonProjectMemberView> team) {
+        En_ProjectAccessType accessType = getAccessType(token, privilege);
+        switch (accessType) {
+            case ALL_PROJECTS: return true;
+            case NONE: return false;
+            case SELF_PROJECTS: {
+                boolean isTeamMember = stream(team)
+                        .map(PersonShortView::getId)
+                        .anyMatch(id -> Objects.equals(id, token.getPersonId()));
+                return isTeamMember;
+            }
+        }
+        return false;
+    }
+
+    private En_ProjectAccessType getAccessType(AuthToken token, En_Privilege privilege) {
+        Set<UserRole> roles = token.getRoles();
+        boolean hasSystemScope = policyService.hasScopeForPrivilege(roles, privilege, En_Scope.SYSTEM);
+        if (hasSystemScope) {
+            return En_ProjectAccessType.ALL_PROJECTS;
+        }
+        boolean hasUserScope = policyService.hasScopeForPrivilege(roles, privilege, En_Scope.USER);
+        if (hasUserScope) {
+            return En_ProjectAccessType.SELF_PROJECTS;
+        }
+        return En_ProjectAccessType.NONE;
     }
 }
