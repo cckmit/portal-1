@@ -6,15 +6,15 @@ import org.apache.poi.ss.usermodel.Workbook;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.CaseCommentTimeElapsedSum;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.struct.ColumnsListBuilder;
+import ru.protei.portal.core.model.struct.ListBuilder;
 import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.ExcelFormatUtils.ExcelFormat;
 import ru.protei.portal.core.utils.JXLSHelper;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -31,14 +31,12 @@ public class ExcelReportWriter implements
     private final Lang.LocalizedLang lang;
     private final String locale;
     private final Set<En_TimeElapsedType> timeElapsedTypes;
-    private long timeElapsedSum;
 
     public ExcelReportWriter(Lang.LocalizedLang localizedLang, Set<En_TimeElapsedType> timeElapsedTypes) {
         this.book = new JXLSHelper.ReportBook<>(localizedLang, this);
         this.lang = localizedLang;
         this.locale = localizedLang.getLanguageTag();
         this.timeElapsedTypes = timeElapsedTypes;
-        this.timeElapsedSum = 0;
     }
 
     @Override
@@ -77,15 +75,37 @@ public class ExcelReportWriter implements
     }
 
     private String[] getFormats(Set<En_TimeElapsedType> timeElapsedTypes) {
-        return new String[] {
-                ExcelFormat.STANDARD, ExcelFormat.STANDARD, ExcelFormat.STANDARD,
-                ExcelFormat.STANDARD, ExcelFormat.STANDARD, ExcelFormat.STANDARD, ExcelFormat.STANDARD,
-                ExcelFormat.STANDARD, ExcelFormat.STANDARD, ExcelFormat.FULL_DATE_TIME,
-                ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES,
-                ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES,
-                ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES,
-                ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES,
-        };
+        if (isEmpty(timeElapsedTypes)) {
+            return new String[] {
+                    ExcelFormat.STANDARD, ExcelFormat.STANDARD, ExcelFormat.STANDARD,
+                    ExcelFormat.STANDARD, ExcelFormat.STANDARD, ExcelFormat.STANDARD, ExcelFormat.STANDARD,
+                    ExcelFormat.STANDARD, ExcelFormat.STANDARD, ExcelFormat.FULL_DATE_TIME,
+                    ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES,
+                    ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES,
+                    ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES,
+                    ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES, ExcelFormat.INFINITE_HOURS_MINUTES,
+            };
+        }
+
+        List<String> columnsWidthList = new ListBuilder<String>()
+                .add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD)
+                .add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD)
+                .add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.FULL_DATE_TIME)
+                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.NONE))
+                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.WATCH))
+                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.NIGHT_WORK))
+                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.SOFT_INSTALL))
+                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.SOFT_UPDATE))
+                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.SOFT_CONFIG))
+                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.TESTING))
+                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.CONSULTATION))
+                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.MEETING))
+                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.DISCUSSION_OF_IMPROVEMENTS))
+                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.LOG_ANALYSIS))
+                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.SOLVE_PROBLEMS))
+                .add(ExcelFormat.INFINITE_HOURS_MINUTES).build();
+
+        return columnsWidthList.toArray(new String[]{});
     }
 
     @Override
@@ -107,7 +127,7 @@ public class ExcelReportWriter implements
             };
         }
 
-        List<Integer> columnsWidthList = new ColumnsListBuilder<Integer>()
+        List<Integer> columnsWidthList = new ListBuilder<Integer>()
                 .add(3650).add(3430).add(8570)
                 .add(4590).add(4200).add(4200).add(4200)
                 .add(3350).add(4600).add(4200)
@@ -146,7 +166,7 @@ public class ExcelReportWriter implements
             };
         }
 
-        List<String> columnNames = new ColumnsListBuilder<String>()
+        List<String> columnNames = new ListBuilder<String>()
                 .add("ir_caseno").add("ir_private").add("ir_name")
                 .add("ir_company").add("ir_product").add("ir_performer").add("ir_manager")
                 .add("ir_importance").add("ir_state").add("ir_date_created")
@@ -177,7 +197,7 @@ public class ExcelReportWriter implements
             }
 
             values[values.length - 2] = lang.get("summary") + ":";
-            values[values.length - 1] = toExcelTimeFormat(isEmpty(timeElapsedTypes) ? object.getTimeElapsedSum() : timeElapsedSum);
+            values[values.length - 1] = toExcelTimeFormat(object.getTimeElapsedSum());
 
             return values;
         }
@@ -210,99 +230,31 @@ public class ExcelReportWriter implements
             };
         }
 
-        List<Object> values = new ArrayList<>();
-        long timeElapsedRowSum = 0;
+        List<Object> columnValues = new ListBuilder<>()
+                .add("CRM-" + object.getCaseNumber())
+                .add(lang.get(object.isCasePrivateCase() ? "yes" : "no"))
+                .add(HelperFunc.isNotEmpty(object.getCaseName()) ? object.getCaseName() : "")
+                .add(HelperFunc.isNotEmpty(object.getCaseCompanyName()) ? transliterate(object.getCaseCompanyName(), locale) : "")
+                .add(HelperFunc.isNotEmpty(object.getProductName()) ? object.getProductName() : "")
+                .add(HelperFunc.isNotEmpty(object.getAuthorDisplayName()) ? transliterate(object.getAuthorDisplayName(), locale) : "")
+                .add(HelperFunc.isNotEmpty(object.getCaseManagerDisplayName()) ? transliterate(object.getCaseManagerDisplayName(), locale) : "")
+                .add(object.getImportanceLevel() != null ? object.getImportanceLevel().getCode() : "")
+                .add(HelperFunc.isNotEmpty(object.getCaseStateName()) ? object.getCaseStateName() : "")
+                .add(object.getCaseCreated() != null ? object.getCaseCreated() : "")
+                .addIf(toExcelTimeFormat(object.getTimeElapsedNone()), timeElapsedTypes.contains(En_TimeElapsedType.NONE))
+                .addIf(toExcelTimeFormat(object.getTimeElapsedWatch()), timeElapsedTypes.contains(En_TimeElapsedType.WATCH))
+                .addIf(toExcelTimeFormat(object.getTimeElapsedNightWork()), timeElapsedTypes.contains(En_TimeElapsedType.NIGHT_WORK))
+                .addIf(toExcelTimeFormat(object.getTimeElapsedTypeSoftInstall()), timeElapsedTypes.contains(En_TimeElapsedType.SOFT_INSTALL))
+                .addIf(toExcelTimeFormat(object.getTimeElapsedTypeSoftUpdate()), timeElapsedTypes.contains(En_TimeElapsedType.SOFT_UPDATE))
+                .addIf(toExcelTimeFormat(object.getTimeElapsedTypeSoftConfig()), timeElapsedTypes.contains(En_TimeElapsedType.SOFT_CONFIG))
+                .addIf(toExcelTimeFormat(object.getTimeElapsedTypeTesting()), timeElapsedTypes.contains(En_TimeElapsedType.TESTING))
+                .addIf(toExcelTimeFormat(object.getTimeElapsedTypeConsultation()), timeElapsedTypes.contains(En_TimeElapsedType.CONSULTATION))
+                .addIf(toExcelTimeFormat(object.getTimeElapsedTypeMeeting()), timeElapsedTypes.contains(En_TimeElapsedType.MEETING))
+                .addIf(toExcelTimeFormat(object.getTimeElapsedTypeDiscussionOfImprovements()), timeElapsedTypes.contains(En_TimeElapsedType.DISCUSSION_OF_IMPROVEMENTS))
+                .addIf(toExcelTimeFormat(object.getTimeElapsedTypeLogAnalysis()), timeElapsedTypes.contains(En_TimeElapsedType.LOG_ANALYSIS))
+                .addIf(toExcelTimeFormat(object.getTimeElapsedTypeSolveProblems()), timeElapsedTypes.contains(En_TimeElapsedType.SOLVE_PROBLEMS))
+                .add(toExcelTimeFormat(object.getTimeElapsedSum())).build();
 
-        values.add("CRM-" + object.getCaseNumber());
-        values.add(lang.get(object.isCasePrivateCase() ? "yes" : "no"));
-        values.add(HelperFunc.isNotEmpty(object.getCaseName()) ? object.getCaseName() : "");
-        values.add(HelperFunc.isNotEmpty(object.getCaseCompanyName()) ? transliterate(object.getCaseCompanyName(), locale) : "");
-        values.add(HelperFunc.isNotEmpty(object.getProductName()) ? object.getProductName() : "");
-        values.add(HelperFunc.isNotEmpty(object.getAuthorDisplayName()) ? transliterate(object.getAuthorDisplayName(), locale) : "");
-        values.add(HelperFunc.isNotEmpty(object.getCaseManagerDisplayName()) ? transliterate(object.getCaseManagerDisplayName(), locale) : "");
-        values.add(object.getImportanceLevel() != null ? object.getImportanceLevel().getCode() : "");
-        values.add(HelperFunc.isNotEmpty(object.getCaseStateName()) ? object.getCaseStateName() : "");
-        values.add(object.getCaseCreated() != null ? object.getCaseCreated() : "");
-
-        if (timeElapsedTypes.contains(En_TimeElapsedType.NONE)) {
-            long timeElapsed = getTimeElapsed(object.getTimeElapsedNone());
-            values.add(toExcelTimeFormat(timeElapsed));
-            timeElapsedSum += timeElapsed;
-            timeElapsedRowSum += timeElapsed;
-        }
-        if (timeElapsedTypes.contains(En_TimeElapsedType.WATCH)) {
-            long timeElapsed = getTimeElapsed(object.getTimeElapsedWatch());
-            values.add(toExcelTimeFormat(timeElapsed));
-            timeElapsedSum += timeElapsed;
-            timeElapsedRowSum += timeElapsed;
-        }
-        if (timeElapsedTypes.contains(En_TimeElapsedType.NIGHT_WORK)) {
-            long timeElapsed = getTimeElapsed(object.getTimeElapsedNightWork());
-            values.add(toExcelTimeFormat(timeElapsed));
-            timeElapsedSum += timeElapsed;
-            timeElapsedRowSum += timeElapsed;
-        }
-        if (timeElapsedTypes.contains(En_TimeElapsedType.SOFT_INSTALL)) {
-            long timeElapsed = getTimeElapsed(object.getTimeElapsedTypeSoftInstall());
-            values.add(toExcelTimeFormat(timeElapsed));
-            timeElapsedSum += timeElapsed;
-            timeElapsedRowSum += timeElapsed;
-        }
-        if (timeElapsedTypes.contains(En_TimeElapsedType.SOFT_UPDATE)) {
-            long timeElapsed = getTimeElapsed(object.getTimeElapsedTypeSoftUpdate());
-            values.add(toExcelTimeFormat(timeElapsed));
-            timeElapsedSum += timeElapsed;
-            timeElapsedRowSum += timeElapsed;
-        }
-        if (timeElapsedTypes.contains(En_TimeElapsedType.SOFT_CONFIG)) {
-            long timeElapsed = getTimeElapsed(object.getTimeElapsedTypeSoftConfig());
-            values.add(toExcelTimeFormat(timeElapsed));
-            timeElapsedSum += timeElapsed;
-            timeElapsedRowSum += timeElapsed;
-        }
-        if (timeElapsedTypes.contains(En_TimeElapsedType.TESTING)) {
-            long timeElapsed = getTimeElapsed(object.getTimeElapsedTypeTesting());
-            values.add(toExcelTimeFormat(timeElapsed));
-            timeElapsedSum += timeElapsed;
-            timeElapsedRowSum += timeElapsed;
-        }
-        if (timeElapsedTypes.contains(En_TimeElapsedType.CONSULTATION)) {
-            long timeElapsed = getTimeElapsed(object.getTimeElapsedTypeConsultation());
-            values.add(toExcelTimeFormat(timeElapsed));
-            timeElapsedSum += timeElapsed;
-            timeElapsedRowSum += timeElapsed;
-        }
-        if (timeElapsedTypes.contains(En_TimeElapsedType.MEETING)) {
-            long timeElapsed = getTimeElapsed(object.getTimeElapsedTypeMeeting());
-            values.add(toExcelTimeFormat(timeElapsed));
-            timeElapsedSum += timeElapsed;
-            timeElapsedRowSum += timeElapsed;
-        }
-        if (timeElapsedTypes.contains(En_TimeElapsedType.DISCUSSION_OF_IMPROVEMENTS)) {
-            long timeElapsed = getTimeElapsed(object.getTimeElapsedTypeDiscussionOfImprovements());
-            values.add(toExcelTimeFormat(timeElapsed));
-            timeElapsedSum += timeElapsed;
-            timeElapsedRowSum += timeElapsed;
-        }
-        if (timeElapsedTypes.contains(En_TimeElapsedType.LOG_ANALYSIS)) {
-            long timeElapsed = getTimeElapsed(object.getTimeElapsedTypeLogAnalysis());
-            values.add(toExcelTimeFormat(timeElapsed));
-            timeElapsedSum += timeElapsed;
-            timeElapsedRowSum += timeElapsed;
-        }
-        if (timeElapsedTypes.contains(En_TimeElapsedType.SOLVE_PROBLEMS)) {
-            long timeElapsed = getTimeElapsed(object.getTimeElapsedTypeSolveProblems());
-            values.add(toExcelTimeFormat(timeElapsed));
-            timeElapsedSum += timeElapsed;
-            timeElapsedRowSum += timeElapsed;
-        }
-
-        values.add(toExcelTimeFormat(timeElapsedRowSum));
-
-        return values.toArray();
-    }
-
-    private long getTimeElapsed(Long timeElapsed) {
-        return timeElapsed == null ? 0 : timeElapsed;
+        return columnValues.toArray();
     }
 }

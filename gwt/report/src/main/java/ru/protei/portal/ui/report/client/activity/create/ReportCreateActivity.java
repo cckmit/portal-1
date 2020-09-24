@@ -99,7 +99,6 @@ public abstract class ReportCreateActivity implements Activity,
         view.reportType().setValue(availableReportTypes(policyService).get(0), true);
         view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
         view.additionalParams().setValue(null);
-        view.timeElapsedTypes().setValue(null);
     }
 
     private void presetCompanyAtFilter() {
@@ -141,7 +140,6 @@ public abstract class ReportCreateActivity implements Activity,
         report.setWithDescription(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.DESCRIPTION));
         report.setWithTags(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.TAGS));
         report.setWithLinkedIssues(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.LINKED_ISSUES));
-        report.setTimeElapsedTypes(view.timeElapsedTypes().getValue());
         return report;
     }
 
@@ -195,9 +193,7 @@ public abstract class ReportCreateActivity implements Activity,
                 view.getFilterContainer().add(projectFilterView.asWidget());
                 view.scheduledTypeContainerVisibility().setVisible(false);
                 view.additionalParamsVisibility().setVisible(false);
-                view.timeElapsedContainerVisibility().setVisible(false);
                 view.additionalParams().setValue(null);
-                view.timeElapsedTypes().setValue(null);
                 break;
             }
             case CASE_OBJECTS:
@@ -205,10 +201,8 @@ public abstract class ReportCreateActivity implements Activity,
             case CASE_RESOLUTION_TIME: {
                 view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
                 view.additionalParams().setValue(null);
-                view.timeElapsedTypes().setValue(null);
                 view.scheduledTypeContainerVisibility().setVisible(isScheduledEnabled(reportType));
                 view.additionalParamsVisibility().setVisible(reportType == En_ReportType.CASE_OBJECTS);
-                view.timeElapsedContainerVisibility().setVisible(reportType == En_ReportType.CASE_TIME_ELAPSED);
                 issueFilterWidget.updateFilterType(En_CaseFilterType.valueOf(reportType.name()));
                 validateDateRanges(reportType);
                 applyIssueFilterVisibilityByPrivileges();

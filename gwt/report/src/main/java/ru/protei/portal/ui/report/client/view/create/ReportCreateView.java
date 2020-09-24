@@ -80,18 +80,8 @@ public class ReportCreateView extends Composite implements AbstractReportCreateV
     }
 
     @Override
-    public HasVisibility timeElapsedContainerVisibility() {
-        return timeElapsedTypesContainer;
-    }
-
-    @Override
     public HasValue<Set<En_ReportAdditionalParamType>> additionalParams() {
         return additionalParams;
-    }
-
-    @Override
-    public HasValue<Set<En_TimeElapsedType>> timeElapsedTypes() {
-        return timeElapsedTypes;
     }
 
     @UiHandler("reportType")
@@ -124,11 +114,6 @@ public class ReportCreateView extends Composite implements AbstractReportCreateV
         additionalParams.setClearEnsureDebugId(DebugIds.ISSUE_REPORT.ADDITIONAL_PARAMS_CLEAR_BUTTON);
         additionalParams.setItemContainerEnsureDebugId(DebugIds.ISSUE_REPORT.ADDITIONAL_PARAMS_ITEM_CONTAINER);
         additionalParams.setLabelEnsureDebugId(DebugIds.ISSUE_REPORT.ADDITIONAL_PARAMS_LABEL);
-        timeElapsedTypes.ensureDebugId(DebugIds.ISSUE_REPORT.TIME_ELAPSED_TYPES);
-        timeElapsedTypes.setAddEnsureDebugId(DebugIds.ISSUE_REPORT.TIME_ELAPSED_TYPES_ADD_BUTTON);
-        timeElapsedTypes.setClearEnsureDebugId(DebugIds.ISSUE_REPORT.TIME_ELAPSED_TYPES_CLEAR_BUTTON);
-        timeElapsedTypes.setItemContainerEnsureDebugId(DebugIds.ISSUE_REPORT.TIME_ELAPSED_TYPES_ITEM_CONTAINER);
-        timeElapsedTypes.setLabelEnsureDebugId(DebugIds.ISSUE_REPORT.TIME_ELAPSED_TYPES_LABEL);
         createButton.ensureDebugId(DebugIds.ISSUE_REPORT.CREATE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.ISSUE_REPORT.CANCEL_BUTTON);
     }
@@ -146,8 +131,6 @@ public class ReportCreateView extends Composite implements AbstractReportCreateV
     @UiField
     HTMLPanel additionalParamsContainer;
     @UiField
-    HTMLPanel timeElapsedTypesContainer;
-    @UiField
     HTMLPanel filterContainer;
     @UiField
     Button createButton;
@@ -156,9 +139,6 @@ public class ReportCreateView extends Composite implements AbstractReportCreateV
     @Inject
     @UiField(provided = true)
     ReportAdditionalParamsMultiSelector additionalParams;
-    @Inject
-    @UiField(provided = true)
-    ElapsedTimeTypeMultiSelector timeElapsedTypes;
 
     private AbstractReportCreateActivity activity;
 

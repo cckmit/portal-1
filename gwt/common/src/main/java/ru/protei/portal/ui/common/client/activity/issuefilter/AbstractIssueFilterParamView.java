@@ -78,6 +78,8 @@ public interface AbstractIssueFilterParamView extends IsWidget {
 
     HasVisibility commentAuthorsVisibility();
 
+    HasVisibility timeElapsedVisibility();
+
     HasVisibility searchPrivateVisibility();
 
     HasVisibility planVisibility();

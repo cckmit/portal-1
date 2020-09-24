@@ -71,10 +71,6 @@ public class Report implements Serializable {
     @JdbcColumn(name = Columns.REMOVED)
     private boolean isRemoved = false;
 
-    @JdbcEnumerated(EnumType.ORDINAL)
-    @JdbcColumnCollection(name = "time_elapsed_types", separator = ",")
-    private Set<En_TimeElapsedType> timeElapsedTypes;
-
     public Long getId() {
         return id;
     }
@@ -211,14 +207,6 @@ public class Report implements Serializable {
         isRemoved = removed;
     }
 
-    public Set<En_TimeElapsedType> getTimeElapsedTypes() {
-        return timeElapsedTypes;
-    }
-
-    public void setTimeElapsedTypes(Set<En_TimeElapsedType> timeElapsedTypes) {
-        this.timeElapsedTypes = timeElapsedTypes;
-    }
-
     @Override
     public String toString() {
         return "Report{" +
@@ -238,7 +226,6 @@ public class Report implements Serializable {
                 ", withTags=" + withTags +
                 ", withLinkedIssues=" + withLinkedIssues +
                 ", isRemoved=" + isRemoved +
-                ", timeElapsedTypes=" + timeElapsedTypes +
                 '}';
     }
 

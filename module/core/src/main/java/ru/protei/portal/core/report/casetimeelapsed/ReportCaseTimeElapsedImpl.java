@@ -10,19 +10,19 @@ import ru.protei.portal.core.model.dao.CaseShortViewDAO;
 import ru.protei.portal.core.model.dao.ReportDAO;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.CaseCommentTimeElapsedSum;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.report.ReportWriter;
-import ru.protei.portal.core.utils.TimeFormatter;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.text.DateFormat;
 import java.util.*;
 import java.util.function.Predicate;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.toSet;
 
 public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
 
@@ -58,7 +58,7 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
         int offset = 0;
 
         log.info( "writeReport(): Start report {}", report );
-        try (ReportWriter<CaseCommentTimeElapsedSum> writer = new ExcelReportWriter(localizedLang, report.getTimeElapsedTypes())) {
+        try (ReportWriter<CaseCommentTimeElapsedSum> writer = new ExcelReportWriter(localizedLang, toSet(caseQuery.getTimeElapsedTypeIds(), En_TimeElapsedType::findById))) {
 
             while (true) {
                 if (isCancel.test(report.getId())) {

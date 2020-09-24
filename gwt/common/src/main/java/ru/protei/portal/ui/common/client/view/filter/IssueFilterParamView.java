@@ -47,6 +47,7 @@ import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWit
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedSelectorRangePicker;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
@@ -231,6 +232,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
+    public HasVisibility timeElapsedVisibility() {
+        return timeElapsedTypes;
+    }
+
+    @Override
     public HasVisibility searchPrivateVisibility() {
         return searchPrivateContainer;
     }
@@ -248,6 +254,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         managerCompanies.setValue(null);
         initiators.setValue(null);
         commentAuthors.setValue(null);
+        timeElapsedTypes.setValue(null);
         creators.setValue(null);
         importance.setValue(null);
         state.setValue(null);
@@ -320,6 +327,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
         initiators.setValue(applyPersons(filter, caseQuery.getInitiatorIds()));
         commentAuthors.setValue(applyPersons(filter, caseQuery.getCommentAuthorIds()));
+        timeElapsedTypes.setValue(toSet(caseQuery.getTimeElapsedTypeIds(), En_TimeElapsedType::findById));
         creators.setValue(applyPersons(filter, caseQuery.getCreatorIds()));
         plan.setValue(filter.getPlanOption());
 
@@ -381,6 +389,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 query.setCompanyIds(getCompaniesIdList(companies.getValue()));
                 query.setProductIds(getProductsIdList(products.getValue()));
                 query.setCommentAuthorIds(getManagersIdList(commentAuthors.getValue()));
+                query.setTimeElapsedTypeIds(toList(timeElapsedTypes.getValue(), en_timeElapsedType -> en_timeElapsedType.getId()));
                 query.setCreatedRange(toDateRange(dateCreatedRange.getValue()));
                 break;
             }
@@ -532,6 +541,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         managerCompanies.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         managers.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         commentAuthors.setVisible(filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED));
+        timeElapsedTypes.setVisible(filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED));
         tags.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS) || filterType.equals(En_CaseFilterType.CASE_RESOLUTION_TIME));
         searchPrivateContainer.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         plan.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS) && policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PLAN_VIEW));
@@ -666,6 +676,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         creators.setAddEnsureDebugId(DebugIds.FILTER.CREATOR_ADD_BUTTON);
         creators.setClearEnsureDebugId(DebugIds.FILTER.CREATOR_CLEAR_BUTTON);
         creators.setItemContainerEnsureDebugId(DebugIds.FILTER.CREATOR_ITEM_CONTAINER);
+        timeElapsedTypes.ensureDebugId(DebugIds.ISSUE_REPORT.TIME_ELAPSED_TYPES);
+        timeElapsedTypes.setAddEnsureDebugId(DebugIds.ISSUE_REPORT.TIME_ELAPSED_TYPES_ADD_BUTTON);
+        timeElapsedTypes.setClearEnsureDebugId(DebugIds.ISSUE_REPORT.TIME_ELAPSED_TYPES_CLEAR_BUTTON);
+        timeElapsedTypes.setItemContainerEnsureDebugId(DebugIds.ISSUE_REPORT.TIME_ELAPSED_TYPES_ITEM_CONTAINER);
+        timeElapsedTypes.setLabelEnsureDebugId(DebugIds.ISSUE_REPORT.TIME_ELAPSED_TYPES_LABEL);
     }
 
     private void onFilterChanged() {
@@ -822,6 +837,9 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @Inject
     @UiField(provided = true)
     EmployeeMultiSelector commentAuthors;
+    @Inject
+    @UiField(provided = true)
+    ElapsedTimeTypeMultiSelector timeElapsedTypes;
     @Inject
     @UiField(provided = true)
     PersonMultiSelector creators;

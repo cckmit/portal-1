@@ -32,9 +32,5 @@ public interface AbstractReportCreateView extends IsWidget {
 
     HasVisibility additionalParamsVisibility();
 
-    HasVisibility timeElapsedContainerVisibility();
-
     HasValue<Set<En_ReportAdditionalParamType>> additionalParams();
-
-    HasValue<Set<En_TimeElapsedType>> timeElapsedTypes();
 }

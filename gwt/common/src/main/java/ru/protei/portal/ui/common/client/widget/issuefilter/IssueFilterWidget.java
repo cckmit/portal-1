@@ -47,6 +47,7 @@ public class IssueFilterWidget extends Composite {
         issueFilterParamView.setManagersModel(personModelProvider.get());
         issueFilterParamView.setCreatorModel(asyncPersonModel);
         issueFilterParamView.commentAuthorsVisibility().setVisible(false);
+        issueFilterParamView.timeElapsedVisibility().setVisible(false);
     }
 
     @Override

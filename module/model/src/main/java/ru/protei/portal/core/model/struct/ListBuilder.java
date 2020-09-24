@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ColumnsListBuilder<T> {
+public class ListBuilder<T> {
     private List<T> list = new ArrayList<>();
 
-    public ColumnsListBuilder<T> add(T element) {
+    public ListBuilder<T> add(T element) {
         list.add(element);
         return this;
     }
 
-    public ColumnsListBuilder<T> addIf(T element, boolean condition) {
+    public ListBuilder<T> addIf(T element, boolean condition) {
         if (condition) {
             list.add(element);
         }
