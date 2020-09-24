@@ -29,4 +29,6 @@ public interface AbstractAppView extends IsWidget {
     void setLogoByLocale(String locale);
 
     void setExternalLinks(String html);
+
+    void clearExternalLinks();
 }
