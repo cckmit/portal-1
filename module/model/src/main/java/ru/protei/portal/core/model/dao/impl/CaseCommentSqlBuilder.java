@@ -31,15 +31,15 @@ public class CaseCommentSqlBuilder {
                 List<String> conditions = new ArrayList<>();
 
                 if (query.getCommentTypes().contains(CaseCommentQuery.CommentType.CASE_STATE)) {
-                    conditions.add("case_comment.cstate_id is not null");
+                    conditions.add("case_comment.cstate_id IS NOT NULL");
                 }
 
                 if (query.getCommentTypes().contains(CaseCommentQuery.CommentType.TIME_ELAPSED)) {
-                    conditions.add("case_comment.time_elapsed is not null");
+                    conditions.add("case_comment.time_elapsed IS NOT NULL");
                 }
 
                 if (query.getCommentTypes().contains(CaseCommentQuery.CommentType.TEXT)) {
-                    conditions.add("case_comment.COMMENT_TEXT is not null");
+                    conditions.add("case_comment.COMMENT_TEXT IS NOT NULL");
                 }
 
                 condition
