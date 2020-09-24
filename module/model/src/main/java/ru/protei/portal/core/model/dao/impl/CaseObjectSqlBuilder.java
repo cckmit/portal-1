@@ -329,9 +329,21 @@ public class CaseObjectSqlBuilder {
             }
 
             if (CollectionUtils.isNotEmpty(query.getTimeElapsedTypeIds())) {
+                List<String> orConditions = new ArrayList<>();
+
+                condition.append(" and (");
+
+                if (query.getTimeElapsedTypeIds().remove(null)) {
+                    orConditions.add("case_comment.time_elapsed_type IS NULL and case_comment.time_elapsed IS NOT NULL");
+                }
+
+                if (isNotEmpty(query.getTimeElapsedTypeIds())) {
+                    orConditions.add("case_comment.time_elapsed_type IN " + HelperFunc.makeInArg(query.getTimeElapsedTypeIds(), false));
+                }
+
                 condition
-                        .append(" and case_comment.time_elapsed_type IS NOT NULL and case_comment.time_elapsed_type IN ")
-                        .append(HelperFunc.makeInArg(query.getTimeElapsedTypeIds(), false));
+                        .append(String.join(" or ", orConditions))
+                        .append(")");
             }
         });
     }

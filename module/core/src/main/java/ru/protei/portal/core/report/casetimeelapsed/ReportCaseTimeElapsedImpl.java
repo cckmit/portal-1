@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.toSet;
@@ -95,7 +96,11 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
             return new HashSet<>(Arrays.asList(En_TimeElapsedType.values()));
         }
 
-        return toSet(timeElapsedTypeIds, En_TimeElapsedType::findById);
+        return timeElapsedTypeIds
+                .stream()
+                .filter(Objects::nonNull)
+                .map(En_TimeElapsedType::findById)
+                .collect(Collectors.toSet());
     }
 
     private class Processor {

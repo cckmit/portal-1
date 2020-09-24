@@ -181,7 +181,14 @@ public class FilterColumn extends StaticColumn<ReportDto> {
 
         // time elapsed types
         if (isNotEmpty(caseQuery.getTimeElapsedTypeIds())) {
-            element.appendChild(makeArraySelectedElement(lang.timeElapsedType(), toList(caseQuery.getTimeElapsedTypeIds(), En_TimeElapsedType::findById)));
+            element.appendChild(makeArraySelectedElement(
+                    lang.timeElapsedType(),
+                    caseQuery.getTimeElapsedTypeIds()
+                            .stream()
+                            .filter(Objects::nonNull)
+                            .map(En_TimeElapsedType::findById)
+                            .collect(Collectors.toSet()))
+            );
         }
 
         // project directions
