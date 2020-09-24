@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
+import static ru.protei.portal.ui.project.client.util.AccessUtil.canAccessProject;
+import static ru.protei.portal.ui.project.client.util.AccessUtil.canAccessProjectPrivateElements;
 
 /**
  * Активность превью проекта
@@ -154,7 +156,18 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
             view.getLinksContainer().clear();
         }
 
-        fireEvent(new CaseCommentEvents.Show( view.getCommentsContainer(), value.getId(), En_CaseType.PROJECT, policyService.hasPrivilegeFor( En_Privilege.PROJECT_EDIT ), value.getCreatorId() ) );
+        CaseCommentEvents.Show showComments = new CaseCommentEvents.Show(
+            view.getCommentsContainer(),
+            value.getId(),
+            En_CaseType.PROJECT,
+            canAccessProject(policyService, En_Privilege.PROJECT_EDIT, value.getTeam()),
+            value.getCreatorId()
+        );
+        showComments.isPrivateVisible = canAccessProjectPrivateElements(policyService, En_Privilege.PROJECT_VIEW, value.getTeam());
+        showComments.isPrivateCase = false;
+        showComments.isNewCommentEnabled = canAccessProject(policyService, En_Privilege.PROJECT_EDIT, value.getTeam());
+        fireEvent(showComments);
+
         fireEvent(new ProjectEvents.ShowProjectDocuments(view.getDocumentsContainer(), project.getId(), false));
     }
 

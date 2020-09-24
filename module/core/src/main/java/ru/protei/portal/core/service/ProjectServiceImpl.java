@@ -40,6 +40,8 @@ import static java.util.stream.Collectors.toList;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
+import static ru.protei.portal.core.access.ProjectAccessUtil.canAccessProject;
+import static ru.protei.portal.core.access.ProjectAccessUtil.getProjectAccessType;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 
@@ -203,7 +205,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         jdbcManyRelationsHelper.fill(project, Project.Fields.PROJECT_PLANS);
 
-        if (!canAccessProject(token, En_Privilege.PROJECT_VIEW, project.getTeam())) {
+        if (!canAccessProject(policyService, token, En_Privilege.PROJECT_VIEW, project.getTeam())) {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
@@ -222,7 +224,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         jdbcManyRelationsHelper.fill(projectFromDb, "members");
         Project project = Project.fromCaseObject(projectFromDb);
-        if (!canAccessProject(token, En_Privilege.PROJECT_VIEW, project.getTeam())) {
+        if (!canAccessProject(policyService, token, En_Privilege.PROJECT_VIEW, project.getTeam())) {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
@@ -243,7 +245,7 @@ public class ProjectServiceImpl implements ProjectService {
         Project oldStateProject = Project.fromCaseObject(caseObject);
         jdbcManyRelationsHelper.fill(oldStateProject, Project.Fields.PROJECT_PLANS);
 
-        if (!canAccessProject(token, En_Privilege.PROJECT_EDIT, oldStateProject.getTeam())) {
+        if (!canAccessProject(policyService, token, En_Privilege.PROJECT_EDIT, oldStateProject.getTeam())) {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
@@ -315,7 +317,7 @@ public class ProjectServiceImpl implements ProjectService {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
-        if (!canAccessProject(token, En_Privilege.PROJECT_CREATE, project.getTeam())) {
+        if (!canAccessProject(policyService, token, En_Privilege.PROJECT_CREATE, project.getTeam())) {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
@@ -373,7 +375,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         jdbcManyRelationsHelper.fill(caseObject, "members");
         Project project = Project.fromCaseObject(caseObject);
-        if (!canAccessProject(token, En_Privilege.PROJECT_REMOVE, project.getTeam())) {
+        if (!canAccessProject(policyService, token, En_Privilege.PROJECT_REMOVE, project.getTeam())) {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
@@ -392,7 +394,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Result<SearchResult<Project>> projects(AuthToken token, ProjectQuery query) {
 
-        En_ProjectAccessType accessType = getAccessType(token, En_Privilege.PROJECT_VIEW);
+        En_ProjectAccessType accessType = getProjectAccessType(policyService, token, En_Privilege.PROJECT_VIEW);
         if (accessType == En_ProjectAccessType.SELF_PROJECTS) {
             query.setOnlyMineProjects(true);
         }
@@ -414,7 +416,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Result<List<EntityOption>> listOptionProjects(AuthToken token, ProjectQuery query) {
 
-        En_ProjectAccessType accessType = getAccessType(token, En_Privilege.PROJECT_VIEW);
+        En_ProjectAccessType accessType = getProjectAccessType(policyService, token, En_Privilege.PROJECT_VIEW);
         if (accessType == En_ProjectAccessType.SELF_PROJECTS) {
             query.setOnlyMineProjects(true);
         }
@@ -431,7 +433,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Result<List<ProjectInfo>> listInfoProjects(AuthToken token, ProjectQuery query) {
 
-        En_ProjectAccessType accessType = getAccessType(token, En_Privilege.PROJECT_VIEW);
+        En_ProjectAccessType accessType = getProjectAccessType(policyService, token, En_Privilege.PROJECT_VIEW);
         if (accessType == En_ProjectAccessType.SELF_PROJECTS) {
             query.setOnlyMineProjects(true);
         }
@@ -445,6 +447,20 @@ public class ProjectServiceImpl implements ProjectService {
                 .map(ProjectInfo::fromCaseObject)
                 .collect(toList());
         return ok(result);
+    }
+
+    @Override
+    public Result<List<PersonProjectMemberView>> getProjectTeam(AuthToken token, Long projectId) {
+        if (projectId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+        CaseObject caseObject = new CaseObject(projectId);
+        caseObject.setMembers(caseMemberDAO.listByCaseId(projectId));
+        List<PersonProjectMemberView> team = Project.fromCaseObject(caseObject).getTeam();
+        if (!canAccessProject(policyService, token, En_Privilege.PROJECT_VIEW, team)) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+        return ok(team);
     }
 
     @Override
@@ -651,34 +667,5 @@ public class ProjectServiceImpl implements ProjectService {
             locationQuery.setSortDir(En_SortDir.ASC);
         }
         return locationQuery;
-    }
-
-
-    private boolean canAccessProject(AuthToken token, En_Privilege privilege, List<PersonProjectMemberView> team) {
-        En_ProjectAccessType accessType = getAccessType(token, privilege);
-        switch (accessType) {
-            case ALL_PROJECTS: return true;
-            case NONE: return false;
-            case SELF_PROJECTS: {
-                boolean isTeamMember = stream(team)
-                        .map(PersonShortView::getId)
-                        .anyMatch(id -> Objects.equals(id, token.getPersonId()));
-                return isTeamMember;
-            }
-        }
-        return false;
-    }
-
-    private En_ProjectAccessType getAccessType(AuthToken token, En_Privilege privilege) {
-        Set<UserRole> roles = token.getRoles();
-        boolean hasSystemScope = policyService.hasScopeForPrivilege(roles, privilege, En_Scope.SYSTEM);
-        if (hasSystemScope) {
-            return En_ProjectAccessType.ALL_PROJECTS;
-        }
-        boolean hasUserScope = policyService.hasScopeForPrivilege(roles, privilege, En_Scope.USER);
-        if (hasUserScope) {
-            return En_ProjectAccessType.SELF_PROJECTS;
-        }
-        return En_ProjectAccessType.NONE;
     }
 }

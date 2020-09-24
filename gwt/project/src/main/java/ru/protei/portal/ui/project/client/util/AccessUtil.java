@@ -14,6 +14,17 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 public class AccessUtil {
 
+    public static boolean canAccessProjectPrivateElements(PolicyService policyService, En_Privilege privilege, List<PersonProjectMemberView> team) {
+        En_ProjectAccessType accessType = getAccessType(policyService, privilege);
+        if (accessType == En_ProjectAccessType.NONE) {
+            return false;
+        }
+        boolean isTeamMember = stream(team)
+                .map(PersonShortView::getId)
+                .anyMatch(id -> Objects.equals(id, policyService.getProfileId()));
+        return isTeamMember;
+    }
+
     public static boolean canAccessProject(PolicyService policyService, En_Privilege privilege, List<PersonProjectMemberView> team) {
         En_ProjectAccessType accessType = getAccessType(policyService, privilege);
         switch (accessType) {

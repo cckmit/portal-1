@@ -91,5 +91,8 @@ public interface ProjectService {
     @Async(BACKGROUND_TASKS)
     void onPauseTimeNotification( ProjectPauseTimeHasComeEvent event );
 
+    @Privileged(En_Privilege.PROJECT_VIEW)
+    Result<List<PersonProjectMemberView>> getProjectTeam(AuthToken token, Long projectId);
+
     Result<PersonProjectMemberView> getProjectLeader(AuthToken authToken, Long projectId);
 }

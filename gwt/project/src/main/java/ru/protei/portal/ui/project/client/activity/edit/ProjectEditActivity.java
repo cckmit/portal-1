@@ -33,6 +33,8 @@ import java.util.stream.Collectors;
 import static ru.protei.portal.core.model.dict.En_RegionState.PAUSED;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
+import static ru.protei.portal.ui.project.client.util.AccessUtil.canAccessProject;
+import static ru.protei.portal.ui.project.client.util.AccessUtil.canAccessProjectPrivateElements;
 
 /**
  * Активность карточки создания и редактирования проектов
@@ -182,8 +184,18 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
         fillCaseLinks(project.getId());
 
-        if(!isNew( project )) {
-            fireEvent( new CaseCommentEvents.Show( view.getCommentsContainer(), project.getId(), En_CaseType.PROJECT, hasPrivileges( project.getId() ), project.getCreatorId() ) );
+        if (!isNew(project)) {
+            CaseCommentEvents.Show show = new CaseCommentEvents.Show(
+                view.getCommentsContainer(),
+                project.getId(),
+                En_CaseType.PROJECT,
+                canAccessProject(policyService, En_Privilege.PROJECT_EDIT, project.getTeam()),
+                project.getCreatorId()
+            );
+            show.isPrivateVisible = canAccessProjectPrivateElements(policyService, En_Privilege.PROJECT_VIEW, project.getTeam());
+            show.isPrivateCase = false;
+            show.isNewCommentEnabled = canAccessProject(policyService, En_Privilege.PROJECT_EDIT, project.getTeam());
+            fireEvent(show);
         }
 
         fireEvent(new ProjectEvents.ShowProjectDocuments(view.getDocumentsContainer(), this.project.getId()));
