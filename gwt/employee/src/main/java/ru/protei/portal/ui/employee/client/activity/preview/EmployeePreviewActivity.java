@@ -6,7 +6,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.WorkerEntry;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
@@ -21,9 +21,12 @@ import ru.protei.portal.ui.common.client.events.AbsenceEvents;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.EmployeeEvents;
 import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
 import ru.protei.portal.ui.common.client.util.AvatarUtils;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
+import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemView;
@@ -87,7 +90,17 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
     }
 
     private void fillView(Long employeeId) {
-        employeeService.getEmployeeWithChangedHiddenCompanyNames(employeeId, new FluentCallback<EmployeeShortView>().withSuccess(this::fillView));
+        employeeService.getEmployeeWithChangedHiddenCompanyNames(employeeId, new FluentCallback<EmployeeShortView>()
+                .withError(throwable -> {
+                    if (En_ResultStatus.NOT_FOUND.equals(getStatus(throwable))) {
+                        fireEvent(new ErrorPageEvents.ShowNotFound(initDetails.parent, lang.errEmployeeNotFound()));
+                        return;
+                    }
+
+                    defaultErrorHandler.accept(throwable);
+                })
+                .withSuccess(this::fillView)
+        );
     }
 
     private void fillView(EmployeeShortView employee) {
@@ -188,6 +201,14 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
     }
 
 
+    private En_ResultStatus getStatus(Throwable throwable) {
+        if (!(throwable instanceof RequestFailedException)) {
+            return null;
+        }
+
+        return ((RequestFailedException) throwable).status;
+    }
+
     @Inject
     AbstractEmployeePreviewView view;
 
@@ -199,6 +220,12 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
 
     @Inject
     PolicyService policyService;
+
+    @Inject
+    Lang lang;
+
+    @Inject
+    DefaultErrorHandler defaultErrorHandler;
 
     private EmployeeShortView employee;
 
