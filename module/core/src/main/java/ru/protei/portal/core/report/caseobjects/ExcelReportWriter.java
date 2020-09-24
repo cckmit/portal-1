@@ -137,8 +137,8 @@ public class ExcelReportWriter implements
                     .sum();
         }
 
-        Long solutionDurationFirst = isNotRestricted ? null : getDurationBetween(created, customerTest, workaround, done);
-        Long solutionDurationFull = isNotRestricted ? null : getDurationBetween(created, done, verified);
+        Long solutionDurationFirst = isNotRestricted ? getDurationBetween(created, customerTest, workaround, done) : null;
+        Long solutionDurationFull = isNotRestricted ? getDurationBetween(created, done, verified) : null;
 
         List<Object> values = new ArrayList<>();
         values.add("CRM-" + issue.getCaseNumber());
@@ -162,8 +162,8 @@ public class ExcelReportWriter implements
         values.add(verified != null ? verified : "");
         values.add(important != null ? important : "");
         values.add(critical != null ? critical : "");
-        if (isNotRestricted) values.add(toExcelTimeFormat(solutionDurationFirst));
-        if (isNotRestricted) values.add(toExcelTimeFormat(solutionDurationFull));
+        if (isNotRestricted) values.add(solutionDurationFirst == null ? "" : toExcelTimeFormat(solutionDurationFirst));
+        if (isNotRestricted) values.add(solutionDurationFull == null ? "" : toExcelTimeFormat(solutionDurationFull));
         if (isNotRestricted) values.add(issue.getTimeElapsed() != null && issue.getTimeElapsed() > 0 ? toExcelTimeFormat(issue.getTimeElapsed()) : "");
         if (isNotRestricted) values.add(toExcelTimeFormat(timeElapsedInSelectedDuration));
 
