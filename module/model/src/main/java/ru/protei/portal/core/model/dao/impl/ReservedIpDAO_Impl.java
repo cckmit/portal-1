@@ -16,7 +16,9 @@ import java.util.Map;
 public class ReservedIpDAO_Impl extends PortalBaseJdbcDAO<ReservedIp> implements ReservedIpDAO {
 
     @Override
-    public ReservedIp getReservedIpByAddress(String address) { return getByCondition("ip_address=?", address); }
+    public List<ReservedIp> getReservedIpByAddress(String address) {
+        return getListByCondition("ip_address=?", address);
+    }
 
     @Override
     public List<ReservedIp> getReservedIpsBySubnetId(Long subnetId) { return getListByCondition("subnet_id=?", subnetId); }

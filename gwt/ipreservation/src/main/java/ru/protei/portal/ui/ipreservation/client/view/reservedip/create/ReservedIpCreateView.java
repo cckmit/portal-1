@@ -176,6 +176,11 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
         }
     }
 
+    @UiHandler("useRange")
+    public void onRangeChanged(ValueChangeEvent<DateIntervalWithType> event) {
+        ipTimer.schedule(200);
+    }
+
     private void fillUseRangeButtons() {
         En_DateIntervalType.reservedIpTypes().forEach(type -> useRange.addBtn(type,"btn btn-default col-md-4"));
         useRange.getValue().setIntervalType(En_DateIntervalType.MONTH);

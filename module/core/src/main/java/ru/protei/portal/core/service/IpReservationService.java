@@ -4,12 +4,14 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
+import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.ReservedIpQuery;
 import ru.protei.portal.core.model.view.SubnetOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +22,7 @@ public interface IpReservationService {
 
     Result<Boolean> isSubnetAddressExists(String address, Long excludeId);
 
-    Result<Boolean> isReservedIpAddressExists(String address, Long excludeId);
+    Result<Boolean> isReservedIpAddressExists(String address, Date reserveDate, Date releaseDate, En_DateIntervalType dateIntervalType, Long excludeId);
 
     Result<Long> getFreeIpsCountBySubnets(AuthToken token, List<Long> subnetIds);
 
