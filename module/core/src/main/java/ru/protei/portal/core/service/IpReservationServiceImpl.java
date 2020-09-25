@@ -677,7 +677,7 @@ public class IpReservationServiceImpl implements IpReservationService {
     }
 
     private boolean checkReservedIpExists(String address, Date reserveDate, Date releaseDate, final Long excludeId) {
-        List<ReservedIp> reservedIps = reservedIpDAO.getReservedIpByAddress(address)
+        List<ReservedIp> reservedIps = reservedIpDAO.getReservedIpsByAddress(address)
                 .stream()
                 .filter(reservedIp -> !reservedIp.getId().equals(excludeId))
                 .collect(Collectors.toList());

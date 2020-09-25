@@ -10,7 +10,7 @@ import java.util.Map;
 
 public interface ReservedIpDAO extends PortalBaseDAO<ReservedIp> {
 
-    List<ReservedIp> getReservedIpByAddress(String address);
+    List<ReservedIp> getReservedIpsByAddress(String address);
 
     List<ReservedIp> getReservedIpsBySubnetId(Long subnetId);
 
