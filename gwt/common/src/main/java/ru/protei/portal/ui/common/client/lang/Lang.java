@@ -3105,4 +3105,6 @@ public interface Lang extends Messages, ContactItemLang {
     String contractDatesWarningCostOverflow();
 
     String errEmployeeNotFound();
+
+    String reservedIpExistedIpInRange();
 }

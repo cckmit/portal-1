@@ -113,15 +113,23 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
 
     @Override
     public void onChangeIpAddress() {
+        view.setIpAddressStatus(NameStatus.UNDEFINED);
 
         if (!view.ipAddressValidator().isValid()) {
             view.setIpAddressStatus(NameStatus.NONE);
             return;
         }
 
+        Date dateFrom = view.useRange().getValue().getIntervalType() != En_DateIntervalType.FIXED ?
+                null : view.useRange().getValue().getInterval().from;
+
+        Date dateTo = view.useRange().getValue().getIntervalType() != En_DateIntervalType.FIXED ?
+                null : view.useRange().getValue().getInterval().to;
+
         ipReservationService.isReservedIpAddressExists(
                 view.ipAddress().getValue().trim(),
-                null,
+                dateFrom, dateTo,
+                view.useRange().getValue().getIntervalType(),
                 new RequestCallback<Boolean>() {
                     @Override
                     public void onError(Throwable throwable) { }

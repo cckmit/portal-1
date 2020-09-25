@@ -5,10 +5,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.ReservedIpRequest;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.ReservedIp;
+import ru.protei.portal.core.model.ent.ReservedIpRequest;
 import ru.protei.portal.core.model.ent.Subnet;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.ReservedIpQuery;
@@ -21,9 +22,8 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Реализация сервиса управления резервированием IP-адресов
@@ -205,11 +205,16 @@ public class IpReservationControllerImpl implements IpReservationController {
     }
 
     @Override
-    public Boolean isReservedIpAddressExists( String address, Long excludeId ) throws RequestFailedException {
+    public Boolean isReservedIpAddressExists(String address, Date reserveDate, Date releaseDate, En_DateIntervalType dateIntervalType ) throws RequestFailedException {
+        return isReservedIpAddressExists(address, reserveDate, releaseDate, dateIntervalType, null);
+    }
 
-        log.info( "isReservedIpAddressExists(): address={} | excludeId={}", address, excludeId );
+    @Override
+    public Boolean isReservedIpAddressExists(String address, Date reserveDate, Date releaseDate, En_DateIntervalType dateIntervalType, Long excludeId) throws RequestFailedException {
 
-        Result<Boolean> response = ipReservationService.isReservedIpAddressExists( address, excludeId );
+        log.info("isReservedIpAddressExists(): address={} | reserveDate={} | reserveDate={} | dateIntervalType={} | excludeId={}", address, reserveDate, releaseDate, dateIntervalType, excludeId);
+
+        Result<Boolean> response = ipReservationService.isReservedIpAddressExists( address, reserveDate, releaseDate, dateIntervalType, excludeId );
 
         log.info( "isReservedIpAddressExists(): response.isOk()={} | response.getData() = {}", response.isOk(), response.getData() );
 
