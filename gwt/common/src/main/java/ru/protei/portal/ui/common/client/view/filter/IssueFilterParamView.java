@@ -335,7 +335,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 query.setCompanyIds(getCompaniesIdList(companies.getValue()));
                 query.setProductIds(getProductsIdList(products.getValue()));
                 query.setCommentAuthorIds(getManagersIdList(commentAuthors.getValue()));
-                query.setTimeElapsedTypeIds(getTimeElapsedTypeIds(timeElapsedTypes.getValue()));
+                query.setTimeElapsedTypeIds(toList(timeElapsedTypes.getValue(), en_timeElapsedType -> en_timeElapsedType.getId()));
                 query.setCreatedRange(toDateRange(dateCreatedRange.getValue()));
                 break;
             }
@@ -346,6 +346,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 query.setImportances(nullIfEmpty(importance.getValue()));
                 query.setStateIds(nullIfEmpty(toList(state.getValue(), state -> state.getId())));
                 query.setCreatedRange(toDateRange(dateCreatedRange.getValue()));
+                break;
+            case PROJECT:
                 break;
         }
         return query;
@@ -740,20 +742,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 .stream()
                 .map( PersonShortView::getId )
                 .collect( Collectors.toList() );
-    }
-
-    private List<Integer> getTimeElapsedTypeIds(Set<En_TimeElapsedType> timeElapsedTypes) {
-        if (isEmpty(timeElapsedTypes)) {
-            return new ArrayList<>();
-        }
-
-        List<Integer> result = toList(timeElapsedTypes, En_TimeElapsedType::getId);
-
-        if (timeElapsedTypes.contains(En_TimeElapsedType.NONE)) {
-            result.add(null);
-        }
-
-        return result;
     }
 
     @Inject
