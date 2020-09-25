@@ -36,6 +36,7 @@ import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemVi
 import ru.protei.portal.ui.common.client.widget.timefield.WorkTimeFormatter;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.PasteInfo;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -194,7 +195,7 @@ public abstract class CaseCommentListActivity
 
         if(caseComment == comment) {
             //deleting while editing
-            fireEvent(new NotifyEvents.Show(lang.errEditIssueComment(), NotifyEvents.NotifyType.INFO));
+            fireEvent(new NotifyEvents.Show(lang.errEditIssueComment(), NotifyEvents.NotifyType.ERROR));
             return;
         }
         if ( caseComment == null || !isEnableEdit( caseComment, profile.getId() ) ) {
@@ -335,7 +336,7 @@ public abstract class CaseCommentListActivity
     public void onRemoveAttachment(CaseCommentItemView itemView, Attachment attachment) {
         if(comment != null && comment == itemViewToModel.get( itemView )) {
             //deleting while editing
-            fireEvent(new NotifyEvents.Show(lang.errEditIssueComment(), NotifyEvents.NotifyType.INFO));
+            fireEvent(new NotifyEvents.Show(lang.errEditIssueComment(), NotifyEvents.NotifyType.ERROR));
             return;
         }
 
@@ -573,7 +574,7 @@ public abstract class CaseCommentListActivity
         caseCommentController.saveCaseComment(caseType, comment, new FluentCallback<CaseComment>()
                 .withError( t -> {
                     unlockSave();
-                    fireEvent( lang.errEditIssueComment() );
+                    defaultErrorHandler.accept(t);
                 } )
                 .withSuccess( result -> {
                     unlockSave();
@@ -839,6 +840,8 @@ public abstract class CaseCommentListActivity
     private Map<AbstractCaseCommentItemView, CaseComment> itemViewToModel = new HashMap<>();
     private Collection<Attachment> tempAttachments = new ArrayList<>();
 
+    @Inject
+    private DefaultErrorHandler defaultErrorHandler;
     private final static int PREVIEW_CHANGE_DELAY_MS = 200;
 
     private final String STORAGE_CASE_COMMENT_PREFIX = "CaseСomment_";

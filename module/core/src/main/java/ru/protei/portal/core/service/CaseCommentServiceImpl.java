@@ -240,8 +240,12 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             throw new ResultStatusException(En_ResultStatus.PROHIBITED_PRIVATE_COMMENT);
         }
 
-        if (!Objects.equals(token.getPersonId(), comment.getAuthorId()) || isCaseCommentReadOnly(comment.getCreated())) {
+        if (!Objects.equals(token.getPersonId(), comment.getAuthorId())) {
             throw new ResultStatusException(En_ResultStatus.NOT_AVAILABLE);
+        }
+
+        if (isCaseCommentReadOnly(comment.getCreated())) {
+            throw new ResultStatusException(En_ResultStatus.NOT_ALLOWED_EDIT_COMMENT_BY_TIME);
         }
 
         CaseComment prevComment = caseCommentDAO.get(comment.getId());

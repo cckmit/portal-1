@@ -720,6 +720,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errEditIssueComment();
 
+    String errEditIssueCommentByTime();
+
     String errEditTimeElapsedType();
 
     String errEditContactLogin();
