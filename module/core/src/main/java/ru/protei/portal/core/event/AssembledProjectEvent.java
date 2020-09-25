@@ -126,6 +126,14 @@ public class AssembledProjectEvent extends ApplicationEvent implements HasCaseCo
         return isEditEvent() && !Objects.equals(oldProjectState.getTechnicalSupportValidity(), newProjectState.getTechnicalSupportValidity());
     }
 
+    public boolean isWorkCompletionDateChanged() {
+        return isEditEvent() && !Objects.equals(oldProjectState.getWorkCompletionDate(), newProjectState.getWorkCompletionDate());
+    }
+
+    public boolean isPurchaseDateChanged() {
+        return isEditEvent() && !Objects.equals(oldProjectState.getPauseDate(), newProjectState.getPurchaseDate());
+    }
+
     public boolean isTeamChanged() {
         if (!isEditEvent()) {
             return false;

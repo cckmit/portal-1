@@ -1112,6 +1112,8 @@ public class MailNotificationProcessor {
                 || event.isProductDirectionChanged()
                 || event.isProductChanged()
                 || event.isSupportValidityChanged()
+                || event.isWorkCompletionDateChanged()
+                || event.isPurchaseDateChanged()
                 || event.isTeamChanged()
                 || event.isSlaChanged()
                 || event.isCommentsChanged()

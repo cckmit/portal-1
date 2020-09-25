@@ -524,6 +524,14 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("oldSupportValidity", getNullOrElse(oldProjectState, Project::getTechnicalSupportValidity));
         templateModel.put("newSupportValidity", newProjectState.getTechnicalSupportValidity());
 
+        templateModel.put("workCompletionDateChanged", event.isWorkCompletionDateChanged());
+        templateModel.put("oldWorkCompletionDate", getNullOrElse(oldProjectState, Project::getWorkCompletionDate));
+        templateModel.put("newWorkCompletionDate", newProjectState.getWorkCompletionDate());
+
+        templateModel.put("purchaseDateChanged", event.isPurchaseDateChanged());
+        templateModel.put("oldPurchaseDate", getNullOrElse(oldProjectState, Project::getPurchaseDate));
+        templateModel.put("newPurchaseDate", newProjectState.getPurchaseDate());
+
         templateModel.put("team", event.getTeamDiffs());
         templateModel.put("sla", event.getSlaDiffs());
 
