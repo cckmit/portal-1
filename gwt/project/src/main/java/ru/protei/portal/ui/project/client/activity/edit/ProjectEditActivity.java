@@ -184,6 +184,10 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
         view.saveVisibility().setVisible( hasPrivileges(project.getId()) );
         view.saveEnabled().setEnabled(true);
+
+        view.setTechnicalSupportValidityValid(true);
+        view.setWorkCompletionDateValid(true);
+        view.setPurchaseDateValid(true);
     }
 
     private Project fillProject(Project project) {

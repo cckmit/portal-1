@@ -171,6 +171,21 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     }
 
     @Override
+    public void setTechnicalSupportValidityValid(boolean valid) {
+        technicalSupportValidity.markInputValid(valid);
+    }
+
+    @Override
+    public void setWorkCompletionDateValid(boolean valid) {
+        workCompletionDate.markInputValid(valid);
+    }
+
+    @Override
+    public void setPurchaseDateValid(boolean valid) {
+        purchaseDate.markInputValid(valid);
+    }
+
+    @Override
     public HasValidable slaValidator() {
         return slaInput;
     }
