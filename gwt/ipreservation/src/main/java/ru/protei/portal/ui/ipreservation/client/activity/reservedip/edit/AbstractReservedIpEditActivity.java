@@ -6,4 +6,5 @@ package ru.protei.portal.ui.ipreservation.client.activity.reservedip.edit;
 public interface AbstractReservedIpEditActivity{
     void onSaveClicked();
     void onCancelClicked();
+    void onRangeChanged();
 }

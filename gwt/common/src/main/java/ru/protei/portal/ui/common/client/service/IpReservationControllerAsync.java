@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.ent.ReservedIpRequest;
 import ru.protei.portal.core.model.ent.ReservedIp;
 import ru.protei.portal.core.model.ent.Subnet;
@@ -8,6 +9,7 @@ import ru.protei.portal.core.model.query.ReservedIpQuery;
 import ru.protei.portal.core.model.view.SubnetOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -41,5 +43,7 @@ public interface IpReservationControllerAsync {
 
     void removeReservedIp(ReservedIp reservedIp, AsyncCallback<Long> async);
 
-    void isReservedIpAddressExists(String address, Long id, AsyncCallback<Boolean> async);
+    void isReservedIpAddressExists(String address, Date reserveDate, Date releaseDate, En_DateIntervalType dateIntervalType, AsyncCallback<Boolean> async);
+
+    void isReservedIpAddressExists(String address, Date reserveDate, Date releaseDate, En_DateIntervalType dateIntervalType, Long excludeId, AsyncCallback<Boolean> async);
 }
