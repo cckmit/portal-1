@@ -682,7 +682,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
-        if (!getCompanyAndChildIds(person.getCompanyId()).contains(caseObject.getInitiatorCompanyId())) {
+        if (isCustomer && !getCompanyAndChildIds(person.getCompanyId()).contains(caseObject.getInitiatorCompanyId())) {
             log.warn("addCommentsReceivedByMail(): case is not owned customer company, forbidden for customer, company = {}", person.getCompanyId());
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
