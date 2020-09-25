@@ -665,7 +665,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
         jdbcManyRelationsHelper.fill( userLogins, "roles" );
         if (stream(userLogins)
-                .noneMatch(userlogin -> policyService.hasGrantAccessFor(userlogin.getRoles(), ISSUE_EDIT))) {
+                .noneMatch(userLogin -> policyService.hasPrivilegeFor(ISSUE_EDIT, userLogin.getRoles()))) {
             log.warn("addCommentsReceivedByMail(): no privilege for create comment ={}", receivedMail.getSenderEmail());
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
@@ -679,6 +679,11 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         boolean isCustomer = !companyDAO.isEmployeeInHomeCompanies(person.getCompanyId());
         if (isCustomer && caseObject.isPrivateCase()) {
             log.warn("addCommentsReceivedByMail(): private case, forbidden for customer company ={}", person.getCompanyId());
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
+        if (!getCompanyAndChildIds(person.getCompanyId()).contains(caseObject.getInitiatorCompanyId())) {
+            log.warn("addCommentsReceivedByMail(): case is not owned customer company, forbidden for customer, company = {}", person.getCompanyId());
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
@@ -703,6 +708,13 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         caseComment.setPrivateComment(caseObject.isPrivateCase());
 
         return caseComment;
+    }
+
+    private Collection<Long> getCompanyAndChildIds(Long companyId) {
+        Company company = new Company();
+        company.setId(companyId);
+        jdbcManyRelationsHelper.fill(company, "childCompanies");
+        return company.getCompanyAndChildIds();
     }
 
     private String cleanHTMLContent(String htmlContent) {
