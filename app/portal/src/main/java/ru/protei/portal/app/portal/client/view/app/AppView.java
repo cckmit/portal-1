@@ -316,8 +316,8 @@ public class AppView extends Composite
 
     private native void removeExternalSections(Element menu) /*-{
         var sections = menu.getElementsByClassName("external");
-        for (i = 0; i < sections.length; i++) {
-            sections[i].remove();
+        while(sections.length > 0) {
+            sections[0].remove();
         }
     }-*/;
 
