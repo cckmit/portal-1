@@ -81,6 +81,7 @@ public class En_ResultStatusLang {
             case CONTRACTOR_NOT_REMOVED_HAS_CONTRACTS: return lang.errContractorNotRemovedHasContracts();
             case CONTRACT_ORGANIZATION_SHOULD_BE_DIFFERENT_FROM_PARENT: return lang.errContractOrganizationShouldBeDifferentFromParent();
             case NOT_ALLOWED_EDIT_COMMENT_BY_TIME: return lang.errEditIssueCommentByTime();
+            case NOT_ALLOWED_REMOVE_COMMENT_BY_TIME: return lang.errRemoveIssueCommentByTime();
             default: return lang.errUnknownResult();
         }
     }

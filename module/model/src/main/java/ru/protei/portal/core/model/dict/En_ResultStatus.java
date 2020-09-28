@@ -276,6 +276,11 @@ public enum En_ResultStatus {
     /**
      * Запрещено редактирование комментария по истечению времени
      */
-    NOT_ALLOWED_EDIT_COMMENT_BY_TIME
+    NOT_ALLOWED_EDIT_COMMENT_BY_TIME,
+
+    /**
+     * Запрещено удаление комментария по истечению времени
+     */
+    NOT_ALLOWED_REMOVE_COMMENT_BY_TIME
     ;
 }

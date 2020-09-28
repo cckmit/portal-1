@@ -22,6 +22,10 @@ public class CaseCommentUtils {
             return false;
         }
 
+        return true;
+    }
+
+    public static boolean isEnableEditByTime( CaseComment value ) {
         Date now = new Date();
         return now.getTime() - value.getCreated().getTime() <= EDIT_PERIOD;
     }

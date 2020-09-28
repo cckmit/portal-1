@@ -244,7 +244,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             throw new ResultStatusException(En_ResultStatus.NOT_AVAILABLE);
         }
 
-        if (isCaseCommentReadOnly(comment.getCreated())) {
+        if (isCaseCommentReadOnlyByTime(comment.getCreated())) {
             throw new ResultStatusException(En_ResultStatus.NOT_ALLOWED_EDIT_COMMENT_BY_TIME);
         }
 
@@ -306,8 +306,12 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             checkAccessStatus = checkAccessForCaseObjectById(token, caseType, removedComment.getCaseId());
         }
         if (checkAccessStatus == null) {
-            if (!Objects.equals(token.getPersonId(), removedComment.getAuthorId()) || isCaseCommentReadOnly(removedComment.getCreated())) {
+            if (!Objects.equals(token.getPersonId(), removedComment.getAuthorId())) {
                 checkAccessStatus = En_ResultStatus.NOT_REMOVED;
+            }
+
+            if (isCaseCommentReadOnlyByTime(removedComment.getCreated())) {
+                throw new ResultStatusException(En_ResultStatus.NOT_ALLOWED_REMOVE_COMMENT_BY_TIME);
             }
         }
         if (checkAccessStatus != null) {
@@ -782,7 +786,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         return null;
     }
 
-    private boolean isCaseCommentReadOnly(Date date) {
+    private boolean isCaseCommentReadOnlyByTime(Date date) {
         Calendar c = Calendar.getInstance();
         long current = c.getTimeInMillis();
         c.setTime(date);

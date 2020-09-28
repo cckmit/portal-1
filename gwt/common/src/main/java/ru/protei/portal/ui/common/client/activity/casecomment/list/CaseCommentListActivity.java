@@ -203,6 +203,11 @@ public abstract class CaseCommentListActivity
             return;
         }
 
+        if ( caseComment == null || !isEnableEditByTime( caseComment ) ) {
+            fireEvent( new NotifyEvents.Show( lang.errRemoveIssueCommentByTime(), NotifyEvents.NotifyType.ERROR ) );
+            return;
+        }
+
         lastCommentView = null;
 
         if (caseComment.getCaseStateId() != null) {
@@ -215,7 +220,7 @@ public abstract class CaseCommentListActivity
 
         caseCommentController.removeCaseComment(caseType, caseComment, new FluentCallback<Void>()
                 .withError(throwable -> {
-                    fireEvent(new NotifyEvents.Show(lang.errRemoveIssueComment(), NotifyEvents.NotifyType.ERROR));
+                    defaultErrorHandler.accept(throwable);
                 })
                 .withSuccess(v -> {
                     Collection<Attachment> commentAttachments = itemView.attachmentContainer().getAll();
@@ -235,6 +240,11 @@ public abstract class CaseCommentListActivity
 
         if ( caseComment == null || !isEnableEdit( caseComment, profile.getId() ) ) {
             fireEvent( new NotifyEvents.Show( lang.errEditIssueCommentNotAllowed(), NotifyEvents.NotifyType.ERROR ) );
+            return;
+        }
+
+        if ( caseComment == null || !isEnableEditByTime( caseComment ) ) {
+            fireEvent( new NotifyEvents.Show( lang.errEditIssueCommentByTime(), NotifyEvents.NotifyType.ERROR ) );
             return;
         }
 
@@ -472,7 +482,7 @@ public abstract class CaseCommentListActivity
 
         itemView.setTimeElapsedTypeChangeHandler(event -> updateTimeElapsedType(event.getValue(), value, itemView));
 
-        itemView.enabledEdit( isModifyEnabled && isEnableEdit( value, profile.getId() ) );
+        itemView.enabledEdit(isModifyEnabled && isEnableEdit( value, profile.getId()) && isEnableEditByTime(value));
         itemView.enableReply(isModifyEnabled);
         itemView.enableUpdateTimeElapsedType(Objects.equals(value.getAuthorId(), profile.getId()));
 
