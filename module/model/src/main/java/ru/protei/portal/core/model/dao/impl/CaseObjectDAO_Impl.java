@@ -155,6 +155,18 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
         return jdbcTemplate.queryForList(query.buildSql(), query.args(), Long.class);
     }
 
+    @Override
+    public boolean isJiraDuplicateByClmId(String clmId) {
+        Query subQuery = query().select("JSON_EXTRACT(EXT_APP_DATA, '$.clmId') clmIds")
+                .from("case_object")
+                .where("EXT_APP").equal("jira")
+            .asQuery();
+
+        String query = "SELECT true WHERE '" + clmId + "' IN (" + subQuery.buildSql() + ");";
+
+        return !jdbcTemplate.queryForList(query, subQuery.args()).isEmpty();
+    }
+
     @SqlConditionBuilder
     public SqlCondition caseQueryCondition (CaseQuery query) {
         return caseObjectSqlBuilder.caseCommonQuery(query);

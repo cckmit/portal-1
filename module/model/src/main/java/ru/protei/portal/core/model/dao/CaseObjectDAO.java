@@ -44,4 +44,6 @@ public interface CaseObjectDAO extends PortalBaseDAO<CaseObject> {
     String getExternalAppName( Long caseId );
 
     List<Long> getCaseIdToAutoOpen();
+
+    boolean isJiraDuplicateByClmId(String clmId);
 }
