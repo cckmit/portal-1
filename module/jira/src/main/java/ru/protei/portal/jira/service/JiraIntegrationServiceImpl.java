@@ -500,7 +500,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
     private String getNewName(Issue issue, Long caseNumber,  IssueField issueCLM){
         logger.debug("update case name, issue={}, case={}", issue.getKey(), caseNumber);
-        return (issueCLM == null ? "" : issueCLM + " | ") + issue.getSummary();
+        return (issueCLM == null ? "" : issueCLM.getValue() + " | ") + issue.getSummary();
     }
 
     private IssueField getClmId(Issue issue) {

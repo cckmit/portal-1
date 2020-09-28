@@ -81,6 +81,7 @@ public class JiraIntegrationServiceTest {
     private final String FILE_PATH_EMPTY_STATUS_JSON = "issue.empty.status.json";
     private final String FILE_PATH_COMPANY_GROUP_JSON = "issue.companygroup.json";
     private final String FILE_PATH_DUPLICATE_CLM_ID_JSON = "issue.duplicate.clmid.json";
+    private final String FILE_PATH_NO_CLM_ID_JSON = "issue.no.clmid.json";
 
     private String jsonString;
     private String updatedJsonString;
@@ -88,6 +89,7 @@ public class JiraIntegrationServiceTest {
     private String unknownStatusJsonString;
     private String companyGroupJsonString;
     private String duplicateClmIdJsonString;
+    private String noClmIdJsonString;
 
     private static AtomicInteger uniqueIndex = new AtomicInteger( 0 );
     private static final String JIRA_ID = "PRT-82";
@@ -110,6 +112,8 @@ public class JiraIntegrationServiceTest {
         companyGroupJsonString = new String(encoded, StandardCharsets.UTF_8);
         encoded = Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(FILE_PATH_DUPLICATE_CLM_ID_JSON).getFile()));
         duplicateClmIdJsonString = new String(encoded, StandardCharsets.UTF_8);
+        encoded = Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(FILE_PATH_NO_CLM_ID_JSON).getFile()));
+        noClmIdJsonString = new String(encoded, StandardCharsets.UTF_8);
     }
 
     @Test
@@ -210,6 +214,21 @@ public class JiraIntegrationServiceTest {
         AssembledCaseEvent assembledCaseEventDublicateIssue = CaseEventDuplicateIssue.get();
 
         Assert.assertNull("Issue created", assembledCaseEventDublicateIssue);
+    }
+
+    @Test
+    public void IssueNoClmId() throws Exception {
+        Issue issue = makeIssue(noClmIdJsonString);
+        Assert.assertNotNull("Error parsing json for create", issue);
+
+        Company company = makeCompany();
+        Person person = makePerson(company);
+
+        JiraEndpoint endpoint = jiraEndpointDAO.getByProjectId(company.getId(), issue.getProject().getId());
+        endpoint.setPersonId(person.getId());
+
+        CompletableFuture<AssembledCaseEvent> caseEvent = jiraIntegrationService.create(endpoint, new JiraHookEventData(JiraHookEventType.ISSUE_CREATED, issue));
+        Assert.assertNotNull("Issue not created", caseEvent.get().getCaseObject().getId());
     }
 
     private String replaceJiraId(String json, String jiraId) {
