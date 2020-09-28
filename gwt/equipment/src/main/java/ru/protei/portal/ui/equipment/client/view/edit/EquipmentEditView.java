@@ -15,6 +15,8 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.model.marker.HasProcessable;
+import ru.protei.portal.ui.common.client.widget.button.ButtonProcessable;
 import ru.protei.portal.ui.common.client.widget.decimalnumber.multiple.MultipleDecimalNumberInput;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentButtonSelector;
@@ -163,6 +165,11 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
         nameSpecification.setValidationFunction(validationFunction);
     }
 
+    @Override
+    public HasProcessable saveProcessable() {
+        return saveButton;
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -194,7 +201,7 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     Lang lang;
 
     @UiField
-    Button saveButton;
+    ButtonProcessable saveButton;
 
     @UiField
     Button cancelButton;
