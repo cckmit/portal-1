@@ -10,7 +10,8 @@
              xmlns:casetag="urn:import:ru.protei.portal.ui.common.client.widget.selector.casetag"
              xmlns:issuestate="urn:import:ru.protei.portal.ui.common.client.widget.issuestate"
              xmlns:plan="urn:import:ru.protei.portal.ui.common.client.widget.selector.plan.selector"
-             xmlns:issueimportance="urn:import:ru.protei.portal.ui.common.client.widget.issueimportance">
+             xmlns:issueimportance="urn:import:ru.protei.portal.ui.common.client.widget.issueimportance"
+             xmlns:timeelapsedtypeselector="urn:import:ru.protei.portal.ui.common.client.view.selector">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -74,6 +75,10 @@
             <person:EmployeeMultiSelector ui:field="commentAuthors"
                                           header="{lang.reportTypeCaseTimeElapsedWorkAutor}"
                                           addStyleNames="form-group col-md-4 resize-md-12"/>
+
+            <timeelapsedtypeselector:ElapsedTimeTypeMultiSelector ui:field="timeElapsedTypes"
+                                                                  header="{lang.timeElapsedType}"
+                                                                  addStyleNames="form-group col-md-4 resize-md-12"/>
 
             <casetag:CaseTagMultiSelector ui:field="tags"
                                           caseType="CRM_SUPPORT"

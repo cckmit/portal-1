@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.CaseObjectReportRequest;
+import ru.protei.portal.core.model.struct.ListBuilder;
 import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.report.ReportWriter;
@@ -224,7 +225,7 @@ public class ExcelReportWriter implements
     }
 
     private String[] getFormats(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues) {
-        List<String> formatList = new ColumnsListBuilder<String>()
+        List<String> formatList = new ListBuilder<String>()
                 .add(ExcelFormat.STANDARD).addIf(ExcelFormat.STANDARD, isNotRestricted).add(ExcelFormat.STANDARD).addIf(ExcelFormat.STANDARD, withDescription)
                 .add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).addIf(ExcelFormat.STANDARD, withTags).addIf(ExcelFormat.STANDARD, withLinkedIssues)
                 .add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD)
@@ -239,7 +240,7 @@ public class ExcelReportWriter implements
     }
 
     private int[] getColumnsWidth(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues) {
-        List<Integer> columnsWidthList = new ColumnsListBuilder<Integer>()
+        List<Integer> columnsWidthList = new ListBuilder<Integer>()
                 .add(3650).addIf(3430, isNotRestricted).add(8570).addIf(9000, withDescription)
                 .add(4590).add(4200).add(4200).add(4200)
                 .add(6000).add(3350).add(4600).addIf(4600, withTags).addIf(6000, withLinkedIssues)
@@ -254,7 +255,7 @@ public class ExcelReportWriter implements
     }
 
     private String[] getColumns(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues) {
-        List<String> columnsList = new ColumnsListBuilder<String>()
+        List<String> columnsList = new ListBuilder<String>()
                 .add("ir_caseno").addIf("ir_private", isNotRestricted).add("ir_name").addIf("ir_description", withDescription)
                 .add("ir_company").add("ir_initiator").add("ir_manager").add("ir_manager_company")
                 .add("ir_product").add("ir_importance").add("ir_state").addIf("ir_tags", withTags).addIf("ir_links", withLinkedIssues)
@@ -266,40 +267,5 @@ public class ExcelReportWriter implements
                 .build();
 
         return columnsList.toArray(new String[]{});
-    }
-
-    private int[] toPrimitiveIntegerArray(List<Integer> elements) {
-        if (isEmpty(elements)) {
-            return new int[0];
-        }
-
-        int[] result = new int[elements.size()];
-
-        for (int i = 0; i < result.length; i++) {
-            result[i] = elements.get(i);
-        }
-
-        return result;
-    }
-
-    private static class ColumnsListBuilder<T> {
-        private List<T> list = new ArrayList<>();
-
-        ColumnsListBuilder<T> add(T element) {
-            list.add(element);
-            return this;
-        }
-
-        ColumnsListBuilder<T> addIf(T element, boolean condition) {
-            if (condition) {
-                list.add(element);
-            }
-
-            return this;
-        }
-
-        List<T> build() {
-            return list;
-        }
     }
 }

@@ -68,6 +68,16 @@ public enum En_TimeElapsedType implements ru.protei.winter.core.utils.enums.HasI
         return id;
     }
 
+    public static En_TimeElapsedType findById(int id) {
+        for (En_TimeElapsedType value : En_TimeElapsedType.values()) {
+            if (value.getId() == id) {
+                return value;
+            }
+        }
+
+        return null;
+    }
+
     private final int id;
 
 

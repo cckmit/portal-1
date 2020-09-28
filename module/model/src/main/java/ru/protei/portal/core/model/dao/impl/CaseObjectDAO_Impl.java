@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.CaseTypeDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -176,13 +177,27 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
         parameters.withOffset(query.getOffset());
         parameters.withLimit(query.getLimit());
         parameters.withSort(TypeConverters.createSort( query ));
-        if (isSearchAtComments(query)
-            || (query.isCheckImportanceHistory()!=null && query.isCheckImportanceHistory())
-        ) {
+        if (isNeedJoinComments(query)) {
             parameters.withDistinct(true);
             parameters.withJoins(LEFT_JOIN_CASE_COMMENT);
         }
 
         return parameters;
+    }
+
+    private boolean isNeedJoinComments(CaseQuery caseQuery) {
+        if (isSearchAtComments(caseQuery)) {
+            return true;
+        }
+
+        if (caseQuery.isCheckImportanceHistory()!=null && caseQuery.isCheckImportanceHistory()) {
+            return true;
+        }
+
+        if (CollectionUtils.isNotEmpty(caseQuery.getTimeElapsedTypeIds())) {
+            return true;
+        }
+
+        return false;
     }
 }

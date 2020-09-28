@@ -3,6 +3,8 @@ package ru.protei.portal.core.model.dao.impl;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.dict.En_TimeElapsedType;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
@@ -325,6 +327,24 @@ public class CaseObjectSqlBuilder {
                         .append(" (SELECT case_object_id FROM person_favorite_issues WHERE person_id = ?)");
 
                 args.add(query.getPersonIdToIsFavorite().getA());
+            }
+
+            if (CollectionUtils.isNotEmpty(query.getTimeElapsedTypeIds())) {
+                List<String> orConditions = new ArrayList<>();
+
+                condition.append(" and (");
+
+                if (query.getTimeElapsedTypeIds().contains(En_TimeElapsedType.NONE.getId())) {
+                    orConditions.add("case_comment.time_elapsed_type IS NULL and case_comment.time_elapsed IS NOT NULL");
+                }
+
+                if (isNotEmpty(query.getTimeElapsedTypeIds())) {
+                    orConditions.add("case_comment.time_elapsed_type IN " + HelperFunc.makeInArg(query.getTimeElapsedTypeIds(), false));
+                }
+
+                condition
+                        .append(String.join(" or ", orConditions))
+                        .append(")");
             }
         });
     }
