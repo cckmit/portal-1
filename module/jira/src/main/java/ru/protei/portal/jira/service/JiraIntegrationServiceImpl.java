@@ -124,7 +124,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     public CompletableFuture<AssembledCaseEvent> create( JiraEndpoint endpoint, JiraHookEventData event) {
         final Issue issue = event.getIssue();
         IssueField clmIdField = getClmId(issue);
-        if (clmIdField != null && caseObjectDAO.isJiraDuplicateByClmId(String.valueOf(clmIdField.getValue()))) {
+        if (clmIdField != null && caseObjectDAO.isJiraDuplicateByClmId(clmIdField.getValue().toString())) {
             logger.info( "issue is duplicate by clm id" );
             return null;
         }
@@ -186,7 +186,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         newImportance = newImportance == null ? En_ImportanceLevel.getById(caseObj.getImpLevel()) : newImportance;
         caseObj.setImpLevel(newImportance.getId());
 
-        caseObj.setName(getNewName(issue, caseObj.getCaseNumber(), String.valueOf(getClmId(issue).getValue())));
+        caseObj.setName(getNewName(issue, caseObj.getCaseNumber(), getClmId(issue)));
 
         ExternalCaseAppData appData = externalCaseAppDAO.get(caseObj.getId());
         JiraExtAppData jiraExtAppData = JiraExtAppData.fromJSON(appData.getExtAppData());
@@ -242,7 +242,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         logger.debug("issue {}, case-priority old={}, new={}", issue.getKey(), caseObj.getImportanceLevel(), newImportance);
         caseObj.setImpLevel(newImportance == null ? En_ImportanceLevel.BASIC.getId() : newImportance.getId());
 
-        String clmId = String.valueOf(getClmId(issue).getValue());
+        IssueField clmId = getClmId(issue);
         caseObj.setName(getNewName(issue, caseObj.getCaseNumber(), clmId));
 
         List<Platform> platforms = getPlatforms(caseObj.getInitiatorCompanyId());
@@ -263,7 +263,9 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         List<CaseComment> caseComments = processComments( endpoint.getServerLogin(), issue.getComments(), caseObj.getId(), personMapper, jiraExtAppData, addedAttachments );
 
         jiraExtAppData = addIssueTypeAndSeverity(jiraExtAppData, issue.getIssueType().getName(), getIssueSeverity(issue));
-        jiraExtAppData.setClmId(clmId);
+        if (clmId != null) {
+            jiraExtAppData.setClmId(clmId.getValue().toString());
+        }
 
         final ExternalCaseAppData appData = new ExternalCaseAppData(caseObj);
         appData.setExtAppCaseId(makeExternalIssueID(endpoint.getId(), issue));
@@ -496,7 +498,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         return state;
     }
 
-    private String getNewName(Issue issue, Long caseNumber, String issueCLM){
+    private String getNewName(Issue issue, Long caseNumber,  IssueField issueCLM){
         logger.debug("update case name, issue={}, case={}", issue.getKey(), caseNumber);
         return (issueCLM == null ? "" : issueCLM + " | ") + issue.getSummary();
     }
