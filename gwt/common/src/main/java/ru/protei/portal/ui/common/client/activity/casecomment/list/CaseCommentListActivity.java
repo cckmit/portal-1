@@ -36,6 +36,7 @@ import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemVi
 import ru.protei.portal.ui.common.client.widget.timefield.WorkTimeFormatter;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.PasteInfo;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -192,13 +193,9 @@ public abstract class CaseCommentListActivity
     public void onRemoveClicked(final AbstractCaseCommentItemView itemView ) {
         CaseComment caseComment = itemViewToModel.get( itemView );
 
-        if(caseComment == comment) {
-            //deleting while editing
-            fireEvent(new NotifyEvents.Show(lang.errEditIssueComment(), NotifyEvents.NotifyType.INFO));
-            return;
-        }
-        if ( caseComment == null || !isEnableEdit( caseComment, profile.getId() ) ) {
-            fireEvent( new NotifyEvents.Show( lang.errEditIssueCommentNotAllowed(), NotifyEvents.NotifyType.ERROR ) );
+        String validationString = makeAllowRemoveValidationString(caseComment, profile);
+        if (validationString != null) {
+            fireEvent(new NotifyEvents.Show(validationString, NotifyEvents.NotifyType.ERROR));
             return;
         }
 
@@ -214,7 +211,7 @@ public abstract class CaseCommentListActivity
 
         caseCommentController.removeCaseComment(caseType, caseComment, new FluentCallback<Void>()
                 .withError(throwable -> {
-                    fireEvent(new NotifyEvents.Show(lang.errRemoveIssueComment(), NotifyEvents.NotifyType.ERROR));
+                    defaultErrorHandler.accept(throwable);
                 })
                 .withSuccess(v -> {
                     Collection<Attachment> commentAttachments = itemView.attachmentContainer().getAll();
@@ -232,8 +229,9 @@ public abstract class CaseCommentListActivity
     public void onEditClicked( AbstractCaseCommentItemView itemView ) {
         CaseComment caseComment = itemViewToModel.get( itemView );
 
-        if ( caseComment == null || !isEnableEdit( caseComment, profile.getId() ) ) {
-            fireEvent( new NotifyEvents.Show( lang.errEditIssueCommentNotAllowed(), NotifyEvents.NotifyType.ERROR ) );
+        String validationString = makeAllowEditValidationString(caseComment, profile);
+        if (validationString != null) {
+            fireEvent(new NotifyEvents.Show(validationString, NotifyEvents.NotifyType.ERROR));
             return;
         }
 
@@ -335,7 +333,7 @@ public abstract class CaseCommentListActivity
     public void onRemoveAttachment(CaseCommentItemView itemView, Attachment attachment) {
         if(comment != null && comment == itemViewToModel.get( itemView )) {
             //deleting while editing
-            fireEvent(new NotifyEvents.Show(lang.errEditIssueComment(), NotifyEvents.NotifyType.INFO));
+            fireEvent(new NotifyEvents.Show(lang.errEditIssueComment(), NotifyEvents.NotifyType.ERROR));
             return;
         }
 
@@ -471,7 +469,7 @@ public abstract class CaseCommentListActivity
 
         itemView.setTimeElapsedTypeChangeHandler(event -> updateTimeElapsedType(event.getValue(), value, itemView));
 
-        itemView.enabledEdit( isModifyEnabled && isEnableEdit( value, profile.getId() ) );
+        itemView.enabledEdit(isModifyEnabled && (makeAllowEditValidationString( value, profile) == null));
         itemView.enableReply(isModifyEnabled);
         itemView.enableUpdateTimeElapsedType(Objects.equals(value.getAuthorId(), profile.getId()));
 
@@ -573,7 +571,7 @@ public abstract class CaseCommentListActivity
         caseCommentController.saveCaseComment(caseType, comment, new FluentCallback<CaseComment>()
                 .withError( t -> {
                     unlockSave();
-                    fireEvent( lang.errEditIssueComment() );
+                    defaultErrorHandler.accept(t);
                 } )
                 .withSuccess( result -> {
                     unlockSave();
@@ -593,6 +591,32 @@ public abstract class CaseCommentListActivity
         }
 
         return ValidationResult.ok();
+    }
+
+    private String makeAllowEditValidationString(CaseComment caseComment, Profile profile) {
+        return makeAllowEditRemoveValidationString(caseComment, profile, true);
+    }
+
+    private String makeAllowRemoveValidationString(CaseComment caseComment, Profile profile) {
+        return makeAllowEditRemoveValidationString(caseComment, profile, false);
+    }
+
+    private String makeAllowEditRemoveValidationString(CaseComment caseComment, Profile profile, boolean isEdit) {
+        if(caseComment == comment) {
+            //deleting while editing
+            return lang.errEditIssueComment();
+        }
+
+        if ( !isEnableEditCommon( caseComment, profile.getId() ) ) {
+            return lang.errEditIssueCommentNotAllowed();
+        }
+
+
+        if ( !isEnableEditByTime(caseComment) ) {
+            return isEdit ? lang.errEditIssueCommentByTime() : lang.errRemoveIssueCommentByTime() ;
+        }
+
+        return null;
     }
 
     private CaseComment buildCaseComment() {
@@ -839,6 +863,8 @@ public abstract class CaseCommentListActivity
     private Map<AbstractCaseCommentItemView, CaseComment> itemViewToModel = new HashMap<>();
     private Collection<Attachment> tempAttachments = new ArrayList<>();
 
+    @Inject
+    private DefaultErrorHandler defaultErrorHandler;
     private final static int PREVIEW_CHANGE_DELAY_MS = 200;
 
     private final String STORAGE_CASE_COMMENT_PREFIX = "CaseСomment_";
