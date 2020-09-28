@@ -193,18 +193,9 @@ public abstract class CaseCommentListActivity
     public void onRemoveClicked(final AbstractCaseCommentItemView itemView ) {
         CaseComment caseComment = itemViewToModel.get( itemView );
 
-        if(caseComment == comment) {
-            //deleting while editing
-            fireEvent(new NotifyEvents.Show(lang.errEditIssueComment(), NotifyEvents.NotifyType.ERROR));
-            return;
-        }
-        if ( caseComment == null || !isEnableEdit( caseComment, profile.getId() ) ) {
-            fireEvent( new NotifyEvents.Show( lang.errEditIssueCommentNotAllowed(), NotifyEvents.NotifyType.ERROR ) );
-            return;
-        }
-
-        if ( caseComment == null || !isEnableEditByTime( caseComment ) ) {
-            fireEvent( new NotifyEvents.Show( lang.errRemoveIssueCommentByTime(), NotifyEvents.NotifyType.ERROR ) );
+        String validationString = makeAllowRemoveValidationString(caseComment, profile);
+        if (validationString != null) {
+            fireEvent(new NotifyEvents.Show(validationString, NotifyEvents.NotifyType.ERROR));
             return;
         }
 
@@ -238,13 +229,9 @@ public abstract class CaseCommentListActivity
     public void onEditClicked( AbstractCaseCommentItemView itemView ) {
         CaseComment caseComment = itemViewToModel.get( itemView );
 
-        if ( caseComment == null || !isEnableEdit( caseComment, profile.getId() ) ) {
-            fireEvent( new NotifyEvents.Show( lang.errEditIssueCommentNotAllowed(), NotifyEvents.NotifyType.ERROR ) );
-            return;
-        }
-
-        if ( caseComment == null || !isEnableEditByTime( caseComment ) ) {
-            fireEvent( new NotifyEvents.Show( lang.errEditIssueCommentByTime(), NotifyEvents.NotifyType.ERROR ) );
+        String validationString = makeAllowEditValidationString(caseComment, profile);
+        if (validationString != null) {
+            fireEvent(new NotifyEvents.Show(validationString, NotifyEvents.NotifyType.ERROR));
             return;
         }
 
@@ -482,7 +469,7 @@ public abstract class CaseCommentListActivity
 
         itemView.setTimeElapsedTypeChangeHandler(event -> updateTimeElapsedType(event.getValue(), value, itemView));
 
-        itemView.enabledEdit(isModifyEnabled && isEnableEdit( value, profile.getId()) && isEnableEditByTime(value));
+        itemView.enabledEdit(isModifyEnabled && (makeAllowEditValidationString( value, profile) == null));
         itemView.enableReply(isModifyEnabled);
         itemView.enableUpdateTimeElapsedType(Objects.equals(value.getAuthorId(), profile.getId()));
 
@@ -604,6 +591,32 @@ public abstract class CaseCommentListActivity
         }
 
         return ValidationResult.ok();
+    }
+
+    private String makeAllowEditValidationString(CaseComment caseComment, Profile profile) {
+        return makeAllowEditRemoveValidationString(caseComment, profile, true);
+    }
+
+    private String makeAllowRemoveValidationString(CaseComment caseComment, Profile profile) {
+        return makeAllowEditRemoveValidationString(caseComment, profile, false);
+    }
+
+    private String makeAllowEditRemoveValidationString(CaseComment caseComment, Profile profile, boolean isEdit) {
+        if(caseComment == comment) {
+            //deleting while editing
+            return lang.errEditIssueComment();
+        }
+
+        if ( !isEnableEditCommon( caseComment, profile.getId() ) ) {
+            return lang.errEditIssueCommentNotAllowed();
+        }
+
+
+        if ( !isEnableEditByTime(caseComment) ) {
+            return isEdit ? lang.errEditIssueCommentByTime() : lang.errRemoveIssueCommentByTime() ;
+        }
+
+        return null;
     }
 
     private CaseComment buildCaseComment() {

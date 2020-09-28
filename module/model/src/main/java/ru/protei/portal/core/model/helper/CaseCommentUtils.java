@@ -13,7 +13,7 @@ import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
  */
 public class CaseCommentUtils {
 
-    public static boolean isEnableEdit( CaseComment value, Long personId ) {
+    public static boolean isEnableEditCommon(CaseComment value, Long personId ) {
         if ( value == null || value.getCreated() == null ) {
             return false;
         }
