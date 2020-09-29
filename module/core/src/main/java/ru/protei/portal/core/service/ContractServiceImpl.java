@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.enterprise1c.dto.Contract1C;
 import ru.protei.portal.core.model.enterprise1c.dto.Contractor1C;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.query.ContractApiQuery;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.struct.ContractorQuery;
 import ru.protei.portal.core.model.util.ContractorUtils;
@@ -482,11 +483,11 @@ public class ContractServiceImpl implements ContractService {
     }
 
     @Override
-    public Result<List<Contract>> getContractsByRefKeys(AuthToken token, List<String> refKeys) {
-        if (isEmpty(refKeys)) {
-            return ok(Collections.emptyList());
+    public Result<List<Contract>> getContractsByApiQuery(AuthToken token, ContractApiQuery apiQuery) {
+        if (apiQuery == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
-        List<Contract> contracts = contractDAO.getByRefKeys(refKeys);
+        List<Contract> contracts = contractDAO.getByApiQuery(apiQuery);
         jdbcManyRelationsHelper.fill(contracts, "contractDates");
         return ok(contracts);
     }

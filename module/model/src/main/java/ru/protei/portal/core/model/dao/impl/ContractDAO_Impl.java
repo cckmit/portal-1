@@ -6,24 +6,23 @@ import ru.protei.portal.core.model.dao.ContractDAO;
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.query.ContractApiQuery;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.util.sqlcondition.Query;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
 import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
-import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
+import static ru.protei.portal.core.model.util.ContractStateUtil.getClosedContractStates;
+import static ru.protei.portal.core.model.util.ContractStateUtil.getOpenedContractStates;
 
 public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements ContractDAO {
 
@@ -50,11 +49,34 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
     }
 
     @Override
-    public List<Contract> getByRefKeys(List<String> refKeys) {
-        Query query = query().asCondition()
-                .and("contract.ref_key").in(refKeys)
-                .asQuery();
-        return getListByCondition(query.buildSql(), query.args());
+    public List<Contract> getByApiQuery(ContractApiQuery apiQuery) {
+
+        SqlCondition where = new SqlCondition().build(((condition, args) -> {
+            condition.append("1=1");
+
+            if (isNotEmpty(apiQuery.getRefKeys())) {
+                String inArg = makeInArg(apiQuery.getRefKeys(), s -> "'" + s + "'");
+                condition.append(" AND contract.ref_key IN ").append(inArg);
+            }
+
+            if (apiQuery.getOpenStateDate() != null) {
+                condition.append(" AND contract.id IN (");
+                  condition.append(" SELECT history.case_object_id FROM history WHERE 1=1");
+                  condition.append(" AND history.case_object_id IN (SELECT contract_h.id FROM contract AS contract_h)");
+                  condition.append(" AND ? BETWEEN");
+                    condition.append(" (SELECT MIN(hd1.date) AS date FROM history AS hd1 WHERE hd1.new_id IN ").append(makeInArg(getOpenedContractStates(), s -> String.valueOf(s.getId()))).append(")");
+                    condition.append(" AND");
+                    condition.append(" (SELECT MAX(hd2.date) AS date FROM history AS hd2 WHERE hd2.new_id IN ").append(makeInArg(getClosedContractStates(), s -> String.valueOf(s.getId()))).append(")");
+                condition.append(")");
+                args.add(apiQuery.getOpenStateDate());
+            }
+        }));
+
+        JdbcQueryParameters parameters = new JdbcQueryParameters()
+            .withCondition(where.condition, where.args)
+            .withDistinct(true);
+
+        return getList(parameters);
     }
 
     @Override
