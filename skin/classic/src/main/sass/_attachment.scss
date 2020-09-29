@@ -356,6 +356,14 @@
       > div {
         background: #f0f0f0;
       }
+
+      div {
+        .fa-fw.fas.fa-lock {
+          position: absolute;
+          top: 10px;
+          right: 15px;
+        }
+      }
     }
   }
 
@@ -363,6 +371,14 @@
     .full-view-attach {
       background: transparent;
       text-shadow: 1px 1px 1px #000000;
+
+      .overlayer-wrapper {
+        .fa-fw.fas.fa-lock {
+          position: absolute;
+          top: -5px;
+          right: 10px;
+        }
+      }
     }
 
     .image-header {

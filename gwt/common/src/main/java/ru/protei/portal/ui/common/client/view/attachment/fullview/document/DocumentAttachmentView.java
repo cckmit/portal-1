@@ -75,6 +75,15 @@ public class DocumentAttachmentView extends Composite implements AbstractAttachm
         return deleteButton;
     }
 
+    @Override
+    public void setPrivateIconVisible(boolean isVisible) {
+        privateIcon.removeClassName("hide");
+
+        if (!isVisible) {
+            privateIcon.addClassName("hide");
+        }
+    }
+
     @UiHandler("deleteButton")
     public void onRemove(ClickEvent event) {
         event.stopPropagation();
@@ -98,6 +107,8 @@ public class DocumentAttachmentView extends Composite implements AbstractAttachm
 
     @UiField
     Button deleteButton;
+    @UiField
+    Element privateIcon;
     @UiField
     Element fileName;
     @UiField
