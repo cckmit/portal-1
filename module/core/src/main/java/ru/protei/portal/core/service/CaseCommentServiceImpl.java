@@ -240,8 +240,12 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             throw new ResultStatusException(En_ResultStatus.PROHIBITED_PRIVATE_COMMENT);
         }
 
-        if (!Objects.equals(token.getPersonId(), comment.getAuthorId()) || isCaseCommentReadOnly(comment.getCreated())) {
+        if (!Objects.equals(token.getPersonId(), comment.getAuthorId())) {
             throw new ResultStatusException(En_ResultStatus.NOT_AVAILABLE);
+        }
+
+        if (isCaseCommentReadOnlyByTime(comment.getCreated())) {
+            throw new ResultStatusException(En_ResultStatus.NOT_ALLOWED_EDIT_COMMENT_BY_TIME);
         }
 
         CaseComment prevComment = caseCommentDAO.get(comment.getId());
@@ -302,8 +306,12 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             checkAccessStatus = checkAccessForCaseObjectById(token, caseType, removedComment.getCaseId());
         }
         if (checkAccessStatus == null) {
-            if (!Objects.equals(token.getPersonId(), removedComment.getAuthorId()) || isCaseCommentReadOnly(removedComment.getCreated())) {
+            if (!Objects.equals(token.getPersonId(), removedComment.getAuthorId())) {
                 checkAccessStatus = En_ResultStatus.NOT_REMOVED;
+            }
+
+            if (isCaseCommentReadOnlyByTime(removedComment.getCreated())) {
+                throw new ResultStatusException(En_ResultStatus.NOT_ALLOWED_REMOVE_COMMENT_BY_TIME);
             }
         }
         if (checkAccessStatus != null) {
@@ -665,7 +673,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
         jdbcManyRelationsHelper.fill( userLogins, "roles" );
         if (stream(userLogins)
-                .noneMatch(userlogin -> policyService.hasGrantAccessFor(userlogin.getRoles(), ISSUE_EDIT))) {
+                .noneMatch(userLogin -> policyService.hasPrivilegeFor(ISSUE_EDIT, userLogin.getRoles()))) {
             log.warn("addCommentsReceivedByMail(): no privilege for create comment ={}", receivedMail.getSenderEmail());
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
@@ -679,6 +687,11 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         boolean isCustomer = !companyDAO.isEmployeeInHomeCompanies(person.getCompanyId());
         if (isCustomer && caseObject.isPrivateCase()) {
             log.warn("addCommentsReceivedByMail(): private case, forbidden for customer company ={}", person.getCompanyId());
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
+        if (isCustomer && !getCompanyAndChildIds(person.getCompanyId()).contains(caseObject.getInitiatorCompanyId())) {
+            log.warn("addCommentsReceivedByMail(): case is not owned customer company, forbidden for customer, company = {}", person.getCompanyId());
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
@@ -703,6 +716,13 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         caseComment.setPrivateComment(caseObject.isPrivateCase());
 
         return caseComment;
+    }
+
+    private Collection<Long> getCompanyAndChildIds(Long companyId) {
+        Company company = new Company();
+        company.setId(companyId);
+        jdbcManyRelationsHelper.fill(company, "childCompanies");
+        return company.getCompanyAndChildIds();
     }
 
     private String cleanHTMLContent(String htmlContent) {
@@ -766,7 +786,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         return null;
     }
 
-    private boolean isCaseCommentReadOnly(Date date) {
+    private boolean isCaseCommentReadOnlyByTime(Date date) {
         Calendar c = Calendar.getInstance();
         long current = c.getTimeInMillis();
         c.setTime(date);

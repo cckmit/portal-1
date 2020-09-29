@@ -272,5 +272,15 @@ public enum En_ResultStatus {
      * Организация в контракте должна быть не равна организации в приходном контракте
      */
     CONTRACT_ORGANIZATION_SHOULD_BE_DIFFERENT_FROM_PARENT,
+
+    /**
+     * Запрещено редактирование комментария по истечению времени
+     */
+    NOT_ALLOWED_EDIT_COMMENT_BY_TIME,
+
+    /**
+     * Запрещено удаление комментария по истечению времени
+     */
+    NOT_ALLOWED_REMOVE_COMMENT_BY_TIME
     ;
 }

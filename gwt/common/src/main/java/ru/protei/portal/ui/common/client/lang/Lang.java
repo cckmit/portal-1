@@ -720,6 +720,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errEditIssueComment();
 
+    String errEditIssueCommentByTime();
+
+    String errRemoveIssueCommentByTime();
+
     String errEditTimeElapsedType();
 
     String errEditContactLogin();
@@ -3105,4 +3109,6 @@ public interface Lang extends Messages, ContactItemLang {
     String contractDatesWarningCostOverflow();
 
     String errEmployeeNotFound();
+
+    String reservedIpExistedIpInRange();
 }

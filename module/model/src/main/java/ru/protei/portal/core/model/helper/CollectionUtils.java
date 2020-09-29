@@ -375,4 +375,18 @@ public class CollectionUtils {
             elementConsumer.accept(listIterator.previous());
         }
     }
+
+    public static int[] toPrimitiveIntegerArray(List<Integer> elements) {
+        if (isEmpty(elements)) {
+            return new int[0];
+        }
+
+        int[] result = new int[elements.size()];
+
+        for (int i = 0; i < result.length; i++) {
+            result[i] = elements.get(i);
+        }
+
+        return result;
+    }
 }

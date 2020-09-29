@@ -13,7 +13,6 @@ import ru.protei.portal.core.model.dto.ReportCaseQuery;
 import ru.protei.portal.core.model.dto.ReportContractQuery;
 import ru.protei.portal.core.model.dto.ReportDto;
 import ru.protei.portal.core.model.ent.Report;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
@@ -182,21 +181,12 @@ public abstract class ReportCreateActivity implements Activity,
 
     private void showFilterForReportType(En_ReportType reportType) {
         switch (reportType) {
-            case PROJECT: {
+            case PROJECT:
+            case CONTRACT: {
                 projectFilterView.resetFilter();
                 view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
                 view.getFilterContainer().clear();
                 view.getFilterContainer().add(projectFilterView.asWidget());
-                view.scheduledTypeContainerVisibility().setVisible(false);
-                view.additionalParamsVisibility().setVisible(false);
-                view.additionalParams().setValue(null);
-                break;
-            }
-            case CONTRACT: {
-                contractFilterView.resetFilter();
-                view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
-                view.getFilterContainer().clear();
-                view.getFilterContainer().add(contractFilterView.asWidget());
                 view.scheduledTypeContainerVisibility().setVisible(false);
                 view.additionalParamsVisibility().setVisible(false);
                 view.additionalParams().setValue(null);

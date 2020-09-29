@@ -24,10 +24,8 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.common.client.view.filter.IssueFilterParamView;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.AsyncPersonModel;
-
-import java.util.function.Function;
+import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
@@ -47,6 +45,7 @@ public class IssueFilterWidget extends Composite {
         issueFilterParamView.setManagersModel(personModelProvider.get());
         issueFilterParamView.setCreatorModel(asyncPersonModel);
         issueFilterParamView.commentAuthorsVisibility().setVisible(false);
+        issueFilterParamView.timeElapsedVisibility().setVisible(false);
     }
 
     @Override
