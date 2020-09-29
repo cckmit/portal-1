@@ -3,7 +3,6 @@ package ru.protei.portal.core.service.bootstrap;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1059,30 +1058,6 @@ public class BootstrapService {
         }
     }
 
-    private List<Attachment> getPrivateAttachments(List<CaseAttachment> commentAttachments, List<Long> privateCommentIds) {
-        return commentAttachments
-                .stream()
-                .filter(commentAttachment -> privateCommentIds.contains(commentAttachment.getCommentId()))
-                .map(commentAttachment -> attachmentDAO.get(commentAttachment.getAttachmentId()))
-                .collect(toList());
-    }
-
-    private List<Long> getPrivateCommentIdsFromCaseAttachments(List<CaseAttachment> commentAttachments) {
-        return commentAttachments
-                .stream()
-                .map(CaseAttachment::getCommentId)
-                .distinct()
-                .filter(commentId -> caseCommentDAO.get(commentId).isPrivateComment())
-                .collect(toList());
-    }
-
-    private List<CaseAttachment> getCommentAttachments() {
-        return caseAttachmentDAO.getAll()
-                .stream()
-                .filter(caseAttachment -> caseAttachment.getCommentId() != null)
-                .collect(toList());
-    }
-
     @Inject
     UserRoleDAO userRoleDAO;
     @Inject
@@ -1090,12 +1065,6 @@ public class BootstrapService {
 
     @Autowired
     CaseObjectDAO caseObjectDAO;
-    @Autowired
-    CaseCommentDAO caseCommentDAO;
-    @Autowired
-    AttachmentDAO attachmentDAO;
-    @Autowired
-    CaseAttachmentDAO caseAttachmentDAO;
     @Autowired
     PlatformDAO platformDAO;
     @Autowired
