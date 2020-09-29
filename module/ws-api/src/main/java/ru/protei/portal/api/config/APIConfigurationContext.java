@@ -118,6 +118,11 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
     }
 
     @Bean
+    public ContactItemDAO getContactItemDAO() {
+        return new ContactItemDAO_Impl();
+    }
+
+    @Bean
     public PersonFavoriteIssuesDAO getPersonFavoritesIssuesDAO() {
         return new PersonFavoriteIssuesDAO_Impl();
     }
@@ -145,6 +150,11 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
     @Bean
     public EmployeeRegistrationDAO getEmployeeRegistrationDAO() {
         return new EmployeeRegistrationDAO_Impl();
+    }
+
+    @Bean
+    public EmployeeShortViewDAO getEmployeeShortViewDAO() {
+        return new EmployeeShortViewDAO_Impl();
     }
 
     /**

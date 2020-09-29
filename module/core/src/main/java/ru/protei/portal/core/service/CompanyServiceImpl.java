@@ -48,6 +48,9 @@ public class CompanyServiceImpl implements CompanyService {
     CompanySubscriptionDAO companySubscriptionDAO;
 
     @Autowired
+    ContactItemDAO contactItemDAO;
+
+    @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Autowired
@@ -68,17 +71,17 @@ public class CompanyServiceImpl implements CompanyService {
         applyFilterByScope(token, query);
 
         SearchResult<Company> sr = companyDAO.getSearchResultByQuery(query);
+        jdbcManyRelationsHelper.fill(sr.getResults(), Company.Fields.CONTACT_ITEMS);
 
         return ok(sr);
     }
 
     @Override
     public Result<List<EntityOption>> companyOptionList( AuthToken token, CompanyQuery query) {
-        List<Company> list = getCompanyList(token, query);
-
+        applyFilterByScope( token, query );
+        List<Company> list = companyDAO.listByQuery(query);
         if (list == null)
             return error(En_ResultStatus.GET_DATA_ERROR);
-
         return ok(companyListToEntityOption(list, query));
     }
 
@@ -229,10 +232,12 @@ public class CompanyServiceImpl implements CompanyService {
 
         company.setCreated(new Date());
         Long companyId = companyDAO.persist(company);
-
         if (companyId == null) {
             return error(En_ResultStatus.NOT_CREATED);
         }
+
+        contactItemDAO.saveOrUpdateBatch(company.getContactItems());
+        jdbcManyRelationsHelper.persist(company, Company.Fields.CONTACT_ITEMS);
 
         updateCompanySubscription(company.getId(), company.getSubscriptions());
         addCommonImportanceLevels(companyId);
@@ -270,9 +275,11 @@ public class CompanyServiceImpl implements CompanyService {
         }
 
         Boolean result = companyDAO.merge(company);
-
         if ( !result )
             return error(En_ResultStatus.NOT_UPDATED);
+
+        contactItemDAO.saveOrUpdateBatch(company.getContactItems());
+        jdbcManyRelationsHelper.persist(company, Company.Fields.CONTACT_ITEMS);
 
         if (YOUTRACK_INTEGRATION_ENABLED && StringUtils.isNotEmpty(company.getCname()) && !company.getCname().equals(oldName)) {
             youtrackService.getCompanyByName(oldName)
@@ -307,7 +314,9 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     public Result<List<Company>> getAllHomeCompanies(AuthToken token) {
-        return ok(companyDAO.getAllHomeCompanies());
+        List<Company> companies = companyDAO.getAllHomeCompanies();
+        jdbcManyRelationsHelper.fill(companies, Company.Fields.CONTACT_ITEMS);
+        return ok(companies);
     }
 
     @Override
@@ -386,11 +395,6 @@ public class CompanyServiceImpl implements CompanyService {
                 && !company.getCname().trim().isEmpty()
                 && (company.getParentCompanyId() == null || isEmpty(company.getChildCompanies()) )
                 && !checkCompanyExists(company.getCname(), company.getId());
-    }
-
-    private List<Company> getCompanyList( AuthToken token, CompanyQuery query ) {
-        applyFilterByScope( token, query );
-        return companyDAO.listByQuery(query);
     }
 
     private boolean checkCompanyExists (String name, Long excludeId) {

@@ -372,4 +372,9 @@ public class RedmineTestConfigurationMockDao {
     public PersonFavoriteIssuesDAO getPersonFavoriteIssuesDAO() {
         return mock(PersonFavoriteIssuesDAO.class);
     }
+
+    @Bean
+    public ContactItemDAO getContactItemDAO() {
+        return mock(ContactItemDAO.class);
+    }
 }

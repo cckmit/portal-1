@@ -1,6 +1,9 @@
 package ru.protei.portal.core.service;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.safety.Whitelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,20 +20,18 @@ import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.event.CaseCommentRemovedClientEvent;
-import ru.protei.portal.core.model.event.CaseCommentSavedClientEvent;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.UserLoginShortViewQuery;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
 import ru.protei.portal.core.model.struct.ReplaceLoginWithUsernameInfo;
+import ru.protei.portal.core.model.struct.receivedmail.ReceivedMail;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseCommentShortView;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
-import ru.protei.portal.core.service.pushevent.ClientEventService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -40,6 +41,9 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.dict.En_CaseType.CRM_SUPPORT;
+import static ru.protei.portal.core.model.dict.En_CaseType.PROJECT;
+import static ru.protei.portal.core.model.dict.En_Privilege.ISSUE_EDIT;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public class CaseCommentServiceImpl implements CaseCommentService {
@@ -53,13 +57,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         CaseCommentQuery query = new CaseCommentQuery(caseObjectId);
         applyFilterByScope(token, query);
 
-        List<CaseComment> comments = getList(query).getData();
-
-        if (needReplaceLoginWithUsername(caseType)) {
-            return replaceLoginWithUsername(comments).map(this::objectListFromReplacementInfoList);
-        }
-
-        return ok(comments);
+        return getList(query);
     }
 
     @Override
@@ -88,7 +86,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         CaseCommentSaveOrUpdateResult resultData = result.getData();
 
         Result<CaseComment> okResult = ok( resultData.getCaseComment() );
-        if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
+        if (CRM_SUPPORT.equals(caseType)) {
             okResult.publishEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, token.getPersonId(), comment.getCaseId(),
                     resultData.getAddedAttachments(), null
             ));
@@ -99,7 +97,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
         }
 
-        if (En_CaseType.PROJECT.equals(caseType)) {
+        if (PROJECT.equals(caseType)) {
             okResult.publishEvent(new ProjectCommentEvent(
                     this, null, resultData.getCaseComment(), null,
                     token.getPersonId(), comment.getCaseId())
@@ -132,7 +130,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             throw new ResultStatusException(checkAccessStatus);
         }
 
-        if (caseType == En_CaseType.CRM_SUPPORT && prohibitedPrivateComment(token, comment)) {
+        if (caseType == CRM_SUPPORT && prohibitedPrivateComment(token, comment)) {
             throw new ResultStatusException(En_ResultStatus.PROHIBITED_PRIVATE_COMMENT);
         }
 
@@ -196,7 +194,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         CaseCommentSaveOrUpdateResult resultData = result.getData();
 
         Result<CaseComment> okResult = ok( resultData.getCaseComment() );
-        if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
+        if (CRM_SUPPORT.equals(caseType)) {
             boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( comment.getCaseId() ) );
             okResult.publishEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, token.getPersonId(), comment.getCaseId(),
                     resultData.getAddedAttachments(), resultData.getRemovedAttachments())
@@ -205,7 +203,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
                             isEagerEvent, resultData.getOldCaseComment(), resultData.getCaseComment(), null ));
         }
 
-        if (En_CaseType.PROJECT.equals(caseType)) {
+        if (PROJECT.equals(caseType)) {
             okResult.publishEvent(new ProjectCommentEvent(this,
                     resultData.getOldCaseComment(), resultData.getCaseComment(), null,
                     token.getPersonId(), comment.getCaseId())
@@ -238,7 +236,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             throw new ResultStatusException(checkAccessStatus);
         }
 
-        if (caseType == En_CaseType.CRM_SUPPORT && prohibitedPrivateComment(token, comment)) {
+        if (caseType == CRM_SUPPORT && prohibitedPrivateComment(token, comment)) {
             throw new ResultStatusException(En_ResultStatus.PROHIBITED_PRIVATE_COMMENT);
         }
 
@@ -350,7 +348,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
         Result<Boolean> okResult = ok(isRemoved);
 
-        if (En_CaseType.PROJECT.equals(caseType)) {
+        if (PROJECT.equals(caseType)) {
             okResult.publishEvent(new ProjectCommentEvent(this,
                     null, null, removedComment, token.getPersonId(), caseId)
             );
@@ -360,7 +358,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             );
         }
 
-        if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
+        if (CRM_SUPPORT.equals(caseType)) {
             boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals(caseObjectDAO.getExternalAppName(caseId));
 
             okResult
@@ -636,7 +634,92 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     private boolean needReplaceLoginWithUsername(En_CaseType caseType) {
-        return En_CaseType.CRM_SUPPORT.equals(caseType);
+        return CRM_SUPPORT.equals(caseType);
+    }
+
+    @Override
+    @Transactional
+    public Result<Boolean> addCommentReceivedByMail(ReceivedMail receivedMail) {
+        if (receivedMail.getCaseNo() == null || receivedMail.getSenderEmail() == null) {
+            log.warn("addCommentsReceivedByMail(): no case no or sender mail receivedMail ={}", receivedMail);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        List<Person> persons = personDAO.findContactByEmail(receivedMail.getSenderEmail());
+        if (persons.isEmpty()) {
+            log.warn("addCommentsReceivedByMail(): no found person person by mail ={}", receivedMail.getSenderEmail());
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        if (persons.size() > 1) {
+            log.warn("addCommentsReceivedByMail(): more than one found person by mail ={}", receivedMail.getSenderEmail());
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
+        Person person = persons.get(0);
+        List<UserLogin> userLogins = userLoginDAO.findByPersonId( person.getId() );
+        if (userLogins.isEmpty()) {
+            log.warn("addCommentsReceivedByMail(): no found user login by email ={}", receivedMail.getSenderEmail());
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        jdbcManyRelationsHelper.fill( userLogins, "roles" );
+        if (stream(userLogins)
+                .noneMatch(userLogin -> policyService.hasPrivilegeFor(ISSUE_EDIT, userLogin.getRoles()))) {
+            log.warn("addCommentsReceivedByMail(): no privilege for create comment ={}", receivedMail.getSenderEmail());
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
+        CaseObject caseObject = caseObjectDAO.getCaseByNumber(CRM_SUPPORT, receivedMail.getCaseNo());
+        if (caseObject == null) {
+            log.warn("addCommentsReceivedByMail(): no found case for case no ={}", receivedMail.getCaseNo());
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        boolean isCustomer = !companyDAO.isEmployeeInHomeCompanies(person.getCompanyId());
+        if (isCustomer && caseObject.isPrivateCase()) {
+            log.warn("addCommentsReceivedByMail(): private case, forbidden for customer company ={}", person.getCompanyId());
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
+        if (isCustomer && !getCompanyAndChildIds(person.getCompanyId()).contains(caseObject.getInitiatorCompanyId())) {
+            log.warn("addCommentsReceivedByMail(): case is not owned customer company, forbidden for customer, company = {}", person.getCompanyId());
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
+        log.info("addCommentsReceivedByMail(): process receivedMail={}", receivedMail);
+        CaseComment comment = createComment(caseObject, person, cleanHTMLContent(receivedMail.getContent()));
+        caseCommentDAO.persist(comment);
+
+        boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( comment.getCaseId() ) );
+
+        return ok(true).publishEvent( new CaseCommentEvent( this, ServiceModule.GENERAL, person.getId(), comment.getCaseId(), isEagerEvent,
+                null, comment, null) );
+    }
+
+    private CaseComment createComment(CaseObject caseObject, Person person, String comment) {
+        CaseComment caseComment = new CaseComment();
+        caseComment.setCaseId(caseObject.getId());
+        caseComment.setAuthor(person);
+        caseComment.setCreated(new Date());
+        caseComment.setOriginalAuthorFullName(person.getDisplayName());
+        caseComment.setOriginalAuthorName(person.getDisplayName());
+        caseComment.setText(comment);
+        caseComment.setPrivateComment(caseObject.isPrivateCase());
+
+        return caseComment;
+    }
+
+    private Collection<Long> getCompanyAndChildIds(Long companyId) {
+        Company company = new Company();
+        company.setId(companyId);
+        jdbcManyRelationsHelper.fill(company, "childCompanies");
+        return company.getCompanyAndChildIds();
+    }
+
+    private String cleanHTMLContent(String htmlContent) {
+        return Jsoup.clean(Jsoup.parse(htmlContent).html(),
+                "", Whitelist.none(), new Document.OutputSettings().prettyPrint(false));
     }
 
     private Result<List<CaseComment>> getList(CaseCommentQuery query) {
@@ -683,11 +766,11 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     private En_ResultStatus checkAccessForCaseObjectByNumber(AuthToken token, En_CaseType caseType, Long caseNumber) {
-        return checkAccessForCaseObject(token, caseType, caseObjectDAO.getCaseByCaseno(caseNumber));
+        return checkAccessForCaseObject(token, caseType, caseObjectDAO.getCaseByNumber(caseType, caseNumber));
     }
 
     private En_ResultStatus checkAccessForCaseObject(AuthToken token, En_CaseType caseType, CaseObject caseObject) {
-        if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
+        if (CRM_SUPPORT.equals(caseType)) {
             if (!policyService.hasAccessForCaseObject(token, En_Privilege.ISSUE_VIEW, caseObject)) {
                 return En_ResultStatus.PERMISSION_DENIED;
             }
@@ -732,6 +815,14 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     CaseAttachmentDAO caseAttachmentDAO;
     @Autowired
     UserLoginShortViewDAO userLoginShortViewDAO;
+    @Autowired
+    EmployeeShortViewDAO employeeShortViewDAO;
+    @Autowired
+    PersonDAO personDAO;
+    @Autowired
+    UserLoginDAO userLoginDAO;
+    @Autowired
+    CompanyDAO companyDAO;
 
 /*
     @Autowired

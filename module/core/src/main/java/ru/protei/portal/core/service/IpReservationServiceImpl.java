@@ -31,8 +31,7 @@ import java.util.stream.Stream;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.not;
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeDateWithOffset;
 
 /**
@@ -71,12 +70,17 @@ public class IpReservationServiceImpl implements IpReservationService {
     }
 
     @Override
-    public Result<Boolean> isReservedIpAddressExists( String address, Long excludeId) {
+    public Result<Boolean> isReservedIpAddressExists(String address, Date reserveDate, Date releaseDate, En_DateIntervalType dateIntervalType, Long excludeId) {
 
-        if( address == null || address.isEmpty() )
+        if (address == null || address.isEmpty()) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
 
-        return ok(checkReservedIpExists(address, excludeId));
+        ReservedIp reservedIp = new ReservedIp();
+
+        fillDatesInterval(reserveDate, releaseDate, reservedIp, dateIntervalType);
+
+        return ok(checkReservedIpExists(address, reservedIp.getReserveDate(), reservedIp.getReleaseDate(), excludeId));
     }
 
     @Override
@@ -275,25 +279,10 @@ public class IpReservationServiceImpl implements IpReservationService {
 
         En_DateIntervalType intervalType = reservedIpRequest.getDateIntervalType();
 
-        Date today = makeDateWithOffset(0);
-        Date throughMonth = makeDateWithOffset(30);
-
-        switch (intervalType) {
-            case UNLIMITED:
-                templateIp.setReserveDate(today);
-                templateIp.setReleaseDate(null);
-                break;
-            case MONTH:
-                templateIp.setReserveDate(today);
-                templateIp.setReleaseDate(throughMonth);
-                break;
-            case FIXED:
-                templateIp.setReserveDate(reservedIpRequest.getReserveDate());
-                templateIp.setReleaseDate(reservedIpRequest.getReleaseDate());
-        }
+        fillDatesInterval(reservedIpRequest.getReserveDate(), reservedIpRequest.getReleaseDate(), templateIp, intervalType);
 
         if (reservedIpRequest.isExact()) {
-            if (checkReservedIpExists(reservedIpRequest.getIpAddress(), null)) {
+            if (checkReservedIpExists(reservedIpRequest.getIpAddress(), templateIp.getReserveDate(), templateIp.getReleaseDate())) {
                 return error(En_ResultStatus.ALREADY_EXIST);
             }
 
@@ -380,6 +369,10 @@ public class IpReservationServiceImpl implements IpReservationService {
 
         if (reservedIp == null || reservedIp.getId() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (checkReservedIpExists(reservedIp.getIpAddress(), reservedIp.getReserveDate(), reservedIp.getReleaseDate(), reservedIp.getId())) {
+            return error(En_ResultStatus.ALREADY_EXIST);
         }
 
         ReservedIp stored = reservedIpDAO.get(reservedIp.getId());
@@ -523,6 +516,24 @@ public class IpReservationServiceImpl implements IpReservationService {
         return ok();
     }
 
+    private void fillDatesInterval(Date reserveDate, Date releaseDate, ReservedIp templateIp, En_DateIntervalType intervalType) {
+        Date today = makeDateWithOffset(0);
+        Date throughMonth = makeDateWithOffset(30);
+        switch (intervalType) {
+            case UNLIMITED:
+                templateIp.setReserveDate(today);
+                templateIp.setReleaseDate(null);
+                break;
+            case MONTH:
+                templateIp.setReserveDate(today);
+                templateIp.setReleaseDate(throughMonth);
+                break;
+            case FIXED:
+                templateIp.setReserveDate(reserveDate);
+                templateIp.setReleaseDate(releaseDate);
+        }
+    }
+
     private boolean isValidSubnet(Subnet subnet) {
         return StringUtils.isNotBlank(subnet.getAddress())
                 && subnet.getAddress().matches(CrmConstants.IpReservation.SUBNET_ADDRESS)
@@ -661,16 +672,58 @@ public class IpReservationServiceImpl implements IpReservationService {
         return true;
     }
 
-    private boolean checkReservedIpExists (String address, Long excludeId) {
-        ReservedIp reservedIp = reservedIpDAO.getReservedIpByAddress(address);
+    private boolean checkReservedIpExists(String address, Date reserveDate, Date releaseDate) {
+        return checkReservedIpExists(address, reserveDate, releaseDate, null);
+    }
 
-        if (reservedIp == null)
+    private boolean checkReservedIpExists(String address, Date reserveDate, Date releaseDate, final Long excludeId) {
+        List<ReservedIp> reservedIps = reservedIpDAO.getReservedIpsByAddress(address)
+                .stream()
+                .filter(reservedIp -> !reservedIp.getId().equals(excludeId))
+                .collect(Collectors.toList());
+
+        if (isEmpty(reservedIps)) {
             return false;
+        }
 
-        if (excludeId != null && reservedIp.getId().equals(excludeId))
-            return false;
+        return checkIntersections(reserveDate, releaseDate, reservedIps);
+    }
 
-        return true;
+    private boolean checkIntersections(Date reserveDate, Date releaseDate, List<ReservedIp> reservedIps) {
+        boolean exists = false;
+
+        for (ReservedIp reservedIp : reservedIps) {
+            Date reservedIpReserveDate = reservedIp.getReserveDate();
+            Date reservedIpReleaseDate = reservedIp.getReleaseDate();
+
+            if (Objects.equals(new Date(reservedIpReserveDate.getTime()), reserveDate)) {
+                return true;
+            } else if (reservedIpReleaseDate == null || releaseDate == null) {
+                exists = checkInfinityReleaseDates(reservedIpReserveDate, reserveDate, reservedIpReleaseDate, releaseDate);
+            } else if (reservedIpReserveDate.before(reserveDate)) {
+                exists = reservedIpReleaseDate.after(reserveDate);
+            } else if (reserveDate.before(reservedIpReserveDate)) {
+                exists = releaseDate.after(reservedIpReserveDate);
+            }
+
+            if (exists) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean checkInfinityReleaseDates(Date reservedIpReserveDate, Date newIpReserveDate, Date reservedIpReleaseDate, Date newIpReleaseDate) {
+        if (newIpReleaseDate == null && reservedIpReleaseDate == null) {
+            return true;
+        }
+
+        if (reservedIpReleaseDate == null) {
+            return newIpReleaseDate.after(reservedIpReserveDate);
+        }
+
+        return reservedIpReleaseDate.after(newIpReserveDate);
     }
 
     private boolean subnetAvailableToRemove (Long subnetId) {
@@ -736,10 +789,11 @@ public class IpReservationServiceImpl implements IpReservationService {
     }
 
     private NotificationEntry makeNotificationEntryFromPersonId(Long personId) {
-        Person person = personDAO.get(personId);
+        Person person = personDAO.partialGet(personId, "locale");
         if (person == null) {
             return null;
         }
+        helper.fill(person, Person.Fields.CONTACT_ITEMS);
 
         PlainContactInfoFacade contact = new PlainContactInfoFacade(person.getContactInfo());
         return NotificationEntry.email(contact.getEmail(), person.getLocale());

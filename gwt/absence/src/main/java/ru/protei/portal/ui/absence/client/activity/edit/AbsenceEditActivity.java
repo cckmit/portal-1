@@ -11,6 +11,8 @@ import ru.protei.portal.ui.common.client.events.EmployeeEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
+import java.util.function.Consumer;
+
 import static com.google.gwt.user.datepicker.client.CalendarUtil.copyDate;
 
 public abstract class AbsenceEditActivity extends AbsenceCommonActivity {
@@ -52,8 +54,6 @@ public abstract class AbsenceEditActivity extends AbsenceCommonActivity {
                     fillView(absence);
                     editView.dateRange().setValue(new DateInterval(copyDate(absence.getFromTime()), copyDate(absence.getTillTime())));
                     editView.setDateRangeValid(isDateRangeValid(editView.dateRange().getValue()));
-
-                    dialogView.saveButtonVisibility().setVisible(true);
                 }));
     }
 
@@ -67,13 +67,17 @@ public abstract class AbsenceEditActivity extends AbsenceCommonActivity {
     }
 
     @Override
-    protected void performSave(Runnable afterSave) {
+    protected void performSave(Consumer<Throwable> onError, Runnable onSuccess) {
         PersonAbsence personAbsence = fillDTO();
         absenceController.saveAbsence(personAbsence, new FluentCallback<Long>()
+                .withError(throwable -> {
+                    defaultErrorHandler.accept(throwable);
+                    onError.accept(throwable);
+                })
                 .withSuccess(result -> {
                     fireEvent(new NotifyEvents.Show(lang.absenceUpdated(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new EmployeeEvents.Update(personAbsence.getPersonId()));
-                    afterSave.run();
+                    onSuccess.run();
                 }));
     }
 

@@ -163,6 +163,19 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
         }
     }
 
+    @Override
+    public Long saveOrUpdateBatch(Collection<T> entities) {
+        if (entities == null) {
+            return 0L;
+        }
+        long handled = 0;
+        for (T entity : entities) {
+            if (saveOrUpdate(entity)) {
+                handled++;
+            }
+        }
+        return handled;
+    }
 
     public <V> V getMaxValue (String field, Class<V> type, String cond, Object...args) {
 

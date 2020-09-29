@@ -1830,6 +1830,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeePositions();
 
+    String employeeContractAgreement();
+
     String errEmployeePositionAlreadeyAdded();
 
     String backToEmployees();
@@ -3082,9 +3084,25 @@ public interface Lang extends Messages, ContactItemLang {
 
     String dutyLogValidationEmployee();
 
+    String issueReportWithTags();
+
+    String issueReportWithTagsTitle();
+
+    String issueReportWithLinkedIssues();
+
+    String issueReportWithLinkedIssuesTitle();
+
+    String issueReportAdditionalParams();
+
+    String yes();
+
+    String no();
+
     String percent();
 
     String attention();
 
     String contractDatesWarningCostOverflow();
+
+    String reservedIpExistedIpInRange();
 }

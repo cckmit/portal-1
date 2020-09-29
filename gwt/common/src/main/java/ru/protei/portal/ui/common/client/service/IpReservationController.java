@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.ent.ReservedIpRequest;
 import ru.protei.portal.core.model.ent.ReservedIp;
 import ru.protei.portal.core.model.ent.Subnet;
@@ -10,6 +11,7 @@ import ru.protei.portal.core.model.view.SubnetOption;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -41,9 +43,11 @@ public interface IpReservationController extends RemoteService {
 
     Long removeSubnet(Subnet subnet, boolean removeWithIps) throws RequestFailedException;
 
+    Boolean isReservedIpAddressExists(String address, Date reserveDate, Date releaseDate, En_DateIntervalType dateIntervalType, Long excludeId) throws RequestFailedException;
+
     Boolean isSubnetAvailableToRemove(Long subnetId) throws RequestFailedException;
 
     Long removeReservedIp(ReservedIp reservedIp) throws RequestFailedException;
 
-    Boolean isReservedIpAddressExists(String address, Long exceptId) throws RequestFailedException;
+    Boolean isReservedIpAddressExists(String address, Date reserveDate, Date releaseDate, En_DateIntervalType dateIntervalType) throws RequestFailedException;
 }

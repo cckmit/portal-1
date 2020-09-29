@@ -342,6 +342,8 @@ public class BaseServiceTest {
     @Autowired
     protected PersonDAO personDAO;
     @Autowired
+    protected ContactItemDAO contactItemDAO;
+    @Autowired
     protected DevUnitDAO devUnitDAO;
     @Autowired
     protected CaseObjectDAO caseObjectDAO;

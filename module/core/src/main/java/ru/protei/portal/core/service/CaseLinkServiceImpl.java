@@ -501,7 +501,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         for (Long number : caseNumberList) {
             log.debug("getCaseIdsByCaseNumbers(): case number={}", number);
-            Long caseId = caseObjectDAO.getCaseId(caseType, number);
+            Long caseId = caseObjectDAO.getCaseIdByNumber(caseType, number);
             log.debug("getCaseIdsByCaseNumbers(): case id={}", caseId);
             if (caseId == null) {
                 errorCaseId.add(number);

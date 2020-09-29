@@ -54,6 +54,16 @@ public abstract class MenuActivity implements Activity, AbstractSectionItemActiv
         identityToItemView.get(event.identity).setActive(true);
     }
 
+    @Event
+    public void onCloseAllSections(MenuEvents.CloseAll event) {
+        for (AbstractSectionItemView item : sectionItems) {
+            String identity = itemViewToIdentity.get(item);
+            if (identityToHasSubSections.get(identity)) {
+                item.toggleSubSection(false);
+            }
+        }
+    }
+
     @Override
     public void onSectionClicked(AbstractSectionItemView itemView) {
         if (itemViewToIdentity == null) {
@@ -91,16 +101,13 @@ public abstract class MenuActivity implements Activity, AbstractSectionItemActiv
             itemView.setEnsureDebugId(ensureDebugId);
         }
 
-        if (parent == null) {
+        if (parent == null || !identityToItemView.containsKey(parent)) {
             init.parent.add(itemView.asWidget());
-        } else if (identityToItemView.containsKey(parent)) {
+        } else {
             AbstractSectionItemView parentView = identityToItemView.get(parent);
             parentView.getChildContainer().add(itemView.asWidget());
             parentView.setSubMenuVisible(true);
             identityToHasSubSections.put(parent, true);
-        } else {
-            // provided sub section with parent that not existing
-            return;
         }
 
         itemViewToIdentity.put(itemView, header);

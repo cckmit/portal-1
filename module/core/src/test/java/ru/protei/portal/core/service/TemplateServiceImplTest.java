@@ -343,8 +343,6 @@ public class TemplateServiceImplTest {
     HTMLRenderer htmlRenderer;
     @Autowired
     CaseStateDAO caseStateDAO;
-    @Autowired
-    EmployeeShortViewDAO employeeShortViewDAO;
 
     private String commentTextWithBreaks = " ```\n" +
             "ls -l\n" +

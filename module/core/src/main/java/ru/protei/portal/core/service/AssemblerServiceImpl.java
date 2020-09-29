@@ -9,9 +9,11 @@ import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.service.events.EventPublisherService;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
 
@@ -45,7 +47,9 @@ public class AssemblerServiceImpl implements AssemblerService {
         }
 
         log.info("fillInitiator(): CaseObjectID={} Try to fill initiator.", e.getCaseObjectId());
-        e.setInitiator(personDAO.get(e.getInitiatorId()));
+        Person initiator = personDAO.get(e.getInitiatorId());
+        jdbcManyRelationsHelper.fill(initiator, Person.Fields.CONTACT_ITEMS);
+        e.setInitiator(initiator);
         log.info("fillInitiator(): CaseObjectID={} initiator is successfully filled.", e.getCaseObjectId());
 
         return ok(e);
@@ -171,6 +175,8 @@ public class AssemblerServiceImpl implements AssemblerService {
     AttachmentDAO attachmentDAO;
     @Autowired
     PersonDAO personDAO;
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     private static final Logger log = LoggerFactory.getLogger( AssemblerServiceImpl.class );
 }

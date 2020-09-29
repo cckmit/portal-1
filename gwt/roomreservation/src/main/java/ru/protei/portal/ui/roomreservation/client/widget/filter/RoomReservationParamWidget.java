@@ -57,7 +57,9 @@ public class RoomReservationParamWidget extends Composite implements AbstractRoo
     public void resetFilter() {
         dateRange.setValue(new DateIntervalWithType(null, En_DateIntervalType.THIS_WEEK));
         room.setValue(null);
-        onFilterChanged();
+        if (isAttached()) {
+            onFilterChanged();
+        }
     }
 
     @Override

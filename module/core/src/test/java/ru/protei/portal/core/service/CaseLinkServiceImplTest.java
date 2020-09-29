@@ -59,8 +59,8 @@ public class CaseLinkServiceImplTest {
     @Test
     public void sendMailNotificationOnSetLinks() {
 
-        when( caseObjectDAO.getCaseId( eq(En_CaseType.CRM_SUPPORT), eq(CASE_NUMBER ) ) ).thenReturn( CASE_ID );
-        when( caseObjectDAO.getCaseByCaseno( eq( CASE_NUMBER ) ) ).thenReturn( new CaseObject() );
+        when( caseObjectDAO.getCaseIdByNumber( eq(En_CaseType.CRM_SUPPORT), eq(CASE_NUMBER ) ) ).thenReturn( CASE_ID );
+        when( caseObjectDAO.getCaseByNumber( eq(En_CaseType.CRM_SUPPORT), eq( CASE_NUMBER ) ) ).thenReturn( new CaseObject() );
         when( caseLinkDAO.getListByQuery( any( CaseLinkQuery.class ) ) ).thenReturn( Collections.EMPTY_LIST );
         when( caseLinkDAO.persist( any( CaseLink.class ) ) ).thenReturn( CASELINK_ID );
 

@@ -3,9 +3,11 @@ package ru.protei.portal.core.model.view;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.PersonAbsence;
 import ru.protei.portal.core.model.struct.ContactInfo;
+import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -13,7 +15,7 @@ import java.util.Objects;
 /**
  * Сокращенное представление Person
  */
-@JdbcEntity(selectSql = "person.* FROM person, JSON_TABLE(person.contactInfo, '$.items[*]' COLUMNS ( a VARCHAR(32) PATH '$.a', t VARCHAR(64) PATH '$.t', v VARCHAR(128) PATH '$.v')) info")
+@JdbcEntity(table = "person")
 public class EmployeeShortView implements Serializable {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
@@ -52,8 +54,8 @@ public class EmployeeShortView implements Serializable {
     @JdbcColumn(name="sex")
     private String gender;
 
-    @JdbcColumn(name = "contactInfo", converterType = ConverterType.JSON)
-    private ContactInfo contactInfo;
+    @JdbcManyToMany(linkTable = "contact_item_person", localLinkColumn = "person_id", remoteLinkColumn = "contact_item_id")
+    private List<ContactItem> contactItems;
 
     @JdbcOneToMany(table = "worker_entry", localColumn = "id", remoteColumn = "personId")
     private List<WorkerEntryShortView> workerEntries;
@@ -109,11 +111,14 @@ public class EmployeeShortView implements Serializable {
     }
 
     public ContactInfo getContactInfo() {
-        return contactInfo;
+        if (contactItems == null) {
+            contactItems = new ArrayList<>();
+        }
+        return new ContactInfo(contactItems);
     }
 
     public void setContactInfo(ContactInfo contactInfo) {
-        this.contactInfo = contactInfo;
+        this.contactItems = contactInfo != null ? contactInfo.getItems() : null;
     }
 
     public List<WorkerEntryShortView> getWorkerEntries() {
@@ -191,5 +196,9 @@ public class EmployeeShortView implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public interface Fields {
+        String CONTACT_ITEMS = "contactItems";
     }
 }

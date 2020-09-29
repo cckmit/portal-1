@@ -13,7 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
-import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dao.ExternalCaseAppDAO;
+import ru.protei.portal.core.model.dao.JiraEndpointDAO;
+import ru.protei.portal.core.model.dao.JiraPriorityMapEntryDAO;
+import ru.protei.portal.core.model.dao.JiraStatusMapEntryDAO;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.utils.JiraUtils;
@@ -28,8 +31,6 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
 
     @Autowired
     JiraClientFactory clientFactory;
-    @Autowired
-    PersonDAO personDAO;
     @Autowired
     FileStorage fileStorage;
 

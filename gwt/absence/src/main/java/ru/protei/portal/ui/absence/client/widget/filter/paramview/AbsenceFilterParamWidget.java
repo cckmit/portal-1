@@ -87,7 +87,9 @@ public class AbsenceFilterParamWidget extends Composite implements AbstractAbsen
         reasons.setValue(null);
         sortField.setValue(En_SortField.absence_person);
         sortDir.setValue(true);
-        onFilterChanged();
+        if (isAttached()) {
+            onFilterChanged();
+        }
     }
 
     @Override

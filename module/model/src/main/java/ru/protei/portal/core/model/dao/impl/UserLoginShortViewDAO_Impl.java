@@ -27,7 +27,6 @@ public class UserLoginShortViewDAO_Impl extends PortalBaseJdbcDAO<UserLoginShort
             parameters.withCondition(where.condition, where.args);
         }
 
-        parameters.withJoins(" LEFT JOIN person ON user_login.personId = person.id");
         parameters.withOffset(query.getOffset());
         parameters.withLimit(query.getLimit());
 
@@ -40,9 +39,10 @@ public class UserLoginShortViewDAO_Impl extends PortalBaseJdbcDAO<UserLoginShort
             condition.append("1=1");
 
             if (StringUtils.isNotEmpty(query.getSearchString())) {
-                condition.append(" and (user_login.ulogin like ? or person.displayname like ?)");
+                condition.append(" and (user_login.ulogin like ? or person.firstname like ? or person.lastname like ?)");
 
                 String likeArg = HelperFunc.makeLikeArg(query.getSearchString(), true);
+                args.add(likeArg);
                 args.add(likeArg);
                 args.add(likeArg);
             }

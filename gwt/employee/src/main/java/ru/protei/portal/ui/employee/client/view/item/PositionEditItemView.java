@@ -9,6 +9,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionEditItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionEditItemView;
 
@@ -39,6 +40,11 @@ public class PositionEditItemView extends Composite implements AbstractPositionE
     }
 
     @Override
+    public void setContractAgreement(Boolean isContractAgreement) {
+        contractAgreement.setInnerText(isContractAgreement == true ? lang.yes() : lang.no());
+    }
+
+    @Override
     public void setRemovePositionEnable (boolean isEnable) {
         removePosition.setStyleName("link-disabled", !isEnable);
     }
@@ -62,7 +68,13 @@ public class PositionEditItemView extends Composite implements AbstractPositionE
     SpanElement company;
 
     @UiField
+    SpanElement contractAgreement;
+
+    @UiField
     Anchor removePosition;
+
+    @UiField
+    Lang lang;
 
     private AbstractPositionEditItemActivity activity;
 

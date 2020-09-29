@@ -18,7 +18,6 @@ import ru.protei.portal.core.event.CaseObjectMetaEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.utils.DateUtils;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.struct.FileStream;
 import ru.protei.portal.core.model.struct.JiraExtAppData;
@@ -26,12 +25,14 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.service.AttachmentService;
 import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.core.utils.DateUtils;
 import ru.protei.portal.core.utils.EntityCache;
 import ru.protei.portal.jira.dto.JiraHookEventData;
 import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.jira.mapper.CachedPersonMapper;
 import ru.protei.portal.jira.mapper.PersonMapper;
 import ru.protei.portal.jira.utils.CustomJiraIssueParser;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,9 +57,11 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     @Autowired
     CaseService caseService;
     @Autowired
-    CompanyDAO companyDAO;
-    @Autowired
     PersonDAO personDAO;
+    @Autowired
+    private ContactItemDAO contactItemDAO;
+    @Autowired
+    private JdbcManyRelationsHelper jdbcManyRelationsHelper;
     @Autowired
     JiraEndpointDAO jiraEndpointDAO;
     @Autowired
@@ -120,7 +123,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     @Override
     public CompletableFuture<AssembledCaseEvent> create( JiraEndpoint endpoint, JiraHookEventData event) {
         final Issue issue = event.getIssue();
-        CachedPersonMapper personMapper = new CachedPersonMapper( personDAO, endpoint, personDAO.get( endpoint.getPersonId() ));
+        CachedPersonMapper personMapper = new CachedPersonMapper( personDAO, contactItemDAO, jdbcManyRelationsHelper, endpoint, personDAO.get( endpoint.getPersonId() ));
         Long authorId = personMapper.toProteiPerson( event.getUser() ).getId();
         Person initiator = personMapper.toProteiPerson( issue.getReporter() );
         return completedFuture( createCaseObject( initiator, authorId, issue, endpoint, personMapper ));
@@ -131,7 +134,8 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     public CompletableFuture<AssembledCaseEvent> updateOrCreate(JiraEndpoint endpoint, JiraHookEventData event) {
         final Issue issue = event.getIssue();
         final Person defaultPerson = personDAO.get(endpoint.getPersonId());
-        final PersonMapper personMapper = new CachedPersonMapper(personDAO, endpoint, defaultPerson);
+        jdbcManyRelationsHelper.fill(defaultPerson, Person.Fields.CONTACT_ITEMS);
+        final PersonMapper personMapper = new CachedPersonMapper(personDAO, contactItemDAO, jdbcManyRelationsHelper, endpoint, defaultPerson);
 
         User user = event.getUser();
         Long authorId = personMapper.toProteiPerson( event.getUser() ).getId();

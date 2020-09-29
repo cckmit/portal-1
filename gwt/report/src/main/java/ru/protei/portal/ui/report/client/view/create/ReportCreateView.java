@@ -8,9 +8,11 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_ReportAdditionalParamType;
 import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.widget.selector.report.additionalparams.ReportAdditionalParamsMultiSelector;
 import ru.protei.portal.ui.common.client.widget.switcher.Switcher;
 import ru.protei.portal.ui.report.client.activity.create.AbstractReportCreateActivity;
 import ru.protei.portal.ui.report.client.activity.create.AbstractReportCreateView;
@@ -18,6 +20,7 @@ import ru.protei.portal.ui.report.client.widget.reporttype.ReportScheduledTypeBu
 import ru.protei.portal.ui.report.client.widget.reporttype.ReportTypeButtonSelector;
 
 import java.util.List;
+import java.util.Set;
 
 public class ReportCreateView extends Composite implements AbstractReportCreateView {
 
@@ -70,23 +73,13 @@ public class ReportCreateView extends Composite implements AbstractReportCreateV
     }
 
     @Override
-    public HasVisibility checkImportanceHistoryContainerVisibility() {
-        return checkImportanceHistoryContainer;
+    public HasVisibility additionalParamsVisibility() {
+        return additionalParamsContainer;
     }
 
     @Override
-    public HasValue<Boolean> checkImportanceHistory() {
-        return checkImportanceHistory;
-    }
-
-    @Override
-    public HasValue<Boolean> withDescription() {
-        return withDescription;
-    }
-
-    @Override
-    public HasVisibility withDescriptionContainerVisibility() {
-        return withDescriptionContainer;
+    public HasValue<Set<En_ReportAdditionalParamType>> additionalParams() {
+        return additionalParams;
     }
 
     @UiHandler("reportType")
@@ -114,8 +107,11 @@ public class ReportCreateView extends Composite implements AbstractReportCreateV
         name.ensureDebugId(DebugIds.ISSUE_REPORT.NAME_INPUT);
         reportType.ensureDebugId(DebugIds.ISSUE_REPORT.REPORT_TYPE);
         scheduledType.ensureDebugId(DebugIds.ISSUE_REPORT.REPORT_SCHEDULED_TYPE);
-        checkImportanceHistory.ensureDebugId(DebugIds.ISSUE_REPORT.IMPORTANCE_CHECK_HISTORY);
-        withDescription.ensureDebugId(DebugIds.ISSUE_REPORT.WITH_DESCRIPTION);
+        additionalParams.ensureDebugId(DebugIds.ISSUE_REPORT.ADDITIONAL_PARAMS);
+        additionalParams.setAddEnsureDebugId(DebugIds.ISSUE_REPORT.ADDITIONAL_PARAMS_ADD_BUTTON);
+        additionalParams.setClearEnsureDebugId(DebugIds.ISSUE_REPORT.ADDITIONAL_PARAMS_CLEAR_BUTTON);
+        additionalParams.setItemContainerEnsureDebugId(DebugIds.ISSUE_REPORT.ADDITIONAL_PARAMS_ITEM_CONTAINER);
+        additionalParams.setLabelEnsureDebugId(DebugIds.ISSUE_REPORT.ADDITIONAL_PARAMS_LABEL);
         createButton.ensureDebugId(DebugIds.ISSUE_REPORT.CREATE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.ISSUE_REPORT.CANCEL_BUTTON);
     }
@@ -131,19 +127,16 @@ public class ReportCreateView extends Composite implements AbstractReportCreateV
     @UiField
     HTMLPanel scheduledTypeContainer;
     @UiField
-    HTMLPanel checkImportanceHistoryContainer;
-    @UiField
-    HTMLPanel withDescriptionContainer;
-    @UiField
-    Switcher checkImportanceHistory;
-    @UiField
-    Switcher withDescription;
+    HTMLPanel additionalParamsContainer;
     @UiField
     HTMLPanel filterContainer;
     @UiField
     Button createButton;
     @UiField
     Button cancelButton;
+    @Inject
+    @UiField(provided = true)
+    ReportAdditionalParamsMultiSelector additionalParams;
 
     private AbstractReportCreateActivity activity;
 

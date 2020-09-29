@@ -152,6 +152,7 @@ public class ProjectServiceImpl implements ProjectService {
         personQuery.setPeople( true );
         personQuery.setPersonIds( subscribersIds );
         List<Person> persons = personDAO.getPersons( personQuery );
+        jdbcManyRelationsHelper.fill(persons, Person.Fields.CONTACT_ITEMS);
 
         if (isEmpty( persons )) {
             log.info( "onPauseTimeNotification(): Ignore notification: No available subscribers found for pause time notification {}", simpleDateFormat.format( pauseDate ) );
@@ -331,7 +332,9 @@ public class ProjectServiceImpl implements ProjectService {
             if (currentResult.isError()) addLinksResult = currentResult;
         }
 
-        project.setCreator(personDAO.get(project.getCreatorId()));
+        Person creator = personDAO.get(project.getCreatorId());
+        jdbcManyRelationsHelper.fill(creator, Person.Fields.CONTACT_ITEMS);
+        project.setCreator(creator);
 
         ProjectCreateEvent projectCreateEvent = new ProjectCreateEvent(this, token.getPersonId(), project.getId());
 

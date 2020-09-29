@@ -8,7 +8,10 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.client.enterprise1c.api.Api1C;
 import ru.protei.portal.core.exception.ResultStatusException;
-import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dao.CaseObjectDAO;
+import ru.protei.portal.core.model.dao.CaseTypeDAO;
+import ru.protei.portal.core.model.dao.ContractDAO;
+import ru.protei.portal.core.model.dao.ContractorDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.enterprise1c.dto.Contract1C;
@@ -33,7 +36,10 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.StringUtils.*;
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.*;
 
@@ -47,8 +53,6 @@ public class ContractServiceImpl implements ContractService {
     CaseObjectDAO caseObjectDAO;
     @Autowired
     CaseTypeDAO caseTypeDAO;
-    @Autowired
-    PersonDAO personDAO;
     @Autowired
     ContractorDAO contractorDAO;
     @Autowired

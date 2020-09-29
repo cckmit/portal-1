@@ -249,13 +249,7 @@ public abstract class CaseCommentListActivity
             tempAttachments.addAll(commentAttachments);
         }
 
-//        Дозапрашиваем комментарий, для восстановления логинов при редактировании
-        caseCommentController.getCaseComment(caseComment.getId(), new FluentCallback<CaseComment>()
-                .withSuccess(comment -> {
-                    this.comment.setText(comment.getText());
-                    view.message().setValue(comment.getText(), true);
-                })
-        );
+        view.message().setValue(comment.getText(), true);
 
         if (isElapsedTimeEnabled && comment.getTimeElapsed() != null) {
             view.timeElapsed().setTime(comment.getTimeElapsed());
@@ -412,7 +406,7 @@ public abstract class CaseCommentListActivity
             view.addCommentToFront( itemView.asWidget() );
         }
 
-        textRenderController.render(textMarkup, textList, new FluentCallback<List<String>>()
+        textRenderController.render(textMarkup, textList, true, new FluentCallback<List<String>>()
                 .withSuccess(converted -> {
                     for (int i = 0; i < converted.size(); i++) {
                         views.get(i).setMessage(converted.get(i));

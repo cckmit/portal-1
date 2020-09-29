@@ -166,10 +166,9 @@ public class ContactConciseTableView extends Composite implements AbstractContac
 
             Stream<ContactItem> contactItems = infoFacade.allPhonesStream();
 
-            String phones = contactItems.map(
-                    p -> "<span class=\"nowrap\">" + p.value() + "</span>"
-                            + (!StringUtils.isEmpty(p.comment()) ? " (" + p.comment() + ")" : "")
-            ).collect(Collectors.joining(", "));
+            String phones = contactItems
+                    .map(p -> "<span class=\"nowrap\">" + p.value() + "</span>")
+                    .collect(Collectors.joining(", "));
 
             if (StringUtils.isNotBlank(phones)) {
                 com.google.gwt.dom.client.Element label = DOM.createLabel();

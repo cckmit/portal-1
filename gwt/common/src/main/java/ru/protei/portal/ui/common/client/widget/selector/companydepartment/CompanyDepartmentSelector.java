@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.widget.selector.companydepartment;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.AddHandler;
@@ -30,6 +31,7 @@ public class CompanyDepartmentSelector extends ButtonPopupSingleSelector<EntityO
 
         item.setName(elementHtml);
         item.setId(value.getId());
+        item.setEditable(StringUtils.isEmpty(value.getInfo()));
         item.addEditHandler(editHandler);
         return item;
     }

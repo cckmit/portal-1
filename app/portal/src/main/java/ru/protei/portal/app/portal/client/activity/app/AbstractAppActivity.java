@@ -12,4 +12,6 @@ public interface AbstractAppActivity {
     void onLocaleChanged(String locale);
 
     void onSettingsClicked();
+
+    void onMenuSectionsClose();
 }

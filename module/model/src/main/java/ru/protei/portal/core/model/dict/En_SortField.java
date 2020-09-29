@@ -200,6 +200,11 @@ public enum En_SortField {
      * Журнал дежурств date from
      */
     duty_log_date_from("duty_log.date_from"),
+
+    /**
+     * Просто значение
+     */
+    value("value"),
     ;
 
     private String fieldName;

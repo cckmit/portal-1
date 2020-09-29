@@ -36,6 +36,8 @@ public interface AbstractEmployeeEditView extends IsWidget {
 
     HasValue<String> lastName();
 
+    HasValue<Boolean> contractAgreement();
+
     HasText secondName();
 
     HasValue<Date> birthDay ();
@@ -106,6 +108,8 @@ public interface AbstractEmployeeEditView extends IsWidget {
 
     void updateWorkerPositions(Long companyId);
 
+    void setWorkerPositionsEditable(boolean isEditable);
+
     void setAddButtonWorkerPositionVisible(boolean isVisible);
 
     HandlerRegistration addChangeHandler(ChangeHandler changeHandler);
@@ -119,4 +123,6 @@ public interface AbstractEmployeeEditView extends IsWidget {
     void setAvatarUrl(String url);
 
     void setAvatarLabelText(String text);
+
+    void refreshHomeCompanies(Boolean isSynchronize);
 }

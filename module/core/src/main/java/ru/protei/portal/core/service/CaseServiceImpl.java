@@ -44,6 +44,7 @@ import java.util.stream.Collectors;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
+import static ru.protei.portal.core.model.dict.En_CaseType.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.util.CaseStateUtil.isTerminalState;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
@@ -76,7 +77,7 @@ public class CaseServiceImpl implements CaseService {
     @Override
     public Result<CaseObject> getCaseObjectByNumber( AuthToken token, long number ) {
 
-        CaseObject caseObject = caseObjectDAO.getCase( En_CaseType.CRM_SUPPORT, number );
+        CaseObject caseObject = caseObjectDAO.getCaseByNumber( CRM_SUPPORT, number );
 
         return fillCaseObject( token, caseObject );
     }
@@ -160,12 +161,7 @@ public class CaseServiceImpl implements CaseService {
                             .collect(Collectors.toList()));
 
             // update partially filled objects
-            caseObject.setNotifiers(new HashSet<>(personDAO.partialGetListByKeys(
-                            caseObject.getNotifiers()
-                                    .stream()
-                                    .map(person ->  person.getId())
-                                    .collect(Collectors.toList()), "id", "contactInfo"))
-            );
+            jdbcManyRelationsHelper.fill(caseObject.getNotifiers(), Person.Fields.CONTACT_ITEMS);
         }
 
         if (isNotEmpty(caseObjectCreateRequest.getTags())) {
@@ -384,8 +380,9 @@ public class CaseServiceImpl implements CaseService {
                     caseMetaNotifiers.getNotifiers().stream()
                         .map(Person::getId)
                         .collect(Collectors.toList()),
-                    "id", "contactInfo", "displayShortName")
+                    "id", "displayShortName")
             ));
+            jdbcManyRelationsHelper.fill(caseMetaNotifiers.getNotifiers(), Person.Fields.CONTACT_ITEMS);
         }
         caseMetaNotifiers.setModified(new Date());
 
@@ -509,11 +506,11 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     public Result<CaseInfo> getCaseInfo(AuthToken token, Long caseNumber) {
-        if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_VIEW, caseObjectDAO.getCase(En_CaseType.CRM_SUPPORT, caseNumber) ) ) {
+        if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_VIEW, caseObjectDAO.getCaseByNumber(CRM_SUPPORT, caseNumber) ) ) {
             return error(En_ResultStatus.PERMISSION_DENIED );
         }
 
-        CaseShortView caseObject = caseShortViewDAO.getCase( caseNumber );
+        CaseShortView caseObject = caseShortViewDAO.getCaseByNumber( CRM_SUPPORT, caseNumber );
 
         if(caseObject == null)
             return error(En_ResultStatus.NOT_FOUND);
@@ -534,7 +531,7 @@ public class CaseServiceImpl implements CaseService {
     @Override
     @Transactional
     public Result<Long> bindAttachmentToCaseNumber( AuthToken token, En_CaseType caseType, Attachment attachment, long caseNumber) {
-        CaseObject caseObject = caseObjectDAO.getCase(caseType, caseNumber);
+        CaseObject caseObject = caseObjectDAO.getCaseByNumber(caseType, caseNumber);
         if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_EDIT, caseObject ) ) {
             return error(En_ResultStatus.PERMISSION_DENIED );
         }
@@ -584,7 +581,7 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     public Result<Long> getCaseId(AuthToken token, Long caseNumber, En_CaseType type ) {
-        Long caseId = caseObjectDAO.getCaseId( type, caseNumber );
+        Long caseId = caseObjectDAO.getCaseIdByNumber( type, caseNumber );
         if(caseId==null) error( En_ResultStatus.NOT_FOUND );
         return ok(caseId);
     }
@@ -725,7 +722,7 @@ public class CaseServiceImpl implements CaseService {
 
     private List<Long> acceptAllowedCompanies( List<Long> companyIds, Collection<Long> allowedCompaniesIds ) {
         if( companyIds == null ) return new ArrayList<>( allowedCompaniesIds );
-        ArrayList allowedCompanies = new ArrayList( companyIds );
+        ArrayList<Long> allowedCompanies = new ArrayList<>( companyIds );
         allowedCompanies.retainAll( allowedCompaniesIds );
         return allowedCompanies.isEmpty() ? new ArrayList<>( allowedCompaniesIds ) : allowedCompanies;
     }

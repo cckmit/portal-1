@@ -52,6 +52,18 @@ public class EmployeeShortViewDAO_Impl extends PortalBaseJdbcDAO<EmployeeShortVi
         return searchResult;
     }
 
+    @Override
+    public EmployeeShortView getEmployeeByEmail(String email) {
+        EmployeeQuery query = new EmployeeQuery();
+        query.setEmail(email);
+        List<EmployeeShortView> employeeShortViews = employeeListByQuery(query);
+        if (employeeShortViews.isEmpty()) {
+            return null;
+        } else {
+            return employeeShortViews.get(0);
+        }
+    }
+
     private int count(EmployeeQuery query) {
         StringBuilder sql = new StringBuilder("select count(*) from ( select distinct ").append(getSelectSQL());
         SqlCondition whereCondition = createEmployeeSqlCondition(query);
@@ -74,38 +86,6 @@ public class EmployeeShortViewDAO_Impl extends PortalBaseJdbcDAO<EmployeeShortVi
                 .withOffset(query.getOffset())
                 .withLimit(query.getLimit());
 
-        String havingCondition = makeHavingCondition(query);
-
-        if (StringUtils.isNotEmpty(havingCondition)) {
-            parameters
-                    .withGroupBy("id")
-                    .withHaving(havingCondition);
-        }
-
         return parameters;
-    }
-
-    private String makeHavingCondition(EmployeeQuery query) {
-        String result = "";
-
-        int countId = 0;
-
-        if (HelperFunc.isLikeRequired(query.getWorkPhone())) {
-            countId++;
-        }
-
-        if (HelperFunc.isLikeRequired(query.getMobilePhone())) {
-            countId++;
-        }
-
-        if (HelperFunc.isLikeRequired(query.getEmail())) {
-            countId++;
-        }
-
-        if (countId > 0) {
-            result = "count(id) = " + countId;
-        }
-
-        return result;
     }
 }

@@ -13,9 +13,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by michael on 04.04.16.
- */
 public interface PersonDAO extends PortalBaseDAO<Person> {
 
 
@@ -39,6 +36,8 @@ public interface PersonDAO extends PortalBaseDAO<Person> {
     Person getContact(long id);
 
     Person findContactByEmail(long companyId, String email);
+
+    List<Person> findContactByEmail(String email);
 
     Person findContactByName(long companyId, String displayName);
 

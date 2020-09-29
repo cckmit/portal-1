@@ -1363,6 +1363,12 @@ td.info {
   height: 35px;
 }
 
+.checkbox.contract-agreement-checkbox {
+  position: absolute;
+  bottom: 0;
+  margin-bottom: 0;
+}
+
 .subscription-group {
   -webkit-transition: all 0.5s;
   -moz-transition: all 0.5s;
