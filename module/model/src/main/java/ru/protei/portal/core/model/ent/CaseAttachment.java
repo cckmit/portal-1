@@ -26,6 +26,9 @@ public class CaseAttachment implements Serializable{
     @JdbcColumn(name = "remote_id")
     private String remoteId;
 
+    @JdbcJoinedColumn(localColumn = "ccomment_id", remoteColumn = "id", table = "case_comment", mappedColumn = "private_flag")
+    private Boolean isPrivate;
+
     public CaseAttachment() {
     }
 
@@ -82,6 +85,14 @@ public class CaseAttachment implements Serializable{
 
     public void setRemoteId(String remoteId) {
         this.remoteId = remoteId;
+    }
+
+    public Boolean isPrivate() {
+        return isPrivate;
+    }
+
+    public void setPrivate(Boolean isPrivate) {
+        this.isPrivate = isPrivate;
     }
 
     @Override

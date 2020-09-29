@@ -560,7 +560,7 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     public Result<Boolean> isExistsAttachments(Long caseId) {
-        return ok(caseAttachmentDAO.checkExistsByCondition("case_id = ?", caseId));
+        return ok(caseAttachmentDAO.checkExistsByCondition("case_attachment.case_id = ?", caseId));
     }
 
     @Override

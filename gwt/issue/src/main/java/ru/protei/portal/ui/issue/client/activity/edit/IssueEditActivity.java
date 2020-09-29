@@ -29,6 +29,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.util.ClipboardUtils;
+import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.PasteInfo;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
@@ -37,15 +38,12 @@ import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.issue.client.view.edit.IssueInfoWidget;
 import ru.protei.portal.ui.issue.client.view.edit.IssueNameDescriptionEditWidget;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Objects;
+import java.util.*;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CaseCommentUtils.addImageInMessage;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.core.model.helper.CollectionUtils.size;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.util.CaseStateUtil.isTerminalState;
 
@@ -438,8 +436,10 @@ public abstract class IssueEditActivity implements
 
         view.setCaseNumber( issue.getCaseNumber() );
         issueInfoWidget.setDescription(issue.getInfo(), CaseTextMarkupUtil.recognizeTextMarkup(issue));
-        issueInfoWidget.attachmentsListContainer().clear();
-        issueInfoWidget.attachmentsListContainer().add(issue.getAttachments());
+
+        issueInfoWidget.setPrivateCase(issue.isPrivateCase());
+
+        fillAttachments(issueInfoWidget.attachmentsListContainer(), issue.getAttachments());
 
         boolean isAttachmentsEmpty = isEmpty(issue.getAttachments());
 
@@ -452,6 +452,23 @@ public abstract class IssueEditActivity implements
 
         view.nameAndDescriptionEditButtonVisibility().setVisible(!readOnly && selfIssue);
         view.setFavoriteButtonActive(issue.isFavorite());
+    }
+
+    private void fillAttachments(HasAttachments attachmentsContainer, List<Attachment> attachments) {
+        attachmentsContainer.clear();
+
+        if (policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW)) {
+            attachmentsContainer.add(attachments);
+        } else {
+            attachmentsContainer.add(getPrivateAttachments(attachments));
+        }
+    }
+
+    private List<Attachment> getPrivateAttachments(List<Attachment> attachments) {
+        return attachments
+                .stream()
+                .filter(not(Attachment::isPrivate))
+                .collect(Collectors.toList());
     }
 
     private void viewModeIsPreview( boolean isPreviewMode){
