@@ -1,6 +1,11 @@
 package ru.protei.portal.test.nrpe;
 
+import org.junit.Assert;
 import org.junit.Test;
+import ru.protei.portal.core.nrpe.NRPERequest;
+import ru.protei.portal.core.nrpe.NRPEResponse;
+import ru.protei.portal.core.nrpe.NRPEStatus;
+import ru.protei.portal.core.nrpe.response.NRPEIncorrectParams;
 
 import java.util.Arrays;
 import java.util.List;
@@ -57,5 +62,12 @@ public class NRPETest {
                 "NRPE: Unable to read output",
                 "3"
         );
+
+        NRPEResponse response = NRPERequest.parse(responseList);
+        Assert.assertTrue(response instanceof NRPEIncorrectParams);
+
+        NRPEIncorrectParams nrpeIncorrectParams = (NRPEIncorrectParams)response;
+        Assert.assertEquals(NRPEStatus.INCORRECT_PARAMS, nrpeIncorrectParams.getNRPEStatus());
+        Assert.assertEquals("NRPE: Unable to read output", nrpeIncorrectParams.getMessage());
     }
 }
