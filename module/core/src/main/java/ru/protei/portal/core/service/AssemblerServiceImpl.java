@@ -9,6 +9,7 @@ import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.CaseObjectMeta;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
@@ -63,7 +64,13 @@ public class AssemblerServiceImpl implements AssemblerService {
 
         log.info( "fillCaseObject(): CaseObjectID={} Try to fill caseObject.", e.getCaseObjectId() );
 
-        e.setLastCaseObject( caseObjectDAO.get( e.getCaseObjectId() ) );
+        CaseObject caseObject = caseObjectDAO.get(e.getCaseObjectId());
+
+        Person creator = caseObject.getCreator();
+        if (creator != null) {
+            jdbcManyRelationsHelper.fill(creator, Person.Fields.CONTACT_ITEMS);
+        }
+        e.setLastCaseObject(caseObject);
 
         log.info( "fillCaseObject(): CaseObjectID={} CaseObject is successfully filled.", e.getCaseObjectId() );
         return ok( e );
@@ -93,7 +100,12 @@ public class AssemblerServiceImpl implements AssemblerService {
         }
 
         log.info("fillCaseMeta(): CaseObjectID={} Try to fill caseMeta.", e.getCaseObjectId());
-        e.setLastCaseMeta(caseObjectMetaDAO.get(e.getCaseObjectId()));
+        CaseObjectMeta caseMeta = caseObjectMetaDAO.get(e.getCaseObjectId());
+        Person manager = caseMeta.getManager();
+        if (manager != null) {
+            jdbcManyRelationsHelper.fill(manager, Person.Fields.CONTACT_ITEMS);
+        }
+        e.setLastCaseMeta(caseMeta);
         log.info("fillCaseMeta(): CaseObjectID={} caseMeta is successfully filled.", e.getCaseObjectId());
 
         return ok(e);

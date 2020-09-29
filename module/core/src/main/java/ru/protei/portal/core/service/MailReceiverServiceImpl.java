@@ -37,6 +37,7 @@ public class MailReceiverServiceImpl implements MailReceiverService {
     @Autowired
     public void onInit() {
         try {
+            log.info("onInit(): init store");
             store = Session.getInstance(createProperties()).getStore();
         } catch (NoSuchProviderException e) {
             log.error("onInit(): fail to get store");
@@ -51,6 +52,7 @@ public class MailReceiverServiceImpl implements MailReceiverService {
             return;
         }
         try {
+            log.info("performReceiveMailAndAddComments(): connect to store");
             connect(store, portalConfig.data().getMailReceiver());
 
             Folder inbox = store.getFolder("INBOX");
@@ -72,7 +74,7 @@ public class MailReceiverServiceImpl implements MailReceiverService {
 
             inbox.close(false);
         } catch (MessagingException e) {
-            log.error("performReceiveMailAndAddComments(): fail");
+            log.error("performReceiveMailAndAddComments(): fail e={}", e.toString());
             throw new RuntimeException();
         } finally {
             if (store != null) {
