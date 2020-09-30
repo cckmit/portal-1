@@ -1,5 +1,6 @@
 package ru.protei.portal.core.nrpe;
 
+import ru.protei.portal.core.nrpe.parser.NRPEParserHostReachable;
 import ru.protei.portal.core.nrpe.parser.NRPEParserHostUnreachable;
 import ru.protei.portal.core.nrpe.parser.NRPEParserIncorrectParams;
 import ru.protei.portal.core.nrpe.parser.NRPEParserServerUnavailable;
@@ -23,6 +24,8 @@ public class NRPERequest {
         List<String> content = list.subList(0, list.size() - 1);
 
         switch (Objects.requireNonNull(status)) {
+            case HOST_REACHABLE:
+                return NRPEParserHostReachable.parse(content);
             case HOST_UNREACHABLE:
                 return NRPEParserHostUnreachable.parse(content);
             case SERVER_UNAVAILABLE:
