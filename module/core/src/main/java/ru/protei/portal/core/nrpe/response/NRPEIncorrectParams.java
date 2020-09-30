@@ -4,7 +4,7 @@ import ru.protei.portal.core.nrpe.NRPEResponse;
 import ru.protei.portal.core.nrpe.NRPEStatus;
 
 public class NRPEIncorrectParams implements NRPEResponse {
-    private String message;
+    private final String message;
 
     public NRPEIncorrectParams(String message) {
         this.message = message;

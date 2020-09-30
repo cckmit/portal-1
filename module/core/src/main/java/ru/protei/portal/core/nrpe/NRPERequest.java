@@ -1,9 +1,11 @@
 package ru.protei.portal.core.nrpe;
 
+import ru.protei.portal.core.nrpe.parser.NRPEParserHostUnreachable;
 import ru.protei.portal.core.nrpe.parser.NRPEParserIncorrectParams;
 import ru.protei.portal.core.nrpe.parser.NRPEParserServerUnavailable;
 
 import java.util.List;
+import java.util.Objects;
 
 public class NRPERequest {
 
@@ -20,7 +22,9 @@ public class NRPERequest {
         }
         List<String> content = list.subList(0, list.size() - 1);
 
-        switch (status) {
+        switch (Objects.requireNonNull(status)) {
+            case HOST_UNREACHABLE:
+                return NRPEParserHostUnreachable.parse(content);
             case SERVER_UNAVAILABLE:
                 return NRPEParserServerUnavailable.parse(content);
             case INCORRECT_PARAMS:

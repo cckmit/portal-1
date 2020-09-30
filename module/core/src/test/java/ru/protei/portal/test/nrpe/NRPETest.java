@@ -5,6 +5,7 @@ import org.junit.Test;
 import ru.protei.portal.core.nrpe.NRPERequest;
 import ru.protei.portal.core.nrpe.NRPEResponse;
 import ru.protei.portal.core.nrpe.NRPEStatus;
+import ru.protei.portal.core.nrpe.response.NRPEHostUnreachable;
 import ru.protei.portal.core.nrpe.response.NRPEIncorrectParams;
 import ru.protei.portal.core.nrpe.response.NRPEServerUnavailable;
 
@@ -42,10 +43,22 @@ public class NRPETest {
     public void parseHostUnreachable() {
         List<String> responseList = Arrays.asList(
                 "ARPING 192.168.100.91 from 192.168.0.254 lan",
-                "Sent 4 probes (4 broadcast(s))",
+                "Sent 4 probes (3 broadcast(s))",
                 "Received 0 response(s)",
                 "1"
         );
+
+        NRPEResponse response = NRPERequest.parse(responseList);
+        Assert.assertTrue(response instanceof NRPEHostUnreachable);
+
+        NRPEHostUnreachable nrpeIncorrectParams = (NRPEHostUnreachable)response;
+        Assert.assertEquals(NRPEStatus.HOST_UNREACHABLE, nrpeIncorrectParams.getNRPEStatus());
+        Assert.assertEquals("192.168.100.91", nrpeIncorrectParams.getIpTarget());
+        Assert.assertEquals("192.168.0.254", nrpeIncorrectParams.getIpSource());
+        Assert.assertEquals(4, nrpeIncorrectParams.getProbes());
+        Assert.assertEquals(3, nrpeIncorrectParams.getBroadcasts());
+        Assert.assertEquals(0, nrpeIncorrectParams.getResponses());
+
     }
 
     @Test

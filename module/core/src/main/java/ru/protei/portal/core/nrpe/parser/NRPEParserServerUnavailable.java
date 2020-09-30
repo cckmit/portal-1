@@ -13,6 +13,9 @@ public class NRPEParserServerUnavailable implements NRPEParser {
     static private final Pattern line1 = Pattern.compile("^connect to host (?<host>\\w+\\.\\w+\\.\\w+) port \\d+: Connection refused$");
 
     static public NRPEResponse parse(List<String> content) {
+        if (content.size() != 2) {
+            return null;
+        }
         Matcher matcher0 = line0.matcher(content.get(0));
         Matcher matcher1 = line1.matcher(content.get(1));
         if (matcher0.find() && matcher1.find()) {
