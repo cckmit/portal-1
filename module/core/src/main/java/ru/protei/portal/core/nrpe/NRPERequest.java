@@ -1,6 +1,7 @@
 package ru.protei.portal.core.nrpe;
 
 import ru.protei.portal.core.nrpe.parser.NRPEParserIncorrectParams;
+import ru.protei.portal.core.nrpe.parser.NRPEParserServerUnavailable;
 
 import java.util.List;
 
@@ -20,6 +21,8 @@ public class NRPERequest {
         List<String> content = list.subList(0, list.size() - 1);
 
         switch (status) {
+            case SERVER_UNAVAILABLE:
+                return NRPEParserServerUnavailable.parse(content);
             case INCORRECT_PARAMS:
                 return NRPEParserIncorrectParams.parse(content);
             default:

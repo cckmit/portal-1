@@ -6,7 +6,7 @@ import ru.protei.portal.core.nrpe.response.NRPEIncorrectParams;
 import java.util.List;
 
 public class NRPEParserIncorrectParams implements NRPEParser {
-    static public NRPEResponse parse(List<String> list) {
-        return new NRPEIncorrectParams(String.join("\n", list));
+    static public NRPEResponse parse(List<String> content) {
+        return new NRPEIncorrectParams(String.join("\n", content));
     }
 }

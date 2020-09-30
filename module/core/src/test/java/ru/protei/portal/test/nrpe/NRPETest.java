@@ -6,6 +6,7 @@ import ru.protei.portal.core.nrpe.NRPERequest;
 import ru.protei.portal.core.nrpe.NRPEResponse;
 import ru.protei.portal.core.nrpe.NRPEStatus;
 import ru.protei.portal.core.nrpe.response.NRPEIncorrectParams;
+import ru.protei.portal.core.nrpe.response.NRPEServerUnavailable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -54,6 +55,15 @@ public class NRPETest {
                 "connect to host router.protei.ru port 5666: Connection refused",
                 "2"
         );
+
+        NRPEResponse response = NRPERequest.parse(responseList);
+        Assert.assertTrue(response instanceof NRPEServerUnavailable);
+
+        NRPEServerUnavailable nrpeIncorrectParams = (NRPEServerUnavailable)response;
+        Assert.assertEquals(NRPEStatus.SERVER_UNAVAILABLE, nrpeIncorrectParams.getNRPEStatus());
+        Assert.assertEquals("192.168.0.254", nrpeIncorrectParams.getIp());
+        Assert.assertEquals("5666", nrpeIncorrectParams.getPort());
+        Assert.assertEquals("router.protei.ru", nrpeIncorrectParams.getHost());
     }
 
     @Test
