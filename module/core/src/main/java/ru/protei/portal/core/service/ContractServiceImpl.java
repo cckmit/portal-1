@@ -124,6 +124,10 @@ public class ContractServiceImpl implements ContractService {
             return error(En_ResultStatus.PROJECT_NOT_SELECTED);
         }
 
+        if (contract.getState() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         boolean invalidContractDates = stream(contract.getContractDates())
                 .anyMatch(not(this::isValidContractDate));
         if (invalidContractDates) {
@@ -164,13 +168,10 @@ public class ContractServiceImpl implements ContractService {
             throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
         }
 
-        boolean contractStateDefined = contract.getState() != null;
-        if (contractStateDefined) {
-            Result<Long> historyResult = createStateHistory(token, contractId, En_HistoryAction.ADD, null, contract.getState());
-            if (historyResult.isError()) {
-                log.error("createContract(): id = {} | failed to create history for contract state : {}", contractId, historyResult.getStatus());
-                throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
-            }
+        Result<Long> historyResult = createStateHistory(token, contractId, En_HistoryAction.ADD, null, contract.getState());
+        if (historyResult.isError()) {
+            log.error("createContract(): id = {} | failed to create history for contract state : {}", contractId, historyResult.getStatus());
+            throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
         }
 
         try {
@@ -221,6 +222,10 @@ public class ContractServiceImpl implements ContractService {
             return error(En_ResultStatus.PROJECT_NOT_SELECTED);
         }
 
+        if (contract.getState() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         boolean invalidContractDates = stream(contract.getContractDates())
                 .anyMatch(not(this::isValidContractDate));
         if (invalidContractDates) {
@@ -267,22 +272,8 @@ public class ContractServiceImpl implements ContractService {
             throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
         }
 
-        boolean contractStateAdded = prevContract.getState() == null && contract.getState() != null;
-        boolean contractStateRemoved = prevContract.getState() != null && contract.getState() == null;
-        boolean contractStateChanged = prevContract.getState() != null && contract.getState() != null && prevContract.getState() != contract.getState();
-        if (contractStateAdded) {
-            Result<Long> historyResult = createStateHistory(token, contractId, En_HistoryAction.ADD, null, contract.getState());
-            if (historyResult.isError()) {
-                log.error("updateContract(): id = {} | failed to create history for added contract state : {}", contractId, historyResult.getStatus());
-                throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
-            }
-        } else if (contractStateRemoved) {
-            Result<Long> historyResult = createStateHistory(token, contractId, En_HistoryAction.REMOVE, prevContract.getState(), null);
-            if (historyResult.isError()) {
-                log.error("updateContract(): id = {} | failed to create history for removed contract state : {}", contractId, historyResult.getStatus());
-                throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
-            }
-        } else if (contractStateChanged) {
+        boolean contractStateChanged = prevContract.getState() != contract.getState();
+        if (contractStateChanged) {
             Result<Long> historyResult = createStateHistory(token, contractId, En_HistoryAction.CHANGE, prevContract.getState(), contract.getState());
             if (historyResult.isError()) {
                 log.error("updateContract(): id = {} | failed to create history for changed contract state : {}", contractId, historyResult.getStatus());
