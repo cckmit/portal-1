@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.enterprise1c.dto.Contract1C;
 import ru.protei.portal.core.model.enterprise1c.dto.Contractor1C;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.query.ContractApiQuery;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.struct.ContractorQuery;
 import ru.protei.portal.core.model.util.ContractorUtils;
@@ -65,6 +66,8 @@ public class ContractServiceImpl implements ContractService {
     AuthService authService;
     @Autowired
     Api1C api1CService;
+    @Autowired
+    HistoryService historyService;
     @Autowired
     PortalConfig config;
 
@@ -121,6 +124,10 @@ public class ContractServiceImpl implements ContractService {
             return error(En_ResultStatus.PROJECT_NOT_SELECTED);
         }
 
+        if (contract.getState() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         boolean invalidContractDates = stream(contract.getContractDates())
                 .anyMatch(not(this::isValidContractDate));
         if (invalidContractDates) {
@@ -158,6 +165,12 @@ public class ContractServiceImpl implements ContractService {
         boolean contractPersisted = contractDAO.persist(contract) != null;
         if (!contractPersisted) {
             log.error("createContract(): id = {} | failed to persist contract to db", contractId);
+            throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+        }
+
+        Result<Long> historyResult = createStateHistory(token, contractId, En_HistoryAction.ADD, null, contract.getState());
+        if (historyResult.isError()) {
+            log.error("createContract(): id = {} | failed to create history for contract state : {}", contractId, historyResult.getStatus());
             throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
         }
 
@@ -209,6 +222,10 @@ public class ContractServiceImpl implements ContractService {
             return error(En_ResultStatus.PROJECT_NOT_SELECTED);
         }
 
+        if (contract.getState() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         boolean invalidContractDates = stream(contract.getContractDates())
                 .anyMatch(not(this::isValidContractDate));
         if (invalidContractDates) {
@@ -253,6 +270,15 @@ public class ContractServiceImpl implements ContractService {
         if (!contractSaved) {
             log.error("updateContract(): id = {} | failed to save contract to db", contractId);
             throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+        }
+
+        boolean contractStateChanged = prevContract.getState() != contract.getState();
+        if (contractStateChanged) {
+            Result<Long> historyResult = createStateHistory(token, contractId, En_HistoryAction.CHANGE, prevContract.getState(), contract.getState());
+            if (historyResult.isError()) {
+                log.error("updateContract(): id = {} | failed to create history for changed contract state : {}", contractId, historyResult.getStatus());
+                throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+            }
         }
 
         try {
@@ -448,13 +474,27 @@ public class ContractServiceImpl implements ContractService {
     }
 
     @Override
-    public Result<List<Contract>> getContractsByRefKeys(AuthToken token, List<String> refKeys) {
-        if (isEmpty(refKeys)) {
-            return ok(Collections.emptyList());
+    public Result<List<Contract>> getContractsByApiQuery(AuthToken token, ContractApiQuery apiQuery) {
+        if (apiQuery == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
-        List<Contract> contracts = contractDAO.getByRefKeys(refKeys);
+        List<Contract> contracts = contractDAO.getByApiQuery(apiQuery);
         jdbcManyRelationsHelper.fill(contracts, "contractDates");
         return ok(contracts);
+    }
+
+    private Result<Long> createStateHistory(AuthToken token, Long contractId, En_HistoryAction action,
+                                            En_ContractState oldState, En_ContractState newState) {
+        return historyService.createHistory(
+            token,
+            contractId,
+            action,
+            En_HistoryType.STATE,
+            oldState == null ? null : (long) oldState.getId(),
+            oldState == null ? null : oldState.name(),
+            newState == null ? null : (long) newState.getId(),
+            newState == null ? null : newState.name()
+        );
     }
 
     private Contractor1C findContractor(String organization, ContractorQuery query) {
