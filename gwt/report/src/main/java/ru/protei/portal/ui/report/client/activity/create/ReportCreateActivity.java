@@ -13,7 +13,6 @@ import ru.protei.portal.core.model.dto.ReportCaseQuery;
 import ru.protei.portal.core.model.dto.ReportContractQuery;
 import ru.protei.portal.core.model.dto.ReportDto;
 import ru.protei.portal.core.model.ent.Report;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
@@ -25,6 +24,7 @@ import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilte
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectFilterActivity;
 import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectFilterView;
+import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ReportControllerAsync;
@@ -421,6 +421,8 @@ public abstract class ReportCreateActivity implements Activity,
     AbstractProjectFilterView projectFilterView;
     @Inject
     AbstractContractFilterView contractFilterView;
+    @Inject
+    ConfigStorage configStorage;
 
     private boolean isSaving;
     private AppEvents.InitDetails initDetails;

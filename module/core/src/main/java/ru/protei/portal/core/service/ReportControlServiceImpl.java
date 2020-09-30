@@ -37,7 +37,6 @@ import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -128,6 +127,7 @@ public class ReportControlServiceImpl implements ReportControlService {
         query.setStatuses(Collections.singletonList(En_ReportStatus.CREATED));
         query.setLimit(limit);
         query.setRemoved(false);
+        query.setSystemId(config.data().getCommonConfig().getSystemId());
         return reportDAO.getReports(query);
     }
 
@@ -268,6 +268,7 @@ public class ReportControlServiceImpl implements ReportControlService {
         query.setToModified(new Date(System.currentTimeMillis() - config.data().reportConfig().getLiveTime()));
         query.setScheduledTypes(Arrays.asList(En_ReportScheduledType.NONE));
         query.setRemoved(false);
+        query.setSystemId(config.data().getCommonConfig().getSystemId());
         return reportDAO.getReports(query);
     }
 
@@ -275,7 +276,8 @@ public class ReportControlServiceImpl implements ReportControlService {
     @Override
     public Result<Void> processScheduledMailReports(En_ReportScheduledType enReportScheduledType) {
         log.info("processScheduledMailReports(): start");
-        CompletableFuture<?>[] futures = reportDAO.getScheduledReports(enReportScheduledType).stream()
+        final String systemId = config.data().getCommonConfig().getSystemId();
+        CompletableFuture<?>[] futures = reportDAO.getScheduledReports(enReportScheduledType, systemId).stream()
                 .map(report -> {
                     log.info("processScheduledMailReports(): Scheduled Mail Reports = {}", report);
                     setRange(report, enReportScheduledType);

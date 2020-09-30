@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.event.ProcessNewReportsEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
@@ -17,6 +18,7 @@ import ru.protei.portal.core.model.dto.ReportDto;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.ent.UserRole;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.BaseQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -65,6 +67,8 @@ public class ReportServiceImpl implements ReportService {
     EventPublisherService publisherService;
     @Autowired
     ObjectMapper objectMapper;
+    @Autowired
+    PortalConfig config;
 
     @Override
     @Transactional
@@ -76,6 +80,11 @@ public class ReportServiceImpl implements ReportService {
 
         Report report = reportDto.getReport();
         if (report == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        final String systemId = config.data().getCommonConfig().getSystemId();
+        if (HelperFunc.isEmpty(systemId)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -106,6 +115,7 @@ public class ReportServiceImpl implements ReportService {
         report.setStatus(En_ReportStatus.CREATED);
         report.setRestricted(!hasGrantAccess);
         report.setQuery(serializeQuery(query, report.getReportType()));
+        report.setSystemId(systemId);
         if (StringUtils.isBlank(report.getLocale())) {
             report.setLocale(LOCALE_RU);
         }
@@ -138,6 +148,11 @@ public class ReportServiceImpl implements ReportService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
+        final String systemId = config.data().getCommonConfig().getSystemId();
+        if (HelperFunc.isEmpty(systemId)) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         boolean hasAccess = canEdit(token, reportType);
         boolean hasGrantAccess = hasGrantAccess(token, reportType);
         if (!hasAccess) {
@@ -153,6 +168,7 @@ public class ReportServiceImpl implements ReportService {
         report.setStatus(En_ReportStatus.CREATED);
         report.setModified(new Date());
         report.setRestricted(!hasGrantAccess);
+        report.setSystemId(systemId);
 
         reportDAO.merge(report);
 

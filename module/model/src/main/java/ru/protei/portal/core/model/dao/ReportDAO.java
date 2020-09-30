@@ -48,7 +48,7 @@ public interface ReportDAO extends PortalBaseDAO<Report> {
      *
      * @return список отчетов
      */
-    List<Report> getScheduledReports(En_ReportScheduledType enReportScheduledType);
+    List<Report> getScheduledReports(En_ReportScheduledType enReportScheduledType, String systemId);
 
     @SqlConditionBuilder
     SqlCondition createSqlCondition(ReportQuery query);

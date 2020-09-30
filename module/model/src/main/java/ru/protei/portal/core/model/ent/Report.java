@@ -68,6 +68,9 @@ public class Report implements Serializable {
     @JdbcColumn(name = Columns.REMOVED)
     private boolean isRemoved = false;
 
+    @JdbcColumn(name = Columns.SYSTEM_ID)
+    private String systemId;
+
     public Long getId() {
         return id;
     }
@@ -204,6 +207,14 @@ public class Report implements Serializable {
         isRemoved = removed;
     }
 
+    public String getSystemId() {
+        return systemId;
+    }
+
+    public void setSystemId(String systemId) {
+        this.systemId = systemId;
+    }
+
     @Override
     public String toString() {
         return "Report{" +
@@ -223,6 +234,7 @@ public class Report implements Serializable {
                 ", withTags=" + withTags +
                 ", withLinkedIssues=" + withLinkedIssues +
                 ", isRemoved=" + isRemoved +
+                ", systemId='" + systemId + '\'' +
                 '}';
     }
 
@@ -230,6 +242,6 @@ public class Report implements Serializable {
         String STATUS = "status";
         String MODIFIED = "modified";
         String REMOVED = "is_removed";
+        String SYSTEM_ID = "system_id";
     }
-
 }

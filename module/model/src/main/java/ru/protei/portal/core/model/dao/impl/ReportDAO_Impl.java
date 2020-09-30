@@ -61,9 +61,10 @@ public class ReportDAO_Impl extends PortalBaseJdbcDAO<Report> implements ReportD
     }
 
     @Override
-    public List<Report> getScheduledReports(En_ReportScheduledType enReportScheduledType) {
+    public List<Report> getScheduledReports(En_ReportScheduledType enReportScheduledType, String systemId) {
         ReportQuery query = new ReportQuery();
         query.setScheduledTypes(Arrays.asList(enReportScheduledType));
+        query.setSystemId(systemId);
         SqlCondition where = createSqlCondition(query);
         return getList(new JdbcQueryParameters()
                 .withCondition(where.condition, where.args)

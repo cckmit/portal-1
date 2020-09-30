@@ -34,6 +34,8 @@ public class ReportQuery extends BaseQuery {
 
     private Boolean isRemoved = false;
 
+    private String systemId;
+
     public ReportQuery() {}
 
     public ReportQuery(List<En_ReportStatus> statuses, String name, String locale, Date fromCreated, Date toCreated) {
@@ -146,24 +148,30 @@ public class ReportQuery extends BaseQuery {
         isRemoved = removed;
     }
 
+    public String getSystemId() {
+        return systemId;
+    }
+
+    public void setSystemId(String systemId) {
+        this.systemId = systemId;
+    }
+
     @Override
-    public String toString () {
+    public String toString() {
         return "ReportQuery{" +
-                "statuses=" + statuses +
-                ", types=" + types +
-                ", name=" + searchString +
-                ", locale=" + locale +
+                "types=" + types +
+                ", statuses=" + statuses +
+                ", locale='" + locale + '\'' +
                 ", fromCreated=" + fromCreated +
                 ", toCreated=" + toCreated +
                 ", fromModified=" + fromModified +
                 ", toModified=" + toModified +
-                ", offset=" + offset +
-                ", limit=" + limit +
                 ", creatorId=" + creatorId +
                 ", includeIds=" + includeIds +
                 ", excludeIds=" + excludeIds +
-                ", enReportScheduledType=" + scheduledTypes +
+                ", scheduledTypes=" + scheduledTypes +
                 ", isRemoved=" + isRemoved +
+                ", systemId='" + systemId + '\'' +
                 '}';
     }
 }
