@@ -84,6 +84,7 @@ public class AbsenceServiceImpl implements AbsenceService {
         }
 
         Person initiator = personDAO.get(token.getPersonId());
+        jdbcManyRelationsHelper.fill(initiator, Person.Fields.CONTACT_ITEMS);
         PersonAbsence newState = personAbsenceDAO.get(absenceId);
 
         return ok(absenceId)
@@ -126,6 +127,7 @@ public class AbsenceServiceImpl implements AbsenceService {
 
 
         Person initiator = personDAO.get(token.getPersonId());
+        jdbcManyRelationsHelper.fill(initiator, Person.Fields.CONTACT_ITEMS);
         List<PersonAbsence> multiAddAbsenceList = personAbsenceDAO.getListByKeys(ids);
         PersonAbsence newState = CollectionUtils.getFirst(multiAddAbsenceList);
 
@@ -162,6 +164,7 @@ public class AbsenceServiceImpl implements AbsenceService {
         }
 
         Person initiator = personDAO.get(token.getPersonId());
+        jdbcManyRelationsHelper.fill(initiator, Person.Fields.CONTACT_ITEMS);
         PersonAbsence newState = personAbsenceDAO.get(absence.getId());
 
         return ok(absence.getId())
@@ -193,6 +196,7 @@ public class AbsenceServiceImpl implements AbsenceService {
         }
 
         Person initiator = personDAO.get(token.getPersonId());
+        jdbcManyRelationsHelper.fill(initiator, Person.Fields.CONTACT_ITEMS);
 
         return ok(true).publishEvent(new AbsenceNotificationEvent(
                 this,
@@ -229,6 +233,7 @@ public class AbsenceServiceImpl implements AbsenceService {
         }
 
         Person initiator = personDAO.get(token.getPersonId());
+        jdbcManyRelationsHelper.fill(initiator, Person.Fields.CONTACT_ITEMS);
 
         return ok(true)
                 .publishEvent(new AbsenceNotificationEvent(
@@ -251,6 +256,7 @@ public class AbsenceServiceImpl implements AbsenceService {
 
         String title = HelperFunc.isEmpty(name) ? ("Отсутствия от " + dateFormat.format(new Date())) : name.trim();
         Person initiator = personDAO.get(token.getPersonId());
+        jdbcManyRelationsHelper.fill(initiator, Person.Fields.CONTACT_ITEMS);
 
         reportControlService.processAbsenceReport(initiator, title, query);
 

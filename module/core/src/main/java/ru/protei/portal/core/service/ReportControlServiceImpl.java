@@ -32,12 +32,12 @@ import ru.protei.portal.core.report.contract.ReportContract;
 import ru.protei.portal.core.report.projects.ReportProject;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.utils.TimeFormatter;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -89,6 +89,8 @@ public class ReportControlServiceImpl implements ReportControlService {
     Executor reportExecutorService;
     @Autowired
     ObjectMapper objectMapper;
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @PostConstruct
     public void init() {
@@ -313,6 +315,7 @@ public class ReportControlServiceImpl implements ReportControlService {
             processReport(report);
             Report processedReport = reportDAO.get(report.getId());
             ReportDto reportDto = reportService.convertReportToDto(processedReport).getData();
+            if (reportDto.getReport().getCreator() != null) jdbcManyRelationsHelper.fill(reportDto.getReport().getCreator(), Person.Fields.CONTACT_ITEMS);
             boolean isFailedOrRemoved = processedReport == null || processedReport.isRemoved();
             boolean isNotReady = isFailedOrRemoved || !En_ReportStatus.READY.equals(processedReport.getStatus());
             if (isNotReady) {
