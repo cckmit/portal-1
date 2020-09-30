@@ -11,4 +11,8 @@
             </column>
         </addColumn>
     </changeSet>
+
+    <changeSet id="drop-default-value-system_id-in-report-table" author="turik">
+        <dropDefaultValue tableName="report" columnName="system_id" columnDataType="VARCHAR(32)"/>
+    </changeSet>
 </databaseChangeLog>
