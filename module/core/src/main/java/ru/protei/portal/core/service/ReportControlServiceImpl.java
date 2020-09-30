@@ -20,6 +20,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ReportDto;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Report;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.struct.ReportContent;
@@ -91,13 +92,20 @@ public class ReportControlServiceImpl implements ReportControlService {
 
     @PostConstruct
     public void init() {
+        if (HelperFunc.isEmpty(config.data().getCommonConfig().getSystemId())) {
+            log.warn("reports is not started because system id not set in configuration");
+            return;
+        }
         processOldReports();
     }
-
 
     @Override
     @EventListener
     public void onProcessNewReportsEvent(ProcessNewReportsEvent event) {
+        if (HelperFunc.isEmpty(config.data().getCommonConfig().getSystemId())) {
+            log.warn("reports is not started because system id not set in configuration");
+            return;
+        }
         processNewReports();
     }
 
