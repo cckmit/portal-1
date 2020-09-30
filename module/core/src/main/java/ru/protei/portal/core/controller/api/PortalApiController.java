@@ -479,17 +479,17 @@ public class PortalApiController {
                 .ifError(result -> log.warn("removeCaseTag(): Can't remove tag={}. {}", caseTagId, result));
     }
 
-    @PostMapping(value = "/contracts/byrefs")
-    public Result<List<ApiContract>> getContractsByRefIds(HttpServletRequest request, HttpServletResponse response, @RequestBody List<String> refKeys) {
-        log.info("API | getContractsByRefIds(): refKeys={}", refKeys);
+    @PostMapping(value = "/contracts/1c/get")
+    public Result<List<ApiContract>> getContracts1cGet(HttpServletRequest request, HttpServletResponse response, @RequestBody ContractApiQuery contractApiQuery) {
+        log.info("API | getContracts1cGet(): contractApiQuery={}", contractApiQuery);
 
         return authenticate(request, response, authService, sidGen, log)
-                .flatMap(authToken -> contractService.getContractsByRefKeys(authToken, refKeys))
+                .flatMap(authToken -> contractService.getContractsByApiQuery(authToken, contractApiQuery))
                 .map(contracts -> stream(contracts)
                         .map(ContractToApiMapper::contractToApi)
                         .collect(Collectors.toList()))
-                .ifOk(id -> log.info("getContractsByRefIds(): OK"))
-                .ifError(result -> log.warn("getContractsByRefIds(): Can't get contracts by ref keys={}. {}", refKeys, result));
+                .ifOk(id -> log.info("getContracts1cGet(): OK"))
+                .ifError(result -> log.warn("getContracts1cGet(): Can't get contracts by contractApiQuery={}. {}", contractApiQuery, result));
     }
 
     private CaseQuery makeCaseQuery(CaseApiQuery apiQuery) {

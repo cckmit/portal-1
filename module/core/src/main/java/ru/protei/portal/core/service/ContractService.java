@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.query.ContractApiQuery;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.struct.ContractorQuery;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -44,5 +45,5 @@ public interface ContractService {
     Result<Long> removeContractor(AuthToken token, String organization, String refKey);
 
     @Privileged(En_Privilege.CONTRACT_VIEW)
-    Result<List<Contract>> getContractsByRefKeys(AuthToken token, List<String> refKeys);
+    Result<List<Contract>> getContractsByApiQuery(AuthToken token, ContractApiQuery apiQuery);
 }
