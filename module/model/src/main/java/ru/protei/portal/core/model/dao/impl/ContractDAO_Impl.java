@@ -67,10 +67,11 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
                       condition.append(" ROW_NUMBER() OVER (PARTITION BY hw.case_object_id ORDER BY hw.date DESC) AS rownumber");
                     condition.append(" FROM history AS hw WHERE 1=1");
                     condition.append(" AND hw.case_object_id IN (SELECT ch.id FROM contract AS ch)");
-                    condition.append(" AND hw.new_id IN ").append(makeInArg(getOpenedContractStates(), s -> String.valueOf(s.getId())));
                     condition.append(" AND hw.date <= ?");
                   condition.append(" ) hww");
-                  condition.append(" WHERE hww.rownumber = 1");
+                  condition.append(" WHERE 1=1");
+                    condition.append(" AND hww.rownumber = 1");
+                    condition.append(" AND hww.new_id IN ").append(makeInArg(getOpenedContractStates(), s -> String.valueOf(s.getId())));
                 condition.append(")");
                 args.add(apiQuery.getOpenStateDate());
             }
