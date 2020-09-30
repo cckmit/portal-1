@@ -2,9 +2,7 @@ package ru.protei.portal.redmine.service;
 
 import com.taskadapter.redmineapi.bean.Issue;
 import com.taskadapter.redmineapi.bean.User;
-import org.springframework.context.event.EventListener;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.RedmineEndpoint;
 

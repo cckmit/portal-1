@@ -31,7 +31,7 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
 
         for (EmployeeRegistration employeeRegistration : emptyIfNull( probationComplete )) {
             if (employeeRegistration.getPerson() == null) continue;
-
+            jdbcManyRelationsHelper.fill(employeeRegistration.getPerson(), Person.Fields.CONTACT_ITEMS);
             notifyEmployerAboutFeedback( employeeRegistration.getPerson() );
             addCaseComment( employeeRegistration.getId(), makeEmployeeFeedbackComment( employeeRegistration.getPerson() ) );
         }
@@ -47,7 +47,7 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
 
         for (EmployeeRegistration employeeRegistration : emptyIfNull( probationExpires )) {
             if (employeeRegistration.getPerson() == null) continue;
-
+            jdbcManyRelationsHelper.fill(employeeRegistration.getPerson(), Person.Fields.CONTACT_ITEMS);
             notifyEmployerAboutAgenda( employeeRegistration.getPerson() );
             addCaseComment( employeeRegistration.getId(), makeDevelopmentAgendaComment( employeeRegistration.getPerson() ) );
         }
