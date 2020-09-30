@@ -65,11 +65,7 @@ public class AssemblerServiceImpl implements AssemblerService {
         log.info( "fillCaseObject(): CaseObjectID={} Try to fill caseObject.", e.getCaseObjectId() );
 
         CaseObject caseObject = caseObjectDAO.get(e.getCaseObjectId());
-
-        Person creator = caseObject.getCreator();
-        if (creator != null) {
-            jdbcManyRelationsHelper.fill(creator, Person.Fields.CONTACT_ITEMS);
-        }
+        if (caseObject.getCreator() != null) jdbcManyRelationsHelper.fill(caseObject.getCreator(), Person.Fields.CONTACT_ITEMS);
         e.setLastCaseObject(caseObject);
 
         log.info( "fillCaseObject(): CaseObjectID={} CaseObject is successfully filled.", e.getCaseObjectId() );
@@ -101,10 +97,7 @@ public class AssemblerServiceImpl implements AssemblerService {
 
         log.info("fillCaseMeta(): CaseObjectID={} Try to fill caseMeta.", e.getCaseObjectId());
         CaseObjectMeta caseMeta = caseObjectMetaDAO.get(e.getCaseObjectId());
-        Person manager = caseMeta.getManager();
-        if (manager != null) {
-            jdbcManyRelationsHelper.fill(manager, Person.Fields.CONTACT_ITEMS);
-        }
+        if (caseMeta.getManager() != null) jdbcManyRelationsHelper.fill( caseMeta.getManager(), Person.Fields.CONTACT_ITEMS);
         e.setLastCaseMeta(caseMeta);
         log.info("fillCaseMeta(): CaseObjectID={} caseMeta is successfully filled.", e.getCaseObjectId());
 
