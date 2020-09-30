@@ -25,7 +25,6 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
     @EventListener
     @Override
     public void onApplicationStartOrRefreshContext(ContextRefreshedEvent event) {
-        scheduler.scheduleAtFixedRate(this::remindAboutEmployeeProbationPeriod, TimeUnit.MINUTES.toMillis(1));
         log.info("onApplicationStartOrRefresh() Context refresh counter={} refresh source: {}",  contextRefreshedEventCounter.getAndIncrement(), event.getSource());
         if (isPortalStarted.getAndSet( true )) return;
 
