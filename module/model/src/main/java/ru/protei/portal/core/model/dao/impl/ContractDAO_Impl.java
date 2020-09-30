@@ -61,12 +61,16 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
 
             if (apiQuery.getOpenStateDate() != null) {
                 condition.append(" AND contract.id IN (");
-                  condition.append(" SELECT history.case_object_id FROM history WHERE 1=1");
-                  condition.append(" AND history.case_object_id IN (SELECT contract_h.id FROM contract AS contract_h)");
-                  condition.append(" AND ? BETWEEN");
-                    condition.append(" (SELECT MIN(hd1.date) AS date FROM history AS hd1 WHERE hd1.new_id IN ").append(makeInArg(getOpenedContractStates(), s -> String.valueOf(s.getId()))).append(")");
-                    condition.append(" AND");
-                    condition.append(" (SELECT MAX(hd2.date) AS date FROM history AS hd2 WHERE hd2.new_id IN ").append(makeInArg(getClosedContractStates(), s -> String.valueOf(s.getId()))).append(")");
+                  condition.append(" SELECT DISTINCT hww.case_object_id FROM (");
+                    condition.append(" SELECT");
+                      condition.append(" hw.*,");
+                      condition.append(" ROW_NUMBER() OVER (PARTITION BY hw.case_object_id ORDER BY hw.date DESC) AS rownumber");
+                    condition.append(" FROM history AS hw WHERE 1=1");
+                    condition.append(" AND hw.case_object_id IN (SELECT ch.id FROM contract AS ch)");
+                    condition.append(" AND hw.new_id IN ").append(makeInArg(getOpenedContractStates(), s -> String.valueOf(s.getId())));
+                    condition.append(" AND hw.date <= ?");
+                  condition.append(" ) hww");
+                  condition.append(" WHERE hww.rownumber = 1");
                 condition.append(")");
                 args.add(apiQuery.getOpenStateDate());
             }
