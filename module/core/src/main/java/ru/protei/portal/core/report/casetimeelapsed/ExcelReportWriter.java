@@ -29,13 +29,14 @@ public class ExcelReportWriter implements
     private final Lang.LocalizedLang lang;
     private final String locale;
     private final Set<En_TimeElapsedType> timeElapsedTypes;
-    private String[] formats;
+    private final String[] formats;
 
     public ExcelReportWriter(Lang.LocalizedLang localizedLang, Set<En_TimeElapsedType> timeElapsedTypes) {
         this.book = new JXLSHelper.ReportBook<>(localizedLang, this);
         this.lang = localizedLang;
         this.locale = localizedLang.getLanguageTag();
         this.timeElapsedTypes = timeElapsedTypes;
+        this.formats = getFormats(timeElapsedTypes);
     }
 
     @Override
@@ -69,7 +70,7 @@ public class ExcelReportWriter implements
             cs.setFont(book.getDefaultFont());
             cs.setVerticalAlignment(VerticalAlignment.CENTER);
             cs.setDataFormat(workbook.createDataFormat()
-                    .getFormat(getFormat(columnIndex)));
+                    .getFormat(formats[columnIndex]));
         });
     }
 
@@ -78,54 +79,9 @@ public class ExcelReportWriter implements
         return getColumnsWidth(timeElapsedTypes);
     }
 
-
-    private int[] getColumnsWidth(Set<En_TimeElapsedType> timeElapsedTypes) {
-        List<Integer> columnsWidthList = new ListBuilder<Integer>()
-                .add(3650).add(3430).add(8570)
-                .add(4590).add(4200).add(4200).add(4200)
-                .add(3350).add(4600).add(4200)
-                .addIf(5800, timeElapsedTypes.contains(En_TimeElapsedType.NONE))
-                .addIf(5800, timeElapsedTypes.contains(En_TimeElapsedType.WATCH))
-                .addIf(5800, timeElapsedTypes.contains(En_TimeElapsedType.NIGHT_WORK))
-                .addIf(5800, timeElapsedTypes.contains(En_TimeElapsedType.SOFT_INSTALL))
-                .addIf(5800, timeElapsedTypes.contains(En_TimeElapsedType.SOFT_UPDATE))
-                .addIf(5800, timeElapsedTypes.contains(En_TimeElapsedType.SOFT_CONFIG))
-                .addIf(5800, timeElapsedTypes.contains(En_TimeElapsedType.TESTING))
-                .addIf(5800, timeElapsedTypes.contains(En_TimeElapsedType.CONSULTATION))
-                .addIf(5800, timeElapsedTypes.contains(En_TimeElapsedType.MEETING))
-                .addIf(5800, timeElapsedTypes.contains(En_TimeElapsedType.DISCUSSION_OF_IMPROVEMENTS))
-                .addIf(5800, timeElapsedTypes.contains(En_TimeElapsedType.LOG_ANALYSIS))
-                .addIf(5800, timeElapsedTypes.contains(En_TimeElapsedType.SOLVE_PROBLEMS))
-                .add(5800).build();
-
-        return toPrimitiveIntegerArray(columnsWidthList);
-    }
-
     @Override
     public String[] getColumnNames() {
         return getColumnNames(timeElapsedTypes);
-    }
-
-    private String[] getColumnNames(Set<En_TimeElapsedType> timeElapsedTypes) {
-        List<String> columnNames = new ListBuilder<String>()
-                .add("ir_caseno").add("ir_private").add("ir_name")
-                .add("ir_company").add("ir_product").add("ir_performer").add("ir_manager")
-                .add("ir_importance").add("ir_state").add("ir_date_created")
-                .addIf("ir_work_time_none", timeElapsedTypes.contains(En_TimeElapsedType.NONE))
-                .addIf("ir_work_time_watch", timeElapsedTypes.contains(En_TimeElapsedType.WATCH))
-                .addIf("ir_work_time_night_work", timeElapsedTypes.contains(En_TimeElapsedType.NIGHT_WORK))
-                .addIf("ir_work_time_SoftInstall", timeElapsedTypes.contains(En_TimeElapsedType.SOFT_INSTALL))
-                .addIf("ir_work_time_SoftUpdate", timeElapsedTypes.contains(En_TimeElapsedType.SOFT_UPDATE))
-                .addIf("ir_work_time_SoftConfig", timeElapsedTypes.contains(En_TimeElapsedType.SOFT_CONFIG))
-                .addIf("ir_work_time_Testing", timeElapsedTypes.contains(En_TimeElapsedType.TESTING))
-                .addIf("ir_work_time_Consultation", timeElapsedTypes.contains(En_TimeElapsedType.CONSULTATION))
-                .addIf("ir_work_time_Meeting", timeElapsedTypes.contains(En_TimeElapsedType.MEETING))
-                .addIf("ir_work_time_DiscussionOfImprovements", timeElapsedTypes.contains(En_TimeElapsedType.DISCUSSION_OF_IMPROVEMENTS))
-                .addIf("ir_work_time_LogAnalysis", timeElapsedTypes.contains(En_TimeElapsedType.LOG_ANALYSIS))
-                .addIf("ir_work_time_SolveProblems", timeElapsedTypes.contains(En_TimeElapsedType.SOLVE_PROBLEMS))
-                .add("ir_work_time_all").build();
-
-        return columnNames.toArray(new String[]{});
     }
 
     @Override
@@ -171,14 +127,6 @@ public class ExcelReportWriter implements
         return columnValues.toArray();
     }
 
-    private String getFormat(int columnIndex) {
-        if (formats == null) {
-            formats = getFormats(timeElapsedTypes);
-        }
-
-        return formats[columnIndex];
-    }
-
     private String[] getFormats(Set<En_TimeElapsedType> timeElapsedTypes) {
         List<String> columnsWidthList = new ListBuilder<String>()
                 .add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD)
@@ -199,5 +147,49 @@ public class ExcelReportWriter implements
                 .add(ExcelFormat.INFINITE_HOURS_MINUTES).build();
 
         return columnsWidthList.toArray(new String[]{});
+    }
+
+    private int[] getColumnsWidth(Set<En_TimeElapsedType> timeElapsedTypes) {
+        List<Integer> columnsWidthList = new ListBuilder<Integer>()
+                .add(3650).add(3430).add(8570)
+                .add(4590).add(4200).add(4200).add(4200)
+                .add(3350).add(4600).add(4200)
+                .addIf(5800, timeElapsedTypes.contains(En_TimeElapsedType.NONE))
+                .addIf(5800, timeElapsedTypes.contains(En_TimeElapsedType.WATCH))
+                .addIf(5800, timeElapsedTypes.contains(En_TimeElapsedType.NIGHT_WORK))
+                .addIf(5800, timeElapsedTypes.contains(En_TimeElapsedType.SOFT_INSTALL))
+                .addIf(5800, timeElapsedTypes.contains(En_TimeElapsedType.SOFT_UPDATE))
+                .addIf(5800, timeElapsedTypes.contains(En_TimeElapsedType.SOFT_CONFIG))
+                .addIf(5800, timeElapsedTypes.contains(En_TimeElapsedType.TESTING))
+                .addIf(5800, timeElapsedTypes.contains(En_TimeElapsedType.CONSULTATION))
+                .addIf(5800, timeElapsedTypes.contains(En_TimeElapsedType.MEETING))
+                .addIf(5800, timeElapsedTypes.contains(En_TimeElapsedType.DISCUSSION_OF_IMPROVEMENTS))
+                .addIf(5800, timeElapsedTypes.contains(En_TimeElapsedType.LOG_ANALYSIS))
+                .addIf(5800, timeElapsedTypes.contains(En_TimeElapsedType.SOLVE_PROBLEMS))
+                .add(5800).build();
+
+        return toPrimitiveIntegerArray(columnsWidthList);
+    }
+
+    private String[] getColumnNames(Set<En_TimeElapsedType> timeElapsedTypes) {
+        List<String> columnNames = new ListBuilder<String>()
+                .add("ir_caseno").add("ir_private").add("ir_name")
+                .add("ir_company").add("ir_product").add("ir_performer").add("ir_manager")
+                .add("ir_importance").add("ir_state").add("ir_date_created")
+                .addIf("ir_work_time_none", timeElapsedTypes.contains(En_TimeElapsedType.NONE))
+                .addIf("ir_work_time_watch", timeElapsedTypes.contains(En_TimeElapsedType.WATCH))
+                .addIf("ir_work_time_night_work", timeElapsedTypes.contains(En_TimeElapsedType.NIGHT_WORK))
+                .addIf("ir_work_time_SoftInstall", timeElapsedTypes.contains(En_TimeElapsedType.SOFT_INSTALL))
+                .addIf("ir_work_time_SoftUpdate", timeElapsedTypes.contains(En_TimeElapsedType.SOFT_UPDATE))
+                .addIf("ir_work_time_SoftConfig", timeElapsedTypes.contains(En_TimeElapsedType.SOFT_CONFIG))
+                .addIf("ir_work_time_Testing", timeElapsedTypes.contains(En_TimeElapsedType.TESTING))
+                .addIf("ir_work_time_Consultation", timeElapsedTypes.contains(En_TimeElapsedType.CONSULTATION))
+                .addIf("ir_work_time_Meeting", timeElapsedTypes.contains(En_TimeElapsedType.MEETING))
+                .addIf("ir_work_time_DiscussionOfImprovements", timeElapsedTypes.contains(En_TimeElapsedType.DISCUSSION_OF_IMPROVEMENTS))
+                .addIf("ir_work_time_LogAnalysis", timeElapsedTypes.contains(En_TimeElapsedType.LOG_ANALYSIS))
+                .addIf("ir_work_time_SolveProblems", timeElapsedTypes.contains(En_TimeElapsedType.SOLVE_PROBLEMS))
+                .add("ir_work_time_all").build();
+
+        return columnNames.toArray(new String[]{});
     }
 }

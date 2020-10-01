@@ -26,12 +26,13 @@ public class ExcelReportWriter implements
     private final JXLSHelper.ReportBook<ReportProjectWithLastComment> book;
     private final Lang.LocalizedLang lang;
     private final EnumLangUtil enumLangUtil;
-    private String[] formats;
+    private final String[] formats;
 
     public ExcelReportWriter(Lang.LocalizedLang localizedLang, EnumLangUtil enumLangUtil) {
         this.book = new JXLSHelper.ReportBook<>(localizedLang, this);
         this.lang = localizedLang;
         this.enumLangUtil = enumLangUtil;
+        this.formats = getFormats();
     }
 
     @Override
@@ -65,7 +66,7 @@ public class ExcelReportWriter implements
             cs.setFont(book.getDefaultFont());
             cs.setVerticalAlignment(VerticalAlignment.CENTER);
             cs.setDataFormat(workbook.createDataFormat()
-                    .getFormat(getFormat(columnIndex)));
+                    .getFormat(formats[columnIndex]));
         });
     }
 
@@ -108,14 +109,6 @@ public class ExcelReportWriter implements
         values.add(comment != null ? comment.getText() : "");
 
         return values.toArray();
-    }
-
-    private String getFormat(int columnIndex) {
-        if (formats == null) {
-            formats = getFormats();
-        }
-
-        return formats[columnIndex];
     }
 
     private String[] getFormats() {

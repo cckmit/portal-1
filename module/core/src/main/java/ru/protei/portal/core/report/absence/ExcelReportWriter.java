@@ -21,11 +21,12 @@ public class ExcelReportWriter implements
 
     private final JXLSHelper.ReportBook<PersonAbsence> book;
     private final Lang.LocalizedLang lang;
-    private String[] formats;
+    private final String[] formats;
 
     public ExcelReportWriter(Lang.LocalizedLang lang) {
         this.book = new JXLSHelper.ReportBook<>(lang, this);
         this.lang = lang;
+        this.formats = getFormats();
     }
 
     @Override
@@ -59,7 +60,7 @@ public class ExcelReportWriter implements
             cs.setFont(book.getDefaultFont());
             cs.setVerticalAlignment(VerticalAlignment.CENTER);
             cs.setDataFormat(workbook.createDataFormat()
-                    .getFormat(getFormat(columnIndex)));
+                    .getFormat(formats[columnIndex]));
         });
     }
 
@@ -82,14 +83,6 @@ public class ExcelReportWriter implements
         values.add(object.getReason() != null ? lang.get("absenceReasonValue" + object.getReason().getId()) : "");
         values.add(HelperFunc.isNotEmpty(object.getUserComment()) ? object.getUserComment() : "");
         return values.toArray();
-    }
-
-    private String getFormat(int columnIndex) {
-        if (formats == null) {
-            formats = getFormats();
-        }
-
-        return formats[columnIndex];
     }
 
     private String[] getFormats() {

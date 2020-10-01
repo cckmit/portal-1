@@ -45,7 +45,7 @@ public class ExcelReportWriter implements
     private final boolean withTags;
     private final boolean withLinkedIssues;
     private final boolean isHumanReadable;
-    private String[] formats;
+    private final String[] formats;
 
     public ExcelReportWriter(Lang.LocalizedLang localizedLang,
                              boolean isRestricted,
@@ -62,6 +62,7 @@ public class ExcelReportWriter implements
         this.withTags = withTags;
         this.withLinkedIssues = withLinkedIssues;
         this.isHumanReadable = isHumanReadable;
+        this.formats = getFormats(isNotRestricted, withDescription, withTags, withLinkedIssues, isHumanReadable);
     }
 
     @Override
@@ -189,7 +190,7 @@ public class ExcelReportWriter implements
         return book.makeCellStyle(columnIndex, cs -> {
             cs.setFont(book.getDefaultFont());
             cs.setVerticalAlignment(VerticalAlignment.CENTER);
-            cs.setDataFormat(workbook.createDataFormat().getFormat(getFormat(columnIndex)));
+            cs.setDataFormat(workbook.createDataFormat().getFormat(formats[columnIndex]));
         });
     }
 
@@ -234,14 +235,6 @@ public class ExcelReportWriter implements
             return minutes > 0 ? minutes : null;
         }
         return null;
-    }
-
-    private String getFormat(int columnIndex) {
-        if (formats == null) {
-            formats = getFormats(isNotRestricted, withDescription, withTags, withLinkedIssues, isHumanReadable);
-        }
-
-        return formats[columnIndex];
     }
 
     private String[] getFormats(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues, boolean isHumanReadable) {
