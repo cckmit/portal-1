@@ -41,12 +41,14 @@ public class ExcelReportWriter implements
     private final boolean withDescription;
     private final boolean withTags;
     private final boolean withLinkedIssues;
+    private final boolean isHumanReadable;
 
     public ExcelReportWriter(Lang.LocalizedLang localizedLang,
                              boolean isRestricted,
                              boolean withDescription,
                              boolean withTags,
-                             boolean withLinkedIssues) {
+                             boolean withLinkedIssues,
+                             boolean isHumanReadable) {
 
         this.book = new JXLSHelper.ReportBook<>(localizedLang, this);
         this.lang = localizedLang;
@@ -55,6 +57,7 @@ public class ExcelReportWriter implements
         this.withDescription = withDescription;
         this.withTags = withTags;
         this.withLinkedIssues = withLinkedIssues;
+        this.isHumanReadable = isHumanReadable;
     }
 
     @Override
@@ -84,12 +87,12 @@ public class ExcelReportWriter implements
 
     @Override
     public int[] getColumnsWidth() {
-        return getColumnsWidth(isNotRestricted, withDescription, withTags, withLinkedIssues);
+        return getColumnsWidth(isNotRestricted, withDescription, withTags, withLinkedIssues, isHumanReadable);
     }
 
     @Override
     public String[] getColumnNames() {
-        return getColumns(isNotRestricted, withDescription, withTags, withLinkedIssues);
+        return getColumns(isNotRestricted, withDescription, withTags, withLinkedIssues, isHumanReadable);
     }
 
     @Override
@@ -165,15 +168,11 @@ public class ExcelReportWriter implements
         values.add(important != null ? important : "");
         values.add(critical != null ? critical : "");
 
-        if (isNotRestricted) {
-            values.add(solutionDurationFirst == null ? "" : toExcelTimeFormat(solutionDurationFirst));
-            values.add(solutionDurationFirst == null ? "" : toDaysHoursMinutes(solutionDurationFirst));
-        }
+        if (isNotRestricted) values.add(solutionDurationFirst == null ? "" : toExcelTimeFormat(solutionDurationFirst));
+        if (isNotRestricted && isHumanReadable) values.add(solutionDurationFirst == null ? "" : toDaysHoursMinutes(solutionDurationFirst));
 
-        if (isNotRestricted) {
-            values.add(solutionDurationFull == null ? "" : toExcelTimeFormat(solutionDurationFull));
-            values.add(solutionDurationFull == null ? "" : toDaysHoursMinutes(solutionDurationFull));
-        }
+        if (isNotRestricted) values.add(solutionDurationFull == null ? "" : toExcelTimeFormat(solutionDurationFull));
+        if (isNotRestricted && isHumanReadable) values.add(solutionDurationFull == null ? "" : toDaysHoursMinutes(solutionDurationFull));
 
         if (isNotRestricted) values.add(issue.getTimeElapsed() != null && issue.getTimeElapsed() > 0 ? toExcelTimeFormat(issue.getTimeElapsed()) : "");
         if (isNotRestricted) values.add(toExcelTimeFormat(timeElapsedInSelectedDuration));
@@ -187,7 +186,7 @@ public class ExcelReportWriter implements
             cs.setFont(book.getDefaultFont());
             cs.setVerticalAlignment(VerticalAlignment.CENTER);
             cs.setDataFormat(workbook.createDataFormat()
-                    .getFormat(getFormats(isNotRestricted, withDescription, withTags, withLinkedIssues)[columnIndex]));
+                    .getFormat(getFormats(isNotRestricted, withDescription, withTags, withLinkedIssues, isHumanReadable)[columnIndex]));
         });
     }
 
@@ -246,23 +245,23 @@ public class ExcelReportWriter implements
         return null;
     }
 
-    private String[] getFormats(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues) {
+    private String[] getFormats(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues, boolean isHumanReadable) {
         List<String> formatList = new ListBuilder<String>()
                 .add(ExcelFormat.STANDARD).addIf(ExcelFormat.STANDARD, isNotRestricted).add(ExcelFormat.STANDARD).addIf(ExcelFormat.STANDARD, withDescription)
-                .add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).addIf(ExcelFormat.STANDARD, withTags).addIf(ExcelFormat.STANDARD, withLinkedIssues)
                 .add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD)
+                .add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).addIf(ExcelFormat.STANDARD, withTags).addIf(ExcelFormat.STANDARD, withLinkedIssues)
                 .add(ExcelFormat.DATE_TIME).add(ExcelFormat.DATE_TIME).add(ExcelFormat.DATE_TIME)
                 .add(ExcelFormat.DATE_TIME).add(ExcelFormat.DATE_TIME).add(ExcelFormat.DATE_TIME)
                 .add(ExcelFormat.DATE_TIME).add(ExcelFormat.DATE_TIME)
-                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted).addIf(ExcelFormat.STANDARD, isNotRestricted)
-                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted).addIf(ExcelFormat.STANDARD, isNotRestricted)
+                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted).addIf(ExcelFormat.STANDARD, isNotRestricted && isHumanReadable)
+                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted).addIf(ExcelFormat.STANDARD, isNotRestricted && isHumanReadable)
                 .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted).addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted)
                 .build();
 
         return formatList.toArray(new String[]{});
     }
 
-    private int[] getColumnsWidth(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues) {
+    private int[] getColumnsWidth(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues, boolean isHumanReadable) {
         List<Integer> columnsWidthList = new ListBuilder<Integer>()
                 .add(3650).addIf(3430, isNotRestricted).add(8570).addIf(9000, withDescription)
                 .add(4590).add(4200).add(4200).add(4200)
@@ -270,15 +269,15 @@ public class ExcelReportWriter implements
                 .add(4200).add(5800).add(5800)
                 .add(5800).add(5800).add(5800)
                 .add(5800).add(5800)
-                .addIf(5800, isNotRestricted).addIf(5800, isNotRestricted)
-                .addIf(5800, isNotRestricted).addIf(5800, isNotRestricted)
+                .addIf(12000, isNotRestricted).addIf(12000, isNotRestricted && isHumanReadable)
+                .addIf(12000, isNotRestricted).addIf(12000, isNotRestricted && isHumanReadable)
                 .addIf(5800, isNotRestricted).addIf(12000, isNotRestricted)
                 .build();
 
         return toPrimitiveIntegerArray(columnsWidthList);
     }
 
-    private String[] getColumns(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues) {
+    private String[] getColumns(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues, boolean isHumanReadable) {
         List<String> columnsList = new ListBuilder<String>()
                 .add("ir_caseno").addIf("ir_private", isNotRestricted).add("ir_name").addIf("ir_description", withDescription)
                 .add("ir_company").add("ir_initiator").add("ir_manager").add("ir_manager_company")
@@ -286,8 +285,8 @@ public class ExcelReportWriter implements
                 .add("ir_date_created").add("ir_date_opened").add("ir_date_workaround")
                 .add("ir_date_customer_test").add("ir_date_done").add("ir_date_verify")
                 .add("ir_date_important").add("ir_date_critical")
-                .addIf("ir_time_solution_first", isNotRestricted).addIf("ir_time_solution_first_with_days", isNotRestricted)
-                .addIf("ir_time_solution_full", isNotRestricted).addIf("ir_time_solution_full_with_days", isNotRestricted)
+                .addIf("ir_time_solution_first", isNotRestricted).addIf("ir_time_solution_first_with_days", isNotRestricted && isHumanReadable)
+                .addIf("ir_time_solution_full", isNotRestricted).addIf("ir_time_solution_full_with_days", isNotRestricted && isHumanReadable)
                 .addIf("ir_time_elapsed", isNotRestricted).addIf("ir_time_elapsed_selected_range", isNotRestricted)
                 .build();
 

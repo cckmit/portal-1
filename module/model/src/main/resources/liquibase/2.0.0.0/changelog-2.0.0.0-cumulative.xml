@@ -52,5 +52,6 @@
   <include file="2020-09-18-add-is_contract_agreement-column-to-worker_entry-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-09-14-add-cost-and-currency-columns-to-contract_date-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-09-24-add-clm-id-in-jira-issue.xml" relativeToChangelogFile="true"/>
+  <include file="2020-10-01-add-human_readable-column-to-report-table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

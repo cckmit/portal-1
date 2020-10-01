@@ -68,6 +68,9 @@ public class Report implements Serializable {
     @JdbcColumn(name = Columns.REMOVED)
     private boolean isRemoved = false;
 
+    @JdbcColumn(name = "human_readable")
+    private boolean isHumanReadable;
+
     public Long getId() {
         return id;
     }
@@ -202,6 +205,14 @@ public class Report implements Serializable {
 
     public void setRemoved(boolean removed) {
         isRemoved = removed;
+    }
+
+    public boolean isHumanReadable() {
+        return isHumanReadable;
+    }
+
+    public void setHumanReadable(boolean humanReadable) {
+        isHumanReadable = humanReadable;
     }
 
     @Override
