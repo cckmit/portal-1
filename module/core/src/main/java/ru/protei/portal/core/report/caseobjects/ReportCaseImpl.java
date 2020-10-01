@@ -61,7 +61,7 @@ public class ReportCaseImpl implements ReportCase {
         int offset = 0;
         try (ReportWriter<CaseObjectReportRequest> writer =
                     new ExcelReportWriter(localizedLang, report.isRestricted(), report.isWithDescription(),
-                            report.isWithTags(), report.isWithLinkedIssues())) {
+                            report.isWithTags(), report.isWithLinkedIssues(), report.isHumanReadable())) {
 
             int sheetNumber = writer.createSheet();
 

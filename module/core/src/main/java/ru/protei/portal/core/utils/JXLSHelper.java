@@ -167,7 +167,7 @@ public final class JXLSHelper {
             }
         }
 
-        private static <T> void fillRow(Row row, Object[] values, Function<Integer, CellStyle> cellStyleProvider) {
+        private static void fillRow(Row row, Object[] values, Function<Integer, CellStyle> cellStyleProvider) {
             for (int columnIndex = 0; columnIndex < values.length; columnIndex++) {
                 Cell cell = row.createCell(columnIndex);
                 cell.setCellStyle(cellStyleProvider.apply(columnIndex));

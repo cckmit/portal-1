@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import ru.protei.portal.core.model.dao.CaseCommentTimeElapsedSumDAO;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.CaseCommentTimeElapsedSum;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.util.sqlcondition.Condition;
@@ -15,6 +16,7 @@ import ru.protei.winter.jdbc.JdbcQueryParameters;
 import java.util.Collection;
 import java.util.List;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
 import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.condition;
 
@@ -55,13 +57,16 @@ public class CaseCommentTimeElapsedSumDAO_Impl extends PortalBaseJdbcDAO<CaseCom
     }
 
     private Condition getConditionByTimeElapsedTypeIds(Collection<Integer> timeElapsedTypeIds) {
+        if (isEmpty(timeElapsedTypeIds)) {
+            return condition();
+        }
+
         if (!timeElapsedTypeIds.contains(En_TimeElapsedType.NONE.getId())) {
             return condition().and("case_comment.time_elapsed_type").in(timeElapsedTypeIds);
         }
 
         return condition()
                 .or("case_comment.time_elapsed_type").in(timeElapsedTypeIds)
-                .or("case_comment.time_elapsed_type").isNull(true)
-                .and("case_comment.time_elapsed").not().isNull(true);
+                .or("case_comment.time_elapsed_type").isNull(true);
     }
 }

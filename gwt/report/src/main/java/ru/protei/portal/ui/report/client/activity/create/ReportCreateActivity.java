@@ -136,6 +136,7 @@ public abstract class ReportCreateActivity implements Activity,
         report.setWithDescription(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.DESCRIPTION));
         report.setWithTags(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.TAGS));
         report.setWithLinkedIssues(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.LINKED_ISSUES));
+        report.setHumanReadable(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.HUMAN_READABLE));
         return report;
     }
 
