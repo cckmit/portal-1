@@ -13,21 +13,24 @@ import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.CaseObjectReportRequest;
-import ru.protei.portal.core.model.struct.ListBuilder;
 import ru.protei.portal.core.model.struct.Interval;
+import ru.protei.portal.core.model.struct.ListBuilder;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.ExcelFormatUtils.ExcelFormat;
 import ru.protei.portal.core.utils.JXLSHelper;
-import ru.protei.portal.core.utils.WorkTimeFormatter;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
 import static ru.protei.portal.core.model.util.TransliterationUtils.transliterate;
+import static ru.protei.portal.core.utils.ExcelFormatUtils.toDaysHoursMinutes;
 import static ru.protei.portal.core.utils.ExcelFormatUtils.toExcelTimeFormat;
 
 public class ExcelReportWriter implements
@@ -42,6 +45,7 @@ public class ExcelReportWriter implements
     private final boolean withTags;
     private final boolean withLinkedIssues;
     private final boolean isHumanReadable;
+    private String[] formats;
 
     public ExcelReportWriter(Lang.LocalizedLang localizedLang,
                              boolean isRestricted,
@@ -185,21 +189,8 @@ public class ExcelReportWriter implements
         return book.makeCellStyle(columnIndex, cs -> {
             cs.setFont(book.getDefaultFont());
             cs.setVerticalAlignment(VerticalAlignment.CENTER);
-            cs.setDataFormat(workbook.createDataFormat()
-                    .getFormat(getFormats(isNotRestricted, withDescription, withTags, withLinkedIssues, isHumanReadable)[columnIndex]));
+            cs.setDataFormat(workbook.createDataFormat().getFormat(getFormat(columnIndex)));
         });
-    }
-
-    private String toDaysHoursMinutes(long min) {
-        if (min == 0) {
-            return "0, 00:00";
-        }
-
-        long days = WorkTimeFormatter.getFullDayTimeDays(min);
-        String hours = String.format("%02d", WorkTimeFormatter.getFullDayTimeHours(min));       // with leading zero
-        String minutes = String.format("%02d", WorkTimeFormatter.getFullDayTimeMinutes(min));
-
-        return days + ", " + hours + ":" + minutes;
     }
 
     private boolean isDateInAnyRange(final Date date, Interval... intervals) {
@@ -243,6 +234,14 @@ public class ExcelReportWriter implements
             return minutes > 0 ? minutes : null;
         }
         return null;
+    }
+
+    private String getFormat(int columnIndex) {
+        if (formats == null) {
+            formats = getFormats(isNotRestricted, withDescription, withTags, withLinkedIssues, isHumanReadable);
+        }
+
+        return formats[columnIndex];
     }
 
     private String[] getFormats(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues, boolean isHumanReadable) {

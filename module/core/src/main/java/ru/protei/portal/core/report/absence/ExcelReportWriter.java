@@ -21,6 +21,7 @@ public class ExcelReportWriter implements
 
     private final JXLSHelper.ReportBook<PersonAbsence> book;
     private final Lang.LocalizedLang lang;
+    private String[] formats;
 
     public ExcelReportWriter(Lang.LocalizedLang lang) {
         this.book = new JXLSHelper.ReportBook<>(lang, this);
@@ -58,14 +59,8 @@ public class ExcelReportWriter implements
             cs.setFont(book.getDefaultFont());
             cs.setVerticalAlignment(VerticalAlignment.CENTER);
             cs.setDataFormat(workbook.createDataFormat()
-                    .getFormat(getFormats()[columnIndex]));
+                    .getFormat(getFormat(columnIndex)));
         });
-    }
-
-    private String[] getFormats() {
-        return new String[] {
-                ExcelFormat.STANDARD, ExcelFormat.FULL_DATE_TIME, ExcelFormat.FULL_DATE_TIME, ExcelFormat.STANDARD, ExcelFormat.STANDARD
-        };
     }
 
     @Override
@@ -87,5 +82,19 @@ public class ExcelReportWriter implements
         values.add(object.getReason() != null ? lang.get("absenceReasonValue" + object.getReason().getId()) : "");
         values.add(HelperFunc.isNotEmpty(object.getUserComment()) ? object.getUserComment() : "");
         return values.toArray();
+    }
+
+    private String getFormat(int columnIndex) {
+        if (formats == null) {
+            formats = getFormats();
+        }
+
+        return formats[columnIndex];
+    }
+
+    private String[] getFormats() {
+        return new String[] {
+                ExcelFormat.STANDARD, ExcelFormat.FULL_DATE_TIME, ExcelFormat.FULL_DATE_TIME, ExcelFormat.STANDARD, ExcelFormat.STANDARD
+        };
     }
 }

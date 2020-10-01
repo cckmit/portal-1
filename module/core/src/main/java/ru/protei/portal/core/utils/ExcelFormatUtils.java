@@ -18,4 +18,16 @@ public class ExcelFormatUtils {
     public static double toExcelTimeFormat(Long minutes) {
         return (double) ofMinutes(ofNullable(minutes).orElse(0L)).getSeconds() / SECONDS_PER_DAY;
     }
+
+    public static String toDaysHoursMinutes(long min) {
+        if (min == 0) {
+            return "0, 00:00";
+        }
+
+        long days = WorkTimeFormatter.getFullDayTimeDays(min);
+        String hours = String.format("%02d", WorkTimeFormatter.getFullDayTimeHours(min));       // with leading zero
+        String minutes = String.format("%02d", WorkTimeFormatter.getFullDayTimeMinutes(min));
+
+        return days + ", " + hours + ":" + minutes;
+    }
 }

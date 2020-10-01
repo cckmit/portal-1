@@ -234,6 +234,7 @@ public class Report implements Serializable {
                 ", withTags=" + withTags +
                 ", withLinkedIssues=" + withLinkedIssues +
                 ", isRemoved=" + isRemoved +
+                ", isHumanReadable=" + isHumanReadable +
                 '}';
     }
 

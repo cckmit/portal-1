@@ -29,6 +29,7 @@ public class ExcelReportWriter implements
     private final Lang.LocalizedLang lang;
     private final String locale;
     private final Set<En_TimeElapsedType> timeElapsedTypes;
+    private String[] formats;
 
     public ExcelReportWriter(Lang.LocalizedLang localizedLang, Set<En_TimeElapsedType> timeElapsedTypes) {
         this.book = new JXLSHelper.ReportBook<>(localizedLang, this);
@@ -68,30 +69,8 @@ public class ExcelReportWriter implements
             cs.setFont(book.getDefaultFont());
             cs.setVerticalAlignment(VerticalAlignment.CENTER);
             cs.setDataFormat(workbook.createDataFormat()
-                    .getFormat(getFormats(timeElapsedTypes)[columnIndex]));
+                    .getFormat(getFormat(columnIndex)));
         });
-    }
-
-    private String[] getFormats(Set<En_TimeElapsedType> timeElapsedTypes) {
-        List<String> columnsWidthList = new ListBuilder<String>()
-                .add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD)
-                .add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD)
-                .add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.FULL_DATE_TIME)
-                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.NONE))
-                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.WATCH))
-                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.NIGHT_WORK))
-                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.SOFT_INSTALL))
-                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.SOFT_UPDATE))
-                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.SOFT_CONFIG))
-                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.TESTING))
-                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.CONSULTATION))
-                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.MEETING))
-                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.DISCUSSION_OF_IMPROVEMENTS))
-                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.LOG_ANALYSIS))
-                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.SOLVE_PROBLEMS))
-                .add(ExcelFormat.INFINITE_HOURS_MINUTES).build();
-
-        return columnsWidthList.toArray(new String[]{});
     }
 
     @Override
@@ -190,5 +169,35 @@ public class ExcelReportWriter implements
                 .add(toExcelTimeFormat(object.getTimeElapsedSum())).build();
 
         return columnValues.toArray();
+    }
+
+    private String getFormat(int columnIndex) {
+        if (formats == null) {
+            formats = getFormats(timeElapsedTypes);
+        }
+
+        return formats[columnIndex];
+    }
+
+    private String[] getFormats(Set<En_TimeElapsedType> timeElapsedTypes) {
+        List<String> columnsWidthList = new ListBuilder<String>()
+                .add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD)
+                .add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD)
+                .add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.FULL_DATE_TIME)
+                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.NONE))
+                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.WATCH))
+                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.NIGHT_WORK))
+                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.SOFT_INSTALL))
+                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.SOFT_UPDATE))
+                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.SOFT_CONFIG))
+                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.TESTING))
+                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.CONSULTATION))
+                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.MEETING))
+                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.DISCUSSION_OF_IMPROVEMENTS))
+                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.LOG_ANALYSIS))
+                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, timeElapsedTypes.contains(En_TimeElapsedType.SOLVE_PROBLEMS))
+                .add(ExcelFormat.INFINITE_HOURS_MINUTES).build();
+
+        return columnsWidthList.toArray(new String[]{});
     }
 }
