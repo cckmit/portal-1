@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.model.marker.HasProcessable;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 
 import java.util.List;
@@ -59,4 +60,6 @@ public interface AbstractEquipmentEditView extends IsWidget {
     HasText nameErrorLabel();
 
     void setNameSizeValidationFunction(Function<String, Boolean> validationFunction);
+
+    HasProcessable saveProcessable();
 }
