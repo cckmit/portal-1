@@ -20,6 +20,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ReportDto;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Report;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.struct.ReportContent;
@@ -94,13 +95,20 @@ public class ReportControlServiceImpl implements ReportControlService {
 
     @PostConstruct
     public void init() {
+        if (HelperFunc.isEmpty(config.data().getCommonConfig().getSystemId())) {
+            log.warn("reports is not started because system id not set in configuration");
+            return;
+        }
         processOldReports();
     }
-
 
     @Override
     @EventListener
     public void onProcessNewReportsEvent(ProcessNewReportsEvent event) {
+        if (HelperFunc.isEmpty(config.data().getCommonConfig().getSystemId())) {
+            log.warn("reports is not started because system id not set in configuration");
+            return;
+        }
         processNewReports();
     }
 
@@ -130,6 +138,7 @@ public class ReportControlServiceImpl implements ReportControlService {
         query.setStatuses(Collections.singletonList(En_ReportStatus.CREATED));
         query.setLimit(limit);
         query.setRemoved(false);
+        query.setSystemId(config.data().getCommonConfig().getSystemId());
         return reportDAO.getReports(query);
     }
 
@@ -270,6 +279,7 @@ public class ReportControlServiceImpl implements ReportControlService {
         query.setToModified(new Date(System.currentTimeMillis() - config.data().reportConfig().getLiveTime()));
         query.setScheduledTypes(Arrays.asList(En_ReportScheduledType.NONE));
         query.setRemoved(false);
+        query.setSystemId(config.data().getCommonConfig().getSystemId());
         return reportDAO.getReports(query);
     }
 
@@ -277,7 +287,8 @@ public class ReportControlServiceImpl implements ReportControlService {
     @Override
     public Result<Void> processScheduledMailReports(En_ReportScheduledType enReportScheduledType) {
         log.info("processScheduledMailReports(): start");
-        CompletableFuture<?>[] futures = reportDAO.getScheduledReports(enReportScheduledType).stream()
+        final String systemId = config.data().getCommonConfig().getSystemId();
+        CompletableFuture<?>[] futures = reportDAO.getScheduledReports(enReportScheduledType, systemId).stream()
                 .map(report -> {
                     log.info("processScheduledMailReports(): Scheduled Mail Reports = {}", report);
                     setRange(report, enReportScheduledType);

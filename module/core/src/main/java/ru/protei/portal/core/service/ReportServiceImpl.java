@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.event.ProcessNewReportsEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
@@ -17,6 +18,7 @@ import ru.protei.portal.core.model.dto.ReportDto;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.ent.UserRole;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.BaseQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -65,6 +67,8 @@ public class ReportServiceImpl implements ReportService {
     EventPublisherService publisherService;
     @Autowired
     ObjectMapper objectMapper;
+    @Autowired
+    PortalConfig config;
 
     @Override
     @Transactional
@@ -76,6 +80,11 @@ public class ReportServiceImpl implements ReportService {
 
         Report report = reportDto.getReport();
         if (report == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        final String systemId = config.data().getCommonConfig().getSystemId();
+        if (HelperFunc.isEmpty(systemId)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -106,6 +115,7 @@ public class ReportServiceImpl implements ReportService {
         report.setStatus(En_ReportStatus.CREATED);
         report.setRestricted(!hasGrantAccess);
         report.setQuery(serializeQuery(query, report.getReportType()));
+        report.setSystemId(systemId);
         if (StringUtils.isBlank(report.getLocale())) {
             report.setLocale(LOCALE_RU);
         }
@@ -128,6 +138,11 @@ public class ReportServiceImpl implements ReportService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
+        final String systemId = config.data().getCommonConfig().getSystemId();
+        if (HelperFunc.isEmpty(systemId)) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         Report report = reportDAO.getReport(token.getPersonId(), id);
         if (report == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -136,6 +151,10 @@ public class ReportServiceImpl implements ReportService {
         En_ReportType reportType = report.getReportType();
         if (reportType == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (!Objects.equals(report.getSystemId(), systemId)) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
         boolean hasAccess = canEdit(token, reportType);
@@ -168,9 +187,18 @@ public class ReportServiceImpl implements ReportService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
+        final String systemId = config.data().getCommonConfig().getSystemId();
+        if (HelperFunc.isEmpty(systemId)) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         Report report = reportDAO.getReport(token.getPersonId(), id);
         if (report == null) {
             return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        if (!Objects.equals(report.getSystemId(), systemId)) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
         boolean hasAccess = canView(token, report.getReportType());
@@ -189,6 +217,12 @@ public class ReportServiceImpl implements ReportService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
+        final String systemId = config.data().getCommonConfig().getSystemId();
+        if (HelperFunc.isEmpty(systemId)) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        query.setSystemId(systemId);
         List<En_ReportType> reportTypes = availableReportTypes(token);
 
         SearchResult<Report> result = reportDAO.getSearchResult(token.getPersonId(), query, null);
@@ -207,9 +241,18 @@ public class ReportServiceImpl implements ReportService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
+        final String systemId = config.data().getCommonConfig().getSystemId();
+        if (HelperFunc.isEmpty(systemId)) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         Report report = reportDAO.getReport(token.getPersonId(), id);
         if (report == null) {
             return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        if (!Objects.equals(report.getSystemId(), systemId)) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
         boolean hasAccess = canView(token, report.getReportType());
@@ -232,9 +275,14 @@ public class ReportServiceImpl implements ReportService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
+        final String systemId = config.data().getCommonConfig().getSystemId();
+        if (HelperFunc.isEmpty(systemId)) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         List<En_ReportType> reportTypes = availableReportTypes(token);
 
-        List<Report> reports = stream(reportDAO.getReportsByIds(token.getPersonId(), includeIds, excludeIds))
+        List<Report> reports = stream(reportDAO.getReportsByIds(token.getPersonId(), includeIds, excludeIds, systemId))
                 .filter(report -> reportTypes.contains(report.getReportType()))
                 .collect(Collectors.toList());
         List<Long> ids = removeReports(reports).getData();
@@ -250,6 +298,12 @@ public class ReportServiceImpl implements ReportService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
+        final String systemId = config.data().getCommonConfig().getSystemId();
+        if (HelperFunc.isEmpty(systemId)) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        query.setSystemId(systemId);
         List<En_ReportType> reportTypes = availableReportTypes(token);
 
         List<Report> reports = stream(reportDAO.getSearchResult(token.getPersonId(), query, exclude).getResults())
@@ -268,9 +322,18 @@ public class ReportServiceImpl implements ReportService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
+        final String systemId = config.data().getCommonConfig().getSystemId();
+        if (HelperFunc.isEmpty(systemId)) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         Report report = reportDAO.getReport(token.getPersonId(), id);
         if (report == null) {
             return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        if (!Objects.equals(report.getSystemId(), systemId)) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
         boolean hasAccess = canEdit(token, report.getReportType());
@@ -290,7 +353,14 @@ public class ReportServiceImpl implements ReportService {
     @Override
     @Transactional
     public Result<List<Long>> removeReports(List<Report> reports) {
+
+        final String systemId = config.data().getCommonConfig().getSystemId();
+        if (HelperFunc.isEmpty(systemId)) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         List<Long> idsToRemove = stream(reports)
+                .filter(report -> Objects.equals(report.getSystemId(), systemId))
                 .map(Report::getId)
                 .collect(Collectors.toList());
 
