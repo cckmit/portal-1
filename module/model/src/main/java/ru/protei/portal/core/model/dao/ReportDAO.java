@@ -39,16 +39,17 @@ public interface ReportDAO extends PortalBaseDAO<Report> {
      * @param creatorId  идентификатор профиля, который является создателем отчетов
      * @param includeIds выбирать указанные идентификаторы
      * @param excludeIds не выбирать указанные идентификаторы
+     * @param systemId идентификатор системы
      * @return список отчетов
      */
-    List<Report> getReportsByIds(Long creatorId, Set<Long> includeIds, Set<Long> excludeIds);
+    List<Report> getReportsByIds(Long creatorId, Set<Long> includeIds, Set<Long> excludeIds, String systemId);
 
     /**
      * Получить отчеты для запланированной рассылки
      *
      * @return список отчетов
      */
-    List<Report> getScheduledReports(En_ReportScheduledType enReportScheduledType);
+    List<Report> getScheduledReports(En_ReportScheduledType enReportScheduledType, String systemId);
 
     @SqlConditionBuilder
     SqlCondition createSqlCondition(ReportQuery query);

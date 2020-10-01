@@ -48,11 +48,12 @@ public class ReportDAO_Impl extends PortalBaseJdbcDAO<Report> implements ReportD
     }
 
     @Override
-    public List<Report> getReportsByIds(Long creatorId, Set<Long> includeIds, Set<Long> excludeIds) {
+    public List<Report> getReportsByIds(Long creatorId, Set<Long> includeIds, Set<Long> excludeIds, String systemId) {
         ReportQuery query = new ReportQuery();
         query.setCreatorId(creatorId);
         query.setIncludeIds(includeIds);
         query.setExcludeIds(excludeIds);
+        query.setSystemId(systemId);
         SqlCondition where = createSqlCondition(query);
         return getList(new JdbcQueryParameters()
                 .withCondition(where.condition, where.args)
@@ -61,9 +62,10 @@ public class ReportDAO_Impl extends PortalBaseJdbcDAO<Report> implements ReportD
     }
 
     @Override
-    public List<Report> getScheduledReports(En_ReportScheduledType enReportScheduledType) {
+    public List<Report> getScheduledReports(En_ReportScheduledType enReportScheduledType, String systemId) {
         ReportQuery query = new ReportQuery();
         query.setScheduledTypes(Arrays.asList(enReportScheduledType));
+        query.setSystemId(systemId);
         SqlCondition where = createSqlCondition(query);
         return getList(new JdbcQueryParameters()
                 .withCondition(where.condition, where.args)
@@ -151,6 +153,11 @@ public class ReportDAO_Impl extends PortalBaseJdbcDAO<Report> implements ReportD
             if (query.isRemoved() != null) {
                 condition.append(" and report.is_removed = ?");
                 args.add(query.isRemoved());
+            }
+
+            if (HelperFunc.isNotEmpty(query.getSystemId())) {
+                condition.append(" and report.system_id = ?");
+                args.add(query.getSystemId());
             }
         });
     }
