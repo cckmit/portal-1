@@ -13,6 +13,8 @@ import ru.protei.portal.core.event.SchedulePauseTimeOnStartupEvent;
 import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.service.*;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
+import ru.protei.portal.core.service.bootstrap.BootstrapService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 
 import java.util.Date;
@@ -28,7 +30,19 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
 
         log.info("onApplicationStartOrRefresh() Context refresh counter={} refresh source: {}",  contextRefreshedEventCounter.getAndIncrement(), event.getSource());
 
+        /**
+         * Run ONCE tasks
+         */
         if (isPortalStarted.getAndSet( true )) return;
+
+        /**
+         * Bootstrap data of application
+         */
+        bootstrapService.bootstrapApplication();
+
+        //TODO EmployeeRegistrationYoutrackSynchronizer
+
+        autoOpenCaseService.scheduleCaseOpen();
 
         scheduleReports();
 
@@ -53,6 +67,7 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         scheduleNotificationsAboutPauseTime();
 
         scheduleMailReports();
+
     }
 
     public void remindAboutEmployeeProbationPeriod() {
@@ -140,6 +155,8 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
 
     @Autowired
     PortalConfig config;
+    @Autowired
+    BootstrapService bootstrapService;
 
     @Autowired
     private ThreadPoolTaskScheduler scheduler;
@@ -160,7 +177,8 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
     EventPublisherService publisherService;
     @Autowired
     MailReceiverService mailReceiverService;
-
+@Autowired
+    AutoOpenCaseService autoOpenCaseService;
     private static AtomicBoolean isPortalStarted = new AtomicBoolean(false);
     private static AtomicInteger contextRefreshedEventCounter = new AtomicInteger(0);
 

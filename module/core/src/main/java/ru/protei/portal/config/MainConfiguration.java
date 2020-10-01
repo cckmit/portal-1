@@ -58,6 +58,7 @@ import ru.protei.portal.core.service.auth.LDAPAuthProvider;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceImpl;
 import ru.protei.portal.core.service.bootstrap.BootstrapService;
+import ru.protei.portal.core.service.bootstrap.BootstrapServiceImpl;
 import ru.protei.portal.core.service.events.*;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
@@ -272,6 +273,11 @@ public class MainConfiguration {
     @Bean
     public CaseObjectDAO getCaseDAO() {
         return new CaseObjectDAO_Impl();
+    }
+
+    @Bean
+    public BootstrapAppDAO getBootstrapAppDAO() {
+        return new BootstrapAppDAO_Impl();
     }
 
     @Bean
@@ -813,7 +819,7 @@ public class MainConfiguration {
 
     @Bean
     public BootstrapService getBootstrapService() {
-        return new BootstrapService();
+        return new BootstrapServiceImpl();
     }
 
     @Bean

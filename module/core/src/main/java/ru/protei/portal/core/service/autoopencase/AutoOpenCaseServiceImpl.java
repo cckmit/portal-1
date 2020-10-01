@@ -3,6 +3,7 @@ package ru.protei.portal.core.service.autoopencase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.ent.*;
@@ -18,13 +19,16 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
+
 /**
  * Сервис выполняющий автоокрытие помеченных кейсов через определенное время
  */
 public class AutoOpenCaseServiceImpl implements AutoOpenCaseService {
 
-    @PostConstruct
-    public void onStartup() {
+    @Async(BACKGROUND_TASKS)
+    @Override
+    public void scheduleCaseOpen() {
         log.info("Schedule case open at startup");
         caseObjectDAO.getCaseIdToAutoOpen()
                 .forEach(caseId -> createTask(caseId, TimeUnit.MINUTES.toMillis(1) + makeRandomDelaySecond(120)));
