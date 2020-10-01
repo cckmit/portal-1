@@ -114,7 +114,7 @@ public class Attachment extends AuditableObject {
         this.fileName = fileName;
     }
 
-    public Boolean isPrivate() {
+    public boolean isPrivate() {
         return Boolean.TRUE.equals(isPrivate);
     }
 

@@ -1070,19 +1070,17 @@ public class MailNotificationProcessor {
             return false;
         }
 
-        if (assembledCaseEvent.isPublicCommentsChanged()) {
-            return false;
-        }
-
-        if (publicChangesExistWithoutComments(assembledCaseEvent)) {
+        if (publicChangesExist(assembledCaseEvent)) {
             return false;
         }
 
         return true;
     }
 
-    private boolean publicChangesExistWithoutComments(AssembledCaseEvent assembledCaseEvent) {
-        return  assembledCaseEvent.isCaseImportanceChanged()
+    private boolean publicChangesExist(AssembledCaseEvent assembledCaseEvent) {
+        return  assembledCaseEvent.isPublicCommentsChanged()
+                || assembledCaseEvent.isPublicAttachmentsChanged()
+                || assembledCaseEvent.isCaseImportanceChanged()
                 || assembledCaseEvent.isCaseStateChanged()
                 || assembledCaseEvent.isPauseDateChanged()
                 || assembledCaseEvent.isInitiatorChanged()

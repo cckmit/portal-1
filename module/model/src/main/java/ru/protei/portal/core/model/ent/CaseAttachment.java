@@ -87,8 +87,8 @@ public class CaseAttachment implements Serializable{
         this.remoteId = remoteId;
     }
 
-    public Boolean isPrivate() {
-        return isPrivate;
+    public boolean isPrivate() {
+        return Boolean.TRUE.equals(isPrivate);
     }
 
     public void setPrivate(Boolean isPrivate) {

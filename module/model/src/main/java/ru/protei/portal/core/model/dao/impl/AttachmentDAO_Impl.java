@@ -12,6 +12,6 @@ public class AttachmentDAO_Impl extends PortalBaseJdbcDAO<Attachment> implements
 
     @Override
     public List<Attachment> getListByCaseId(Long caseId) {
-        return getListByCondition("id in (select att_id from case_attachment where case_id=?)", caseId);
+        return getListByCondition("attachment.id in (select case_attachment.att_id from case_attachment where case_attachment.case_id=?)", caseId);
     }
 }

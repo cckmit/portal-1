@@ -62,7 +62,12 @@ public class CaseServiceImpl implements CaseService {
 
         List<Long> personFavoriteIssueIds = getPersonFavoriteIssueIds(token.getPersonId());
 
-        sr.getResults().forEach(caseShortView -> caseShortView.setFavorite(personFavoriteIssueIds.contains(caseShortView.getId())));
+        sr.getResults().forEach(caseShortView -> {
+            caseShortView.setFavorite(personFavoriteIssueIds.contains(caseShortView.getId()));
+            caseShortView.setPublicAttachmentsExist(
+                    caseAttachmentDAO.getListByCaseId(caseShortView.getId()).stream().anyMatch(not(CaseAttachment::isPrivate))
+            );
+        });
 
         return ok(sr);
     }

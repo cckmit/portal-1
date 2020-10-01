@@ -11,16 +11,15 @@ import ru.protei.portal.core.model.dao.AttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseAttachment;
-import ru.protei.portal.core.model.event.CaseCommentSavedClientEvent;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventAssemblerService;
 import ru.protei.portal.core.service.events.EventProjectAssemblerService;
 import ru.protei.portal.core.service.policy.PolicyService;
-import ru.protei.portal.core.service.pushevent.ClientEventService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.Collection;
@@ -31,6 +30,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.not;
 
 /**
  * Created by bondarenko on 23.01.17.
@@ -145,14 +145,17 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     @Override
     public Result<List<Attachment>> getAttachmentsByCaseId( AuthToken token, En_CaseType caseType, Long caseId) {
-        List<Attachment> list = attachmentDAO.getListByCondition(
-                "ID in (Select ATT_ID from case_attachment where CASE_ID = ?)", caseId
-        );
+        List<Attachment> list = attachmentDAO.getListByCaseId(caseId);
 
-        if(list == null)
-            return error( En_ResultStatus.GET_DATA_ERROR);
+        if (list == null) {
+            return error(En_ResultStatus.GET_DATA_ERROR);
+        }
 
-        return ok( list);
+        if (En_CaseType.CRM_SUPPORT.equals(caseType) && !policyService.hasGrantAccessFor(token.getRoles(), En_Privilege.ISSUE_VIEW)) {
+            return ok(list.stream().filter(not(Attachment::isPrivate)).collect(Collectors.toList()));
+        }
+
+        return ok(list);
     }
 
     @Override

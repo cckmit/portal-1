@@ -119,9 +119,8 @@ public abstract class IssueTableFilterActivity
     @Event
     public void onChangeRow( IssueEvents.ChangeIssue event ) {
         issueService.getIssues(new CaseQuery(event.id), new FluentCallback<SearchResult<CaseShortView>>()
-                .withSuccess(sr -> {
-                    view.updateRow(sr.getResults().get(0));
-                }));
+                .withSuccess(sr -> view.updateRow(sr.getResults().get(0)))
+        );
     }
 
     @Event

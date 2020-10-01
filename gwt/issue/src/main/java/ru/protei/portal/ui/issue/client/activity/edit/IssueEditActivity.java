@@ -69,6 +69,8 @@ public abstract class IssueEditActivity implements
 
                 issueInfoWidget.attachmentsVisibility().setVisible(!issueInfoWidget.attachmentsListContainer().isEmpty());
                 issueInfoWidget.setCountOfAttachments(size(issueInfoWidget.attachmentsListContainer().getAll()));
+
+                fireIssueChanged(issue.getId());
             }
 
             @Override
@@ -144,6 +146,8 @@ public abstract class IssueEditActivity implements
 
             issueInfoWidget.setCountOfAttachments(size(issueInfoWidget.attachmentsListContainer().getAll()));
             issueInfoWidget.attachmentsVisibility().setVisible(!issueInfoWidget.attachmentsListContainer().isEmpty());
+
+            fireIssueChanged(issue.getId());
         }
     }
 
@@ -156,6 +160,8 @@ public abstract class IssueEditActivity implements
 
             issueInfoWidget.setCountOfAttachments(size(issueInfoWidget.attachmentsListContainer().getAll()));
             issueInfoWidget.attachmentsVisibility().setVisible(!issueInfoWidget.attachmentsListContainer().isEmpty());
+
+            fireIssueChanged(issue.getId());
         }
     }
 
@@ -237,6 +243,8 @@ public abstract class IssueEditActivity implements
                     issueInfoWidget.setCountOfAttachments(size(issueInfoWidget.attachmentsListContainer().getAll()));
                     issueInfoWidget.attachmentsVisibility().setVisible(!issueInfoWidget.attachmentsListContainer().isEmpty());
 
+                    fireIssueChanged(issue.getId());
+
                     showComments( issue );
                 }));
     }
@@ -315,6 +323,14 @@ public abstract class IssueEditActivity implements
                     .withSuccess(result -> onSuccessChangeFavoriteState(issue, view))
             );
         }
+    }
+
+    private void fireIssueChanged(Long issueId) {
+        if (issueId == null) {
+            return;
+        }
+
+        fireEvent(new IssueEvents.ChangeIssue(issueId));
     }
 
     private void onSuccessChangeFavoriteState(CaseObject issue, AbstractIssueEditView view) {
