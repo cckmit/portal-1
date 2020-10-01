@@ -35,6 +35,9 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.model.ent.CaseInfo;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.nrpe.NRPEExecutor;
+import ru.protei.portal.core.nrpe.NRPEExecutorTerminal;
+import ru.protei.portal.core.nrpe.NRPERequest;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.renderer.JiraWikiMarkupRenderer;
 import ru.protei.portal.core.renderer.MarkdownRenderer;
@@ -1075,6 +1078,17 @@ public class MainConfiguration {
     @Bean
     public ServiceLayerInterceptorLogging getServiceLayerInterceptorLogging() {
         return new ServiceLayerInterceptorLogging();
+    }
+
+    /* NRPE */
+    @Bean
+    public NRPEExecutor getNRPEExecutor() {
+        return new NRPEExecutorTerminal();
+    }
+
+    @Bean
+    public NRPERequest getNRPERequest(@Autowired NRPEExecutor executor) {
+        return new NRPERequest(executor);
     }
 
     public static final String BACKGROUND_TASKS = "backgroundTasks";

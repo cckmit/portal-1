@@ -17,7 +17,7 @@ public class NRPEParserHostUnreachable extends NRPEParserHost {
         if (matcher0.find() && matcher1.find() && matcher2.find()) {
             return new NRPEHostUnreachable(
                     matcher0.group("ipTarget"),
-                    matcher0.group("ipSorce"),
+                    matcher0.group("ipSource"),
                     Integer.parseInt(matcher1.group("probes")),
                     Integer.parseInt(matcher1.group("broadcasts")),
                     Integer.parseInt(matcher2.group("responses")));

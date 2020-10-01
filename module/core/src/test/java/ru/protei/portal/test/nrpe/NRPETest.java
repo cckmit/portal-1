@@ -143,4 +143,27 @@ public class NRPETest {
         Assert.assertEquals(NRPEStatus.INCORRECT_PARAMS, nrpeResponse.getNRPEStatus());
         Assert.assertEquals("NRPE: Unable to read output", nrpeResponse.getMessage());
     }
+
+    @Test
+    public void requestReachable() {
+        NRPEResponse response = request.perform("192.168.100.90");
+
+        Assert.assertTrue(response instanceof NRPEHostReachable);
+
+        NRPEHostReachable nrpeResponse = (NRPEHostReachable)response;
+        Assert.assertEquals(NRPEStatus.HOST_REACHABLE, nrpeResponse.getNRPEStatus());
+        Assert.assertEquals("192.168.100.90", nrpeResponse.getIpTarget());
+    }
+
+    @Test
+    public void requestIncorrectParam() {
+        NRPEResponse response = request.perform("^&*^7&^*786");
+
+        Assert.assertTrue(response instanceof NRPEIncorrectParams);
+
+        NRPEIncorrectParams nrpeResponse = (NRPEIncorrectParams)response;
+        Assert.assertEquals(NRPEStatus.INCORRECT_PARAMS, nrpeResponse.getNRPEStatus());
+    }
+
+    private final NRPERequest request = new NRPERequest(new NRPEExecutorTest());
 }
