@@ -1,5 +1,7 @@
 package ru.protei.portal.core.nrpe;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.nrpe.parser.NRPEParserHostReachable;
 import ru.protei.portal.core.nrpe.parser.NRPEParserHostUnreachable;
@@ -10,7 +12,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class NRPERequest {
-
+    private static Logger log = LoggerFactory.getLogger(NRPERequest.class);
     @Autowired
     public NRPERequest(NRPEExecutor executor) {
         this.executor = executor;
@@ -21,13 +23,21 @@ public class NRPERequest {
     static private final String REQUEST_TEMPLATE = "/usr/lib64/nagios/plugins/check_nrpe -H router.protei.ru -c check_arping_lan -a %s ; echo $?";
     public NRPEResponse perform(String ip) {
         if (ip == null) {
+            log.error("ip == null");
             return null;
         }
-        return parse(executor.execute(String.format(REQUEST_TEMPLATE, ip)));
+        String request = String.format(REQUEST_TEMPLATE, ip);
+        log.info("request: {}", request);
+        List<String> list = executor.execute(request);
+        if (list == null) {
+            log.error("executor error");
+        }
+        return parse(list);
     }
 
     static public NRPEResponse parse(List<String> list) {
         if (list == null || list.size() <= 1) {
+            log.error("list == null || list.size() <= 1");
             return null;
         }
 
@@ -35,6 +45,7 @@ public class NRPERequest {
         try {
             status = NRPEStatus.find(Integer.parseInt(list.get(list.size() - 1)));
         } catch (NumberFormatException exception) {
+            log.error("status parse error, status = {}", list.get(list.size() - 1));
             return null;
         }
         List<String> content = list.subList(0, list.size() - 1);
@@ -49,6 +60,7 @@ public class NRPERequest {
             case INCORRECT_PARAMS:
                 return NRPEParserIncorrectParams.parse(content);
             default:
+                log.error("no parser for status, status = {}", status);
                 return null;
         }
     }
