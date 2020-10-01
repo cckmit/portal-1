@@ -19,6 +19,7 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.ExcelFormatUtils.ExcelFormat;
 import ru.protei.portal.core.utils.JXLSHelper;
+import ru.protei.portal.core.utils.WorkTimeFormatter;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -163,8 +164,17 @@ public class ExcelReportWriter implements
         values.add(verified != null ? verified : "");
         values.add(important != null ? important : "");
         values.add(critical != null ? critical : "");
-        if (isNotRestricted) values.add(solutionDurationFirst == null ? "" : toExcelTimeFormat(solutionDurationFirst));
-        if (isNotRestricted) values.add(solutionDurationFull == null ? "" : toExcelTimeFormat(solutionDurationFull));
+
+        if (isNotRestricted) {
+            values.add(solutionDurationFirst == null ? "" : toExcelTimeFormat(solutionDurationFirst));
+            values.add(solutionDurationFirst == null ? "" : toDaysHoursMinutes(solutionDurationFirst));
+        }
+
+        if (isNotRestricted) {
+            values.add(solutionDurationFull == null ? "" : toExcelTimeFormat(solutionDurationFull));
+            values.add(solutionDurationFull == null ? "" : toDaysHoursMinutes(solutionDurationFull));
+        }
+
         if (isNotRestricted) values.add(issue.getTimeElapsed() != null && issue.getTimeElapsed() > 0 ? toExcelTimeFormat(issue.getTimeElapsed()) : "");
         if (isNotRestricted) values.add(toExcelTimeFormat(timeElapsedInSelectedDuration));
 
@@ -179,6 +189,18 @@ public class ExcelReportWriter implements
             cs.setDataFormat(workbook.createDataFormat()
                     .getFormat(getFormats(isNotRestricted, withDescription, withTags, withLinkedIssues)[columnIndex]));
         });
+    }
+
+    private String toDaysHoursMinutes(long min) {
+        if (min == 0) {
+            return "0, 00:00";
+        }
+
+        long days = WorkTimeFormatter.getFullDayTimeDays(min);
+        String hours = String.format("%02d", WorkTimeFormatter.getFullDayTimeHours(min));       // with leading zero
+        String minutes = String.format("%02d", WorkTimeFormatter.getFullDayTimeMinutes(min));
+
+        return days + ", " + hours + ":" + minutes;
     }
 
     private boolean isDateInAnyRange(final Date date, Interval... intervals) {
@@ -232,8 +254,9 @@ public class ExcelReportWriter implements
                 .add(ExcelFormat.DATE_TIME).add(ExcelFormat.DATE_TIME).add(ExcelFormat.DATE_TIME)
                 .add(ExcelFormat.DATE_TIME).add(ExcelFormat.DATE_TIME).add(ExcelFormat.DATE_TIME)
                 .add(ExcelFormat.DATE_TIME).add(ExcelFormat.DATE_TIME)
-                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted).addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted).addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted)
-                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted)
+                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted).addIf(ExcelFormat.STANDARD, isNotRestricted)
+                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted).addIf(ExcelFormat.STANDARD, isNotRestricted)
+                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted).addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted)
                 .build();
 
         return formatList.toArray(new String[]{});
@@ -247,8 +270,9 @@ public class ExcelReportWriter implements
                 .add(4200).add(5800).add(5800)
                 .add(5800).add(5800).add(5800)
                 .add(5800).add(5800)
-                .addIf(5800, isNotRestricted).addIf(5800, isNotRestricted).addIf(5800, isNotRestricted)
-                .addIf(12000, isNotRestricted)
+                .addIf(5800, isNotRestricted).addIf(5800, isNotRestricted)
+                .addIf(5800, isNotRestricted).addIf(5800, isNotRestricted)
+                .addIf(5800, isNotRestricted).addIf(12000, isNotRestricted)
                 .build();
 
         return toPrimitiveIntegerArray(columnsWidthList);
@@ -262,8 +286,9 @@ public class ExcelReportWriter implements
                 .add("ir_date_created").add("ir_date_opened").add("ir_date_workaround")
                 .add("ir_date_customer_test").add("ir_date_done").add("ir_date_verify")
                 .add("ir_date_important").add("ir_date_critical")
-                .addIf("ir_time_solution_first", isNotRestricted).addIf("ir_time_solution_full", isNotRestricted).addIf("ir_time_elapsed", isNotRestricted)
-                .addIf("ir_time_elapsed_selected_range", isNotRestricted)
+                .addIf("ir_time_solution_first", isNotRestricted).addIf("ir_time_solution_first_with_days", isNotRestricted)
+                .addIf("ir_time_solution_full", isNotRestricted).addIf("ir_time_solution_full_with_days", isNotRestricted)
+                .addIf("ir_time_elapsed", isNotRestricted).addIf("ir_time_elapsed_selected_range", isNotRestricted)
                 .build();
 
         return columnsList.toArray(new String[]{});
