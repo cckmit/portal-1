@@ -3115,4 +3115,6 @@ public interface Lang extends Messages, ContactItemLang {
     String issueReportHumanReadable();
 
     String issueReportHumanReadableTitle();
+
+    String errReportingServiceNotConfigured();
 }

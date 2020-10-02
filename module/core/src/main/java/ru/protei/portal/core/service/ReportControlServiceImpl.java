@@ -95,8 +95,7 @@ public class ReportControlServiceImpl implements ReportControlService {
 
     @PostConstruct
     public void init() {
-        if (HelperFunc.isEmpty(config.data().getCommonConfig().getSystemId())) {
-            log.warn("reports is not started because system id not set in configuration");
+        if (isNotConfiguredSystemId()) {
             return;
         }
         processOldReports();
@@ -105,8 +104,7 @@ public class ReportControlServiceImpl implements ReportControlService {
     @Override
     @EventListener
     public void onProcessNewReportsEvent(ProcessNewReportsEvent event) {
-        if (HelperFunc.isEmpty(config.data().getCommonConfig().getSystemId())) {
-            log.warn("reports is not started because system id not set in configuration");
+        if (isNotConfiguredSystemId()) {
             return;
         }
         processNewReports();
@@ -388,5 +386,13 @@ public class ReportControlServiceImpl implements ReportControlService {
 
     private DateRange makeFixedRange(Date from, Date to) {
         return new DateRange(En_DateIntervalType.FIXED, from, to);
+    }
+
+    private boolean isNotConfiguredSystemId() {
+        if (HelperFunc.isEmpty(config.data().getCommonConfig().getSystemId())) {
+            log.warn("reports is not started because system.id not set in configuration");
+            return true;
+        }
+        return false;
     }
 }
