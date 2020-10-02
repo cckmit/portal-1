@@ -82,6 +82,7 @@ public class En_ResultStatusLang {
             case CONTRACT_ORGANIZATION_SHOULD_BE_DIFFERENT_FROM_PARENT: return lang.errContractOrganizationShouldBeDifferentFromParent();
             case NOT_ALLOWED_EDIT_COMMENT_BY_TIME: return lang.errEditIssueCommentByTime();
             case NOT_ALLOWED_REMOVE_COMMENT_BY_TIME: return lang.errRemoveIssueCommentByTime();
+            case REPORTING_SERVICE_NOT_CONFIGURED: return lang.errReportingServiceNotConfigured();
             default: return lang.errUnknownResult();
         }
     }

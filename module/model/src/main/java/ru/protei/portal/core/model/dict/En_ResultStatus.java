@@ -281,6 +281,11 @@ public enum En_ResultStatus {
     /**
      * Запрещено удаление комментария по истечению времени
      */
-    NOT_ALLOWED_REMOVE_COMMENT_BY_TIME
+    NOT_ALLOWED_REMOVE_COMMENT_BY_TIME,
+
+    /**
+     * Сервис отчётов не настроен
+     */
+    REPORTING_SERVICE_NOT_CONFIGURED
     ;
 }

@@ -19,6 +19,7 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ReportControllerAsync;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -126,7 +127,7 @@ public abstract class ReportTableActivity implements
         query.setLimit(limit);
         reportService.getReportsByQuery(query, new FluentCallback<SearchResult<ReportDto>>()
                 .withError(throwable -> {
-                    fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+                    defaultErrorHandler.accept(throwable);
                     asyncCallback.onFailure(throwable);
                 })
                 .withSuccess(sr -> {
@@ -171,6 +172,8 @@ public abstract class ReportTableActivity implements
     AbstractPagerView pagerView;
     @Inject
     PolicyService policyService;
+    @Inject
+    protected DefaultErrorHandler defaultErrorHandler;
 
     private AppEvents.InitDetails initDetails;
     private static String CREATE_ACTION;

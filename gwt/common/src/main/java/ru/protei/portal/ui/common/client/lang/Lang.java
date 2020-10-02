@@ -3111,4 +3111,6 @@ public interface Lang extends Messages, ContactItemLang {
     String errEmployeeNotFound();
 
     String reservedIpExistedIpInRange();
+
+    String errReportingServiceNotConfigured();
 }
