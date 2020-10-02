@@ -7,12 +7,11 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.BirthdaysNotificationEvent;
-import ru.protei.portal.core.exception.RollbackTransactionException;
+import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
@@ -284,8 +283,8 @@ public class EmployeeServiceImpl implements EmployeeService {
                     }).map(ignore -> person);
         }
 
-        log.warn("createEmployeePerson(): person not created. id = null");
-        throw new RollbackTransactionException("createEmployeePerson(): person not created");
+        log.warn("createEmployeePerson(): person not created. id = null. person={}, token={}", person, token);
+        return error(En_ResultStatus.NOT_CREATED);
     }
 
     @Override
@@ -870,6 +869,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (userLoginDAO.saveOrUpdate(userLogin)) {
             jdbcManyRelationsHelper.persist( userLogin, "roles" );
             makeAudit(userLogin, En_AuditType.ACCOUNT_CREATE, authToken);
+        } else {
+            log.warn("saveUserLogin(): fail to create login. Rollback transaction. userLogin={}, authToken={}", userLogin, authToken);
+            throw new ResultStatusException(En_ResultStatus.INTERNAL_ERROR);
         }
     }
 
