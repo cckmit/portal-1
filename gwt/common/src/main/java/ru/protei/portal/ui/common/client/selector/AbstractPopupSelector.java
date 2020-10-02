@@ -50,7 +50,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
     }
 
     @Override
-    public void onPopupUnload(SelectorPopup selectorPopup) {
+    public void onPopupHide(SelectorPopup selectorPopup) {
         clearPopupItems();
         getPopup().setNoElements(false, null);
         if (popupUnloadHandler != null) popupUnloadHandler.run();

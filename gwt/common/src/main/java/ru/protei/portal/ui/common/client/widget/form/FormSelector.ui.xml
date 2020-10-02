@@ -1,12 +1,14 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
-    <g:HTMLPanel styleName="form-group form-group-default form-group-default-selectFx" ui:field="formContainer">
-        <label ui:field="label" class="fade hide"/>
-        <div class="cs-wrapper">
-            <div class="cs-select cs-skin-slide cs-transparent form-control">
-                <span ui:field="text" class="cs-placeholder"/>
+    <g:HTMLPanel styleName="h-100" ui:field="root">
+        <g:HTMLPanel styleName="form-group form-group-default form-group-default-selectFx" ui:field="formContainer">
+            <label ui:field="label" class="fade hide"/>
+            <div class="cs-wrapper">
+                <div class="cs-select cs-skin-slide cs-transparent form-control">
+                    <span ui:field="text" class="cs-placeholder"/>
+                </div>
             </div>
-        </div>
+        </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

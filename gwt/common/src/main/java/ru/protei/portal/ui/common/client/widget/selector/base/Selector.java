@@ -4,14 +4,15 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpHandler;
-import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import ru.protei.portal.ui.common.client.common.ScrollWatcher;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
@@ -117,14 +118,6 @@ public abstract class Selector<T>
 
     public void setAddButtonText(String addButtonText) {
         this.addButtonText = addButtonText;
-    }
-
-    public void watchForScrollOf(Widget widget) {
-        scrollWatcher.watchForScrollOf(widget);
-    }
-
-    public void stopWatchForScrollOf(Widget widget) {
-        scrollWatcher.stopWatchForScrollOf(widget);
     }
 
     @Override
@@ -250,19 +243,9 @@ public abstract class Selector<T>
         }
     }
 
-    private void onScroll() {
-        if (popup.isAttached()) {
-            popup.showNear(relative);
-        }
-    }
-
     @Override
     public HandlerRegistration addSelectorChangeValHandler(SelectorChangeValHandler handler) {
         return addHandler(handler, SelectorChangeValEvent.getType());
-    }
-
-    public void addCloseHandler(CloseHandler<PopupPanel> handler) {
-        popup.addCloseHandler(handler);
     }
 
     public void setFilter( SelectorFilter<T> selectorFilter ) {
@@ -273,7 +256,6 @@ public abstract class Selector<T>
 
     @Override
     protected void onLoad() {
-        scrollWatcher.startWatchForScroll();
         if ( selectorModel != null ) {
             selectorModel.onSelectorLoad(this);
         }
@@ -281,27 +263,13 @@ public abstract class Selector<T>
 
     @Override
     protected void onUnload() {
-        scrollWatcher.stopWatchForScroll();
         if ( selectorModel != null ) {
             selectorModel.onSelectorUnload(this);
         }
     }
 
     protected void showPopup(IsWidget relative) {
-        this.relative = relative;
-        popup.showNear(relative);
-        showPopup();
-    }
-
-    protected void showPopupRight(IsWidget relative) {
-        this.relative = relative;
-        popup.showNearRight(relative);
-        showPopup();
-    }
-
-    protected void showPopupInlineRight(IsWidget relative) {
-        this.relative = relative;
-        popup.showNearInlineRight(relative);
+        popup.show(relative);
         showPopup();
     }
 
@@ -402,7 +370,6 @@ public abstract class Selector<T>
     private boolean searchAutoFocusEnabled = false;
     private boolean addButtonVisible = false;
     private String addButtonText;
-    private IsWidget relative;
     private T selectedOption = null;
     private SelectorItem nullItemView;
     protected DisplayOptionCreator<T> displayOptionCreator;
@@ -415,6 +382,5 @@ public abstract class Selector<T>
 
     protected Map<T, DisplayOption> itemToDisplayOptionModel = new HashMap<>();
     protected SelectorFilter<T> filter = null;
-    private final ScrollWatcher scrollWatcher = new ScrollWatcher(this::onScroll);
     protected String noSearchResult;
 }

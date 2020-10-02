@@ -9,39 +9,46 @@
     <g:HTMLPanel styleName="full-height bg-white">
         <div class="calendar week">
             <div class="options p-r-15">
-                <selector:room.RoomReservableButtonSelector ui:field="roomSelector"
-                                                           validation="false" hasNullValue="false"
-                                                           addStyleNames="inline-block align-middle m-r-5"/>
-                <selector:year.YearButtonSelector ui:field="yearSelector"
-                                                  validation="false" hasNullValue="false"
-                                                  addStyleNames="inline-block align-middle m-r-5"/>
-                <selector:month.MonthButtonSelector ui:field="monthSelector"
-                                                    validation="false" hasNullValue="false"
-                                                    addStyleNames="inline-block align-middle m-r-5"/>
-                <h5 ui:field="dayAndName" class="semi-bold inline-block align-middle m-t-0 m-b-0 m-l-5"/>
-                <div class="btn-toolbar pull-right">
-                    <div class="btn-group form-group">
-                        <g:Button styleName="btn btn-default btn-xs btn-cons-toolbar" ui:field="showTodayButton" title="{lang.roomReservationShowTodayButton}">
-                            <i class="fas fa-calendar-day"/>
-                        </g:Button>
-                        <g:Button styleName="btn btn-default btn-xs btn-cons-toolbar" ui:field="toggleHourStartButton" title="{lang.roomReservationHourStartButton}">
-                            <i class="fas fa-clock"/>
-                        </g:Button>
-                        <g:Button styleName="btn btn-default btn-xs btn-cons-toolbar" ui:field="reloadButton" title="{lang.buttonReload}">
-                            <i class="fas fa-redo-alt"/>
-                        </g:Button>
-                        <g:Button styleName="btn btn-complete btn-xs btn-cons-toolbar" ui:field="addNewReservationButton" title="{lang.buttonCreate}">
-                            <i class="fas fa-plus-circle"/>
-                        </g:Button>
+                <div class="d-flex justify-content-between">
+                    <div class="row align-items-center flex-1">
+                        <selector:room.RoomReservableButtonSelector ui:field="roomSelector"
+                                                                    validation="false" hasNullValue="false"
+                                                                    addStyleNames="inline-block align-middle col-md-1 p-r-0 m-r-5"/>
+                        <selector:year.YearButtonSelector ui:field="yearSelector"
+                                                          validation="false" hasNullValue="false"
+                                                          addStyleNames="inline-block align-middle col-md-1 p-0 m-r-5"/>
+                        <selector:month.MonthButtonSelector ui:field="monthSelector"
+                                                            validation="false" hasNullValue="false"
+                                                            addStyleNames="inline-block align-middle col-md-1 p-0"/>
+                        <h5 ui:field="dayAndName" class="semi-bold inline-block align-middle m-t-0 m-b-0 col-md-3"/>
                     </div>
+                    <div>
+                        <div class="btn-toolbar">
+                            <div class="btn-group form-group">
+                                <g:Button styleName="btn btn-default btn-xs btn-cons-toolbar" ui:field="showTodayButton" title="{lang.roomReservationShowTodayButton}">
+                                    <i class="fas fa-calendar-day"/>
+                                </g:Button>
+                                <g:Button styleName="btn btn-default btn-xs btn-cons-toolbar" ui:field="toggleHourStartButton" title="{lang.roomReservationHourStartButton}">
+                                    <i class="fas fa-clock"/>
+                                </g:Button>
+                                <g:Button styleName="btn btn-default btn-xs btn-cons-toolbar" ui:field="reloadButton" title="{lang.buttonReload}">
+                                    <i class="fas fa-redo-alt"/>
+                                </g:Button>
+                                <g:Button styleName="btn btn-complete btn-xs btn-cons-toolbar" ui:field="addNewReservationButton" title="{lang.buttonCreate}">
+                                    <i class="fas fa-plus-circle"/>
+                                </g:Button>
+                            </div>
+                        </div>
+                        <g:HTMLPanel ui:field="roomNotAccessiblePanel" styleName="card card-default bg-info m-t-10 m-b-10" visible="false">
+                            <div class="card-body">
+                                <h6 class="text-white m-t-0 m-b-0 m-l-0 m-r-0">
+                                    <i class="fas fa-info-circle p-r-5"/> <ui:text from="{lang.errRoomReservationRoomNotAccessible}"/>
+                                </h6>
+                            </div>
+                        </g:HTMLPanel>
+                    </div>
+
                 </div>
-                <g:HTMLPanel ui:field="roomNotAccessiblePanel" styleName="card card-default bg-info m-t-10 m-b-10" visible="false">
-                    <div class="card-body">
-                        <h6 class="text-white m-t-0 m-b-0 m-l-0 m-r-0">
-                            <i class="fas fa-info-circle p-r-5"/> <ui:text from="{lang.errRoomReservationRoomNotAccessible}"/>
-                        </h6>
-                    </div>
-                </g:HTMLPanel>
                 <calendar:options.CalendarDayOfMonth ui:field="dayOfMonthSelector"/>
             </div>
             <loading:IndeterminateCircleLoading ui:field="loading" visible="false"

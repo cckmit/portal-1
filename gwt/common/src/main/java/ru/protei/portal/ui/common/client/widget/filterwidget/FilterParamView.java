@@ -8,10 +8,6 @@ import ru.protei.portal.core.model.view.filterwidget.FilterQuery;
 import java.util.function.Consumer;
 
 public interface FilterParamView<Q extends FilterQuery> extends IsWidget {
-    void watchForScrollOf(Widget widget);
-
-    void stopWatchForScrollOf(Widget widget);
-
     void resetFilter();
 
     Q getQuery();

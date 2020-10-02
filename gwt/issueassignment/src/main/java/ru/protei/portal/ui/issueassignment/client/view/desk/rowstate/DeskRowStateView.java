@@ -9,6 +9,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.UIObject;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -44,6 +45,11 @@ public class DeskRowStateView extends Composite implements AbstractDeskRowStateV
     }
 
     @Override
+    public UIObject rootContainer() {
+        return root;
+    }
+
+    @Override
     public void setHandler(Handler handler) {
         this.handler = handler;
     }
@@ -76,6 +82,8 @@ public class DeskRowStateView extends Composite implements AbstractDeskRowStateV
 
     @UiField
     SpanElement label;
+    @UiField
+    HTMLPanel root;
     @UiField
     Button optionsButton;
 

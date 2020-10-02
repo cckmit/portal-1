@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.selector.popup;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ScrollEvent;
 import com.google.gwt.event.dom.client.ScrollHandler;
@@ -9,7 +10,6 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.test.client.DebugIds;
@@ -17,33 +17,33 @@ import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
 import ru.protei.portal.ui.common.client.events.InputEvent;
-import ru.protei.portal.ui.common.client.popup.BasePopupView;
 import ru.protei.portal.ui.common.client.selector.SearchHandler;
 import ru.protei.portal.ui.common.client.selector.SelectorPopup;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
+import ru.protei.portal.ui.common.client.widget.composite.popper.PopperComposite;
 
 import java.util.logging.Logger;
-
-import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 
 /**
  * Вид попапа
  */
-public class SelectorPopupWithSearch extends BasePopupView
+public class SelectorPopupWithSearch extends PopperComposite
         implements SelectorPopup, HasAddHandlers {
 
     public SelectorPopupWithSearch() {
-        setWidget(ourUiBinder.createAndBindUi(this));
-        setAutoHideEnabled(true);
-        setAutoHideOnHistoryEventsEnabled(true);
+        initWidget(ourUiBinder.createAndBindUi(this));
+        setAutoHide(true);
+        setAutoResize(true);
         ensureDefaultDebugIds();
-    }
 
-    @Override
-    protected UIObject getPositionRoot() {
-        return root;
+        addCloseHandler(event -> {
+            removePagingHandler();
+            if (popupHandler != null) {
+                popupHandler.onPopupHide(this);
+            }
+        });
     }
 
     @Override
@@ -68,42 +68,37 @@ public class SelectorPopupWithSearch extends BasePopupView
     }
 
     @Override
-    public void showNear( UIObject view ) {
-        super.showNear( view );
-        search.setFocus( isSearchAutoFocus );
-    }
-
-    @Override
-    public void showNear(UIObject showNear, Position position, Integer width) {
-        if (position != null) super.setPosition(position);
-        super.show(showNear, width);
+    public void showNear(Element relative) {
+        addPagingHandler();
+        show(relative);
         search.setFocus(isSearchAutoFocus);
     }
 
     @Override
-    protected void onLoad() {
-        scrolForPagingHandleRegistration = dropdown.addDomHandler( new ScrollHandler() {
-            @Override
-            public void onScroll( ScrollEvent scrollEvent ) {
-                Element e = dropdown.getElement();
-                if (e.getScrollTop() + e.getClientHeight() >= e.getScrollHeight()) {
-                    if (popupHandler != null) {
-                        popupHandler.onEndOfScroll();
-                    }
-                }
-            }
-        }, ScrollEvent.getType() );
+    public void showNear(Element relative, Placement placement) {
+        addPagingHandler();
+        show(relative, placement);
+        search.setFocus(isSearchAutoFocus);
+    }
+
+    @Override
+    public void showNear(Element relative, Placement placement, int skidding, int distance) {
+        addPagingHandler();
+        show(relative, placement, skidding, distance);
+        search.setFocus(isSearchAutoFocus);
+    }
+
+    @Override
+    public void hide() {
+        super.hide();
+
+        removePagingHandler();
+        popupHandler.onPopupHide(this);
     }
 
     @Override
     public void showLoading(boolean isLoading) {
         loading.setVisible(isLoading);
-    }
-
-    @Override
-    protected void onUnload() {
-        scrolForPagingHandleRegistration.removeHandler();
-        popupHandler.onPopupUnload(this);
     }
 
     @Override
@@ -141,13 +136,13 @@ public class SelectorPopupWithSearch extends BasePopupView
         message.setText( noElementsMessage == null ? "" : noElementsMessage );
     }
 
-    public void clearSearchField() {
-            search.setValue( "" );
-    }
-
     @Override
     public void setAddButtonVisibility(boolean isVisible) {
         addButton.setVisible( isVisible );
+    }
+
+    public void clearSearchField() {
+            search.setValue( "" );
     }
 
     public String getSearchString() {
@@ -173,6 +168,32 @@ public class SelectorPopupWithSearch extends BasePopupView
 
     public void setSearchAutoFocus( boolean isSearchAutoFocus ) {
         this.isSearchAutoFocus = isSearchAutoFocus;
+    }
+
+    private void addPagingHandler() {
+        if (scrollForPagingHandleRegistration != null) {
+            return;
+        }
+
+        scrollForPagingHandleRegistration = dropdown.addDomHandler(new ScrollHandler() {
+            @Override
+            public void onScroll( ScrollEvent scrollEvent ) {
+                Element element = dropdown.getElement();
+                if (element.getScrollTop() + element.getClientHeight() >= element.getScrollHeight()) {
+                    if (popupHandler != null) {
+                        popupHandler.onEndOfScroll();
+                    }
+                }
+            }
+        }, ScrollEvent.getType() );
+    }
+
+    private void removePagingHandler() {
+        if (scrollForPagingHandleRegistration != null) {
+            scrollForPagingHandleRegistration.removeHandler();
+        }
+
+        scrollForPagingHandleRegistration = null;
     }
 
     private void ensureDefaultDebugIds() {
@@ -204,7 +225,7 @@ public class SelectorPopupWithSearch extends BasePopupView
     private PopupHandler popupHandler;
     private SearchHandler searchHandler = ignoreSearch;
     private boolean isSearchAutoFocus = true;
-    private HandlerRegistration scrolForPagingHandleRegistration;
+    private HandlerRegistration scrollForPagingHandleRegistration;
     private Timer changeSearchTimer = new Timer() {
         @Override
         public void run() {

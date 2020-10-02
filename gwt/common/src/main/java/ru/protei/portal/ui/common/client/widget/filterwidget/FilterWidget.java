@@ -33,18 +33,6 @@ public abstract class FilterWidget<F extends Filter<FSV, Q>, Q extends FilterQue
         });
     }
 
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-        filterParamView.watchForScrollOf(root);
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        filterParamView.stopWatchForScrollOf(root);
-    }
-
     public void setOnFilterChangeCallback(Runnable callback) {
         filterParamView.setOnFilterChangeCallback(callback);
     }

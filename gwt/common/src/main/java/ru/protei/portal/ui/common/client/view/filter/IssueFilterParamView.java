@@ -459,14 +459,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         onFilterChanged();
     }
 
-    public void watchForScrollOf(Widget widget) {
-        sortField.watchForScrollOf(widget);
-    }
-
-    public void stopWatchForScrollOf(Widget widget) {
-        sortField.stopWatchForScrollOf(widget);
-    }
-
     public void applyVisibilityByFilterType(En_CaseFilterType filterType) {
         if (filterType == null) {
             return;

@@ -154,11 +154,6 @@ public class CaseCommentItemView
     }
 
     @Override
-    public void enableUpdateTimeElapsedType(boolean isTimeElapsedTypeEnabled) {
-        this.isTimeElapsedTypeEditEnabled = isTimeElapsedTypeEnabled;
-    }
-
-    @Override
     public void showAttachments( boolean isShow ){
         if( isShow )
             attachBlock.removeClassName( CrmConstants.Style.HIDE );
@@ -236,6 +231,11 @@ public class CaseCommentItemView
         removeAddedTimer.run();
     }
 
+    @Override
+    public HasVisibility timeElapsedTypePopupVisibility() {
+        return timeElapsedTypePopup;
+    }
+
     @UiHandler( "remove" )
     public void onRemoveClicked( ClickEvent event ) {
         event.preventDefault();
@@ -267,9 +267,7 @@ public class CaseCommentItemView
 
     @UiHandler("timeElapsed")
     public void onTimeElapsedClicked(ClickEvent event) {
-        if (isTimeElapsedTypeEditEnabled) {
-            timeElapsedTypePopup.showNear(timeElapsed.asWidget());
-        }
+        activity.onTimeElapsedTypeClicked(this);
     }
 
     private void setTestAttributes() {
@@ -321,6 +319,7 @@ public class CaseCommentItemView
     @UiField
     ImageElement icon;
     @Inject
+    @UiField(provided = true)
     EditTimeElapsedTypePopup timeElapsedTypePopup;
 
     @Inject
@@ -333,7 +332,6 @@ public class CaseCommentItemView
     Throttler removeUpdatedTimer = ThrottlerFactory.makeDelayedAntiRapidThrottler( 1 * SECOND, ()-> root.getElement().removeClassName( CrmConstants.Style.UPDATED ) );
     Throttler removeAddedTimer = ThrottlerFactory.makeDelayedAntiRapidThrottler( 1 * SECOND,  () -> root.getElement().removeClassName( CrmConstants.Style.ADDED ) );
 
-    private boolean isTimeElapsedTypeEditEnabled;
     private AbstractCaseCommentItemActivity activity;
 
     private static int SECOND = (int) CrmConstants.Time.SEC;

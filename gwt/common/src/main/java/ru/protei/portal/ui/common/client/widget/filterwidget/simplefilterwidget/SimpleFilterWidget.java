@@ -25,18 +25,6 @@ public abstract class SimpleFilterWidget<Q extends FilterQuery> extends Composit
     }
 
     @Override
-    protected void onAttach() {
-        super.onAttach();
-        filterParamView.watchForScrollOf(root);
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        filterParamView.stopWatchForScrollOf(root);
-    }
-
-    @Override
     public void resetFilter() {
         filterParamView.resetFilter();
     }

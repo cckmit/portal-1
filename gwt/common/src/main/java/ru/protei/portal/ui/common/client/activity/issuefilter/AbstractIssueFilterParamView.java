@@ -86,10 +86,6 @@ public interface AbstractIssueFilterParamView extends IsWidget {
 
     boolean isModifiedRangeValid();
 
-    void watchForScrollOf(Widget widget);
-
-    void stopWatchForScrollOf(Widget widget);
-
     void applyVisibilityByFilterType(En_CaseFilterType filterType);
 
     void setCreatedRangeMandatory(boolean isMandatory);

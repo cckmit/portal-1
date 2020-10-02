@@ -10,10 +10,10 @@ import java.util.List;
 /**
  * Селектор локалей
  */
-public class LocaleButtonSelector extends ButtonSelector<String>{
+public class LocaleButtonSelector extends ButtonSelector<String> {
 
     @Inject
-    public void onInit() {
+    public void init() {
         hasNullValue = false;
         setDisplayOptionCreator( value -> new DisplayOption( value, "selector-option-" + value, null ));
         fillOptions();

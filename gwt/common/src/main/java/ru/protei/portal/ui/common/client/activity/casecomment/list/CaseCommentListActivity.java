@@ -351,6 +351,21 @@ public abstract class CaseCommentListActivity
     }
 
     @Override
+    public void onTimeElapsedTypeClicked(AbstractCaseCommentItemView itemView) {
+        CaseComment caseComment = itemViewToModel.get(itemView);
+
+        if (caseComment == null) {
+            return;
+        }
+
+        if (!Objects.equals(caseComment.getAuthorId(), policyService.getProfileId())) {
+            return;
+        }
+
+        itemView.timeElapsedTypePopupVisibility().setVisible(!itemView.timeElapsedTypePopupVisibility().isVisible());
+    }
+
+    @Override
     public void onDisplayPreviewChanged( Boolean isDisplayPreview ) {
         storage.set( IS_PREVIEW_DISPLAYED, String.valueOf( isDisplayPreview ) );
         fireChangedPreview();
@@ -472,7 +487,6 @@ public abstract class CaseCommentListActivity
 
         itemView.enabledEdit(isModifyEnabled && (makeAllowEditValidationString( value, profile) == null));
         itemView.enableReply(isModifyEnabled);
-        itemView.enableUpdateTimeElapsedType(Objects.equals(value.getAuthorId(), profile.getId()));
 
         return itemView;
     }

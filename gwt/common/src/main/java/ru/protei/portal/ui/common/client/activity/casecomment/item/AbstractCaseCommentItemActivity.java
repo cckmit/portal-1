@@ -17,4 +17,5 @@ public interface AbstractCaseCommentItemActivity extends Activity {
 
     void onRemoveAttachment(CaseCommentItemView view, Attachment attachment);
 
+    void onTimeElapsedTypeClicked(AbstractCaseCommentItemView itemView);
 }

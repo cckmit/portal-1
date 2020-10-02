@@ -48,20 +48,6 @@ public class IssueFilterWidget extends Composite {
         issueFilterParamView.timeElapsedVisibility().setVisible(false);
     }
 
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-        issueFilterParamView.watchForScrollOf(root);
-        userFilter.watchForScrollOf(root);
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        issueFilterParamView.stopWatchForScrollOf(root);
-        userFilter.stopWatchForScrollOf(root);
-    }
-
     public void resetFilter() {
         issueFilterParamView.resetFilter();
         userFilter.setValue(null);
