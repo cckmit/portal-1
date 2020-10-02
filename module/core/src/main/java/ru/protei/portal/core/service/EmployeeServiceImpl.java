@@ -278,7 +278,9 @@ public class EmployeeServiceImpl implements EmployeeService {
             return createLDAPAccount(person)
                     .flatMap(userLogin -> {
                         userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
-                        saveUserLogin(userLogin, token);
+                        if (!saveUserLogin(userLogin, token)) {
+                            throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+                        }
                         return ok();
                     }).map(ignore -> person);
         }
@@ -865,13 +867,14 @@ public class EmployeeServiceImpl implements EmployeeService {
         return !userLoginDAO.isUnique(makeLogin(email));
     }
 
-    private void saveUserLogin(UserLogin userLogin, AuthToken authToken) {
+    private boolean saveUserLogin(UserLogin userLogin, AuthToken authToken) {
         if (userLoginDAO.saveOrUpdate(userLogin)) {
             jdbcManyRelationsHelper.persist( userLogin, "roles" );
             makeAudit(userLogin, En_AuditType.ACCOUNT_CREATE, authToken);
+            return true;
         } else {
             log.warn("saveUserLogin(): fail to create login. Rollback transaction. userLogin={}, authToken={}", userLogin, authToken);
-            throw new ResultStatusException(En_ResultStatus.INTERNAL_ERROR);
+           return false;
         }
     }
 
