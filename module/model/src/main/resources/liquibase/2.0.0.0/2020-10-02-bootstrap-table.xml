@@ -9,16 +9,16 @@
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="unique_name" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
             <column name="timestamp" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP"/>
         </createTable>
     </changeSet>
     
-    <changeSet id="add-unique-for-bootstrapchangelog-unique-name" author="eliseev">
+    <changeSet id="add-unique-for-bootstrapchangelog-name" author="eliseev">
         <addUniqueConstraint
                 tableName="bootstrapchangelog"
-                columnNames="unique_name"
-                constraintName="uq_bootstrapchangelog_unique_name"
+                columnNames="name"
+                constraintName="uq_bootstrapchangelog_name"
         />
 
     </changeSet>

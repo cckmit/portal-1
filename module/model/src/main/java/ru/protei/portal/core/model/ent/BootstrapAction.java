@@ -6,25 +6,24 @@ import ru.protei.winter.jdbc.annotations.JdbcEntity;
 import ru.protei.winter.jdbc.annotations.JdbcId;
 
 @JdbcEntity(table = "bootstrapchangelog")
-public class BootstrapApp {
-
+public class BootstrapAction {
 
     @JdbcId(name = Columns.ID, idInsertMode = IdInsertMode.AUTOINCREMENT)
     private Long id;
 
-    @JdbcColumn(name = Columns.UNIQUE_NAME)
-    private String key;
+    @JdbcColumn(name = Columns.NAME)
+    private String name;
 
     public interface Columns {
         String ID = "id";
-        String UNIQUE_NAME = "unique_name";
+        String NAME = "name";
     }
 
-    public void setKey( String key ) {
-        this.key = key;
+    public void setName( String name ) {
+        this.name = name;
     }
 
-    public String getKey() {
-        return key;
+    public String getName() {
+        return name;
     }
 }

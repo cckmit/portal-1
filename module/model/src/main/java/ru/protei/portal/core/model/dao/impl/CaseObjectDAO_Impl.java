@@ -148,7 +148,7 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
                 .where("case_object.state" ).equal(CrmConstants.State.CREATED)
                 .and("case_object.case_type").equal(CRM_SUPPORT.getId())
                 .and(query()
-                        .select( "SELECT company.auto_open_issue" ).from( "FROM company WHERE" )
+                        .select( "SELECT company.auto_open_issue" ).from( "company" )
                             .whereExpression( "company.id = case_object.initiator_company" ))
                 .asQuery();
 

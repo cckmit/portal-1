@@ -18,11 +18,10 @@ import ru.protei.portal.core.controller.cloud.FileController;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseTaskHandler;
 import ru.protei.portal.core.service.events.*;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
-import ru.protei.portal.core.service.pushevent.ClientEventService;
-import ru.protei.portal.core.service.pushevent.ClientEventServiceImpl;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.redmine.aspect.RedmineServiceLayerInterceptor;
 import ru.protei.portal.redmine.handlers.BackchannelEventHandler;
@@ -193,6 +192,11 @@ public class RedmineTestConfiguration {
     @Bean
     public AutoOpenCaseService getAutoOpenCaseService() {
         return mock(AutoOpenCaseService.class);
+    }
+
+    @Bean
+    public AutoOpenCaseTaskHandler getAutoOpenCaseTaskHandler() {
+        return mock(AutoOpenCaseTaskHandler.class);
     }
 
     @Bean

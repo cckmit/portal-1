@@ -4,9 +4,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -19,7 +16,7 @@ import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
-import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceImpl;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseTaskHandler;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
@@ -32,18 +29,9 @@ import java.util.List;
 @EnableTransactionManagement
 @ContextConfiguration(classes = {CoreConfigurationContext.class,
         JdbcConfigurationContext.class, DatabaseConfiguration.class,
-        IntegrationTestsConfiguration.class,
-        AutoOpenCaseServiceImplTest.AutoOpenConfiguration.class})
+        IntegrationTestsConfiguration.class
+})
 public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
-
-    @Configuration
-    static class AutoOpenConfiguration {
-        @Bean
-        @Qualifier("TEST")
-        public AutoOpenCaseService getAutoOpenCaseService() {
-            return new AutoOpenCaseServiceImpl();
-        }
-    }
 
     @Test
     public void createTask() {
@@ -228,6 +216,7 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
     }
 
     @Autowired
-    @Qualifier("TEST")
     AutoOpenCaseService service;
+    @Autowired
+    AutoOpenCaseTaskHandler handler;
 }

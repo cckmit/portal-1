@@ -24,6 +24,7 @@ import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.auth.AuthServiceImpl;
 import ru.protei.portal.core.service.auth.LDAPAuthProvider;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseTaskHandler;
 import ru.protei.portal.core.service.events.*;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
@@ -443,6 +444,11 @@ public class JiraTestConfiguration {
     @Bean
     public AutoOpenCaseService getAutoOpenCaseService() {
         return mock(AutoOpenCaseService.class);
+    }
+
+    @Bean
+    public AutoOpenCaseTaskHandler getAutoOpenCaseTaskHandler() {
+        return mock(AutoOpenCaseTaskHandler.class);
     }
 
     @Bean

@@ -1,7 +1,6 @@
 package ru.protei.portal.core.service.bootstrap;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.annotation.Transactional;
-import org.tmatesoft.svn.core.SVNException;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.index.document.DocumentStorageIndex;
 import ru.protei.portal.core.model.dao.*;
@@ -40,7 +38,6 @@ import ru.protei.winter.jdbc.annotations.JdbcEntity;
 import ru.protei.winter.jdbc.annotations.JdbcId;
 
 import javax.inject.Inject;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -70,7 +67,7 @@ public class BootstrapServiceImpl implements BootstrapService {
     @Transactional
     @Override
     public void bootstrapApplication() {
-        log.info( "bootstrapApplication(): BootstrapService "  );
+        log.info( "bootstrapApplication(): BootstrapService begin."  );
 
         migrateUserRoleScopeToSingleValue();
         removeObsoletePrivileges();
@@ -80,7 +77,7 @@ public class BootstrapServiceImpl implements BootstrapService {
         //patchNormalizeWorkersPhoneNumbers(); // remove once executed
 //        uniteSeveralProductsInProjectToComplex();
         //createProjectsForContracts();
-        documentBuildFullIndex();
+//        documentBuildFullIndex();
         //fillImportanceLevels();
         migrateIpReservation();
         updateManagerFiltersWithoutManagerCompany();
@@ -91,20 +88,25 @@ public class BootstrapServiceImpl implements BootstrapService {
         updateIssueFiltersDateRanges();
         updateIssueReportDateRanges();
         migratePersonAbsences();
-        if(!bootstrapAppDAO.isKeyExists( "updateWithCrossLinkColumn" )) {
-             updateWithCrossLinkColumn();
-            bootstrapAppDAO.createKey("updateWithCrossLinkColumn");
+        if (!bootstrapAppDAO.isActionExists( "updateWithCrossLinkColumn" )) {
+            updateWithCrossLinkColumn();
+            bootstrapAppDAO.createAction( "updateWithCrossLinkColumn" );
         }
-        if(!bootstrapAppDAO.isKeyExists( "transferProjectCrosslinkToYoutrack" )) {
+        if(!bootstrapAppDAO.isActionExists( "transferProjectCrosslinkToYoutrack" )) {
             transferProjectCrosslinkToYoutrack();
-            bootstrapAppDAO.createKey("transferProjectCrosslinkToYoutrack");
+            bootstrapAppDAO.createAction("transferProjectCrosslinkToYoutrack");
         }
         updateUserDashboardOrders();
-        if(!bootstrapAppDAO.isKeyExists( "ContactInfoPersonMigration" )) {
+        if(!bootstrapAppDAO.isActionExists( "ContactInfoPersonMigration" )) {
             ContactInfoPersonMigration.migrate( applicationContext );
-            ContactInfoCompanyMigration.migrate( applicationContext );
-            bootstrapAppDAO.createKey("ContactInfoPersonMigration");
+            bootstrapAppDAO.createAction("ContactInfoPersonMigration");
         }
+        if(!bootstrapAppDAO.isActionExists( "ContactInfoCompanyMigration" )) {
+            ContactInfoCompanyMigration.migrate( applicationContext );
+            bootstrapAppDAO.createAction("ContactInfoCompanyMigration");
+        }
+
+        log.info( "bootstrapApplication(): BootstrapService complete."  );
     }
 
 
@@ -208,119 +210,6 @@ public class BootstrapServiceImpl implements BootstrapService {
         log.debug("transferProjectCrosslinkToYoutrack(): finish");
     }
 
-    private void fillWithCrossLinkColumn() {
-        log.debug("fillWithCrossLinkColumn(): start");
-
-        CaseLinkQuery query = new CaseLinkQuery();
-        query.setType(En_CaseLink.YT);
-        List<CaseLink> ytLinks = caseLinkDAO.getListByQuery(query);
-
-        query.setType(En_CaseLink.CRM);
-        List<CaseLink> crmLinks = caseLinkDAO.getListByQuery(query);
-
-        if (ytLinks.stream().anyMatch(CaseLink::getWithCrosslink) || crmLinks.stream().anyMatch(CaseLink::getWithCrosslink)){
-            log.debug("fillWithCrossLinkColumn(): column already filled");
-            return;
-        }
-
-        //Для CRM ссылок, если флаг еще не заполнен, находим обратную ссылку. Если она есть, то обеим ссылкам ставим true
-        for (CaseLink caseLink : crmLinks) {
-            try {
-                CaseLink crosslink = caseLinkDAO.getCrmLink(En_CaseLink.CRM, NumberUtils.toLong(caseLink.getRemoteId()), caseLink.getCaseId().toString());
-                if (crosslink != null) {
-                    caseLink.setWithCrosslink(true);
-                    crosslink.setWithCrosslink(true);
-
-                    caseLinkDAO.merge(caseLink);
-                    caseLinkDAO.merge(crosslink);
-
-                }
-                log.debug("fillWithCrossLinkColumn(): successfully updated caseLink={}", caseLink);
-            } catch (Exception e){
-                log.error("fillWithCrossLinkColumn(): failed to update caseLink={}, errorMessage={}", caseLink, e.getMessage(), e);
-            }
-        }
-
-        //Для YT ссылок проверяем тим caseObject. Если CRM_SUPPORT, то ставим флаг true. Иначе - false
-        for (CaseLink caseLink : ytLinks) {
-            try {
-                    CaseObject caseObject = caseObjectDAO.get(caseLink.getCaseId());
-
-                    if (caseObject == null) {
-                        log.warn("fillWithCrossLinkColumn(): CaseObject is NULL from caseLink={}", caseLink);
-                        continue;
-                    }
-
-                    if(En_CaseType.CRM_SUPPORT.equals(caseObject.getType())) {
-                        caseLink.setWithCrosslink(true);
-                        caseLinkDAO.merge(caseLink);
-                    }
-                log.debug("fillWithCrossLinkColumn(): successfully updated caseLink={}", caseLink);
-            } catch (Exception e){
-                log.error("fillWithCrossLinkColumn(): failed to update caseLink={}, errorMessage={}", caseLink, e.getMessage(), e);
-            }
-        }
-        log.debug("fillWithCrossLinkColumn(): finish");
-    }
-
-    private void transferYoutrackLinks() {
-        if (!config.data().integrationConfig().isYoutrackLinksMigrationEnabled() || !config.data().getCommonConfig().isProductionServer()){
-            return;
-        }
-
-        log.debug("transferYoutrackLinks(): start transfer");
-
-        CaseLinkQuery query = new CaseLinkQuery(null, null);
-        query.setType(En_CaseLink.YT);
-        query.setWithCrosslink(true);
-
-        List<CaseLink> listByQuery = caseLinkDAO.getListByQuery(query);
-
-        log.debug("transferYoutrackLinks(): quantity of YT case links={}", listByQuery.size());
-
-        Set<String> youtrackIssueIds = listByQuery.stream()
-                .map(CaseLink::getRemoteId)
-                .collect(Collectors.toSet());
-
-        log.debug("transferYoutrackLinks(): quantity of YT ids={}", youtrackIssueIds.size());
-
-        youtrackIssueIds.forEach(youtrackIssueId -> {
-            try {
-                youtrackService.setIssueCrmNumbers(youtrackIssueId, findAllCaseNumbersByYoutrackId(youtrackIssueId, true));
-                log.debug("transferYoutrackLinks(): SUCCESS transfer case links to youtrack id={}", youtrackIssueId);
-            } catch (Exception e){
-                log.error("transferYoutrackLinks(): ERROR transfer case links to youtrack id={}, error message={}", youtrackIssueId, e.getMessage());
-            }
-        });
-    }
-
-
-    private void fillImportanceLevels() {
-        if(importanceLevelDAO.getAll().size() == 4){
-            importanceLevelDAO.persist(new ImportanceLevel(5L, "medium", "medium"));
-        }
-
-        if (!companyImportanceItemDAO.getAll().isEmpty()){
-            return;
-        }
-
-        List<Company> companies = companyDAO.getAll();
-        List<CompanyImportanceItem> importanceItems = new ArrayList<>();
-
-        for (Company company : companies) {
-            if (company.getId() > 0) {
-                for (En_ImportanceLevel value : En_ImportanceLevel.values(true)) {
-                    importanceItems.add(new CompanyImportanceItem(company.getId(), value.getId(), value.getId()));
-                }
-            }
-        }
-        companyImportanceItemDAO.persistBatch(importanceItems);
-    }
-
-    private void autoPatchDefaultRoles () {
-        userRoleDAO.getDefaultCustomerRoles();
-        userRoleDAO.getDefaultEmployeeRoles();
-    }
 
     private void migrateUserRoleScopeToSingleValue() {
         log.info( "Start migrate user role scope to single values" );
@@ -453,85 +342,6 @@ public class BootstrapServiceImpl implements BootstrapService {
             projectToProductDAO.removeAllProductsFromProject(project.getId());
             projectToProductDAO.persist(new ProjectToProduct(project.getId(), complexId));
         });
-    }
-
-//    private void createProjectsForContracts() {
-//        List<Contract> contracts = contractDAO.getAll();
-//
-//        if (contracts == null) {
-//            return;
-//        }
-//
-//        contracts
-//                .stream()
-//                .filter(contract -> contract.getProjectId() == null)
-//                .forEach(contract -> {
-//                    CaseObject contractAsCaseObject = caseObjectDAO.get(contract.getId());
-//
-//                    CaseObject project = new CaseObject();
-//                    project.setName("Проект для договора №" + contract.getNumber());
-//                    project.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.PROJECT));
-//                    project.setType(En_CaseType.PROJECT);
-//                    project.setCreated(new Date());
-//                    project.setStateId(En_RegionState.UNKNOWN.getId());
-//                    project.setLocal(En_CustomerType.COMMERCIAL_PROTEI.getId());
-//                    project.setInitiatorCompanyId(contractAsCaseObject.getInitiatorCompanyId());
-//                    project.setProductId(contractAsCaseObject.getProductId());
-//                    project.setManagerId(contractAsCaseObject.getManagerId());
-//
-//                    Long caseId = caseObjectDAO.persist(project);
-//
-//                    if (contractAsCaseObject.getManagerId() != null) {
-//                        CaseMember caseMember = new CaseMember();
-//                        caseMember.setCaseId(caseId);
-//                        caseMember.setRole(En_DevUnitPersonRoleType.HEAD_MANAGER);
-//                        caseMember.setMemberId(contractAsCaseObject.getManagerId());
-//                        caseMemberDAO.persist(caseMember);
-//                    }
-//                    contract.setProjectId(caseId);
-//                    contractDAO.merge(contract);
-//                });
-//    }
-
-    private void documentBuildFullIndex() { // Данный метод создаст индексы для всех существующих документов
-        try {
-            if (!Objects.equals(config.data().getCommonConfig().getCrmUrlCurrent(), config.data().getCommonConfig().getCrmUrlInternal())) {
-                // disable index at non internal stand
-                return;
-            }
-            if (documentStorageIndex.isIndexExists()) {
-                log.warn("Document build full index - execution prevented. Consider to disable documentBuildFullIndex() method.");
-                return;
-            }
-        } catch (IOException e) {
-            log.warn("Document build full index - execution prevented. Consider to disable documentBuildFullIndex() method.", e);
-            return;
-        }
-
-        log.info("Document index full build has started");
-
-        List<Document> partialDocuments = documentDAO.partialGetAll("id", "project_id");
-        int size = partialDocuments.size();
-        for (int i = 0; i < size; i++) {
-            Long documentId = partialDocuments.get(i).getId();
-            Long projectId = partialDocuments.get(i).getProjectId();
-            try (final ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                documentSvnApi.getDocument(projectId, documentId, En_DocumentFormat.PDF, out);
-                final byte[] fileData = out.toByteArray();
-                if (fileData.length == 0) {
-                    log.warn("Content for document({}) not found, {}/{}", documentId, i + 1, size);
-                    continue;
-                }
-                documentStorageIndex.addPdfDocument(fileData, documentId, projectId);
-                log.info("Index created for document({}), {}/{}", documentId, i + 1, size);
-            } catch (SVNException e) {
-                log.warn("Content for document(" + documentId + ") not found, " + (i + 1) + "/" + size, e);
-            } catch (Exception e) {
-                log.warn("Failed to create index for document(" + documentId + "), " + (i + 1) + "/" + size, e);
-            }
-        }
-
-        log.info("Document index full build has ended");
     }
 
     private void migrateIpReservation() {
@@ -1102,8 +912,7 @@ public class BootstrapServiceImpl implements BootstrapService {
     CaseTypeDAO caseTypeDAO;
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
-    @Autowired
-    DocumentDAO documentDAO;
+
     @Autowired
     CompanyDAO companyDAO;
     @Autowired

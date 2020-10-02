@@ -5,6 +5,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
 import org.tmatesoft.svn.core.SVNErrorCode;
 import org.tmatesoft.svn.core.SVNException;
@@ -43,6 +44,7 @@ import java.util.stream.Collectors;
 import static com.mysql.jdbc.StringUtils.isEmptyOrWhitespaceOnly;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
 
 public class DocumentServiceImpl implements DocumentService {
 
@@ -74,6 +76,51 @@ public class DocumentServiceImpl implements DocumentService {
     ProjectService projectService;
     @Autowired
     PortalConfig config;
+
+    @Async(BACKGROUND_TASKS)
+    @Override
+    public void documentBuildFullIndex() { // Данный метод создаст индексы для всех существующих документов
+        log.info( "documentBuildFullIndex(): Begin." );
+        try {
+            if (!Objects.equals(config.data().getCommonConfig().getCrmUrlCurrent(), config.data().getCommonConfig().getCrmUrlInternal())) {
+                // disable index at non internal stand
+                log.warn("Document build full index - execution prevented. Disable index at non internal stand.");
+                return;
+            }
+            if (documentStorageIndex.isIndexExists()) {
+                log.warn("Document build full index - execution prevented. Consider to disable documentBuildFullIndex() method.");
+                return;
+            }
+        } catch (IOException e) {
+            log.warn("Document build full index - execution prevented. Consider to disable documentBuildFullIndex() method.", e);
+            return;
+        }
+
+        log.info("Document index full build has started");
+
+        List<Document> partialDocuments = documentDAO.partialGetAll("id", "project_id");
+        int size = partialDocuments.size();
+        for (int i = 0; i < size; i++) {
+            Long documentId = partialDocuments.get(i).getId();
+            Long projectId = partialDocuments.get(i).getProjectId();
+            try (final ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                documentSvnApi.getDocument(projectId, documentId, En_DocumentFormat.PDF, out);
+                final byte[] fileData = out.toByteArray();
+                if (fileData.length == 0) {
+                    log.warn("Content for document({}) not found, {}/{}", documentId, i + 1, size);
+                    continue;
+                }
+                documentStorageIndex.addPdfDocument(fileData, documentId, projectId);
+                log.info("Index created for document({}), {}/{}", documentId, i + 1, size);
+            } catch (SVNException e) {
+                log.warn("Content for document(" + documentId + ") not found, " + (i + 1) + "/" + size, e);
+            } catch (Exception e) {
+                log.warn("Failed to create index for document(" + documentId + "), " + (i + 1) + "/" + size, e);
+            }
+        }
+
+        log.info("documentBuildFullIndex(): Document index full build has ended");
+    }
 
     @Override
     public Result<SearchResult<Document>> getDocuments( AuthToken token, Long equipmentId) {

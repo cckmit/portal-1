@@ -1,11 +1,11 @@
 package ru.protei.portal.core.model.dao;
 
-import ru.protei.portal.core.model.ent.BootstrapApp;
+import ru.protei.portal.core.model.ent.BootstrapAction;
 import ru.protei.winter.jdbc.JdbcDAO;
 
-public interface BootstrapAppDAO extends JdbcDAO<Long, BootstrapApp> {
+public interface BootstrapAppDAO extends JdbcDAO<Long, BootstrapAction> {
 
-    boolean isKeyExists( String key );
+    boolean isActionExists( String key );
 
-    Long createKey( String key );
+    Long createAction( String key );
 }
