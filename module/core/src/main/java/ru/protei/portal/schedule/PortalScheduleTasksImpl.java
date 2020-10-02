@@ -14,7 +14,10 @@ import ru.protei.portal.core.event.SchedulePauseTimeOnStartupEvent;
 import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.service.*;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
+import ru.protei.portal.core.service.bootstrap.BootstrapService;
 import ru.protei.portal.core.service.events.EventPublisherService;
+import ru.protei.portal.core.service.syncronization.EmployeeRegistrationYoutrackSynchronizer;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -29,7 +32,28 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
 
         log.info("onApplicationStartOrRefresh() Context refresh counter={} refresh source: {}",  contextRefreshedEventCounter.getAndIncrement(), event.getSource());
 
+        /**
+         * Run ONCE tasks
+         */
         if (isPortalStarted.getAndSet( true )) return;
+
+        /**
+         * Bootstrap data of application
+         * First of ALL
+         */
+        bootstrapService.bootstrapApplication();
+        documentService.documentBuildFullIndex();
+
+        /**
+         * Scheduled tasks
+         */
+
+        if (employeeRegistrationYoutrackSynchronizer.isScheduleSynchronizationNeeded()) {
+            String syncCronSchedule = config.data().youtrack().getEmployeeRegistrationSyncSchedule();
+            scheduler.schedule( () -> employeeRegistrationYoutrackSynchronizer.synchronizeAll(), new CronTrigger( syncCronSchedule ) );
+        }
+
+        autoOpenCaseService.scheduleCaseOpen();
 
         if (!config.data().isTaskSchedulerEnabled()) {
             log.info("portal task's scheduler is not started because disabled in configuration");
@@ -54,6 +78,7 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         scheduler.schedule(this::processScheduledMailReportsWeekly, new CronTrigger( "0 0 5 * * MON"));
 
         scheduleNotificationsAboutPauseTime();
+
     }
 
     public void remindAboutEmployeeProbationPeriod() {
@@ -141,6 +166,8 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
 
     @Autowired
     PortalConfig config;
+    @Autowired
+    BootstrapService bootstrapService;
 
     @Autowired
     private ThreadPoolTaskScheduler scheduler;
@@ -161,7 +188,12 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
     EventPublisherService publisherService;
     @Autowired
     MailReceiverService mailReceiverService;
-
+    @Autowired
+    AutoOpenCaseService autoOpenCaseService;
+    @Autowired
+    DocumentService documentService;
+    @Autowired
+    EmployeeRegistrationYoutrackSynchronizer employeeRegistrationYoutrackSynchronizer;
     private static AtomicBoolean isPortalStarted = new AtomicBoolean(false);
     private static AtomicInteger contextRefreshedEventCounter = new AtomicInteger(0);
 

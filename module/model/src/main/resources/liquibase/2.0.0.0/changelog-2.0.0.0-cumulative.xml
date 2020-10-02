@@ -54,5 +54,6 @@
   <include file="2020-09-24-add-clm-id-in-jira-issue.xml" relativeToChangelogFile="true"/>
   <include file="2020-09-30-modify-report-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-10-01-add-human_readable-column-to-report-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-10-02-bootstrap-table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

@@ -1,11 +1,9 @@
-package ru.protei.portal.core.service;
+package ru.protei.portal.core.service.syncronization;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import org.springframework.scheduling.support.CronTrigger;
-import org.springframework.stereotype.Component;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledEmployeeRegistrationEvent;
@@ -19,6 +17,7 @@ import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
 import ru.protei.portal.core.model.struct.Pair;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.service.YoutrackService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 
 import javax.annotation.PostConstruct;
@@ -26,9 +25,10 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-@Component
-public class EmployeeRegistrationYoutrackSynchronizer {
-    private final Logger log = LoggerFactory.getLogger(EmployeeRegistrationYoutrackSynchronizer.class);
+import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
+
+public class EmployeeRegistrationYoutrackSynchronizerImpl implements EmployeeRegistrationYoutrackSynchronizer {
+    private final Logger log = LoggerFactory.getLogger( EmployeeRegistrationYoutrackSynchronizerImpl.class);
 
     private Set<String> YOUTRACK_PROJECTS = new LinkedHashSet<>();
     private Long YOUTRACK_USER_ID;
@@ -51,21 +51,20 @@ public class EmployeeRegistrationYoutrackSynchronizer {
     private MigrationEntryDAO migrationEntryDAO;
     @Autowired
     private EventPublisherService publisherService;
-    @Autowired
-    private ThreadPoolTaskScheduler scheduler;
+
     @Autowired
     private PortalConfig config;
-
+    
     @PostConstruct
-    public void startSynchronization() {
+    public void init(){
         if (!config.data().integrationConfig().isYoutrackEnabled()) {
-            log.debug("employee registration youtrack synchronizer is not started because YouTrack integration is disabled in configuration");
+            log.debug("init(): employee registration youtrack synchronizer is not started because YouTrack integration is disabled in configuration");
             return;
         }
 
         YOUTRACK_USER_ID = config.data().youtrack().getYoutrackUserId();
         if (YOUTRACK_USER_ID == null) {
-            log.warn("bad youtrack configuration: user id for synchronization not set. Employee registration youtrack synchronizer not started");
+            log.warn("init(): bad youtrack configuration: user id for synchronization not set. Employee registration youtrack synchronizer not started");
             return;
         }
 
@@ -84,20 +83,30 @@ public class EmployeeRegistrationYoutrackSynchronizer {
             YOUTRACK_PROJECTS.add(phoneProjectName);
         }
 
+        log.debug("init(): employee registration youtrack synchronizer initialized: " +
+                        "project for equipment={}, project for admin={}, project for phone={}, youtrack user id={}",
+                equipmentProjectName, adminProjectName, phoneProjectName, YOUTRACK_USER_ID);
+
+
         if (YOUTRACK_PROJECTS.isEmpty()) {
-            log.warn("bad youtrack configuration: project set is empty. Employee registration youtrack synchronizer not started");
+            log.warn("scheduleSynchronization(): bad youtrack configuration: project set is empty. Employee registration youtrack synchronizer not started");
             return;
         }
 
-        String syncCronSchedule = config.data().youtrack().getEmployeeRegistrationSyncSchedule();
-        scheduler.schedule(this::synchronizeAll, new CronTrigger(syncCronSchedule));
-
-        log.debug("employee registration youtrack synchronizer was started: " +
-                "schedule={}, project for equipment={}, project for admin={}, project for phone={}, youtrack user id={}",
-                syncCronSchedule, equipmentProjectName, adminProjectName, phoneProjectName, YOUTRACK_USER_ID);
     }
 
+    @Override
+    public boolean isScheduleSynchronizationNeeded(){
+        if (YOUTRACK_USER_ID == null) {
+            return false;
+        }
+
+        return !CollectionUtils.isEmpty( YOUTRACK_PROJECTS );
+    }
+
+    @Async(BACKGROUND_TASKS)
     @Transactional
+    @Override
     public void synchronizeAll() {
         log.debug("synchronizeAll(): start synchronization");
         Date synchronizationStarted = new Date();
@@ -108,7 +117,7 @@ public class EmployeeRegistrationYoutrackSynchronizer {
         Set<String> updatedIssueIds = getUpdatedIssueIds(lastUpdate);
 
         if (CollectionUtils.isEmpty(updatedIssueIds)) {
-            log.debug("synchronizeAll(): nothing to synchronize");
+            log.debug("synchronizeAll(): nothing to synchronize. Complete.");
             return;
         }
 

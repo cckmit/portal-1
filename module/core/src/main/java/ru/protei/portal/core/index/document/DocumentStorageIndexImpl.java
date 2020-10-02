@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.index.LuceneIndex;
+import ru.protei.portal.core.model.dao.DocumentDAO;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 
 import javax.annotation.PostConstruct;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
 
 public class DocumentStorageIndexImpl implements DocumentStorageIndex {
 
@@ -32,6 +34,8 @@ public class DocumentStorageIndexImpl implements DocumentStorageIndex {
 
     @Autowired
     PortalConfig config;
+    @Autowired
+    DocumentDAO documentDAO;
 
     @PostConstruct
     public void init() {
