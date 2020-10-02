@@ -71,16 +71,6 @@ public class AbsenceFilterParamWidget extends Composite implements AbstractAbsen
     }
 
     @Override
-    public void watchForScrollOf(Widget widget) {
-        sortField.watchForScrollOf(widget);
-    }
-
-    @Override
-    public void stopWatchForScrollOf(Widget widget) {
-        sortField.stopWatchForScrollOf(widget);
-    }
-
-    @Override
     public void resetFilter() {
         employees.setValue(null);
         dateRange.setValue(new DateIntervalWithType(null, En_DateIntervalType.TODAY));

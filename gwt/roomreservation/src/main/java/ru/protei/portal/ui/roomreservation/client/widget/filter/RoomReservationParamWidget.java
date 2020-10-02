@@ -8,7 +8,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.ent.RoomReservable;
@@ -37,16 +36,6 @@ public class RoomReservationParamWidget extends Composite implements AbstractRoo
         ensureDebugIds();
         fillDateRanges(dateRange);
         resetFilter();
-    }
-
-    @Override
-    public void watchForScrollOf(Widget widget) {
-        //        пока не реализуем слеженеим за скролом
-    }
-
-    @Override
-    public void stopWatchForScrollOf(Widget widget) {
-        //        пока не реализуем слеженеим за скролом
     }
 
     public void setOnFilterChangeCallback(Runnable onFilterChangeCallback) {
