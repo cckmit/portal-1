@@ -286,6 +286,15 @@ public class AssembledCaseEvent extends ApplicationEvent implements HasCaseComme
         return allEntries.stream().anyMatch(comment -> !comment.isPrivateComment());
     }
 
+    public boolean isPublicAttachmentsChanged() {
+        List<Attachment> allEntries = new ArrayList<>();
+        allEntries.addAll(emptyIfNull(attachments.getAddedEntries()));
+        allEntries.addAll(emptyIfNull(attachments.getRemovedEntries()));
+        allEntries.addAll(emptyIfNull(attachments.getChangedEntries()).stream().map(DiffResult::getNewState).collect(Collectors.toList()));
+
+        return allEntries.stream().anyMatch(attachment -> !attachment.isPrivate());
+    }
+
     public boolean isCaseObjectFilled() {
         return lastState != null;
     }

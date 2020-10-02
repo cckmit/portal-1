@@ -10,7 +10,6 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.AbstractColumn;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
@@ -142,6 +141,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
     private void initTable () {
         attachClickColumn = new AttachClickColumn<CaseShortView>(lang) {};
+        attachClickColumn.setDisplayPredicate(caseShortView -> policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW) || caseShortView.isPublicAttachmentsExist());
         editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT) );
         issueNumber = new NumberColumn( lang );
         contact = new ContactColumn( lang );
@@ -150,16 +150,12 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
         favoritesClickColumn = new FavoritesClickColumn<>(lang);
 
         table.addColumn(favoritesClickColumn.header, favoritesClickColumn.values);
-//        table.addColumn( selectionColumn.header, selectionColumn.values );
         table.addColumn( issueNumber.header, issueNumber.values );
         table.addColumn( info.header, info.values );
-//        table.addColumn( contact.header, contact.values );
-//        table.addColumn( managers.header, managers.values );
         hideContact = table.addColumn( contact.header, contact.values );
         hideManager = table.addColumn( manager.header, manager.values );
         table.addColumn( attachClickColumn.header, attachClickColumn.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
-//        table.setSeparatorProvider( separator );
     }
 
     @UiField

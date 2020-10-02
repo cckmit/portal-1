@@ -110,7 +110,7 @@ public class AssemblerServiceImpl implements AssemblerService {
             return ok( e );
         }
         log.info( "fillAttachments(): CaseObjectID={} Try to fill attachments.", e.getCaseObjectId() );
-        e.setExistingAttachments(  attachmentDAO.getListByCaseId( e.getCaseObjectId() ));
+        e.setExistingAttachments(  attachmentDAO.getAttachmentsByCaseId( e.getCaseObjectId() ));
         log.info( "fillAttachments(): CaseObjectID={} Attachments are successfully filled.", e.getCaseObjectId() );
 
         return ok( e );

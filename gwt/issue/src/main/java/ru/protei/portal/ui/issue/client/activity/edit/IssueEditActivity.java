@@ -6,10 +6,8 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
-import org.springframework.context.event.EventListener;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.context.client.events.Back;
-import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
@@ -71,6 +69,8 @@ public abstract class IssueEditActivity implements
 
                 issueInfoWidget.attachmentsVisibility().setVisible(!issueInfoWidget.attachmentsListContainer().isEmpty());
                 issueInfoWidget.setCountOfAttachments(size(issueInfoWidget.attachmentsListContainer().getAll()));
+
+                fireIssueChanged(issue.getId());
             }
 
             @Override
@@ -146,6 +146,8 @@ public abstract class IssueEditActivity implements
 
             issueInfoWidget.setCountOfAttachments(size(issueInfoWidget.attachmentsListContainer().getAll()));
             issueInfoWidget.attachmentsVisibility().setVisible(!issueInfoWidget.attachmentsListContainer().isEmpty());
+
+            fireIssueChanged(issue.getId());
         }
     }
 
@@ -158,6 +160,8 @@ public abstract class IssueEditActivity implements
 
             issueInfoWidget.setCountOfAttachments(size(issueInfoWidget.attachmentsListContainer().getAll()));
             issueInfoWidget.attachmentsVisibility().setVisible(!issueInfoWidget.attachmentsListContainer().isEmpty());
+
+            fireIssueChanged(issue.getId());
         }
     }
 
@@ -239,6 +243,8 @@ public abstract class IssueEditActivity implements
                     issueInfoWidget.setCountOfAttachments(size(issueInfoWidget.attachmentsListContainer().getAll()));
                     issueInfoWidget.attachmentsVisibility().setVisible(!issueInfoWidget.attachmentsListContainer().isEmpty());
 
+                    fireIssueChanged(issue.getId());
+
                     showComments( issue );
                 }));
     }
@@ -317,6 +323,14 @@ public abstract class IssueEditActivity implements
                     .withSuccess(result -> onSuccessChangeFavoriteState(issue, view))
             );
         }
+    }
+
+    private void fireIssueChanged(Long issueId) {
+        if (issueId == null) {
+            return;
+        }
+
+        fireEvent(new IssueEvents.ChangeIssue(issueId));
     }
 
     private void onSuccessChangeFavoriteState(CaseObject issue, AbstractIssueEditView view) {
@@ -438,6 +452,9 @@ public abstract class IssueEditActivity implements
 
         view.setCaseNumber( issue.getCaseNumber() );
         issueInfoWidget.setDescription(issue.getInfo(), CaseTextMarkupUtil.recognizeTextMarkup(issue));
+
+        issueInfoWidget.setPrivateCase(issue.isPrivateCase());
+
         issueInfoWidget.attachmentsListContainer().clear();
         issueInfoWidget.attachmentsListContainer().add(issue.getAttachments());
 

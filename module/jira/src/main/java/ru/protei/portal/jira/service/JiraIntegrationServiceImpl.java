@@ -192,7 +192,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         JiraExtAppData jiraExtAppData = JiraExtAppData.fromJSON(appData.getExtAppData());
 
         List<ru.protei.portal.core.model.ent.Attachment> processedAttachments = processAttachments(endpoint, issue.getAttachments(), caseObj.getId(), jiraExtAppData, personMapper);
-        List<ru.protei.portal.core.model.ent.Attachment> caseAttachments = attachmentDAO.getListByCaseId(caseObj.getId());
+        List<ru.protei.portal.core.model.ent.Attachment> caseAttachments = attachmentDAO.getAttachmentsByCaseId(caseObj.getId());
         caseObj.setInfo(convertDescription(issue.getDescription(), caseAttachments));
 
         CaseObject oldCase = caseObjectDAO.get(caseObj.getId());

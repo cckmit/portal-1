@@ -4,4 +4,5 @@ import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentV
 
 public interface AbstractAttachmentFullView extends AbstractAttachmentView {
     void setAuthorAvatarUrl(String url);
+    void setPrivateIconVisible(boolean isVisible);
 }

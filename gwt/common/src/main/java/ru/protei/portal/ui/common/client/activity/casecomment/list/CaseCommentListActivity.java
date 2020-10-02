@@ -46,6 +46,7 @@ import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.CaseCommentUtils.*;
 
@@ -569,14 +570,14 @@ public abstract class CaseCommentListActivity
 
         boolean isEdit = comment.getId() != null;
         caseCommentController.saveCaseComment(caseType, comment, new FluentCallback<CaseComment>()
-                .withError( t -> {
+                .withError(t -> {
                     unlockSave();
                     defaultErrorHandler.accept(t);
-                } )
-                .withSuccess( result -> {
+                })
+                .withSuccess(result -> {
                     unlockSave();
-                    onCommentSent( isEdit, result );
-                } )
+                    onCommentSent(isEdit, result);
+                })
         );
     }
 
@@ -650,6 +651,7 @@ public abstract class CaseCommentListActivity
         storage.remove(makeStorageKey(caseComment.getCaseId()));
 
         caseComment.setCaseAttachments(comment.getCaseAttachments());
+        stream(tempAttachments).forEach(attachment -> attachment.setPrivate(comment.isPrivateComment()));
 
         if (isEdit) {
             renderTextAsync(caseComment.getText(), textMarkup, lastCommentView::setMessage);
@@ -698,7 +700,7 @@ public abstract class CaseCommentListActivity
 
 
     private void updateTimeElapsedInIssue(Collection<CaseComment> comments) {
-        Long timeElapsed = CollectionUtils.stream(comments).filter(cmnt -> cmnt.getTimeElapsed() != null)
+        Long timeElapsed = stream(comments).filter(cmnt -> cmnt.getTimeElapsed() != null)
                 .mapToLong(cmnt -> cmnt.getTimeElapsed()).sum();
         fireEvent( new IssueEvents.ChangeTimeElapsed(timeElapsed) );
     }

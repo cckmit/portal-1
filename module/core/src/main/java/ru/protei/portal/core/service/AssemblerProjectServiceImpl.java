@@ -130,7 +130,7 @@ public class AssemblerProjectServiceImpl implements AssemblerProjectService {
             return ok(event);
         }
         log.info("fillAttachments(): CaseObjectID={} Try to fill attachments.", event.getProjectId());
-        event.setExistingAttachments(attachmentDAO.getListByCaseId(event.getProjectId()));
+        event.setExistingAttachments(attachmentDAO.getAttachmentsByCaseId(event.getProjectId()));
         log.info("fillAttachments(): CaseObjectID={} Attachments are successfully filled.", event.getProjectId());
 
         return ok(event);

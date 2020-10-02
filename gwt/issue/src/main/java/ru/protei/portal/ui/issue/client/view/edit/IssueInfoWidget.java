@@ -66,6 +66,10 @@ public class IssueInfoWidget extends Composite {
         return accordionWidget;
     }
 
+    public void setPrivateCase(boolean isPrivateCase) {
+        attachmentListContainer.setPrivateCase(isPrivateCase);
+    }
+
     @UiHandler("attachmentListContainer")
     public void attachmentContainerRemove(RemoveEvent event) {
         activity.removeAttachment(event.getAttachment());

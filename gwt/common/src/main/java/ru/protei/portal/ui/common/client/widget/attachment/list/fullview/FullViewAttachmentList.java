@@ -48,7 +48,7 @@ public class FullViewAttachmentList extends Composite implements HasAttachments,
             return;
         }
 
-        AbstractAttachmentView view = createView(attachment);
+        AbstractAttachmentView view = createView(attachment, isPrivateCase);
         addViewInContainer(view, attachment);
 
         personService.getPersonsByIds(Collections.singletonList(attachment.getCreatorId()), new FluentCallback<List<Person>>()
@@ -66,7 +66,7 @@ public class FullViewAttachmentList extends Composite implements HasAttachments,
         final List<Attachment> localAttachments = new ArrayList<>(attachments);
 
         localAttachments.forEach(attachment -> {
-            AbstractAttachmentView view = createView(attachment);
+            AbstractAttachmentView view = createView(attachment, isPrivateCase);
             addViewInContainer(view, attachment);
         });
 
@@ -132,11 +132,15 @@ public class FullViewAttachmentList extends Composite implements HasAttachments,
         this.activity = activity;
     }
 
+    public void setPrivateCase(boolean isPrivateCase) {
+        this.isPrivateCase = isPrivateCase;
+    }
+
     public void setEnsureDebugId(String debugId) {
         attachmentList.ensureDebugId(debugId);
     }
 
-    private AbstractAttachmentView createView(Attachment attachment) {
+    private AbstractAttachmentView createView(Attachment attachment, boolean isPrivateCase) {
         AttachmentType.AttachmentCategory category = AttachmentType.getCategory(attachment.getMimeType());
         boolean isImage = category == AttachmentType.AttachmentCategory.IMAGE;
         String attachmentUrl = DOWNLOAD_PATH + attachment.getExtLink();
@@ -149,6 +153,8 @@ public class FullViewAttachmentList extends Composite implements HasAttachments,
 
         view.setDownloadUrl(attachmentUrl);
         view.setPicture(attachmentUrl);
+
+        ((AbstractAttachmentFullView) view).setPrivateIconVisible(!isPrivateCase && attachment.isPrivate());
 
         return view;
     }
@@ -212,6 +218,7 @@ public class FullViewAttachmentList extends Composite implements HasAttachments,
 
     private Map<AbstractAttachmentView, Attachment> viewToAttachment;
     private Activity activity;
+    private boolean isPrivateCase;
     private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/files/";
 
     interface AttachmentListUiBinder extends UiBinder<HTMLPanel, FullViewAttachmentList> {}

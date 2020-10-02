@@ -27,6 +27,7 @@
                         </div>
                     </div>
                 </div>
+                <i ui:field="privateIcon" class="fa-fw fas fa-lock text-danger hide"/>
             </div>
         </div>
     </g:HTMLPanel>

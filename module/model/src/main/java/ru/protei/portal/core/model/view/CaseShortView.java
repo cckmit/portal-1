@@ -93,8 +93,11 @@ public class CaseShortView implements Serializable, Identifiable {
     // ManyToMany via CaseTagService
     private List<CaseTag> tags;
 
-//    Проставляется относительно авторизованного пользователя
+    //    Проставляется относительно авторизованного пользователя
     private boolean isFavorite;
+
+    //  Проставляется при запросе обращений
+    private boolean isPublicAttachmentExist;
 
     public CaseShortView() {
 
@@ -309,6 +312,14 @@ public class CaseShortView implements Serializable, Identifiable {
         isFavorite = favorite;
     }
 
+    public boolean isPublicAttachmentsExist() {
+        return isPublicAttachmentExist;
+    }
+
+    public void setPublicAttachmentsExist(boolean isPublicAttachmentExist) {
+        this.isPublicAttachmentExist = isPublicAttachmentExist;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (id != null) {
@@ -347,6 +358,7 @@ public class CaseShortView implements Serializable, Identifiable {
                 ", managerCompanyName='" + managerCompanyName + '\'' +
                 ", tags=" + tags +
                 ", isFavorite=" + isFavorite +
+                ", isPublicAttachmentExist=" + isPublicAttachmentExist +
                 '}';
     }
 }
