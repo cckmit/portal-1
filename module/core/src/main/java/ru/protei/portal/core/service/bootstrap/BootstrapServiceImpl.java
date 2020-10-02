@@ -69,6 +69,9 @@ public class BootstrapServiceImpl implements BootstrapService {
     public void bootstrapApplication() {
         log.info( "bootstrapApplication(): BootstrapService begin."  );
 
+        /**
+         *  begin Спринт 58 */
+
         migrateUserRoleScopeToSingleValue();
         removeObsoletePrivileges();
 //        autoPatchDefaultRoles();
@@ -105,6 +108,9 @@ public class BootstrapServiceImpl implements BootstrapService {
             ContactInfoCompanyMigration.migrate( applicationContext );
             bootstrapAppDAO.createAction("ContactInfoCompanyMigration");
         }
+
+        /**
+         *  end Спринт 58 */
 
         log.info( "bootstrapApplication(): BootstrapService complete."  );
     }
