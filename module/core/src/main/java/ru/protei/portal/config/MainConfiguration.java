@@ -1068,6 +1068,11 @@ public class MainConfiguration {
         return new ExternalLinksHtml();
     }
 
+    @Bean
+    public NRPEService getNRPEService() {
+        return new NRPEServiceImpl();
+    }
+
     /* ASPECT/INTERCEPTORS */
 
     @Bean

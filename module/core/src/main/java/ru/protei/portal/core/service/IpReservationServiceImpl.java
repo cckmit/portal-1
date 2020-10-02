@@ -60,6 +60,9 @@ public class IpReservationServiceImpl implements IpReservationService {
     @Autowired
     PortalConfig config;
 
+    @Autowired
+    NRPEService nrpeService;
+
     @Override
     public Result<Boolean> isSubnetAddressExists( String address, Long excludeId) {
 
@@ -80,7 +83,17 @@ public class IpReservationServiceImpl implements IpReservationService {
 
         fillDatesInterval(reserveDate, releaseDate, reservedIp, dateIntervalType);
 
-        return ok(checkReservedIpExists(address, reservedIp.getReserveDate(), reservedIp.getReleaseDate(), excludeId));
+        boolean existInBase = checkReservedIpExists(address, reservedIp.getReserveDate(), reservedIp.getReleaseDate(), excludeId);
+        if (existInBase) {
+            return ok(true);
+        } else {
+            Result<Boolean> ipAvailable = nrpeService.isIpAvailable(address);
+            if (ipAvailable.isOk()) {
+                return ipAvailable;
+            } else {
+                return ok(false);
+            }
+        }
     }
 
     @Override
