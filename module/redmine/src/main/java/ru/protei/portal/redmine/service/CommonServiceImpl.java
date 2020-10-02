@@ -308,7 +308,7 @@ public final class CommonServiceImpl implements CommonService {
 
     @Override
     public Result<Set<Integer>> getExistingAttachmentsHashCodes( long caseObjId ) {
-        return ok( attachmentDAO.getListByCaseId(caseObjId).stream()
+        return ok( attachmentDAO.getAttachmentsByCaseId(caseObjId).stream()
                 .map(Attachment::toHashCodeForRedmineCheck)
                 .collect(Collectors.toSet()));
     }

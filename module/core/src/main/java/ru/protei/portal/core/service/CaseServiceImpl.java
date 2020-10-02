@@ -64,9 +64,7 @@ public class CaseServiceImpl implements CaseService {
 
         sr.getResults().forEach(caseShortView -> {
             caseShortView.setFavorite(personFavoriteIssueIds.contains(caseShortView.getId()));
-            caseShortView.setPublicAttachmentsExist(
-                    caseAttachmentDAO.getListByCaseId(caseShortView.getId()).stream().anyMatch(not(CaseAttachment::isPrivate))
-            );
+            caseShortView.setPublicAttachmentsExist(attachmentDAO.hasPublicAttachments(caseShortView.getId()));
         });
 
         return ok(sr);
@@ -996,9 +994,9 @@ public class CaseServiceImpl implements CaseService {
             return error(En_ResultStatus.NOT_FOUND);
 
         jdbcManyRelationsHelper.fillAll( caseObject.getInitiatorCompany() );
-        jdbcManyRelationsHelper.fill( caseObject, "attachments");
         jdbcManyRelationsHelper.fill( caseObject, "notifiers");
         jdbcManyRelationsHelper.fill(caseObject, "plans");
+        fillAttachments(token, caseObject);
 
         withJiraSLAInformation(caseObject);
 
@@ -1019,6 +1017,14 @@ public class CaseServiceImpl implements CaseService {
         }
 
         return ok(caseObject);
+    }
+
+    private void fillAttachments(AuthToken token, CaseObject caseObject) {
+        jdbcManyRelationsHelper.fill(caseObject, "attachments");
+
+        if (!policyService.hasGrantAccessFor(token.getRoles(), En_Privilege.ISSUE_VIEW)) {
+            caseObject.setAttachments(stream(caseObject.getAttachments()).filter(not(Attachment::isPrivate)).collect(Collectors.toList()));
+        }
     }
 
     @Autowired
@@ -1056,6 +1062,9 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     CaseAttachmentDAO caseAttachmentDAO;
+
+    @Autowired
+    AttachmentDAO attachmentDAO;
 
     @Autowired
     CaseNotifierDAO caseNotifierDAO;

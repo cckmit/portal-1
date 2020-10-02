@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.not;
 
 /**
  * Created by bondarenko on 23.01.17.
@@ -145,27 +144,16 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     @Override
     public Result<List<Attachment>> getAttachmentsByCaseId( AuthToken token, En_CaseType caseType, Long caseId) {
-        List<Attachment> list = attachmentDAO.getListByCaseId(caseId);
-
-        if (list == null) {
-            return error(En_ResultStatus.GET_DATA_ERROR);
-        }
-
         if (En_CaseType.CRM_SUPPORT.equals(caseType) && !policyService.hasGrantAccessFor(token.getRoles(), En_Privilege.ISSUE_VIEW)) {
-            return ok(list.stream().filter(not(Attachment::isPrivate)).collect(Collectors.toList()));
+            return ok(attachmentDAO.getPublicAttachmentsByCaseId(caseId));
         }
 
-        return ok(list);
+        return ok(attachmentDAO.getAttachmentsByCaseId(caseId));
     }
 
     @Override
     public Result<List<Attachment>> getAttachments( AuthToken token, En_CaseType caseType, List<Long> ids) {
-        List<Attachment> list = attachmentDAO.getListByKeys(ids);
-
-        if(list == null)
-            return error( En_ResultStatus.GET_DATA_ERROR);
-
-        return ok( list);
+        return ok(attachmentDAO.getListByKeys(ids));
     }
 
     @Override

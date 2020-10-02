@@ -8,5 +8,9 @@ import java.util.List;
  * Created by bondarenko on 26.01.17.
  */
 public interface AttachmentDAO extends PortalBaseDAO<Attachment>{
-    List<Attachment> getListByCaseId(Long caseId);
+    List<Attachment> getAttachmentsByCaseId(Long caseId);
+
+    List<Attachment> getPublicAttachmentsByCaseId(Long caseId);
+
+    boolean hasPublicAttachments(Long caseId);
 }

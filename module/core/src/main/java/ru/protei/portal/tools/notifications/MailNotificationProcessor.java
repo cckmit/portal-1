@@ -1070,14 +1070,14 @@ public class MailNotificationProcessor {
             return false;
         }
 
-        if (publicChangesExist(assembledCaseEvent)) {
+        if (isPublicChangesExist(assembledCaseEvent)) {
             return false;
         }
 
         return true;
     }
 
-    private boolean publicChangesExist(AssembledCaseEvent assembledCaseEvent) {
+    private boolean isPublicChangesExist(AssembledCaseEvent assembledCaseEvent) {
         return  assembledCaseEvent.isPublicCommentsChanged()
                 || assembledCaseEvent.isPublicAttachmentsChanged()
                 || assembledCaseEvent.isCaseImportanceChanged()
