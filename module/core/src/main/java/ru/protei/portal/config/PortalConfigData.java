@@ -36,6 +36,7 @@ public class PortalConfigData {
     private final MarkupHelpLink markupHelpLink;
     private final UiConfig uiConfig;
     private final MailReceiverConfig mailReceiverConfig;
+    private final NRPEConfig nrpeConfig;
 
     private final String loginSuffixConfig;
     private final boolean taskSchedulerEnabled;
@@ -62,6 +63,7 @@ public class PortalConfigData {
         markupHelpLink = new MarkupHelpLink(wrapper);
         uiConfig = new UiConfig(wrapper);
         mailReceiverConfig = new MailReceiverConfig(wrapper);
+        nrpeConfig = new NRPEConfig(wrapper);
 
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
         taskSchedulerEnabled = wrapper.getProperty("task.scheduler.enabled", Boolean.class,false);
@@ -146,6 +148,10 @@ public class PortalConfigData {
 
     public MailReceiverConfig getMailReceiver() {
         return mailReceiverConfig;
+    }
+
+    public NRPEConfig getNrpeConfig() {
+        return nrpeConfig;
     }
 
     public boolean isTaskSchedulerEnabled() {
@@ -805,6 +811,25 @@ public class PortalConfigData {
 
         public String getHost() {
             return host;
+        }
+    }
+
+    public static class NRPEConfig {
+        final String template;
+        final Boolean enable;
+
+        public NRPEConfig(PropertiesWrapper properties) {
+            this.template = properties.getProperty("nrpe.template",
+                    "/usr/lib64/nagios/plugins/check_nrpe -H router.protei.ru -c check_arping_lan -a %s ; echo $?");
+            this.enable = properties.getProperty("nrpe.enable", Boolean.class, false);
+        }
+
+        public String getTemplate() {
+            return template;
+        }
+
+        public Boolean getEnable() {
+            return enable;
         }
     }
 

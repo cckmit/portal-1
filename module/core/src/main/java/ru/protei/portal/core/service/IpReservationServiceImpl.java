@@ -84,14 +84,19 @@ public class IpReservationServiceImpl implements IpReservationService {
         fillDatesInterval(reserveDate, releaseDate, reservedIp, dateIntervalType);
 
         boolean existInBase = checkReservedIpExists(address, reservedIp.getReserveDate(), reservedIp.getReleaseDate(), excludeId);
-        if (existInBase) {
-            return ok(true);
+
+        if (!config.data().getNrpeConfig().getEnable()) {
+            return ok(existInBase);
         } else {
-            Result<Boolean> ipAvailable = nrpeService.isIpAvailable(address);
-            if (ipAvailable.isOk()) {
-                return ipAvailable;
+            if (existInBase) {
+                return ok(true);
             } else {
-                return ok(false);
+                Result<Boolean> ipAvailable = nrpeService.isIpAvailable(address);
+                if (ipAvailable.isOk()) {
+                    return ok(!ipAvailable.getData());
+                } else {
+                    return ok(false);
+                }
             }
         }
     }

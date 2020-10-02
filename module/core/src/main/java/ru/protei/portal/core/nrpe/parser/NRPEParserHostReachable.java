@@ -11,9 +11,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class NRPEParserHostReachable extends NRPEParserHost {
-    static private final Pattern lineProbeInfo = Pattern.compile("^Unicast reply from (?<ip>" + IP_TEMPLATE + ") \\[(?<mac>" + MAC_TEMPLATE + ")\\] (?<time>\\d+\\.\\d+ms)$");
+    static private final Pattern lineProbeInfo = Pattern.compile("^Unicast reply from (?<ip>" + IP_TEMPLATE + ") \\[(?<mac>" + MAC_TEMPLATE + ")\\]\\ +(?<time>\\d+\\.\\d+ms)$");
     static public NRPEResponse parse(List<String> content) {
-        if (content.size() <= 3) {
+        if (content.size() < 3) {
             return null;
         }
         Matcher matcherWelcome = lineWelcome.matcher(content.get(0));

@@ -3,6 +3,7 @@ package ru.protei.portal.core.nrpe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.nrpe.parser.NRPEParserHostReachable;
 import ru.protei.portal.core.nrpe.parser.NRPEParserHostUnreachable;
 import ru.protei.portal.core.nrpe.parser.NRPEParserIncorrectParams;
@@ -18,15 +19,17 @@ public class NRPERequest {
         this.executor = executor;
     }
 
+    @Autowired
+    PortalConfig portalConfig;
+
     private final NRPEExecutor executor;
 
-    static private final String REQUEST_TEMPLATE = "/usr/lib64/nagios/plugins/check_nrpe -H router.protei.ru -c check_arping_lan -a %s ; echo $?";
     public NRPEResponse perform(String ip) {
         if (ip == null) {
             log.error("ip == null");
             return null;
         }
-        String request = String.format(REQUEST_TEMPLATE, ip);
+        String request = String.format(portalConfig.data().getNrpeConfig().getTemplate(), ip);
         log.info("request: {}", request);
         List<String> list = executor.execute(request);
         if (list == null) {
