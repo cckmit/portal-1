@@ -51,6 +51,6 @@
   <include file="2020-09-16-create-contact_item-tables.xml" relativeToChangelogFile="true"/>
   <include file="2020-09-18-add-is_contract_agreement-column-to-worker_entry-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-09-14-add-cost-and-currency-columns-to-contract_date-table.xml" relativeToChangelogFile="true"/>
-  <include file="2020-09-24-add-project-work_completion_date-and-purchase_date.xml" relativeToChangelogFile="true"/>
+  <include file="2020-09-29-create-project-table-and-modify-case_object-table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

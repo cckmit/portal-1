@@ -229,7 +229,7 @@ public class ReportControlServiceImpl implements ReportControlService {
                 return reportProject.writeReport(
                         buffer,
                         report,
-                        getQuery(report, CaseQuery.class),
+                        getQuery(report, ProjectQuery.class),
                         this::isCancel
                 );
             case CONTRACT:

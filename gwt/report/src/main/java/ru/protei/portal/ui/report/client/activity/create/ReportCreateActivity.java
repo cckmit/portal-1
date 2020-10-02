@@ -8,12 +8,8 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.dto.ProductDirectionInfo;
-import ru.protei.portal.core.model.dto.ReportCaseQuery;
-import ru.protei.portal.core.model.dto.ReportContractQuery;
-import ru.protei.portal.core.model.dto.ReportDto;
+import ru.protei.portal.core.model.dto.*;
 import ru.protei.portal.core.model.ent.Report;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
@@ -35,6 +31,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
@@ -155,11 +152,8 @@ public abstract class ReportCreateActivity implements Activity,
                 return new ReportCaseQuery(report, query);
             }
             case PROJECT: {
-                CaseQuery query = getProjectQuery();
-                if (!validateCaseQuery(report.getReportType(), query)) {
-                    return null;
-                }
-                return new ReportCaseQuery(report, query);
+                ProjectQuery query = getProjectQuery();
+                return new ReportProjectQuery(report, query);
             }
             case CONTRACT: {
                 ContractQuery query = getContractQuery();
@@ -364,7 +358,7 @@ public abstract class ReportCreateActivity implements Activity,
         return query;
     }
 
-    private CaseQuery getProjectQuery() {
+    private ProjectQuery getProjectQuery() {
         ProjectQuery query = new ProjectQuery();
 
         String searchString = projectFilterView.searchPattern().getValue();
@@ -380,9 +374,10 @@ public abstract class ReportCreateActivity implements Activity,
         query.setDirections(projectFilterView.direction().getValue());
         query.setSortField(projectFilterView.sortField().getValue());
         query.setSortDir(projectFilterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
-        query.setOnlyMineProjects(projectFilterView.onlyMineProjects().getValue());
-        query.setInitiatorCompanyIds(projectFilterView.initiatorCompanies().getValue());
-        return query.toCaseQuery(policyService.getProfile().getId());
+        query.setMemberId(policyService.getProfile().getId());
+        query.setInitiatorCompanyIds(projectFilterView.initiatorCompanies().getValue().stream()
+                .map(entityOption -> entityOption.getId()).collect(Collectors.toSet()));
+        return query;
     }
     
     private ContractQuery getContractQuery() {

@@ -13,9 +13,9 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.DocumentDocFileUpdatedByMemberEvent;
 import ru.protei.portal.core.event.DocumentMemberAddedEvent;
 import ru.protei.portal.core.index.document.DocumentStorageIndex;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.DocumentDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dao.ProjectDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Document;
@@ -55,7 +55,7 @@ public class DocumentServiceImpl implements DocumentService {
     @Autowired
     DocumentDAO documentDAO;
     @Autowired
-    CaseObjectDAO caseObjectDAO;
+    ProjectDAO projectDAO;
     @Autowired
     PersonDAO personDAO;
     @Autowired
@@ -152,7 +152,7 @@ public class DocumentServiceImpl implements DocumentService {
         if (document.getProjectId() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
-        ProjectInfo projectInfo = ProjectInfo.fromCaseObject(caseObjectDAO.get(document.getProjectId()));
+        ProjectInfo projectInfo = ProjectInfo.fromProject(projectDAO.get(document.getProjectId()));
         if (!DocumentUtils.isValidNewDocument(document, projectInfo, withDoc, withPdf)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -229,7 +229,7 @@ public class DocumentServiceImpl implements DocumentService {
         En_DocumentFormat pdfFormat = withPdf ? En_DocumentFormat.PDF : null;
         En_DocumentFormat ApprovalSheetFormat = withApprovalSheet ? En_DocumentFormat.AS : null;
 
-        ProjectInfo projectInfo = ProjectInfo.fromCaseObject(caseObjectDAO.get(document.getProjectId()));
+        ProjectInfo projectInfo = ProjectInfo.fromProject(projectDAO.get(document.getProjectId()));
         if (document.getId() == null || !DocumentUtils.isValidDocument(document, projectInfo)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }

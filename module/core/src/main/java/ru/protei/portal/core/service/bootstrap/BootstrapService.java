@@ -396,7 +396,7 @@ public class BootstrapService {
         log.info("Correction company id in tags completed successfully");
     }
 
-    private void uniteSeveralProductsInProjectToComplex() {
+   /* private void uniteSeveralProductsInProjectToComplex() {
         CaseQuery caseQuery = new CaseQuery();
         caseQuery.setType(En_CaseType.PROJECT);
         caseQuery.setSortDir(En_SortDir.ASC);
@@ -440,7 +440,7 @@ public class BootstrapService {
             projectToProductDAO.removeAllProductsFromProject(project.getId());
             projectToProductDAO.persist(new ProjectToProduct(project.getId(), complexId));
         });
-    }
+    }*/
 
 //    private void createProjectsForContracts() {
 //        List<Contract> contracts = contractDAO.getAll();

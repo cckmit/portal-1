@@ -6,13 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
+import ru.protei.portal.core.model.dao.ProjectDAO;
 import ru.protei.portal.core.model.dao.ReportDAO;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Report;
-import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.dto.Project;
+import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.ReportProjectWithLastComment;
 import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.EnumLangUtil;
@@ -20,8 +20,6 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -39,7 +37,7 @@ public class ReportProjectImpl implements ReportProject {
     @Autowired
     PortalConfig config;
     @Autowired
-    CaseObjectDAO caseObjectDAO;
+    ProjectDAO projectDAO;
     @Autowired
     CaseCommentDAO caseCommentDAO;
     @Autowired
@@ -50,22 +48,22 @@ public class ReportProjectImpl implements ReportProject {
     @Override
     public boolean writeReport(OutputStream buffer,
                                Report report,
-                               CaseQuery query,
+                               ProjectQuery query,
                                Predicate<Long> isCancel) throws IOException {
 
-        int count = caseObjectDAO.countByQuery(query);
+        int count = projectDAO.countByQuery(query);
 
         Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
 
         if (count < 1) {
-            log.debug("writeReport : reportId={} has no corresponding case objects", report.getId());
+            log.debug("writeReport : reportId={} has no corresponding projects", report.getId());
             ReportWriter<ReportProjectWithLastComment> writer = new ExcelReportWriter(localizedLang, new EnumLangUtil(lang));
             writer.createSheet();
             writer.collect(buffer);
             return true;
         }
 
-        log.debug("writeReport : reportId={} has {} case objects to process", report.getId(), count);
+        log.debug("writeReport : reportId={} has {} projects to process", report.getId(), count);
 
         try (ReportWriter<ReportProjectWithLastComment> writer = new ExcelReportWriter(localizedLang, new EnumLangUtil(lang))) {
             int sheetNumber = writer.createSheet();
@@ -84,7 +82,7 @@ public class ReportProjectImpl implements ReportProject {
     private boolean writeReport(ReportWriter<ReportProjectWithLastComment> writer,
                                 int sheetNumber,
                                 Long reportId,
-                                CaseQuery query,
+                                ProjectQuery query,
                                 int count,
                                 Predicate<Long> isCancel) {
 
@@ -113,24 +111,24 @@ public class ReportProjectImpl implements ReportProject {
         return true;
     }
 
-    public List<ReportProjectWithLastComment> createData(CaseQuery query) {
-        List<CaseObject> cases = caseObjectDAO.getCases(query);
-        if (cases.isEmpty()) {
+    public List<ReportProjectWithLastComment> createData(ProjectQuery query) {
+        List<Project> projects = projectDAO.getProjects(query);
+        if (projects.isEmpty()) {
             return new ArrayList<>();
         }
 
-        jdbcManyRelationsHelper.fill(cases, "locations");
+        jdbcManyRelationsHelper.fill(projects, "locations");
 
-        List<Long> ids = cases.stream().map(CaseObject::getId).collect(Collectors.toList());
+        List<Long> ids = projects.stream().map(Project::getId).collect(Collectors.toList());
         List<CaseComment> lastNotNullTextCommentsForReport = caseCommentDAO
                 .getLastNotNullTextCommentsForReport(ids);
         Map<Long, CaseComment> CaseIdToCaseComment = lastNotNullTextCommentsForReport
                 .stream().collect(Collectors.toMap(CaseComment::getCaseId, Function.identity()));
 
-        return cases.stream().map(caseObject ->
+        return projects.stream().map(project ->
                 new ReportProjectWithLastComment(
-                        Project.fromCaseObject(caseObject),
-                        CaseIdToCaseComment.get(caseObject.getId())))
+                        project,
+                        CaseIdToCaseComment.get(project.getId())))
                 .collect(Collectors.toList());
     }
 }

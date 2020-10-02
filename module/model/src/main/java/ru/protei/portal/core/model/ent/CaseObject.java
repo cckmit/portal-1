@@ -83,18 +83,18 @@ public class CaseObject extends AuditableObject {
     @JdbcJoinedObject(localColumn = "product_id", remoteColumn = "id", updateLocalColumn = false)
     private DevUnit product;
 
-    @JdbcColumn(name = "MANAGER")
+    @JdbcColumn(name = MANAGER)
     private Long managerId;
 
-    @JdbcJoinedObject( localColumn = "MANAGER", remoteColumn = "id", updateLocalColumn = false )
+    @JdbcJoinedObject( localColumn = MANAGER, remoteColumn = "id", updateLocalColumn = false )
     private Person manager;
 
     @JdbcColumn(name = "KEYWORDS")
     private String keywords;
 
-    @JdbcColumn(name = ISLOCAL)
+  /*  @JdbcColumn(name = ISLOCAL)
     private int local;
-
+*/
     @JdbcColumn(name = "EMAILS")
     private String emails;
 
@@ -128,26 +128,18 @@ public class CaseObject extends AuditableObject {
     @JdbcColumn(name = "time_elapsed")
     private Long timeElapsed;
 
-    @JdbcManyToMany(linkTable = "project_to_product", localLinkColumn = "project_id", remoteLinkColumn = "product_id")
-    private Set<DevUnit> products;
+    /*@JdbcManyToMany(linkTable = "project_to_product", localLinkColumn = "project_id", remoteLinkColumn = "product_id")
+    !!private Set<DevUnit> products;*/
 
-    @JdbcColumn(name = "platform_id")
+    @JdbcColumn(name = PLATFORM_ID)
     private Long platformId;
 
-    @JdbcJoinedColumn(localColumn = "platform_id", table = "platform", remoteColumn = "id", mappedColumn = "name")
+    @JdbcJoinedColumn(localColumn = PLATFORM_ID, table = "platform", remoteColumn = "id", mappedColumn = "name")
     private String platformName;
 
-    @JdbcOneToMany(table = "project_sla", localColumn = "id", remoteColumn = "project_id")
-    private List<ProjectSla> projectSlas;
 
-    @JdbcColumn(name = "technical_support_validity")
-    private Date technicalSupportValidity;
 
-    @JdbcColumn(name = WORK_COMPLETION_DATE)
-    private Date workCompletionDate;
 
-    @JdbcColumn(name = PURCHASE_DATE)
-    private Date purchaseDate;
 
     @JdbcJoinedColumn(joinPath = {
             @JdbcJoinPath(localColumn = "id", remoteColumn = "CASE_ID", table = "case_location", sqlTableAlias = "location"),
@@ -166,9 +158,6 @@ public class CaseObject extends AuditableObject {
 
     @JdbcManyToMany(localLinkColumn = "case_object_id", remoteLinkColumn = "plan_id", linkTable = "plan_to_case_object")
     private List<Plan> plans;
-
-    // not db column
-    private List<EntityOption> contracts;
 
     // not db column
     private En_TimeElapsedType timeElapsedType;
@@ -344,13 +333,9 @@ public class CaseObject extends AuditableObject {
         this.keywords = keywords;
     }
 
-    public int getLocal() {
-        return local;
-    }
-
-    public void setLocal(int local) {
+/*    public void setLocal(int local) {
         this.local = local;
-    }
+    }*/
 
     public String getEmails() {
         return emails;
@@ -498,13 +483,13 @@ public class CaseObject extends AuditableObject {
         this.timeElapsed = timeElapsed;
     }
 
-    public Set<DevUnit> getProducts() {
+/*    public Set<DevUnit> getProducts() {
         return products;
     }
 
     public void setProducts(Set<DevUnit> products) {
         this.products = products;
-    }
+    }*/
 
     public En_TimeElapsedType getTimeElapsedType() {
         return timeElapsedType;
@@ -538,14 +523,6 @@ public class CaseObject extends AuditableObject {
         this.platformName = platformName;
     }
 
-    public List<EntityOption> getContracts() {
-        return contracts;
-    }
-
-    public void setContracts(List<EntityOption> contracts) {
-        this.contracts = contracts;
-    }
-
     public String getJiraUrl() {
         return jiraUrl;
     }
@@ -554,25 +531,17 @@ public class CaseObject extends AuditableObject {
         this.jiraUrl = jiraUrl;
     }
 
-    public List<ProjectSla> getProjectSlas() {
-        return projectSlas;
-    }
-
-    public void setProjectSlas(List<ProjectSla> projectSlas) {
+   /* public void setProjectSlas(List<ProjectSla> projectSlas) {
         this.projectSlas = projectSlas;
-    }
+    }*/
 
     public EntityOption toEntityOption() {
         return new EntityOption(this.getName(), this.getId());
     }
 
-    public Date getTechnicalSupportValidity() {
-        return technicalSupportValidity;
-    }
-
-    public void setTechnicalSupportValidity(Date technicalSupportValidity) {
+  /*  public void setTechnicalSupportValidity(Date technicalSupportValidity) {
         this.technicalSupportValidity = technicalSupportValidity;
-    }
+    }*/
 
     public Long getPauseDate() {
         return pauseDate;
@@ -614,7 +583,7 @@ public class CaseObject extends AuditableObject {
         isFavorite = favorite;
     }
 
-    public Date getWorkCompletionDate() {
+   /* public Date getWorkCompletionDate() {
         return workCompletionDate;
     }
 
@@ -629,7 +598,7 @@ public class CaseObject extends AuditableObject {
     public void setPurchaseDate(Date purchaseDate) {
         this.purchaseDate = purchaseDate;
     }
-
+*/
     @Override
     public String getAuditType() {
         return "CaseObject";
@@ -646,8 +615,8 @@ public class CaseObject extends AuditableObject {
         String CREATOR = "CREATOR";
         String STATE = "STATE";
         String CASE_NAME = "CASE_NAME";
-        String WORK_COMPLETION_DATE = "work_completion_date";
-        String PURCHASE_DATE = "purchase_date";
+        String MANAGER = "MANAGER";
+        String PLATFORM_ID = "platform_id";
     }
 
     public static final int NOT_DELETED = 0;
@@ -678,7 +647,6 @@ public class CaseObject extends AuditableObject {
                 ", managerId=" + managerId +
                 ", manager=" + manager +
                 ", keywords='" + keywords + '\'' +
-                ", local=" + local +
                 ", emails='" + emails + '\'' +
                 ", creatorInfo='" + creatorInfo + '\'' +
                 ", deleted=" + deleted +
@@ -690,19 +658,13 @@ public class CaseObject extends AuditableObject {
                 ", extAppType='" + extAppType + '\'' +
                 ", notifiers=" + notifiers +
                 ", timeElapsed=" + timeElapsed +
-                ", products=" + products +
                 ", platformId=" + platformId +
                 ", platformName='" + platformName + '\'' +
-                ", projectSlas=" + projectSlas +
-                ", technicalSupportValidity=" + technicalSupportValidity +
-                ", workCompletionDate=" + workCompletionDate +
-                ", purchaseDate=" + purchaseDate +
                 ", regionName='" + regionName + '\'' +
                 ", pauseDate=" + pauseDate +
                 ", managerCompanyId=" + managerCompanyId +
                 ", managerCompanyName='" + managerCompanyName + '\'' +
                 ", plans=" + plans +
-                ", contracts=" + contracts +
                 ", timeElapsedType=" + timeElapsedType +
                 ", caseObjectMetaJira=" + caseObjectMetaJira +
                 ", jiraUrl='" + jiraUrl + '\'' +

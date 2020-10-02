@@ -68,10 +68,10 @@ public class CaseLocation implements Serializable{
             '}';
     }
 
-    public static CaseLocation makeLocationOf( CaseObject caseObject, EntityOption location ) {
+    public static CaseLocation makeLocationOf( CaseObject caseObject, Long productDirectionId ) {
         CaseLocation result = new CaseLocation();
         result.setCaseId( caseObject.getId() );
-        result.setLocationId( location.getId() );
+        result.setLocationId( productDirectionId );
         return result;
     }
 }

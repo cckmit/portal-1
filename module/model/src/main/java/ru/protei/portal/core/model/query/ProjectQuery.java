@@ -3,16 +3,13 @@ package ru.protei.portal.core.model.query;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 
 import java.util.*;
 
-import static java.util.stream.Collectors.toList;
-
 /**
- * Запрос по регионам
+ * Запрос по проектам
  */
 public class ProjectQuery extends BaseQuery {
     private En_CaseType type = En_CaseType.PROJECT;
@@ -31,7 +28,7 @@ public class ProjectQuery extends BaseQuery {
 
     private Set<Long> districtIds;
 
-    private Boolean onlyMineProjects;
+    private Long memberId;
 
     private Set<Long> productIds;
 
@@ -41,11 +38,9 @@ public class ProjectQuery extends BaseQuery {
 
     private Date createdTo;
 
-    private Long pauseDate;
-
     private Boolean platformIndependentProject;
 
-    private Set<EntityOption> initiatorCompanyIds;
+    private Set<Long> initiatorCompanyIds;
 
     public ProjectQuery() {
         sortField = En_SortField.case_name;
@@ -77,6 +72,10 @@ public class ProjectQuery extends BaseQuery {
         this.caseIds.add(caseId);
     }
 
+    public En_CaseType getType() {
+        return type;
+    }
+
     public void setCaseIds(List<Long> caseIds) {
         this.caseIds = caseIds;
     }
@@ -105,12 +104,12 @@ public class ProjectQuery extends BaseQuery {
         this.directions = directions;
     }
 
-    public Boolean isOnlyMineProjects() {
-        return onlyMineProjects;
+    public Long getMemberId() {
+        return memberId;
     }
 
-    public void setOnlyMineProjects(Boolean onlyMineProjects) {
-        this.onlyMineProjects = onlyMineProjects;
+    public void setMemberId(Long memberId) {
+        this.memberId = memberId;
     }
 
     public Set<Long> getProductIds() {
@@ -177,19 +176,11 @@ public class ProjectQuery extends BaseQuery {
         this.caseMembers = caseMembers;
     }
 
-    public Long getPauseDate() {
-        return pauseDate;
-    }
-
-    public void setPauseDate( Long pauseDate ) {
-        this.pauseDate = pauseDate;
-    }
-
-    public Set<EntityOption> getInitiatorCompanyIds() {
+    public Set<Long> getInitiatorCompanyIds() {
         return initiatorCompanyIds;
     }
 
-    public void setInitiatorCompanyIds(Set<EntityOption> initiatorCompanyIds) {
+    public void setInitiatorCompanyIds(Set<Long> initiatorCompanyIds) {
         this.initiatorCompanyIds = initiatorCompanyIds;
     }
 
@@ -213,23 +204,19 @@ public class ProjectQuery extends BaseQuery {
     @Override
     public String toString() {
         return "ProjectQuery{" +
-                "states=" + states +
+                "type=" + type +
+                ", caseIds=" + caseIds +
+                ", states=" + states +
                 ", regions=" + regions +
                 ", headManagers=" + headManagers +
                 ", caseMembers=" + caseMembers +
-                ", caseIds=" + caseIds +
-                ", districtIds=" + districtIds +
                 ", directions=" + directions +
-                ", onlyMineProjects=" + onlyMineProjects +
+                ", districtIds=" + districtIds +
+                ", memberId=" + memberId +
                 ", productIds=" + productIds +
                 ", customerType=" + customerType +
                 ", createdFrom=" + createdFrom +
                 ", createdTo=" + createdTo +
-                ", searchString='" + searchString + '\'' +
-                ", sortField=" + sortField +
-                ", sortDir=" + sortDir +
-                ", limit=" + limit +
-                ", offset=" + offset +
                 ", platformIndependentProject=" + platformIndependentProject +
                 ", initiatorCompanyIds=" + initiatorCompanyIds +
                 '}';
@@ -247,7 +234,7 @@ public class ProjectQuery extends BaseQuery {
                 Objects.equals(caseMembers, that.caseMembers) &&
                 Objects.equals(directions, that.directions) &&
                 Objects.equals(districtIds, that.districtIds) &&
-                Objects.equals(onlyMineProjects, that.onlyMineProjects) &&
+                Objects.equals(memberId, that.memberId) &&
                 Objects.equals(productIds, that.productIds) &&
                 customerType == that.customerType &&
                 Objects.equals(createdFrom, that.createdFrom) &&
@@ -259,77 +246,13 @@ public class ProjectQuery extends BaseQuery {
     @Override
     public int hashCode() {
         return Objects.hash(caseIds, states, regions, headManagers, caseMembers, directions,
-                districtIds, onlyMineProjects, productIds, customerType, createdFrom, createdTo,
+                districtIds, memberId, productIds, customerType, createdFrom, createdTo,
                 platformIndependentProject, initiatorCompanyIds);
     }
 
-    public CaseQuery toCaseQuery(Long myPersonId) {
-        CaseQuery caseQuery = new CaseQuery();
-        caseQuery.setType(En_CaseType.PROJECT);
 
-        caseQuery.setCaseIds(this.getCaseIds());
-
-        if (CollectionUtils.isNotEmpty(this.getStates())) {
-            caseQuery.setStateIds(this.getStates().stream()
-                    .map(state -> state.getId())
-                    .collect(toList())
-            );
-        }
-
-        if (CollectionUtils.isNotEmpty(this.getRegions())) {
-            caseQuery.setRegionIds(this.getRegions().stream()
-                    .map(region -> region == null ? null : region.getId())
-                    .collect(toList())
-            );
-        }
-
-        if (CollectionUtils.isNotEmpty(this.getHeadManagers())) {
-            caseQuery.setHeadManagerIds(this.getHeadManagers().stream()
-                    .map(headManager -> headManager == null ? null : headManager.getId())
-                    .collect(toList())
-            );
-        }
-
-        if (CollectionUtils.isNotEmpty(this.getCaseMembers())) {
-            caseQuery.setCaseMemberIds(this.getCaseMembers().stream()
-                    .map(member -> member == null ? null : member.getId())
-                    .collect(toList())
-            );
-        }
-
-        if (CollectionUtils.isNotEmpty(this.getDirections())) {
-            caseQuery.setProductDirectionIds(this.getDirections().stream()
-                    .map(directionInfo -> directionInfo == null ? null : directionInfo.id)
-                    .collect(toList())
-            );
-        }
-
-        if (CollectionUtils.isNotEmpty(this.getProductIds())) {
-            caseQuery.setProductIds(this.getProductIds());
-        }
-
-        if (this.isOnlyMineProjects() != null && this.isOnlyMineProjects()) {
-            caseQuery.setMemberId(myPersonId);
-        }
-
-        if (this.getCustomerType() != null) {
-            caseQuery.setLocal(this.getCustomerType().getId());
-        }
-
-        caseQuery.setCreatedRange(new DateRange(En_DateIntervalType.FIXED, this.getCreatedFrom(), this.getCreatedTo()));
-        caseQuery.setSearchString(this.getSearchString());
-        caseQuery.setSortDir(this.getSortDir());
+    /*????????
+     caseQuery.setSortDir(this.getSortDir());
         caseQuery.setSortField(this.getSortField());
-        caseQuery.setPlatformIndependentProject(this.getPlatformIndependentProject());
-        caseQuery.setDistrictIds(this.getDistrictIds());
-
-        if (CollectionUtils.isNotEmpty(this.getInitiatorCompanyIds())) {
-            caseQuery.setCompanyIds(this.getInitiatorCompanyIds().stream()
-                    .map(directionInfo -> directionInfo == null ? null : directionInfo.getId())
-                    .collect(toList())
-            );
-        }
-
-        return caseQuery;
-    }
+*/
 }

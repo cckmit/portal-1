@@ -56,7 +56,7 @@ public class MigrateFreq implements MigrateAction {
                     obj.setInfo((String) row.get("strDescription"));
                     obj.setInitiatorId((Long) row.get("nDeclarantId"));
 //                    obj.setKeywords((String)row.get("strKeyWord"));
-                    obj.setLocal(row.get("lIsLocal") == null ? 1 : ((Number) row.get("lIsLocal")).intValue());
+//                    obj.setLocal(row.get("lIsLocal") == null ? 1 : ((Number) row.get("lIsLocal")).intValue());
                     obj.setName((String) row.get("strName"));
                     obj.setManagerId((Long) row.get("nManagerId"));
                     obj.setModified(new Date());

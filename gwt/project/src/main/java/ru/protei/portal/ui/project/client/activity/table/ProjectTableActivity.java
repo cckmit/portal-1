@@ -26,6 +26,7 @@ import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectF
 import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectFilterView;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.searchCaseNumber;
@@ -215,8 +216,9 @@ public abstract class ProjectTableActivity
         query.setDirections(filterView.direction().getValue());
         query.setSortField(filterView.sortField().getValue());
         query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
-        query.setOnlyMineProjects(filterView.onlyMineProjects().getValue());
-        query.setInitiatorCompanyIds(filterView.initiatorCompanies().getValue());
+        query.setMemberId(policyService.getProfile().getId());
+        query.setInitiatorCompanyIds(filterView.initiatorCompanies().getValue().stream()
+                .map(entityOption -> entityOption.getId()).collect(Collectors.toSet()));
         return query;
     }
 
