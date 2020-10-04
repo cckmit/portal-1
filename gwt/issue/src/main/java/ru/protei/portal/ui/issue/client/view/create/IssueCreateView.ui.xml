@@ -1,6 +1,5 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader.buttonpanel'
              xmlns:accordion='urn:import:ru.protei.portal.ui.common.client.widget.accordion'
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
              xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.makdown"

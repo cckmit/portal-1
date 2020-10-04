@@ -23,4 +23,6 @@ public interface AbstractIssueEditActivity extends Activity {
     void onCopyNumberAndNameClicked();
 
     void onFavoriteStateChanged();
+
+    void onAddSubtaskClicked();
 }

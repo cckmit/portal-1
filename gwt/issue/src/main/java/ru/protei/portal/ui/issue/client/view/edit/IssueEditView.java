@@ -216,6 +216,13 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         }
     }
 
+    @UiHandler("addSubtaskButton")
+    public void onAddSubtaskButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onAddSubtaskClicked();
+        }
+    }
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
@@ -230,6 +237,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         nameAndDescriptionEditButton.ensureDebugId(DebugIds.ISSUE.EDIT_NAME_AND_DESC_BUTTON);
         favoritesButton.ensureDebugId(DebugIds.ISSUE.FAVORITES_BUTTON);
         fileUploader.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_UPLOAD_BUTTON);
+        addSubtaskButton.ensureDebugId(DebugIds.ISSUE.SUBTASK_BUTTON);
     }
 
     @UiField
@@ -280,6 +288,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     HTMLPanel integrationLabel;
     @UiField
     Element integrationLabelName;
+    @UiField
+    Button addSubtaskButton;
 
     private AbstractIssueEditActivity activity;
 

@@ -3117,4 +3117,6 @@ public interface Lang extends Messages, ContactItemLang {
     String issueReportHumanReadableTitle();
 
     String errReportingServiceNotConfigured();
+
+    String addSubtask();
 }

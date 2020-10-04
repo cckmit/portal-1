@@ -33,6 +33,9 @@
                             <g:Button ui:field="nameAndDescriptionEditButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.editNameAndDescription}">
                                 <i class="fa fa-pencil-alt"/>
                             </g:Button>
+                            <g:Button ui:field="addSubtaskButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.addSubtask}">
+                                <i class="fas fa-code-branch"></i>
+                            </g:Button>
                         </div>
                     </div>
 

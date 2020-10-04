@@ -325,6 +325,11 @@ public abstract class IssueEditActivity implements
         }
     }
 
+    @Override
+    public void onAddSubtaskClicked() {
+        fireEvent(new IssueEvents.AddSubtask(issue.getCaseNumber()));
+    }
+
     private void fireIssueChanged(Long issueId) {
         if (issueId == null) {
             return;
