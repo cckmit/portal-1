@@ -52,55 +52,46 @@ IDEA->Конфигурация запуска->VM options добавить:
 
 ### Настройка базы данных в docker
 
-После установки докера, необходимо cоздать файл my.cnf со следующим содержимым: 
->  [mysqld]   
-pid-file        = /var/run/mysqld/mysqld.pid  
-socket          = /var/run/mysqld/mysqld.sock  
-datadir         = /var/lib/mysql  
-secure-file-priv= NULL  
-lower_case_table_names = 1  
-character-set-client-handshake = FALSE  
-character-set-server = utf8mb4  
-collation-server = utf8mb4_unicode_ci  
-innodb_file_per_table=1  
-symbolic-links=0  
->
->[client]  
-default-character-set = utf8mb4  
->
-> [mysql]  
-default-character-set = utf8mb4  
-!includedir /etc/mysql/conf.d/
-
-Завести dockerfile примерно со следующим содержимым: 
+После установки docker, завести dockerfile примерно со следующим содержимым: 
 > FROM mysql:8.0.18 
 >
 > RUN apt-get update && apt-get install -y nano mc
 >
 > ENV MYSQL_ROOT_PASSWORD=my_root_pw
->
-> COPY /path/to/my/custom/my.cnf /etc/mysql/my.cnf
 
 В папке с докер файлом выполнить команду:
 
 `docker build -t my_img_name -f my_dockerfile_name .`
 
-Создать папку, например, data, в которой будут лежать файлы mysql из контейнера.
-
-Выполнить команду:
+Создать папку, например, data, в которой будут лежать файлы mysql из контейнера и выполнить команду:
 
 `docker run -d --name container_name -v /path/to/data:/var/lib/mysql -p 3000:3306 my_img_name`
 
-БД доступна по localhost:3000. Вход в контейнер:
+После этого, контейнер запустится и БД будет доступна по localhost:3000. 
+
+Вход в контейнер:
 
 `docker exec -it container_name /bin/bash`
 
-Создание тестовой бд:
+Создание бд для разработки и тестов:
+
+`create database portal_dev`
 
 `create database portal_test`
 
-Теперь в файлах winter.properties с тестами, можно подменять проперти на свои. 
+Желательно, сначала создать бд для разработки внутри контейнера, потом запустить портал, чтобы отработал Liquibase
+и уже после этого применять дамп базы данных для разработки.
 
 Дамп базы данных для разработки можно положить в папку data и применить дамп из контенера.
+
+Теперь в файлах winter.properties с тестами можно подменять проперти на свои.
+Как вариант, создать патч файл с изменениям в файлах winter.properties и применять его перед тестами.
+Не забыть отменить патч перед пушем.
+
+Последующие запуск/остановка контейнера:
+
+`docker start container_name`
+
+`docker stop container_name`
 
 Image - https://hub.docker.com/_/mysql
