@@ -751,7 +751,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private boolean isEmployeeExist(Person person){
         EmployeeQuery employeeQuery = new EmployeeQuery();
-        employeeQuery.setFired(false);
         employeeQuery.setDeleted(false);
         employeeQuery.setFirstName(person.getFirstName());
         employeeQuery.setLastName(person.getLastName());
