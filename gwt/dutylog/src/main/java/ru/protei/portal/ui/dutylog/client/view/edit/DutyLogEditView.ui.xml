@@ -10,26 +10,20 @@
         <loading:IndeterminateCircleLoading ui:field="loading" visible="false"
                                             styleName="p-t-20 p-b-20 p-l-20 p-r-20"/>
         <g:HTMLPanel ui:field="content" visible="false" styleName="form-group-attached p-t-20">
-            <div class="form-group form-group-default required">
-                <label ui:field="absenceEmployeeLabel" class="fade">
-                    <ui:text from="{lang.dutyLogEmployee}"/>
+            <person:EmployeeFormSelector ui:field="employee" defaultValue="{lang.selectAbsenceEmployee}"
+                                         header="{lang.dutyLogEmployee}" mandatory="true"/>
+
+            <div class="form-group form-group-default required" aria-required="true">
+                <label ui:field="absenceDateRangeLabel" class="fade">
+                    <ui:text from="{lang.dutyLogRange}"/>
                 </label>
-                <person:EmployeeButtonSelector ui:field="employee" defaultValue="{lang.selectAbsenceEmployee}"
-                                               validation="true"/>
+                <range:RangePicker ui:field="dateRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"
+                                   mandatory="true" styleName=""/>
             </div>
-            <div class="row clearfix">
-                <div class="form-group form-group-default required" aria-required="true">
-                    <label ui:field="absenceDateRangeLabel" class="fade">
-                        <ui:text from="{lang.dutyLogRange}"/>
-                    </label>
-                    <range:RangePicker ui:field="dateRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"
-                                       mandatory="true" styleName=""/>
-                </div>
-            </div>
-            <div class="row clearfix">
-                <form:FormPopupSingleSelector ui:field="type" header="{lang.dutyLogDuty}"
-                                              hasNullValue="false" addStyleNames="form-group required"/>
-            </div>
+
+            <form:FormPopupSingleSelector ui:field="type" header="{lang.dutyLogDuty}"
+                                          hasNullValue="false" addStyleNames="form-group required"/>
+
         </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

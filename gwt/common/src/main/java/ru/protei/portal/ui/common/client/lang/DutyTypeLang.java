@@ -25,6 +25,8 @@ public class DutyTypeLang {
                 return lang.dutyTypeNGN();
             case SORM:
                 return lang.dutyTypeSORM();
+            case COV:
+                return lang.dutyTypeCOV();
         }
         return lang.unknownField();
     }
