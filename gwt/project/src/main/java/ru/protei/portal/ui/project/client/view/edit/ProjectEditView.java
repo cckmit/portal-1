@@ -19,6 +19,7 @@ import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
+import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.UiConstants;
@@ -26,6 +27,7 @@ import ru.protei.portal.ui.common.client.lang.En_RegionStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.plan.selector.PlanMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.region.RegionFormSelector;
@@ -220,6 +222,11 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         return pauseDate;
     }
 
+    @Override
+    public HasValue<Set<PlanOption>> plans() {
+        return plans;
+    }
+
     @UiHandler("addLinkButton")
     public void onAddLinkButtonClick(ClickEvent event) {
         if (activity != null) {
@@ -262,7 +269,6 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
 
     @UiField
     HTMLPanel root;
-
     @UiField
     Label number;
     @UiField
@@ -272,44 +278,38 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     @Inject
     @UiField(provided = true)
     TeamSelector team;
-
     @Inject
     @UiField( provided = true )
     ProductDirectionFormSelector productDirection;
-
     @Inject
     @UiField( provided = true )
     RegionStateFormSelector projectState;
-
     @Inject
     @UiField( provided = true )
     RegionFormSelector projectRegion;
-
     @Inject
     @UiField(provided = true)
     CompanyFormSelector company;
-
     @Inject
     @UiField(provided = true)
     DevUnitFormSelector product;
-
     @Inject
     @UiField(provided = true)
     CustomerFormSelector customerType;
-
     @Inject
     @UiField(provided = true)
     SlaInput slaInput;
-
     @Inject
     @UiField(provided = true)
     SinglePicker technicalSupportValidity;
-
     @UiField
     HTMLPanel pauseDateContainer;
     @Inject
     @UiField(provided = true)
     SinglePicker pauseDate;
+    @Inject
+    @UiField(provided = true)
+    PlanMultiSelector plans;
 
     @UiField
     DivElement comments;

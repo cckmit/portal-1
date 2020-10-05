@@ -45,9 +45,9 @@
                         <g:ToggleButton ui:field="sortDir" styleName="btn btn-default sorting_button"/>
                     </div>
                 </div>
-                <div class="form-group col-md-12">
+                <g:HTMLPanel styleName="form-group col-md-12" ui:field="onlyMineProjectsContainer">
                     <g:CheckBox ui:field="onlyMineProjects" styleName="checkbox" text="{lang.projectOnlyMine}"/>
-                </div>
+                </g:HTMLPanel>
             </div>
         </div>
         <div ui:field="footer" class="card-footer text-right">

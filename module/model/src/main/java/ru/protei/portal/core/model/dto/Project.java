@@ -116,6 +116,10 @@ public class Project extends AuditableObject {
     @JdbcColumn(name = Project.Columns.PAUSE_DATE)
     private Long pauseDate;
 
+    @JdbcManyToMany(linkTable = "plan_to_project", localLinkColumn = "project_id", remoteLinkColumn = "plan_id")
+    private List<Plan> projectPlans;
+
+
     public Long getId() {
         return id;
     }
@@ -327,6 +331,14 @@ public class Project extends AuditableObject {
         this.projectSlas = projectSlas;
     }
 
+    public List<Plan> getProjectPlans() {
+        return projectPlans;
+    }
+
+    public void setProjectPlans(List<Plan> projectPlans) {
+        this.projectPlans = projectPlans;
+    }
+
     public static Project fromCaseObject(CaseObject caseObject) {
         if (caseObject == null) {
             return null;
@@ -450,6 +462,7 @@ public class Project extends AuditableObject {
                 ", technicalSupportValidity=" + technicalSupportValidity +
                 ", projectSlas=" + projectSlas +
                 ", pauseDate=" + pauseDate +
+                ", projectPlans=" + projectPlans +
                 '}';
     }
 
@@ -464,5 +477,8 @@ public class Project extends AuditableObject {
         String CREATOR = CaseObject.Columns.CREATOR;
         String STATE = CaseObject.Columns.STATE;
         String NAME = CaseObject.Columns.CASE_NAME;
+    }
+    public interface Fields {
+        String PROJECT_PLANS = "projectPlans";
     }
 }
