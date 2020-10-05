@@ -19,7 +19,9 @@ public enum DutyType  implements HasId {
     // дежурный NGN
     NGN(7),
     // дежурный СОРМ
-    SORM(8);
+    SORM(8),
+    // дежурный ЦОВ
+    COV(9);
 
     DutyType(int id) {
         this.id = id;
