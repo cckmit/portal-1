@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.DutyTypeLang;
 import ru.protei.portal.ui.common.client.widget.form.FormPopupSingleSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeFormSelector;
 import ru.protei.portal.ui.dutylog.client.activity.edit.AbstractDutyLogEditActivity;
 import ru.protei.portal.ui.dutylog.client.activity.edit.AbstractDutyLogEditView;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -81,7 +82,7 @@ public class DutyLogEditView extends Composite implements AbstractDutyLogEditVie
 
     @Inject
     @UiField(provided = true)
-    EmployeeButtonSelector employee;
+    EmployeeFormSelector employee;
     @Inject
     @UiField(provided = true)
     RangePicker dateRange;
