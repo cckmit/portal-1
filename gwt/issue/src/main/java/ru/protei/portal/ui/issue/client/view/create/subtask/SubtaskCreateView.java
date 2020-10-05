@@ -8,9 +8,16 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.inject.Inject;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanyFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.PersonFormSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.issue.client.activity.create.subtask.AbstractSubtaskCreateActivity;
@@ -20,8 +27,10 @@ import static ru.protei.portal.core.model.util.CrmConstants.NAME_MAX_SIZE;
 
 public class SubtaskCreateView extends Composite implements AbstractSubtaskCreateView {
 
-    public SubtaskCreateView() {
+    @Inject
+    public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        initView();
         ensureDebugIds();
         description.setRenderer((text, consumer) -> activity.renderMarkupText(text, consumer));
         description.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged(DESCRIPTION, isDisplay));
@@ -48,6 +57,16 @@ public class SubtaskCreateView extends Composite implements AbstractSubtaskCreat
         return nameValidator;
     }
 
+    @Override
+    public HasValue<EntityOption> getManagerCompany() {
+        return this.managerCompany;
+    }
+
+    @Override
+    public HasValue<PersonShortView> getManager() {
+        return manager;
+    }
+
     private HasValidable nameValidator = new HasValidable() {
         @Override
         public void setValid(boolean isValid) {
@@ -69,11 +88,21 @@ public class SubtaskCreateView extends Composite implements AbstractSubtaskCreat
             return;
         }
         name.ensureDebugId(DebugIds.ISSUE.NAME_INPUT);
-        description.setEnsureDebugId(DebugIds.ISSUE.DESCRIPTION_INPUT);
         nameLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.NAME);
+        description.setEnsureDebugId(DebugIds.ISSUE.DESCRIPTION_INPUT);
         descriptionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.INFO);
+        manager.setEnsureDebugId(DebugIds.ISSUE.MANAGER_SELECTOR);
+        manager.ensureLabelDebugId(DebugIds.ISSUE.LABEL.MANAGER);
     }
 
+    private void initView() {
+        managerCompany.setDefaultValue(lang.selectIssueCompany());
+        manager.setDefaultValue(lang.selectIssueManager());
+    }
+
+    @UiField
+    @Inject
+    Lang lang;
     @UiField
     LabelElement nameLabel;
     @UiField
@@ -84,6 +113,12 @@ public class SubtaskCreateView extends Composite implements AbstractSubtaskCreat
     MarkdownAreaWithPreview description;
     @UiField
     HTMLPanel nameContainer;
+    @Inject
+    @UiField(provided = true)
+    CompanyFormSelector managerCompany;
+    @Inject
+    @UiField(provided = true)
+    PersonFormSelector manager;
 
     private AbstractSubtaskCreateActivity activity;
 
