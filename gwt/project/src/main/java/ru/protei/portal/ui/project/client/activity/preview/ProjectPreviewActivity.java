@@ -7,16 +7,16 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_ProjectAccessType;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
 import ru.protei.portal.ui.common.client.lang.En_PersonRoleTypeLang;
@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
+import static ru.protei.portal.ui.project.client.util.AccessUtil.*;
 
 /**
  * Активность превью проекта
@@ -58,8 +59,8 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 
     @Event
     public void onShow( ProjectEvents.ShowFullScreen event ) {
-        if (!policyService.hasPrivilegeFor(En_Privilege.PROJECT_VIEW)) {
-            fireEvent(new ErrorPageEvents.ShowForbidden());
+        if (getAccessType(policyService, En_Privilege.PROJECT_VIEW) == En_ProjectAccessType.NONE) {
+            fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
 
@@ -154,7 +155,18 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
             view.getLinksContainer().clear();
         }
 
-        fireEvent(new CaseCommentEvents.Show( view.getCommentsContainer(), value.getId(), En_CaseType.PROJECT, policyService.hasPrivilegeFor( En_Privilege.PROJECT_EDIT ), value.getCreatorId() ) );
+        CaseCommentEvents.Show showComments = new CaseCommentEvents.Show(
+            view.getCommentsContainer(),
+            value.getId(),
+            En_CaseType.PROJECT,
+            canAccessProject(policyService, En_Privilege.PROJECT_EDIT, value.getTeam()),
+            value.getCreatorId()
+        );
+        showComments.isPrivateVisible = canAccessProjectPrivateElements(policyService, En_Privilege.PROJECT_VIEW, value.getTeam());
+        showComments.isPrivateCase = false;
+        showComments.isNewCommentEnabled = canAccessProject(policyService, En_Privilege.PROJECT_EDIT, value.getTeam());
+        fireEvent(showComments);
+
         fireEvent(new ProjectEvents.ShowProjectDocuments(view.getDocumentsContainer(), project.getId(), false));
     }
 

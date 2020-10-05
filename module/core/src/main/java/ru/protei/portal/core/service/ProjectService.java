@@ -48,6 +48,7 @@ public interface ProjectService {
     Result<List<EntityOption>> listOptionProjects(AuthToken token, ProjectQuery query);
 
     Result<List<ProjectInfo>> listInfoProjects(AuthToken token, ProjectQuery query);
+
     /**
      * Получает информацию о проекте
      * @param id
@@ -89,6 +90,9 @@ public interface ProjectService {
     @EventListener
     @Async(BACKGROUND_TASKS)
     void onPauseTimeNotification( ProjectPauseTimeHasComeEvent event );
+
+    @Privileged(En_Privilege.PROJECT_VIEW)
+    Result<List<PersonProjectMemberView>> getProjectTeam(AuthToken token, Long projectId);
 
     Result<PersonProjectMemberView> getProjectLeader(AuthToken authToken, Long projectId);
 }

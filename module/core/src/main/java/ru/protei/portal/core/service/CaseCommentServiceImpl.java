@@ -29,6 +29,7 @@ import ru.protei.portal.core.model.struct.ReplaceLoginWithUsernameInfo;
 import ru.protei.portal.core.model.struct.receivedmail.ReceivedMail;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseCommentShortView;
+import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
@@ -41,6 +42,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.access.ProjectAccessUtil.*;
 import static ru.protei.portal.core.model.dict.En_CaseType.CRM_SUPPORT;
 import static ru.protei.portal.core.model.dict.En_CaseType.PROJECT;
 import static ru.protei.portal.core.model.dict.En_Privilege.ISSUE_EDIT;
@@ -55,7 +57,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             return error(checkAccessStatus);
         }
         CaseCommentQuery query = new CaseCommentQuery(caseObjectId);
-        applyFilterByScope(token, query);
+        applyFilterByScope(token, caseType, query);
 
         return getList(query);
     }
@@ -66,7 +68,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         if (checkAccessStatus != null) {
             return error(checkAccessStatus);
         }
-        applyFilterByScope(token, query);
+        applyFilterByScope(token, caseType, query);
 
         return ok(caseCommentShortViewDAO.getSearchResult(query));
     }
@@ -130,7 +132,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             throw new ResultStatusException(checkAccessStatus);
         }
 
-        if (caseType == CRM_SUPPORT && prohibitedPrivateComment(token, comment)) {
+        if (caseType == CRM_SUPPORT && !allowedPrivateComment(token, caseType, comment)) {
             throw new ResultStatusException(En_ResultStatus.PROHIBITED_PRIVATE_COMMENT);
         }
 
@@ -236,7 +238,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             throw new ResultStatusException(checkAccessStatus);
         }
 
-        if (caseType == CRM_SUPPORT && prohibitedPrivateComment(token, comment)) {
+        if (caseType == CRM_SUPPORT && !allowedPrivateComment(token, caseType, comment)) {
             throw new ResultStatusException(En_ResultStatus.PROHIBITED_PRIVATE_COMMENT);
         }
 
@@ -735,21 +737,56 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         return getList(comments);
     }
 
-    private void applyFilterByScope( AuthToken token, CaseCommentQuery query ) {
-        if (token != null) {
-            Set<UserRole> roles = token.getRoles();
-            if (!policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
-                query.setViewPrivate(false);
+    private void applyFilterByScope( AuthToken token, En_CaseType caseType, CaseCommentQuery query ) {
+        if (token == null || caseType == null) {
+            return;
+        }
+        Set<UserRole> roles = token.getRoles();
+        switch (caseType) {
+            case CRM_SUPPORT: {
+                if (!policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
+                    query.setViewPrivate(false);
+                }
+                return;
+            }
+            case PROJECT: {
+                Result<List<PersonProjectMemberView>> team = projectService.getProjectTeam(token, getFirst(query.getCaseObjectIds()));
+                if (team.isError()) {
+                    query.setViewPrivate(false);
+                    return;
+                }
+                if (!canAccessProjectPrivateElements(policyService, token, En_Privilege.PROJECT_VIEW, team.getData())) {
+                    query.setViewPrivate(false);
+                }
+                return;
             }
         }
     }
-    private boolean prohibitedPrivateComment(AuthToken token, CaseComment comment) {
-        if (token != null) {
-            Set< UserRole > roles = token.getRoles();
-            return comment.isPrivateComment() && !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_VIEW );
-        } else {
-            return false;
+
+    private boolean allowedPrivateComment(AuthToken token, En_CaseType caseType, CaseComment comment) {
+        if (token == null || caseType == null) {
+            return true;
         }
+        Set< UserRole > roles = token.getRoles();
+        switch (caseType) {
+            case CRM_SUPPORT: {
+                if (!comment.isPrivateComment()) {
+                    return true;
+                }
+                return policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW);
+            }
+            case PROJECT: {
+                if (!comment.isPrivateComment()) {
+                    return true;
+                }
+                Result<List<PersonProjectMemberView>> team = projectService.getProjectTeam(token, comment.getCaseId());
+                if (team.isError()) {
+                    return false;
+                }
+                return canAccessProjectPrivateElements(policyService, token, En_Privilege.PROJECT_VIEW, team.getData());
+            }
+        }
+        return false;
     }
 
     private Result<List<CaseComment>> getList(List<CaseComment> comments) {
@@ -778,9 +815,25 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     private En_ResultStatus checkAccessForCaseObject(AuthToken token, En_CaseType caseType, CaseObject caseObject) {
-        if (CRM_SUPPORT.equals(caseType)) {
-            if (!policyService.hasAccessForCaseObject(token, En_Privilege.ISSUE_VIEW, caseObject)) {
-                return En_ResultStatus.PERMISSION_DENIED;
+        if (token == null || caseType == null) {
+            return null;
+        }
+        switch (caseType) {
+            case CRM_SUPPORT: {
+                if (!policyService.hasAccessForCaseObject(token, En_Privilege.ISSUE_VIEW, caseObject)) {
+                    return En_ResultStatus.PERMISSION_DENIED;
+                }
+                break;
+            }
+            case PROJECT: {
+                Result<List<PersonProjectMemberView>> team = projectService.getProjectTeam(token, caseObject.getId());
+                if (team.isError()) {
+                    return team.getStatus();
+                }
+                if (!canAccessProject(policyService, token, En_Privilege.PROJECT_VIEW, team.getData())) {
+                    return En_ResultStatus.PERMISSION_DENIED;
+                }
+                break;
             }
         }
         return null;
@@ -803,6 +856,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     CaseService caseService;
     @Autowired
     AttachmentService attachmentService;
+    @Autowired
+    ProjectService projectService;
     @Autowired
     EventPublisherService publisherService;
 

@@ -6,10 +6,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
-import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dict.En_RegionState;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.Company;
@@ -17,6 +14,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
+import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -27,9 +25,12 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.dict.En_RegionState.PAUSED;
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
+import static ru.protei.portal.ui.project.client.util.AccessUtil.*;
 
 /**
  * Активность карточки создания и редактирования проектов
@@ -48,8 +49,12 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
     @Event
     public void onShow (ProjectEvents.Edit event) {
-        if (!hasPrivileges(event.id)) {
-            fireEvent(new ErrorPageEvents.ShowForbidden());
+
+        En_Privilege privilege = event.id == null
+                ? En_Privilege.PROJECT_CREATE
+                : En_Privilege.PROJECT_EDIT;
+        if (getAccessType(policyService, privilege) == En_ProjectAccessType.NONE) {
+            fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
 
@@ -173,16 +178,33 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.technicalSupportValidity().setValue(project.getTechnicalSupportValidity());
         if (isNew( project )) view.setDateValid( true );
 
+        view.plans().setValue(stream(project.getProjectPlans())
+                .map(PlanOption::fromPlan)
+                .collect(Collectors.toSet()));
 
-        fillCaseLinks(project.getId());
+        fillCaseLinks(project);
 
-        if(!isNew( project )) {
-            fireEvent( new CaseCommentEvents.Show( view.getCommentsContainer(), project.getId(), En_CaseType.PROJECT, hasPrivileges( project.getId() ), project.getCreatorId() ) );
+        En_Privilege actionPrivilege = isNew(project)
+                ? En_Privilege.PROJECT_CREATE
+                : En_Privilege.PROJECT_EDIT;
+
+        if (!isNew(project)) {
+            CaseCommentEvents.Show show = new CaseCommentEvents.Show(
+                view.getCommentsContainer(),
+                project.getId(),
+                En_CaseType.PROJECT,
+                canAccessProject(policyService, actionPrivilege, project.getTeam()),
+                project.getCreatorId()
+            );
+            show.isPrivateVisible = canAccessProjectPrivateElements(policyService, En_Privilege.PROJECT_VIEW, project.getTeam());
+            show.isPrivateCase = false;
+            show.isNewCommentEnabled = canAccessProject(policyService, actionPrivilege, project.getTeam());
+            fireEvent(show);
         }
 
         fireEvent(new ProjectEvents.ShowProjectDocuments(view.getDocumentsContainer(), this.project.getId()));
 
-        view.saveVisibility().setVisible( hasPrivileges(project.getId()) );
+        view.saveVisibility().setVisible(canAccessProject(policyService, actionPrivilege, project.getTeam()));
         view.saveEnabled().setEnabled(true);
     }
 
@@ -199,20 +221,27 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         project.setRegion(view.region().getValue());
         project.setTeam(new ArrayList<>(view.team().getValue()));
         project.setProjectSlas(view.slaInput().getValue());
+        project.setProjectPlans(stream(view.plans().getValue())
+                .map(PlanOption::toPlan)
+                .collect(Collectors.toList()));
         return project;
     }
 
-    private void fillCaseLinks(Long projectId){
+    private void fillCaseLinks(Project project) {
+
+        En_Privilege actionPrivilege = isNew(project)
+                ? En_Privilege.PROJECT_CREATE
+                : En_Privilege.PROJECT_EDIT;
+        boolean canAction = canAccessProject(policyService, actionPrivilege, project.getTeam());
+        boolean canView = canAccessProject(policyService, En_Privilege.ISSUE_VIEW, project.getTeam());
 
         view.getLinksContainer().clear();
-
-        view.addLinkButtonVisibility().setVisible(hasPrivileges(projectId));
-
-        if(policyService.hasPrivilegeFor(En_Privilege.ISSUE_VIEW)){
+        view.addLinkButtonVisibility().setVisible(canAction);
+        if (canView) {
             fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
-                    .withCaseId(projectId)
+                    .withCaseId(project.getId())
                     .withCaseType(PROJECT_CASE_TYPE)
-                    .withReadOnly(!hasPrivileges(projectId)));
+                    .withReadOnly(!canAction));
         }
     }
 
@@ -263,18 +292,6 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
     private boolean hasHeadManager(Set<PersonProjectMemberView> team) {
         return team.stream().anyMatch(personProjectMemberView -> En_DevUnitPersonRoleType.HEAD_MANAGER.equals(personProjectMemberView.getRole()));
-    }
-
-    private boolean hasPrivileges(Long projectId) {
-        if (projectId == null && policyService.hasPrivilegeFor(En_Privilege.PROJECT_CREATE)) {
-            return true;
-        }
-
-        if (projectId != null && policyService.hasPrivilegeFor(En_Privilege.PROJECT_EDIT)) {
-            return true;
-        }
-
-        return false;
     }
 
     @Inject
