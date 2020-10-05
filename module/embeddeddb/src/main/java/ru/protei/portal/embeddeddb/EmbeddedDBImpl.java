@@ -12,7 +12,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import ru.protei.portal.embeddeddb.TestConfig;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -37,6 +36,7 @@ public class EmbeddedDBImpl implements EmbeddedDB, ApplicationContextAware {
 
     @PostConstruct
     public void onInit() {
+        log.info( "onInit(): PostConstruct initilisation" );
         if (isInitialized) {
             log.error("Attempt to initialize already initialized EmbeddedDB");
             return;

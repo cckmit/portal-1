@@ -79,12 +79,12 @@ public class AutoOpenCaseServiceTaskHandlerImpl implements AutoOpenCaseTaskHandl
         token.setPersonDisplayShortName(commonManager.getDisplayShortName());
         token.setCompanyId(commonManager.getCompanyId());
         token.setCompanyAndChildIds(null);
+        Set<UserRole> defaultRoles = userRoleDAO.getDefaultManagerRoles();
         token.setRoles(defaultRoles);
 
         return token;
     }
 
-    Set<UserRole> defaultRoles;
     @Autowired
     CaseObjectMetaDAO caseObjectMetaDAO;
     @Autowired
@@ -93,9 +93,7 @@ public class AutoOpenCaseServiceTaskHandlerImpl implements AutoOpenCaseTaskHandl
     CaseService caseService;
 
     @Autowired
-    public void setAdminRole( UserRoleDAO userRoleDAO) {
-        defaultRoles = userRoleDAO.getDefaultManagerRoles();
-    }
+    UserRoleDAO userRoleDAO;
 
     private static Logger log = LoggerFactory.getLogger( AutoOpenCaseServiceTaskHandlerImpl.class );
 }
