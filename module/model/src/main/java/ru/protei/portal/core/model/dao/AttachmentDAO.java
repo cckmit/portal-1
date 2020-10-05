@@ -13,4 +13,6 @@ public interface AttachmentDAO extends PortalBaseDAO<Attachment>{
     List<Attachment> getPublicAttachmentsByCaseId(Long caseId);
 
     boolean hasPublicAttachments(Long caseId);
+
+    List<Attachment> getPublicAttachmentsByIds(List<Long> ids);
 }

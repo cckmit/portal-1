@@ -46,6 +46,20 @@ public class AttachmentDAO_Impl extends PortalBaseJdbcDAO<Attachment> implements
         return jdbcTemplate.queryForObject(query.buildSql(), query.args(), Integer.class) > 0;
     }
 
+    @Override
+    public List<Attachment> getPublicAttachmentsByIds(List<Long> ids) {
+        Query query = query().where("attachment.id")
+                .in(query()
+                        .select("case_attachment.att_id")
+                        .from("case_attachment")
+                        .where("case_attachment.att_id").in(ids)
+                        .and(getPublicCondition())
+                        .asQuery()
+                ).asQuery();
+
+        return getListByCondition(query.buildSql(), query.args());
+    }
+
     private Condition getPublicCondition() {
         return condition()
                 .or("case_attachment.ccomment_id").isNull(true)
