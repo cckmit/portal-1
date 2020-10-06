@@ -281,6 +281,16 @@ public enum En_ResultStatus {
     /**
      * Запрещено удаление комментария по истечению времени
      */
-    NOT_ALLOWED_REMOVE_COMMENT_BY_TIME
+    NOT_ALLOWED_REMOVE_COMMENT_BY_TIME,
+
+    /**
+     * NRPE. IP адрес занят
+     */
+    NRPE_IP_NON_AVAILABLE,
+
+    /**
+     * NRPE. Ошибка сервиса
+     */
+    NRPE_ERROR
     ;
 }

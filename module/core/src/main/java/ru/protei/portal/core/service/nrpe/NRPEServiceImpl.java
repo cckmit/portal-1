@@ -1,10 +1,8 @@
-package ru.protei.portal.core.service;
+package ru.protei.portal.core.service.nrpe;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.nrpe.NRPERequest;
 import ru.protei.portal.core.nrpe.NRPEResponse;
 import ru.protei.portal.core.nrpe.NRPEStatus;
@@ -18,16 +16,16 @@ public class NRPEServiceImpl implements NRPEService {
     NRPERequest nrpeRequest;
 
     @Override
-    public Result<Boolean> isIpAvailable(String ip) {
+    public Boolean isIpAvailable(String ip) {
         if (isEmpty(ip)) {
-            return Result.error(En_ResultStatus.INCORRECT_PARAMS);
+            return null;
         }
 
         NRPEResponse response = nrpeRequest.perform(ip);
         if (response == null) {
-            return Result.error(En_ResultStatus.INTERNAL_ERROR);
+            return null;
         }
 
-        return Result.ok(response.getNRPEStatus() == NRPEStatus.HOST_UNREACHABLE);
+        return response.getNRPEStatus() == NRPEStatus.HOST_UNREACHABLE;
     }
 }

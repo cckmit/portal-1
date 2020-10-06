@@ -3,24 +3,28 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.event.ReservedIpAdminNotificationEvent;
 import ru.protei.portal.core.event.ReservedIpNotificationEvent;
 import ru.protei.portal.core.event.ReservedIpReleaseRemainingEvent;
 import ru.protei.portal.core.event.SubnetNotificationEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
-import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dao.ReservedIpDAO;
+import ru.protei.portal.core.model.dao.SubnetDAO;
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.ent.ReservedIpRequest;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.query.*;
+import ru.protei.portal.core.model.query.ReservedIpQuery;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.SubnetOption;
 import ru.protei.portal.core.service.events.EventPublisherService;
+import ru.protei.portal.core.service.nrpe.NRPEService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -83,22 +87,7 @@ public class IpReservationServiceImpl implements IpReservationService {
 
         fillDatesInterval(reserveDate, releaseDate, reservedIp, dateIntervalType);
 
-        boolean existInBase = checkReservedIpExists(address, reservedIp.getReserveDate(), reservedIp.getReleaseDate(), excludeId);
-
-        if (!config.data().getNrpeConfig().getEnable()) {
-            return ok(existInBase);
-        } else {
-            if (existInBase) {
-                return ok(true);
-            } else {
-                Result<Boolean> ipAvailable = nrpeService.isIpAvailable(address);
-                if (ipAvailable.isOk()) {
-                    return ok(!ipAvailable.getData());
-                } else {
-                    return ok(false);
-                }
-            }
-        }
+        return ok(checkReservedIpExists(address, reservedIp.getReserveDate(), reservedIp.getReleaseDate(), excludeId));
     }
 
     @Override
@@ -280,6 +269,7 @@ public class IpReservationServiceImpl implements IpReservationService {
     }
 
     @Override
+    @Transactional
     /* @todo задача резервирования должна выполняться в фоне? */
     public Result<List<ReservedIp>> createReservedIp( AuthToken token, ReservedIpRequest reservedIpRequest) {
 
@@ -288,6 +278,7 @@ public class IpReservationServiceImpl implements IpReservationService {
         }
 
         List<ReservedIp> reservedIps = new ArrayList<>();
+        List<String> NRPENonAvailableIps = new ArrayList<>();
 
         ReservedIp templateIp = new ReservedIp();
         templateIp.setCreated(new Date());
@@ -302,6 +293,19 @@ public class IpReservationServiceImpl implements IpReservationService {
         if (reservedIpRequest.isExact()) {
             if (checkReservedIpExists(reservedIpRequest.getIpAddress(), templateIp.getReserveDate(), templateIp.getReleaseDate())) {
                 return error(En_ResultStatus.ALREADY_EXIST);
+            }
+
+            if (config.data().getNrpeConfig().getEnable()) {
+                Boolean ipAvailable = nrpeService.isIpAvailable(reservedIpRequest.getIpAddress());
+                if (ipAvailable == null) {
+                    return error(En_ResultStatus.NRPE_ERROR);
+                }
+
+                if (!ipAvailable) {
+                    return error(En_ResultStatus.NRPE_IP_NON_AVAILABLE, null, Collections.singletonList(
+                                    new ReservedIpAdminNotificationEvent(this, Collections.singletonList(reservedIpRequest.getIpAddress())))
+                    );
+                }
             }
 
             templateIp.setIpAddress(reservedIpRequest.getIpAddress());
@@ -340,26 +344,49 @@ public class IpReservationServiceImpl implements IpReservationService {
             while (reservedIps.size() < reservedIpRequest.getNumber()) {
                 ReservedIp reservedIp = ReservedIp.createByTemplate(templateIp);
 
-                subnets.forEach( s -> {
-                            if (hasSubnetFreeIps(s.getId())) {
-                                String freeIp = getAnyFreeIpInSubnet(s.getId());
-                                if (freeIp != null) {
-                                    reservedIp.setSubnetId(s.getId());
-                                    reservedIp.setIpAddress(freeIp);
-                                    return;
+                for (SubnetOption s : subnets) {
+                    if (hasSubnetFreeIps(s.getId())) {
+                        Subnet subnet = subnetDAO.get(s.getId());
+                        Set<String> allReservedIpInSubnet = getReservedIpInSubnet(subnet);
+                        if (allReservedIpInSubnet == null) {
+                            continue;
+                        }
+
+                        for (int i = CrmConstants.IpReservation.MIN_IPS_COUNT; i <= CrmConstants.IpReservation.MAX_IPS_COUNT; i++) {
+                            String checkedIp = subnet.getAddress() + "." + i;
+
+                            if (allReservedIpInSubnet.contains(checkedIp)) {
+                                continue;
+                            }
+
+                            if (config.data().getNrpeConfig().getEnable()) {
+                                Boolean ipAvailable = nrpeService.isIpAvailable(checkedIp);
+                                if (ipAvailable == null) {
+                                    return error(En_ResultStatus.NRPE_ERROR);
+                                }
+
+                                if (!ipAvailable) {
+                                    NRPENonAvailableIps.add(checkedIp);
+                                    continue;
                                 }
                             }
+                            reservedIp.setSubnetId(s.getId());
+                            reservedIp.setIpAddress(checkedIp);
+                            break;
                         }
-                );
-                if (reservedIp.getIpAddress() == null || reservedIp.getSubnetId() == null) {
-                    break;
+                        if (reservedIp.getIpAddress() == null || reservedIp.getSubnetId() == null) {
+                            break;
+                        }
+
+                        Long reservedIpId = reservedIpDAO.persist(reservedIp);
+
+                        if (reservedIpId != null) {
+                            reservedIps.add(getReservedIp(reservedIpId));
+                        }
+                        break;
+                    }
                 }
 
-                Long reservedIpId = reservedIpDAO.persist(reservedIp);
-
-                if (reservedIpId != null) {
-                    reservedIps.add(getReservedIp(reservedIpId));
-                }
             }
         }
 
@@ -370,7 +397,7 @@ public class IpReservationServiceImpl implements IpReservationService {
              -  ответ внести в reservedIp и merge в БД
         */
 
-        return ok(reservedIps)
+        Result<List<ReservedIp>> result = ok(reservedIps)
                 .publishEvent(new ReservedIpNotificationEvent(
                         this,
                         reservedIps,
@@ -380,6 +407,10 @@ public class IpReservationServiceImpl implements IpReservationService {
                                 token.getPersonId(),
                                 reservedIpRequest.getOwnerId())
                 ));
+        if (!NRPENonAvailableIps.isEmpty()) {
+            result.publishEvent(new ReservedIpAdminNotificationEvent(this, NRPENonAvailableIps));
+        }
+        return result;
     }
 
     @Override
@@ -643,35 +674,20 @@ public class IpReservationServiceImpl implements IpReservationService {
         return count < CrmConstants.IpReservation.MAX_IPS_COUNT;
     }
 
-    private String getAnyFreeIpInSubnet(Long subnetId) {
-        Subnet subnet = subnetDAO.get(subnetId);
+    private Set<String> getReservedIpInSubnet(Subnet subnet) {
         if (subnet == null || !subnet.isAllowForReserve()) {
             return null;
         }
 
         ReservedIpQuery query = new ReservedIpQuery(null, En_SortField.ip_address, En_SortDir.ASC);
-        query.setSubnetId(subnetId);
+        query.setSubnetId(subnet.getId());
         SearchResult<ReservedIp> sr = reservedIpDAO.getSearchResultByQuery(query);
 
-        if (CollectionUtils.isEmpty(sr.getResults())) {
-            return subnet.getAddress()+"." + CrmConstants.IpReservation.MIN_IPS_COUNT;
-        }
-
-        if (sr.getResults().size() == CrmConstants.IpReservation.MAX_IPS_COUNT) {
+        if (sr.getTotalCount() == CrmConstants.IpReservation.MAX_IPS_COUNT) {
             return null;
         }
 
-        for (int i=CrmConstants.IpReservation.MIN_IPS_COUNT; i <= CrmConstants.IpReservation.MAX_IPS_COUNT; i++) {
-            String checkedIp = subnet.getAddress()+"."+i;
-            if (!sr.getResults()
-                    .stream()
-                    .filter(r -> r.getIpAddress().equals(checkedIp))
-                    .findFirst().isPresent()) {
-                return checkedIp;
-            }
-        }
-
-        return null;
+       return sr.getResults().stream().map(ReservedIp::getIpAddress).collect(Collectors.toSet());
     }
 
     private ReservedIp getReservedIp(Long reservedIpId) {

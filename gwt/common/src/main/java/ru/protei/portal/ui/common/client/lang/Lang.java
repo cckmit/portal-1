@@ -724,6 +724,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errRemoveIssueCommentByTime();
 
+    String errNRPEIpNonAvailable();
+
+    String errNRPEError();
+
     String errEditTimeElapsedType();
 
     String errEditContactLogin();

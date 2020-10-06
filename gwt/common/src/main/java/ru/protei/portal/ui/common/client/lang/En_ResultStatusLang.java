@@ -82,6 +82,8 @@ public class En_ResultStatusLang {
             case CONTRACT_ORGANIZATION_SHOULD_BE_DIFFERENT_FROM_PARENT: return lang.errContractOrganizationShouldBeDifferentFromParent();
             case NOT_ALLOWED_EDIT_COMMENT_BY_TIME: return lang.errEditIssueCommentByTime();
             case NOT_ALLOWED_REMOVE_COMMENT_BY_TIME: return lang.errRemoveIssueCommentByTime();
+            case NRPE_IP_NON_AVAILABLE: return lang.errNRPEIpNonAvailable();
+            case NRPE_ERROR: return lang.errNRPEError();
             default: return lang.errUnknownResult();
         }
     }
