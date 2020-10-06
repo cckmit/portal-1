@@ -4121,6 +4121,10 @@ table {
     width: calc(100% - 47px);
     margin: -1px -1px 0 -3px;
   }
+
+  .dropdown-menu {
+    width: max-content;
+  }
 }
 
 .type-selector-item,
@@ -5195,4 +5199,10 @@ table {
 
 .min-width-150 {
   min-width: 150px;
+}
+
+.locale-selector {
+  .dropdown-menu {
+    width: max-content;
+  }
 }
