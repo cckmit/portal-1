@@ -17,6 +17,7 @@ import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.core.mail.VirtualMailSendChannel;
+import ru.protei.portal.core.model.converter.MoneyJdbcConverter;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.service.*;
@@ -506,5 +507,42 @@ public class JiraTestConfiguration {
     @Bean
     public EmployeeShortViewDAO getEmployeeShortViewDAO() {
         return new EmployeeShortViewDAO_Impl();
+    }
+
+    @Bean
+    public LocationDAO getLocationDAO() {
+        return new LocationDAO_Impl();
+    }
+
+    @Bean
+    public CaseMemberDAO getCaseMemberDAO() {
+        return new CaseMemberDAO_Impl();
+    }
+
+    @Bean
+    public CaseLocationDAO getCaseLocationDAO() {
+        return new CaseLocationDAO_Impl();
+    }
+
+    @Bean
+    public ProjectToProductDAO getProjectToProductDAO() {
+        return new ProjectToProductDAO_Impl();
+    }
+
+    @Bean
+    public ContractDAO getContractDAO() {
+        return new ContractDAO_Impl();
+    }
+
+    @Bean
+    public ProjectDAO getProjectDAO() {
+        return new ProjectEntityDAO_Impl();
+    }
+
+    /* DAO converters */
+
+    @Bean
+    public MoneyJdbcConverter moneyJdbcConverter() {
+        return new MoneyJdbcConverter();
     }
 }
