@@ -404,6 +404,11 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public ProjectService getProjectService() {
+        return new ProjectServiceImpl();
+    }
+
+    @Bean
     public PlatformDAO getPlatformDAO() {
         return new PlatformDAO_Impl();
     }
