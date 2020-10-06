@@ -1,10 +1,12 @@
 package ru.protei.portal.ui.common.client.widget.selector.login;
 
 import com.google.gwt.user.client.ui.HasVisibility;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.UserLoginShortView;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
+import ru.protei.portal.ui.common.client.selector.SelectorPopup;
 import ru.protei.portal.ui.common.client.selector.popup.item.PopupUserLoginSelectorItem;
 import ru.protei.portal.ui.common.client.util.AvatarUtils;
 import ru.protei.portal.ui.common.client.widget.popupselector.PopupSingleSelector;
@@ -44,4 +46,6 @@ public class UserLoginSelector extends PopupSingleSelector<UserLoginShortView> i
         popupSelectorItem.setImage(AvatarUtils.getAvatarUrl(element.getPersonId(), element.getCompanyCategory(), En_Gender.parse(element.getGenderCode())));
         return popupSelectorItem;
     }
+
+    private SelectorPopup popup;
 }

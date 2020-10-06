@@ -38,7 +38,7 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
 
             setValue(beforeReplace + userLoginSelector.getValue().getUlogin() + " " + afterReplace);
 
-            userLoginSelector.getPopup().hide();
+            hidePopup(userLoginSelector);
 
             getElement().focus();
         });
@@ -51,9 +51,7 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
                 PossibleLoginInfo possibleLoginInfo = possibleLogin(pointerPosition(getElement()));
 
                 if (possibleLoginInfo == null) {
-                    userLoginSelector.getPopup().getChildContainer().clear();
-                    userLoginSelector.getPopup().hide();
-
+                    hidePopup(userLoginSelector);
                     return;
                 }
 
@@ -85,8 +83,13 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
     }
 
     private void showPopup(UserLoginSelector userLoginSelector) {
-        userLoginSelector.getPopup().showNear(getElement());
+        userLoginSelector.showPopup();
         userLoginSelector.clearAndFill();
+    }
+
+    private void hidePopup(UserLoginSelector userLoginSelector) {
+        userLoginSelector.clearPopup();
+        userLoginSelector.hidePopup();
     }
 
     private void updateModel(String searchString, UserLoginModel userLoginModel) {
