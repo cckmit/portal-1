@@ -4123,7 +4123,7 @@ table {
   }
 
   .dropdown-menu {
-    width: unset;
+    width: max-content;
   }
 }
 
@@ -5199,4 +5199,10 @@ table {
 
 .min-width-150 {
   min-width: 150px;
+}
+
+.locale-selector {
+  .dropdown-menu {
+    width: max-content;
+  }
 }

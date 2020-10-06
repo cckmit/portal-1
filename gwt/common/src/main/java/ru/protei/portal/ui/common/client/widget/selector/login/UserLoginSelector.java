@@ -46,6 +46,4 @@ public class UserLoginSelector extends PopupSingleSelector<UserLoginShortView> i
         popupSelectorItem.setImage(AvatarUtils.getAvatarUrl(element.getPersonId(), element.getCompanyCategory(), En_Gender.parse(element.getGenderCode())));
         return popupSelectorItem;
     }
-
-    private SelectorPopup popup;
 }
