@@ -84,7 +84,7 @@ public final class RedmineServiceImpl implements RedmineService {
             return ok( issue );
         } catch (RedmineException e) {
             logRedmineException( logger, e );
-            return error( En_ResultStatus.INTERNAL_ERROR, String.format( "Failed to update issue with id {}", issue.getId() ) );
+            return error( En_ResultStatus.INTERNAL_ERROR, String.format( "Failed to update issue with id %d", issue.getId() ) );
         }
     }
 
