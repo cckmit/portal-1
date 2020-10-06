@@ -101,6 +101,11 @@ public class RedmineTestConfiguration {
         return new AsyncEventPublisherService();
     }
 
+    @Bean
+    public ProjectService getProjectService() {
+        return new ProjectServiceImpl();
+    }
+
 
     @Bean
     public CaseService getCaseService() {
