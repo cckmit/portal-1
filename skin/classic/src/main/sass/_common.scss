@@ -4121,6 +4121,10 @@ table {
     width: calc(100% - 47px);
     margin: -1px -1px 0 -3px;
   }
+
+  .dropdown-menu {
+    width: unset;
+  }
 }
 
 .type-selector-item,
