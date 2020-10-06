@@ -38,7 +38,7 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
 
             setValue(beforeReplace + userLoginSelector.getValue().getUlogin() + " " + afterReplace);
 
-            userLoginSelector.getPopup().hide();
+            hidePopup(userLoginSelector);
 
             getElement().focus();
         });
@@ -51,9 +51,7 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
                 PossibleLoginInfo possibleLoginInfo = possibleLogin(pointerPosition(getElement()));
 
                 if (possibleLoginInfo == null) {
-                    userLoginSelector.getPopup().getChildContainer().clear();
-                    userLoginSelector.getPopup().hide();
-
+                    hidePopup(userLoginSelector);
                     return;
                 }
 
@@ -67,21 +65,31 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
 
     private PossibleLoginInfo possibleLogin(int pointerPosition) {
         String substring = getValue().substring(0, pointerPosition);
-        int spacePosition = substring.lastIndexOf(' ');
-        int enterPosition = substring.lastIndexOf('\n');
-        final int atPosition = Math.max(spacePosition, enterPosition) + 1; // "at" means "@"
 
-        String possibleMention = getValue().substring(atPosition, pointerPosition);
+        int spaceEnterPosition = Math.max(substring.lastIndexOf(' '), substring.lastIndexOf('\n'));
+        int roundBracketsPosition = Math.max(substring.lastIndexOf('('), substring.lastIndexOf(')'));
+        int squareBracketsPosition = Math.max(substring.lastIndexOf('['), substring.lastIndexOf(']'));
+
+        int desiredPosition = Math.max(spaceEnterPosition, Math.max(roundBracketsPosition, squareBracketsPosition));
+
+        final int possibleAtPosition = desiredPosition + 1; // "at" means "@"
+
+        String possibleMention = getValue().substring(possibleAtPosition, pointerPosition);
 
         return ofNullable(MENTION_REGEXP.exec(possibleMention))
                 .map(matchResult -> matchResult.getGroup(0).equals(possibleMention) ? matchResult : null)
-                .map(matchResult -> new PossibleLoginInfo(matchResult.getGroup(0).substring(1), atPosition + 1))
+                .map(matchResult -> new PossibleLoginInfo(matchResult.getGroup(0).substring(1), possibleAtPosition + 1))
                 .orElse(null);
     }
 
     private void showPopup(UserLoginSelector userLoginSelector) {
-        userLoginSelector.getPopup().showNear(getElement());
+        userLoginSelector.showPopup();
         userLoginSelector.clearAndFill();
+    }
+
+    private void hidePopup(UserLoginSelector userLoginSelector) {
+        userLoginSelector.clearPopup();
+        userLoginSelector.hidePopup();
     }
 
     private void updateModel(String searchString, UserLoginModel userLoginModel) {

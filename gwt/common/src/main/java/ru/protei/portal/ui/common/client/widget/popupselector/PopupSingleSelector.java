@@ -10,9 +10,11 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.RootPanel;
 import ru.protei.portal.ui.common.client.selector.AbstractPopupSelector;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
+import ru.protei.portal.ui.common.client.selector.SelectorPopup;
 import ru.protei.portal.ui.common.client.selector.pageable.AbstractPageableSelector;
 import ru.protei.portal.ui.common.client.selector.pageable.SingleValuePageableSelector;
 import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
+import ru.protei.portal.ui.common.client.widget.composite.popper.PopperComposite;
 
 public class PopupSingleSelector<T> extends AbstractPopupSelector<T> implements HasValue<T> {
 
@@ -57,7 +59,6 @@ public class PopupSingleSelector<T> extends AbstractPopupSelector<T> implements 
     public void setRelative(Element relative, boolean isAutoResize) {
         this.relative = relative;
         getPopup().setAutoResize(isAutoResize);
-        RootPanel.get().add(getPopup());
 
         if (relative.getParentElement() != null) {
             relative.getParentElement().appendChild(getPopup().asWidget().getElement());
@@ -68,6 +69,25 @@ public class PopupSingleSelector<T> extends AbstractPopupSelector<T> implements 
 
     public void fill() {
         getSelector().fillFromBegin(this);
+    }
+
+    public void showPopup() {
+        getPopup().showNear(relative);
+        RootPanel.get().add(getPopup());
+    }
+
+    public void showPopup(PopperComposite.Placement placement, int skidding, int distance) {
+        getPopup().showNear(relative, placement, skidding, distance);
+        RootPanel.get().add(getPopup());
+    }
+
+    public void hidePopup() {
+        getPopup().hide();
+        RootPanel.get().remove(getPopup());
+    }
+
+    public void clearPopup() {
+        getPopup().getChildContainer().clear();
     }
 
     @Override
@@ -90,5 +110,4 @@ public class PopupSingleSelector<T> extends AbstractPopupSelector<T> implements 
 
     protected SingleValuePageableSelector<T> selector = new SingleValuePageableSelector<>();
     protected Element relative;
-    private boolean needRemoveFromParentAfterChanged;
 }

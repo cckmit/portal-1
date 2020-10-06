@@ -10,7 +10,7 @@
         </div>
         <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="dropdown-searchbox hide"/>
         <div class="dropdown-menu full-width show">
-            <g:HTMLPanel ui:field="childContainer" tag="ul" styleName="full-width"/>
+            <g:HTMLPanel ui:field="childContainer" tag="ul"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

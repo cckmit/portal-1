@@ -532,121 +532,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         return replaceLoginWithUsername(comments, CaseComment::getText, this::replaceTextAndGetComment);
     }
 
-    /**
-     * Заменяет в списке объектов возможные логины, которые начинаются с символа "@", на Фамилия Имя
-     *
-     * @param  objects                  список объектов
-     * @param  objectToStringFunction   функция, переводящая переданный объект в строку, в которой будет производиться замена
-     * @param  replacementMapper        {@link ReplacementMapper}
-     * @return список {@link ReplaceLoginWithUsernameInfo}, содержащий объект и набор логинов в объекте
-     */
-    private <T> Result<List<ReplaceLoginWithUsernameInfo<T>>> replaceLoginWithUsername(List<T> objects, Function<T, String> objectToStringFunction, ReplacementMapper<T> replacementMapper) {
-        if (isEmpty(objects)) {
-            return ok(new ArrayList<>());
-        }
-
-        Set<String> possibleLoginSet = new HashSet<>(getPossibleLoginSet(toList(objects, objectToStringFunction)).getData());
-
-        if (possibleLoginSet.isEmpty()) {
-            return ok(objects.stream().map(ReplaceLoginWithUsernameInfo::new).collect(Collectors.toList()));
-        }
-
-        UserLoginShortViewQuery query = new UserLoginShortViewQuery();
-        query.setAdminState(En_AdminState.UNLOCKED);
-        query.setLoginSet(possibleLoginSet);
-
-        SearchResult<UserLoginShortView> searchResult = userLoginShortViewDAO.getSearchResult(query);
-
-        List<UserLoginShortView> existingLoginList = searchResult.getResults()
-                .stream()
-                .sorted((login1, login2) -> login2.getUlogin().length() - login1.getUlogin().length())
-                .collect(Collectors.toList());
-
-        return ok(makeReplacementInfoList(objects, objectToStringFunction, replacementMapper, existingLoginList));
-    }
-
-    private <T> List<ReplaceLoginWithUsernameInfo<T>> makeReplacementInfoList(List<T> objects, Function<T, String> objectToStringFunction, ReplacementMapper<T> replacementMapper, List<UserLoginShortView> existingLoginList) {
-        List<ReplaceLoginWithUsernameInfo<T>> replacementInfoList = new ArrayList<>();
-
-        for (T object : objects) {
-            replacementInfoList.add(new ReplaceLoginWithUsernameInfo<>(object));
-        }
-
-        for (UserLoginShortView nextUserLogin : existingLoginList) {
-            for (ReplaceLoginWithUsernameInfo<T> info : replacementInfoList) {
-                String textBeforeReplace = objectToStringFunction.apply(info.getObject());
-
-                T objectWithReplace = replacementMapper
-                        .replace(info.getObject(), "@" + nextUserLogin.getUlogin(), "@" + nextUserLogin.getLastName() + " " + nextUserLogin.getFirstName());
-
-                String textAfterReplace = objectToStringFunction.apply(objectWithReplace);
-
-                boolean isReplaced = !Objects.equals(textBeforeReplace, textAfterReplace);
-
-                if (isReplaced) {
-                    info.setObject(objectWithReplace);
-                    info.addUserLoginShortView(nextUserLogin);
-                }
-            }
-        }
-
-        return replacementInfoList;
-    }
-
-    private Result<Set<String>> getPossibleLoginSet(List<String> texts) {
-        if (isEmpty(texts)) {
-            return ok(new HashSet<>());
-        }
-
-        Set<String> possibleLoginSet = new HashSet<>();
-
-        fillPossibleLoginSet(texts, possibleLoginSet);
-
-        return ok(possibleLoginSet);
-    }
-
-    private void fillPossibleLoginSet(List<String> texts, Set<String> possibleLoginSet) {
-        texts
-                .stream()
-                .filter(StringUtils::isNotBlank)
-                .map(String::trim)
-                .flatMap(text -> Arrays.stream(text.split(CrmConstants.Masks.ONE_OR_MORE_SPACES)))
-                .filter(text -> text.startsWith("@"))
-                .map(text -> text.substring(1))
-                .filter(text -> text.length() <= CrmConstants.ContactConstants.LOGIN_SIZE)
-                .forEach(text -> {
-                    possibleLoginSet.add(text);
-                    possibleLoginSet.addAll(subLoginList(text));
-                });
-    }
-
-    private List<String> subLoginList(String text) {
-        List<String> subLoginList = new ArrayList<>();
-
-        for (int i = 1; i < text.toCharArray().length; i++) {
-            subLoginList.add(text.substring(0, i));
-        }
-
-        return subLoginList;
-    }
-
-    private CaseComment replaceTextAndGetComment(CaseComment comment, String replaceFrom, String replaceTo) {
-        if (comment.getText() == null) {
-            return comment;
-        }
-
-        comment.setText(comment.getText().replace(replaceFrom, replaceTo));
-        return comment;
-    }
-
-    private <T> List<T> objectListFromReplacementInfoList(List<ReplaceLoginWithUsernameInfo<T>> infos) {
-        return infos.stream().map(ReplaceLoginWithUsernameInfo::getObject).collect(Collectors.toList());
-    }
-
-    private boolean needReplaceLoginWithUsername(En_CaseType caseType) {
-        return CRM_SUPPORT.equals(caseType);
-    }
-
     @Override
     @Transactional
     public Result<Boolean> addCommentReceivedByMail(ReceivedMail receivedMail) {
@@ -850,6 +735,124 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     private void removeAttachments(AuthToken token, En_CaseType caseType, Collection<CaseAttachment> list) {
         list.forEach(ca -> attachmentService.removeAttachment(token, caseType, ca.getAttachmentId()));
+    }
+
+    /**
+     * Заменяет в списке объектов возможные логины, которые начинаются с символа "@", на Фамилия Имя
+     *
+     * @param  objects                  список объектов
+     * @param  objectToStringFunction   функция, переводящая переданный объект в строку, в которой будет производиться замена
+     * @param  replacementMapper        {@link ReplacementMapper}
+     * @return список {@link ReplaceLoginWithUsernameInfo}, содержащий объект и набор логинов в объекте
+     */
+    private <T> Result<List<ReplaceLoginWithUsernameInfo<T>>> replaceLoginWithUsername(List<T> objects, Function<T, String> objectToStringFunction, ReplacementMapper<T> replacementMapper) {
+        if (isEmpty(objects)) {
+            return ok(new ArrayList<>());
+        }
+
+        Set<String> possibleLoginSet = new HashSet<>(getPossibleLoginSet(toList(objects, objectToStringFunction)).getData());
+
+        if (possibleLoginSet.isEmpty()) {
+            return ok(objects.stream().map(ReplaceLoginWithUsernameInfo::new).collect(Collectors.toList()));
+        }
+
+        UserLoginShortViewQuery query = new UserLoginShortViewQuery();
+        query.setAdminState(En_AdminState.UNLOCKED);
+        query.setLoginSet(possibleLoginSet);
+
+        SearchResult<UserLoginShortView> searchResult = userLoginShortViewDAO.getSearchResult(query);
+
+        List<UserLoginShortView> existingLoginList = searchResult.getResults()
+                .stream()
+                .sorted((login1, login2) -> login2.getUlogin().length() - login1.getUlogin().length())
+                .collect(Collectors.toList());
+
+        return ok(makeReplacementInfoList(objects, objectToStringFunction, replacementMapper, existingLoginList));
+    }
+
+    private <T> List<ReplaceLoginWithUsernameInfo<T>> makeReplacementInfoList(List<T> objects, Function<T, String> objectToStringFunction, ReplacementMapper<T> replacementMapper, List<UserLoginShortView> existingLoginList) {
+        List<ReplaceLoginWithUsernameInfo<T>> replacementInfoList = new ArrayList<>();
+
+        for (T object : objects) {
+            replacementInfoList.add(new ReplaceLoginWithUsernameInfo<>(object));
+        }
+
+        for (UserLoginShortView nextUserLogin : existingLoginList) {
+            for (ReplaceLoginWithUsernameInfo<T> info : replacementInfoList) {
+                String textBeforeReplace = objectToStringFunction.apply(info.getObject());
+
+                T objectWithReplace = replacementMapper
+                        .replace(info.getObject(), "@" + nextUserLogin.getUlogin(), "@" + nextUserLogin.getLastName() + " " + nextUserLogin.getFirstName());
+
+                String textAfterReplace = objectToStringFunction.apply(objectWithReplace);
+
+                boolean isReplaced = !Objects.equals(textBeforeReplace, textAfterReplace);
+
+                if (isReplaced) {
+                    info.setObject(objectWithReplace);
+                    info.addUserLoginShortView(nextUserLogin);
+                }
+            }
+        }
+
+        return replacementInfoList;
+    }
+
+    private Result<Set<String>> getPossibleLoginSet(List<String> texts) {
+        if (isEmpty(texts)) {
+            return ok(new HashSet<>());
+        }
+
+        Set<String> possibleLoginSet = new HashSet<>();
+
+        fillPossibleLoginSet(texts, possibleLoginSet);
+
+        return ok(possibleLoginSet);
+    }
+
+    private void fillPossibleLoginSet(List<String> texts, Set<String> possibleLoginSet) {
+        texts
+                .stream()
+                .filter(StringUtils::isNotBlank)
+                .map(String::trim)
+                .flatMap(text -> Arrays.stream(text.split(CrmConstants.Masks.ONE_OR_MORE_SPACES)))
+                .flatMap(text -> Arrays.stream(text.split(CrmConstants.Masks.ROUND_AND_SQUARE_BRACKETS)))
+                .filter(text -> text.startsWith("@"))
+                .map(text -> text.substring(1))
+                .filter(text -> text.length() <= CrmConstants.ContactConstants.LOGIN_SIZE)
+                .forEach(text -> {
+                    List<String> result = new ArrayList<>();
+                    result.add(text);
+                    result.addAll(subLoginList(text));
+                    possibleLoginSet.addAll(prepareLoginList(result));
+                });
+    }
+
+    private List<String> subLoginList(String text) {
+        List<String> subLoginList = new ArrayList<>();
+
+        for (int i = 1; i < text.toCharArray().length; i++) {
+            subLoginList.add(text.substring(0, i));
+        }
+
+        return subLoginList;
+    }
+
+    private CaseComment replaceTextAndGetComment(CaseComment comment, String replaceFrom, String replaceTo) {
+        if (comment.getText() == null) {
+            return comment;
+        }
+
+        comment.setText(comment.getText().replace(replaceFrom, replaceTo));
+        return comment;
+    }
+
+    private <T> List<T> objectListFromReplacementInfoList(List<ReplaceLoginWithUsernameInfo<T>> infos) {
+        return infos.stream().map(ReplaceLoginWithUsernameInfo::getObject).collect(Collectors.toList());
+    }
+
+    private List<String> prepareLoginList(List<String> loginList) {
+        return stream(loginList).map(login -> login.replace("'", "\\'")).collect(Collectors.toList());
     }
 
     @Autowired
