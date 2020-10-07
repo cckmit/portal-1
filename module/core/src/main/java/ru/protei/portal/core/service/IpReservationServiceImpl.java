@@ -30,8 +30,11 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
@@ -329,98 +332,18 @@ public class IpReservationServiceImpl implements IpReservationService {
             reservedIps.add(getReservedIp(reservedIpId));
 
         } else {
-         /*
-           @todo если задано "любая свободная подсеть"
-                Для начала необходиом определить список подсетей, в которых достаточно свободных IP адресов
-                - проверка подсетей на наличие требуемого кол-ва свободных IP
-                - пройти по всем подходящим подсетям, резервируя IP, попутно проверяя их через NRPE
-         */
-
-            Set<SubnetOption> subnets = getAvailableSubnets(token, reservedIpRequest.getSubnets());
+            List<SubnetOption> subnets = getAvailableSubnets(token, new ArrayList<>(reservedIpRequest.getSubnets()));
             if (CollectionUtils.isEmpty(subnets)) {
                 return error(En_ResultStatus.NOT_CREATED);
             }
 
-            // поток
-            // генерим свободные: ip берем из базы всю подсеть и выдаем только свободные
-            // фильтруем - откидываем занятые по nrpe
-            // лимит по количеству
-            // не забыть переписать на отработку аварийных случаев -
-            // - если не найдем нужного количества свободных ip
-            // - если ошибка nrpe
+            IpInfoSpliterator ipInfoSpliterator = new IpInfoSpliterator(subnets);
+            Stream<IpInfo> ipInfoStream = StreamSupport.stream(ipInfoSpliterator, false);
 
-            class IpInfo {
-                final String ip;
-                final long subnetId;
-
-                public IpInfo(String ip, long subnetId) {
-                    this.ip = ip;
-                    this.subnetId = subnetId;
-                }
-
-                public String getIp() {
-                    return ip;
-                }
-
-                public long getSubnetId() {
-                    return subnetId;
-                }
-            }
-
-            class IpInfoGenerator {
-                final List<SubnetOption> subnets;
-                int nextSubnetIndex;
-                Subnet currentSubnet;
-                int currentNumber;
-                Set<Integer> currentDBReservedIps;
-
-                public IpInfoGenerator(List<SubnetOption> subnets) {
-                    this.subnets = subnets;
-                    this.nextSubnetIndex = 0;
-                    prepare();
-                }
-
-                public IpInfo getNextIpInfo() {
-                    int number;
-                    do {
-                        if (currentNumber > CrmConstants.IpReservation.MAX_IPS_COUNT) {
-                            prepare();
-                        }
-                        number = currentNumber++;
-                    } while (currentDBReservedIps.contains(number));
-                    return new IpInfo(currentSubnet.getAddress() + "." + number, currentSubnet.getId());
-                }
-
-                private void prepare() {
-                    SubnetOption subnetOption;
-                    do {
-                        subnetOption = subnets.get(nextSubnetIndex++);
-                    } while (!hasSubnetFreeIps(subnetOption.getId()));
-
-                    currentSubnet = subnetDAO.get(subnetOption.getId());
-                    currentNumber = CrmConstants.IpReservation.MIN_IPS_COUNT;
-                    currentDBReservedIps = getReservedIpNumInSubnet(currentSubnet);
-                }
-            }
-
-            IpInfoGenerator ipInfoGenerator = new IpInfoGenerator(new ArrayList<>(subnets));
-            Stream<IpInfo> ipInfoStream = Stream.generate(ipInfoGenerator::getNextIpInfo);
             if (config.data().getNrpeConfig().getEnable()) {
-                ipInfoStream = ipInfoStream.filter(checkedIpInfo -> {
-                    String ip = checkedIpInfo.getIp();
-                    Boolean ipAvailable = nrpeService.isIpAvailable(ip);
-                    if (ipAvailable == null) {
-//                                return error(En_ResultStatus.NRPE_ERROR);
-                        // прерывать пайп
-                        return false;
-                    }
-
-                    if (!ipAvailable) {
-                        NRPENonAvailableIps.add(ip);
-                    }
-                    return ipAvailable;
-                });
+                ipInfoStream = ipInfoStream.filter(makeNRPETest(NRPENonAvailableIps, ipInfoSpliterator));
             }
+
             reservedIps = ipInfoStream
                     .limit(reservedIpRequest.getNumber())
                     .map(ipInfo -> {
@@ -430,15 +353,12 @@ public class IpReservationServiceImpl implements IpReservationService {
                         return reservedIp;
                     }).collect(Collectors.toList());
 
-            reservedIpDAO.persistBatch(reservedIps);
+            if (ipInfoSpliterator.status == En_ResultStatus.OK) {
+                reservedIpDAO.persistBatch(reservedIps);
+            } else {
+                return error(ipInfoSpliterator.status);
+            }
         }
-
-        /*
-           @todo
-             - проверка IP через NRPE
-             - update IP с ответом от NRPE
-             -  ответ внести в reservedIp и merge в БД
-        */
 
         Result<List<ReservedIp>> result = ok(reservedIps)
                 .publishEvent(new ReservedIpNotificationEvent(
@@ -692,9 +612,8 @@ public class IpReservationServiceImpl implements IpReservationService {
                 && (to != null && from.before(to) || isAllowToSetNullDate);
     }
 
-    private Set<SubnetOption> getAvailableSubnets(AuthToken token, Set<SubnetOption> selectedSubnets) {
-
-        Set<SubnetOption> subnets;
+    private List<SubnetOption> getAvailableSubnets(AuthToken token, List<SubnetOption> selectedSubnets) {
+        List<SubnetOption> subnets;
         if (CollectionUtils.isNotEmpty(selectedSubnets)) {
             subnets = selectedSubnets;
         } else {
@@ -706,7 +625,7 @@ public class IpReservationServiceImpl implements IpReservationService {
                 return null;
             }
 
-            subnets = new HashSet<>(result);
+            subnets = result;
         }
 
         return subnets;
@@ -891,6 +810,128 @@ public class IpReservationServiceImpl implements IpReservationService {
 
     private Person getInitiator (AuthToken token) {
         return personDAO.get(token.getPersonId());
+    }
+
+    private Predicate<IpInfo> makeNRPETest(List<String> NRPENonAvailableIps, IpInfoSpliterator ipInfoSpliterator) {
+        return checkedIpInfo -> {
+            String ip = checkedIpInfo.getIp();
+            Boolean ipAvailable = nrpeService.isIpAvailable(ip);
+            if (ipAvailable == null) {
+                // прерывать пайп
+                ipInfoSpliterator.setStatus(En_ResultStatus.NRPE_ERROR);
+                return false;
+            }
+
+            if (!ipAvailable) {
+                NRPENonAvailableIps.add(ip);
+            }
+            return ipAvailable;
+        };
+    }
+
+    static class IpInfo {
+        private final String ip;
+        private final long subnetId;
+
+        public IpInfo(String ip, long subnetId) {
+            this.ip = ip;
+            this.subnetId = subnetId;
+        }
+
+        public String getIp() {
+            return ip;
+        }
+
+        public long getSubnetId() {
+            return subnetId;
+        }
+    }
+
+    class IpInfoSpliterator implements Spliterator<IpInfo> {
+        private final List<SubnetOption> subnets;
+        private int nextSubnetIndex;
+        private Subnet currentSubnet;
+        private int nextNumber;
+        private Set<Integer> currentDBReservedIps;
+
+        private En_ResultStatus status = En_ResultStatus.OK;
+
+        public En_ResultStatus getStatus() {
+            return status;
+        }
+
+        public void setStatus(En_ResultStatus status) {
+            this.status = status;
+        }
+
+        public IpInfoSpliterator(List<SubnetOption> subnets) {
+            this.subnets = subnets;
+            this.nextSubnetIndex = 0;
+            refreshData();
+        }
+
+        private void refreshData() {
+            if (status != En_ResultStatus.OK) {
+                return;
+            }
+
+            SubnetOption subnetOption;
+            do {
+                int index = nextSubnetIndex++;
+                if (index >= subnets.size()) {
+                    status = En_ResultStatus.INTERNAL_ERROR;
+                    return;
+                }
+                subnetOption = subnets.get(index);
+            } while (!hasSubnetFreeIps(subnetOption.getId()));
+
+            currentSubnet = subnetDAO.get(subnetOption.getId());
+            nextNumber = CrmConstants.IpReservation.MIN_IPS_COUNT;
+            currentDBReservedIps = getReservedIpNumInSubnet(currentSubnet);
+        }
+
+        private IpInfo getNextIpInfo() {
+            if (status != En_ResultStatus.OK) {
+                return null;
+            }
+            int number;
+            do {
+                if (nextNumber > CrmConstants.IpReservation.MAX_IPS_COUNT) {
+                    refreshData();
+                }
+                if (status != En_ResultStatus.OK) {
+                    return null;
+                }
+                number = nextNumber++;
+            } while (currentDBReservedIps.contains(number));
+            return new IpInfo(currentSubnet.getAddress() + "." + number, currentSubnet.getId());
+        }
+
+        @Override
+        public boolean tryAdvance(Consumer<? super IpInfo> action) {
+            IpInfo nextIpInfo = getNextIpInfo();
+            if (status == En_ResultStatus.OK && nextIpInfo != null) {
+                action.accept(nextIpInfo);
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        @Override
+        public Spliterator<IpInfo> trySplit() {
+            return null;
+        }
+
+        @Override
+        public long estimateSize() {
+            return Long.MAX_VALUE;
+        }
+
+        @Override
+        public int characteristics() {
+            return DISTINCT + NONNULL + IMMUTABLE;
+        }
     }
 
     private final static Logger log = LoggerFactory.getLogger( IpReservationService.class );

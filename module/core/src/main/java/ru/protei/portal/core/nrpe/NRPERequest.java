@@ -25,11 +25,15 @@ public class NRPERequest {
     private final NRPEExecutor executor;
 
     public NRPEResponse perform(String ip) {
+        return perform(ip, portalConfig.data().getNrpeConfig().getTemplate());
+    }
+
+    public NRPEResponse perform(String ip, String template) {
         if (ip == null) {
             log.error("ip == null");
             return null;
         }
-        String request = String.format(portalConfig.data().getNrpeConfig().getTemplate(), ip);
+        String request = String.format(template, ip);
         log.info("request: {}", request);
         List<String> list = executor.execute(request);
         if (list == null) {
