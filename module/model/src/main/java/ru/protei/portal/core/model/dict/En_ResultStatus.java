@@ -291,6 +291,11 @@ public enum En_ResultStatus {
     /**
      * NRPE. Ошибка сервиса
      */
-    NRPE_ERROR
+    NRPE_ERROR,
+
+    /**
+     *  Недостаточно свободных IP адресов
+     */
+    NRPE_NO_FREE_IPS
     ;
 }

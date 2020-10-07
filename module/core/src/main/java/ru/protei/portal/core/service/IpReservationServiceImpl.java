@@ -852,7 +852,7 @@ public class IpReservationServiceImpl implements IpReservationService {
         private int nextSubnetIndex;
         private Subnet currentSubnet;
         private int nextNumber;
-        private Set<Integer> currentDBReservedIps;
+        private Set<Integer> subnetDBReservedIps;
 
         private En_ResultStatus status = En_ResultStatus.OK;
 
@@ -879,7 +879,7 @@ public class IpReservationServiceImpl implements IpReservationService {
             do {
                 int index = nextSubnetIndex++;
                 if (index >= subnets.size()) {
-                    status = En_ResultStatus.INTERNAL_ERROR;
+                    status = En_ResultStatus.NRPE_NO_FREE_IPS;
                     return;
                 }
                 subnetOption = subnets.get(index);
@@ -887,7 +887,7 @@ public class IpReservationServiceImpl implements IpReservationService {
 
             currentSubnet = subnetDAO.get(subnetOption.getId());
             nextNumber = CrmConstants.IpReservation.MIN_IPS_COUNT;
-            currentDBReservedIps = getReservedIpNumInSubnet(currentSubnet);
+            subnetDBReservedIps = getReservedIpNumInSubnet(currentSubnet);
         }
 
         private IpInfo getNextIpInfo() {
@@ -903,7 +903,7 @@ public class IpReservationServiceImpl implements IpReservationService {
                     return null;
                 }
                 number = nextNumber++;
-            } while (currentDBReservedIps.contains(number));
+            } while (subnetDBReservedIps.contains(number));
             return new IpInfo(currentSubnet.getAddress() + "." + number, currentSubnet.getId());
         }
 

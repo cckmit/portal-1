@@ -728,6 +728,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errNRPEError();
 
+    String errNRPENoFreeIps();
+
     String errEditTimeElapsedType();
 
     String errEditContactLogin();
