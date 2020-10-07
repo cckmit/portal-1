@@ -146,7 +146,7 @@ public class NRPETest {
 
     @Test
     public void requestReachable() {
-        NRPEResponse response = request.perform("192.168.100.90");
+        NRPEResponse response = request.perform("192.168.100.90", "%s");
 
         Assert.assertTrue(response instanceof NRPEHostReachable);
 
@@ -157,7 +157,7 @@ public class NRPETest {
 
     @Test
     public void requestIncorrectParam() {
-        NRPEResponse response = request.perform("^&*^7&^*786");
+        NRPEResponse response = request.perform("^&*^7&^*786", "%s");
 
         Assert.assertTrue(response instanceof NRPEIncorrectParams);
 

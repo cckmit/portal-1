@@ -24,6 +24,8 @@ import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.index.document.DocumentStorageIndex;
 import ru.protei.portal.core.index.document.DocumentStorageIndexImpl;
+import ru.protei.portal.core.nrpe.NRPEExecutor;
+import ru.protei.portal.core.nrpe.NRPERequest;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.renderer.JiraWikiMarkupRenderer;
 import ru.protei.portal.core.renderer.MarkdownRenderer;
@@ -44,6 +46,8 @@ import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
 import ru.protei.portal.core.service.events.*;
+import ru.protei.portal.core.service.nrpe.NRPEService;
+import ru.protei.portal.core.service.nrpe.NRPEServiceImpl;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
 import ru.protei.portal.core.service.template.TemplateService;
@@ -56,6 +60,7 @@ import ru.protei.portal.mock.AuthServiceMock;
 import ru.protei.portal.mock.PortalScheduleTasksStub;
 import ru.protei.portal.mock.ReportControlServiceMock;
 import ru.protei.portal.schedule.PortalScheduleTasks;
+import ru.protei.portal.test.nrpe.NRPEExecutorTest;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.portal.tools.migrate.sybase.SybConnProvider;
 import ru.protei.portal.tools.migrate.sybase.SybConnWrapperImpl;
@@ -439,6 +444,11 @@ public class ServiceTestsConfiguration {
         return new Api1CImpl();
     }
 
+    @Bean
+    public NRPEService getNRPEService() {
+        return new NRPEServiceImpl();
+    }
+
     /* ASPECT/INTERCEPTORS */
 
     @Bean
@@ -449,5 +459,16 @@ public class ServiceTestsConfiguration {
     @Bean
     public ServiceLayerInterceptorLogging getServiceLayerInterceptorLogging() {
         return new ServiceLayerInterceptorLogging();
+    }
+
+    /* NRPE */
+    @Bean
+    public NRPEExecutor getNRPEExecutor() {
+        return new NRPEExecutorTest();
+    }
+
+    @Bean
+    public NRPERequest getNRPERequest(@Autowired NRPEExecutor executor) {
+        return new NRPERequest(executor);
     }
 }

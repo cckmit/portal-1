@@ -19,12 +19,17 @@ import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.core.mail.VirtualMailSendChannel;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
+import ru.protei.portal.core.nrpe.NRPEExecutor;
+import ru.protei.portal.core.nrpe.NRPEExecutorTerminal;
+import ru.protei.portal.core.nrpe.NRPERequest;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.auth.AuthServiceImpl;
 import ru.protei.portal.core.service.auth.LDAPAuthProvider;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
 import ru.protei.portal.core.service.events.*;
+import ru.protei.portal.core.service.nrpe.NRPEService;
+import ru.protei.portal.core.service.nrpe.NRPEServiceImpl;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
 import ru.protei.portal.jira.aspect.JiraServiceLayerInterceptorLogging;
@@ -493,5 +498,21 @@ public class JiraTestConfiguration {
     @Bean
     public EmployeeShortViewDAO getEmployeeShortViewDAO() {
         return new EmployeeShortViewDAO_Impl();
+    }
+
+    @Bean
+    public NRPEService getNRPEService() {
+        return new NRPEServiceImpl();
+    }
+
+    /* NRPE */
+    @Bean
+    public NRPEExecutor getNRPEExecutor() {
+        return new NRPEExecutorTerminal();
+    }
+
+    @Bean
+    public NRPERequest getNRPERequest(@Autowired NRPEExecutor executor) {
+        return new NRPERequest(executor);
     }
 }
