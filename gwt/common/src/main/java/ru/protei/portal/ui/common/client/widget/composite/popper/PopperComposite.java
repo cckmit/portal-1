@@ -35,12 +35,19 @@ public abstract class PopperComposite extends PopupLikeComposite {
             public String getCode() {
                 return "left";
             }
+        },
+
+        DEFAULT {
+            @Override
+            public String getCode() {
+                return null;
+            }
         };
 
         public abstract String getCode();
     }
 
-    public PopperComposite() {
+    protected PopperComposite() {
         addCloseHandler(event -> {
             destroyPopper(popper);
 
@@ -51,7 +58,7 @@ public abstract class PopperComposite extends PopupLikeComposite {
     }
 
     public void show(Element relative) {
-        show(relative, Placement.BOTTOM);
+        show(relative, Placement.DEFAULT);
     }
 
     public void show(Element relative, Placement placement) {
@@ -115,8 +122,22 @@ public abstract class PopperComposite extends PopupLikeComposite {
     }
 
     private native JavaScriptObject createPopper(Element button, Element popup, String placement, int skidding, int distance) /*-{
+        if (placement) {
+            return $wnd.Popper.createPopper(button, popup, {
+                placement: placement,
+                strategy: 'fixed',
+                modifiers: [
+                    {
+                        name: 'offset',
+                        options: {
+                            offset: [skidding, distance]
+                        }
+                    }
+                ]
+            });
+        }
+
         return $wnd.Popper.createPopper(button, popup, {
-            placement: placement,
             strategy: 'fixed',
             modifiers: [
                 {
