@@ -94,10 +94,8 @@ public class ReportCaseImpl implements ReportCase {
             CaseCommentQuery commentQuery = new CaseCommentQuery();
             commentQuery.addCaseObjectId( caseObject.getId() );
 
-            if (query.isCheckImportanceHistory() == null || !query.isCheckImportanceHistory()) {
-                commentQuery.addCommentType(CaseCommentQuery.CommentType.CASE_STATE);
-            }
-
+            commentQuery.addCommentType(CaseCommentQuery.CommentType.CASE_STATE);
+            commentQuery.addCommentType(CaseCommentQuery.CommentType.IMPORTANCE);
             commentQuery.addCommentType(CaseCommentQuery.CommentType.TIME_ELAPSED);
 
             List<CaseComment> caseComments = caseCommentDAO.getCaseComments( commentQuery );
