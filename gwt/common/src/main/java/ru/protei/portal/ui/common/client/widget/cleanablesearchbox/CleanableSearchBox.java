@@ -123,12 +123,12 @@ public class CleanableSearchBox extends Composite implements HasValue<String>, H
         }
     }
 
-    public void setEnsureDebugIdTextBox(String debugId) {
-        textBox.ensureDebugId(debugId);
+    public void setDebugAttributeTextBox(String attribute) {
+        textBox.getElement().setAttribute(DebugIds.DEBUG_ID_ATTRIBUTE, attribute);
     }
 
-    public void setEnsureDebugIdAction(String debugId) {
-        textBoxAction.ensureDebugId(debugId);
+    public void setDebugAttributeAction(String attribute) {
+        textBoxAction.getElement().setAttribute(DebugIds.DEBUG_ID_ATTRIBUTE, attribute);
     }
 
     public void setAddon(String addon) {
@@ -144,7 +144,7 @@ public class CleanableSearchBox extends Composite implements HasValue<String>, H
     }
 
     private void ensureDebugIds() {
-        textBox.getElement().setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CLEANABLE_SEARCH_BOX.SEARCH_INPUT);
+        textBox.getElement().setAttribute(DebugIds.DEBUG_ID_ATTRIBUTE, DebugIds.CLEANABLE_SEARCH_BOX.SEARCH_INPUT);
     }
 
     @UiField

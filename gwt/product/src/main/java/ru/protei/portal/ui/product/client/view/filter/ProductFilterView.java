@@ -125,8 +125,8 @@ public class ProductFilterView extends Composite implements AbstractProductFilte
     }
 
     private void ensureDebugIds() {
-        search.setEnsureDebugIdTextBox(DebugIds.FILTER.SEARCH_INPUT);
-        search.setEnsureDebugIdAction(DebugIds.FILTER.SEARCH_CLEAR_BUTTON);
+        search.setDebugAttributeTextBox(DebugIds.FILTER.SEARCH_INPUT);
+        search.setDebugAttributeAction(DebugIds.FILTER.SEARCH_CLEAR_BUTTON);
         sortField.setEnsureDebugId(DebugIds.FILTER.SORT_FIELD_SELECTOR);
         sortDir.ensureDebugId(DebugIds.FILTER.SORT_DIR_BUTTON);
 
