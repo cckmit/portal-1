@@ -37,18 +37,6 @@ public class FormSelector<T> extends Selector<T> implements HasValidable, HasEna
     }
 
     @Override
-    protected void onLoad() {
-        super.onLoad();
-    }
-
-    @Override
-    protected void onUnload() {
-        super.onUnload();
-
-        popup.getElement().removeFromParent();
-    }
-
-    @Override
     public void fillSelectorView(DisplayOption selectedValue) {
         if ( selectedValue == null ) {
             return;
