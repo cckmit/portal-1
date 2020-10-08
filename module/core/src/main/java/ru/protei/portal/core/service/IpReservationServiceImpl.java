@@ -33,7 +33,6 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -340,11 +339,11 @@ public class IpReservationServiceImpl implements IpReservationService {
                 return error(En_ResultStatus.NOT_CREATED);
             }
 
-            IpInfoSpliterator ipInfoSpliterator = new IpInfoSpliterator(subnets);
-            Stream<IpInfo> ipInfoStream = StreamSupport.stream(ipInfoSpliterator, false);
+            IpInfoIterator ipInfoIterator = new IpInfoIterator(subnets);
+            Stream<IpInfo> ipInfoStream = StreamSupport.stream(((Iterable<IpInfo>)() -> ipInfoIterator).spliterator(), false);
 
             if (config.data().getNrpeConfig().getEnable()) {
-                ipInfoStream = ipInfoStream.filter(makeNRPETest(NRPENonAvailableIps, ipInfoSpliterator));
+                ipInfoStream = ipInfoStream.filter(makeNRPETest(NRPENonAvailableIps, ipInfoIterator));
             }
 
             reservedIps = ipInfoStream
@@ -356,10 +355,10 @@ public class IpReservationServiceImpl implements IpReservationService {
                         return reservedIp;
                     }).collect(Collectors.toList());
 
-            if (ipInfoSpliterator.status == En_ResultStatus.OK) {
+            if (ipInfoIterator.getStatus() == En_ResultStatus.OK) {
                 reservedIpDAO.persistBatch(reservedIps);
             } else {
-                return error(ipInfoSpliterator.status);
+                return error(ipInfoIterator.getStatus());
             }
         }
 
@@ -815,13 +814,13 @@ public class IpReservationServiceImpl implements IpReservationService {
         return personDAO.get(token.getPersonId());
     }
 
-    private Predicate<IpInfo> makeNRPETest(List<String> NRPENonAvailableIps, IpInfoSpliterator ipInfoSpliterator) {
+    private Predicate<IpInfo> makeNRPETest(List<String> NRPENonAvailableIps, IpInfoIterator ipInfoIterator) {
         return checkedIpInfo -> {
             String ip = checkedIpInfo.getIp();
 
             NRPEResponse nrpeResponse = nrpeService.checkIp(ip);
             if (nrpeResponse == null) {
-                ipInfoSpliterator.setStatus(En_ResultStatus.NRPE_ERROR);
+                ipInfoIterator.interrupt(En_ResultStatus.NRPE_ERROR);
                 return false;
             }
 
@@ -852,27 +851,29 @@ public class IpReservationServiceImpl implements IpReservationService {
         }
     }
 
-    class IpInfoSpliterator implements Spliterator<IpInfo> {
+    class IpInfoIterator implements Iterator<IpInfo> {
         private final List<SubnetOption> subnets;
         private int nextSubnetIndex;
         private Subnet currentSubnet;
         private int nextNumber;
         private Set<Integer> subnetDBReservedIps;
 
+        private IpInfo nextIpInfo;
+
         private En_ResultStatus status = En_ResultStatus.OK;
+
+        public IpInfoIterator(List<SubnetOption> subnets) {
+            this.subnets = subnets;
+            this.nextSubnetIndex = 0;
+            refreshData();
+        }
 
         public En_ResultStatus getStatus() {
             return status;
         }
 
-        public void setStatus(En_ResultStatus status) {
+        public void interrupt(En_ResultStatus status) {
             this.status = status;
-        }
-
-        public IpInfoSpliterator(List<SubnetOption> subnets) {
-            this.subnets = subnets;
-            this.nextSubnetIndex = 0;
-            refreshData();
         }
 
         private void refreshData() {
@@ -913,10 +914,10 @@ public class IpReservationServiceImpl implements IpReservationService {
         }
 
         @Override
-        public boolean tryAdvance(Consumer<? super IpInfo> action) {
-            IpInfo nextIpInfo = getNextIpInfo();
-            if (status == En_ResultStatus.OK && nextIpInfo != null) {
-                action.accept(nextIpInfo);
+        public boolean hasNext() {
+            IpInfo next = getNextIpInfo();
+            if (status == En_ResultStatus.OK && next != null) {
+                nextIpInfo = next;
                 return true;
             } else {
                 return false;
@@ -924,18 +925,13 @@ public class IpReservationServiceImpl implements IpReservationService {
         }
 
         @Override
-        public Spliterator<IpInfo> trySplit() {
-            return null;
-        }
-
-        @Override
-        public long estimateSize() {
-            return Long.MAX_VALUE;
-        }
-
-        @Override
-        public int characteristics() {
-            return DISTINCT + NONNULL + IMMUTABLE;
+        public IpInfo next() {
+            if (nextIpInfo == null) {
+                throw new NoSuchElementException();
+            }
+            IpInfo next = nextIpInfo;
+            nextIpInfo = null;
+            return next;
         }
     }
 
