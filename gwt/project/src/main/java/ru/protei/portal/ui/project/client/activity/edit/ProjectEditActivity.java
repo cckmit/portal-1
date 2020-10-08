@@ -27,6 +27,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.dict.En_RegionState.PAUSED;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
@@ -173,8 +174,9 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.technicalSupportValidity().setValue(project.getTechnicalSupportValidity());
         if (isNew( project )) view.setDateValid( true );
 
-
         fillCaseLinks(project.getId());
+
+        view.subcontractors().setValue(project.getSubcontractors() == null ? null : project.getSubcontractors().stream().map(Company::toEntityOption).collect(Collectors.toSet()));
 
         if(!isNew( project )) {
             fireEvent( new CaseCommentEvents.Show( view.getCommentsContainer(), project.getId(), En_CaseType.PROJECT, hasPrivileges( project.getId() ), project.getCreatorId() ) );

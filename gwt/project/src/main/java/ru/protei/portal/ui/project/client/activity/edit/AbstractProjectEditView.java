@@ -69,4 +69,6 @@ public interface AbstractProjectEditView extends IsWidget {
     HasVisibility pauseDateContainerVisibility();
 
     HasValue<Date> pauseDate();
+
+    HasValue<Set<EntityOption>> subcontractors();
 }

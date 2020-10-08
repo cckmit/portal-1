@@ -325,7 +325,7 @@ public class ProjectQuery extends BaseQuery {
 
         if (CollectionUtils.isNotEmpty(this.getInitiatorCompanyIds())) {
             caseQuery.setCompanyIds(this.getInitiatorCompanyIds().stream()
-                    .map(directionInfo -> directionInfo == null ? null : directionInfo.getId())
+                    .map(entityOption -> entityOption == null ? null : entityOption.getId())
                     .collect(toList())
             );
         }

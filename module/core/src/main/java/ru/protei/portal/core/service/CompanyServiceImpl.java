@@ -7,10 +7,12 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CompanyGroupQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
+import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.service.auth.AuthService;
@@ -65,6 +67,9 @@ public class CompanyServiceImpl implements CompanyService {
     @Autowired
     PortalConfig portalConfig;
 
+    @Autowired
+    ProjectDAO projectDAO;
+
     @Override
     public Result<SearchResult<Company>> getCompanies( AuthToken token, CompanyQuery query) {
 
@@ -104,6 +109,27 @@ public class CompanyServiceImpl implements CompanyService {
             return error(En_ResultStatus.GET_DATA_ERROR);
 
         return ok(list.stream()
+                .map(Company::toEntityOption)
+                .collect(Collectors.toList()));
+    }
+
+    @Override
+    public Result<List<EntityOption>> subcontractorOptionListByCompanyId(AuthToken token, Long companyId) {
+
+        ProjectQuery projectQuery = new ProjectQuery();
+        projectQuery.setInitiatorCompanyIds(setOf(new EntityOption(null, companyId)));
+        List<Project> list = projectDAO.listByQuery(projectQuery);
+        if (list == null)
+            return error(En_ResultStatus.GET_DATA_ERROR);
+
+        List<Company> companies = list.stream()
+                .map(Project::getSubcontractors)
+                .filter(Objects::nonNull)
+                .flatMap(Collection::stream)
+                .distinct()
+                .collect(Collectors.toList());
+
+        return ok(companies.stream()
                 .map(Company::toEntityOption)
                 .collect(Collectors.toList()));
     }

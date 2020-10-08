@@ -3119,4 +3119,6 @@ public interface Lang extends Messages, ContactItemLang {
     String errReportingServiceNotConfigured();
 
     String addSubtask();
+
+    String projectSubcontractor();
 }

@@ -11,10 +11,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
-import ru.protei.portal.core.model.dict.En_CustomerType;
-import ru.protei.portal.core.model.dict.En_DevUnitState;
-import ru.protei.portal.core.model.dict.En_DevUnitType;
-import ru.protei.portal.core.model.dict.En_RegionState;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -25,6 +22,8 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.lang.En_RegionStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionFormSelector;
@@ -37,6 +36,7 @@ import ru.protei.portal.ui.project.client.activity.edit.AbstractProjectEditActiv
 import ru.protei.portal.ui.project.client.activity.edit.AbstractProjectEditView;
 import ru.protei.portal.ui.project.client.view.widget.team.TeamSelector;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Date;
 import java.util.Set;
@@ -59,6 +59,9 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         projectRegion.setDefaultValue(lang.selectOfficialRegion());
         productDirection.setDefaultValue(lang.contractSelectDirection());
         customerType.setDefaultValue(lang.selectCustomerType());
+
+        companyModel.setCategories(Arrays.asList(En_CompanyCategory.SUBCONTRACTOR));
+        subcontractors.setAsyncModel(companyModel);
     }
 
     @Override
@@ -220,6 +223,11 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         return pauseDate;
     }
 
+    @Override
+    public HasValue<Set<EntityOption>> subcontractors() {
+        return subcontractors;
+    }
+
     @UiHandler("addLinkButton")
     public void onAddLinkButtonClick(ClickEvent event) {
         if (activity != null) {
@@ -258,6 +266,10 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         addLinkButton.ensureDebugId(DebugIds.PROJECT.LINKS_BUTTON);
         slaInput.setEnsureDebugId(DebugIds.PROJECT.SLA_INPUT);
         technicalSupportValidity.setEnsureDebugId(DebugIds.PROJECT.TECHNICAL_SUPPORT_VALIDITY_CONTAINER);
+        subcontractors.setAddEnsureDebugId(DebugIds.PROJECT.SUBCONTRACTOR_SELECTOR_ADD_BUTTON);
+        subcontractors.setClearEnsureDebugId(DebugIds.PROJECT.SUBCONTRACTOR_SELECTOR_CLEAR_BUTTON);
+        subcontractors.setItemContainerEnsureDebugId(DebugIds.PROJECT.SUBCONTRACTOR_SELECTOR_ITEM_CONTAINER);
+        subcontractors.setLabelEnsureDebugId(DebugIds.PROJECT.SUBCONTRACTOR_SELECTOR_LABEL);
     }
 
     @UiField
@@ -265,10 +277,13 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
 
     @UiField
     Label number;
+
     @UiField
     ValidableTextBox projectName;
+
     @UiField
     TextArea description;
+
     @Inject
     @UiField(provided = true)
     TeamSelector team;
@@ -315,26 +330,37 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     DivElement comments;
     @UiField
     HTMLPanel commentsContainer;
+
     @UiField
     DivElement documents;
     @UiField
     HTMLPanel documentsContainer;
+
     @UiField
     HTMLPanel linksContainer;
+
+    @Inject
+    @UiField( provided = true )
+    CompanyMultiSelector subcontractors;
+
     @UiField
     Button addLinkButton;
     @UiField
     Button backButton;
-
     @UiField
     Button saveButton;
     @UiField
     Button cancelButton;
+
     @Inject
     @UiField
     Lang lang;
+
     @Inject
     En_RegionStateLang regionStateLang;
+
+    @Inject
+    CompanyModel companyModel;
 
     private AbstractProjectEditActivity activity;
 

@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
+import ru.protei.portal.core.model.ent.CaseInfo;
 import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
@@ -45,7 +46,9 @@ public abstract class SubtaskCreateActivity implements AbstractSubtaskCreateActi
         if (!view.asWidget().isAttached()) {
             return;
         }
-        fillView();
+
+        issueService.getIssueShortInfo(event.caseNumber, new FluentCallback<CaseInfo>()
+                .withSuccess(this::fillView));
     }
 
     @Override
@@ -87,7 +90,7 @@ public abstract class SubtaskCreateActivity implements AbstractSubtaskCreateActi
         localStorageService.set( ISSUE_CREATE_PREVIEW_DISPLAYED + "_" + key, String.valueOf( isDisplay ) );
     }
 
-    private void fillView() {
+    private void fillView(CaseInfo caseInfo) {
         view.name().setValue(null);
         view.description().setValue(null);
     }

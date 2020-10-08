@@ -2799,7 +2799,7 @@ div.select2-container {
   border: 1px solid $error_color;
 }
 
-.case-subscribers {
+.multi-selector-without-border {
   div.select2-container {
     border: 0 !important;
     ul.select2-choices {
@@ -5163,7 +5163,7 @@ table {
   position: absolute;
   display: block;
   float: left;
-  z-index: 150;
+  z-index: 160;
 
   .dropdown-menu {
     position: relative;

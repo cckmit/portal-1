@@ -113,6 +113,8 @@ public class Project extends AuditableObject {
 
     private List<ProjectSla> projectSlas;
 
+    private Set<Company> subcontractors;
+
     @JdbcColumn(name = Project.Columns.PAUSE_DATE)
     private Long pauseDate;
 
@@ -325,6 +327,14 @@ public class Project extends AuditableObject {
 
     public void setProjectSlas(List<ProjectSla> projectSlas) {
         this.projectSlas = projectSlas;
+    }
+
+    public Set<Company> getSubcontractors() {
+        return subcontractors;
+    }
+
+    public void setSubcontractors(Set<Company> subcontractors) {
+        this.subcontractors = subcontractors;
     }
 
     public static Project fromCaseObject(CaseObject caseObject) {

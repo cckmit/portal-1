@@ -29,6 +29,8 @@ public interface CompanyService {
 
     Result<List<EntityOption>> companyOptionListByIds( List<Long> ids);
 
+    Result<List<EntityOption>> subcontractorOptionListByCompanyId(AuthToken token, Long companyId);
+
     @Privileged( En_Privilege.COMPANY_EDIT )
     @Auditable( En_AuditType.COMPANY_MODIFY )
     Result<?> updateState( AuthToken makeAuthToken, Long companyId, boolean isDeprecated);
