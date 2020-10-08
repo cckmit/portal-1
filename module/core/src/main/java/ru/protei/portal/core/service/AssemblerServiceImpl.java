@@ -37,7 +37,8 @@ public class AssemblerServiceImpl implements AssemblerService {
                 this::fillCaseMeta).flatMap(
                 this::fillComments).flatMap(
                 this::fillAttachments).flatMap(
-                this::fillLinks).
+                this::fillLinks).map(
+                this::fillEmails).
                 ifOk( filledEvent -> publisherService.publishEvent( filledEvent ) );
     }
 
@@ -65,7 +66,6 @@ public class AssemblerServiceImpl implements AssemblerService {
         log.info( "fillCaseObject(): CaseObjectID={} Try to fill caseObject.", e.getCaseObjectId() );
 
         CaseObject caseObject = caseObjectDAO.get(e.getCaseObjectId());
-        if (caseObject.getCreator() != null) jdbcManyRelationsHelper.fill(caseObject.getCreator(), Person.Fields.CONTACT_ITEMS);
         e.setLastCaseObject(caseObject);
 
         log.info( "fillCaseObject(): CaseObjectID={} CaseObject is successfully filled.", e.getCaseObjectId() );
@@ -97,7 +97,6 @@ public class AssemblerServiceImpl implements AssemblerService {
 
         log.info("fillCaseMeta(): CaseObjectID={} Try to fill caseMeta.", e.getCaseObjectId());
         CaseObjectMeta caseMeta = caseObjectMetaDAO.get(e.getCaseObjectId());
-        if (caseMeta.getManager() != null) jdbcManyRelationsHelper.fill( caseMeta.getManager(), Person.Fields.CONTACT_ITEMS);
         e.setLastCaseMeta(caseMeta);
         log.info("fillCaseMeta(): CaseObjectID={} caseMeta is successfully filled.", e.getCaseObjectId());
 
@@ -164,6 +163,13 @@ public class AssemblerServiceImpl implements AssemblerService {
         calendar.setTime( date );
         calendar.add( Calendar.SECOND, sec );
         return calendar.getTime();
+    }
+
+    private AssembledCaseEvent fillEmails( AssembledCaseEvent e ) {
+        if (e.getCreator() != null) jdbcManyRelationsHelper.fill( e.getCreator(), Person.Fields.CONTACT_ITEMS);
+        if (e.getInitiator() != null) jdbcManyRelationsHelper.fill( e.getInitiator(), Person.Fields.CONTACT_ITEMS);
+        if (e.getManager() != null) jdbcManyRelationsHelper.fill( e.getManager(), Person.Fields.CONTACT_ITEMS);
+        return e;
     }
 
     @Autowired
