@@ -816,9 +816,7 @@ public class IpReservationServiceImpl implements IpReservationService {
 
     private Predicate<IpInfo> makeNRPETest(List<String> NRPENonAvailableIps, IpInfoIterator ipInfoIterator) {
         return checkedIpInfo -> {
-            String ip = checkedIpInfo.getIp();
-
-            NRPEResponse nrpeResponse = nrpeService.checkIp(ip);
+            NRPEResponse nrpeResponse = nrpeService.checkIp(checkedIpInfo.getIp());
             if (nrpeResponse == null) {
                 ipInfoIterator.interrupt(En_ResultStatus.NRPE_ERROR);
                 return false;

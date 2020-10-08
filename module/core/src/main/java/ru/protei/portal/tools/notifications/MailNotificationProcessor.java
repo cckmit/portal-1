@@ -787,7 +787,6 @@ public class MailNotificationProcessor {
 
     @EventListener
     public void onReservedIpNotificationEvent(ReservedIpNotificationEvent event) {
-        if (true) return;
         List<ReservedIp> reservedIps = event.getReservedIps();
         Person initiator = event.getInitiator();
         ReservedIpNotificationEvent.Action action = event.getAction();
