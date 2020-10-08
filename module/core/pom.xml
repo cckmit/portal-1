@@ -104,6 +104,8 @@
                         <argument>notification/email/project.pausetime.body.ftl</argument>
                         <argument>notification/email/birthdays.subject.ftl</argument>
                         <argument>notification/email/birthdays.body.ftl</argument>
+                        <argument>notification/email/nrpe.ips.subject.ftl</argument>
+                        <argument>notification/email/nrpe.ips.body.ftl</argument>
                     </arguments>
                 </configuration>
             </plugin>

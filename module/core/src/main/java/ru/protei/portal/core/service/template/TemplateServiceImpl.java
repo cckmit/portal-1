@@ -824,6 +824,26 @@ public class TemplateServiceImpl implements TemplateService {
         return template;
     }
 
+    @Override
+    public PreparedTemplate getNRPENonAvailableIpsNotificationSubject() {
+        Map<String, Object> model = new HashMap<>();
+        PreparedTemplate template = new PreparedTemplate("notification/email/nrpe.ips.subject.%s.ftl");
+        template.setModel(model);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getNRPENonAvailableIpsNotificationBody(List<String> nonAvailableIps) {
+        Map<String, Object> model = new HashMap<>();
+        model.put("nonAvailableIps", nonAvailableIps);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/nrpe.ips.body.%s.ftl");
+        template.setModel(model);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
     private <T, R> R getNullOrElse(T value, Function<T, R> orElseFunction) {
         return value == null ? null : orElseFunction.apply(value);
     }

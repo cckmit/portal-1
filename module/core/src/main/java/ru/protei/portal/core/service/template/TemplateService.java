@@ -99,4 +99,6 @@ public interface TemplateService {
     PreparedTemplate getBirthdaysNotificationSubject(Date from, Date to);
     PreparedTemplate getBirthdaysNotificationBody(List<EmployeeShortView> employees, Collection<String> recipients);
 
+    PreparedTemplate getNRPENonAvailableIpsNotificationSubject();
+    PreparedTemplate getNRPENonAvailableIpsNotificationBody(List<String> nonAvailableIps);
 }

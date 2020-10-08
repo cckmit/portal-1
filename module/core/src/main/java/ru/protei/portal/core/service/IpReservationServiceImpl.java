@@ -23,6 +23,9 @@ import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.SubnetOption;
+import ru.protei.portal.core.nrpe.NRPEResponse;
+import ru.protei.portal.core.nrpe.NRPEStatus;
+import ru.protei.portal.core.nrpe.response.NRPEHostReachable;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.nrpe.NRPEService;
 import ru.protei.portal.core.service.policy.PolicyService;
@@ -299,14 +302,14 @@ public class IpReservationServiceImpl implements IpReservationService {
             }
 
             if (config.data().getNrpeConfig().getEnable()) {
-                Boolean ipAvailable = nrpeService.isIpAvailable(reservedIpRequest.getIpAddress());
-                if (ipAvailable == null) {
+                NRPEResponse nrpeResponse = nrpeService.checkIp(reservedIpRequest.getIpAddress());
+                if (nrpeResponse == null) {
                     return error(En_ResultStatus.NRPE_ERROR);
                 }
 
-                if (!ipAvailable) {
+                if (nrpeResponse.getNRPEStatus() == NRPEStatus.HOST_REACHABLE) {
                     return error(En_ResultStatus.NRPE_IP_NON_AVAILABLE, null, Collections.singletonList(
-                                    new ReservedIpAdminNotificationEvent(this, Collections.singletonList(reservedIpRequest.getIpAddress())))
+                                    new ReservedIpAdminNotificationEvent(this, ((NRPEHostReachable)nrpeResponse).ipsAndMacs()))
                     );
                 }
             }
@@ -815,17 +818,19 @@ public class IpReservationServiceImpl implements IpReservationService {
     private Predicate<IpInfo> makeNRPETest(List<String> NRPENonAvailableIps, IpInfoSpliterator ipInfoSpliterator) {
         return checkedIpInfo -> {
             String ip = checkedIpInfo.getIp();
-            Boolean ipAvailable = nrpeService.isIpAvailable(ip);
-            if (ipAvailable == null) {
-                // прерывать пайп
+
+            NRPEResponse nrpeResponse = nrpeService.checkIp(ip);
+            if (nrpeResponse == null) {
                 ipInfoSpliterator.setStatus(En_ResultStatus.NRPE_ERROR);
                 return false;
             }
 
-            if (!ipAvailable) {
-                NRPENonAvailableIps.add(ip);
+            boolean ipNonAvailable = nrpeResponse.getNRPEStatus() == NRPEStatus.HOST_REACHABLE;
+            if (ipNonAvailable) {
+                NRPENonAvailableIps.addAll(((NRPEHostReachable) nrpeResponse).ipsAndMacs());
             }
-            return ipAvailable;
+
+            return !ipNonAvailable;
         };
     }
 

@@ -2,7 +2,9 @@ package ru.protei.portal.core.nrpe.response;
 
 import ru.protei.portal.core.nrpe.NRPEStatus;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class NRPEHostReachable extends NRPEHost {
     public static class ProbeInfo {
@@ -27,6 +29,11 @@ public class NRPEHostReachable extends NRPEHost {
         public String getTime() {
             return time;
         }
+
+        @Override
+        public String toString() {
+            return String.format("%s [%s] %s ", ip, mac, time);
+        }
     }
 
     private final List<ProbeInfo> probeInfos;
@@ -48,6 +55,17 @@ public class NRPEHostReachable extends NRPEHost {
 
     public boolean isIpConflict() {
         return isIpConflict;
+    }
+
+    public List<String> ipsAndMacs() {
+        if (probeInfos == null) {
+            return null;
+        }
+        if (isIpConflict) {
+            return probeInfos.stream().map(String::valueOf).collect(Collectors.toList());
+        } else {
+            return Collections.singletonList(String.valueOf(probeInfos.get(0)));
+        }
     }
 
     @Override

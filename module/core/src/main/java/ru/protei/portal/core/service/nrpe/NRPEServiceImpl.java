@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.nrpe.NRPERequest;
 import ru.protei.portal.core.nrpe.NRPEResponse;
-import ru.protei.portal.core.nrpe.NRPEStatus;
 
 import static ru.protei.portal.core.model.helper.HelperFunc.isEmpty;
 
@@ -16,7 +15,7 @@ public class NRPEServiceImpl implements NRPEService {
     NRPERequest nrpeRequest;
 
     @Override
-    public Boolean isIpAvailable(String ip) {
+    public NRPEResponse checkIp(String ip) {
         if (isEmpty(ip)) {
             return null;
         }
@@ -26,6 +25,6 @@ public class NRPEServiceImpl implements NRPEService {
             return null;
         }
 
-        return response.getNRPEStatus() == NRPEStatus.HOST_UNREACHABLE;
+        return response;
     }
 }

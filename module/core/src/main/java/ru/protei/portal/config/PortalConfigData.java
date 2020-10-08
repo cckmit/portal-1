@@ -817,11 +817,13 @@ public class PortalConfigData {
     public static class NRPEConfig {
         final String template;
         final Boolean enable;
+        final String adminEmail;
 
         public NRPEConfig(PropertiesWrapper properties) {
             this.template = properties.getProperty("nrpe.template",
                     "/usr/lib64/nagios/plugins/check_nrpe -H router.protei.ru -c check_arping_lan -a %s ; echo $?");
             this.enable = properties.getProperty("nrpe.enable", Boolean.class, false);
+            this.adminEmail = properties.getProperty("nrpe.admin.email", "sysadmin@protei.ru");
         }
 
         public String getTemplate() {
@@ -830,6 +832,10 @@ public class PortalConfigData {
 
         public Boolean getEnable() {
             return enable;
+        }
+
+        public String getAdminEmail() {
+            return adminEmail;
         }
     }
 

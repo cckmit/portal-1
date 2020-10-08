@@ -1,8 +1,10 @@
 package ru.protei.portal.core.service.nrpe;
 
+import ru.protei.portal.core.nrpe.NRPEResponse;
+
 /**
  * Сервис NRPE (опрос ip)
  */
 public interface NRPEService {
-    Boolean isIpAvailable(String ip);
+    NRPEResponse checkIp(String ip);
 }
