@@ -37,7 +37,8 @@ public class AssemblerServiceImpl implements AssemblerService {
                 this::fillCaseMeta).flatMap(
                 this::fillComments).flatMap(
                 this::fillAttachments).flatMap(
-                this::fillLinks).
+                this::fillLinks).map(
+                this::fillEmails).
                 ifOk( filledEvent -> publisherService.publishEvent( filledEvent ) );
     }
 
@@ -59,18 +60,12 @@ public class AssemblerServiceImpl implements AssemblerService {
     private Result<AssembledCaseEvent> fillCaseObject( AssembledCaseEvent e ) {
         if (e.isCaseObjectFilled()) {
             log.info( "fillCaseObject(): CaseObjectID={} caseObject is already filled.", e.getCaseObjectId() );
-            if (e.getCaseObject().getCreator() != null && e.getCaseObject().getCreator().getContactItems() == null) jdbcManyRelationsHelper.fill(e.getCaseObject().getCreator(), Person.Fields.CONTACT_ITEMS);
-            if (e.getCaseObject().getManager() != null && e.getCaseObject().getManager().getContactItems() == null) jdbcManyRelationsHelper.fill(e.getCaseObject().getManager(), Person.Fields.CONTACT_ITEMS);
-            if (e.getCaseObject().getInitiator() != null && e.getCaseObject().getInitiator().getContactItems() == null) jdbcManyRelationsHelper.fill(e.getCaseObject().getInitiator(), Person.Fields.CONTACT_ITEMS);
             return ok( e );
         }
 
         log.info( "fillCaseObject(): CaseObjectID={} Try to fill caseObject.", e.getCaseObjectId() );
 
         CaseObject caseObject = caseObjectDAO.get(e.getCaseObjectId());
-        if (caseObject.getCreator() != null) jdbcManyRelationsHelper.fill(caseObject.getCreator(), Person.Fields.CONTACT_ITEMS);
-        if (caseObject.getManager() != null) jdbcManyRelationsHelper.fill(caseObject.getManager(), Person.Fields.CONTACT_ITEMS);
-        if (caseObject.getInitiator() != null) jdbcManyRelationsHelper.fill(caseObject.getInitiator(), Person.Fields.CONTACT_ITEMS);
         e.setLastCaseObject(caseObject);
 
         log.info( "fillCaseObject(): CaseObjectID={} CaseObject is successfully filled.", e.getCaseObjectId() );
@@ -97,21 +92,11 @@ public class AssemblerServiceImpl implements AssemblerService {
     private Result<AssembledCaseEvent> fillCaseMeta( AssembledCaseEvent e ) {
         if (e.isCaseMetaFilled()) {
             log.info("fillCaseMeta(): CaseObjectID={} caseMeta is already filled.", e.getCaseObjectId());
-            if (e.getInitCaseMeta() != null) {
-                if (e.getInitCaseMeta().getManager() != null && e.getInitCaseMeta().getManager().getContactItems() == null) jdbcManyRelationsHelper.fill( e.getInitCaseMeta().getManager(), Person.Fields.CONTACT_ITEMS);
-                if (e.getInitCaseMeta().getInitiator() != null && e.getInitCaseMeta().getInitiator().getContactItems() == null) jdbcManyRelationsHelper.fill( e.getInitCaseMeta().getInitiator(), Person.Fields.CONTACT_ITEMS);
-            }
-            if (e.getLastCaseMeta() != null) {
-                if (e.getLastCaseMeta().getInitiator() != null && e.getLastCaseMeta().getInitiator().getContactItems() == null) jdbcManyRelationsHelper.fill( e.getLastCaseMeta().getInitiator(), Person.Fields.CONTACT_ITEMS);
-                if (e.getLastCaseMeta().getManager() != null && e.getLastCaseMeta().getManager().getContactItems() == null) jdbcManyRelationsHelper.fill( e.getLastCaseMeta().getManager(), Person.Fields.CONTACT_ITEMS);
-            }
             return ok(e);
         }
 
         log.info("fillCaseMeta(): CaseObjectID={} Try to fill caseMeta.", e.getCaseObjectId());
         CaseObjectMeta caseMeta = caseObjectMetaDAO.get(e.getCaseObjectId());
-        if (caseMeta.getManager() != null) jdbcManyRelationsHelper.fill( caseMeta.getManager(), Person.Fields.CONTACT_ITEMS);
-        if (caseMeta.getInitiator() != null) jdbcManyRelationsHelper.fill( caseMeta.getInitiator(), Person.Fields.CONTACT_ITEMS);
         e.setLastCaseMeta(caseMeta);
         log.info("fillCaseMeta(): CaseObjectID={} caseMeta is successfully filled.", e.getCaseObjectId());
 
@@ -178,6 +163,13 @@ public class AssemblerServiceImpl implements AssemblerService {
         calendar.setTime( date );
         calendar.add( Calendar.SECOND, sec );
         return calendar.getTime();
+    }
+
+    private AssembledCaseEvent fillEmails( AssembledCaseEvent e ) {
+        if (e.getCreator() != null) jdbcManyRelationsHelper.fill( e.getCreator(), Person.Fields.CONTACT_ITEMS);
+        if (e.getInitiator() != null) jdbcManyRelationsHelper.fill( e.getInitiator(), Person.Fields.CONTACT_ITEMS);
+        if (e.getManager() != null) jdbcManyRelationsHelper.fill( e.getManager(), Person.Fields.CONTACT_ITEMS);
+        return e;
     }
 
     @Autowired
