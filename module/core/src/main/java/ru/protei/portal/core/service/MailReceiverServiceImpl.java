@@ -68,8 +68,10 @@ public class MailReceiverServiceImpl implements MailReceiverService {
                 log.info("performReceiveMailAndAddComments(): message service info = {}", parseServiceInfo(message));
                 parseMessage(message)
                         .filter(this::hasFullInfo)
-                        .ifPresent(mail -> caseCommentService.addCommentReceivedByMail(mail)
-                                .ifOk(ignore -> setSeen(inbox, message)));
+                        .ifPresent(mail -> {
+                            caseCommentService.addCommentReceivedByMail(mail);
+                            setSeen(inbox, message);
+                        });
             });
 
             inbox.close(false);
