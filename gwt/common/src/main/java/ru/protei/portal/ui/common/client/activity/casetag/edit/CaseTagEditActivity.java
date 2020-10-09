@@ -44,7 +44,7 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
         boolean isSystemScope = policyService.hasSystemScopeForPrivilege(privilegeByCaseType(caseType));
         boolean isAllowedChangeCompany = isCompanySelectorEnabled(caseType) && isSystemScope && (isCreationMode || isTagOwner) ;
 
-        // создавать могут все с привилегией ISSUE_EDIT. Заказчики только для своих компаний, сотрудники НТЦ протей для всех.
+        // создавать могут все с привилегией по типу кейса. Заказчики только для своих компаний, сотрудники НТЦ протей для всех.
         // редактируем/удаляем только свои кейсы
         boolean isAllowedEdit = policyService.hasPrivilegeFor(privilegeByCaseType(caseType)) && (isCreationMode || isTagOwner);
 
@@ -143,7 +143,7 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
     private En_Privilege privilegeByCaseType(En_CaseType caseType) {
         switch (caseType) {
             case CRM_SUPPORT: return En_Privilege.ISSUE_EDIT;
-            case CONTRACT: return En_Privilege.CONTACT_EDIT;
+            case CONTRACT: return En_Privilege.CONTRACT_EDIT;
         }
         return En_Privilege.ISSUE_EDIT;
     }
