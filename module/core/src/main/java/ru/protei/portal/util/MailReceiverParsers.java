@@ -11,51 +11,52 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class MailReceiverParsers {
-    static public String parseContent(Part part) throws IOException, MessagingException {
+    static public MailContent parseContent(Part part) throws IOException, MessagingException {
         Object content = part.getContent();
         if (content == null) {
             return null;
-        } else if (part.getContentType().startsWith(MIME_TEXT)) {
-            return (String)content;
+        }
+        ContentType contentType = new ContentType(part.getContentType());
+        if (contentType.getPrimaryType().equals(MailContent.MIME_TEXT_TYPE)) {
+            return new MailContent((String)content, contentType.getBaseType());
         } else if (content instanceof Part) {
             return parseContent((Part)content);
         } else if (content instanceof Multipart) {
             return parseContent((Multipart) content);
         } else if (content instanceof InputStream) {
-            return IOUtils.toString((InputStream) content, StandardCharsets.UTF_8);
+            return new MailContent(IOUtils.toString((InputStream) content, StandardCharsets.UTF_8), contentType.getBaseType());
         }
         return null;
     }
 
-    static private String parseContent(Multipart multipart) throws MessagingException {
-        if (new ContentType(multipart.getContentType()).match(MIME_MULTIPART_ALTERNATIVE)) {
+    static private MailContent parseContent(Multipart multipart) throws MessagingException {
+        if (new ContentType(multipart.getContentType()).match(MailContent.MIME_MULTIPART_ALTERNATIVE)) {
             return extractMostRichAlternativeContent(multipart);
         } else {
             return extractContentAll(multipart);
         }
     }
 
-    static private String extractContentAll(Multipart multipart) throws MessagingException {
+    static private MailContent extractContentAll(Multipart multipart) throws MessagingException {
         return IntStream.range(0, multipart.getCount())
                 .mapToObj(i -> parseContentBodyPart(multipart, i))
-                .filter(Objects::nonNull)
-                .collect(Collectors.joining("\n"));
+                .findAny()
+                .orElse(null);
     }
 
-    static private String extractMostRichAlternativeContent(Multipart multipart) throws MessagingException {
+    static private MailContent extractMostRichAlternativeContent(Multipart multipart) throws MessagingException {
         int size = multipart.getCount();
         return IntStream.range(0, size)
-                .mapToObj(i -> parseContentBodyPart(multipart, (size-1) - i))
+                .mapToObj(i -> parseContentBodyPart(multipart, (size - 1) - i))
                 .filter(Objects::nonNull)
                 .findAny()
                 .orElse(null);
     }
 
-    static private String parseContentBodyPart(Multipart multipart, int i) {
+    static private MailContent parseContentBodyPart(Multipart multipart, int i) {
         try {
             return parseContent(multipart.getBodyPart(i));
         } catch (MessagingException | IOException e) {
@@ -105,8 +106,29 @@ public class MailReceiverParsers {
         }
     }
 
+    static public class MailContent {
+        private final String content;
+        private final String contentType;
+
+        public MailContent(String content, String contentType) {
+            this.content = content;
+            this.contentType = contentType;
+        }
+
+        public String getContent() {
+            return content;
+        }
+
+        public String getContentType() {
+            return contentType;
+        }
+
+        static public final String MIME_TEXT_TYPE = "TEXT";
+        static public final String MIME_MULTIPART_TYPE = "multipart";
+        static public final String MIME_MULTIPART_ALTERNATIVE = "multipart/alternative";
+        static public final String MIME_TEXT_HTML = "TEXT/HTML";
+    }
+
     static private final String ISSUE_ID_PREFIX = "CRM-";
-    static private final String MIME_MULTIPART_ALTERNATIVE = "multipart/alternative";
-    static private final String MIME_TEXT = "TEXT/";
     static private final Pattern issueIdPattern = Pattern.compile(ISSUE_ID_PREFIX + "\\d+");
 }

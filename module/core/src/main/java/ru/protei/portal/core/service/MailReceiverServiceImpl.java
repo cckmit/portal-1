@@ -128,9 +128,10 @@ public class MailReceiverServiceImpl implements MailReceiverService {
         try {
             Long caseNo = parseCaseNo(message);
             String senderEmail = parseSenderEmail(message);
-            return Optional.of(
-                        new ReceivedMail(caseNo, senderEmail,
-                                (caseNo != null && senderEmail != null) ? parseContent(message) : null));
+            MailContent content = (caseNo != null && senderEmail != null) ? parseContent(message) : null;
+            return Optional.of(new ReceivedMail(caseNo, senderEmail,
+                    content != null ? content.getContent() : null,
+                    content != null ? content.getContentType() : null));
 
         } catch (MessagingException | IOException e) {
             log.error("parseMessage(): fail, e = {}", e.getMessage());

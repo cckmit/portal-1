@@ -33,6 +33,7 @@ import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.portal.util.MailReceiverParsers;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -583,7 +584,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
 
         log.info("addCommentsReceivedByMail(): process receivedMail={}", receivedMail);
-        CaseComment comment = createComment(caseObject, person, cleanHTMLContent(receivedMail.getContent()));
+        String content = receivedMail.getContentType().equals(MailReceiverParsers.MailContent.MIME_TEXT_HTML)? cleanHTMLContent(receivedMail.getContent()) : receivedMail.getContent();
+        CaseComment comment = createComment(caseObject, person, content);
         caseCommentDAO.persist(comment);
 
         boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( comment.getCaseId() ) );
