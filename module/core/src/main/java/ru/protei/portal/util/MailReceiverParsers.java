@@ -84,6 +84,16 @@ public class MailReceiverParsers {
         }
     }
 
+    static public boolean isInBlackList(Message message, Pattern blackListPattern) throws MessagingException {
+        String subject = message.getSubject();
+        if (subject == null) {
+            return true;
+        }
+
+        Matcher matcher = blackListPattern.matcher(subject);
+        return matcher.find();
+    }
+
     static public String parseSenderEmail(Message message) throws MessagingException {
         Address[] from = message.getFrom();
         if (from == null) {
@@ -124,7 +134,6 @@ public class MailReceiverParsers {
         }
 
         static public final String MIME_TEXT_TYPE = "TEXT";
-        static public final String MIME_MULTIPART_TYPE = "multipart";
         static public final String MIME_MULTIPART_ALTERNATIVE = "multipart/alternative";
         static public final String MIME_TEXT_HTML = "TEXT/HTML";
     }

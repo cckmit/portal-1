@@ -8,7 +8,13 @@ import ru.protei.winter.core.utils.duration.DurationUtils;
 import ru.protei.winter.core.utils.duration.IncorrectDurationException;
 
 import java.net.Inet4Address;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 
 /**
  * Created by michael on 31.05.17.
@@ -794,11 +800,18 @@ public class PortalConfigData {
         final String user;
         final String pass;
         final String host;
+        final List<String> blackList;
 
         public MailReceiverConfig(PropertiesWrapper properties) {
             user = properties.getProperty("imap.user", "portal@protei.ru");
             pass = properties.getProperty("imap.pass");
             host = properties.getProperty("imap.host", "imap.protei.ru");
+            String temp = properties.getProperty("imap.subject.black.list", "");
+            if (isNotEmpty(temp)) {
+                blackList = Arrays.stream(temp.split(",")).collect(Collectors.toList());
+            } else {
+                blackList = new ArrayList<>();
+            }
         }
 
         public String getUser() {
@@ -811,6 +824,10 @@ public class PortalConfigData {
 
         public String getHost() {
             return host;
+        }
+
+        public List<String> getBlackList() {
+            return blackList;
         }
     }
 

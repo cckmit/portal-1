@@ -13,8 +13,11 @@ import ru.protei.portal.core.service.events.EventPublisherService;
 import javax.mail.*;
 import javax.mail.search.FlagTerm;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static java.util.Arrays.stream;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
@@ -64,14 +67,13 @@ public class MailReceiverServiceImpl implements MailReceiverService {
             }
             inbox.fetch(search, createFetchProfile());
 
+            Pattern blackListPattern = createBlackListPattern(portalConfig.data().getMailReceiver().getBlackList());
             stream(search).forEach(message -> {
                 log.info("performReceiveMailAndAddComments(): message service info = {}", parseServiceInfo(message));
-                parseMessage(message)
+                parseMessage(message, blackListPattern)
                         .filter(this::hasFullInfo)
-                        .ifPresent(mail -> {
-                            caseCommentService.addCommentReceivedByMail(mail);
-                            setSeen(inbox, message);
-                        });
+                        .ifPresent(mail -> caseCommentService.addCommentReceivedByMail(mail));
+                setSeen(inbox, message);
             });
 
             inbox.close(false);
@@ -124,8 +126,11 @@ public class MailReceiverServiceImpl implements MailReceiverService {
         }
     }
 
-    private Optional<ReceivedMail> parseMessage(Message message) {
+    private Optional<ReceivedMail> parseMessage(Message message, Pattern blackListPattern) {
         try {
+            if (isInBlackList(message, blackListPattern)) {
+                return Optional.empty();
+            }
             Long caseNo = parseCaseNo(message);
             String senderEmail = parseSenderEmail(message);
             MailContent content = (caseNo != null && senderEmail != null) ? parseContent(message) : null;
@@ -136,6 +141,13 @@ public class MailReceiverServiceImpl implements MailReceiverService {
         } catch (MessagingException | IOException e) {
             log.error("parseMessage(): fail, e = {}", e.getMessage());
             return Optional.empty();
-        } 
+        }
+    }
+
+    private Pattern createBlackListPattern(List<String> blackList) {
+        return Pattern.compile(blackList.stream()
+                        .map(Pattern::quote)
+                        .map(item -> String.format(".*%s.*", item))
+                        .collect(Collectors.joining("|")));
     }
 }
