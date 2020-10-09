@@ -13,13 +13,16 @@ import static java.util.Optional.ofNullable;
 
 public class MentioningTextArea extends DndAutoResizeTextArea {
     @Inject
-    public MentioningTextArea(UserLoginModel userLoginModel, UserLoginSelector userLoginSelector) {
+    public MentioningTextArea(UserLoginModel userLoginModel,
+                              UserLoginSelector userLoginSelector,
+                              MentioningKeyDownEventHandler mentioningKeyDownEventHandler) {
+
         this.userLoginModel = userLoginModel;
 
         initUserLoginSelector(userLoginModel, userLoginSelector);
         final Timer changeTimer = initTimer(userLoginModel, userLoginSelector);
 
-        addKeyUpHandler(event -> changeTimer.schedule(200));
+        initKeyDownSelector(mentioningKeyDownEventHandler, userLoginSelector, changeTimer);
         addClickHandler(event -> changeTimer.run());
     }
 
@@ -31,10 +34,10 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
         userLoginSelector.setAsyncSearchModel(userLoginModel);
         userLoginSelector.setRelative(getElement(), true);
         userLoginSelector.addValueChangeHandler(event -> {
-            int pointerPosition = pointerPosition(getElement());
+            int cursorPosition = cursorPosition(getElement());
 
             String beforeReplace = getValue().substring(0, possibleLoginInfo.index);
-            String afterReplace = getValue().substring(pointerPosition);
+            String afterReplace = getValue().substring(cursorPosition);
 
             setValue(beforeReplace + userLoginSelector.getValue().getUlogin() + " " + afterReplace);
 
@@ -48,7 +51,7 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
         return new Timer() {
             @Override
             public void run() {
-                PossibleLoginInfo possibleLoginInfo = possibleLogin(pointerPosition(getElement()));
+                PossibleLoginInfo possibleLoginInfo = possibleLogin(cursorPosition(getElement()));
 
                 if (possibleLoginInfo == null) {
                     hidePopup(userLoginSelector);
@@ -61,6 +64,17 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
                 MentioningTextArea.this.possibleLoginInfo = possibleLoginInfo;
             }
         };
+    }
+
+    private void initKeyDownSelector(MentioningKeyDownEventHandler mentioningKeyDownEventHandler, UserLoginSelector userLoginSelector, Timer changeTimer) {
+        addKeyDownHandler(mentioningKeyDownEventHandler.getTextAreaKeyDownHandler(userLoginSelector, changeTimer, userLoginSelector.getPopup().getChildContainer()::iterator));
+
+        userLoginSelector.getPopup().addKeyDownHandler(
+                mentioningKeyDownEventHandler.getPopupKeyDownHandler(
+                        this,
+                        userLoginSelector.getPopup().getChildContainer()::iterator
+                )
+        );
     }
 
     private PossibleLoginInfo possibleLogin(int pointerPosition) {
@@ -77,7 +91,6 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
         String possibleMention = getValue().substring(possibleAtPosition, pointerPosition);
 
         return ofNullable(MENTION_REGEXP.exec(possibleMention))
-                .map(matchResult -> matchResult.getGroup(0).equals(possibleMention) ? matchResult : null)
                 .map(matchResult -> new PossibleLoginInfo(matchResult.getGroup(0).substring(1), possibleAtPosition + 1))
                 .orElse(null);
     }
@@ -96,7 +109,7 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
         userLoginModel.setSearchString(searchString);
     }
 
-    private native int pointerPosition(Element textArea) /*-{
+    private native int cursorPosition(Element textArea) /*-{
         return textArea.selectionStart;
     }-*/;
 

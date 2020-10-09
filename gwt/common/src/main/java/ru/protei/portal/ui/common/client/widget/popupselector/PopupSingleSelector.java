@@ -81,6 +81,10 @@ public class PopupSingleSelector<T> extends AbstractPopupSelector<T> implements 
         RootPanel.get().add(getPopup());
     }
 
+    public boolean isPopupVisible() {
+        return getPopup().isVisible();
+    }
+
     public void hidePopup() {
         getPopup().hide();
         RootPanel.get().remove(getPopup());

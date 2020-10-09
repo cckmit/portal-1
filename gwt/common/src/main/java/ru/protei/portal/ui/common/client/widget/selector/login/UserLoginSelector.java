@@ -12,6 +12,7 @@ import ru.protei.portal.ui.common.client.util.AvatarUtils;
 import ru.protei.portal.ui.common.client.widget.popupselector.PopupSingleSelector;
 
 import java.util.Iterator;
+import java.util.function.Consumer;
 
 import static ru.protei.portal.core.model.util.CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE;
 

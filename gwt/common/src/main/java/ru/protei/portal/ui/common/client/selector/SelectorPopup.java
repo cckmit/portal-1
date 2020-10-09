@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.selector;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -24,6 +25,8 @@ public interface SelectorPopup extends IsWidget {
     void setNoElements(boolean isSearchResultEmpty, String noElementsMessage );
 
     HandlerRegistration addAddHandler( AddHandler addhandler );
+
+    HandlerRegistration addKeyDownHandler(KeyDownHandler handler);
 
     void setAddButtonVisibility( boolean isVisible );
 
