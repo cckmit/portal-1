@@ -27,9 +27,7 @@ public class AttachmentView extends Composite implements AbstractAttachmentView 
     public AttachmentView() {
         initWidget(ourUiBinder.createAndBindUi(this));
         setTestAttributes();
-        picture.addLoadHandler(event -> {
-            thumbs.removeClassName("fas fa-circle-notch icon-verifiable");
-        });
+        picture.addLoadHandler(event -> thumbs.removeClassName("fas fa-circle-notch icon-verifiable"));
     }
 
     @Override

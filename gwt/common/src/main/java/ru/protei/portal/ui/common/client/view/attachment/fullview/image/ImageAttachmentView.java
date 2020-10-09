@@ -9,11 +9,11 @@ import com.google.gwt.i18n.shared.DateTimeFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentList;
 import ru.protei.portal.ui.common.client.activity.attachment.fullview.AbstractAttachmentFullView;
+import ru.protei.portal.ui.common.client.widget.button.AnchorLikeButton;
 
 import java.util.Date;
 
@@ -23,7 +23,6 @@ import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 public class ImageAttachmentView extends Composite implements AbstractAttachmentFullView {
     public ImageAttachmentView() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        root.addDomHandler(event -> activity.onShowPreview(new Image(picture.getUrl())), ClickEvent.getType());
         setTestAttributes();
     }
 
@@ -34,7 +33,8 @@ public class ImageAttachmentView extends Composite implements AbstractAttachment
 
     @Override
     public void setDownloadUrl(String url) {
-        this.url = url;
+        root.addDomHandler(event -> activity.onShowPreview(new Image(picture.getUrl())), ClickEvent.getType());
+        downloadButton.setHref(url);
     }
 
     @Override
@@ -93,12 +93,6 @@ public class ImageAttachmentView extends Composite implements AbstractAttachment
         }
     }
 
-    @UiHandler("downloadButton")
-    public void onDownloadButtonClicked(ClickEvent event) {
-        event.stopPropagation();
-        Window.open(url, null, null);
-    }
-
     private void setTestAttributes() {
         deleteButton.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ATTACHMENT.DELETE);
         downloadButton.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ATTACHMENT.DOWNLOAD);
@@ -117,7 +111,7 @@ public class ImageAttachmentView extends Composite implements AbstractAttachment
     @UiField
     SpanElement fileSize;
     @UiField
-    Button downloadButton;
+    AnchorLikeButton downloadButton;
     @UiField
     Image authorAvatar;
     @UiField
@@ -130,8 +124,6 @@ public class ImageAttachmentView extends Composite implements AbstractAttachment
     SpanElement createdDate;
 
     private AbstractAttachmentList activity;
-
-    private String url;
 
     interface FullAttachmentViewUiBinder extends UiBinder<HTMLPanel, ImageAttachmentView> {}
     private static FullAttachmentViewUiBinder ourUiBinder = GWT.create(FullAttachmentViewUiBinder.class);
