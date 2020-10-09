@@ -73,6 +73,10 @@
                                               addStyleNames="form-group col-md-4 resize-md-12"
                                               firedEmployeesVisible="true"/>
 
+                <person:EmployeeCustomMultiSelector ui:field="curators"
+                                                    header="{lang.contractCurator}"
+                                                    addStyleNames="form-group col-md-4 resize-md-12"
+                                                    firedEmployeesVisible="true"/>
             </div>
         </div>
         <div ui:field="footer" class="card-footer text-right">
