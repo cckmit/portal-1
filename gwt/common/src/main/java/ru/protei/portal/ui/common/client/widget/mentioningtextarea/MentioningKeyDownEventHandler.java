@@ -16,7 +16,10 @@ import java.util.function.Supplier;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 class MentioningKeyDownEventHandler {
-    KeyDownHandler getTextAreaKeyDownHandler(UserLoginSelector userLoginSelector, Timer changeTimer, Supplier<Iterator<Widget>> iteratorSupplier) {
+    KeyDownHandler getTextAreaKeyDownHandler(final UserLoginSelector userLoginSelector,
+                                             final Timer changeTimer,
+                                             final Supplier<Iterator<Widget>> userLoginIteratorSupplier) {
+
         return event -> {
             if (!userLoginSelector.isPopupVisible()) {
                 changeTimer.schedule(200);
@@ -28,18 +31,20 @@ class MentioningKeyDownEventHandler {
                 return;
             }
 
-            fillWidgets(iteratorSupplier.get(), widgets, widgetToIndex);
+            fillWidgets(userLoginIteratorSupplier.get(), userLoginItems, userLoginItemToIndex);
 
-            if (isEmpty(widgets)) {
+            if (isEmpty(userLoginItems)) {
                 return;
             }
 
             event.preventDefault();
-            selectWidget(getNext(widgets));
+            focusUserLoginItem(getNext(userLoginItems));
         };
     }
 
-    KeyDownHandler getPopupKeyDownHandler(TextArea textArea, Supplier<Iterator<Widget>> iteratorSupplier) {
+    KeyDownHandler getPopupKeyDownHandler(final TextArea textArea,
+                                          final Supplier<Iterator<Widget>> userLoginIteratorSupplier) {
+
         return event -> {
             if (KeyCodes.KEY_ESCAPE == event.getNativeKeyCode()) {
                 event.preventDefault();
@@ -48,126 +53,133 @@ class MentioningKeyDownEventHandler {
             }
 
             if (KeyCodes.KEY_UP == event.getNativeKeyCode()) {
-                onKeyUpClicked(event, widgets, textArea);
+                onKeyUpClicked(event, userLoginItems, textArea);
                 return;
             }
 
             if (KeyCodes.KEY_DOWN == event.getNativeKeyCode()) {
-                onKeyDownClicked(event, widgets, widgetToIndex, iteratorSupplier);
+                onKeyDownClicked(event, userLoginItems, userLoginItemToIndex, userLoginIteratorSupplier);
                 return;
             }
         };
     }
 
-    private void onKeyUpClicked(KeyDownEvent event, List<Widget> widgets, TextArea textArea) {
+    private void onKeyUpClicked(KeyDownEvent event, List<Widget> userLoginItems, TextArea textArea) {
         event.preventDefault();
-        Widget previous = getPrevious(widgets);
+        Widget previousUserLoginItem = getPrevious(userLoginItems);
 
-        if (previous == null) {
+        if (previousUserLoginItem == null) {
             focusTextArea(textArea);
             return;
         }
 
-        selectWidget(previous);
+        focusUserLoginItem(previousUserLoginItem);
     }
 
-    private void onKeyDownClicked(KeyDownEvent event, List<Widget> widgets, Map<Widget, Integer> widgetToInteger, Supplier<Iterator<Widget>> iteratorSupplier) {
-        event.preventDefault();
-        Widget next = getNext(widgets);
+    private void onKeyDownClicked(KeyDownEvent event,
+                                  List<Widget> userLoginItems,
+                                  Map<Widget, Integer> userLoginItemToIndex,
+                                  Supplier<Iterator<Widget>> userLoginIteratorSupplier) {
 
-        if (next == null) {
-            fillWidgets(iteratorSupplier.get(), widgets, widgetToInteger);
+        event.preventDefault();
+        Widget nextUserLoginItem = getNext(userLoginItems);
+
+        if (nextUserLoginItem == null) {
+            fillWidgets(userLoginIteratorSupplier.get(), userLoginItems, userLoginItemToIndex);
         }
 
-        selectWidget(getNext(widgets));
+        focusUserLoginItem(getNext(userLoginItems));
     }
 
-    private Widget getNext(List<Widget> widgets) {
-        if (isEmpty(widgets)) {
+    private Widget getNext(List<Widget> userLoginItems) {
+        if (isEmpty(userLoginItems)) {
             return null;
         }
 
         Integer nextIndex = Optional
-                .ofNullable(selectedWidget)
-                .map(widgetToIndex::get)
+                .ofNullable(focusedUserLoginItem)
+                .map(userLoginItemToIndex::get)
                 .map(currentIndex -> currentIndex + 1)
                 .orElse(null);
 
         if (nextIndex == null) {
-            return CollectionUtils.getFirst(widgets);
+            return CollectionUtils.getFirst(userLoginItems);
         }
 
-        if (nextIndex >= widgets.size()) {
+        if (nextIndex >= userLoginItems.size()) {
             return null;
         }
 
-        return widgets.get(nextIndex);
+        return userLoginItems.get(nextIndex);
     }
 
-    private Widget getPrevious(List<Widget> widgets) {
-        if (isEmpty(widgets)) {
+    private Widget getPrevious(List<Widget> userLoginItems) {
+        if (isEmpty(userLoginItems)) {
             return null;
         }
 
         Integer previousIndex = Optional
-                .ofNullable(selectedWidget)
-                .map(widgetToIndex::get)
+                .ofNullable(focusedUserLoginItem)
+                .map(userLoginItemToIndex::get)
                 .map(currentIndex -> currentIndex - 1)
                 .orElse(null);
 
         if (previousIndex == null) {
-            return CollectionUtils.getFirst(widgets);
+            return CollectionUtils.getFirst(userLoginItems);
         }
 
         if (previousIndex < 0) {
             return null;
         }
 
-        return widgets.get(previousIndex);
+        return userLoginItems.get(previousIndex);
     }
 
-    private void selectWidget(Widget widget) {
-        if (widget == null) {
+    private void fillWidgets(Iterator<Widget> userLoginIterator,
+                             List<Widget> userLoginItems,
+                             Map<Widget, Integer> userLoginItemToIndex) {
+
+        if (userLoginIterator == null) {
             return;
         }
 
-        selectedWidget = widget;
-        widget.getElement().getFirstChildElement().focus();
-    }
-
-    private void fillWidgets(Iterator<Widget> widgetIterator, List<Widget> widgets, Map<Widget, Integer> widgetToInteger) {
-        if (widgetIterator == null) {
-            return;
-        }
-
-        widgets.clear();
-        widgetToInteger.clear();
+        userLoginItems.clear();
+        userLoginItemToIndex.clear();
 
         int index = 0;
 
-        while (widgetIterator.hasNext()) {
-            Widget next = widgetIterator.next();
-            widgetToInteger.put(next, index++);
-            next.addDomHandler(event -> resetLastSelectedWidget(), MouseOverEvent.getType());
-            widgets.add(next);
+        while (userLoginIterator.hasNext()) {
+            Widget next = userLoginIterator.next();
+            userLoginItemToIndex.put(next, index++);
+            next.addDomHandler(event -> resetFocusedUserLoginItem(), MouseOverEvent.getType());
+            userLoginItems.add(next);
         }
     }
 
     private void focusTextArea(TextArea textArea) {
-        selectedWidget = null;
+        focusedUserLoginItem = null;
         textArea.getElement().focus();
     }
 
-    private void resetLastSelectedWidget() {
-        if (selectedWidget == null) {
+    private void focusUserLoginItem(Widget userLoginItem) {
+        if (userLoginItem == null) {
             return;
         }
 
-        selectedWidget.getElement().getFirstChildElement().blur();
-        selectedWidget = null;
+        focusedUserLoginItem = userLoginItem;
+        userLoginItem.getElement().getFirstChildElement().focus();
     }
 
-    private List<Widget> widgets = new ArrayList<>();
-    private Map<Widget, Integer> widgetToIndex = new HashMap<>();
-    private Widget selectedWidget;
+    private void resetFocusedUserLoginItem() {
+        if (focusedUserLoginItem == null) {
+            return;
+        }
+
+        focusedUserLoginItem.getElement().getFirstChildElement().blur();
+        focusedUserLoginItem = null;
+    }
+
+    private List<Widget> userLoginItems = new ArrayList<>();
+    private Map<Widget, Integer> userLoginItemToIndex = new HashMap<>();
+    private Widget focusedUserLoginItem;
 }
