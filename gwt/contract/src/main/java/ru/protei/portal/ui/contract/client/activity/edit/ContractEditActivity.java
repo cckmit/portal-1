@@ -30,10 +30,8 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 
-import static java.util.Collections.emptyList;
 import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.struct.Vat.NoVat;
@@ -104,20 +102,13 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     public void onOrganizationChanged() {
         EntityOption organization = view.organization().getValue();
         setOrganization(organization, makePrimaryContractEditContractorView());
-        updateOrganizationBasedOnParentContract(fillDto(contract), makeSecondaryContractEditContractorView());
     }
 
     @Override
     public void onContractParentChanged() {
         EntityOption contractParent = view.contractParent().getValue();
-        Long contractParentId = contractParent != null
-                ? contractParent.getId()
-                : null;
         En_ContractKind kind = getContractKind(contractParent);
         view.setKind(kind);
-        updateOrganizationBasedOnParentContract(contractParentId, makePrimaryContractEditContractorView(), () -> {
-            updateOrganizationBasedOnParentContract(fillDto(contract), makeSecondaryContractEditContractorView());
-        });
     }
 
     @Override
@@ -257,7 +248,6 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
             showTags(contract.getId());
         }
 
-        updateOrganizationBasedOnParentContract(contract.getParentContractId(), makePrimaryContractEditContractorView());
         syncSecondContractView(isNew, false);
     }
 
@@ -314,40 +304,6 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         contract.setOrganizationId(getOptionIdOrNull(view.secondContractOrganization().getValue()));
         contract.setContractor(view.secondContractContractor().getValue());
         contract.setParentContractId(parentContractId);
-    }
-
-    private void updateOrganizationBasedOnParentContract(Long contractId, AbstractContractEditContractorView view) {
-        updateOrganizationBasedOnParentContract(contractId, view, () -> {});
-    }
-
-    private void updateOrganizationBasedOnParentContract(Long contractId, AbstractContractEditContractorView view, Runnable onDone) {
-        if (contractId == null) {
-            updateOrganizationBasedOnParentContract((Contract) null, view);
-            onDone.run();
-        } else {
-            requestContract(contractId, contract -> {
-                updateOrganizationBasedOnParentContract(contract, view);
-                onDone.run();
-            });
-        }
-    }
-
-    private void updateOrganizationBasedOnParentContract(Contract contract, AbstractContractEditContractorView view) {
-        Long contractParentOrganizationId = contract != null
-                ? contract.getOrganizationId()
-                : null;
-        if (contractParentOrganizationId == null) {
-            view.setNotAvailableOrganizations(emptyList());
-            return;
-        }
-        Long selectedOrganizationId = view.organization().getValue() != null
-                ? view.organization().getValue().getId()
-                : null;
-        view.setNotAvailableOrganizations(listOf(contractParentOrganizationId));
-        if (Objects.equals(selectedOrganizationId, contractParentOrganizationId)) {
-            setOrganization(null, view);
-            fireEvent(new NotifyEvents.Show(lang.contractOrganizationDropped(), NotifyEvents.NotifyType.INFO));
-        }
     }
 
     private void setOrganization(EntityOption organization, AbstractContractEditContractorView view) {
@@ -504,16 +460,12 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.secondContractContractor().setValue(null);
         view.secondContractContractorEnabled().setEnabled(false);
         view.setSecondContractOrganization(null);
-        updateOrganizationBasedOnParentContract(fillDto(contract), makeSecondaryContractEditContractorView());
     }
 
     private AbstractContractEditContractorView makePrimaryContractEditContractorView() {
         return new AbstractContractEditContractorView() {
             public void setOrganization(String organization) {
                 view.setOrganization(organization);
-            }
-            public void setNotAvailableOrganizations(List<Long> organizationsToHide) {
-                view.setNotAvailableOrganizations(organizationsToHide);
             }
             public HasValue<EntityOption> organization() {
                 return view.organization();
@@ -531,9 +483,6 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         return new AbstractContractEditContractorView() {
             public void setOrganization(String organization) {
                 view.setSecondContractOrganization(organization);
-            }
-            public void setNotAvailableOrganizations(List<Long> organizationsToHide) {
-                view.setSecondContractNotAvailableOrganizations(organizationsToHide);
             }
             public HasValue<EntityOption> organization() {
                 return view.secondContractOrganization();

@@ -243,16 +243,6 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
-    public void setNotAvailableOrganizations(List<Long> organizationsToHide) {
-        organization.setIdsToHide(organizationsToHide);
-    }
-
-    @Override
-    public void setSecondContractNotAvailableOrganizations(List<Long> organizationsToHide) {
-        secondContractOrganization.setIdsToHide(organizationsToHide);
-    }
-
-    @Override
     public HasVisibility tagsVisibility() {
         return tags;
     }
