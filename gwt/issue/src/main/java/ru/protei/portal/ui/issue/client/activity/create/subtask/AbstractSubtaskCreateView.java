@@ -4,6 +4,7 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.widget.selector.company.SubcontractorCompanyModel;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 public interface AbstractSubtaskCreateView extends IsWidget {
@@ -12,6 +13,9 @@ public interface AbstractSubtaskCreateView extends IsWidget {
     HasValue<String> description();
     HasValidable nameValidator();
     String DESCRIPTION = "description";
-    HasValue<EntityOption> getManagerCompany();
-    HasValue<PersonShortView> getManager();
+    HasValue<EntityOption> managerCompany();
+    HasValidable managerCompanyValidator();
+    HasValue<PersonShortView> manager();
+    void setManagerCompanyModel(SubcontractorCompanyModel subcontractorCompanyModel);
+    void updateManagersCompanyFilter(Long managerCompanyId);
 }

@@ -326,8 +326,8 @@ public abstract class IssueEditActivity implements
     }
 
     @Override
-    public void onAddSubtaskClicked() {
-        fireEvent(new IssueEvents.AddSubtask(issue.getCaseNumber()));
+    public void onCreateSubtaskClicked() {
+        fireEvent(new IssueEvents.CreateSubtask(issue.getCaseNumber()));
     }
 
     private void fireIssueChanged(Long issueId) {

@@ -12,7 +12,6 @@ import static ru.protei.portal.core.model.dto.Project.Columns.*;
 
 public class ProjectEntityDAO_Impl extends PortalBaseJdbcDAO<Project> implements ProjectDAO {
 
-
     @Override
     public Collection<Project> selectScheduledPauseTime( long greaterThanTime ) {
         Condition condition = SqlQueryBuilder.condition()
@@ -20,5 +19,14 @@ public class ProjectEntityDAO_Impl extends PortalBaseJdbcDAO<Project> implements
                 .and( DELETED ).equal( Project.NOT_DELETED )
                 .and( PAUSE_DATE ).gt( greaterThanTime );
         return partialGetListByCondition( condition.getSqlCondition(), condition.getSqlParameters(), ID, PAUSE_DATE );
+    }
+
+    @Override
+    public Collection<Project> getListByCompanyId( long companyId ) {
+        Condition condition = SqlQueryBuilder.condition()
+                .and( CASE_TYPE ).equal( En_CaseType.PROJECT.getId() )
+                .and( DELETED ).equal( Project.NOT_DELETED )
+                .and( COMPANY ).equal( companyId );
+        return partialGetListByCondition( condition.getSqlCondition(), condition.getSqlParameters(), ID, NAME );
     }
 }

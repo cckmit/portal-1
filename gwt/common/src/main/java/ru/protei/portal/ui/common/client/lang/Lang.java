@@ -3118,7 +3118,13 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errReportingServiceNotConfigured();
 
-    String addSubtask();
-
     String projectSubcontractor();
+
+    String subtaskCreate();
+
+    String errSaveSubtaskParentFieldsInvalid();
+
+    String errSaveSubtaskCompanyWithAutoOpenIssues();
+
+    String errSaveSubtaskFieldsInvalid();
 }

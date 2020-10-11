@@ -176,6 +176,21 @@ public class CompanyControllerImpl implements CompanyController {
     }
 
     @Override
+    public List<EntityOption> getSubcontractorOptionList(Long companyId) throws RequestFailedException {
+        log.info("getSubcontractorOptionList(): companyId={}", companyId);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        Result<List<EntityOption>> result = companyService.subcontractorOptionListByCompanyId(token, companyId);
+
+        log.info("getSubcontractorOptionList(): {}", result.isOk() ? "ok" : result.getStatus());
+
+        if (result.isError())
+            throw new RequestFailedException(result.getStatus());
+
+        return result.getData();
+    }
+
+    @Override
     public List< EntityOption > getCompanyOptionListIgnorePrivileges(CompanyQuery query) throws RequestFailedException {
         log.info( "getCompanyOptionListIgnorePrivileges(): query={}", query );
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);

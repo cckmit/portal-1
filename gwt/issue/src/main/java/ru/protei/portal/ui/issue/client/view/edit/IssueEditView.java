@@ -216,10 +216,10 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         }
     }
 
-    @UiHandler("addSubtaskButton")
-    public void onAddSubtaskButtonClick(ClickEvent event) {
+    @UiHandler("createSubtaskButton")
+    public void onCreateSubtaskButtonClick(ClickEvent event) {
         if (activity != null) {
-            activity.onAddSubtaskClicked();
+            activity.onCreateSubtaskClicked();
         }
     }
 
@@ -237,7 +237,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         nameAndDescriptionEditButton.ensureDebugId(DebugIds.ISSUE.EDIT_NAME_AND_DESC_BUTTON);
         favoritesButton.ensureDebugId(DebugIds.ISSUE.FAVORITES_BUTTON);
         fileUploader.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_UPLOAD_BUTTON);
-        addSubtaskButton.ensureDebugId(DebugIds.ISSUE.SUBTASK_BUTTON);
+        createSubtaskButton.ensureDebugId(DebugIds.ISSUE.SUBTASK_BUTTON);
     }
 
     @UiField
@@ -289,7 +289,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @UiField
     Element integrationLabelName;
     @UiField
-    Button addSubtaskButton;
+    Button createSubtaskButton;
 
     private AbstractIssueEditActivity activity;
 

@@ -24,5 +24,5 @@ public interface AbstractIssueEditActivity extends Activity {
 
     void onFavoriteStateChanged();
 
-    void onAddSubtaskClicked();
+    void onCreateSubtaskClicked();
 }

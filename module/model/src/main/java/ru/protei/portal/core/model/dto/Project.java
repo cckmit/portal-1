@@ -474,5 +474,6 @@ public class Project extends AuditableObject {
         String CREATOR = CaseObject.Columns.CREATOR;
         String STATE = CaseObject.Columns.STATE;
         String NAME = CaseObject.Columns.CASE_NAME;
+        String COMPANY = CaseObject.Columns.INITIATOR_COMPANY;
     }
 }

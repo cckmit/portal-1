@@ -195,9 +195,9 @@ public class IssueEvents {
         public Long issueId;
     }
 
-    public static class AddSubtask {
+    public static class CreateSubtask {
 
-        public AddSubtask(Long caseNumber) {
+        public CreateSubtask(Long caseNumber) {
             this.caseNumber = caseNumber;
         }
 

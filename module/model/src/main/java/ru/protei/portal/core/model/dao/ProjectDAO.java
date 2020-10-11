@@ -7,4 +7,6 @@ import java.util.Collection;
 public interface ProjectDAO extends PortalBaseDAO<Project> {
 
     Collection<Project> selectScheduledPauseTime( long greaterThanTime );
+
+    Collection<Project> getListByCompanyId( long companyId );
 }

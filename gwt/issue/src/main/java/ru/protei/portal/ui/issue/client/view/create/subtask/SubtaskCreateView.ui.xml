@@ -30,22 +30,31 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-6">
-                    <company:CompanyFormSelector ui:field="managerCompany"
-                                                 validation="false"
-                                                 header="{lang.issueCompany}"
-                                                 hasNullValue="false"
-                                                 mandatory="false"
-                                                 defaultValue="lang.selectIssueCompany"/>
-                </div>
-                <div class="col-md-6">
-                    <person:PersonFormSelector ui:field="manager"
-                                               validation="false"
-                                               header="{lang.issueManager}"
-                                               hasNullValue="true"
-                                               mandatory="false"
-                                               fired="false"
-                                               defaultValue="lang.selectIssueManager"/>
+                <div class="col-md-12 form-group-attached form-group">
+                    <div class="row">
+                        <div class="col-md-12 form-group m-t-10 m-b-0">
+                            <label><ui:text from="{lang.issueManagerInfo}"/></label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <company:CompanyFormSelector ui:field="managerCompany"
+                                                         validation="false"
+                                                         header="{lang.issueCompany}"
+                                                         hasNullValue="false"
+                                                         mandatory="true"/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <person:PersonFormSelector ui:field="manager"
+                                                       validation="false"
+                                                       header="{lang.issueManager}"
+                                                       hasNullValue="true"
+                                                       mandatory="false"
+                                                       fired="false"/>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

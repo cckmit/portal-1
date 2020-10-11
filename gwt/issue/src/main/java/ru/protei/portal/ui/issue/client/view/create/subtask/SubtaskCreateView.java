@@ -3,8 +3,10 @@ package ru.protei.portal.ui.issue.client.view.create.subtask;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.LabelElement;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
@@ -16,11 +18,15 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.company.SubcontractorCompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonFormSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.issue.client.activity.create.subtask.AbstractSubtaskCreateActivity;
 import ru.protei.portal.ui.issue.client.activity.create.subtask.AbstractSubtaskCreateView;
+
+import java.util.Collections;
+import java.util.HashSet;
 
 import static ru.protei.portal.core.model.util.CrmConstants.NAME_MAX_SIZE;
 
@@ -57,13 +63,33 @@ public class SubtaskCreateView extends Composite implements AbstractSubtaskCreat
     }
 
     @Override
-    public HasValue<EntityOption> getManagerCompany() {
-        return this.managerCompany;
+    public HasValue<EntityOption> managerCompany() {
+        return managerCompany;
     }
 
     @Override
-    public HasValue<PersonShortView> getManager() {
+    public HasValidable managerCompanyValidator() {
+        return managerCompany;
+    }
+
+    @Override
+    public HasValue<PersonShortView> manager() {
         return manager;
+    }
+
+    @Override
+    public void setManagerCompanyModel(SubcontractorCompanyModel subcontractorCompanyModel) {
+        managerCompany.setAsyncModel(subcontractorCompanyModel);
+    }
+
+    @Override
+    public void updateManagersCompanyFilter(Long managerCompanyId) {
+        manager.updateCompanies(new HashSet<>(Collections.singletonList(managerCompanyId)));
+    }
+
+    @UiHandler("managerCompany")
+    public void onManagerCompanyChanged(ValueChangeEvent<EntityOption> event) {
+        activity.onManagerCompanyChanged();
     }
 
     private HasValidable nameValidator = new HasValidable() {

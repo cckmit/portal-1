@@ -116,9 +116,7 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public Result<List<EntityOption>> subcontractorOptionListByCompanyId(AuthToken token, Long companyId) {
 
-        ProjectQuery projectQuery = new ProjectQuery();
-        projectQuery.setInitiatorCompanyIds(setOf(new EntityOption(null, companyId)));
-        List<Project> list = projectDAO.listByQuery(projectQuery);
+        Collection<Project> list = projectDAO.getListByCompanyId(companyId);
         if (list == null)
             return error(En_ResultStatus.GET_DATA_ERROR);
 
