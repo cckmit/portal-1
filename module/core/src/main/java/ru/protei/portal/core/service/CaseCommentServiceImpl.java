@@ -39,15 +39,19 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.access.ProjectAccessUtil.*;
+import static ru.protei.portal.core.access.ProjectAccessUtil.canAccessProject;
+import static ru.protei.portal.core.access.ProjectAccessUtil.canAccessProjectPrivateElements;
 import static ru.protei.portal.core.model.dict.En_CaseType.CRM_SUPPORT;
 import static ru.protei.portal.core.model.dict.En_CaseType.PROJECT;
 import static ru.protei.portal.core.model.dict.En_Privilege.ISSUE_EDIT;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.util.MailReceiverParsers.MailContent.*;
 
 public class CaseCommentServiceImpl implements CaseCommentService {
 
@@ -583,8 +587,12 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
-        log.info("addCommentsReceivedByMail(): process receivedMail={}", receivedMail);
-        String content = receivedMail.getContentType().equals(MailReceiverParsers.MailContent.MIME_TEXT_HTML)? cleanHTMLContent(receivedMail.getContent()) : receivedMail.getContent();
+        String content = receivedMail.getContent();
+        if (receivedMail.getContentType().equals(MailReceiverParsers.MailContent.MIME_TEXT_HTML)) {
+            content = htmlClean(content);
+        }
+        content = plainClean(content);
+
         CaseComment comment = createComment(caseObject, person, content);
         caseCommentDAO.persist(comment);
 
@@ -614,9 +622,23 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         return company.getCompanyAndChildIds();
     }
 
-    private String cleanHTMLContent(String htmlContent) {
-        return Jsoup.clean(Jsoup.parse(htmlContent).html(),
+    private String htmlClean(String content) {
+        Document document = Jsoup.parse(content);
+        document.getElementById(CONTENT_ID_CRM_BODY_FTL).remove();
+        return Jsoup.clean(document.html(),
                 "", Whitelist.none(), new Document.OutputSettings().prettyPrint(false));
+    }
+
+    private String plainClean(String content) {
+        for (Pattern pattern : crmContentPattern) {
+            Matcher matcher = pattern.matcher(content);
+            if (matcher.find()) {
+                content = content.substring(0, matcher.start()) +
+                        content.substring(matcher.end());
+                break;
+            }
+        }
+        return content;
     }
 
     private Result<List<CaseComment>> getList(CaseCommentQuery query) {
@@ -899,5 +921,11 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
 
     private static final long CHANGE_LIMIT_TIME = 300000;  // 5 минут (в мсек)
+    private final List<Pattern> crmContentPattern = Arrays.asList(
+            Pattern.compile(THUNDERBIRD_PATTERN_CONTENT_CRM_BODY_FTL),
+            Pattern.compile(BEGIN_END_PATTERN_CONTENT_CRM_BODY_FTL),
+            Pattern.compile(BEGIN_PATTERN_CONTENT_CRM_BODY_FTL),
+            Pattern.compile(ONLY_END_PATTERN_CONTENT_CRM_BODY_FTL)
+    );
     private static Logger log = LoggerFactory.getLogger(CaseCommentServiceImpl.class);
 }

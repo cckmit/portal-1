@@ -60,10 +60,12 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
             margin-top: 0;
         }
         <#include "/ru/protei/portal/skin/classic/public/css/markdown.css" parse=false>
+
     </style>
 </head>
 <body bgcolor="#FFFFFF" text="#000000">
-<div>
+<div hidden>===ContentBegin_crm.body.ftl===</div>
+<div id="CrmMailContent">
     <div style="padding: 5px;font-size: 14px;<#if isCreated>background:#dff7e2;color:#11731d;<#else>background:#f0f0f0;color:#666666;</#if>">
         ${_createdBy}
         <#if createdByMe == true>
@@ -362,6 +364,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
         </div>
     </div>
 </div>
+<div hidden>===ContentEnd_crm.body.ftl===</div>
 </body>
 </html>
 </#noparse>
