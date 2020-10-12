@@ -111,8 +111,8 @@ public class CompanyFilterView extends Composite implements AbstractCompanyFilte
     }
 
     private void ensureDebugIds() {
-        search.setDebugAttributeTextBox(DebugIds.FILTER.SEARCH_INPUT);
-        search.setDebugAttributeAction(DebugIds.FILTER.SEARCH_CLEAR_BUTTON);
+        search.setDebugIdTextBox(DebugIds.FILTER.SEARCH_INPUT);
+        search.setDebugIdAction(DebugIds.FILTER.SEARCH_CLEAR_BUTTON);
         sortField.setEnsureDebugId(DebugIds.FILTER.SORT_FIELD_SELECTOR);
         sortDir.ensureDebugId(DebugIds.FILTER.SORT_DIR_BUTTON);
         resetBtn.ensureDebugId(DebugIds.FILTER.RESET_BUTTON);

@@ -123,6 +123,14 @@ public class CleanableSearchBox extends Composite implements HasValue<String>, H
         }
     }
 
+    public void setDebugIdTextBox(String debugId) {
+        textBox.ensureDebugId(debugId);
+    }
+
+    public void setDebugIdAction(String debugId) {
+        textBoxAction.ensureDebugId(debugId);
+    }
+
     public void setDebugAttributeTextBox(String attribute) {
         textBox.getElement().setAttribute(DebugIds.DEBUG_ID_ATTRIBUTE, attribute);
     }
