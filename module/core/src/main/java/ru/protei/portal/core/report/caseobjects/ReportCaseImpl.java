@@ -61,7 +61,7 @@ public class ReportCaseImpl implements ReportCase {
         int offset = 0;
         try (ReportWriter<CaseObjectReportRequest> writer =
                     new ExcelReportWriter(localizedLang, report.isRestricted(), report.isWithDescription(),
-                            report.isWithTags(), report.isWithLinkedIssues(), report.isHumanReadable(), query.isCheckImportanceHistory())) {
+                            report.isWithTags(), report.isWithLinkedIssues(), report.isHumanReadable(), Boolean.TRUE.equals(query.isCheckImportanceHistory()))) {
 
             int sheetNumber = writer.createSheet();
 
@@ -94,7 +94,7 @@ public class ReportCaseImpl implements ReportCase {
             CaseCommentQuery commentQuery = new CaseCommentQuery();
             commentQuery.addCaseObjectId( caseObject.getId() );
 
-            if (query.isCheckImportanceHistory()) {
+            if (Boolean.TRUE.equals(query.isCheckImportanceHistory())) {
                 commentQuery.addCommentType(CaseCommentQuery.CommentType.IMPORTANCE);
             }
 
