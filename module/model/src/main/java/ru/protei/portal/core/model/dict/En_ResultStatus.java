@@ -296,6 +296,11 @@ public enum En_ResultStatus {
     /**
      * Сервис отчётов не настроен
      */
-    REPORTING_SERVICE_NOT_CONFIGURED
+    REPORTING_SERVICE_NOT_CONFIGURED,
+
+    /**
+     * Пользователь не найдем
+     */
+    USER_NOT_FOUND
     ;
 }

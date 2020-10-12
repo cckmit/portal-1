@@ -544,7 +544,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         List<Person> persons = personDAO.findContactByEmail(receivedMail.getSenderEmail());
         if (persons.isEmpty()) {
             log.warn("addCommentsReceivedByMail(): no found person person by mail ={}", receivedMail.getSenderEmail());
-            return error(En_ResultStatus.NOT_FOUND);
+            return error(En_ResultStatus.USER_NOT_FOUND);
         }
 
         if (persons.size() > 1) {
@@ -556,7 +556,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         List<UserLogin> userLogins = userLoginDAO.findByPersonId( person.getId() );
         if (userLogins.isEmpty()) {
             log.warn("addCommentsReceivedByMail(): no found user login by email ={}", receivedMail.getSenderEmail());
-            return error(En_ResultStatus.NOT_FOUND);
+            return error(En_ResultStatus.USER_NOT_FOUND);
         }
 
         jdbcManyRelationsHelper.fill( userLogins, "roles" );

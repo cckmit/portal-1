@@ -41,7 +41,7 @@ public class PortalConfigData {
     private final LdapConfig ldapConfig;
     private final MarkupHelpLink markupHelpLink;
     private final UiConfig uiConfig;
-    private final MailReceiverConfig mailReceiverConfig;
+    private final MailCommentConfig mailCommentConfig;
 
     private final String loginSuffixConfig;
     private final boolean taskSchedulerEnabled;
@@ -67,7 +67,7 @@ public class PortalConfigData {
         ldapConfig = new LdapConfig(wrapper);
         markupHelpLink = new MarkupHelpLink(wrapper);
         uiConfig = new UiConfig(wrapper);
-        mailReceiverConfig = new MailReceiverConfig(wrapper);
+        mailCommentConfig = new MailCommentConfig(wrapper);
 
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
         taskSchedulerEnabled = wrapper.getProperty("task.scheduler.enabled", Boolean.class,false);
@@ -150,8 +150,8 @@ public class PortalConfigData {
         return uiConfig;
     }
 
-    public MailReceiverConfig getMailReceiver() {
-        return mailReceiverConfig;
+    public MailCommentConfig getMailCommentConfig() {
+        return mailCommentConfig;
     }
 
     public boolean isTaskSchedulerEnabled() {
@@ -796,22 +796,30 @@ public class PortalConfigData {
         }
     }
 
-    public static class MailReceiverConfig {
+    public static class MailCommentConfig {
         final String user;
         final String pass;
         final String host;
-        final List<String> blackList;
 
-        public MailReceiverConfig(PropertiesWrapper properties) {
-            user = properties.getProperty("imap.user", "portal@protei.ru");
+        final boolean enable;
+        final List<String> blackList;
+        final boolean enableForwardMail;
+        final String forwardMail;
+
+        public MailCommentConfig(PropertiesWrapper properties) {
+            user = properties.getProperty("imap.user", "crm@protei.ru");
             pass = properties.getProperty("imap.pass");
             host = properties.getProperty("imap.host", "imap.protei.ru");
-            String temp = properties.getProperty("imap.subject.black.list", "");
+
+            enable = properties.getProperty("mail.comment.enable", Boolean.class, false);
+            String temp = properties.getProperty("mail.comment.subject.black.list", "");
             if (isNotEmpty(temp)) {
                 blackList = Arrays.stream(temp.split(",")).collect(Collectors.toList());
             } else {
                 blackList = new ArrayList<>();
             }
+            enableForwardMail = properties.getProperty("mail.comment.forward.enable", Boolean.class, false);
+            forwardMail = properties.getProperty("mail.comment.email", "support@protei.ru");
         }
 
         public String getUser() {
@@ -826,8 +834,20 @@ public class PortalConfigData {
             return host;
         }
 
+        public boolean isEnable() {
+            return enable;
+        }
+
         public List<String> getBlackList() {
             return blackList;
+        }
+
+        public String getForwardMail() {
+            return forwardMail;
+        }
+
+        public boolean isEnableForwardMail() {
+            return enableForwardMail;
         }
     }
 

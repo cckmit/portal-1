@@ -85,6 +85,7 @@ public class En_ResultStatusLang {
             case NOT_ALLOWED_EDIT_COMMENT_BY_TIME: return lang.errEditIssueCommentByTime();
             case NOT_ALLOWED_REMOVE_COMMENT_BY_TIME: return lang.errRemoveIssueCommentByTime();
             case REPORTING_SERVICE_NOT_CONFIGURED: return lang.errReportingServiceNotConfigured();
+            case USER_NOT_FOUND: return lang.errUserNotFound();
             default: return lang.errUnknownResult();
         }
     }
