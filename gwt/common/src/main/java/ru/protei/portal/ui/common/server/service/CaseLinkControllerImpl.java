@@ -53,21 +53,9 @@ public class CaseLinkControllerImpl implements CaseLinkController {
     }
 
     @Override
-    public CaseLink createLink(CaseLink value, En_CaseType caseType) throws RequestFailedException {
-        AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
-        return checkResultAndGetData( linkService.createLink( authToken, value, caseType) );
-    }
-
-    @Override
     public CaseLink createLinkWithPublish(CaseLink value, En_CaseType caseType) throws RequestFailedException {
         AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
         return checkResultAndGetData( linkService.createLinkWithPublish( authToken, value, caseType) );
-    }
-
-    @Override
-    public void deleteLink(Long id) throws RequestFailedException {
-        AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
-        checkResult( linkService.deleteLink( authToken, id) );
     }
 
     @Override

@@ -27,6 +27,21 @@ import static ru.protei.portal.api.struct.Result.ok;
 
 public class SiteFolderServiceImpl implements SiteFolderService {
 
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
+    @Autowired
+    PlatformDAO platformDAO;
+    @Autowired
+    ServerDAO serverDAO;
+    @Autowired
+    ApplicationDAO applicationDAO;
+    @Autowired
+    ServerApplicationDAO serverApplicationDAO;
+    @Autowired
+    CaseObjectDAO caseObjectDAO;
+    @Autowired
+    CaseAttachmentDAO caseAttachmentDAO;
+
     @Override
     public Result<SearchResult<Platform>> getPlatforms( AuthToken token, PlatformQuery query) {
 
@@ -216,6 +231,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
+    @Transactional
     public Result<Server> createServer( AuthToken token, Server server) {
 
         Long id = serverDAO.persist(server);
@@ -234,6 +250,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
+    @Transactional
     public Result<Server> createServerAndCloneApps( AuthToken token, Server server, Long serverIdOfAppsToBeCloned) {
 
         Result<Server> response = createServer(token, server);
@@ -246,6 +263,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
+    @Transactional
     public Result<Application> createApplication( AuthToken token, Application application) {
 
         Long id = applicationDAO.persist(application);
@@ -298,13 +316,13 @@ public class SiteFolderServiceImpl implements SiteFolderService {
 
         boolean caseStatus = caseObjectDAO.partialMerge(caseObject, "CASE_NAME");
         if (!caseStatus) {
-            return error(En_ResultStatus.NOT_UPDATED);
+            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
         }
 
         Platform result = platformDAO.get(platform.getId());
 
         if (result == null) {
-            return error(En_ResultStatus.INTERNAL_ERROR);
+            throw new ResultStatusException(En_ResultStatus.INTERNAL_ERROR);
         }
 
         return ok(result);
@@ -411,19 +429,4 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         caseObject.setStateId(CrmConstants.State.CREATED);
         return caseObject;
     }
-
-    @Autowired
-    JdbcManyRelationsHelper jdbcManyRelationsHelper;
-    @Autowired
-    PlatformDAO platformDAO;
-    @Autowired
-    ServerDAO serverDAO;
-    @Autowired
-    ApplicationDAO applicationDAO;
-    @Autowired
-    ServerApplicationDAO serverApplicationDAO;
-    @Autowired
-    CaseObjectDAO caseObjectDAO;
-    @Autowired
-    CaseAttachmentDAO caseAttachmentDAO;
 }

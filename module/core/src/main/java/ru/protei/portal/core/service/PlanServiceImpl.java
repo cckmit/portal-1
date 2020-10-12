@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.PlanDAO;
@@ -167,6 +168,7 @@ public class PlanServiceImpl implements PlanService{
     }
 
     @Override
+    @Transactional
     public Result<Boolean> editPlanParams(AuthToken token, Plan plan) {
         if (plan == null || plan.getId() == null || !validatePlan(plan)){
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -185,7 +187,7 @@ public class PlanServiceImpl implements PlanService{
             return error(En_ResultStatus.ALREADY_EXIST);
         }
 
-        if (!planDAO.partialMerge(plan, "name", "start_date", "finish_date")){
+        if (!planDAO.partialMerge(plan, "name", "start_date", "finish_date")) {
             log.warn("editPlanParams(): NOT_UPDATED. planId={}, name={} ", plan.getId(), plan.getName());
             return error(En_ResultStatus.NOT_UPDATED);
         }
@@ -218,9 +220,9 @@ public class PlanServiceImpl implements PlanService{
 
         newIssueInPlan.setId(planToCaseObjectDAO.persist(newIssueInPlan));
 
-        if (newIssueInPlan.getId() == null){
+        if (newIssueInPlan.getId() == null) {
             log.warn("addIssueToPlan(): NOT CREATED. planId={}, issueId={} ", planId, issueId);
-            return error(En_ResultStatus.NOT_CREATED);
+            throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
         }
 
         Plan plan = planDAO.get(planId);
@@ -253,11 +255,11 @@ public class PlanServiceImpl implements PlanService{
 
         if (rowCount == 0) {
             log.warn("removeIssueFromPlan(): NOT_REMOVED. plan id={}, token personId={}", planId, token.getPersonId());
-            return error(En_ResultStatus.NOT_REMOVED);
+        } else {
+            log.warn("removeIssueFromPlan(): More than one was removed! Rollback. plan id={}, token personId={}", planId, token.getPersonId());
         }
 
-        log.warn("removeIssueFromPlan(): More that one was removed! Rollback. plan id={}, token personId={}", planId, token.getPersonId());
-        throw new RollbackTransactionException("removeIssueFromPlan(): rollback transaction");
+        throw new ResultStatusException(En_ResultStatus.NOT_REMOVED);
     }
 
     @Override
@@ -345,6 +347,7 @@ public class PlanServiceImpl implements PlanService{
     }
 
     @Override
+    @Transactional
     public Result<Boolean> removePlan(AuthToken token, Long planId) {
         if (planId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);

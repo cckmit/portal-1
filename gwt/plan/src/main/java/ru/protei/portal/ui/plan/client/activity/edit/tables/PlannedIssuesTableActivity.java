@@ -103,7 +103,7 @@ public abstract class PlannedIssuesTableActivity implements AbstractPlannedIssue
             plan.setIssueList(issues);
             plan.setId(planId);
             planService.changeIssuesOrder(plan, new FluentCallback<Boolean>()
-                    .withError(throwable -> {
+                    .withError((throwable, defaultErrorHandler, status) -> {
                         defaultErrorHandler.accept(throwable);
                         loadTable(planId);
                     })
@@ -129,8 +129,8 @@ public abstract class PlannedIssuesTableActivity implements AbstractPlannedIssue
             }
 
             planService.moveIssueToAnotherPlan(planId, value.getId(), plan.getId(), new FluentCallback<Boolean>()
-                    .withError(throwable -> {
-                        if (throwable instanceof RequestFailedException && En_ResultStatus.ALREADY_EXIST.equals(((RequestFailedException) throwable).status)) {
+                    .withError((throwable, defaultErrorHandler, status) -> {
+                        if (En_ResultStatus.ALREADY_EXIST.equals(status)) {
                             fireEvent(new NotifyEvents.Show(lang.errIssueAlreadyExistInPlan(), NotifyEvents.NotifyType.ERROR));
                         } else {
                             defaultErrorHandler.accept(throwable);

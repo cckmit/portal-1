@@ -3,6 +3,7 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.CaseFilterDAO;
 import ru.protei.portal.core.model.dao.PlanDAO;
@@ -144,6 +145,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     }
 
     @Override
+    @Transactional
     public Result<CaseFilter> saveIssueFilter(AuthToken token, CaseFilter filter) {
 
         log.debug("saveIssueFilter(): filter={} ", filter);
@@ -171,6 +173,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     }
 
     @Override
+    @Transactional
     public Result< Boolean > removeIssueFilter( Long id ) {
 
         log.debug( "removeIssueFilter(): id={} ", id );

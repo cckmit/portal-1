@@ -7,6 +7,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.event.ProjectAttachmentEvent;
+import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.AttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
@@ -76,24 +77,28 @@ public class AttachmentServiceImpl implements AttachmentService {
     @Transactional
     public Result<Boolean> removeAttachmentEverywhere( AuthToken token, En_CaseType caseType, Long id) {
         CaseAttachment caseAttachment = caseAttachmentDAO.getByAttachmentId(id);
-        if (caseAttachment != null) {
+
+        if (caseAttachment == null) {
+            return removeAttachment(token, caseType, id);
+        } else {
             boolean isDeleted = caseAttachmentDAO.removeByKey(caseAttachment.getId());
-            if(!isDeleted)
-                return error( En_ResultStatus.NOT_REMOVED);
+            if (!isDeleted) {
+                return error(En_ResultStatus.NOT_REMOVED);
+            }
 
-            caseService.updateCaseModified( token, caseAttachment.getCaseId(), new Date() );
+            caseService.updateCaseModified(token, caseAttachment.getCaseId(), new Date());
 
-            caseService.isExistsAttachments( caseAttachment.getCaseId() ).ifOk( isExists -> {
+            caseService.isExistsAttachments(caseAttachment.getCaseId()).ifOk(isExists -> {
                 if (!isExists) {
-                    caseService.updateExistsAttachmentsFlag( caseAttachment.getCaseId(), false );
+                    caseService.updateExistsAttachmentsFlag(caseAttachment.getCaseId(), false);
                 }
-            } );
+            });
 
             Attachment attachment = attachmentDAO.get(id);
 
-            Result<Boolean> result = removeAttachment( token, caseType, id);
+            Result<Boolean> result = removeAttachment(token, caseType, id);
 
-            if(result.isOk() && token != null) {
+            if (result.isOk() && token != null) {
 
 /*
                 if (caseAttachment.getCommentId() != null) {
@@ -102,7 +107,7 @@ public class AttachmentServiceImpl implements AttachmentService {
 */
 
                 if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
-                    publisherService.onCaseAttachmentEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL,
+                    publisherService.onCaseAttachmentEvent(new CaseAttachmentEvent(this, ServiceModule.GENERAL,
                             token.getPersonId(), caseAttachment.getCaseId(), null, Collections.singletonList(attachment)));
                 }
 
@@ -114,8 +119,6 @@ public class AttachmentServiceImpl implements AttachmentService {
             }
 
             return result;
-        }else {
-            return removeAttachment( token, caseType, id);
         }
     }
 
@@ -126,18 +129,18 @@ public class AttachmentServiceImpl implements AttachmentService {
     @Transactional
     public Result<Boolean> removeAttachment( AuthToken token, En_CaseType caseType, Long id) {
         Attachment attachment = attachmentDAO.partialGet(id, "ext_link");
-        if(attachment == null)
-            return error( En_ResultStatus.NOT_FOUND);
+        if (attachment == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
 
-        boolean result =
-                fileStorage.deleteFile(attachment.getExtLink())
-                &&
-                attachmentDAO.removeByKey(id);
+        boolean result = attachmentDAO.removeByKey(id)
+                && fileStorage.deleteFile(attachment.getExtLink());
 
-        if (!result)
-            return error( En_ResultStatus.NOT_REMOVED);
+        if (!result) {
+            throw new ResultStatusException(En_ResultStatus.NOT_REMOVED);
+        }
 
-        return ok( true);
+        return ok(true);
     }
 
     @Override
@@ -174,20 +177,23 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     @Override
+    @Transactional
     public Result<Long> saveAttachment( Attachment attachment) {
         /* В redmine и jira дата устанавливается из источника */
         if (attachment.getCreated() == null) {
             attachment.setCreated(new Date());
         }
+
         Long id = attachment.getId();
         if (id == null) {
             id = attachmentDAO.persist(attachment);
 
-            if(id == null)
-                return error( En_ResultStatus.NOT_CREATED);
-        }
-        else
+            if (id == null) {
+                return error(En_ResultStatus.NOT_CREATED);
+            }
+        } else {
             attachmentDAO.merge(attachment);
+        }
 
         return ok( id);
     }

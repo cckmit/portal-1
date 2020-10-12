@@ -357,10 +357,12 @@ public abstract class IssueEditActivity implements
 
     private void requestIssue(Long number, HasWidgets container) {
         issueController.getIssue(number, new FluentCallback<CaseObject>()
-                .withError(throwable -> {
-                    if (throwable instanceof RequestFailedException && En_ResultStatus.PERMISSION_DENIED.equals(((RequestFailedException) throwable).status)) {
+                .withError((throwable, defaultErrorHandler, status) -> {
+                    if (En_ResultStatus.PERMISSION_DENIED.equals(status)) {
                         fireEvent(new ErrorPageEvents.ShowForbidden());
                     }
+
+                    defaultErrorHandler.accept(throwable);
                 })
                 .withSuccess(issue -> {
                     IssueEditActivity.this.issue = issue;

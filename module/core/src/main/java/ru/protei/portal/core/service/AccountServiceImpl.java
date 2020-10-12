@@ -166,6 +166,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Transactional
     public Result<UserLogin> saveContactAccount( AuthToken token, UserLogin userLogin, Boolean sendWelcomeEmail) {
 
         if (userLogin.getId() == null) {
@@ -177,25 +178,28 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Result< Boolean > checkUniqueLogin( String login, Long excludeId ) {
+    public Result<Boolean> checkUniqueLogin(String login, Long excludeId) {
 
-        if( HelperFunc.isEmpty( login ) )
-            return error( En_ResultStatus.INCORRECT_PARAMS);
-
-        return ok( isUniqueLogin( login, excludeId ) );
-    }
-
-    @Override
-    public Result< Boolean > removeAccount( AuthToken token, Long accountId ) {
-
-        if ( userLoginDAO.removeByKey( accountId ) ) {
-            return ok( true );
+        if (HelperFunc.isEmpty(login)) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        return error( En_ResultStatus.INTERNAL_ERROR );
+        return ok(isUniqueLogin(login, excludeId));
     }
 
     @Override
+    @Transactional
+    public Result<Boolean> removeAccount(AuthToken token, Long accountId) {
+
+        if (userLoginDAO.removeByKey(accountId)) {
+            return ok(true);
+        }
+
+        return error(En_ResultStatus.INTERNAL_ERROR);
+    }
+
+    @Override
+    @Transactional
     public Result<?> updateAccountPassword( AuthToken token, Long loginId, String currentPassword, String newPassword) {
         UserLogin userLogin = getAccount(token, loginId).getData();
 

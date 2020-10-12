@@ -335,6 +335,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
     public Result<Boolean> updateEmployeeWorker(AuthToken token, WorkerEntry worker) {
         if (worker == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -354,6 +355,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
     public Result<WorkerEntry> createEmployeeWorker(AuthToken token, WorkerEntry worker) {
         if (worker == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -397,7 +399,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             boolean isRemoved = removeWorkerEntriesByPersonId(personFromDb.getId());
 
             if (!isRemoved){
-                return error(En_ResultStatus.EMPLOYEE_NOT_FIRED_FROM_THESE_COMPANIES);
+                throw new ResultStatusException(En_ResultStatus.EMPLOYEE_NOT_FIRED_FROM_THESE_COMPANIES);
             }
 
             List<UserLogin> userLogins = userLoginDAO.findByPersonId(personFromDb.getId());
@@ -425,8 +427,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         return ok(result);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public Result<Boolean> updateEmployeeWorkers(AuthToken token, List<WorkerEntry> newWorkerEntries){
         if (newWorkerEntries == null || newWorkerEntries.isEmpty() || newWorkerEntries.get(0).getPersonId() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -472,7 +474,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             }
         }
 
-       return ok(true);
+        return ok(true);
     }
 
     @Override

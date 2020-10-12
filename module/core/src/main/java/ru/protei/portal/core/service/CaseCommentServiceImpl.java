@@ -49,6 +49,48 @@ import static ru.protei.portal.core.model.dict.En_Privilege.ISSUE_EDIT;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public class CaseCommentServiceImpl implements CaseCommentService {
+    private static final long CHANGE_LIMIT_TIME = 300000;  // 5 минут (в мсек)
+    private static Logger log = LoggerFactory.getLogger(CaseCommentServiceImpl.class);
+
+    @Autowired
+    CaseService caseService;
+    @Autowired
+    AttachmentService attachmentService;
+    @Autowired
+    ProjectService projectService;
+    @Autowired
+    EventPublisherService publisherService;
+
+    @Autowired
+    PolicyService policyService;
+    @Autowired
+    AuthService authService;
+
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
+    @Autowired
+    CaseObjectDAO caseObjectDAO;
+    @Autowired
+    CaseCommentDAO caseCommentDAO;
+    @Autowired
+    CaseCommentShortViewDAO caseCommentShortViewDAO;
+    @Autowired
+    CaseAttachmentDAO caseAttachmentDAO;
+    @Autowired
+    UserLoginShortViewDAO userLoginShortViewDAO;
+    @Autowired
+    EmployeeShortViewDAO employeeShortViewDAO;
+    @Autowired
+    PersonDAO personDAO;
+    @Autowired
+    UserLoginDAO userLoginDAO;
+    @Autowired
+    CompanyDAO companyDAO;
+
+/*
+    @Autowired
+    private ClientEventService clientEventService;
+*/
 
     @Override
     public Result<List<CaseComment>> getCaseCommentList(AuthToken token, En_CaseType caseType, long caseObjectId) {
@@ -395,12 +437,14 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     @Override
+    @Transactional
     public Result<Boolean> updateTimeElapsed( AuthToken token, Long caseId) {
         long timeElapsed = getTimeElapsed(caseId).getData();
         return updateCaseTimeElapsed(token, caseId, timeElapsed);
     }
 
     @Override
+    @Transactional
     public Result<Boolean> updateCaseTimeElapsed( AuthToken token, Long caseId, long timeElapsed) {
         if (caseId == null || !caseObjectDAO.checkExistsByKey(caseId)) {
             return error( En_ResultStatus.INCORRECT_PARAMS);
@@ -415,6 +459,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     @Override
+    @Transactional
     public Result<Boolean> updateCaseTimeElapsedType(AuthToken token, Long caseCommentId, En_TimeElapsedType type) {
         CaseComment caseComment;
 
@@ -854,48 +899,4 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     private List<String> prepareLoginList(List<String> loginList) {
         return stream(loginList).map(login -> login.replace("'", "\\'")).collect(Collectors.toList());
     }
-
-    @Autowired
-    CaseService caseService;
-    @Autowired
-    AttachmentService attachmentService;
-    @Autowired
-    ProjectService projectService;
-    @Autowired
-    EventPublisherService publisherService;
-
-    @Autowired
-    PolicyService policyService;
-    @Autowired
-    AuthService authService;
-
-    @Autowired
-    JdbcManyRelationsHelper jdbcManyRelationsHelper;
-    @Autowired
-    CaseObjectDAO caseObjectDAO;
-    @Autowired
-    CaseCommentDAO caseCommentDAO;
-    @Autowired
-    CaseCommentShortViewDAO caseCommentShortViewDAO;
-    @Autowired
-    CaseAttachmentDAO caseAttachmentDAO;
-    @Autowired
-    UserLoginShortViewDAO userLoginShortViewDAO;
-    @Autowired
-    EmployeeShortViewDAO employeeShortViewDAO;
-    @Autowired
-    PersonDAO personDAO;
-    @Autowired
-    UserLoginDAO userLoginDAO;
-    @Autowired
-    CompanyDAO companyDAO;
-
-/*
-    @Autowired
-    private ClientEventService clientEventService;
-*/
-
-
-    private static final long CHANGE_LIMIT_TIME = 300000;  // 5 минут (в мсек)
-    private static Logger log = LoggerFactory.getLogger(CaseCommentServiceImpl.class);
 }

@@ -11,6 +11,7 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseLinkEvent;
 import ru.protei.portal.core.event.ProjectLinkEvent;
+import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.AuditObjectDAO;
 import ru.protei.portal.core.model.dao.CaseLinkDAO;
@@ -111,6 +112,10 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         Result<CaseLink> completeResult = ok(createdLink);
 
+        if (completeResult.isError()) {
+            return error(completeResult.getStatus());
+        }
+
         return sendNotificationLinkAdded(authToken, link.getCaseId(), link, caseType);
     }
 
@@ -178,7 +183,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                 return error(addResult.getStatus(), addResult.getMessage());
             }
 
-            addResult.getEvents().forEach(event -> result.publishEvent(event));
+            addResult.getEvents().forEach(result::publishEvent);
             makeAudit(caseId, youtrackId, En_AuditType.LINK_CREATE, token);
         }
 
@@ -191,7 +196,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                 return error(removeResult.getStatus(), removeResult.getMessage());
             }
 
-            removeResult.getEvents().forEach(event -> result.publishEvent(event));
+            removeResult.getEvents().forEach(result::publishEvent);
         }
 
         return result;
@@ -276,7 +281,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             }
         } catch (Exception e){
             log.error("changeYoutrackId(): change failed", e);
-            return error(En_ResultStatus.INTERNAL_ERROR);
+            throw  new ResultStatusException(En_ResultStatus.INTERNAL_ERROR);
         }
 
         return ok();

@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
-import static ru.protei.portal.core.model.dict.En_CaseType.*;
+import static ru.protei.portal.core.model.dict.En_CaseType.CRM_SUPPORT;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.util.CaseStateUtil.isTerminalState;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
@@ -53,6 +53,106 @@ import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED
  * Реализация сервиса управления обращениями
  */
 public class CaseServiceImpl implements CaseService {
+    private static Logger log = LoggerFactory.getLogger(CaseServiceImpl.class);
+
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
+
+    @Autowired
+    CaseObjectDAO caseObjectDAO;
+
+    @Autowired
+    CompanyDAO companyDAO;
+
+    @Autowired
+    PlatformDAO platformDAO;
+
+    @Autowired
+    SiteFolderService siteFolderService;
+
+    @Autowired
+    ProductService productService;
+
+    @Autowired
+    CaseShortViewDAO caseShortViewDAO;
+
+    @Autowired
+    CaseObjectMetaDAO caseObjectMetaDAO;
+
+    @Autowired
+    CaseObjectMetaNotifiersDAO caseObjectMetaNotifiersDAO;
+
+    @Autowired
+    CaseCommentDAO caseCommentDAO;
+
+    @Autowired
+    PersonDAO personDAO;
+
+    @Autowired
+    CaseAttachmentDAO caseAttachmentDAO;
+
+    @Autowired
+    AttachmentDAO attachmentDAO;
+
+    @Autowired
+    CaseNotifierDAO caseNotifierDAO;
+
+    @Autowired
+    ExternalCaseAppDAO externalCaseAppDAO;
+
+    @Autowired
+    CaseTagDAO caseTagDAO;
+
+    @Autowired
+    JiraEndpointDAO jiraEndpointDAO;
+
+    @Autowired
+    JiraSLAMapEntryDAO jiraSLAMapEntryDAO;
+
+    @Autowired
+    CaseStateDAO caseStateDAO;
+
+    @Autowired
+    PolicyService policyService;
+
+    @Autowired
+    AuthService authService;
+
+    @Autowired
+    CaseLinkService caseLinkService;
+
+    @Autowired
+    CaseCommentService caseCommentService;
+
+    @Autowired
+    CaseStateWorkflowService caseStateWorkflowService;
+
+    @Autowired
+    CaseTagService caseTagService;
+
+    @Autowired
+    YoutrackService youtrackService;
+
+    @Autowired
+    PortalConfig portalConfig;
+
+    @Autowired
+    LockService lockService;
+
+    @Autowired
+    CompanyService companyService;
+
+    @Autowired
+    CaseObjectTagDAO caseObjectTagDAO;
+
+    @Autowired
+    AutoOpenCaseService autoOpenCaseService;
+
+    @Autowired
+    PlanService planService;
+
+    @Autowired
+    PersonFavoriteIssuesDAO personFavoriteIssuesDAO;
 
     @Override
     public Result<SearchResult<CaseShortView>> getCaseObjects( AuthToken token, CaseQuery query) {
@@ -463,6 +563,7 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
+    @Transactional
     public Result<Boolean> updateCaseModified( AuthToken token, Long caseId, Date modified) {
         if(caseId == null || !caseObjectDAO.checkExistsByKey(caseId))
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -476,6 +577,7 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
+    @Transactional
     public Result<Boolean> updateExistsAttachmentsFlag( Long caseId, boolean flag){
         if(caseId == null)
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -490,6 +592,7 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
+    @Transactional
     public Result<Boolean> updateExistsAttachmentsFlag( Long caseId){
         return isExistsAttachments(caseId).flatMap( isExists ->
                 updateExistsAttachmentsFlag(caseId, isExists));
@@ -846,25 +949,69 @@ public class CaseServiceImpl implements CaseService {
     }
 
     private boolean validateFields(CaseObject caseObject) {
-        if(caseObject == null) return false;
-        if(caseObject.getName() == null) return false;
-        if(caseObject.getName().isEmpty()) return false;
-        if(caseObject.getType() == null) return false;
+        if (caseObject == null) {
+            log.error("Case object cannot be null");
+            return false;
+        }
+        if (StringUtils.isEmpty(caseObject.getName())) {
+            log.error("Name must be specified. caseId={}", caseObject.getId());
+            return false;
+        }
+        if (caseObject.getType() == null) {
+            log.error("Type must be specified. caseId={}", caseObject.getId());
+            return false;
+        }
         return true;
     }
 
     private boolean validateMetaFields(AuthToken token, CaseObjectMeta caseMeta) {
-        if (caseMeta == null) return false;
-        if (caseMeta.getImpLevel() == null) return false;
-        if (En_ImportanceLevel.find(caseMeta.getImpLevel()) == null) return false;
-        if (!isStateValid(caseMeta.getStateId(), caseMeta.getManagerId(), caseMeta.getPauseDate())) return false;
-        if (caseMeta.getManagerCompanyId() == null) return false;
-        if (caseMeta.getManagerId() != null && !personBelongsToCompany(caseMeta.getManagerId(), caseMeta.getManagerCompanyId())) return false;
-        if (caseMeta.getManagerId() != null && caseMeta.getProductId() == null) return false;
-        if (caseMeta.getInitiatorCompanyId() == null) return false;
-        if (caseMeta.getInitiatorId() != null && !personBelongsToCompany( caseMeta.getInitiatorId(), caseMeta.getInitiatorCompanyId() )) return false;
-        if (caseMeta.getPlatformId() != null && !platformBelongsToCompany(token, caseMeta.getPlatformId(), caseMeta.getInitiatorCompanyId())) return false;
-        if (!isProductValid(token, caseMeta.getProductId(), caseMeta.getPlatformId(), caseMeta.getInitiatorCompanyId())) return false;
+        if (caseMeta == null) {
+            log.error("Case meta cannot be null");
+            return false;
+        }
+        if (caseMeta.getImpLevel() == null) {
+            log.error("Importance level must be specified. caseId={}", caseMeta.getId());
+            return false;
+        }
+        if (En_ImportanceLevel.find(caseMeta.getImpLevel()) == null) {
+            log.error("Unknown importance level. caseId={}, importance={}", caseMeta.getId(), caseMeta.getImpLevel());
+            return false;
+        }
+        if (!isStateValid(caseMeta.getStateId(), caseMeta.getManagerId(), caseMeta.getPauseDate())) {
+            log.error("State is not valid. caseId={}", caseMeta.getId());
+            return false;
+        }
+        if (caseMeta.getManagerCompanyId() == null) {
+            log.error("Manager company must be specified. caseId={}", caseMeta.getId());
+            return false;
+        }
+        if (caseMeta.getManagerId() != null && !personBelongsToCompany(caseMeta.getManagerId(), caseMeta.getManagerCompanyId())) {
+            log.error("Manager doesn't belong to company. caseId={}, managerId={}, managerCompanyId={}",
+                    caseMeta.getId(), caseMeta.getManagerId(), caseMeta.getManagerCompanyId());
+            return false;
+        }
+        if (caseMeta.getManagerId() != null && caseMeta.getProductId() == null) {
+            log.error("Manager must be specified with product. caseId={}", caseMeta.getId());
+            return false;
+        }
+        if (caseMeta.getInitiatorCompanyId() == null) {
+            log.error("Initiator company must be specified. caseId={}", caseMeta.getId());
+            return false;
+        }
+        if (caseMeta.getInitiatorId() != null && !personBelongsToCompany( caseMeta.getInitiatorId(), caseMeta.getInitiatorCompanyId() )) {
+            log.error("Initiator doesn't belong to company. caseId={}, initiatorId={}, initiatorCompanyId={}",
+                    caseMeta.getId(), caseMeta.getInitiatorId(), caseMeta.getInitiatorCompanyId());
+            return false;
+        }
+        if (caseMeta.getPlatformId() != null && !platformBelongsToCompany(token, caseMeta.getPlatformId(), caseMeta.getInitiatorCompanyId())) {
+            log.error("Platform doesn't belong to initiator company. caseId={}, platformId={}, initiatorCompanyId={}",
+                    caseMeta.getId(), caseMeta.getPlatformId(), caseMeta.getInitiatorCompanyId());
+            return false;
+        }
+        if (!isProductValid(token, caseMeta.getProductId(), caseMeta.getPlatformId(), caseMeta.getInitiatorCompanyId())) {
+            log.error("Product is not valid. caseId={}", caseMeta.getId());
+            return false;
+        }
         return true;
     }
 
@@ -876,10 +1023,16 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if (productId == null) {
+            log.error("Product must be specified with company with auto open issue");
             return false;
         }
 
         if (!isProductContainsInPlatformsProducts(token, productId, platformId, companyId)) {
+            if (platformId != null) {
+                log.error("Product must be present in specified platform. platformId={}", platformId);
+            } else {
+                log.error("Product must be present at least in one company platform. companyId={}", companyId);
+            }
             return false;
         }
 
@@ -939,11 +1092,19 @@ public class CaseServiceImpl implements CaseService {
     private boolean isStateValid(long caseStateId, Long managerId, Long pauseDate) {
         if (!(listOf(CrmConstants.State.CREATED, CrmConstants.State.CANCELED)
                 .contains(caseStateId)) && managerId == null) {
+
+            log.error("State must be CREATED or CANCELED without manager");
             return false;
         }
 
         if (CrmConstants.State.PAUSED == caseStateId) {
-            return pauseDate != null && (System.currentTimeMillis() < pauseDate);
+            boolean isPauseDateValid = pauseDate != null && (System.currentTimeMillis() < pauseDate);
+
+            if (!isPauseDateValid) {
+                log.error("Pause date was passed");
+            }
+
+            return isPauseDateValid;
         }
 
         return true;
@@ -1026,105 +1187,4 @@ public class CaseServiceImpl implements CaseService {
             caseObject.setAttachments(stream(caseObject.getAttachments()).filter(not(Attachment::isPrivate)).collect(Collectors.toList()));
         }
     }
-
-    @Autowired
-    JdbcManyRelationsHelper jdbcManyRelationsHelper;
-
-    @Autowired
-    CaseObjectDAO caseObjectDAO;
-
-    @Autowired
-    CompanyDAO companyDAO;
-
-    @Autowired
-    PlatformDAO platformDAO;
-
-    @Autowired
-    SiteFolderService siteFolderService;
-
-    @Autowired
-    ProductService productService;
-
-    @Autowired
-    CaseShortViewDAO caseShortViewDAO;
-
-    @Autowired
-    CaseObjectMetaDAO caseObjectMetaDAO;
-
-    @Autowired
-    CaseObjectMetaNotifiersDAO caseObjectMetaNotifiersDAO;
-
-    @Autowired
-    CaseCommentDAO caseCommentDAO;
-
-    @Autowired
-    PersonDAO personDAO;
-
-    @Autowired
-    CaseAttachmentDAO caseAttachmentDAO;
-
-    @Autowired
-    AttachmentDAO attachmentDAO;
-
-    @Autowired
-    CaseNotifierDAO caseNotifierDAO;
-
-    @Autowired
-    ExternalCaseAppDAO externalCaseAppDAO;
-
-    @Autowired
-    CaseTagDAO caseTagDAO;
-
-    @Autowired
-    JiraEndpointDAO jiraEndpointDAO;
-
-    @Autowired
-    JiraSLAMapEntryDAO jiraSLAMapEntryDAO;
-
-    @Autowired
-    CaseStateDAO caseStateDAO;
-
-    @Autowired
-    PolicyService policyService;
-
-    @Autowired
-    AuthService authService;
-
-    @Autowired
-    CaseLinkService caseLinkService;
-
-    @Autowired
-    CaseCommentService caseCommentService;
-
-    @Autowired
-    CaseStateWorkflowService caseStateWorkflowService;
-
-    @Autowired
-    CaseTagService caseTagService;
-
-    @Autowired
-    YoutrackService youtrackService;
-
-    @Autowired
-    PortalConfig portalConfig;
-
-    @Autowired
-    LockService lockService;
-
-    @Autowired
-    CompanyService companyService;
-
-    @Autowired
-    CaseObjectTagDAO caseObjectTagDAO;
-
-    @Autowired
-    AutoOpenCaseService autoOpenCaseService;
-
-    @Autowired
-    PlanService planService;
-
-    @Autowired
-    PersonFavoriteIssuesDAO personFavoriteIssuesDAO;
-
-    private static Logger log = LoggerFactory.getLogger(CaseServiceImpl.class);
 }

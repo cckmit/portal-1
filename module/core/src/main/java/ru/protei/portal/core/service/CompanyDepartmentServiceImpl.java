@@ -1,6 +1,8 @@
 package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.CompanyDepartmentDAO;
 import ru.protei.portal.core.model.dao.WorkerEntryDAO;
@@ -32,6 +34,7 @@ public class CompanyDepartmentServiceImpl implements CompanyDepartmentService{
     }
 
     @Override
+    @Transactional
     public Result<Long> createCompanyDepartment(AuthToken token, CompanyDepartment companyDepartment) {
         if (!isValid(companyDepartment)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -52,6 +55,7 @@ public class CompanyDepartmentServiceImpl implements CompanyDepartmentService{
     }
 
     @Override
+    @Transactional
     public Result<Long> updateCompanyDepartmentName(AuthToken token, CompanyDepartment companyDepartment) {
         if (!isValid(companyDepartment)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -70,6 +74,7 @@ public class CompanyDepartmentServiceImpl implements CompanyDepartmentService{
     }
 
     @Override
+    @Transactional
     public Result<Long> removeCompanyDepartment(AuthToken token, CompanyDepartment companyDepartment) {
 
         if(workerEntryDAO.checkExistsByDepId(companyDepartment.getId())){

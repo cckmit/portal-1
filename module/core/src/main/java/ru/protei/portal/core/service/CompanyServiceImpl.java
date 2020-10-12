@@ -3,6 +3,7 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.*;
@@ -132,6 +133,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    @Transactional
     public Result<?> updateState( AuthToken makeAuthToken, Long companyId, boolean isDeprecated) {
         if (companyId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -257,6 +259,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    @Transactional
     public Result<Company> updateCompany( AuthToken token, Company company ) {
 
         if (!isValidCompany(company)) {

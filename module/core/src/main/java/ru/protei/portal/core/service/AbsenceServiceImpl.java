@@ -192,7 +192,7 @@ public class AbsenceServiceImpl implements AbsenceService {
         }
 
         if (!personAbsenceDAO.removeByKey(storedAbsence.getId())) {
-            error(En_ResultStatus.NOT_REMOVED);
+            return error(En_ResultStatus.NOT_REMOVED);
         }
 
         Person initiator = personDAO.get(token.getPersonId());
@@ -229,7 +229,7 @@ public class AbsenceServiceImpl implements AbsenceService {
         newState.setTillTime(DateUtils.resetSeconds(new Date()));
 
         if (!personAbsenceDAO.partialMerge(newState, "till_time")) {
-            error(En_ResultStatus.NOT_UPDATED);
+            return error(En_ResultStatus.NOT_UPDATED);
         }
 
         Person initiator = personDAO.get(token.getPersonId());

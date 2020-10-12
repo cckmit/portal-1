@@ -12,6 +12,10 @@ import java.util.List;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 public class CaseStateWorkflowServiceImpl implements CaseStateWorkflowService {
+    @Autowired
+    CaseStateWorkflowDAO caseStateWorkflowDAO;
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Override
     public Result<List<CaseStateWorkflow>> getWorkflowList() {
@@ -32,9 +36,4 @@ public class CaseStateWorkflowServiceImpl implements CaseStateWorkflowService {
         jdbcManyRelationsHelper.fill(workflow, "caseStateWorkflowLinks");
         return ok(workflow);
     }
-
-    @Autowired
-    CaseStateWorkflowDAO caseStateWorkflowDAO;
-    @Autowired
-    JdbcManyRelationsHelper jdbcManyRelationsHelper;
 }

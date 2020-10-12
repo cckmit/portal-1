@@ -27,6 +27,26 @@ import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
 
 public class AssemblerProjectServiceImpl implements AssemblerProjectService {
+    private static final Logger log = LoggerFactory.getLogger(AssemblerProjectServiceImpl.class);
+
+    @Autowired
+    PersonDAO personDAO;
+    @Autowired
+    CaseObjectDAO caseObjectDAO;
+    @Autowired
+    CaseCommentDAO caseCommentDAO;
+    @Autowired
+    CaseLinkDAO caseLinkDAO;
+    @Autowired
+    AttachmentDAO attachmentDAO;
+    @Autowired
+    PortalScheduleTasks scheduledTasksService;
+
+    @Autowired
+    EventPublisherService publisherService;
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
+
     @Async(BACKGROUND_TASKS)
     @Override
     public void proceed(final AssembledProjectEvent sourceEvent) {
@@ -142,24 +162,4 @@ public class AssemblerProjectServiceImpl implements AssemblerProjectService {
         calendar.add(Calendar.SECOND, sec);
         return calendar.getTime();
     }
-
-    @Autowired
-    PersonDAO personDAO;
-    @Autowired
-    CaseObjectDAO caseObjectDAO;
-    @Autowired
-    CaseCommentDAO caseCommentDAO;
-    @Autowired
-    CaseLinkDAO caseLinkDAO;
-    @Autowired
-    AttachmentDAO attachmentDAO;
-    @Autowired
-    PortalScheduleTasks scheduledTasksService;
-
-    @Autowired
-    EventPublisherService publisherService;
-    @Autowired
-    JdbcManyRelationsHelper jdbcManyRelationsHelper;
-
-    private static final Logger log = LoggerFactory.getLogger(AssemblerProjectServiceImpl.class);
 }

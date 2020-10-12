@@ -3,6 +3,7 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.ReservedIpNotificationEvent;
@@ -177,6 +178,7 @@ public class IpReservationServiceImpl implements IpReservationService {
     }
 
     @Override
+    @Transactional
     public Result<Subnet> createSubnet( AuthToken token, Subnet subnet) {
 
         if (!isValidSubnet(subnet)) {
@@ -198,6 +200,7 @@ public class IpReservationServiceImpl implements IpReservationService {
     }
 
     @Override
+    @Transactional
     public Result<Subnet> updateSubnet( AuthToken token, Subnet subnet ) {
 
         if (subnet == null || subnet.getId() == null) {
@@ -231,6 +234,7 @@ public class IpReservationServiceImpl implements IpReservationService {
     }
 
     @Override
+    @Transactional
     public Result<Subnet> removeSubnet( AuthToken token, Subnet subnet, boolean removeWithIps) {
         if (subnet == null) {
             return error(En_ResultStatus.NOT_FOUND);
@@ -262,7 +266,7 @@ public class IpReservationServiceImpl implements IpReservationService {
     }
 
     @Override
-    /* @todo задача резервирования должна выполняться в фоне? */
+    @Transactional
     public Result<List<ReservedIp>> createReservedIp( AuthToken token, ReservedIpRequest reservedIpRequest) {
 
         if (!isValidRequest(reservedIpRequest)) {
@@ -307,13 +311,6 @@ public class IpReservationServiceImpl implements IpReservationService {
             reservedIps.add(getReservedIp(reservedIpId));
 
         } else {
-         /*
-           @todo если задано "любая свободная подсеть"
-                Для начала необходиом определить список подсетей, в которых достаточно свободных IP адресов
-                - проверка подсетей на наличие требуемого кол-ва свободных IP
-                - пройти по всем подходящим подсетям, резервируя IP, попутно проверяя их через NRPE
-         */
-
             Set<SubnetOption> subnets = getAvailableSubnets(token, reservedIpRequest.getSubnets());
             if (CollectionUtils.isEmpty(subnets)) {
                 return error(En_ResultStatus.NOT_CREATED);
@@ -345,13 +342,6 @@ public class IpReservationServiceImpl implements IpReservationService {
             }
         }
 
-        /*
-           @todo
-             - проверка IP через NRPE
-             - update IP с ответом от NRPE
-             -  ответ внести в reservedIp и merge в БД
-        */
-
         return ok(reservedIps)
                 .publishEvent(new ReservedIpNotificationEvent(
                         this,
@@ -365,6 +355,7 @@ public class IpReservationServiceImpl implements IpReservationService {
     }
 
     @Override
+    @Transactional
     public Result<ReservedIp> updateReservedIp( AuthToken token, ReservedIp reservedIp ) {
 
         if (reservedIp == null || reservedIp.getId() == null) {
@@ -415,6 +406,7 @@ public class IpReservationServiceImpl implements IpReservationService {
     }
 
     @Override
+    @Transactional
     public Result<ReservedIp> removeReservedIp( AuthToken token, ReservedIp reservedIp ) {
         if (reservedIp == null) {
             return error(En_ResultStatus.NOT_FOUND);

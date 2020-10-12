@@ -34,6 +34,19 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public class RoomReservationServiceImpl implements RoomReservationService {
 
+    @Autowired
+    PortalConfig config;
+    @Autowired
+    RoomReservationDAO roomReservationDAO;
+    @Autowired
+    RoomReservableDAO roomReservableDAO;
+    @Autowired
+    PersonDAO personDAO;
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
+    @Autowired
+    PolicyService policyService;
+
     @Override
     public Result<SearchResult<RoomReservation>> getReservations(AuthToken authToken, RoomReservationQuery query) {
         SearchResult<RoomReservation> result = roomReservationDAO.getSearchResultByQuery(query);
@@ -371,17 +384,4 @@ public class RoomReservationServiceImpl implements RoomReservationService {
                 .distinct()
                 .collect(Collectors.toList());
     }
-
-    @Autowired
-    PortalConfig config;
-    @Autowired
-    RoomReservationDAO roomReservationDAO;
-    @Autowired
-    RoomReservableDAO roomReservableDAO;
-    @Autowired
-    PersonDAO personDAO;
-    @Autowired
-    JdbcManyRelationsHelper jdbcManyRelationsHelper;
-    @Autowired
-    PolicyService policyService;
 }
