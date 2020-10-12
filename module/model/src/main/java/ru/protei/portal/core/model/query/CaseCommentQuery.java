@@ -125,6 +125,6 @@ public class CaseCommentQuery extends BaseQuery {
     }
 
     public enum CommentType {
-        CASE_STATE, TIME_ELAPSED, TEXT
+        CASE_STATE, IMPORTANCE, TIME_ELAPSED, TEXT
     }
 }

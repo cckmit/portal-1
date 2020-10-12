@@ -569,8 +569,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     private void ensureDebugIds() {
-        search.setEnsureDebugIdTextBox(DebugIds.FILTER.SEARCH_INPUT);
-        search.setEnsureDebugIdAction(DebugIds.FILTER.SEARCH_CLEAR_BUTTON);
+        search.setDebugIdTextBox(DebugIds.FILTER.SEARCH_INPUT);
+        search.setDebugIdAction(DebugIds.FILTER.SEARCH_CLEAR_BUTTON);
         plan.setEnsureDebugId(DebugIds.FILTER.PLAN_SELECTOR);
         searchByComments.ensureDebugId(DebugIds.FILTER.SEARCH_BY_COMMENTS_TOGGLE);
         searchByCommentsWarning.ensureDebugId(DebugIds.FILTER.SEARCH_BY_WARNING_COMMENTS_LABEL);

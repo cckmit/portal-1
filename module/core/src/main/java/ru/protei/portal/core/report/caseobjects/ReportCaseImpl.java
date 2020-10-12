@@ -61,7 +61,7 @@ public class ReportCaseImpl implements ReportCase {
         int offset = 0;
         try (ReportWriter<CaseObjectReportRequest> writer =
                     new ExcelReportWriter(localizedLang, report.isRestricted(), report.isWithDescription(),
-                            report.isWithTags(), report.isWithLinkedIssues(), report.isHumanReadable())) {
+                            report.isWithTags(), report.isWithLinkedIssues(), report.isHumanReadable(), query.isCheckImportanceHistory())) {
 
             int sheetNumber = writer.createSheet();
 
@@ -94,10 +94,11 @@ public class ReportCaseImpl implements ReportCase {
             CaseCommentQuery commentQuery = new CaseCommentQuery();
             commentQuery.addCaseObjectId( caseObject.getId() );
 
-            if (query.isCheckImportanceHistory() == null || !query.isCheckImportanceHistory()) {
-                commentQuery.addCommentType(CaseCommentQuery.CommentType.CASE_STATE);
+            if (query.isCheckImportanceHistory()) {
+                commentQuery.addCommentType(CaseCommentQuery.CommentType.IMPORTANCE);
             }
 
+            commentQuery.addCommentType(CaseCommentQuery.CommentType.CASE_STATE);
             commentQuery.addCommentType(CaseCommentQuery.CommentType.TIME_ELAPSED);
 
             List<CaseComment> caseComments = caseCommentDAO.getCaseComments( commentQuery );

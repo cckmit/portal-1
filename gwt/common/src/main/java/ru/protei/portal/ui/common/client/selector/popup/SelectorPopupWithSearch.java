@@ -150,20 +150,20 @@ public class SelectorPopupWithSearch extends PopperComposite
     }
 
 
-    public void setEnsureDebugIdAddEntryAction(String debugId) {
-        addButton.ensureDebugId(debugId);
+    public void setDebugAttributeAddEntryAction(String debugId) {
+        addButton.getElement().setAttribute(DebugIds.DEBUG_ID_ATTRIBUTE, debugId);
     }
 
-    public void setEnsureDebugIdSearch(String debugId) {
-        search.setEnsureDebugIdTextBox(debugId);
+    public void setDebugAttributeSearch(String debugId) {
+        search.setDebugAttributeTextBox(debugId);
     }
 
-    public void setEnsureDebugIdSearchAction(String debugId) {
-        search.setEnsureDebugIdAction(debugId);
+    public void setDebugAttributeSearchAction(String debugId) {
+        search.setDebugAttributeAction(debugId);
     }
 
-    public void setEnsureDebugIdListContainer(String debugId) {
-        childContainer.ensureDebugId(debugId);
+    public void setDebugAttributeListContainer(String debugId) {
+        childContainer.getElement().setAttribute(DebugIds.DEBUG_ID_ATTRIBUTE, debugId);
     }
 
     public void setSearchAutoFocus( boolean isSearchAutoFocus ) {
@@ -197,10 +197,10 @@ public class SelectorPopupWithSearch extends PopperComposite
     }
 
     private void ensureDefaultDebugIds() {
-        setEnsureDebugIdAddEntryAction( DebugIds.SELECTOR.POPUP.ADD_NEW_ENTRY_BUTTON);
-        setEnsureDebugIdSearch(DebugIds.SELECTOR.POPUP.SEARCH_INPUT);
-        setEnsureDebugIdSearchAction(DebugIds.SELECTOR.POPUP.SEARCH_ACTION);
-        setEnsureDebugIdListContainer(DebugIds.SELECTOR.POPUP.ENTRY_LIST_CONTAINER);
+        setDebugAttributeAddEntryAction( DebugIds.SELECTOR.POPUP.ADD_NEW_ENTRY_BUTTON);
+        setDebugAttributeSearch(DebugIds.SELECTOR.POPUP.SEARCH_INPUT);
+        setDebugAttributeSearchAction(DebugIds.SELECTOR.POPUP.SEARCH_ACTION);
+        setDebugAttributeListContainer(DebugIds.SELECTOR.POPUP.ENTRY_LIST_CONTAINER);
     }
 
     @UiField

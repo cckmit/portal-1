@@ -34,6 +34,10 @@ public class CaseCommentSqlBuilder {
                     conditions.add("case_comment.cstate_id IS NOT NULL");
                 }
 
+                if (query.getCommentTypes().contains(CaseCommentQuery.CommentType.IMPORTANCE)) {
+                    conditions.add("case_comment.cimp_level IS NOT NULL");
+                }
+
                 if (query.getCommentTypes().contains(CaseCommentQuery.CommentType.TIME_ELAPSED)) {
                     conditions.add("case_comment.time_elapsed IS NOT NULL");
                 }

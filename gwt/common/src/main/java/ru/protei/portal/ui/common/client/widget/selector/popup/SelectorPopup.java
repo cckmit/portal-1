@@ -119,26 +119,26 @@ public class SelectorPopup extends PopperComposite implements HasValueChangeHand
     }
 
     private void ensureDefaultDebugIds() {
-        setEnsureDebugIdAddEntryAction(DebugIds.SELECTOR.POPUP.ADD_NEW_ENTRY_BUTTON);
-        setEnsureDebugIdSearch(DebugIds.SELECTOR.POPUP.SEARCH_INPUT);
-        setEnsureDebugIdSearchAction(DebugIds.SELECTOR.POPUP.SEARCH_ACTION);
-        setEnsureDebugIdListContainer(DebugIds.SELECTOR.POPUP.ENTRY_LIST_CONTAINER);
+        setDebugAttributeAddEntryAction(DebugIds.SELECTOR.POPUP.ADD_NEW_ENTRY_BUTTON);
+        setDebugAttributeSearch(DebugIds.SELECTOR.POPUP.SEARCH_INPUT);
+        setDebugAttributeSearchAction(DebugIds.SELECTOR.POPUP.SEARCH_ACTION);
+        setDebugAttributeListContainer(DebugIds.SELECTOR.POPUP.ENTRY_LIST_CONTAINER);
     }
 
-    public void setEnsureDebugIdAddEntryAction(String debugId) {
-        addButton.ensureDebugId(debugId);
+    public void setDebugAttributeAddEntryAction(String attribute) {
+        addButton.getElement().setAttribute(DebugIds.DEBUG_ID_ATTRIBUTE, attribute);
     }
 
-    public void setEnsureDebugIdSearch(String debugId) {
-        search.setEnsureDebugIdTextBox(debugId);
+    public void setDebugAttributeSearch(String attribute) {
+        search.setDebugAttributeTextBox(attribute);
     }
 
-    public void setEnsureDebugIdSearchAction(String debugId) {
-        search.setEnsureDebugIdAction(debugId);
+    public void setDebugAttributeSearchAction(String attribute) {
+        search.setDebugAttributeAction(attribute);
     }
 
-    public void setEnsureDebugIdListContainer(String debugId) {
-        childContainer.ensureDebugId(debugId);
+    public void setDebugAttributeListContainer(String attribute) {
+        childContainer.getElement().setAttribute(DebugIds.DEBUG_ID_ATTRIBUTE, attribute);
     }
 
     private Timer searchValueChangeTimer = new Timer() {
