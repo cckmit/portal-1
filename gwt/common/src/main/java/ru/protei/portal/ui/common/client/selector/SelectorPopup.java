@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.selector;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.ui.common.client.events.AddHandler;
@@ -12,7 +13,7 @@ import ru.protei.portal.ui.common.client.widget.composite.popper.PopperComposite
 public interface SelectorPopup extends IsWidget {
     void setPopupHandler( PopupHandler tPopupSelector );
 
-    HasWidgets getChildContainer();
+    HTMLPanel getChildContainer();
 
     void setSearchHandler( SearchHandler searchHandler );
 

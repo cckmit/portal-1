@@ -45,7 +45,7 @@ public class SelectorPopupWithSearch extends PopperComposite
     }
 
     @Override
-    public HasWidgets getChildContainer() {
+    public HTMLPanel getChildContainer() {
         return childContainer;
     }
 

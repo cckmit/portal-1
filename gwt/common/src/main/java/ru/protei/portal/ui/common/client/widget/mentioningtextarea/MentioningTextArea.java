@@ -14,15 +14,14 @@ import static java.util.Optional.ofNullable;
 public class MentioningTextArea extends DndAutoResizeTextArea {
     @Inject
     public MentioningTextArea(UserLoginModel userLoginModel,
-                              UserLoginSelector userLoginSelector,
-                              MentioningKeyDownEventHandler mentioningKeyDownEventHandler) {
+                              UserLoginSelector userLoginSelector) {
 
         this.userLoginModel = userLoginModel;
 
         initUserLoginSelector(userLoginModel, userLoginSelector);
         final Timer changeTimer = initTimer(userLoginModel, userLoginSelector);
 
-        initKeyDownSelector(mentioningKeyDownEventHandler, userLoginSelector, changeTimer);
+        initKeyDownSelector(new PopupWithTextAreaKeyDownEventHandler(this, userLoginSelector.getPopup().getChildContainer()), userLoginSelector, changeTimer);
         addClickHandler(event -> changeTimer.run());
     }
 
@@ -66,14 +65,15 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
         };
     }
 
-    private void initKeyDownSelector(MentioningKeyDownEventHandler mentioningKeyDownEventHandler, UserLoginSelector userLoginSelector, Timer changeTimer) {
-        addKeyDownHandler(mentioningKeyDownEventHandler.getTextAreaKeyDownHandler(userLoginSelector, changeTimer, userLoginSelector.getPopup().getChildContainer()::iterator));
+    private void initKeyDownSelector(PopupWithTextAreaKeyDownEventHandler popupWithTextAreaKeyDownEventHandler, UserLoginSelector userLoginSelector, Timer changeTimer) {
+        Runnable onChange = () -> changeTimer.schedule(200);
+
+        addKeyDownHandler(
+                popupWithTextAreaKeyDownEventHandler.getTextAreaKeyDownHandler(userLoginSelector::isPopupVisible, onChange)
+        );
 
         userLoginSelector.getPopup().addKeyDownHandler(
-                mentioningKeyDownEventHandler.getPopupKeyDownHandler(
-                        this,
-                        userLoginSelector.getPopup().getChildContainer()::iterator
-                )
+                popupWithTextAreaKeyDownEventHandler.getPopupKeyDownHandler(this, onChange)
         );
     }
 
