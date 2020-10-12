@@ -146,6 +146,8 @@ public class MailReceiverParsers {
         static public final String CONTENT_END_CRM_BODY_FTL = "===ContentEnd_crm\\.body\\.ftl===";
         static public final String CONTENT_ID_CRM_BODY_FTL = "CrmMailContent";
 
+        static public final String CONTENT_NEW_LINE_DUPLICATE = "(\n+) *";
+
         static public final String THUNDERBIRD_PATTERN_CONTENT_CRM_BODY_FTL = THUNDERBIRD_REPLAY + ANY_SYMBOL + CONTENT_BEGIN_CRM_BODY_FTL + ANY_SYMBOL  + CONTENT_END_CRM_BODY_FTL;
         static public final String BEGIN_END_PATTERN_CONTENT_CRM_BODY_FTL = CONTENT_BEGIN_CRM_BODY_FTL +  ANY_SYMBOL + CONTENT_END_CRM_BODY_FTL;
         static public final String BEGIN_PATTERN_CONTENT_CRM_BODY_FTL = CONTENT_BEGIN_CRM_BODY_FTL +  ANY_SYMBOL + "$";

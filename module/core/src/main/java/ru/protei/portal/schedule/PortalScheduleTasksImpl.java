@@ -32,14 +32,10 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
 
         log.info("onApplicationStartOrRefresh() Context refresh counter={} refresh source: {}",  contextRefreshedEventCounter.getAndIncrement(), event.getSource());
 
-
         /**
          * Run ONCE tasks
          */
         if (isPortalStarted.getAndSet( true )) return;
-
-        // every 5 minutes
-        scheduler.scheduleAtFixedRate(mailReceiverService::performReceiveMailAndAddComments, TimeUnit.MINUTES.toMillis(1));
 
         /**
          * Bootstrap data of application

@@ -587,6 +587,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
+        log.info("addCommentsReceivedByMail(): process receivedMail={}", receivedMail);
         String content = receivedMail.getContent();
         if (receivedMail.getContentType().equals(MailReceiverParsers.MailContent.MIME_TEXT_HTML)) {
             content = htmlClean(content);
@@ -630,13 +631,22 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     private String plainClean(String content) {
-        for (Pattern pattern : crmContentPattern) {
+        for (Pattern pattern : crmContentPatterns) {
             Matcher matcher = pattern.matcher(content);
             if (matcher.find()) {
                 content = content.substring(0, matcher.start()) +
                         content.substring(matcher.end());
                 break;
             }
+        }
+
+        return cleanNewLineDuplicate(content);
+    }
+
+    private String cleanNewLineDuplicate(String content) {
+        for (int i = 0; i < 2; i++) {
+            Matcher matcher = newLineDuplicatePattern.matcher(content);
+            content = matcher.replaceAll("\n");
         }
         return content;
     }
@@ -921,11 +931,12 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
 
     private static final long CHANGE_LIMIT_TIME = 300000;  // 5 минут (в мсек)
-    private final List<Pattern> crmContentPattern = Arrays.asList(
+    private final List<Pattern> crmContentPatterns = Arrays.asList(
             Pattern.compile(THUNDERBIRD_PATTERN_CONTENT_CRM_BODY_FTL),
             Pattern.compile(BEGIN_END_PATTERN_CONTENT_CRM_BODY_FTL),
             Pattern.compile(BEGIN_PATTERN_CONTENT_CRM_BODY_FTL),
             Pattern.compile(ONLY_END_PATTERN_CONTENT_CRM_BODY_FTL)
     );
+    private final Pattern newLineDuplicatePattern = Pattern.compile(CONTENT_NEW_LINE_DUPLICATE);
     private static Logger log = LoggerFactory.getLogger(CaseCommentServiceImpl.class);
 }
