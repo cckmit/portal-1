@@ -6,24 +6,14 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.Widget;
-import org.jetbrains.annotations.NotNull;
-import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.ui.common.client.widget.selector.login.UserLoginSelector;
 
-import java.util.*;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
-
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 class PopupWithTextAreaKeyDownEventHandler {
     PopupWithTextAreaKeyDownEventHandler(TextArea textArea, HTMLPanel childContainer) {
-        this.popupIterator = new PopupIterator(childContainer::getElement);
+        this.popupElementsIterator = new PopupElementsIterator(childContainer::getElement);
         childContainer.addDomHandler(event -> focusTextArea(textArea), MouseOverEvent.getType());
     }
 
@@ -41,14 +31,14 @@ class PopupWithTextAreaKeyDownEventHandler {
                 return;
             }
 
-            if (popupIterator.getChildCount() == 0) {
+            if (popupElementsIterator.isEmpty()) {
                 return;
             }
 
             event.preventDefault();
 
-            popupIterator.reset();
-            focusElement(popupIterator.getNext());
+            popupElementsIterator.reset();
+            focusItem(popupElementsIterator.getNext());
         };
     }
 
@@ -61,12 +51,12 @@ class PopupWithTextAreaKeyDownEventHandler {
             }
 
             if (KeyCodes.KEY_UP == event.getNativeKeyCode()) {
-                onKeyUpClicked(event, popupIterator, textArea);
+                onKeyUpClicked(event, popupElementsIterator, textArea);
                 return;
             }
 
             if (KeyCodes.KEY_DOWN == event.getNativeKeyCode()) {
-                onKeyDownClicked(event, popupIterator);
+                onKeyDownClicked(event, popupElementsIterator);
                 return;
             }
 
@@ -77,46 +67,46 @@ class PopupWithTextAreaKeyDownEventHandler {
         };
     }
 
-    private void onKeyUpClicked(KeyDownEvent event, PopupIterator popupIterator, TextArea textArea) {
+    private void onKeyUpClicked(KeyDownEvent event, PopupElementsIterator popupElementsIterator, TextArea textArea) {
         event.preventDefault();
-        Element previousUserLoginItem = popupIterator.getPrevious();
+        Element previousItem = popupElementsIterator.getPrevious();
 
-        if (previousUserLoginItem == null) {
+        if (previousItem == null) {
             focusTextArea(textArea);
             return;
         }
 
-        focusElement(previousUserLoginItem);
+        focusItem(previousItem);
     }
 
-    private void onKeyDownClicked(KeyDownEvent event, PopupIterator popupIterator) {
+    private void onKeyDownClicked(KeyDownEvent event, PopupElementsIterator popupElementsIterator) {
         event.preventDefault();
-        Element nextElement = popupIterator.getNext();
+        Element nextItem = popupElementsIterator.getNext();
 
-        if (nextElement == null) {
+        if (nextItem == null) {
             return;
         }
 
-        focusElement(nextElement);
+        focusItem(nextItem);
     }
 
     private void focusTextArea(TextArea textArea) {
         textArea.getElement().focus();
     }
 
-    private void focusElement(Element element) {
-        if (element == null) {
+    private void focusItem(Element item) {
+        if (item == null) {
             return;
         }
 
-        element.getFirstChildElement().focus();
+        item.getFirstChildElement().focus();
     }
 
-    private static final class PopupIterator {
+    private static final class PopupElementsIterator {
         private final Supplier<Element> elementContainerSupplier;
         private int index = -1;
 
-        PopupIterator(Supplier<Element> elementContainerSupplier) {
+        PopupElementsIterator(Supplier<Element> elementContainerSupplier) {
             this.elementContainerSupplier = elementContainerSupplier;
         }
 
@@ -144,8 +134,8 @@ class PopupWithTextAreaKeyDownEventHandler {
             return (Element) child;
         }
 
-        int getChildCount() {
-            return elementContainerSupplier.get().getChildCount();
+        boolean isEmpty() {
+            return elementContainerSupplier.get().getChildCount() == 0;
         }
 
         public void reset() {
@@ -153,5 +143,5 @@ class PopupWithTextAreaKeyDownEventHandler {
         }
     }
 
-    private PopupIterator popupIterator;
+    private PopupElementsIterator popupElementsIterator;
 }
