@@ -28,7 +28,7 @@ import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
  * Вид попапа
  */
 public class SelectorPopupWithSearch extends PopperComposite
-        implements SelectorPopup, HasAddHandlers, HasKeyDownHandlers {
+        implements SelectorPopup, HasAddHandlers {
 
     public SelectorPopupWithSearch() {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -45,7 +45,12 @@ public class SelectorPopupWithSearch extends PopperComposite
     }
 
     @Override
-    public HTMLPanel getChildContainer() {
+    public HasWidgets getChildContainer() {
+        return childContainer;
+    }
+
+    @Override
+    public ComplexPanel getChildContainerAsComplexPanel() {
         return childContainer;
     }
 
@@ -127,11 +132,6 @@ public class SelectorPopupWithSearch extends PopperComposite
     @Override
     public void setAddButtonVisibility(boolean isVisible) {
         addButton.setVisible( isVisible );
-    }
-
-    @Override
-    public HandlerRegistration addKeyDownHandler(KeyDownHandler handler) {
-        return addDomHandler(handler, KeyDownEvent.getType());
     }
 
     @UiHandler( "search" )

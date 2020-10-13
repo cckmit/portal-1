@@ -1,48 +1,52 @@
 package ru.protei.portal.ui.common.client.widget.mentioningtextarea;
 
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Node;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.Widget;
 
-import java.util.function.Supplier;
+import static java.util.Optional.of;
 
-class PopupWithTextAreaKeyDownEventHandler {
-    PopupWithTextAreaKeyDownEventHandler(TextArea textArea, HTMLPanel childContainer) {
-        this.popupElementsIterator = new PopupElementsIterator(childContainer::getElement);
+public class PopupWithTextAreaKeyDownEventHandler {
+    public PopupWithTextAreaKeyDownEventHandler(TextArea textArea, ComplexPanel childContainer) {
         childContainer.addDomHandler(event -> focusTextArea(textArea), MouseOverEvent.getType());
+        textArea.addKeyDownHandler(getTextAreaKeyDownHandler(childContainer));
+        childContainer.addDomHandler(getPopupKeyDownHandler(childContainer, textArea), KeyDownEvent.getType());
     }
 
-    KeyDownHandler getTextAreaKeyDownHandler(final Supplier<Boolean> isPopupVisible,
-                                             final Runnable onChange) {
+    public void setDefaultKeyDownHandler(KeyDownHandler defaultKeyDownHandler) {
+        this.defaultKeyDownHandler = defaultKeyDownHandler;
+    }
 
+    private KeyDownHandler getTextAreaKeyDownHandler(ComplexPanel childContainer) {
         return event -> {
-            if (Boolean.FALSE.equals(isPopupVisible.get())) {
-                onChange.run();
+            if (!childContainer.isVisible()) {
+                initDefaultKeyDownHandler(defaultKeyDownHandler, event);
                 return;
             }
 
             if (event.getNativeKeyCode() != KeyCodes.KEY_DOWN) {
-                onChange.run();
+                initDefaultKeyDownHandler(defaultKeyDownHandler, event);
                 return;
             }
 
-            if (popupElementsIterator.isEmpty()) {
+            if (childContainer.getWidgetCount() == 0) {
+                initDefaultKeyDownHandler(defaultKeyDownHandler, event);
                 return;
             }
 
             event.preventDefault();
 
-            popupElementsIterator.reset();
-            focusItem(popupElementsIterator.getNext());
+            focusedWidget = null;
+
+            focusWidget(getNext(childContainer, null));
         };
     }
 
-    KeyDownHandler getPopupKeyDownHandler(final TextArea textArea, final Runnable onChange) {
+    private KeyDownHandler getPopupKeyDownHandler(ComplexPanel childContainer, TextArea textArea) {
         return event -> {
             if (KeyCodes.KEY_ESCAPE == event.getNativeKeyCode()) {
                 event.preventDefault();
@@ -51,97 +55,79 @@ class PopupWithTextAreaKeyDownEventHandler {
             }
 
             if (KeyCodes.KEY_UP == event.getNativeKeyCode()) {
-                onKeyUpClicked(event, popupElementsIterator, textArea);
+                event.preventDefault();
+                focusedWidget = getPrevious(childContainer, focusedWidget);
+
+                if (focusedWidget == null) {
+                    focusTextArea(textArea);
+                    return;
+                }
+
+                focusWidget(focusedWidget);
                 return;
             }
 
             if (KeyCodes.KEY_DOWN == event.getNativeKeyCode()) {
-                onKeyDownClicked(event, popupElementsIterator);
+                event.preventDefault();
+                focusedWidget = getNext(childContainer, focusedWidget);
+                focusWidget(focusedWidget);
                 return;
             }
 
             if (KeyCodes.KEY_ENTER != event.getNativeKeyCode()) {
-                onChange.run();
                 focusTextArea(textArea);
+                initDefaultKeyDownHandler(defaultKeyDownHandler, event);
             }
         };
     }
 
-    private void onKeyUpClicked(KeyDownEvent event, PopupElementsIterator popupElementsIterator, TextArea textArea) {
-        event.preventDefault();
-        Element previousItem = popupElementsIterator.getPrevious();
-
-        if (previousItem == null) {
-            focusTextArea(textArea);
-            return;
+    private Widget getNext(ComplexPanel childContainer, Widget focusedWidget) {
+        if (focusedWidget == null) {
+            return childContainer.getWidget(0);
         }
 
-        focusItem(previousItem);
+        return of(focusedWidget)
+                .map(widget -> childContainer.getWidgetIndex(focusedWidget) + 1)
+                .filter(index -> index < childContainer.getWidgetCount())
+                .map(childContainer::getWidget)
+                .orElse(null);
     }
 
-    private void onKeyDownClicked(KeyDownEvent event, PopupElementsIterator popupElementsIterator) {
-        event.preventDefault();
-        Element nextItem = popupElementsIterator.getNext();
-
-        if (nextItem == null) {
-            return;
+    private Widget getPrevious(ComplexPanel childContainer, Widget focusedWidget) {
+        if (focusedWidget == null) {
+            return childContainer.getWidget(0);
         }
 
-        focusItem(nextItem);
+        return of(focusedWidget)
+                .map(widget -> childContainer.getWidgetIndex(focusedWidget) - 1)
+                .filter(index -> index >= 0)
+                .map(childContainer::getWidget)
+                .orElse(null);
     }
 
     private void focusTextArea(TextArea textArea) {
+        focusedWidget = null;
         textArea.getElement().focus();
     }
 
-    private void focusItem(Element item) {
+    private void focusWidget(Widget item) {
         if (item == null) {
             return;
         }
 
-        item.getFirstChildElement().focus();
+        item.getElement().getFirstChildElement().focus();
+        focusedWidget = item;
     }
 
-    private static final class PopupElementsIterator {
-        private final Supplier<Element> elementContainerSupplier;
-        private int index = -1;
-
-        PopupElementsIterator(Supplier<Element> elementContainerSupplier) {
-            this.elementContainerSupplier = elementContainerSupplier;
+    private void initDefaultKeyDownHandler(KeyDownHandler defaultKeyDownHandler, KeyDownEvent event) {
+        if (defaultKeyDownHandler == null) {
+            return;
         }
 
-        Element getNext() {
-            Element container = elementContainerSupplier.get();
-
-            if (index + 1 >= container.getChildCount()) {
-                return null;
-            }
-
-            Node child = container.getChild(++index);
-
-            return (Element) child;
-        }
-
-        Element getPrevious() {
-            Element container = elementContainerSupplier.get();
-
-            if (index - 1 < 0) {
-                return null;
-            }
-
-            Node child = container.getChild(--index);
-
-            return (Element) child;
-        }
-
-        boolean isEmpty() {
-            return elementContainerSupplier.get().getChildCount() == 0;
-        }
-
-        public void reset() {
-            index = -1;
-        }
+        defaultKeyDownHandler.onKeyDown(event);
     }
 
-    private PopupElementsIterator popupElementsIterator;
+    private Widget focusedWidget;
+
+    private KeyDownHandler defaultKeyDownHandler;
 }
