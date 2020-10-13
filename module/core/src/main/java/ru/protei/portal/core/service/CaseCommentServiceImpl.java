@@ -1,9 +1,6 @@
 package ru.protei.portal.core.service;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.safety.Whitelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,14 +30,12 @@ import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
-import ru.protei.portal.util.MailReceiverParsers;
+import ru.protei.portal.util.MailReceiverContentUtils;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
 import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
@@ -51,7 +46,6 @@ import static ru.protei.portal.core.model.dict.En_CaseType.CRM_SUPPORT;
 import static ru.protei.portal.core.model.dict.En_CaseType.PROJECT;
 import static ru.protei.portal.core.model.dict.En_Privilege.ISSUE_EDIT;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
-import static ru.protei.portal.util.MailReceiverParsers.MailContent.*;
 
 public class CaseCommentServiceImpl implements CaseCommentService {
 
@@ -588,13 +582,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
 
         log.info("addCommentsReceivedByMail(): process receivedMail={}", receivedMail);
-        String content = receivedMail.getContent();
-        if (receivedMail.getContentType().equals(MailReceiverParsers.MailContent.MIME_TEXT_HTML)) {
-            content = htmlClean(content);
-        }
-        content = plainClean(content);
-
-        CaseComment comment = createComment(caseObject, person, content);
+        CaseComment comment = createComment(caseObject, person,
+                MailReceiverContentUtils.getCleanedContent(receivedMail.getContentType(), receivedMail.getContent()));
         caseCommentDAO.persist(comment);
 
         boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( comment.getCaseId() ) );
@@ -621,34 +610,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         company.setId(companyId);
         jdbcManyRelationsHelper.fill(company, "childCompanies");
         return company.getCompanyAndChildIds();
-    }
-
-    private String htmlClean(String content) {
-        Document document = Jsoup.parse(content);
-        document.getElementById(CONTENT_ID_CRM_BODY_FTL).remove();
-        return Jsoup.clean(document.html(),
-                "", Whitelist.none(), new Document.OutputSettings().prettyPrint(false));
-    }
-
-    private String plainClean(String content) {
-        for (Pattern pattern : crmContentPatterns) {
-            Matcher matcher = pattern.matcher(content);
-            if (matcher.find()) {
-                content = content.substring(0, matcher.start()) +
-                        content.substring(matcher.end());
-                break;
-            }
-        }
-
-        return cleanNewLineDuplicate(content);
-    }
-
-    private String cleanNewLineDuplicate(String content) {
-        for (int i = 0; i < 2; i++) {
-            Matcher matcher = newLineDuplicatePattern.matcher(content);
-            content = matcher.replaceAll("\n");
-        }
-        return content;
     }
 
     private Result<List<CaseComment>> getList(CaseCommentQuery query) {
@@ -928,17 +889,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     @Autowired
     private ClientEventService clientEventService;
 */
-
-
     private static final long CHANGE_LIMIT_TIME = 300000;  // 5 минут (в мсек)
-
-    private final List<Pattern> crmContentPatterns = Arrays.asList(
-            Pattern.compile(DOT_DASH_PATTERN_CONTENT_CRM_BODY_FTL),
-            Pattern.compile(THUNDERBIRD_PATTERN_CONTENT_CRM_BODY_FTL),
-            Pattern.compile(BEGIN_END_PATTERN_CONTENT_CRM_BODY_FTL),
-            Pattern.compile(ONLY_BEGIN_PATTERN_CONTENT_CRM_BODY_FTL),
-            Pattern.compile(ONLY_END_PATTERN_CONTENT_CRM_BODY_FTL)
-    );
-    private final Pattern newLineDuplicatePattern = Pattern.compile(CONTENT_NEW_LINE_DUPLICATE);
     private static final Logger log = LoggerFactory.getLogger(CaseCommentServiceImpl.class);
 }

@@ -819,7 +819,7 @@ public class PortalConfigData {
                 blackList = new ArrayList<>();
             }
             enableForwardMail = properties.getProperty("mail.comment.forward.enable", Boolean.class, false);
-            forwardMail = properties.getProperty("mail.comment.email", "support@protei.ru");
+            forwardMail = properties.getProperty("mail.comment.forward.email", "support@protei.ru");
         }
 
         public String getUser() {
