@@ -212,16 +212,18 @@ public class MailReceiverContentUtils {
         return content;
     }
 
-    static private final String MIME_TEXT_TYPE = "TEXT";
+    static public final String MIME_TEXT_TYPE = "TEXT";
     static private final String MIME_MULTIPART_ALTERNATIVE = "multipart/alternative";
-    static private final String MIME_TEXT_HTML = "TEXT/HTML";
+    static public final String MIME_TEXT_HTML = "TEXT/HTML";
 
     static private final String DOT_DASH_LINE = "\n *(\\.|,){7,} *\n";
     static private final String ANY_SYMBOL = "(\\s|\\S)*";
     static private final String DATE = "\\d{1,2}(\\.|\\\\|-)\\d{1,2}(\\.|\\\\|-)\\d{4}";
+    static private final String GMAIL_DATE = "\\d{1,2} \\S{2,7}\\. \\d{4} г\\.";
     static private final String TIME = "([0-1][0-9]|[2][0-3]):([0-5][0-9])";
     static private final String EMAIL = "[-a-zA-Z0-9_\\.]+@[-a-zA-Z0-9_\\.]+\\.\\w{2,4}";
     static private final String THUNDERBIRD_REPLAY = DATE + "\\s+" + TIME + ",\\s+" + EMAIL;
+    static private final String MOBILEGMAIL_REPLAY = GMAIL_DATE + "\\s+" + TIME + ANY_SYMBOL + EMAIL;
     static private final String CONTENT_BEGIN_CRM_BODY_FTL = "===ContentBegin_crm\\.body\\.ftl===";
     static private final String CONTENT_END_CRM_BODY_FTL = "===ContentEnd_crm\\.body\\.ftl===";
     static private final String CONTENT_ID_CRM_BODY_FTL = "CrmMailContent";
@@ -231,6 +233,7 @@ public class MailReceiverContentUtils {
 
     static private final String DOT_DASH_PATTERN_CONTENT_CRM_BODY_FTL = DOT_DASH_LINE + ANY_SYMBOL + "$";
     static private final String THUNDERBIRD_PATTERN_CONTENT_CRM_BODY_FTL = THUNDERBIRD_REPLAY + ANY_SYMBOL + CONTENT_BEGIN_CRM_BODY_FTL + ANY_SYMBOL  + CONTENT_END_CRM_BODY_FTL;
+    static private final String MOBILEGMAIL_PATTERN_CONTENT_CRM_BODY_FTL = MOBILEGMAIL_REPLAY + ANY_SYMBOL + CONTENT_BEGIN_CRM_BODY_FTL + ANY_SYMBOL  + CONTENT_END_CRM_BODY_FTL;
     static private final String BEGIN_END_PATTERN_CONTENT_CRM_BODY_FTL = CONTENT_BEGIN_CRM_BODY_FTL +  ANY_SYMBOL + CONTENT_END_CRM_BODY_FTL;
     static private final String ONLY_BEGIN_PATTERN_CONTENT_CRM_BODY_FTL = CONTENT_BEGIN_CRM_BODY_FTL + ANY_SYMBOL + "$";
     static private final String ONLY_END_PATTERN_CONTENT_CRM_BODY_FTL = CONTENT_END_CRM_BODY_FTL;
@@ -238,6 +241,7 @@ public class MailReceiverContentUtils {
     static private final List<Pattern> crmContentPatterns = Arrays.asList(
             Pattern.compile(DOT_DASH_PATTERN_CONTENT_CRM_BODY_FTL),
             Pattern.compile(THUNDERBIRD_PATTERN_CONTENT_CRM_BODY_FTL),
+            Pattern.compile(MOBILEGMAIL_PATTERN_CONTENT_CRM_BODY_FTL),
             Pattern.compile(BEGIN_END_PATTERN_CONTENT_CRM_BODY_FTL),
             Pattern.compile(ONLY_BEGIN_PATTERN_CONTENT_CRM_BODY_FTL),
             Pattern.compile(ONLY_END_PATTERN_CONTENT_CRM_BODY_FTL)
