@@ -13,7 +13,6 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.LocationQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
@@ -241,7 +240,7 @@ public class ProjectServiceImpl implements ProjectService {
         jdbcManyRelationsHelper.fillAll( projectFormDB );
 
         Project oldStateProject = projectDAO.get( project.getId() );
-        jdbcManyRelationsHelper.fillAll( projectFormDB );
+        jdbcManyRelationsHelper.fillAll( oldStateProject );
 
         if (!Objects.equals(project.getCustomer(), projectFormDB.getCustomer())) {
             return error(En_ResultStatus.NOT_ALLOWED_CHANGE_PROJECT_COMPANY);
@@ -263,10 +262,10 @@ public class ProjectServiceImpl implements ProjectService {
 
         try {
             updateTeam( caseObject, project.getTeam() );
-            updateLocations( caseObject, project.getProductDirectionId() );
+            updateLocations( caseObject, project.getRegion() );
             updateProducts( projectFormDB, project.getProducts() );
         } catch (Throwable e) {
-            log.error("saveProject(): error during save project when update one of following parameters: team, location, or products; {}", e.getMessage());
+            log.error("saveProject(): error during save project when update one of following parameters: team, location, or products;", e);
             throw new ResultStatusException(En_ResultStatus.INTERNAL_ERROR);
         }
 
@@ -319,7 +318,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         try {
             updateTeam(caseObject, project.getTeam());
-            updateLocations(caseObject,  project.getProductDirectionId());
+            updateLocations(caseObject,  project.getRegion());
             updateProducts(project, project.getProducts());
         } catch (Throwable e) {
             log.error("createProject(): error during create project when set one of following parameters: team, location, or products; {}", e.getMessage());
@@ -431,6 +430,8 @@ public class ProjectServiceImpl implements ProjectService {
             caseObject.setModified(new Date());
         }
 
+        caseObject.setId(project.getId());
+
         caseObject.setStateId(project.getState().getId());
 
         caseObject.setName(project.getName());
@@ -491,8 +492,8 @@ public class ProjectServiceImpl implements ProjectService {
         }
     }
 
-    private void updateLocations( CaseObject caseObject, Long productDirectionId ) {
-        if ( productDirectionId == null ) {
+    private void updateLocations( CaseObject caseObject, EntityOption location ) {
+        if ( location == null ) {
             return;
         }
 
@@ -500,7 +501,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         if ( caseObject.getLocations() != null ) {
             for ( CaseLocation loc : caseObject.getLocations() ) {
-                if ( loc.getLocationId().equals( productDirectionId ) ) {
+                if ( loc.getLocationId().equals( location ) ) {
                     locationFound = true;
                     continue;
                 }
@@ -513,7 +514,7 @@ public class ProjectServiceImpl implements ProjectService {
             return;
         }
 
-        caseLocationDAO.persist( CaseLocation.makeLocationOf( caseObject, productDirectionId ) );
+        caseLocationDAO.persist( CaseLocation.makeLocationOf( caseObject, location ) );
 
     }
 

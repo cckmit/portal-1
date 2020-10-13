@@ -4,6 +4,7 @@ import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.ProjectDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.Project;
+import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
@@ -31,11 +32,12 @@ public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements Proje
 
     @Override
     public Collection<Project> selectScheduledPauseTime( long greaterThanTime ) {
-        Condition condition = SqlQueryBuilder.condition()
-                .and( CASE_TYPE ).equal( En_CaseType.PROJECT.getId() )
-                .and( DELETED ).equal( Project.NOT_DELETED )
-                .and( PAUSE_DATE ).gt( greaterThanTime );
-        return partialGetListByCondition( condition.getSqlCondition(), condition.getSqlParameters(), ID, PAUSE_DATE );
+        ProjectQuery query = new ProjectQuery();
+
+        query.setPauseDateGreaterThan(greaterThanTime);
+        query.setDeleted(CaseObject.NOT_DELETED);
+
+        return getProjects(query);
     }
 
     @Override
@@ -90,7 +92,7 @@ public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements Proje
 
             if (isNotEmpty(query.getCaseIds())) {
                 condition
-                        .append(" and id in ")
+                        .append(" and project.id in ")
                         .append(makeInArg(query.getCaseIds(), false));
             }
 
@@ -192,7 +194,7 @@ public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements Proje
 
             if (isNotEmpty(query.getProductIds())) {
                 if (!query.getProductIds().remove(CrmConstants.Product.UNDEFINED) || !query.getProductIds().isEmpty()) {
-                    condition.append(" and id in")
+                    condition.append(" and project.id in")
                             .append(" (select project_id from project_to_product where product_id in " + makeInArg(query.getProductIds(), false) + ")");
                 }
             }
@@ -216,11 +218,19 @@ public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements Proje
             }
 
             if (query.getPlatformIndependentProject() != null && query.getPlatformIndependentProject()) {
-                condition.append(" and id NOT IN (SELECT platform.project_id FROM platform WHERE platform.project_id IS NOT NULL)");
+                condition.append(" and project.id NOT IN (SELECT platform.project_id FROM platform WHERE platform.project_id IS NOT NULL)");
             }
 
             if (isNotEmpty(query.getInitiatorCompanyIds())) {
-                condition.append(" and (initiator_company in ").append(makeInArg(query.getInitiatorCompanyIds(), false));
+                condition.append(" and initiator_company in ").append(makeInArg(query.getInitiatorCompanyIds(), false));
+            }
+
+            if (query.getPauseDateGreaterThan() != null) {
+                condition.append(" and CO.pause_date > ").append(query.getPauseDateGreaterThan());
+            }
+
+            if (query.getDeleted() != null) {
+                condition.append(" and CO.deleted = ").append(query.getDeleted());
             }
         }));
     }

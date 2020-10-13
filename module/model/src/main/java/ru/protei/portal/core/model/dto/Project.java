@@ -23,6 +23,8 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 public class Project extends AuditableObject {
 
     public static final int NOT_DELETED = CaseObject.NOT_DELETED;
+    public static final String CASE_OBJECT_ALIAS = "CO";
+
     public static final String AUDIT_TYPE = "Project";
     /**
      * Идентификатор записи о проекте
@@ -33,33 +35,33 @@ public class Project extends AuditableObject {
     /**
      * Название проекта
      */
-    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = "CASE_NAME", table = "case_object", sqlTableAlias = "CO")
+    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = "CASE_NAME", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
     private String name;
 
     /**
      * Описание проекта
      */
-    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Columns.DESCRIPTION, table = "case_object", sqlTableAlias = "CO")
+    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Columns.DESCRIPTION, table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
     private String description;
 
     /**
      * Текущее состояние проекта
      */
-    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Columns.STATE, table = "case_object", sqlTableAlias = "CO")
+    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Columns.STATE, table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
     private Long stateId;
 
     /**
      * Тип заказчика
      */
     @JdbcColumn(name = Columns.CUSTOMER_TYPE)
-    @JdbcEnumerated( EnumType.ID )
+    @JdbcEnumerated( value = EnumType.ID, mandatory = false )
     private En_CustomerType customerType;
 
     /**
      * Заказчик
      */
     @JdbcJoinedObject(joinPath = {
-            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = "CO"),
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
             @JdbcJoinPath(localColumn = "initiator_company", remoteColumn = "id", table = "company")})
     private Company customer;
 
@@ -67,26 +69,26 @@ public class Project extends AuditableObject {
      * Имя продукта
      */
     @JdbcJoinedColumn(joinPath = {
-            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = "CO"),
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
             @JdbcJoinPath(localColumn = "product_id", remoteColumn = "id", table = "dev_unit")}, mappedColumn = "UNIT_NAME")
     private String productDirectionName;
 
     /**
      * id продукта
      */
-    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = "product_id", table = "case_object", sqlTableAlias = "CO")
+    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = "product_id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
     private Long productDirectionId;
 
     /**
      * Дата создания
      */
-    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Columns.CREATED, table = "case_object", sqlTableAlias = "CO")
+    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Columns.CREATED, table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
     private Date created;
 
     /**
      * Создатель проекта
      */
-    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Columns.CREATOR, table = "case_object", sqlTableAlias = "CO")
+    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Columns.CREATOR, table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
     private Long creatorId;
 
     @JdbcOneToMany( table = "case_member", localColumn = "id", remoteColumn = "CASE_ID" )
@@ -98,7 +100,7 @@ public class Project extends AuditableObject {
     @JdbcManyToMany(linkTable = "project_to_product", localLinkColumn = "project_id", remoteLinkColumn = "product_id")
     private Set<DevUnit> products;
 
-    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Columns.DELETED, table = "case_object", sqlTableAlias = "CO")
+    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Columns.DELETED, table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
     private boolean deleted;
 
     /**
@@ -111,7 +113,7 @@ public class Project extends AuditableObject {
     private List<CaseLink> links;
 
     @JdbcJoinedObject(joinPath = {
-            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = "CO"),
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
             @JdbcJoinPath(localColumn = "CREATOR", remoteColumn = "id", table = "person")})
     private Person creator;
 
@@ -119,20 +121,20 @@ public class Project extends AuditableObject {
 
     private EntityOption manager;
 
-    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Columns.MANAGER, table = "case_object", sqlTableAlias = "CO")
+    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Columns.MANAGER, table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
     private Long managerId;
 
     @JdbcJoinedColumn(joinPath = {
-            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = "CO"),
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
             @JdbcJoinPath(localColumn = Columns.MANAGER, remoteColumn = "id", table = "person")}, mappedColumn = "displayShortName")
     private String managerName;
 
     @JdbcJoinedColumn(joinPath = {
-            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = "CO"),
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
             @JdbcJoinPath(localColumn = Columns.PLATFORM_ID, remoteColumn = "id", table = "platform")}, mappedColumn = "name")
     private String platformName;
 
-    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Columns.PLATFORM_ID, table = "case_object", sqlTableAlias = "CO")
+    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Columns.PLATFORM_ID, table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
     private Long platformId;
 
     @JdbcColumn(name = "technical_support_validity")
@@ -147,7 +149,7 @@ public class Project extends AuditableObject {
     @JdbcOneToMany(table = "project_sla", localColumn = "id", remoteColumn = "project_id")
     private List<ProjectSla> projectSlas;
 
-    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Columns.PAUSE_DATE, table = "case_object", sqlTableAlias = "CO")
+    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Columns.PAUSE_DATE, table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
     private Long pauseDate;
 
     public Long getId() {

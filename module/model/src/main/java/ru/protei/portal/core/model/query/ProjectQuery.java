@@ -42,6 +42,10 @@ public class ProjectQuery extends BaseQuery {
 
     private Set<Long> initiatorCompanyIds;
 
+    private Long pauseDateGreaterThan;
+
+    private Integer deleted;
+
     public ProjectQuery() {
         sortField = En_SortField.case_name;
         sortDir = En_SortDir.ASC;
@@ -184,6 +188,26 @@ public class ProjectQuery extends BaseQuery {
         this.initiatorCompanyIds = initiatorCompanyIds;
     }
 
+    public void setType(En_CaseType type) {
+        this.type = type;
+    }
+
+    public Long getPauseDateGreaterThan() {
+        return pauseDateGreaterThan;
+    }
+
+    public void setPauseDateGreaterThan(Long pauseDateGreaterThan) {
+        this.pauseDateGreaterThan = pauseDateGreaterThan;
+    }
+
+    public Integer getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Integer deleted) {
+        this.deleted = deleted;
+    }
+
     @Override
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
@@ -198,7 +222,9 @@ public class ProjectQuery extends BaseQuery {
                 customerType != null ||
                 createdFrom != null ||
                 createdTo != null ||
-                platformIndependentProject != null;
+                platformIndependentProject != null ||
+                pauseDateGreaterThan != null ||
+                deleted != null;
     }
 
     @Override
@@ -219,6 +245,8 @@ public class ProjectQuery extends BaseQuery {
                 ", createdTo=" + createdTo +
                 ", platformIndependentProject=" + platformIndependentProject +
                 ", initiatorCompanyIds=" + initiatorCompanyIds +
+                ", pauseDateGreaterThan=" + pauseDateGreaterThan +
+                ", deleted=" + deleted +
                 '}';
     }
 
@@ -240,14 +268,16 @@ public class ProjectQuery extends BaseQuery {
                 Objects.equals(createdFrom, that.createdFrom) &&
                 Objects.equals(createdTo, that.createdTo) &&
                 Objects.equals(platformIndependentProject, that.platformIndependentProject) &&
-                Objects.equals(initiatorCompanyIds, that.initiatorCompanyIds);
+                Objects.equals(initiatorCompanyIds, that.initiatorCompanyIds) &&
+                Objects.equals(pauseDateGreaterThan, that.pauseDateGreaterThan) &&
+                Objects.equals(deleted, that.deleted);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(caseIds, states, regions, headManagers, caseMembers, directions,
                 districtIds, memberId, productIds, customerType, createdFrom, createdTo,
-                platformIndependentProject, initiatorCompanyIds);
+                platformIndependentProject, initiatorCompanyIds, pauseDateGreaterThan, deleted);
     }
 
 

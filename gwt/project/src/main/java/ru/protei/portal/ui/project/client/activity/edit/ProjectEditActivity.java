@@ -21,6 +21,7 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -77,7 +78,10 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.saveEnabled().setEnabled(false);
 
         regionService.saveProject(project, new FluentCallback<UiResult<Project>>()
-                .withError(throwable -> view.saveEnabled().setEnabled(true))
+                .withError(throwable -> {
+                    view.saveEnabled().setEnabled(true);
+                    defaultErrorHandler.accept(throwable);
+                })
                 .withSuccess(projectSaveResult -> {
                     view.saveEnabled().setEnabled(true);
 
@@ -291,6 +295,8 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     RegionControllerAsync regionService;
     @Inject
     PolicyService policyService;
+    @Inject
+    DefaultErrorHandler defaultErrorHandler;
 
     private Project project;
 
