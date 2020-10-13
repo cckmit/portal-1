@@ -137,6 +137,7 @@ public class MailReceiverParsers {
         static public final String MIME_MULTIPART_ALTERNATIVE = "multipart/alternative";
         static public final String MIME_TEXT_HTML = "TEXT/HTML";
 
+        static public final String DOT_DASH_LINE = "\n *(\\.|,){7,} *\n";
         static public final String ANY_SYMBOL = "(\\s|\\S)*";
         static public final String DATE = "\\d{1,2}(\\.|\\\\|-)\\d{1,2}(\\.|\\\\|-)\\d{4}";
         static public final String TIME = "([0-1][0-9]|[2][0-3]):([0-5][0-9])";
@@ -148,9 +149,10 @@ public class MailReceiverParsers {
 
         static public final String CONTENT_NEW_LINE_DUPLICATE = "(\n+) *";
 
+        static public final String DOT_DASH_PATTERN_CONTENT_CRM_BODY_FTL = DOT_DASH_LINE + ANY_SYMBOL + "$";
         static public final String THUNDERBIRD_PATTERN_CONTENT_CRM_BODY_FTL = THUNDERBIRD_REPLAY + ANY_SYMBOL + CONTENT_BEGIN_CRM_BODY_FTL + ANY_SYMBOL  + CONTENT_END_CRM_BODY_FTL;
         static public final String BEGIN_END_PATTERN_CONTENT_CRM_BODY_FTL = CONTENT_BEGIN_CRM_BODY_FTL +  ANY_SYMBOL + CONTENT_END_CRM_BODY_FTL;
-        static public final String BEGIN_PATTERN_CONTENT_CRM_BODY_FTL = CONTENT_BEGIN_CRM_BODY_FTL +  ANY_SYMBOL + "$";
+        static public final String ONLY_BEGIN_PATTERN_CONTENT_CRM_BODY_FTL = CONTENT_BEGIN_CRM_BODY_FTL + ANY_SYMBOL + "$";
         static public final String ONLY_END_PATTERN_CONTENT_CRM_BODY_FTL = CONTENT_END_CRM_BODY_FTL;
     }
 

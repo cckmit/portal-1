@@ -931,12 +931,14 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
 
     private static final long CHANGE_LIMIT_TIME = 300000;  // 5 минут (в мсек)
+
     private final List<Pattern> crmContentPatterns = Arrays.asList(
+            Pattern.compile(DOT_DASH_PATTERN_CONTENT_CRM_BODY_FTL),
             Pattern.compile(THUNDERBIRD_PATTERN_CONTENT_CRM_BODY_FTL),
             Pattern.compile(BEGIN_END_PATTERN_CONTENT_CRM_BODY_FTL),
-            Pattern.compile(BEGIN_PATTERN_CONTENT_CRM_BODY_FTL),
+            Pattern.compile(ONLY_BEGIN_PATTERN_CONTENT_CRM_BODY_FTL),
             Pattern.compile(ONLY_END_PATTERN_CONTENT_CRM_BODY_FTL)
     );
     private final Pattern newLineDuplicatePattern = Pattern.compile(CONTENT_NEW_LINE_DUPLICATE);
-    private static Logger log = LoggerFactory.getLogger(CaseCommentServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(CaseCommentServiceImpl.class);
 }
