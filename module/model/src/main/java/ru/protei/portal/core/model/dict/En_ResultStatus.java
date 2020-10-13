@@ -286,6 +286,16 @@ public enum En_ResultStatus {
     /**
      * Сервис отчётов не настроен
      */
-    REPORTING_SERVICE_NOT_CONFIGURED
+    REPORTING_SERVICE_NOT_CONFIGURED,
+
+    /**
+     * Родительский объект не найден
+     */
+    NOT_FOUND_PARENT,
+
+    /**
+     * Запрещено создание подзадачи
+     */
+    NOT_ALLOWED_CREATE_SUBTASK
     ;
 }

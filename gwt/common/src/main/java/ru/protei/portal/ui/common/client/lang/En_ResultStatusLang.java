@@ -83,6 +83,8 @@ public class En_ResultStatusLang {
             case NOT_ALLOWED_EDIT_COMMENT_BY_TIME: return lang.errEditIssueCommentByTime();
             case NOT_ALLOWED_REMOVE_COMMENT_BY_TIME: return lang.errRemoveIssueCommentByTime();
             case REPORTING_SERVICE_NOT_CONFIGURED: return lang.errReportingServiceNotConfigured();
+            case NOT_FOUND_PARENT: return lang.errNotFoundParent();
+            case NOT_ALLOWED_CREATE_SUBTASK: return lang.errNotAllowedCreateSubtask();
             default: return lang.errUnknownResult();
         }
     }

@@ -188,6 +188,7 @@ public class CrmConstants {
         long SOLVED_NOT_A_PROBLEM = 7;
         long SOLVED_FIXED = 8;
         long SOLVED_DUPLICATED = 9;
+        long BLOCKED = 38;
     }
 
     public interface Department {

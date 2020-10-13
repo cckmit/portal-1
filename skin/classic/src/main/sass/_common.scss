@@ -1420,6 +1420,10 @@ td.info {
   color: #868686 !important;
 }
 
+.state-blocked {
+  color: black;
+}
+
 /****************/
 
 .none-vertical-align {
@@ -1555,6 +1559,16 @@ td.info {
 .case-paused,
 .case-request_to_partner {
   color: #868686;
+  font-weight: bold;
+}
+
+.label-blocked,
+.option-blocked .option-name {
+  background-color: black;
+}
+
+.case-blocked {
+  color: black;
   font-weight: bold;
 }
 

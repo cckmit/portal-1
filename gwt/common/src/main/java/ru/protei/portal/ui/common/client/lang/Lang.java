@@ -3127,4 +3127,8 @@ public interface Lang extends Messages, ContactItemLang {
     String errSaveSubtaskCompanyWithAutoOpenIssues();
 
     String errSaveSubtaskFieldsInvalid();
+
+    String errNotFoundParent();
+
+    String errNotAllowedCreateSubtask();
 }

@@ -44,4 +44,6 @@ public interface IssueController extends RemoteService {
     Boolean removeFavoriteState(Long personId, Long issueId) throws RequestFailedException;
 
     Long addFavoriteState(Long personId, Long issueId) throws RequestFailedException;
+
+    UiResult<Long> createSubtask(CaseObjectCreateRequest createRequest, Long parentCaseId) throws RequestFailedException;
 }

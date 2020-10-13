@@ -20,10 +20,7 @@ import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.struct.JiraExtAppData;
-import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
-import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.util.DiffCollectionResult;
-import ru.protei.portal.core.model.util.DiffResult;
+import ru.protei.portal.core.model.util.*;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.portal.core.model.view.PlatformOption;
@@ -87,7 +84,7 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public Result< CaseObject > createCaseObject( AuthToken token, CaseObjectCreateRequest caseObjectCreateRequest) {
+    public Result< CaseObject > createCaseObject(AuthToken token, CaseObjectCreateRequest caseObjectCreateRequest) {
 
         CaseObject caseObject = caseObjectCreateRequest.getCaseObject();
 
@@ -673,6 +670,46 @@ public class CaseServiceImpl implements CaseService {
         return En_ResultStatus.OK;
     }
 
+    @Override
+    @Transactional
+    public Result<CaseObject> createSubtask(AuthToken token, CaseObjectCreateRequest caseObjectCreateRequest, Long parentCaseObjectId) {
+
+        if (parentCaseObjectId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        CaseObject parentCaseObject = caseObjectDAO.get(parentCaseObjectId);
+        if (parentCaseObject == null) {
+            return error(En_ResultStatus.NOT_FOUND_PARENT);
+        }
+
+        if (parentCaseObject.getInitiatorCompany().getAutoOpenIssue()) {
+            return error(En_ResultStatus.NOT_ALLOWED_CREATE_SUBTASK);
+        }
+
+        if (isStateSubtaskNotAllowed(parentCaseObject)) {
+            return error(En_ResultStatus.NOT_ALLOWED_CREATE_SUBTASK);
+        }
+
+        fillCaseCreateRequest(caseObjectCreateRequest, parentCaseObject);
+
+        Result<CaseObject> result = createCaseObject(token, caseObjectCreateRequest);
+        if (result.isError()) {
+            log.error("createSubtask(): parent-id = {} | failed to save subtask to db with result = {}", parentCaseObjectId, result);
+            throw new ResultStatusException(result.getStatus());
+        }
+
+        parentCaseObject.setStateId(CrmConstants.State.BLOCKED);
+
+        Result<CaseObjectMeta> parentUpdate = updateCaseObjectMeta(token, new CaseObjectMeta(parentCaseObject));
+        if (parentUpdate.isError()) {
+            log.error("createSubtask(): parent-id = {} | failed to save parent issue to db with result = {}", parentCaseObjectId, result);
+            throw new ResultStatusException(result.getStatus());
+        }
+
+        return result;
+    }
+
     private Long createAndPersistTimeElapsedMessage(Long authorId, Long caseId, Long timeElapsed, En_TimeElapsedType timeElapsedType) {
         CaseComment stateChangeMessage = new CaseComment();
         stateChangeMessage.setAuthorId(authorId);
@@ -779,6 +816,11 @@ public class CaseServiceImpl implements CaseService {
     private boolean isStateReopenNotAllowed(CaseObjectMeta oldMeta, CaseObjectMeta newMeta) {
         return isTerminalState(oldMeta.getStateId()) &&
               !isTerminalState(newMeta.getStateId());
+    }
+
+    private boolean isStateSubtaskNotAllowed(CaseObject caseObject) {
+        return isTerminalState(caseObject.getStateId()) ||
+                CrmConstants.State.CREATED == caseObject.getStateId();
     }
 
     private boolean isPersonHasGrantAccess(AuthToken token, En_Privilege privilege) {
@@ -1025,6 +1067,24 @@ public class CaseServiceImpl implements CaseService {
         if (!policyService.hasGrantAccessFor(token.getRoles(), En_Privilege.ISSUE_VIEW)) {
             caseObject.setAttachments(stream(caseObject.getAttachments()).filter(not(Attachment::isPrivate)).collect(Collectors.toList()));
         }
+    }
+
+    private void fillCaseCreateRequest(CaseObjectCreateRequest createRequest, CaseObject parent) {
+
+        CaseObject subtask = createRequest.getCaseObject();
+        subtask.setPrivateCase(parent.isPrivateCase());
+        subtask.setImpLevel(parent.getImpLevel());
+        subtask.setInitiatorCompanyId(parent.getInitiatorCompanyId());
+        subtask.setInitiatorId(parent.getInitiatorId());
+        subtask.setProductId(parent.getProductId());
+        subtask.setPlatformId(parent.getPlatformId());
+        subtask.setNotifiers(setOf(parent.getManager()));
+
+        CaseLink caseLink = new CaseLink();
+        caseLink.setType(En_CaseLink.CRM);
+        caseLink.setRemoteId(parent.getId().toString());
+        caseLink.setWithCrosslink(true);
+        createRequest.addLink(caseLink);
     }
 
     @Autowired

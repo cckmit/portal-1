@@ -185,6 +185,35 @@ public class IssueControllerImpl implements IssueController {
         return ServiceUtils.checkResultAndGetData(caseService.addFavoriteState(token, personId, issueId));
     }
 
+    @Override
+    public UiResult<Long> createSubtask(CaseObjectCreateRequest createRequest, Long parentCaseId) throws RequestFailedException {
+        log.info("createSubtask(): createRequest={}, parentCaseId={}", createRequest, parentCaseId);
+
+        if (createRequest == null || createRequest.getCaseId() != null || parentCaseId == null) {
+            throw new RequestFailedException(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        createRequest.getCaseObject().setType(En_CaseType.CRM_SUPPORT);
+        createRequest.getCaseObject().setCreatorId(token.getPersonId());
+
+        Result<CaseObject> response = caseService.createSubtask(token, createRequest, parentCaseId);
+
+        if (response.isError()) {
+            log.info("createSubtask(): status={}", response.getStatus());
+            throw new RequestFailedException(response.getStatus());
+        }
+
+        if (response.getMessage() != null) {
+            log.info("createSubtask(): message={}", response.getMessage());
+        }
+
+        log.info("createSubtask(): id={}", response.getData().getId());
+
+        return new UiResult<>(response.getData().getId(), response.getMessage());
+    }
+
     @Autowired
     CaseService caseService;
     @Autowired

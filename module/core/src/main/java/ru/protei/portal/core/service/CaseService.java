@@ -34,7 +34,7 @@ public interface CaseService {
 
     @Privileged({ En_Privilege.ISSUE_CREATE })
     @Auditable( En_AuditType.ISSUE_CREATE )
-    Result<CaseObject> createCaseObject( AuthToken token, CaseObjectCreateRequest request);
+    Result<CaseObject> createCaseObject(AuthToken token, CaseObjectCreateRequest request);
 
     @Privileged({ En_Privilege.ISSUE_EDIT })
     @Auditable( En_AuditType.ISSUE_MODIFY )
@@ -92,4 +92,8 @@ public interface CaseService {
 
     @Privileged({En_Privilege.ISSUE_VIEW})
     Result<Long> addFavoriteState(AuthToken token, Long personId, Long issueId);
+
+    @Privileged({ En_Privilege.ISSUE_CREATE })
+    @Auditable( En_AuditType.ISSUE_CREATE )
+    Result<CaseObject> createSubtask(AuthToken token, CaseObjectCreateRequest caseObjectCreateRequest, Long parentCaseObjectId);
 }

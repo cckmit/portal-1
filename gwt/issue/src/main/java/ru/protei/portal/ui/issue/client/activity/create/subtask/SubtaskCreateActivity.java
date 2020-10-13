@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.*;
@@ -25,6 +24,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import java.util.function.Consumer;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
+import static ru.protei.portal.core.model.util.CaseStateUtil.isTerminalState;
 import static ru.protei.portal.ui.common.client.common.UiConstants.ISSUE_CREATE_PREVIEW_DISPLAYED;
 
 public abstract class SubtaskCreateActivity implements AbstractSubtaskCreateActivity, AbstractDialogDetailsActivity, Activity {
@@ -57,14 +57,15 @@ public abstract class SubtaskCreateActivity implements AbstractSubtaskCreateActi
 
     @Override
     public void onSaveClicked() {
-        if (!validateView()) {
+        if (!validate()) {
             return;
         }
 
         CaseObjectCreateRequest createRequest = fillCaseCreateRequest(new CaseObjectCreateRequest());
 
-        issueService.createIssue(createRequest, new FluentCallback<UiResult<Long>>()
+        issueService.createSubtask(createRequest, parentCaseObject.getId(), new FluentCallback<UiResult<Long>>()
                 .withSuccess(createIssueResult -> {
+                    onCancelClicked();
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new IssueEvents.Show(false));
                 })
@@ -79,6 +80,7 @@ public abstract class SubtaskCreateActivity implements AbstractSubtaskCreateActi
 
     @Override
     public void onCancelClicked() {
+        parentCaseObject = null;
         dialogView.hidePopup();
     }
 
@@ -101,7 +103,6 @@ public abstract class SubtaskCreateActivity implements AbstractSubtaskCreateActi
     }
 
     private void requestParentIssue(Long caseNumber) {
-        this.parentCaseObject = null;
         issueService.getIssue(caseNumber, new FluentCallback<CaseObject>()
                 .withSuccess(this::fillView));
     }
@@ -111,22 +112,25 @@ public abstract class SubtaskCreateActivity implements AbstractSubtaskCreateActi
 
         view.name().setValue(null);
         view.description().setValue(null);
-        subcontractorCompanyModel.setCompanyId(caseObject.getId());
+        subcontractorCompanyModel.setCompanyId(caseObject.getInitiatorCompanyId());
         view.managerCompany().setValue(null);
         view.manager().setValue(null);
     }
 
-    private boolean validateView() {
+    private boolean validate() {
 
-        if (parentCaseObject.getImpLevel() == null ||
-                parentCaseObject.getInitiatorCompanyId() == null ||
-                parentCaseObject.getProductId() == null) {
-            fireEvent(new NotifyEvents.Show(lang.errSaveSubtaskParentFieldsInvalid(), NotifyEvents.NotifyType.ERROR));
+        if (parentCaseObject == null) {
+            fireEvent(new NotifyEvents.Show(lang.errNotFoundParent(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
 
         if (isCompanyWithAutoOpenIssues(parentCaseObject.getInitiatorCompany())) {
             fireEvent(new NotifyEvents.Show(lang.errSaveSubtaskCompanyWithAutoOpenIssues(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
+        if (isStateCreatingSubtaskNotAllowed(parentCaseObject)) {
+            fireEvent(new NotifyEvents.Show(lang.errNotAllowedCreateSubtask(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
 
@@ -146,30 +150,21 @@ public abstract class SubtaskCreateActivity implements AbstractSubtaskCreateActi
         CaseObject caseObject = createRequest.getCaseObject();
         caseObject.setName(view.name().getValue());
         caseObject.setInfo(view.description().getValue());
-        caseObject.setPrivateCase(caseObject.isPrivateCase());
         caseObject.setStateId(view.manager().getValue() == null ? CrmConstants.State.CREATED : CrmConstants.State.OPENED);
-        caseObject.setImpLevel(caseObject.getImpLevel());
-        caseObject.setInitiatorCompanyId(caseObject.getInitiatorCompanyId());
-        caseObject.setInitiatorId(caseObject.getInitiatorId());
-        caseObject.setProductId(caseObject.getProductId());
         caseObject.setManagerId(view.manager().getValue() == null ? null : view.manager().getValue().getId());
-        caseObject.setNotifiers(setOf(caseObject.getManager()));
-        caseObject.setPlatformId(caseObject.getPlatformId());
-        caseObject.setPlatformName(caseObject.getPlatformName());
         caseObject.setManagerCompanyId(view.managerCompany().getValue().getId());
         caseObject.setManagerCompanyName(view.managerCompany().getValue().getDisplayText());
-
-        CaseLink caseLink = new CaseLink();
-        caseLink.setType(En_CaseLink.CRM);
-        caseLink.setRemoteId(parentCaseObject.getId().toString());
-        caseLink.setWithCrosslink(true);
-        createRequest.addLink(caseLink);
 
         return createRequest;
     }
 
     private boolean isCompanyWithAutoOpenIssues(Company company) {
         return Boolean.TRUE.equals(company.getAutoOpenIssue());
+    }
+
+    private boolean isStateCreatingSubtaskNotAllowed(CaseObject caseObject) {
+        return isTerminalState(caseObject.getStateId()) ||
+                CrmConstants.State.CREATED == caseObject.getStateId();
     }
 
     @Inject
