@@ -11,23 +11,18 @@ import com.google.gwt.user.client.ui.Widget;
 import static java.util.Optional.of;
 
 public class PopupWithTextAreaKeyDownEventHandler {
-    public PopupWithTextAreaKeyDownEventHandler(TextArea textArea, ComplexPanel childContainer) {
+    public PopupWithTextAreaKeyDownEventHandler(final TextArea textArea, ComplexPanel childContainer) {
         childContainer.addDomHandler(event -> focusTextArea(textArea), MouseOverEvent.getType());
-        textArea.addKeyDownHandler(getTextAreaKeyDownHandler(childContainer));
-        childContainer.addDomHandler(getPopupKeyDownHandler(childContainer, textArea), KeyDownEvent.getType());
+        textArea.addKeyDownHandler(createTextAreaKeyDownHandler(childContainer));
+        childContainer.addDomHandler(createPopupKeyDownHandler(childContainer, textArea), KeyDownEvent.getType());
     }
 
     public void setDefaultKeyDownHandler(KeyDownHandler defaultKeyDownHandler) {
         this.defaultKeyDownHandler = defaultKeyDownHandler;
     }
 
-    private KeyDownHandler getTextAreaKeyDownHandler(ComplexPanel childContainer) {
+    private KeyDownHandler createTextAreaKeyDownHandler(final ComplexPanel childContainer) {
         return event -> {
-            if (!childContainer.isVisible()) {
-                initDefaultKeyDownHandler(defaultKeyDownHandler, event);
-                return;
-            }
-
             if (event.getNativeKeyCode() != KeyCodes.KEY_DOWN) {
                 initDefaultKeyDownHandler(defaultKeyDownHandler, event);
                 return;
@@ -40,13 +35,11 @@ public class PopupWithTextAreaKeyDownEventHandler {
 
             event.preventDefault();
 
-            focusedWidget = null;
-
             focusWidget(getNext(childContainer, null));
         };
     }
 
-    private KeyDownHandler getPopupKeyDownHandler(ComplexPanel childContainer, TextArea textArea) {
+    private KeyDownHandler createPopupKeyDownHandler(final ComplexPanel childContainer, final TextArea textArea) {
         return event -> {
             if (KeyCodes.KEY_ESCAPE == event.getNativeKeyCode()) {
                 event.preventDefault();
@@ -56,21 +49,17 @@ public class PopupWithTextAreaKeyDownEventHandler {
 
             if (KeyCodes.KEY_UP == event.getNativeKeyCode()) {
                 event.preventDefault();
-                focusedWidget = getPrevious(childContainer, focusedWidget);
 
-                if (focusedWidget == null) {
+                if (focusWidget(getPrevious(childContainer, currentWidget)) == null) {
                     focusTextArea(textArea);
-                    return;
                 }
 
-                focusWidget(focusedWidget);
                 return;
             }
 
             if (KeyCodes.KEY_DOWN == event.getNativeKeyCode()) {
                 event.preventDefault();
-                focusedWidget = getNext(childContainer, focusedWidget);
-                focusWidget(focusedWidget);
+                focusWidget(getNext(childContainer, currentWidget));
                 return;
             }
 
@@ -81,42 +70,44 @@ public class PopupWithTextAreaKeyDownEventHandler {
         };
     }
 
-    private Widget getNext(ComplexPanel childContainer, Widget focusedWidget) {
-        if (focusedWidget == null) {
+    private Widget getNext(final ComplexPanel childContainer, final Widget currentWidget) {
+        if (currentWidget == null) {
             return childContainer.getWidget(0);
         }
 
-        return of(focusedWidget)
-                .map(widget -> childContainer.getWidgetIndex(focusedWidget) + 1)
+        return of(currentWidget)
+                .map(widget -> childContainer.getWidgetIndex(currentWidget) + 1)
                 .filter(index -> index < childContainer.getWidgetCount())
                 .map(childContainer::getWidget)
                 .orElse(null);
     }
 
-    private Widget getPrevious(ComplexPanel childContainer, Widget focusedWidget) {
-        if (focusedWidget == null) {
+    private Widget getPrevious(final ComplexPanel childContainer, final Widget currentWidget) {
+        if (currentWidget == null) {
             return childContainer.getWidget(0);
         }
 
-        return of(focusedWidget)
-                .map(widget -> childContainer.getWidgetIndex(focusedWidget) - 1)
+        return of(currentWidget)
+                .map(widget -> childContainer.getWidgetIndex(currentWidget) - 1)
                 .filter(index -> index >= 0)
                 .map(childContainer::getWidget)
                 .orElse(null);
     }
 
     private void focusTextArea(TextArea textArea) {
-        focusedWidget = null;
         textArea.getElement().focus();
     }
 
-    private void focusWidget(Widget item) {
-        if (item == null) {
-            return;
+    private Widget focusWidget(Widget widget) {
+        currentWidget = widget;
+
+        if (currentWidget == null) {
+            return null;
         }
 
-        item.getElement().getFirstChildElement().focus();
-        focusedWidget = item;
+        currentWidget.getElement().getFirstChildElement().focus();
+
+        return currentWidget;
     }
 
     private void initDefaultKeyDownHandler(KeyDownHandler defaultKeyDownHandler, KeyDownEvent event) {
@@ -127,7 +118,7 @@ public class PopupWithTextAreaKeyDownEventHandler {
         defaultKeyDownHandler.onKeyDown(event);
     }
 
-    private Widget focusedWidget;
+    private Widget currentWidget;
 
     private KeyDownHandler defaultKeyDownHandler;
 }

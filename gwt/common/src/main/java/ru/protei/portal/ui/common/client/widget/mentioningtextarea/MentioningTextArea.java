@@ -78,10 +78,6 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
     private PossibleLoginInfo possibleLogin(int cursorPosition) {
         String substring = getValue().substring(0, cursorPosition);
 
-        if (StringUtils.isBlank(substring)) {
-            return null;
-        }
-
         int spaceEnterPosition = Math.max(substring.lastIndexOf(' '), substring.lastIndexOf('\n'));
         int roundBracketsPosition = Math.max(substring.lastIndexOf('('), substring.lastIndexOf(')'));
         int squareBracketsPosition = Math.max(substring.lastIndexOf('['), substring.lastIndexOf(']'));
@@ -89,6 +85,10 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
         int desiredPosition = Math.max(spaceEnterPosition, Math.max(roundBracketsPosition, squareBracketsPosition));
 
         final int possibleAtPosition = desiredPosition + 1; // "at" means "@"
+
+        if (possibleAtPosition >= substring.length()) {
+            return null;
+        }
 
         if (substring.charAt(possibleAtPosition) != '@') {
             return null;
