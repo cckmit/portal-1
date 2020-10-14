@@ -374,7 +374,9 @@ public abstract class ReportCreateActivity implements Activity,
         query.setDirections(projectFilterView.direction().getValue());
         query.setSortField(projectFilterView.sortField().getValue());
         query.setSortDir(projectFilterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
-        query.setMemberId(policyService.getProfile().getId());
+        if(projectFilterView.onlyMineProjects().getValue() != null && projectFilterView.onlyMineProjects().getValue()) {
+            query.setMemberId(policyService.getProfile().getId());
+        }
         query.setInitiatorCompanyIds(projectFilterView.initiatorCompanies().getValue().stream()
                 .map(entityOption -> entityOption.getId()).collect(Collectors.toSet()));
         return query;

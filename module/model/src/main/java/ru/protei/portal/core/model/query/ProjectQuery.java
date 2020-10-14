@@ -279,10 +279,4 @@ public class ProjectQuery extends BaseQuery {
                 districtIds, memberId, productIds, customerType, createdFrom, createdTo,
                 platformIndependentProject, initiatorCompanyIds, pauseDateGreaterThan, deleted);
     }
-
-
-    /*????????
-     caseQuery.setSortDir(this.getSortDir());
-        caseQuery.setSortField(this.getSortField());
-*/
 }

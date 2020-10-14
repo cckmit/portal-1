@@ -216,7 +216,9 @@ public abstract class ProjectTableActivity
         query.setDirections(filterView.direction().getValue());
         query.setSortField(filterView.sortField().getValue());
         query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
-        query.setMemberId(policyService.getProfile().getId());
+        if(filterView.onlyMineProjects().getValue() != null && filterView.onlyMineProjects().getValue()) {
+            query.setMemberId(policyService.getProfile().getId());
+        }
         query.setInitiatorCompanyIds(filterView.initiatorCompanies().getValue().stream()
                 .map(entityOption -> entityOption.getId()).collect(Collectors.toSet()));
         return query;

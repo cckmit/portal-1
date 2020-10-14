@@ -167,7 +167,6 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         caseObj.setModified(DateUtils.max(issue.getUpdateDate().toDate(), caseObj.getModified()));
         caseObj.setExtAppType(En_ExtAppType.JIRA.getCode());
-       // caseObj.setLocal(0);
 
         long oldStateId = caseObj.getStateId();
         JiraStatusMapEntry newState = getNewCaseState(endpoint.getStatusMapId(), issue.getStatus().getName());
@@ -283,7 +282,6 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         caseObj.setCreated(issue.getCreationDate().toDate());
         caseObj.setModified(issue.getUpdateDate().toDate());
         caseObj.setExtAppType(En_ExtAppType.JIRA.getCode());
-      //  caseObj.setLocal(0);
         caseObj.setInitiator( initiator );
         caseObj.setCreator( initiator );
         caseObj.setCreatorInfo("jira");

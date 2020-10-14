@@ -892,6 +892,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String projects();
 
+    String projectNumber();
+
     String projectDirection();
 
     String projectInfo();

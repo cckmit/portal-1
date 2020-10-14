@@ -92,9 +92,6 @@ public class CaseObject extends AuditableObject {
     @JdbcColumn(name = "KEYWORDS")
     private String keywords;
 
-  /*  @JdbcColumn(name = ISLOCAL)
-    private int local;
-*/
     @JdbcColumn(name = "EMAILS")
     private String emails;
 
@@ -128,24 +125,11 @@ public class CaseObject extends AuditableObject {
     @JdbcColumn(name = "time_elapsed")
     private Long timeElapsed;
 
-    /*@JdbcManyToMany(linkTable = "project_to_product", localLinkColumn = "project_id", remoteLinkColumn = "product_id")
-    !!private Set<DevUnit> products;*/
-
     @JdbcColumn(name = PLATFORM_ID)
     private Long platformId;
 
     @JdbcJoinedColumn(localColumn = PLATFORM_ID, table = "platform", remoteColumn = "id", mappedColumn = "name")
     private String platformName;
-
-
-
-
-
-    @JdbcJoinedColumn(joinPath = {
-            @JdbcJoinPath(localColumn = "id", remoteColumn = "CASE_ID", table = "case_location", sqlTableAlias = "location"),
-            @JdbcJoinPath(localColumn = "LOCATION_ID", remoteColumn = "id", table = "location", sqlTableAlias = "region"),
-    }, mappedColumn = "name")
-    private String regionName;
 
     @JdbcColumn(name = PAUSE_DATE)
     private Long pauseDate;
@@ -333,10 +317,6 @@ public class CaseObject extends AuditableObject {
         this.keywords = keywords;
     }
 
-/*    public void setLocal(int local) {
-        this.local = local;
-    }*/
-
     public String getEmails() {
         return emails;
     }
@@ -483,14 +463,6 @@ public class CaseObject extends AuditableObject {
         this.timeElapsed = timeElapsed;
     }
 
-/*    public Set<DevUnit> getProducts() {
-        return products;
-    }
-
-    public void setProducts(Set<DevUnit> products) {
-        this.products = products;
-    }*/
-
     public En_TimeElapsedType getTimeElapsedType() {
         return timeElapsedType;
     }
@@ -531,17 +503,9 @@ public class CaseObject extends AuditableObject {
         this.jiraUrl = jiraUrl;
     }
 
-   /* public void setProjectSlas(List<ProjectSla> projectSlas) {
-        this.projectSlas = projectSlas;
-    }*/
-
     public EntityOption toEntityOption() {
         return new EntityOption(this.getName(), this.getId());
     }
-
-  /*  public void setTechnicalSupportValidity(Date technicalSupportValidity) {
-        this.technicalSupportValidity = technicalSupportValidity;
-    }*/
 
     public Long getPauseDate() {
         return pauseDate;
@@ -583,22 +547,6 @@ public class CaseObject extends AuditableObject {
         isFavorite = favorite;
     }
 
-   /* public Date getWorkCompletionDate() {
-        return workCompletionDate;
-    }
-
-    public void setWorkCompletionDate(Date workCompletionDate) {
-        this.workCompletionDate = workCompletionDate;
-    }
-
-    public Date getPurchaseDate() {
-        return purchaseDate;
-    }
-
-    public void setPurchaseDate(Date purchaseDate) {
-        this.purchaseDate = purchaseDate;
-    }
-*/
     @Override
     public String getAuditType() {
         return "CaseObject";
@@ -610,7 +558,6 @@ public class CaseObject extends AuditableObject {
         String PAUSE_DATE = "pause_date";
         String DELETED = "deleted";
         String INFO = "INFO";
-        String ISLOCAL = "ISLOCAL";
         String CREATED = "CREATED";
         String CREATOR = "CREATOR";
         String STATE = "STATE";
@@ -660,7 +607,6 @@ public class CaseObject extends AuditableObject {
                 ", timeElapsed=" + timeElapsed +
                 ", platformId=" + platformId +
                 ", platformName='" + platformName + '\'' +
-                ", regionName='" + regionName + '\'' +
                 ", pauseDate=" + pauseDate +
                 ", managerCompanyId=" + managerCompanyId +
                 ", managerCompanyName='" + managerCompanyName + '\'' +

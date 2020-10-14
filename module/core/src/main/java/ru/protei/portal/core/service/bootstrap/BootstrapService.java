@@ -75,7 +75,6 @@ public class BootstrapService {
         createSFPlatformCaseObjects();
         updateCompanyCaseTags();
         //patchNormalizeWorkersPhoneNumbers(); // remove once executed
-//        uniteSeveralProductsInProjectToComplex();
         //createProjectsForContracts();
         documentBuildFullIndex();
         //fillImportanceLevels();
@@ -395,90 +394,6 @@ public class BootstrapService {
         });
         log.info("Correction company id in tags completed successfully");
     }
-
-   /* private void uniteSeveralProductsInProjectToComplex() {
-        CaseQuery caseQuery = new CaseQuery();
-        caseQuery.setType(En_CaseType.PROJECT);
-        caseQuery.setSortDir(En_SortDir.ASC);
-        caseQuery.setSortField(En_SortField.case_name);
-
-        List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
-
-        jdbcManyRelationsHelper.fill(projects, "products");
-
-        if (projects.isEmpty()) {
-            return;
-        }
-
-        projects = projects
-                .stream()
-                .filter(project -> project.getProducts() != null && project.getProducts().size() > 1)
-                .collect(toList());
-
-        if (projects.isEmpty()) {
-            return;
-        }
-
-        projects.forEach(project -> {
-            String complexName = project.getProducts()
-                    .stream()
-                    .map(DevUnit::getName)
-                    .reduce((name1, name2) -> name1 + " " + name2)
-                    .get();
-
-            DevUnit complex = new DevUnit();
-            complex.setName(complexName);
-            complex.setStateId(En_DevUnitState.ACTIVE.getId());
-            complex.setType(En_DevUnitType.COMPLEX);
-            complex.setChildren(project.getProducts().stream().filter(DevUnit::isProduct).collect(toList()));
-            complex.setCreated(new Date());
-
-            Long complexId = devUnitDAO.persist(complex);
-            complex.setId(complexId);
-            jdbcManyRelationsHelper.persist(complex, "children");
-
-            projectToProductDAO.removeAllProductsFromProject(project.getId());
-            projectToProductDAO.persist(new ProjectToProduct(project.getId(), complexId));
-        });
-    }*/
-
-//    private void createProjectsForContracts() {
-//        List<Contract> contracts = contractDAO.getAll();
-//
-//        if (contracts == null) {
-//            return;
-//        }
-//
-//        contracts
-//                .stream()
-//                .filter(contract -> contract.getProjectId() == null)
-//                .forEach(contract -> {
-//                    CaseObject contractAsCaseObject = caseObjectDAO.get(contract.getId());
-//
-//                    CaseObject project = new CaseObject();
-//                    project.setName("Проект для договора №" + contract.getNumber());
-//                    project.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.PROJECT));
-//                    project.setType(En_CaseType.PROJECT);
-//                    project.setCreated(new Date());
-//                    project.setStateId(En_RegionState.UNKNOWN.getId());
-//                    project.setLocal(En_CustomerType.COMMERCIAL_PROTEI.getId());
-//                    project.setInitiatorCompanyId(contractAsCaseObject.getInitiatorCompanyId());
-//                    project.setProductId(contractAsCaseObject.getProductId());
-//                    project.setManagerId(contractAsCaseObject.getManagerId());
-//
-//                    Long caseId = caseObjectDAO.persist(project);
-//
-//                    if (contractAsCaseObject.getManagerId() != null) {
-//                        CaseMember caseMember = new CaseMember();
-//                        caseMember.setCaseId(caseId);
-//                        caseMember.setRole(En_DevUnitPersonRoleType.HEAD_MANAGER);
-//                        caseMember.setMemberId(contractAsCaseObject.getManagerId());
-//                        caseMemberDAO.persist(caseMember);
-//                    }
-//                    contract.setProjectId(caseId);
-//                    contractDAO.merge(contract);
-//                });
-//    }
 
     private void documentBuildFullIndex() { // Данный метод создаст индексы для всех существующих документов
         try {

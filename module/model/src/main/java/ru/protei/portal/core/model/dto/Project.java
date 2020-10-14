@@ -22,10 +22,11 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 @JdbcEntity(table = "project")
 public class Project extends AuditableObject {
 
+    public static final String AUDIT_TYPE = "Project";
+
     public static final int NOT_DELETED = CaseObject.NOT_DELETED;
     public static final String CASE_OBJECT_ALIAS = "CO";
 
-    public static final String AUDIT_TYPE = "Project";
     /**
      * Идентификатор записи о проекте
      */
@@ -103,23 +104,10 @@ public class Project extends AuditableObject {
     @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Columns.DELETED, table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
     private boolean deleted;
 
-    /**
-     * Команда проекта
-     */
-    private List<PersonProjectMemberView> team;
-
-    private EntityOption region;
-
-    private List<CaseLink> links;
-
     @JdbcJoinedObject(joinPath = {
             @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
             @JdbcJoinPath(localColumn = "CREATOR", remoteColumn = "id", table = "person")})
     private Person creator;
-
-    private List<EntityOption> contracts;
-
-    private EntityOption manager;
 
     @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Columns.MANAGER, table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
     private Long managerId;
@@ -151,6 +139,23 @@ public class Project extends AuditableObject {
 
     @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Columns.PAUSE_DATE, table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
     private Long pauseDate;
+
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "CASE_ID", table = "case_location", sqlTableAlias = "location"),
+            @JdbcJoinPath(localColumn = "LOCATION_ID", remoteColumn = "id", table = "location", sqlTableAlias = "region"),
+    }, mappedColumn = "name")
+    private String regionName;
+
+    /**
+     * Команда проекта
+     */
+    private List<PersonProjectMemberView> team;
+
+    private EntityOption region;
+
+    private List<CaseLink> links;
+
+    private List<EntityOption> contracts;
 
     public Long getId() {
         return id;
@@ -378,14 +383,6 @@ public class Project extends AuditableObject {
     public void setManagerName(String managerName) {
         this.managerName = managerName;
     }
-/*
-    public EntityOption getContragent() {
-        return contragent;
-    }
-
-    public void setContragent(EntityOption contragent) {
-        this.contragent = contragent;
-    }*/
 
     public String getPlatformName() {
         return platformName;
@@ -439,87 +436,17 @@ public class Project extends AuditableObject {
         return new EntityOption(this.getName(), this.getId());
     }
 
-    //удалить это
-    public static Project fromCaseObject(CaseObject caseObject) {
-        if (caseObject == null) {
-            return null;
-        }
-
-        Project project = new Project();
-        project.setId( caseObject.getId() );
-        /*project.setName( caseObject.getName() );*/
-       /* project.setCreator(caseObject.getCreator());*/
-        /*project.setDescription(caseObject.getInfo());*/
-        /*project.setState( En_RegionState.forId( caseObject.getStateId() ) );*/
-        /*project.setDeleted(caseObject.isDeleted());*/
-        /*if ( caseObject.getProduct() != null ) {
-            project.setProductDirection( new EntityOption(
-                caseObject.getProduct().getName(), caseObject.getProduct().getId()
-            ) );
-        }*/
-
-        //project.setCustomerType(En_CustomerType.find(caseObject.getLocal()));
-        /*project.setCustomer(caseObject.getInitiatorCompany());*/
-
-        /*if (caseObject.getMembers() != null) {
-            List<En_DevUnitPersonRoleType> projectRoles = En_DevUnitPersonRoleType.getProjectRoles();
-            project.setTeam( caseObject.getMembers().stream()
-                    .filter(member -> projectRoles.contains(member.getRole()))
-                    .map(member -> PersonProjectMemberView.fromFullNamePerson(member.getMember(), member.getRole()))
-                    .collect(Collectors.toList()) );
-        }*/
-
-        /*project.setCreated( caseObject.getCreated() );*/
-
-       /* List<CaseLocation> locations = caseObject.getLocations();
-        if ( locations != null && !locations.isEmpty() ) {
-            project.setRegion( EntityOption.fromLocation( locations.get( 0 ).getLocation() ) );
-        }
-*/
-      /*  if (caseObject.getProducts() != null) {
-            project.setProducts( caseObject.getProducts().stream()
-                                        .map(ProductShortView::fromProduct)
-                                        .collect(Collectors.toSet()) );
-        }*/
-
-      /*  project.setContracts(caseObject.getContracts());*/
-
-      /*  if (caseObject.getManager() != null) {
-            project.setManager(new EntityOption(caseObject.getManager().getDisplayShortName(), caseObject.getManagerId()));
-        }*/
-
-   /*     if (caseObject.getInitiatorCompany() != null) {
-            project.setContragent(new EntityOption(caseObject.getInitiatorCompany().getCname(), caseObject.getInitiatorCompanyId()));
-        }
-*/
-     /*   if (caseObject.getPlatformId() != null){
-            project.setPlatformId(caseObject.getPlatformId());
-            project.setPlatformName(caseObject.getPlatformName());
-
-        }*/
-
-      /*  project.setTechnicalSupportValidity(caseObject.getTechnicalSupportValidity());*/
-     /*   project.setWorkCompletionDate(caseObject.getWorkCompletionDate());
-        project.setPurchaseDate(caseObject.getPurchaseDate());*/
-
-      /*  project.setProjectSlas(caseObject.getProjectSlas());
-*/
-     /*   project.setPauseDate( caseObject.getPauseDate() );*/
-
-        return project;
-    }
-
-    @Override
-    public String getAuditType() {
-        return AUDIT_TYPE;
-    }
-
     public void setPauseDate( Long pauseDateTimestamp ) {
         this.pauseDate = pauseDateTimestamp;
     }
 
     public Long getPauseDate() {
         return pauseDate;
+    }
+
+    @Override
+    public String getAuditType() {
+        return AUDIT_TYPE;
     }
 
     @Override
@@ -556,12 +483,7 @@ public class Project extends AuditableObject {
                 ", locations=" + locations +
                 ", products=" + products +
                 ", deleted=" + deleted +
-                ", team=" + team +
-                ", region=" + region +
-                ", links=" + links +
                 ", creator=" + creator +
-                ", contracts=" + contracts +
-                ", manager=" + manager +
                 ", managerId=" + managerId +
                 ", managerName='" + managerName + '\'' +
                 ", platformName='" + platformName + '\'' +
@@ -571,6 +493,11 @@ public class Project extends AuditableObject {
                 ", purchaseDate=" + purchaseDate +
                 ", projectSlas=" + projectSlas +
                 ", pauseDate=" + pauseDate +
+                ", regionName='" + regionName + '\'' +
+                ", team=" + team +
+                ", region=" + region +
+                ", links=" + links +
+                ", contracts=" + contracts +
                 '}';
     }
 

@@ -89,8 +89,10 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     ProjectDAO projectDAO;
+
     @Autowired
     PortalScheduleTasks scheduledTasksService;
+
     @Autowired
     EventPublisherService publisherService;
 
@@ -247,8 +249,6 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         caseObject = createCaseObjectFromProject(caseObject, project);
-        //?????? зачем???
-    //    caseObject.setManager(personDAO.get(caseObject.getManagerId()));
 
         projectFormDB.setTechnicalSupportValidity(project.getTechnicalSupportValidity());
         projectFormDB.setWorkCompletionDate(project.getWorkCompletionDate());
@@ -324,8 +324,6 @@ public class ProjectServiceImpl implements ProjectService {
             log.error("createProject(): error during create project when set one of following parameters: team, location, or products; {}", e.getMessage());
             throw new ResultStatusException(En_ResultStatus.INTERNAL_ERROR);
         }
-        //зачем мержить?????
-       // caseObjectDAO.merge( caseObject );
 
         Result addLinksResult = ok();
 
@@ -362,7 +360,6 @@ public class ProjectServiceImpl implements ProjectService {
 
         return ok(result);
     }
-
 
     @Override
     public Result<SearchResult<Project>> projects(AuthToken token, ProjectQuery query) {
@@ -437,8 +434,6 @@ public class ProjectServiceImpl implements ProjectService {
         caseObject.setName(project.getName());
         caseObject.setInfo(project.getDescription());
         caseObject.setManagerId(project.getLeader() == null ? null : project.getLeader().getId());
-      //  caseObject.setTechnicalSupportValidity(project.getTechnicalSupportValidity());
-      //  caseObject.setProjectSlas(project.getProjectSlas());
         caseObject.setPauseDate( project.getPauseDate() );
 
         caseObject.setProductId(project.getProductDirection() == null ? null :  project.getProductDirection().getId());
@@ -448,9 +443,6 @@ public class ProjectServiceImpl implements ProjectService {
         } else {
             caseObject.setInitiatorCompanyId(project.getCustomer().getId());
         }
-      /*  if (project.getCustomerType() != null) {
-            caseObject.setLocal(project.getCustomerType().getId());
-        }*/
         return caseObject;
     }
 
@@ -496,7 +488,6 @@ public class ProjectServiceImpl implements ProjectService {
         if ( location == null ) {
             return;
         }
-
         boolean locationFound = false;
 
         if ( caseObject.getLocations() != null ) {
@@ -505,7 +496,6 @@ public class ProjectServiceImpl implements ProjectService {
                     locationFound = true;
                     continue;
                 }
-
                 caseLocationDAO.removeByKey( loc.getId() );
             }
         }
@@ -515,7 +505,6 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         caseLocationDAO.persist( CaseLocation.makeLocationOf( caseObject, location ) );
-
     }
 
     private void updateProducts(Project project, Set<ProductShortView> products) {
@@ -560,24 +549,6 @@ public class ProjectServiceImpl implements ProjectService {
         locations.forEach( ( location ) -> {
             handler.accept( location.getLocation() );
         } );
-    }
-
-    private RegionInfo findRegionByLocation( Map< Long, RegionInfo > regions, Location location ) {
-        if ( location == null ) {
-            return null;
-        }
-
-        // добавить сюда поиск региона, если location у проекта не регион а муниципальное образование например
-        if ( !En_LocationType.REGION.equals( location.getType() ) ) {
-            return null;
-        }
-
-        RegionInfo info = regions.get( location.getId() );
-        if ( info != null ) {
-            return info;
-        }
-
-        return null;
     }
 
     private void applyCaseToProjectInfo( Project project, Location location, Map< String, List<Project> > projects ) {

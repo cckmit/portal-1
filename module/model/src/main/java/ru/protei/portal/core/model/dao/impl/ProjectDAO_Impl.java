@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
-import static ru.protei.portal.core.model.dto.Project.Columns.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
 import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;

@@ -94,7 +94,6 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
         newCaseObject.setInitiatorId(customerPerson.getId());
         newCaseObject.setManagerCompanyId(homeCompany.getId());
         newCaseObject.setProductId(product.getId());
-//        newCaseObject.setProducts(Collections.singleton(product));
         newCaseObject.setPlatformId(platform.getId());
         newCaseObject.setType(En_CaseType.CRM_SUPPORT);
         newCaseObject.setStateId(CrmConstants.State.CREATED);
@@ -156,7 +155,6 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
         openNoCommonManagerCase.setManagerCompanyId(homeCompany.getId());
         openNoCommonManagerCase.setManagerId(commonManager.getId());
         openNoCommonManagerCase.setProductId(product.getId());
-        //openNoCommonManagerCase.setProducts(Collections.singleton(product));
         openNoCommonManagerCase.setStateId(CrmConstants.State.OPENED);
         openNoCommonManagerCase.setType(En_CaseType.CRM_SUPPORT);
 
@@ -168,7 +166,6 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
         createNoCommonManagerCase.setInitiatorId(customerPerson.getId());
         createNoCommonManagerCase.setManagerCompanyId(homeCompany.getId());
         createNoCommonManagerCase.setProductId(product.getId());
-        //createNoCommonManagerCase.setProducts(Collections.singleton(product));
         openNoCommonManagerCase.setStateId(CrmConstants.State.CREATED);
         openNoCommonManagerCase.setType(En_CaseType.CRM_SUPPORT);
 
@@ -211,7 +208,6 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
         noAutoOpenCase.setInitiatorId(customerPerson.getId());
         noAutoOpenCase.setManagerCompanyId(homeCompany.getId());
         noAutoOpenCase.setProductId(product.getId());
-        //noAutoOpenCase.setProducts(Collections.singleton(product));
         noAutoOpenCase.setType(En_CaseType.CRM_SUPPORT);
 
         caseObjectDAO.persist(noAutoOpenCase);
@@ -221,7 +217,6 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
         autoOpenCase.setInitiatorId(customerPersonAutoOpen.getId());
         autoOpenCase.setManagerCompanyId(homeCompany.getId());
         autoOpenCase.setProductId(product.getId());
-        //autoOpenCase.setProducts(Collections.singleton(product));
         autoOpenCase.setType(En_CaseType.CRM_SUPPORT);
 
         caseObjectDAO.persist(autoOpenCase);
