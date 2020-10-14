@@ -17,10 +17,12 @@ import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 
 public class AssemblerServiceImpl implements AssemblerService {
@@ -109,7 +111,7 @@ public class AssemblerServiceImpl implements AssemblerService {
             return ok( e );
         }
         log.info( "fillAttachments(): CaseObjectID={} Try to fill attachments.", e.getCaseObjectId() );
-        e.setExistingAttachments(  attachmentDAO.getAttachmentsByCaseId( e.getCaseObjectId() ));
+        e.setExistingAttachments(  stream(attachmentDAO.getAttachmentsByCaseId( e.getCaseObjectId() )).distinct().collect(Collectors.toList()) );
         log.info( "fillAttachments(): CaseObjectID={} Attachments are successfully filled.", e.getCaseObjectId() );
 
         return ok( e );

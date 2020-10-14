@@ -1025,6 +1025,8 @@ public class CaseServiceImpl implements CaseService {
         if (!policyService.hasGrantAccessFor(token.getRoles(), En_Privilege.ISSUE_VIEW)) {
             caseObject.setAttachments(stream(caseObject.getAttachments()).filter(not(Attachment::isPrivate)).collect(Collectors.toList()));
         }
+
+        caseObject.setAttachments(caseObject.getAttachments().stream().distinct().collect(Collectors.toList()));
     }
 
     @Autowired
