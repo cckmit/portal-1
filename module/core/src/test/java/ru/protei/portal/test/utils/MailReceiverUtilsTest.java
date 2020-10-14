@@ -4,21 +4,20 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import ru.protei.portal.util.MailReceiverContentUtils;
+import ru.protei.portal.util.MailReceiverUtils;
 
 import java.io.File;
 import java.io.IOException;
 
-import static ru.protei.portal.util.MailReceiverContentUtils.MIME_TEXT_HTML;
-import static ru.protei.portal.util.MailReceiverContentUtils.MIME_TEXT_TYPE;
+import static ru.protei.portal.util.MailReceiverUtils.MIME_TEXT_HTML;
+import static ru.protei.portal.util.MailReceiverUtils.MIME_TEXT_TYPE;
 
-public class MailReceiverContentUtilsTest {
+public class MailReceiverUtilsTest {
     private final String FILE_PATH_MAIL_REMOVED_TXT = "mail.removed.html";
     private final String FILE_PATH_MAIL_NOT_REMOVED_THUNDERBIRD_HTML = "mail.not.removed.thunderbird.html";
     private final String FILE_PATH_MAIL_NOT_REMOVED_MOBILEGMAIL_HTML = "mail.not.removed.mobilegmail.html";
     private final String FILE_PATH_MAIL_DOT_HTML = "mail.dot.html";
     private final String FILE_PATH_MAIL_DASH_HTML = "mail.dash.html";
-
 
     private String mailRemovedTxt;
     private String mailNotRemovedThunderbirdHtml;
@@ -37,50 +36,46 @@ public class MailReceiverContentUtilsTest {
 
     @Test
     public void mailRemovedTxt() {
-        String cleanedContent = MailReceiverContentUtils.getCleanedContent(MIME_TEXT_TYPE, mailRemovedTxt);
+        String cleanedContent = MailReceiverUtils.getCleanedContent(MIME_TEXT_TYPE, mailRemovedTxt);
         Assert.assertEquals("С удалением\n" +
                 "на несколько строк\n" +
-                "3\n",
+                "3",
                 cleanedContent);
     }
 
     @Test
     public void mailNotRemovedMobileGmailHtml() {
-        String cleanedContent = MailReceiverContentUtils.getCleanedContent(MIME_TEXT_HTML, mailNotRemovedThunderbirdHtml);
-        Assert.assertEquals("\n" +
-                        "Ответ без удаления \n" +
-                        "на несколько строк \n",
+        String cleanedContent = MailReceiverUtils.getCleanedContent(MIME_TEXT_HTML, mailNotRemovedThunderbirdHtml);
+        Assert.assertEquals("Ответ без удаления \n" +
+                        "на несколько строк",
                 cleanedContent);
     }
 
     @Test
     public void mailNotRemovedThunderbirdHtml() {
-        String cleanedContent = MailReceiverContentUtils.getCleanedContent(MIME_TEXT_HTML, mailNotRemovedMobileGmailHtml);
-        Assert.assertEquals("\n" +
-                        "Гмайл\n" +
+        String cleanedContent = MailReceiverUtils.getCleanedContent(MIME_TEXT_HTML, mailNotRemovedMobileGmailHtml);
+        Assert.assertEquals("Гмайл\n" +
                         "Без разделителя\n" +
                         "3\n" +
-                        "4\n",
+                        "4",
                 cleanedContent);
     }
 
     @Test
     public void mailDotHtml() {
-        String cleanedContent = MailReceiverContentUtils.getCleanedContent(MIME_TEXT_HTML, mailDotHtml);
-        Assert.assertEquals("\n" +
-                        "с точками \n" +
+        String cleanedContent = MailReceiverUtils.getCleanedContent(MIME_TEXT_HTML, mailDotHtml);
+        Assert.assertEquals("с точками \n" +
                         "2 \n" +
-                        "3 ",
+                        "3",
                 cleanedContent);
     }
 
     @Test
     public void mailDashHtml() {
-        String cleanedContent = MailReceiverContentUtils.getCleanedContent(MIME_TEXT_HTML, mailDashHtml);
-        Assert.assertEquals("\n" +
-                        "C запятыми   \n" +
+        String cleanedContent = MailReceiverUtils.getCleanedContent(MIME_TEXT_HTML, mailDashHtml);
+        Assert.assertEquals("C запятыми   \n" +
                         "2 \n" +
-                        "3 ",
+                        "3",
                 cleanedContent);
     }
 

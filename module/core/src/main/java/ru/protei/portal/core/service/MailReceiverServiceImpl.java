@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Arrays.stream;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
-import static ru.protei.portal.util.MailReceiverContentUtils.*;
+import static ru.protei.portal.util.MailReceiverUtils.*;
 
 public class MailReceiverServiceImpl implements MailReceiverService {
 

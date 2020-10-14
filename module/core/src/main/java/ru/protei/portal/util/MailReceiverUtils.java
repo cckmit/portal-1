@@ -20,7 +20,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
-public class MailReceiverContentUtils {
+public class MailReceiverUtils {
     static public MailContent parseContent(Part part) throws IOException, MessagingException {
         Object content = part.getContent();
         if (content == null) {
@@ -192,7 +192,6 @@ public class MailReceiverContentUtils {
     }
 
     static private String plainClean(String content) {
-        content = cleanNewLineDuplicate(content);
         for (Pattern pattern : crmContentPatterns) {
             Matcher matcher = pattern.matcher(content);
             if (matcher.find()) {
@@ -209,7 +208,7 @@ public class MailReceiverContentUtils {
             Matcher matcher = newLineDuplicatePattern.matcher(content);
             content = matcher.replaceAll("\n");
         }
-        return content;
+        return content.trim();
     }
 
     static public final String MIME_TEXT_TYPE = "TEXT";
