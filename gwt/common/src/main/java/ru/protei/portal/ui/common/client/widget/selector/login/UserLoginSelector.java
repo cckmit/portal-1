@@ -16,8 +16,6 @@ import static ru.protei.portal.core.model.util.CrmConstants.DEFAULT_SELECTOR_PAG
 public class UserLoginSelector extends PopupSingleSelector<UserLoginShortView> implements HasVisibility {
     public UserLoginSelector() {
         setPageSize(DEFAULT_SELECTOR_PAGE_SIZE);
-        setSearchEnabled(false);
-        getPopup().addStyleName("user-login-selector");
     }
 
     public void clearAndFill() {

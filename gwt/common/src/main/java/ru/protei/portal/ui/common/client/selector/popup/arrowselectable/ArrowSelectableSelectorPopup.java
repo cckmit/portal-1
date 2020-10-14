@@ -1,49 +1,31 @@
-package ru.protei.portal.ui.common.client.widget.mentioningtextarea;
+package ru.protei.portal.ui.common.client.selector.popup.arrowselectable;
 
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.user.client.ui.ComplexPanel;
-import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
+import ru.protei.portal.ui.common.client.selector.popup.SelectorPopupWithSearch;
 
 import static java.util.Optional.of;
 
-public class PopupWithTextAreaKeyDownEventHandler {
-    public PopupWithTextAreaKeyDownEventHandler(final TextArea textArea, ComplexPanel childContainer) {
-        childContainer.addDomHandler(event -> focusTextArea(textArea), MouseOverEvent.getType());
-        textArea.addKeyDownHandler(createTextAreaKeyDownHandler(childContainer));
-        childContainer.addDomHandler(createPopupKeyDownHandler(childContainer, textArea), KeyDownEvent.getType());
+public class ArrowSelectableSelectorPopup extends SelectorPopupWithSearch {
+    public ArrowSelectableSelectorPopup(TextAreaHandler textAreaHandler) {
+        childContainer.setStyleName("arrow-selectable");
+        childContainer.addDomHandler(event -> textAreaHandler.focus(), MouseOverEvent.getType());
+        childContainer.addDomHandler(createPopupKeyDownHandler(childContainer, textAreaHandler), KeyDownEvent.getType());
     }
 
-    public void setDefaultKeyDownHandler(KeyDownHandler defaultKeyDownHandler) {
-        this.defaultKeyDownHandler = defaultKeyDownHandler;
+    public void focus() {
+        focusWidget(getNext(childContainer, null));
     }
 
-    private KeyDownHandler createTextAreaKeyDownHandler(final ComplexPanel childContainer) {
-        return event -> {
-            if (event.getNativeKeyCode() != KeyCodes.KEY_DOWN) {
-                initDefaultKeyDownHandler(defaultKeyDownHandler, event);
-                return;
-            }
-
-            if (childContainer.getWidgetCount() == 0) {
-                initDefaultKeyDownHandler(defaultKeyDownHandler, event);
-                return;
-            }
-
-            event.preventDefault();
-
-            focusWidget(getNext(childContainer, null));
-        };
-    }
-
-    private KeyDownHandler createPopupKeyDownHandler(final ComplexPanel childContainer, final TextArea textArea) {
+    private KeyDownHandler createPopupKeyDownHandler(final ComplexPanel childContainer, TextAreaHandler textAreaHandler) {
         return event -> {
             if (KeyCodes.KEY_ESCAPE == event.getNativeKeyCode()) {
                 event.preventDefault();
-                focusTextArea(textArea);
+                textAreaHandler.focus();
                 return;
             }
 
@@ -51,7 +33,7 @@ public class PopupWithTextAreaKeyDownEventHandler {
                 event.preventDefault();
 
                 if (focusWidget(getPrevious(childContainer, currentWidget)) == null) {
-                    focusTextArea(textArea);
+                    textAreaHandler.focus();
                 }
 
                 return;
@@ -64,8 +46,8 @@ public class PopupWithTextAreaKeyDownEventHandler {
             }
 
             if (KeyCodes.KEY_ENTER != event.getNativeKeyCode()) {
-                focusTextArea(textArea);
-                initDefaultKeyDownHandler(defaultKeyDownHandler, event);
+                textAreaHandler.focus();
+                textAreaHandler.onKeyDown();
             }
         };
     }
@@ -94,10 +76,6 @@ public class PopupWithTextAreaKeyDownEventHandler {
                 .orElse(null);
     }
 
-    private void focusTextArea(TextArea textArea) {
-        textArea.getElement().focus();
-    }
-
     private Widget focusWidget(Widget widget) {
         currentWidget = widget;
 
@@ -110,15 +88,5 @@ public class PopupWithTextAreaKeyDownEventHandler {
         return currentWidget;
     }
 
-    private void initDefaultKeyDownHandler(KeyDownHandler defaultKeyDownHandler, KeyDownEvent event) {
-        if (defaultKeyDownHandler == null) {
-            return;
-        }
-
-        defaultKeyDownHandler.onKeyDown(event);
-    }
-
     private Widget currentWidget;
-
-    private KeyDownHandler defaultKeyDownHandler;
 }

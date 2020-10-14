@@ -207,7 +207,7 @@ public class SelectorPopupWithSearch extends PopperComposite
     }
 
     @UiField
-    HTMLPanel childContainer;
+    protected HTMLPanel childContainer;
 
     @UiField
     HTMLPanel root;

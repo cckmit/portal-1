@@ -1,40 +1,73 @@
 package ru.protei.portal.ui.common.client.widget.mentioningtextarea;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.ui.common.client.selector.SelectorPopup;
+import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
+import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.TextAreaHandler;
 import ru.protei.portal.ui.common.client.widget.dndautoresizetextarea.DndAutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.selector.login.UserLoginModel;
 import ru.protei.portal.ui.common.client.widget.selector.login.UserLoginSelector;
 
-public class MentioningTextArea extends DndAutoResizeTextArea {
+public class MentioningTextArea extends DndAutoResizeTextArea implements TextAreaHandler {
     @Inject
     public MentioningTextArea(UserLoginModel userLoginModel,
                               UserLoginSelector userLoginSelector) {
 
         this.userLoginModel = userLoginModel;
+        this.changeTimer = initTimer(userLoginModel, userLoginSelector);
 
-        initUserLoginSelector(userLoginModel, userLoginSelector);
-        final Timer changeTimer = initTimer(userLoginModel, userLoginSelector);
+        ArrowSelectableSelectorPopup selectorPopup = new ArrowSelectableSelectorPopup(this);
 
-        initKeyDownHandler(
-                this,
-                userLoginSelector.getPopup().getChildContainerAsComplexPanel(),
-                changeTimer
-        );
+        initUserLoginSelector(userLoginModel, userLoginSelector, selectorPopup);
+        addKeyDownHandler(createKeyDownHandler(userLoginSelector, selectorPopup));
 
         addClickHandler(event -> changeTimer.run());
+    }
+
+    @Override
+    public void focus() {
+        getElement().focus();
+    }
+
+    @Override
+    public void onKeyDown() {
+        changeTimer.schedule(200);
     }
 
     public void setPersonId(Long personId) {
         userLoginModel.setPersonFirstId(personId);
     }
 
-    private void initUserLoginSelector(final UserLoginModel userLoginModel, final UserLoginSelector userLoginSelector) {
+    private KeyDownHandler createKeyDownHandler(UserLoginSelector userLoginSelector, ArrowSelectableSelectorPopup selectorPopup) {
+        return event -> {
+            if (event.getNativeKeyCode() != KeyCodes.KEY_DOWN) {
+                changeTimer.schedule(200);
+                return;
+            }
+
+            if (!userLoginSelector.isPopupVisible()) {
+                changeTimer.schedule(200);
+                return;
+            }
+
+            event.preventDefault();
+
+            selectorPopup.focus();
+        };
+    }
+
+    private void initUserLoginSelector(final UserLoginModel userLoginModel,
+                                       final UserLoginSelector userLoginSelector,
+                                       SelectorPopup selectorPopup) {
+
+        userLoginSelector.setPopup(selectorPopup);
         userLoginSelector.setAsyncSearchModel(userLoginModel);
         userLoginSelector.setRelative(getElement(), true);
+        userLoginSelector.setSearchEnabled(false);
         userLoginSelector.addValueChangeHandler(event -> {
             int cursorPosition = cursorPosition(getElement());
 
@@ -66,13 +99,6 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
                 MentioningTextArea.this.possibleLoginInfo = possibleLoginInfo;
             }
         };
-    }
-
-    private void initKeyDownHandler(MentioningTextArea textArea, ComplexPanel childContainer, Timer changeTimer) {
-        PopupWithTextAreaKeyDownEventHandler popupWithTextAreaKeyDownEventHandler
-                = new PopupWithTextAreaKeyDownEventHandler(textArea, childContainer);
-
-        popupWithTextAreaKeyDownEventHandler.setDefaultKeyDownHandler(event -> changeTimer.schedule(200));
     }
 
     private PossibleLoginInfo possibleLogin(int cursorPosition) {
@@ -116,6 +142,7 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
     }-*/;
 
     private final UserLoginModel userLoginModel;
+    private final Timer changeTimer;
 
     private PossibleLoginInfo possibleLoginInfo;
 
