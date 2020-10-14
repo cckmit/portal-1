@@ -2,8 +2,7 @@ package ru.protei.portal.ui.common.client.widget.mentioningtextarea;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyDownHandler;
-import com.google.gwt.user.client.Timer;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.selector.SelectorPopup;
 import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
@@ -18,14 +17,14 @@ public class MentioningTextArea extends DndAutoResizeTextArea implements TextAre
                               UserLoginSelector userLoginSelector) {
 
         this.userLoginModel = userLoginModel;
-        this.changeTimer = initTimer(userLoginModel, userLoginSelector);
+        this.userLoginSelector = userLoginSelector;
 
         ArrowSelectableSelectorPopup selectorPopup = new ArrowSelectableSelectorPopup(this);
 
         initUserLoginSelector(userLoginModel, userLoginSelector, selectorPopup);
 
-        addKeyDownHandler(createKeyDownHandler(userLoginSelector, selectorPopup, changeTimer));
-        addClickHandler(event -> changeTimer.run());
+        addKeyUpHandler(createKeyUpHandler(userLoginSelector, selectorPopup));
+        addClickHandler(event -> onValueChanged());
     }
 
     @Override
@@ -34,23 +33,23 @@ public class MentioningTextArea extends DndAutoResizeTextArea implements TextAre
     }
 
     @Override
-    public void onKeyDown() {
-        changeTimer.schedule(200);
+    public void onValueChanged() {
+        onValueChanged(userLoginModel, userLoginSelector);
     }
 
     public void setPersonId(Long personId) {
         userLoginModel.setPersonFirstId(personId);
     }
 
-    private KeyDownHandler createKeyDownHandler(UserLoginSelector userLoginSelector, ArrowSelectableSelectorPopup selectorPopup, Timer changeTimer) {
+    private KeyUpHandler createKeyUpHandler(UserLoginSelector userLoginSelector, ArrowSelectableSelectorPopup selectorPopup) {
         return event -> {
             if (event.getNativeKeyCode() != KeyCodes.KEY_DOWN) {
-                changeTimer.schedule(200);
+                onValueChanged();
                 return;
             }
 
             if (!userLoginSelector.isPopupVisible()) {
-                changeTimer.schedule(200);
+                onValueChanged();
                 return;
             }
 
@@ -82,23 +81,18 @@ public class MentioningTextArea extends DndAutoResizeTextArea implements TextAre
         });
     }
 
-    private Timer initTimer(final UserLoginModel userLoginModel, final UserLoginSelector userLoginSelector) {
-        return new Timer() {
-            @Override
-            public void run() {
-                PossibleLoginInfo possibleLoginInfo = possibleLogin(cursorPosition(getElement()));
+    private void onValueChanged(final UserLoginModel userLoginModel, final UserLoginSelector userLoginSelector) {
+        PossibleLoginInfo possibleLoginInfo = possibleLogin(cursorPosition(getElement()));
 
-                if (possibleLoginInfo == null) {
-                    hidePopup(userLoginSelector);
-                    return;
-                }
+        if (possibleLoginInfo == null) {
+            hidePopup(userLoginSelector);
+            return;
+        }
 
-                userLoginModel.setSearchString(possibleLoginInfo.possibleLogin);
-                showPopup(userLoginSelector);
+        userLoginModel.setSearchString(possibleLoginInfo.possibleLogin);
+        showPopup(userLoginSelector);
 
-                MentioningTextArea.this.possibleLoginInfo = possibleLoginInfo;
-            }
-        };
+        this.possibleLoginInfo = possibleLoginInfo;
     }
 
     private PossibleLoginInfo possibleLogin(int cursorPosition) {
@@ -142,7 +136,7 @@ public class MentioningTextArea extends DndAutoResizeTextArea implements TextAre
     }-*/;
 
     private final UserLoginModel userLoginModel;
-    private final Timer changeTimer;
+    private final UserLoginSelector userLoginSelector;
 
     private PossibleLoginInfo possibleLoginInfo;
 

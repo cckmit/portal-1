@@ -45,9 +45,10 @@ public class ArrowSelectableSelectorPopup extends SelectorPopupWithSearch {
                 return;
             }
 
+//            Если нажали не на Enter, а продолжили ввод, то переводим фокус обратно
             if (KeyCodes.KEY_ENTER != event.getNativeKeyCode()) {
                 textAreaHandler.focus();
-                textAreaHandler.onKeyDown();
+                textAreaHandler.onValueChanged();
             }
         };
     }
