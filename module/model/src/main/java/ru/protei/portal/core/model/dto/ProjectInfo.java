@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.view.ProductShortView;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ProjectInfo implements Serializable {
 
@@ -117,7 +118,7 @@ public class ProjectInfo implements Serializable {
                 project.getProductDirectionId() == null || project.getProductDirectionName() == null ? null : new EntityOption(project.getProductDirectionName(), project.getProductDirectionId()),
                 project.getManagerId() == null || project.getManagerName() == null ? null : new EntityOption(project.getManagerName(), project.getManagerId()),
                 project.getCustomer() == null ? null : new EntityOption(project.getCustomer().getCname(), project.getCustomer().getId()),
-                project.getProducts() == null ? null : project.getProducts(),
+                project.getProducts() == null ? null : project.getProducts().stream().map(ProductShortView::fromProduct).collect(Collectors.toSet()),
                 project.getTechnicalSupportValidity());
     }
 }

@@ -21,7 +21,6 @@ import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.dto.RegionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
-import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
@@ -436,7 +435,7 @@ public class ProjectServiceImpl implements ProjectService {
         caseObject.setManagerId(project.getLeader() == null ? null : project.getLeader().getId());
         caseObject.setPauseDate( project.getPauseDate() );
 
-        caseObject.setProductId(project.getProductDirection() == null ? null :  project.getProductDirection().getId());
+        caseObject.setProductId(project.getProductDirectionEntityOption() == null ? null :  project.getProductDirectionEntityOption().getId());
 
         if (project.getCustomer() == null) {
             caseObject.setInitiatorCompany(null);
@@ -507,12 +506,12 @@ public class ProjectServiceImpl implements ProjectService {
         caseLocationDAO.persist( CaseLocation.makeLocationOf( caseObject, location ) );
     }
 
-    private void updateProducts(Project project, Set<ProductShortView> products) {
+    private void updateProducts(Project project, Set<DevUnit> products) {
         if (products == null)
             return;
 
-        Set<DevUnit> oldProducts = project.getProducts() == null ? new HashSet<>() : project.getProducts().stream().map(DevUnit::fromProductShortView).collect(Collectors.toSet());
-        Set<DevUnit> newProducts = products == null ? new HashSet<>() : products.stream().map(DevUnit::fromProductShortView).collect(Collectors.toSet());
+        Set<DevUnit> oldProducts = project.getProducts() == null ? new HashSet<>() : project.getProducts();
+        Set<DevUnit> newProducts = products == null ? new HashSet<>() : products;
 
         Set<DevUnit> toDelete = new HashSet<>(oldProducts);
         Set<DevUnit> toCreate = new HashSet<>(newProducts);
@@ -530,7 +529,7 @@ public class ProjectServiceImpl implements ProjectService {
             projectToProductDAO.persist(projectToProduct);
         });
 
-        project.setProducts(CollectionUtils.stream(newProducts).map(ProductShortView::fromProduct).collect(Collectors.toSet()));
+        project.setProducts(newProducts);
     }
 
     private void iterateAllLocations( Project project, Consumer< Location > handler ) {

@@ -25,7 +25,6 @@ import ru.protei.portal.ui.project.client.activity.table.AbstractProjectTableVie
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 
 /**
@@ -128,8 +127,8 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
                     StringBuilder content = new StringBuilder();
                     content.append("<b>").append(value.getId()).append("</b>").append("<br/>");
 
-                    if (value.getProductDirection() != null) {
-                        content.append(value.getProductDirection().getDisplayText());
+                    if (value.getProductDirectionEntityOption() != null) {
+                        content.append(value.getProductDirectionEntityOption().getDisplayText());
                     }
                     return content.toString();
                 });

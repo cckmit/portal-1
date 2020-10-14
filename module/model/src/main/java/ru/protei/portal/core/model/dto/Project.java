@@ -181,23 +181,12 @@ public class Project extends AuditableObject {
         this.stateId = state.getId();
     }
 
-
-   //пееределать!!!!
-    public EntityOption getProductDirection() {
+    public EntityOption getProductDirectionEntityOption() {
         if (productDirectionName != null && productDirectionId != null) {
             return new EntityOption(productDirectionName, productDirectionId);
         } else {
             return null;
         }
-    }
-
-    public void setProductDirection( EntityOption productDirection ) {
-        if (productDirection == null) {
-            productDirectionId = null;
-            productDirectionName = null;
-        }
-        this.productDirectionName = productDirection.getDisplayText();
-        this.productDirectionId = productDirection.getId();
     }
 
     public String getProductDirectionName() {
@@ -275,25 +264,12 @@ public class Project extends AuditableObject {
         this.customer = customer;
     }
 
-    //заменить на работу с продуктами!!!!!
-    public Set<ProductShortView> getProducts() {
-        if (products == null) {
-            return null;
-        } else {
-            return products.stream()
-                    .map(ProductShortView::fromProduct)
-                    .collect(Collectors.toSet());
-        }
+    public Set<DevUnit> getProducts() {
+        return products;
     }
 
-    public void setProducts(Set<ProductShortView> products) {
-        if (products == null) {
-            this.products = null;
-        } else {
-            this.products = products.stream()
-                    .map(DevUnit::fromProductShortView)
-                    .collect(Collectors.toSet());
-        }
+    public void setProducts(Set<DevUnit> products) {
+        this.products = products;
     }
 
     public Person getCreator() {
@@ -357,7 +333,7 @@ public class Project extends AuditableObject {
     }
 
     public ProductShortView getSingleProduct() {
-        return products == null ? null : getProducts().stream().findAny().orElse(null);
+        return products == null ? null : getProducts().stream().map(ProductShortView::fromProduct).findAny().orElse(null);
     }
 
     public List<EntityOption> getContracts() {
