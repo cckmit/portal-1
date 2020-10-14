@@ -13,7 +13,7 @@ import static java.util.Optional.of;
 public class ArrowSelectableSelectorPopup extends SelectorPopupWithSearch {
     public ArrowSelectableSelectorPopup(TextAreaHandler textAreaHandler) {
         childContainer.addStyleName("arrow-selectable");
-        childContainer.addDomHandler(event -> textAreaHandler.focus(), MouseOverEvent.getType());
+        childContainer.addDomHandler(event -> textAreaHandler.focusTextArea(), MouseOverEvent.getType());
         childContainer.addDomHandler(createPopupKeyDownHandler(childContainer, textAreaHandler), KeyDownEvent.getType());
     }
 
@@ -25,7 +25,7 @@ public class ArrowSelectableSelectorPopup extends SelectorPopupWithSearch {
         return event -> {
             if (KeyCodes.KEY_ESCAPE == event.getNativeKeyCode()) {
                 event.preventDefault();
-                textAreaHandler.focus();
+                textAreaHandler.focusTextArea();
                 return;
             }
 
@@ -33,7 +33,7 @@ public class ArrowSelectableSelectorPopup extends SelectorPopupWithSearch {
                 event.preventDefault();
 
                 if (focusWidget(getPrevious(childContainer, currentWidget)) == null) {
-                    textAreaHandler.focus();
+                    textAreaHandler.focusTextArea();
                 }
 
                 return;
@@ -47,7 +47,7 @@ public class ArrowSelectableSelectorPopup extends SelectorPopupWithSearch {
 
 //            Если нажали не на Enter, а продолжили ввод, то переводим фокус обратно
             if (KeyCodes.KEY_ENTER != event.getNativeKeyCode()) {
-                textAreaHandler.focus();
+                textAreaHandler.focusTextArea();
                 textAreaHandler.onValueChanged();
             }
         };

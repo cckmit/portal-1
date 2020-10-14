@@ -28,7 +28,7 @@ public class MentioningTextArea extends DndAutoResizeTextArea implements TextAre
     }
 
     @Override
-    public void focus() {
+    public void focusTextArea() {
         getElement().focus();
     }
 
