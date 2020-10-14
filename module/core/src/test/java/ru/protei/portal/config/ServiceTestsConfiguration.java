@@ -25,7 +25,7 @@ import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.index.document.DocumentStorageIndex;
 import ru.protei.portal.core.index.document.DocumentStorageIndexImpl;
 import ru.protei.portal.core.nrpe.NRPEExecutor;
-import ru.protei.portal.core.nrpe.NRPERequest;
+import ru.protei.portal.core.nrpe.NRPEProcessor;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.renderer.JiraWikiMarkupRenderer;
 import ru.protei.portal.core.renderer.MarkdownRenderer;
@@ -468,7 +468,7 @@ public class ServiceTestsConfiguration {
     }
 
     @Bean
-    public NRPERequest getNRPERequest(@Autowired NRPEExecutor executor) {
-        return new NRPERequest(executor);
+    public NRPEProcessor getNRPERequest(@Autowired NRPEExecutor executor) {
+        return new NRPEProcessor(executor);
     }
 }

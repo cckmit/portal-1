@@ -21,7 +21,7 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.nrpe.NRPEExecutor;
 import ru.protei.portal.core.nrpe.NRPEExecutorTerminal;
-import ru.protei.portal.core.nrpe.NRPERequest;
+import ru.protei.portal.core.nrpe.NRPEProcessor;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.auth.AuthServiceImpl;
@@ -512,7 +512,7 @@ public class JiraTestConfiguration {
     }
 
     @Bean
-    public NRPERequest getNRPERequest(@Autowired NRPEExecutor executor) {
-        return new NRPERequest(executor);
+    public NRPEProcessor getNRPERequest(@Autowired NRPEExecutor executor) {
+        return new NRPEProcessor(executor);
     }
 }

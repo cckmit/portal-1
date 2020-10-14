@@ -23,9 +23,9 @@ import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.SubnetOption;
-import ru.protei.portal.core.nrpe.NRPEResponse;
-import ru.protei.portal.core.nrpe.NRPEStatus;
-import ru.protei.portal.core.nrpe.response.NRPEHostReachable;
+import ru.protei.portal.core.model.struct.nrpe.response.NRPEResponse;
+import ru.protei.portal.core.model.dict.En_NRPEStatus;
+import ru.protei.portal.core.model.struct.nrpe.response.NRPEHostReachable;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.nrpe.NRPEService;
 import ru.protei.portal.core.service.policy.PolicyService;
@@ -33,6 +33,7 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -283,7 +284,7 @@ public class IpReservationServiceImpl implements IpReservationService {
         }
 
         List<ReservedIp> reservedIps = new ArrayList<>();
-        List<String> NRPENonAvailableIps = new ArrayList<>();
+        List<String> nrpeNonAvailableIps = new ArrayList<>();
 
         ReservedIp templateIp = new ReservedIp();
         templateIp.setCreated(new Date());
@@ -306,7 +307,7 @@ public class IpReservationServiceImpl implements IpReservationService {
                     return error(En_ResultStatus.NRPE_ERROR);
                 }
 
-                if (nrpeResponse.getNRPEStatus() == NRPEStatus.HOST_REACHABLE) {
+                if (nrpeResponse.getNRPEStatus() == En_NRPEStatus.HOST_REACHABLE) {
                     return error(En_ResultStatus.NRPE_IP_NON_AVAILABLE, null, Collections.singletonList(
                                     new ReservedIpAdminNotificationEvent(this, ((NRPEHostReachable)nrpeResponse).ipsAndMacs()))
                     );
@@ -339,14 +340,19 @@ public class IpReservationServiceImpl implements IpReservationService {
                 return error(En_ResultStatus.NOT_CREATED);
             }
 
-            IpInfoIterator ipInfoIterator = new IpInfoIterator(subnets);
-            Stream<IpInfo> ipInfoStream = StreamSupport.stream(((Iterable<IpInfo>)() -> ipInfoIterator).spliterator(), false);
+            IpInfoIterator ipInfoIterator = new IpInfoIterator(
+                    subnets,
+                    this::hasSubnetFreeIps,
+                    subnetDAO::get,
+                    this::getReservedIpNumInSubnet
+            );
+            Stream<IpInfo> freeIpInfoStream = StreamSupport.stream(((Iterable<IpInfo>)() -> ipInfoIterator).spliterator(), false);
 
             if (config.data().getNrpeConfig().getEnable()) {
-                ipInfoStream = ipInfoStream.filter(makeNRPETest(NRPENonAvailableIps, ipInfoIterator));
+                freeIpInfoStream = freeIpInfoStream.filter(makeNRPETest(nrpeNonAvailableIps, ipInfoIterator));
             }
 
-            reservedIps = ipInfoStream
+            reservedIps = freeIpInfoStream
                     .limit(reservedIpRequest.getNumber())
                     .map(ipInfo -> {
                         ReservedIp reservedIp = ReservedIp.createByTemplate(templateIp);
@@ -372,8 +378,8 @@ public class IpReservationServiceImpl implements IpReservationService {
                                 token.getPersonId(),
                                 reservedIpRequest.getOwnerId())
                 ));
-        if (!NRPENonAvailableIps.isEmpty()) {
-            result.publishEvent(new ReservedIpAdminNotificationEvent(this, NRPENonAvailableIps));
+        if (!nrpeNonAvailableIps.isEmpty()) {
+            result.publishEvent(new ReservedIpAdminNotificationEvent(this, nrpeNonAvailableIps));
         }
         return result;
     }
@@ -822,7 +828,7 @@ public class IpReservationServiceImpl implements IpReservationService {
                 return false;
             }
 
-            boolean ipNonAvailable = nrpeResponse.getNRPEStatus() == NRPEStatus.HOST_REACHABLE;
+            boolean ipNonAvailable = nrpeResponse.getNRPEStatus() == En_NRPEStatus.HOST_REACHABLE;
             if (ipNonAvailable) {
                 NRPENonAvailableIps.addAll(((NRPEHostReachable) nrpeResponse).ipsAndMacs());
             }
@@ -849,7 +855,7 @@ public class IpReservationServiceImpl implements IpReservationService {
         }
     }
 
-    class IpInfoIterator implements Iterator<IpInfo> {
+    static class IpInfoIterator implements Iterator<IpInfo> {
         private final List<SubnetOption> subnets;
         private int nextSubnetIndex;
         private Subnet currentSubnet;
@@ -857,11 +863,18 @@ public class IpReservationServiceImpl implements IpReservationService {
         private Set<Integer> subnetDBReservedIps;
 
         private IpInfo nextIpInfo;
-
         private En_ResultStatus status = En_ResultStatus.OK;
 
-        public IpInfoIterator(List<SubnetOption> subnets) {
+        private final Predicate<Long> isSubnetHasFreeIp;
+        private final Function<Long, Subnet> subnetById;
+        private final Function<Subnet, Set<Integer>> subnetReservedIpsBySubnet;
+
+        public IpInfoIterator(List<SubnetOption> subnets, Predicate<Long> isSubnetHasFreeIp,
+                              Function<Long, Subnet> subnetById, Function<Subnet, Set<Integer>> subnetReservedIpsBySubnet) {
             this.subnets = subnets;
+            this.isSubnetHasFreeIp = isSubnetHasFreeIp;
+            this.subnetById = subnetById;
+            this.subnetReservedIpsBySubnet = subnetReservedIpsBySubnet;
             this.nextSubnetIndex = 0;
             refreshData();
         }
@@ -887,11 +900,11 @@ public class IpReservationServiceImpl implements IpReservationService {
                     return;
                 }
                 subnetOption = subnets.get(index);
-            } while (!hasSubnetFreeIps(subnetOption.getId()));
+            } while (!isSubnetHasFreeIp.test(subnetOption.getId()));
 
-            currentSubnet = subnetDAO.get(subnetOption.getId());
             nextNumber = CrmConstants.IpReservation.MIN_IPS_COUNT;
-            subnetDBReservedIps = getReservedIpNumInSubnet(currentSubnet);
+            currentSubnet = subnetById.apply(subnetOption.getId());
+            subnetDBReservedIps = subnetReservedIpsBySubnet.apply(currentSubnet);
         }
 
         private IpInfo getNextIpInfo() {

@@ -959,9 +959,9 @@ public class MailNotificationProcessor {
     public void onReservedIpAdminNotificationEvent( ReservedIpAdminNotificationEvent event) {
         log.info( "onReservedIpAdminNotificationEvent(): {}", event );
 
-        String adminEmail = config.data().getNrpeConfig().getAdminEmail();
-        if (adminEmail.isEmpty()) {
-            log.error("No admin email");
+        List<String> adminEmails = config.data().getNrpeConfig().getAdminMails();
+        if (isEmpty(adminEmails)) {
+            log.error("No admin mails");
             return;
         }
 
@@ -971,20 +971,23 @@ public class MailNotificationProcessor {
             return;
         }
 
-        PreparedTemplate bodyTemplate = templateService.getNRPENonAvailableIpsNotificationBody( event.getNonAvailableIps() );
+        PreparedTemplate bodyTemplate = templateService.getNRPENonAvailableIpsNotificationBody( event.getNonAvailableIps(), adminEmails);
         if (bodyTemplate == null) {
             log.error("Failed to prepare body template for release ReservedIpAdminNotification notification");
             return;
         }
 
-        try {
-            String body = bodyTemplate.getText(adminEmail, null, false);
-            String subject = subjectTemplate.getText(adminEmail, null, false);
+        adminEmails.forEach(adminEmail -> {
+            try {
+                String body = bodyTemplate.getText(adminEmail, null, false);
+                String subject = subjectTemplate.getText(adminEmail, null, false);
 
-            sendMail(adminEmail, subject, body);
-        } catch (Exception e) {
-            log.error("Failed to make MimeMessage", e);
-        }
+                sendMail(adminEmail, subject, body);
+            } catch (Exception e) {
+                log.error("Failed to make MimeMessage mail={}, e={}", adminEmail, e);
+            }
+        });
+
     }
 
     // -----

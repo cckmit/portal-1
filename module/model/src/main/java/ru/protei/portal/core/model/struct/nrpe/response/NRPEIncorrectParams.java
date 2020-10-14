@@ -1,7 +1,6 @@
-package ru.protei.portal.core.nrpe.response;
+package ru.protei.portal.core.model.struct.nrpe.response;
 
-import ru.protei.portal.core.nrpe.NRPEResponse;
-import ru.protei.portal.core.nrpe.NRPEStatus;
+import ru.protei.portal.core.model.dict.En_NRPEStatus;
 
 public class NRPEIncorrectParams implements NRPEResponse {
     private final String message;
@@ -15,7 +14,7 @@ public class NRPEIncorrectParams implements NRPEResponse {
     }
 
     @Override
-    public NRPEStatus getNRPEStatus() {
-        return NRPEStatus.INCORRECT_PARAMS;
+    public En_NRPEStatus getNRPEStatus() {
+        return En_NRPEStatus.INCORRECT_PARAMS;
     }
 }

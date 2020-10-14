@@ -5,20 +5,21 @@ import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
 public class NRPEExecutorTerminal implements NRPEExecutor {
-    private static Logger log = LoggerFactory.getLogger(NRPEExecutorTerminal.class);
+    private static final Logger log = LoggerFactory.getLogger(NRPEExecutorTerminal.class);
     @Override
     public List<String> execute(String request) {
         String[] bashArgs = new String[] {"/bin/bash", "-c", request};
         log.info("request = {}", request);
         ArrayList<String> lines = new ArrayList<>();
-        try {
-            Process pr = new ProcessBuilder(bashArgs).start();
-            BufferedReader r = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+        try (
+                InputStream inputStream = new ProcessBuilder(bashArgs).start().getInputStream();
+                BufferedReader r = new BufferedReader(new InputStreamReader(inputStream))) {
             while (true) {
                 String line = r.readLine();
                 log.info("line = {}", line);
@@ -27,11 +28,9 @@ public class NRPEExecutorTerminal implements NRPEExecutor {
                 }
                 lines.add(line);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
         }
-
         return lines;
     }
 }

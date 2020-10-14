@@ -3,7 +3,8 @@ package ru.protei.portal.core.nrpe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.model.dict.En_NRPEStatus;
+import ru.protei.portal.core.model.struct.nrpe.response.NRPEResponse;
 import ru.protei.portal.core.nrpe.parser.NRPEParserHostReachable;
 import ru.protei.portal.core.nrpe.parser.NRPEParserHostUnreachable;
 import ru.protei.portal.core.nrpe.parser.NRPEParserIncorrectParams;
@@ -12,29 +13,28 @@ import ru.protei.portal.core.nrpe.parser.NRPEParserServerUnavailable;
 import java.util.List;
 import java.util.Objects;
 
-public class NRPERequest {
-    private static Logger log = LoggerFactory.getLogger(NRPERequest.class);
+public class NRPEProcessor {
+    private static Logger log = LoggerFactory.getLogger(NRPEProcessor.class);
+
     @Autowired
-    public NRPERequest(NRPEExecutor executor) {
+    public NRPEProcessor(NRPEExecutor executor) {
         this.executor = executor;
     }
 
-    @Autowired
-    PortalConfig portalConfig;
-
     private final NRPEExecutor executor;
 
-    public NRPEResponse perform(String ip) {
-        return perform(ip, portalConfig.data().getNrpeConfig().getTemplate());
-    }
-
-    public NRPEResponse perform(String ip, String template) {
+    public NRPEResponse request(String ip, String template) {
         if (ip == null) {
             log.error("ip == null");
             return null;
         }
         String request = String.format(template, ip);
         log.info("request: {}", request);
+        if (!validateRequest(request)) {
+            log.info("validate: false");
+            return null;
+        }
+
         List<String> list = executor.execute(request);
         if (list == null) {
             log.error("executor error");
@@ -48,14 +48,17 @@ public class NRPERequest {
             return null;
         }
 
-        NRPEStatus status;
+        int statusLineIndex = list.size() - 1;
+        String statusLine = list.get(statusLineIndex);
+
+        En_NRPEStatus status;
         try {
-            status = NRPEStatus.find(Integer.parseInt(list.get(list.size() - 1)));
+            status = En_NRPEStatus.find(Integer.parseInt(statusLine));
         } catch (NumberFormatException exception) {
-            log.error("status parse error, status = {}", list.get(list.size() - 1));
+            log.error("status parse error, status = {}", statusLine);
             return null;
         }
-        List<String> content = list.subList(0, list.size() - 1);
+        List<String> content = list.subList(0, statusLineIndex);
 
         switch (Objects.requireNonNull(status)) {
             case HOST_REACHABLE:
@@ -70,5 +73,9 @@ public class NRPERequest {
                 log.error("no parser for status, status = {}", status);
                 return null;
         }
+    }
+
+    static private boolean validateRequest(String request) {
+        return request.contains("check_nrpe") && request.endsWith("; echo $?");
     }
 }

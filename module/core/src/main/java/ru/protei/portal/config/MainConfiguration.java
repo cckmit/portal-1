@@ -37,7 +37,7 @@ import ru.protei.portal.core.model.ent.CaseInfo;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.nrpe.NRPEExecutor;
 import ru.protei.portal.core.nrpe.NRPEExecutorTerminal;
-import ru.protei.portal.core.nrpe.NRPERequest;
+import ru.protei.portal.core.nrpe.NRPEProcessor;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.renderer.JiraWikiMarkupRenderer;
 import ru.protei.portal.core.renderer.MarkdownRenderer;
@@ -1094,8 +1094,8 @@ public class MainConfiguration {
     }
 
     @Bean
-    public NRPERequest getNRPERequest(@Autowired NRPEExecutor executor) {
-        return new NRPERequest(executor);
+    public NRPEProcessor getNRPERequest(@Autowired NRPEExecutor executor) {
+        return new NRPEProcessor(executor);
     }
 
     public static final String BACKGROUND_TASKS = "backgroundTasks";

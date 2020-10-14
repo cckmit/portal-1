@@ -1,6 +1,6 @@
-package ru.protei.portal.core.nrpe.response;
+package ru.protei.portal.core.model.struct.nrpe.response;
 
-import ru.protei.portal.core.nrpe.NRPEStatus;
+import ru.protei.portal.core.model.dict.En_NRPEStatus;
 
 import java.util.Collections;
 import java.util.List;
@@ -69,7 +69,7 @@ public class NRPEHostReachable extends NRPEHost {
     }
 
     @Override
-    public NRPEStatus getNRPEStatus() {
-        return NRPEStatus.HOST_REACHABLE;
+    public En_NRPEStatus getNRPEStatus() {
+        return En_NRPEStatus.HOST_REACHABLE;
     }
 }

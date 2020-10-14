@@ -1,8 +1,8 @@
-package ru.protei.portal.core.nrpe;
+package ru.protei.portal.core.model.dict;
 
 import ru.protei.winter.core.utils.enums.HasId;
 
-public enum NRPEStatus implements HasId {
+public enum En_NRPEStatus implements HasId {
     HOST_REACHABLE(0),
     HOST_UNREACHABLE(1),
     SERVER_UNAVAILABLE(2),
@@ -11,7 +11,7 @@ public enum NRPEStatus implements HasId {
 
     private final int id;
 
-    NRPEStatus(int id) {
+    En_NRPEStatus(int id) {
         this.id = id;
     }
 
@@ -20,8 +20,8 @@ public enum NRPEStatus implements HasId {
         return id;
     }
 
-    public static NRPEStatus find(int id) {
-        for (NRPEStatus as : NRPEStatus.values())
+    public static En_NRPEStatus find(int id) {
+        for (En_NRPEStatus as : En_NRPEStatus.values())
             if (as.id == id)
                 return as;
 

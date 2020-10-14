@@ -1,7 +1,7 @@
 package ru.protei.portal.core.nrpe.parser;
 
-import ru.protei.portal.core.nrpe.NRPEResponse;
-import ru.protei.portal.core.nrpe.response.NRPEIncorrectParams;
+import ru.protei.portal.core.model.struct.nrpe.response.NRPEResponse;
+import ru.protei.portal.core.model.struct.nrpe.response.NRPEIncorrectParams;
 
 import java.util.List;
 

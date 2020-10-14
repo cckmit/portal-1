@@ -834,9 +834,10 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getNRPENonAvailableIpsNotificationBody(List<String> nonAvailableIps) {
+    public PreparedTemplate getNRPENonAvailableIpsNotificationBody(List<String> nonAvailableIps, Collection<String> recipients) {
         Map<String, Object> model = new HashMap<>();
         model.put("nonAvailableIps", nonAvailableIps);
+        model.put("recipients", recipients);
 
         PreparedTemplate template = new PreparedTemplate("notification/email/nrpe.ips.body.%s.ftl");
         template.setModel(model);

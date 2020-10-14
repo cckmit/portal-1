@@ -2,13 +2,13 @@ package ru.protei.portal.test.nrpe;
 
 import org.junit.Assert;
 import org.junit.Test;
-import ru.protei.portal.core.nrpe.NRPERequest;
-import ru.protei.portal.core.nrpe.NRPEResponse;
-import ru.protei.portal.core.nrpe.NRPEStatus;
-import ru.protei.portal.core.nrpe.response.NRPEHostReachable;
-import ru.protei.portal.core.nrpe.response.NRPEHostUnreachable;
-import ru.protei.portal.core.nrpe.response.NRPEIncorrectParams;
-import ru.protei.portal.core.nrpe.response.NRPEServerUnavailable;
+import ru.protei.portal.core.nrpe.NRPEProcessor;
+import ru.protei.portal.core.model.struct.nrpe.response.NRPEResponse;
+import ru.protei.portal.core.model.dict.En_NRPEStatus;
+import ru.protei.portal.core.model.struct.nrpe.response.NRPEHostReachable;
+import ru.protei.portal.core.model.struct.nrpe.response.NRPEHostUnreachable;
+import ru.protei.portal.core.model.struct.nrpe.response.NRPEIncorrectParams;
+import ru.protei.portal.core.model.struct.nrpe.response.NRPEServerUnavailable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,11 +26,11 @@ public class NRPETest {
                 "0"
         );
 
-        NRPEResponse response = NRPERequest.parse(responseList);
+        NRPEResponse response = NRPEProcessor.parse(responseList);
         Assert.assertTrue(response instanceof NRPEHostReachable);
 
         NRPEHostReachable nrpeResponse = (NRPEHostReachable)response;
-        Assert.assertEquals(NRPEStatus.HOST_REACHABLE, nrpeResponse.getNRPEStatus());
+        Assert.assertEquals(En_NRPEStatus.HOST_REACHABLE, nrpeResponse.getNRPEStatus());
         Assert.assertEquals("192.168.100.90", nrpeResponse.getIpTarget());
         Assert.assertEquals("192.168.0.254", nrpeResponse.getIpSource());
         Assert.assertEquals(3, nrpeResponse.getProbes());
@@ -64,11 +64,11 @@ public class NRPETest {
                 "0"
         );
 
-        NRPEResponse response = NRPERequest.parse(responseList);
+        NRPEResponse response = NRPEProcessor.parse(responseList);
         Assert.assertTrue(response instanceof NRPEHostReachable);
 
         NRPEHostReachable nrpeResponse = (NRPEHostReachable)response;
-        Assert.assertEquals(NRPEStatus.HOST_REACHABLE, nrpeResponse.getNRPEStatus());
+        Assert.assertEquals(En_NRPEStatus.HOST_REACHABLE, nrpeResponse.getNRPEStatus());
         Assert.assertEquals("192.168.100.50", nrpeResponse.getIpTarget());
         Assert.assertEquals("192.168.0.254", nrpeResponse.getIpSource());
         Assert.assertEquals(3, nrpeResponse.getProbes());
@@ -99,11 +99,11 @@ public class NRPETest {
                 "1"
         );
 
-        NRPEResponse response = NRPERequest.parse(responseList);
+        NRPEResponse response = NRPEProcessor.parse(responseList);
         Assert.assertTrue(response instanceof NRPEHostUnreachable);
 
         NRPEHostUnreachable nrpeResponse = (NRPEHostUnreachable)response;
-        Assert.assertEquals(NRPEStatus.HOST_UNREACHABLE, nrpeResponse.getNRPEStatus());
+        Assert.assertEquals(En_NRPEStatus.HOST_UNREACHABLE, nrpeResponse.getNRPEStatus());
         Assert.assertEquals("192.168.100.91", nrpeResponse.getIpTarget());
         Assert.assertEquals("192.168.0.254", nrpeResponse.getIpSource());
         Assert.assertEquals(4, nrpeResponse.getProbes());
@@ -119,11 +119,11 @@ public class NRPETest {
                 "2"
         );
 
-        NRPEResponse response = NRPERequest.parse(responseList);
+        NRPEResponse response = NRPEProcessor.parse(responseList);
         Assert.assertTrue(response instanceof NRPEServerUnavailable);
 
         NRPEServerUnavailable nrpeResponse = (NRPEServerUnavailable)response;
-        Assert.assertEquals(NRPEStatus.SERVER_UNAVAILABLE, nrpeResponse.getNRPEStatus());
+        Assert.assertEquals(En_NRPEStatus.SERVER_UNAVAILABLE, nrpeResponse.getNRPEStatus());
         Assert.assertEquals("192.168.0.254", nrpeResponse.getIp());
         Assert.assertEquals("5666", nrpeResponse.getPort());
         Assert.assertEquals("router.protei.ru", nrpeResponse.getHost());
@@ -136,34 +136,34 @@ public class NRPETest {
                 "3"
         );
 
-        NRPEResponse response = NRPERequest.parse(responseList);
+        NRPEResponse response = NRPEProcessor.parse(responseList);
         Assert.assertTrue(response instanceof NRPEIncorrectParams);
 
         NRPEIncorrectParams nrpeResponse = (NRPEIncorrectParams)response;
-        Assert.assertEquals(NRPEStatus.INCORRECT_PARAMS, nrpeResponse.getNRPEStatus());
+        Assert.assertEquals(En_NRPEStatus.INCORRECT_PARAMS, nrpeResponse.getNRPEStatus());
         Assert.assertEquals("NRPE: Unable to read output", nrpeResponse.getMessage());
     }
 
     @Test
     public void requestReachable() {
-        NRPEResponse response = request.perform("192.168.100.90", "%s");
+        NRPEResponse response = nrpeProcessor.request("192.168.100.90", "check_nrpe %s; echo $?");
 
         Assert.assertTrue(response instanceof NRPEHostReachable);
 
         NRPEHostReachable nrpeResponse = (NRPEHostReachable)response;
-        Assert.assertEquals(NRPEStatus.HOST_REACHABLE, nrpeResponse.getNRPEStatus());
+        Assert.assertEquals(En_NRPEStatus.HOST_REACHABLE, nrpeResponse.getNRPEStatus());
         Assert.assertEquals("192.168.100.90", nrpeResponse.getIpTarget());
     }
 
     @Test
     public void requestIncorrectParam() {
-        NRPEResponse response = request.perform("^&*^7&^*786", "%s");
+        NRPEResponse response = nrpeProcessor.request("^788*^7&^*akk", "check_nrpe %s; echo $?");
 
         Assert.assertTrue(response instanceof NRPEIncorrectParams);
 
         NRPEIncorrectParams nrpeResponse = (NRPEIncorrectParams)response;
-        Assert.assertEquals(NRPEStatus.INCORRECT_PARAMS, nrpeResponse.getNRPEStatus());
+        Assert.assertEquals(En_NRPEStatus.INCORRECT_PARAMS, nrpeResponse.getNRPEStatus());
     }
 
-    private final NRPERequest request = new NRPERequest(new NRPEExecutorTest());
+    private final NRPEProcessor nrpeProcessor = new NRPEProcessor(new NRPEExecutorTest());
 }

@@ -8,7 +8,13 @@ import ru.protei.winter.core.utils.duration.DurationUtils;
 import ru.protei.winter.core.utils.duration.IncorrectDurationException;
 
 import java.net.Inet4Address;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 
 /**
  * Created by michael on 31.05.17.
@@ -817,13 +823,18 @@ public class PortalConfigData {
     public static class NRPEConfig {
         final String template;
         final Boolean enable;
-        final String adminEmail;
+        final List<String> adminMails;
 
         public NRPEConfig(PropertiesWrapper properties) {
             this.template = properties.getProperty("nrpe.template",
                     "/usr/lib64/nagios/plugins/check_nrpe -H router.protei.ru -c check_arping_lan -a %s ; echo $?");
             this.enable = properties.getProperty("nrpe.enable", Boolean.class, false);
-            this.adminEmail = properties.getProperty("nrpe.admin.email", "sysadmin@protei.ru");
+            String temp = properties.getProperty("nrpe.admin.mails");
+            if (isNotEmpty(temp)) {
+                adminMails = Arrays.stream(temp.split(",")).collect(Collectors.toList());
+            } else {
+                adminMails = new ArrayList<>();
+            }
         }
 
         public String getTemplate() {
@@ -834,8 +845,8 @@ public class PortalConfigData {
             return enable;
         }
 
-        public String getAdminEmail() {
-            return adminEmail;
+        public List<String> getAdminMails() {
+            return adminMails;
         }
     }
 

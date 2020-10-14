@@ -35,7 +35,12 @@
             </#list>
             <div style="padding: 4px 0 8px;">
                 <div style="color: #777777; font-size: 11px; font-family:sans-serif; margin: 20px 0; padding: 8px 0; border-top: 1px solid #D4D5D6;">
-                    ${_you} (<b>${userName}</b>) ${_notification_footer} ${userName}
+                    ${_you} (<b>${userName}</b>) ${_notification_footer}
+                    <#list recipients as recipient>
+                        <#if recipient??>
+                            ${recipient}<#sep>, </#sep>
+                        </#if>
+                    </#list>
                 </div>
             </div>
         </div>

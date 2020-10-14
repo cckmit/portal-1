@@ -1,6 +1,6 @@
-package ru.protei.portal.core.nrpe.response;
+package ru.protei.portal.core.model.struct.nrpe.response;
 
-import ru.protei.portal.core.nrpe.NRPEStatus;
+import ru.protei.portal.core.model.dict.En_NRPEStatus;
 
 public class NRPEHostUnreachable extends NRPEHost {
     public NRPEHostUnreachable(String ipTarget, String ipSource, int probes, int broadcast, int response) {
@@ -12,7 +12,7 @@ public class NRPEHostUnreachable extends NRPEHost {
     }
 
     @Override
-    public NRPEStatus getNRPEStatus() {
-        return NRPEStatus.HOST_UNREACHABLE;
+    public En_NRPEStatus getNRPEStatus() {
+        return En_NRPEStatus.HOST_UNREACHABLE;
     }
 }

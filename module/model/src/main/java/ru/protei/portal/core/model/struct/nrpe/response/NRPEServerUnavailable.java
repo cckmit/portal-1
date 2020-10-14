@@ -1,7 +1,6 @@
-package ru.protei.portal.core.nrpe.response;
+package ru.protei.portal.core.model.struct.nrpe.response;
 
-import ru.protei.portal.core.nrpe.NRPEResponse;
-import ru.protei.portal.core.nrpe.NRPEStatus;
+import ru.protei.portal.core.model.dict.En_NRPEStatus;
 
 public class NRPEServerUnavailable implements NRPEResponse {
     private final String ip;
@@ -27,7 +26,7 @@ public class NRPEServerUnavailable implements NRPEResponse {
     }
 
     @Override
-    public NRPEStatus getNRPEStatus() {
-        return NRPEStatus.SERVER_UNAVAILABLE;
+    public En_NRPEStatus getNRPEStatus() {
+        return En_NRPEStatus.SERVER_UNAVAILABLE;
     }
 }

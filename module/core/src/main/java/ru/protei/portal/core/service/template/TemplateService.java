@@ -100,5 +100,5 @@ public interface TemplateService {
     PreparedTemplate getBirthdaysNotificationBody(List<EmployeeShortView> employees, Collection<String> recipients);
 
     PreparedTemplate getNRPENonAvailableIpsNotificationSubject();
-    PreparedTemplate getNRPENonAvailableIpsNotificationBody(List<String> nonAvailableIps);
+    PreparedTemplate getNRPENonAvailableIpsNotificationBody(List<String> nonAvailableIps, Collection<String> recipients);
 }

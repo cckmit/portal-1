@@ -1,6 +1,4 @@
-package ru.protei.portal.core.nrpe.response;
-
-import ru.protei.portal.core.nrpe.NRPEResponse;
+package ru.protei.portal.core.model.struct.nrpe.response;
 
 public abstract class NRPEHost implements NRPEResponse {
     protected String ipTarget;
