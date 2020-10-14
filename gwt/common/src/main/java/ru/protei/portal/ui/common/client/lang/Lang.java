@@ -728,6 +728,12 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errRemoveIssueCommentByTime();
 
+    String errNRPEIpNonAvailable();
+
+    String errNRPEError();
+
+    String errNRPENoFreeIps();
+
     String errEditTimeElapsedType();
 
     String errEditContactLogin();
@@ -3123,4 +3129,6 @@ public interface Lang extends Messages, ContactItemLang {
     String errReportingServiceNotConfigured();
 
     String dutyTypeCOV();
+
+    String reservedIpReservationStart();
 }

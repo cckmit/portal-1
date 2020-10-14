@@ -85,6 +85,9 @@ public class En_ResultStatusLang {
             case NOT_ALLOWED_EDIT_COMMENT_BY_TIME: return lang.errEditIssueCommentByTime();
             case NOT_ALLOWED_REMOVE_COMMENT_BY_TIME: return lang.errRemoveIssueCommentByTime();
             case REPORTING_SERVICE_NOT_CONFIGURED: return lang.errReportingServiceNotConfigured();
+            case NRPE_IP_NON_AVAILABLE: return lang.errNRPEIpNonAvailable();
+            case NRPE_ERROR: return lang.errNRPEError();
+            case NRPE_NO_FREE_IPS: return lang.errNRPENoFreeIps();
             default: return lang.errUnknownResult();
         }
     }

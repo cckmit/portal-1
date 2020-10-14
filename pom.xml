@@ -47,7 +47,8 @@
                 <module>module/redmine</module>
                 <module>module/jira</module>
                 <module>module/test</module>
-                
+                <module>module/nrpe</module>
+
                 <module>skin/classic</module>
 
                 <module>gwt/common</module>

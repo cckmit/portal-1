@@ -62,6 +62,8 @@ import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceImpl;
 import ru.protei.portal.core.service.bootstrap.BootstrapService;
 import ru.protei.portal.core.service.bootstrap.BootstrapServiceImpl;
 import ru.protei.portal.core.service.events.*;
+import ru.protei.portal.core.service.nrpe.NRPEService;
+import ru.protei.portal.core.service.nrpe.NRPEServiceImpl;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
 import ru.protei.portal.core.service.syncronization.EmployeeRegistrationYoutrackSynchronizer;
@@ -72,6 +74,8 @@ import ru.protei.portal.core.svn.document.DocumentSvnApi;
 import ru.protei.portal.core.svn.document.DocumentSvnApiImpl;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
+import ru.protei.portal.nrpe.NRPEExecutorTerminal;
+import ru.protei.portal.nrpe.NRPEProcessor;
 import ru.protei.portal.schedule.PortalScheduleTasks;
 import ru.protei.portal.schedule.PortalScheduleTasksImpl;
 import ru.protei.portal.tools.migrate.export.ActiveExportDataService;
@@ -1078,6 +1082,11 @@ public class MainConfiguration {
         return new ExternalLinksHtml();
     }
 
+    @Bean
+    public NRPEService getNRPEService() {
+        return new NRPEServiceImpl();
+    }
+
     /* ASPECT/INTERCEPTORS */
 
     @Bean
@@ -1088,6 +1097,11 @@ public class MainConfiguration {
     @Bean
     public ServiceLayerInterceptorLogging getServiceLayerInterceptorLogging() {
         return new ServiceLayerInterceptorLogging();
+    }
+
+    @Bean
+    public NRPEProcessor getNRPERequest() {
+        return new NRPEProcessor(new NRPEExecutorTerminal());
     }
 
     public static final String BACKGROUND_TASKS = "backgroundTasks";

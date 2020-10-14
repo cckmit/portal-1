@@ -29,6 +29,8 @@ import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceImpl;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceTaskHandlerImpl;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseTaskHandler;
 import ru.protei.portal.core.service.events.*;
+import ru.protei.portal.core.service.nrpe.NRPEService;
+import ru.protei.portal.core.service.nrpe.NRPEServiceImpl;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
 import ru.protei.portal.jira.aspect.JiraServiceLayerInterceptorLogging;
@@ -39,6 +41,8 @@ import ru.protei.portal.jira.service.JiraBackchannelHandlerImpl;
 import ru.protei.portal.jira.service.JiraIntegrationService;
 import ru.protei.portal.jira.service.JiraIntegrationServiceImpl;
 import ru.protei.portal.jira.utils.JiraQueueSingleThreadPoolTaskExecutor;
+import ru.protei.portal.nrpe.NRPEExecutorTest;
+import ru.protei.portal.nrpe.NRPEProcessor;
 import ru.protei.portal.schedule.PortalScheduleTasks;
 import ru.protei.portal.test.jira.mock.JiraEndpointDAO_ImplMock;
 import ru.protei.portal.test.jira.mock.JiraPriorityMapEntryDAO_ImplMock;
@@ -544,5 +548,16 @@ public class JiraTestConfiguration {
     @Bean
     public MoneyJdbcConverter moneyJdbcConverter() {
         return new MoneyJdbcConverter();
+    }
+
+    @Bean
+    public NRPEService getNRPEService() {
+        return new NRPEServiceImpl();
+    }
+
+    /* NRPE */
+    @Bean
+    public NRPEProcessor getNRPERequest() {
+        return new NRPEProcessor(new NRPEExecutorTest());
     }
 }

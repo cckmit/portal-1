@@ -651,13 +651,13 @@ public class MailNotificationProcessor {
 
         PreparedTemplate bodyTemplate = templateService.getMailReportBody(reportDto, createdInterval, modifiedInterval);
         if (bodyTemplate == null) {
-            log.error("Failed to prepare body template for reporId={}", report.getId());
+            log.error("Failed to prepare body template for reportId={}", report.getId());
             return;
         }
 
         PreparedTemplate subjectTemplate = templateService.getMailReportSubject(reportDto);
         if (subjectTemplate == null) {
-            log.error("Failed to prepare subject template for reporId={}", report.getId());
+            log.error("Failed to prepare subject template for reportId={}", report.getId());
             return;
         }
 
@@ -960,6 +960,41 @@ public class MailNotificationProcessor {
         }
 
         sendMailToRecipients(event.getNotifiers(), bodyTemplate, subjectTemplate, true);
+    }
+
+    @EventListener
+    public void onReservedIpAdminNotificationEvent( ReservedIpAdminNotificationEvent event) {
+        log.info( "onReservedIpAdminNotificationEvent(): {}", event );
+
+        List<String> adminEmails = config.data().getNrpeConfig().getAdminMails();
+        if (isEmpty(adminEmails)) {
+            log.error("No admin mails");
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.getNRPENonAvailableIpsNotificationSubject();
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for ReservedIpAdminNotification notification");
+            return;
+        }
+
+        PreparedTemplate bodyTemplate = templateService.getNRPENonAvailableIpsNotificationBody( event.getNonAvailableIps(), adminEmails);
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for release ReservedIpAdminNotification notification");
+            return;
+        }
+
+        adminEmails.forEach(adminEmail -> {
+            try {
+                String body = bodyTemplate.getText(adminEmail, null, false);
+                String subject = subjectTemplate.getText(adminEmail, null, false);
+
+                sendMail(adminEmail, subject, body);
+            } catch (Exception e) {
+                log.error("Failed to make MimeMessage mail={}, e={}", adminEmail, e);
+            }
+        });
+
     }
 
     // -----

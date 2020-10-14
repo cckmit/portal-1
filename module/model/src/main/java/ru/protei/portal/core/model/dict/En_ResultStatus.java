@@ -296,6 +296,21 @@ public enum En_ResultStatus {
     /**
      * Сервис отчётов не настроен
      */
-    REPORTING_SERVICE_NOT_CONFIGURED
+    REPORTING_SERVICE_NOT_CONFIGURED,
+
+    /**
+     * NRPE. IP адрес занят
+     */
+    NRPE_IP_NON_AVAILABLE,
+
+    /**
+     * NRPE. Ошибка сервиса
+     */
+    NRPE_ERROR,
+
+    /**
+     *  Недостаточно свободных IP адресов
+     */
+    NRPE_NO_FREE_IPS
     ;
 }

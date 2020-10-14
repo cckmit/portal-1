@@ -8,7 +8,13 @@ import ru.protei.winter.core.utils.duration.DurationUtils;
 import ru.protei.winter.core.utils.duration.IncorrectDurationException;
 
 import java.net.Inet4Address;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 
 /**
  * Created by michael on 31.05.17.
@@ -36,6 +42,7 @@ public class PortalConfigData {
     private final MarkupHelpLink markupHelpLink;
     private final UiConfig uiConfig;
     private final MailReceiverConfig mailReceiverConfig;
+    private final NRPEConfig nrpeConfig;
 
     private final String loginSuffixConfig;
     private final boolean taskSchedulerEnabled;
@@ -62,6 +69,7 @@ public class PortalConfigData {
         markupHelpLink = new MarkupHelpLink(wrapper);
         uiConfig = new UiConfig(wrapper);
         mailReceiverConfig = new MailReceiverConfig(wrapper);
+        nrpeConfig = new NRPEConfig(wrapper);
 
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
         taskSchedulerEnabled = wrapper.getProperty("task.scheduler.enabled", Boolean.class,false);
@@ -146,6 +154,10 @@ public class PortalConfigData {
 
     public MailReceiverConfig getMailReceiver() {
         return mailReceiverConfig;
+    }
+
+    public NRPEConfig getNrpeConfig() {
+        return nrpeConfig;
     }
 
     public boolean isTaskSchedulerEnabled() {
@@ -811,6 +823,36 @@ public class PortalConfigData {
 
         public String getHost() {
             return host;
+        }
+    }
+
+    public static class NRPEConfig {
+        final String template;
+        final Boolean enable;
+        final List<String> adminMails;
+
+        public NRPEConfig(PropertiesWrapper properties) {
+            this.template = properties.getProperty("nrpe.template",
+                    "/usr/lib64/nagios/plugins/check_nrpe -H router.protei.ru -c check_arping_lan -a %s ; echo $?");
+            this.enable = properties.getProperty("nrpe.enable", Boolean.class, false);
+            String temp = properties.getProperty("nrpe.admin.mails");
+            if (isNotEmpty(temp)) {
+                adminMails = Arrays.stream(temp.split(",")).collect(Collectors.toList());
+            } else {
+                adminMails = new ArrayList<>();
+            }
+        }
+
+        public String getTemplate() {
+            return template;
+        }
+
+        public Boolean getEnable() {
+            return enable;
+        }
+
+        public List<String> getAdminMails() {
+            return adminMails;
         }
     }
 
