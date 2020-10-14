@@ -16,15 +16,19 @@ public class MailReceiverUtilsTest {
     private final String FILE_PATH_MAIL_REMOVED_TXT = "mail.removed.html";
     private final String FILE_PATH_MAIL_NOT_REMOVED_THUNDERBIRD_HTML = "mail.not.removed.thunderbird.html";
     private final String FILE_PATH_MAIL_NOT_REMOVED_MOBILEGMAIL_HTML = "mail.not.removed.mobilegmail.html";
+    private final String FILE_PATH_MAIL_NOT_REMOVED_TXT_HTML = "mail.not.removed.txt.html";
 
     private String mailRemovedTxt;
     private String mailNotRemovedThunderbirdHtml;
     private String mailNotRemovedMobileGmailHtml;
+    private String mailNotRemovedTxt;
+
     @Before
     public void readFiles() throws IOException {
         mailRemovedTxt = getFileContent(FILE_PATH_MAIL_REMOVED_TXT);
         mailNotRemovedThunderbirdHtml = getFileContent(FILE_PATH_MAIL_NOT_REMOVED_THUNDERBIRD_HTML);
         mailNotRemovedMobileGmailHtml = getFileContent(FILE_PATH_MAIL_NOT_REMOVED_MOBILEGMAIL_HTML);
+        mailNotRemovedTxt = getFileContent(FILE_PATH_MAIL_NOT_REMOVED_TXT_HTML);
     }
 
     @Test
@@ -51,6 +55,15 @@ public class MailReceiverUtilsTest {
                         "Без разделителя\n" +
                         "3\n" +
                         "4",
+                cleanedContent);
+    }
+
+    @Test
+    public void mailNotRemovedTxt() {
+        String cleanedContent = MailReceiverUtils.getCleanedContent(MIME_TEXT_TYPE, mailNotRemovedTxt);
+        Assert.assertEquals("С разделителем\n" +
+                        "на несколько строк\n" +
+                        "3",
                 cleanedContent);
     }
 
