@@ -1,4 +1,4 @@
-package ru.protei.portal.core.nrpe.parser;
+package ru.protei.portal.nrpe.parser;
 
 import java.util.regex.Pattern;
 

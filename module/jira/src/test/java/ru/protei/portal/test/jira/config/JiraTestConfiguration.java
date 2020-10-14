@@ -19,9 +19,6 @@ import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.core.mail.VirtualMailSendChannel;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
-import ru.protei.portal.core.nrpe.NRPEExecutor;
-import ru.protei.portal.core.nrpe.NRPEExecutorTerminal;
-import ru.protei.portal.core.nrpe.NRPEProcessor;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.auth.AuthServiceImpl;
@@ -40,6 +37,8 @@ import ru.protei.portal.jira.service.JiraBackchannelHandlerImpl;
 import ru.protei.portal.jira.service.JiraIntegrationService;
 import ru.protei.portal.jira.service.JiraIntegrationServiceImpl;
 import ru.protei.portal.jira.utils.JiraQueueSingleThreadPoolTaskExecutor;
+import ru.protei.portal.nrpe.NRPEExecutorTest;
+import ru.protei.portal.nrpe.NRPEProcessor;
 import ru.protei.portal.schedule.PortalScheduleTasks;
 import ru.protei.portal.test.jira.mock.JiraEndpointDAO_ImplMock;
 import ru.protei.portal.test.jira.mock.JiraPriorityMapEntryDAO_ImplMock;
@@ -507,12 +506,7 @@ public class JiraTestConfiguration {
 
     /* NRPE */
     @Bean
-    public NRPEExecutor getNRPEExecutor() {
-        return new NRPEExecutorTerminal();
-    }
-
-    @Bean
-    public NRPEProcessor getNRPERequest(@Autowired NRPEExecutor executor) {
-        return new NRPEProcessor(executor);
+    public NRPEProcessor getNRPERequest() {
+        return new NRPEProcessor(new NRPEExecutorTest());
     }
 }

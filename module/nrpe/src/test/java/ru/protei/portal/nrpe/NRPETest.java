@@ -1,14 +1,9 @@
-package ru.protei.portal.test.nrpe;
+package ru.protei.portal.nrpe;
 
 import org.junit.Assert;
 import org.junit.Test;
-import ru.protei.portal.core.nrpe.NRPEProcessor;
-import ru.protei.portal.core.model.struct.nrpe.response.NRPEResponse;
 import ru.protei.portal.core.model.dict.En_NRPEStatus;
-import ru.protei.portal.core.model.struct.nrpe.response.NRPEHostReachable;
-import ru.protei.portal.core.model.struct.nrpe.response.NRPEHostUnreachable;
-import ru.protei.portal.core.model.struct.nrpe.response.NRPEIncorrectParams;
-import ru.protei.portal.core.model.struct.nrpe.response.NRPEServerUnavailable;
+import ru.protei.portal.core.model.struct.nrpe.response.*;
 
 import java.util.Arrays;
 import java.util.List;

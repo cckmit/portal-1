@@ -1,4 +1,4 @@
-package ru.protei.portal.core.nrpe;
+package ru.protei.portal.nrpe;
 
 import java.util.List;
 

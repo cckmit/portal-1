@@ -24,8 +24,6 @@ import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.index.document.DocumentStorageIndex;
 import ru.protei.portal.core.index.document.DocumentStorageIndexImpl;
-import ru.protei.portal.core.nrpe.NRPEExecutor;
-import ru.protei.portal.core.nrpe.NRPEProcessor;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.renderer.JiraWikiMarkupRenderer;
 import ru.protei.portal.core.renderer.MarkdownRenderer;
@@ -59,8 +57,9 @@ import ru.protei.portal.core.utils.SimpleSidGenerator;
 import ru.protei.portal.mock.AuthServiceMock;
 import ru.protei.portal.mock.PortalScheduleTasksStub;
 import ru.protei.portal.mock.ReportControlServiceMock;
+import ru.protei.portal.nrpe.NRPEExecutorTest;
+import ru.protei.portal.nrpe.NRPEProcessor;
 import ru.protei.portal.schedule.PortalScheduleTasks;
-import ru.protei.portal.test.nrpe.NRPEExecutorTest;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.portal.tools.migrate.sybase.SybConnProvider;
 import ru.protei.portal.tools.migrate.sybase.SybConnWrapperImpl;
@@ -461,14 +460,8 @@ public class ServiceTestsConfiguration {
         return new ServiceLayerInterceptorLogging();
     }
 
-    /* NRPE */
     @Bean
-    public NRPEExecutor getNRPEExecutor() {
-        return new NRPEExecutorTest();
-    }
-
-    @Bean
-    public NRPEProcessor getNRPERequest(@Autowired NRPEExecutor executor) {
-        return new NRPEProcessor(executor);
+    public NRPEProcessor getNRPERequest() {
+        return new NRPEProcessor(new NRPEExecutorTest());
     }
 }

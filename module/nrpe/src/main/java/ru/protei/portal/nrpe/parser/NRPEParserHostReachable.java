@@ -1,4 +1,4 @@
-package ru.protei.portal.core.nrpe.parser;
+package ru.protei.portal.nrpe.parser;
 
 import ru.protei.portal.core.model.struct.nrpe.response.NRPEResponse;
 import ru.protei.portal.core.model.struct.nrpe.response.NRPEHostReachable;

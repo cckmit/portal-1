@@ -1,6 +1,4 @@
-package ru.protei.portal.test.nrpe;
-
-import ru.protei.portal.core.nrpe.NRPEExecutor;
+package ru.protei.portal.nrpe;
 
 import java.util.Arrays;
 import java.util.List;

@@ -1,4 +1,4 @@
-package ru.protei.portal.core.nrpe;
+package ru.protei.portal.nrpe;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

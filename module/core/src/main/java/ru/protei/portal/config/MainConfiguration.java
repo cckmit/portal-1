@@ -35,9 +35,6 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.model.ent.CaseInfo;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.nrpe.NRPEExecutor;
-import ru.protei.portal.core.nrpe.NRPEExecutorTerminal;
-import ru.protei.portal.core.nrpe.NRPEProcessor;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.renderer.JiraWikiMarkupRenderer;
 import ru.protei.portal.core.renderer.MarkdownRenderer;
@@ -72,6 +69,8 @@ import ru.protei.portal.core.svn.document.DocumentSvnApi;
 import ru.protei.portal.core.svn.document.DocumentSvnApiImpl;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
+import ru.protei.portal.nrpe.NRPEExecutorTerminal;
+import ru.protei.portal.nrpe.NRPEProcessor;
 import ru.protei.portal.schedule.PortalScheduleTasks;
 import ru.protei.portal.schedule.PortalScheduleTasksImpl;
 import ru.protei.portal.tools.migrate.export.ActiveExportDataService;
@@ -1087,15 +1086,9 @@ public class MainConfiguration {
         return new ServiceLayerInterceptorLogging();
     }
 
-    /* NRPE */
     @Bean
-    public NRPEExecutor getNRPEExecutor() {
-        return new NRPEExecutorTerminal();
-    }
-
-    @Bean
-    public NRPEProcessor getNRPERequest(@Autowired NRPEExecutor executor) {
-        return new NRPEProcessor(executor);
+    public NRPEProcessor getNRPERequest() {
+        return new NRPEProcessor(new NRPEExecutorTerminal());
     }
 
     public static final String BACKGROUND_TASKS = "backgroundTasks";

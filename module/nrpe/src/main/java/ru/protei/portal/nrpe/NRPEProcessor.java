@@ -1,14 +1,13 @@
-package ru.protei.portal.core.nrpe;
+package ru.protei.portal.nrpe;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.dict.En_NRPEStatus;
 import ru.protei.portal.core.model.struct.nrpe.response.NRPEResponse;
-import ru.protei.portal.core.nrpe.parser.NRPEParserHostReachable;
-import ru.protei.portal.core.nrpe.parser.NRPEParserHostUnreachable;
-import ru.protei.portal.core.nrpe.parser.NRPEParserIncorrectParams;
-import ru.protei.portal.core.nrpe.parser.NRPEParserServerUnavailable;
+import ru.protei.portal.nrpe.parser.NRPEParserHostReachable;
+import ru.protei.portal.nrpe.parser.NRPEParserHostUnreachable;
+import ru.protei.portal.nrpe.parser.NRPEParserIncorrectParams;
+import ru.protei.portal.nrpe.parser.NRPEParserServerUnavailable;
 
 import java.util.List;
 import java.util.Objects;
@@ -16,7 +15,6 @@ import java.util.Objects;
 public class NRPEProcessor {
     private static Logger log = LoggerFactory.getLogger(NRPEProcessor.class);
 
-    @Autowired
     public NRPEProcessor(NRPEExecutor executor) {
         this.executor = executor;
     }
