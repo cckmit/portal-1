@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.*;
+import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
@@ -39,6 +40,8 @@ import static java.util.stream.Collectors.toList;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
+import static ru.protei.portal.core.access.ProjectAccessUtil.canAccessProject;
+import static ru.protei.portal.core.access.ProjectAccessUtil.getProjectAccessType;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 
@@ -51,50 +54,36 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     CaseObjectDAO caseObjectDAO;
-
     @Autowired
     LocationDAO locationDAO;
-
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
-
     @Autowired
     CaseMemberDAO caseMemberDAO;
-
     @Autowired
     CaseLocationDAO caseLocationDAO;
-
     @Autowired
     CaseTypeDAO caseTypeDAO;
-
     @Autowired
     PolicyService policyService;
-
     @Autowired
     ProjectToProductDAO projectToProductDAO;
-
     @Autowired
     AuthService authService;
-
     @Autowired
     ContractDAO contractDAO;
-
     @Autowired
     PersonDAO personDAO;
-
     @Autowired
     PlatformDAO platformDAO;
-
     @Autowired
     CaseLinkService caseLinkService;
-
     @Autowired
     ProjectDAO projectDAO;
     @Autowired
     PortalScheduleTasks scheduledTasksService;
     @Autowired
     EventPublisherService publisherService;
-
 
     @EventListener
     @Async(BACKGROUND_TASKS)
@@ -192,27 +181,35 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Result<Project> getProject(AuthToken token, Long id ) {
 
-        CaseObject project = caseObjectDAO.get( id );
+        CaseObject projectCO = caseObjectDAO.get( id );
 
-        if (project == null) {
+        if (projectCO == null) {
             return error(En_ResultStatus.NOT_FOUND, "Project was not found");
         }
 
         Platform platform = platformDAO.getByProjectId(id);
 
         if (platform != null) {
-            project.setPlatformId(platform.getId());
-            project.setPlatformName(platform.getName());
+            projectCO.setPlatformId(platform.getId());
+            projectCO.setPlatformName(platform.getName());
         }
 
-        jdbcManyRelationsHelper.fillAll( project );
+        jdbcManyRelationsHelper.fillAll( projectCO );
         List<Contract> contracts = contractDAO.getByProjectId(id);
 
         if (CollectionUtils.isNotEmpty(contracts)) {
-            project.setContracts(contracts.stream().map(contract -> new EntityOption(contract.getNumber(), contract.getId())).collect(toList()));
+            projectCO.setContracts(contracts.stream().map(contract -> new EntityOption(contract.getNumber(), contract.getId())).collect(toList()));
         }
 
-        return ok(Project.fromCaseObject(project));
+        Project project = Project.fromCaseObject(projectCO);
+
+        jdbcManyRelationsHelper.fill(project, Project.Fields.PROJECT_PLANS);
+
+        if (!canAccessProject(policyService, token, En_Privilege.PROJECT_VIEW, project.getTeam())) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
+        return ok(project);
     }
 
     @Override
@@ -225,8 +222,14 @@ public class ProjectServiceImpl implements ProjectService {
 
         jdbcManyRelationsHelper.fill(projectFromDb, "locations");
 
-        ProjectInfo project = ProjectInfo.fromCaseObject(projectFromDb);
-        return ok(project);
+        jdbcManyRelationsHelper.fill(projectFromDb, "members");
+        Project project = Project.fromCaseObject(projectFromDb);
+        if (!canAccessProject(policyService, token, En_Privilege.PROJECT_VIEW, project.getTeam())) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
+        ProjectInfo projectInfo = ProjectInfo.fromCaseObject(projectFromDb);
+        return ok(projectInfo);
     }
 
     @Override
@@ -240,6 +243,11 @@ public class ProjectServiceImpl implements ProjectService {
         jdbcManyRelationsHelper.fillAll( caseObject );
 
         Project oldStateProject = Project.fromCaseObject(caseObject);
+        jdbcManyRelationsHelper.fill(oldStateProject, Project.Fields.PROJECT_PLANS);
+
+        if (!canAccessProject(policyService, token, En_Privilege.PROJECT_EDIT, oldStateProject.getTeam())) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
 
         if (!Objects.equals(project.getCustomer(), caseObject.getInitiatorCompany())) {
             return error(En_ResultStatus.NOT_ALLOWED_CHANGE_PROJECT_COMPANY);
@@ -276,8 +284,9 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         caseObject.setProjectSlas(project.getProjectSlas());
-
         jdbcManyRelationsHelper.persist(caseObject, "projectSlas");
+
+        jdbcManyRelationsHelper.persist(project, Project.Fields.PROJECT_PLANS);
 
         try {
             updateTeam( caseObject, project.getTeam() );
@@ -285,14 +294,18 @@ public class ProjectServiceImpl implements ProjectService {
             updateProducts( caseObject, project.getProducts() );
         } catch (Throwable e) {
             log.error("error during save project when update one of following parameters: team, location, or products; {}", e.getMessage());
-            return error(En_ResultStatus.INTERNAL_ERROR);
+            throw new ResultStatusException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        caseObjectDAO.merge( caseObject );
+        boolean merged = caseObjectDAO.merge(caseObject);
+        if (!merged) {
+            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+        }
 
         CaseObject updatedCaseObject = caseObjectDAO.get(project.getId());
         jdbcManyRelationsHelper.fillAll(updatedCaseObject);
         Project newStateProject = Project.fromCaseObject(updatedCaseObject);
+        jdbcManyRelationsHelper.fill(newStateProject, Project.Fields.PROJECT_PLANS);
 
         return ok(project).publishEvent(new ProjectUpdateEvent(this, oldStateProject, newStateProject, token.getPersonId()));
     }
@@ -304,15 +317,21 @@ public class ProjectServiceImpl implements ProjectService {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
+        if (!canAccessProject(policyService, token, En_Privilege.PROJECT_CREATE, project.getTeam())) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
         CaseObject caseObject = createCaseObjectFromProjectInfo(project);
 
         Long id = caseObjectDAO.persist(caseObject);
-        if (id == null)
+        if (id == null) {
             return error(En_ResultStatus.NOT_CREATED);
+        }
 
         project.setId(id);
 
         jdbcManyRelationsHelper.persist(caseObject, "projectSlas");
+        jdbcManyRelationsHelper.persist(project, Project.Fields.PROJECT_PLANS);
 
         try {
             updateTeam(caseObject, project.getTeam());
@@ -320,9 +339,13 @@ public class ProjectServiceImpl implements ProjectService {
             updateProducts(caseObject, project.getProducts());
         } catch (Throwable e) {
             log.error("error during create project when set one of following parameters: team, location, or products; {}", e.getMessage());
-            return error(En_ResultStatus.INTERNAL_ERROR);
+            throw new ResultStatusException(En_ResultStatus.INTERNAL_ERROR);
         }
-        caseObjectDAO.merge( caseObject );
+
+        boolean merged = caseObjectDAO.merge(caseObject);
+        if (!merged) {
+            throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+        }
 
         Result addLinksResult = ok();
 
@@ -342,27 +365,40 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    @Transactional
     public Result<Boolean> removeProject( AuthToken token, Long projectId) {
 
         CaseObject caseObject = caseObjectDAO.get(projectId);
-
         if (caseObject == null) {
             return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        jdbcManyRelationsHelper.fill(caseObject, "members");
+        Project project = Project.fromCaseObject(caseObject);
+        if (!canAccessProject(policyService, token, En_Privilege.PROJECT_REMOVE, project.getTeam())) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
         caseObject.setDeleted(true);
         boolean result = caseObjectDAO.partialMerge(caseObject, "deleted");
 
-        caseLinkService.getLinks(token, caseObject.getId()).getData()
-                        .forEach(caseLink ->
-                                caseLinkService.deleteLink(token, caseLink.getId()));
-
+        if (result) {
+            caseLinkService.getLinks(token, caseObject.getId())
+                .ifOk(links -> links.forEach(caseLink -> {
+                    caseLinkService.deleteLink(token, caseLink.getId());
+                }));
+        }
         return ok(result);
     }
 
-
     @Override
     public Result<SearchResult<Project>> projects(AuthToken token, ProjectQuery query) {
+
+        En_ProjectAccessType accessType = getProjectAccessType(policyService, token, En_Privilege.PROJECT_VIEW);
+        if (accessType == En_ProjectAccessType.SELF_PROJECTS) {
+            query.setOnlyMineProjects(true);
+        }
+
         CaseQuery caseQuery = query.toCaseQuery(token.getPersonId());
 
         SearchResult<CaseObject> projects = caseObjectDAO.getSearchResult(caseQuery);
@@ -371,40 +407,65 @@ public class ProjectServiceImpl implements ProjectService {
         jdbcManyRelationsHelper.fill(projects.getResults(), "products");
         jdbcManyRelationsHelper.fill(projects.getResults(), "locations");
 
-        SearchResult<Project> result = new SearchResult<>(
-                projects.getResults().isEmpty() ?
-                        new ArrayList<>()
-                        : projects.getResults().stream().map(Project::fromCaseObject).collect(toList()),
-                projects.getTotalCount());
+        SearchResult<Project> result = new SearchResult<>(stream(projects.getResults())
+                .map(Project::fromCaseObject)
+                .collect(toList()));
         return ok(result);
     }
 
     @Override
     public Result<List<EntityOption>> listOptionProjects(AuthToken token, ProjectQuery query) {
+
+        En_ProjectAccessType accessType = getProjectAccessType(policyService, token, En_Privilege.PROJECT_VIEW);
+        if (accessType == En_ProjectAccessType.SELF_PROJECTS) {
+            query.setOnlyMineProjects(true);
+        }
+
         CaseQuery caseQuery = query.toCaseQuery(token.getPersonId());
         List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
 
-        List<EntityOption> result = projects.stream()
-                .map(CaseObject::toEntityOption).collect(toList());
+        List<EntityOption> result = stream(projects)
+                .map(CaseObject::toEntityOption)
+                .collect(toList());
         return ok(result);
     }
 
     @Override
     public Result<List<ProjectInfo>> listInfoProjects(AuthToken token, ProjectQuery query) {
+
+        En_ProjectAccessType accessType = getProjectAccessType(policyService, token, En_Privilege.PROJECT_VIEW);
+        if (accessType == En_ProjectAccessType.SELF_PROJECTS) {
+            query.setOnlyMineProjects(true);
+        }
+
         CaseQuery caseQuery = query.toCaseQuery(token.getPersonId());
         List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
 
         jdbcManyRelationsHelper.fill(projects, "products");
 
-        List<ProjectInfo> result = projects.stream()
-                .map(ProjectInfo::fromCaseObject).collect(toList());
+        List<ProjectInfo> result = stream(projects)
+                .map(ProjectInfo::fromCaseObject)
+                .collect(toList());
         return ok(result);
+    }
+
+    @Override
+    public Result<List<PersonProjectMemberView>> getProjectTeam(AuthToken token, Long projectId) {
+        if (projectId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+        CaseObject caseObject = new CaseObject(projectId);
+        caseObject.setMembers(caseMemberDAO.listByCaseId(projectId));
+        List<PersonProjectMemberView> team = Project.fromCaseObject(caseObject).getTeam();
+        if (!canAccessProject(policyService, token, En_Privilege.PROJECT_VIEW, team)) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+        return ok(team);
     }
 
     @Override
     public Result<PersonProjectMemberView> getProjectLeader(AuthToken authToken, Long projectId) {
         Result<Project> projectResult = getProject(authToken, projectId);
-
         if (projectResult.isError()) {
             return error(projectResult.getStatus());
         }

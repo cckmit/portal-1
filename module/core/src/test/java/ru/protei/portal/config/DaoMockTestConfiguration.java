@@ -413,4 +413,14 @@ public class DaoMockTestConfiguration {
     public ContactItemDAO getContactItemDAO() {
         return mock(ContactItemDAO.class);
     }
+
+    @Bean
+    public ImportanceLevelDAO getImportanceLevelDAO() {
+        return  mock( ImportanceLevelDAO.class );
+    }
+
+    @Bean
+    public BootstrapAppDAO getBootstrapAppDAO() {
+        return  mock( BootstrapAppDAO.class );
+    }
 }

@@ -3,6 +3,8 @@ package ru.protei.portal.core.model.dao.impl;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.dict.En_TimeElapsedType;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
@@ -30,8 +32,9 @@ public class CaseObjectSqlBuilder {
                 condition.append( " and case_object.id=?" );
                 args.add( query.getId() );
             } else if (query.getMemberId() != null) {
-                condition.append(" and (case_object.id in (select case_id from case_member where member_id = ").append(query.getMemberId()).append(")");
-                condition.append(" or case_object.creator = ").append(query.getMemberId()).append(")");
+                condition.append(" and (");
+                condition.append("case_object.id in (select case_id from case_member where member_id = ").append(query.getMemberId()).append(")");
+                condition.append(")");
             } else if (isNotEmpty(query.getCaseTagsIds())) {
                 if (query.getCaseTagsIds().remove(CrmConstants.CaseTag.NOT_SPECIFIED)) {
                     if (query.isCustomerSearch()) {
@@ -325,6 +328,24 @@ public class CaseObjectSqlBuilder {
                         .append(" (SELECT case_object_id FROM person_favorite_issues WHERE person_id = ?)");
 
                 args.add(query.getPersonIdToIsFavorite().getA());
+            }
+
+            if (CollectionUtils.isNotEmpty(query.getTimeElapsedTypeIds())) {
+                List<String> orConditions = new ArrayList<>();
+
+                condition.append(" and (");
+
+                if (query.getTimeElapsedTypeIds().contains(En_TimeElapsedType.NONE.getId())) {
+                    orConditions.add("case_comment.time_elapsed_type IS NULL and case_comment.time_elapsed IS NOT NULL");
+                }
+
+                if (isNotEmpty(query.getTimeElapsedTypeIds())) {
+                    orConditions.add("case_comment.time_elapsed_type IN " + HelperFunc.makeInArg(query.getTimeElapsedTypeIds(), false));
+                }
+
+                condition
+                        .append(String.join(" or ", orConditions))
+                        .append(")");
             }
         });
     }

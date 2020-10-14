@@ -29,6 +29,7 @@ import ru.protei.portal.core.model.struct.ReplaceLoginWithUsernameInfo;
 import ru.protei.portal.core.model.struct.receivedmail.ReceivedMail;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseCommentShortView;
+import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
@@ -41,6 +42,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.access.ProjectAccessUtil.*;
 import static ru.protei.portal.core.model.dict.En_CaseType.CRM_SUPPORT;
 import static ru.protei.portal.core.model.dict.En_CaseType.PROJECT;
 import static ru.protei.portal.core.model.dict.En_Privilege.ISSUE_EDIT;
@@ -55,7 +57,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             return error(checkAccessStatus);
         }
         CaseCommentQuery query = new CaseCommentQuery(caseObjectId);
-        applyFilterByScope(token, query);
+        applyFilterByScope(token, caseType, query);
 
         return getList(query);
     }
@@ -66,7 +68,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         if (checkAccessStatus != null) {
             return error(checkAccessStatus);
         }
-        applyFilterByScope(token, query);
+        applyFilterByScope(token, caseType, query);
 
         return ok(caseCommentShortViewDAO.getSearchResult(query));
     }
@@ -130,7 +132,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             throw new ResultStatusException(checkAccessStatus);
         }
 
-        if (caseType == CRM_SUPPORT && prohibitedPrivateComment(token, comment)) {
+        if (caseType == CRM_SUPPORT && !allowedPrivateComment(token, caseType, comment)) {
             throw new ResultStatusException(En_ResultStatus.PROHIBITED_PRIVATE_COMMENT);
         }
 
@@ -236,12 +238,16 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             throw new ResultStatusException(checkAccessStatus);
         }
 
-        if (caseType == CRM_SUPPORT && prohibitedPrivateComment(token, comment)) {
+        if (caseType == CRM_SUPPORT && !allowedPrivateComment(token, caseType, comment)) {
             throw new ResultStatusException(En_ResultStatus.PROHIBITED_PRIVATE_COMMENT);
         }
 
-        if (!Objects.equals(token.getPersonId(), comment.getAuthorId()) || isCaseCommentReadOnly(comment.getCreated())) {
+        if (!Objects.equals(token.getPersonId(), comment.getAuthorId())) {
             throw new ResultStatusException(En_ResultStatus.NOT_AVAILABLE);
+        }
+
+        if (isCaseCommentReadOnlyByTime(comment.getCreated())) {
+            throw new ResultStatusException(En_ResultStatus.NOT_ALLOWED_EDIT_COMMENT_BY_TIME);
         }
 
         CaseComment prevComment = caseCommentDAO.get(comment.getId());
@@ -302,8 +308,12 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             checkAccessStatus = checkAccessForCaseObjectById(token, caseType, removedComment.getCaseId());
         }
         if (checkAccessStatus == null) {
-            if (!Objects.equals(token.getPersonId(), removedComment.getAuthorId()) || isCaseCommentReadOnly(removedComment.getCreated())) {
+            if (!Objects.equals(token.getPersonId(), removedComment.getAuthorId())) {
                 checkAccessStatus = En_ResultStatus.NOT_REMOVED;
+            }
+
+            if (isCaseCommentReadOnlyByTime(removedComment.getCreated())) {
+                throw new ResultStatusException(En_ResultStatus.NOT_ALLOWED_REMOVE_COMMENT_BY_TIME);
             }
         }
         if (checkAccessStatus != null) {
@@ -522,121 +532,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         return replaceLoginWithUsername(comments, CaseComment::getText, this::replaceTextAndGetComment);
     }
 
-    /**
-     * Заменяет в списке объектов возможные логины, которые начинаются с символа "@", на Фамилия Имя
-     *
-     * @param  objects                  список объектов
-     * @param  objectToStringFunction   функция, переводящая переданный объект в строку, в которой будет производиться замена
-     * @param  replacementMapper        {@link ReplacementMapper}
-     * @return список {@link ReplaceLoginWithUsernameInfo}, содержащий объект и набор логинов в объекте
-     */
-    private <T> Result<List<ReplaceLoginWithUsernameInfo<T>>> replaceLoginWithUsername(List<T> objects, Function<T, String> objectToStringFunction, ReplacementMapper<T> replacementMapper) {
-        if (isEmpty(objects)) {
-            return ok(new ArrayList<>());
-        }
-
-        Set<String> possibleLoginSet = new HashSet<>(getPossibleLoginSet(toList(objects, objectToStringFunction)).getData());
-
-        if (possibleLoginSet.isEmpty()) {
-            return ok(objects.stream().map(ReplaceLoginWithUsernameInfo::new).collect(Collectors.toList()));
-        }
-
-        UserLoginShortViewQuery query = new UserLoginShortViewQuery();
-        query.setAdminState(En_AdminState.UNLOCKED);
-        query.setLoginSet(possibleLoginSet);
-
-        SearchResult<UserLoginShortView> searchResult = userLoginShortViewDAO.getSearchResult(query);
-
-        List<UserLoginShortView> existingLoginList = searchResult.getResults()
-                .stream()
-                .sorted((login1, login2) -> login2.getUlogin().length() - login1.getUlogin().length())
-                .collect(Collectors.toList());
-
-        return ok(makeReplacementInfoList(objects, objectToStringFunction, replacementMapper, existingLoginList));
-    }
-
-    private <T> List<ReplaceLoginWithUsernameInfo<T>> makeReplacementInfoList(List<T> objects, Function<T, String> objectToStringFunction, ReplacementMapper<T> replacementMapper, List<UserLoginShortView> existingLoginList) {
-        List<ReplaceLoginWithUsernameInfo<T>> replacementInfoList = new ArrayList<>();
-
-        for (T object : objects) {
-            replacementInfoList.add(new ReplaceLoginWithUsernameInfo<>(object));
-        }
-
-        for (UserLoginShortView nextUserLogin : existingLoginList) {
-            for (ReplaceLoginWithUsernameInfo<T> info : replacementInfoList) {
-                String textBeforeReplace = objectToStringFunction.apply(info.getObject());
-
-                T objectWithReplace = replacementMapper
-                        .replace(info.getObject(), "@" + nextUserLogin.getUlogin(), "@" + nextUserLogin.getLastName() + " " + nextUserLogin.getFirstName());
-
-                String textAfterReplace = objectToStringFunction.apply(objectWithReplace);
-
-                boolean isReplaced = !Objects.equals(textBeforeReplace, textAfterReplace);
-
-                if (isReplaced) {
-                    info.setObject(objectWithReplace);
-                    info.addUserLoginShortView(nextUserLogin);
-                }
-            }
-        }
-
-        return replacementInfoList;
-    }
-
-    private Result<Set<String>> getPossibleLoginSet(List<String> texts) {
-        if (isEmpty(texts)) {
-            return ok(new HashSet<>());
-        }
-
-        Set<String> possibleLoginSet = new HashSet<>();
-
-        fillPossibleLoginSet(texts, possibleLoginSet);
-
-        return ok(possibleLoginSet);
-    }
-
-    private void fillPossibleLoginSet(List<String> texts, Set<String> possibleLoginSet) {
-        texts
-                .stream()
-                .filter(StringUtils::isNotBlank)
-                .map(String::trim)
-                .flatMap(text -> Arrays.stream(text.split(CrmConstants.Masks.ONE_OR_MORE_SPACES)))
-                .filter(text -> text.startsWith("@"))
-                .map(text -> text.substring(1))
-                .filter(text -> text.length() <= CrmConstants.ContactConstants.LOGIN_SIZE)
-                .forEach(text -> {
-                    possibleLoginSet.add(text);
-                    possibleLoginSet.addAll(subLoginList(text));
-                });
-    }
-
-    private List<String> subLoginList(String text) {
-        List<String> subLoginList = new ArrayList<>();
-
-        for (int i = 1; i < text.toCharArray().length; i++) {
-            subLoginList.add(text.substring(0, i));
-        }
-
-        return subLoginList;
-    }
-
-    private CaseComment replaceTextAndGetComment(CaseComment comment, String replaceFrom, String replaceTo) {
-        if (comment.getText() == null) {
-            return comment;
-        }
-
-        comment.setText(comment.getText().replace(replaceFrom, replaceTo));
-        return comment;
-    }
-
-    private <T> List<T> objectListFromReplacementInfoList(List<ReplaceLoginWithUsernameInfo<T>> infos) {
-        return infos.stream().map(ReplaceLoginWithUsernameInfo::getObject).collect(Collectors.toList());
-    }
-
-    private boolean needReplaceLoginWithUsername(En_CaseType caseType) {
-        return CRM_SUPPORT.equals(caseType);
-    }
-
     @Override
     @Transactional
     public Result<Boolean> addCommentReceivedByMail(ReceivedMail receivedMail) {
@@ -727,21 +622,56 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         return getList(comments);
     }
 
-    private void applyFilterByScope( AuthToken token, CaseCommentQuery query ) {
-        if (token != null) {
-            Set<UserRole> roles = token.getRoles();
-            if (!policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
-                query.setViewPrivate(false);
+    private void applyFilterByScope( AuthToken token, En_CaseType caseType, CaseCommentQuery query ) {
+        if (token == null || caseType == null) {
+            return;
+        }
+        Set<UserRole> roles = token.getRoles();
+        switch (caseType) {
+            case CRM_SUPPORT: {
+                if (!policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
+                    query.setViewPrivate(false);
+                }
+                return;
+            }
+            case PROJECT: {
+                Result<List<PersonProjectMemberView>> team = projectService.getProjectTeam(token, getFirst(query.getCaseObjectIds()));
+                if (team.isError()) {
+                    query.setViewPrivate(false);
+                    return;
+                }
+                if (!canAccessProjectPrivateElements(policyService, token, En_Privilege.PROJECT_VIEW, team.getData())) {
+                    query.setViewPrivate(false);
+                }
+                return;
             }
         }
     }
-    private boolean prohibitedPrivateComment(AuthToken token, CaseComment comment) {
-        if (token != null) {
-            Set< UserRole > roles = token.getRoles();
-            return comment.isPrivateComment() && !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_VIEW );
-        } else {
-            return false;
+
+    private boolean allowedPrivateComment(AuthToken token, En_CaseType caseType, CaseComment comment) {
+        if (token == null || caseType == null) {
+            return true;
         }
+        Set< UserRole > roles = token.getRoles();
+        switch (caseType) {
+            case CRM_SUPPORT: {
+                if (!comment.isPrivateComment()) {
+                    return true;
+                }
+                return policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW);
+            }
+            case PROJECT: {
+                if (!comment.isPrivateComment()) {
+                    return true;
+                }
+                Result<List<PersonProjectMemberView>> team = projectService.getProjectTeam(token, comment.getCaseId());
+                if (team.isError()) {
+                    return false;
+                }
+                return canAccessProjectPrivateElements(policyService, token, En_Privilege.PROJECT_VIEW, team.getData());
+            }
+        }
+        return false;
     }
 
     private Result<List<CaseComment>> getList(List<CaseComment> comments) {
@@ -770,15 +700,31 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     private En_ResultStatus checkAccessForCaseObject(AuthToken token, En_CaseType caseType, CaseObject caseObject) {
-        if (CRM_SUPPORT.equals(caseType)) {
-            if (!policyService.hasAccessForCaseObject(token, En_Privilege.ISSUE_VIEW, caseObject)) {
-                return En_ResultStatus.PERMISSION_DENIED;
+        if (token == null || caseType == null) {
+            return null;
+        }
+        switch (caseType) {
+            case CRM_SUPPORT: {
+                if (!policyService.hasAccessForCaseObject(token, En_Privilege.ISSUE_VIEW, caseObject)) {
+                    return En_ResultStatus.PERMISSION_DENIED;
+                }
+                break;
+            }
+            case PROJECT: {
+                Result<List<PersonProjectMemberView>> team = projectService.getProjectTeam(token, caseObject.getId());
+                if (team.isError()) {
+                    return team.getStatus();
+                }
+                if (!canAccessProject(policyService, token, En_Privilege.PROJECT_VIEW, team.getData())) {
+                    return En_ResultStatus.PERMISSION_DENIED;
+                }
+                break;
             }
         }
         return null;
     }
 
-    private boolean isCaseCommentReadOnly(Date date) {
+    private boolean isCaseCommentReadOnlyByTime(Date date) {
         Calendar c = Calendar.getInstance();
         long current = c.getTimeInMillis();
         c.setTime(date);
@@ -791,10 +737,130 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         list.forEach(ca -> attachmentService.removeAttachment(token, caseType, ca.getAttachmentId()));
     }
 
+    /**
+     * Заменяет в списке объектов возможные логины, которые начинаются с символа "@", на Фамилия Имя
+     *
+     * @param  objects                  список объектов
+     * @param  objectToStringFunction   функция, переводящая переданный объект в строку, в которой будет производиться замена
+     * @param  replacementMapper        {@link ReplacementMapper}
+     * @return список {@link ReplaceLoginWithUsernameInfo}, содержащий объект и набор логинов в объекте
+     */
+    private <T> Result<List<ReplaceLoginWithUsernameInfo<T>>> replaceLoginWithUsername(List<T> objects, Function<T, String> objectToStringFunction, ReplacementMapper<T> replacementMapper) {
+        if (isEmpty(objects)) {
+            return ok(new ArrayList<>());
+        }
+
+        Set<String> possibleLoginSet = new HashSet<>(getPossibleLoginSet(toList(objects, objectToStringFunction)).getData());
+
+        if (possibleLoginSet.isEmpty()) {
+            return ok(objects.stream().map(ReplaceLoginWithUsernameInfo::new).collect(Collectors.toList()));
+        }
+
+        UserLoginShortViewQuery query = new UserLoginShortViewQuery();
+        query.setAdminState(En_AdminState.UNLOCKED);
+        query.setLoginSet(possibleLoginSet);
+
+        SearchResult<UserLoginShortView> searchResult = userLoginShortViewDAO.getSearchResult(query);
+
+        List<UserLoginShortView> existingLoginList = searchResult.getResults()
+                .stream()
+                .sorted((login1, login2) -> login2.getUlogin().length() - login1.getUlogin().length())
+                .collect(Collectors.toList());
+
+        return ok(makeReplacementInfoList(objects, objectToStringFunction, replacementMapper, existingLoginList));
+    }
+
+    private <T> List<ReplaceLoginWithUsernameInfo<T>> makeReplacementInfoList(List<T> objects, Function<T, String> objectToStringFunction, ReplacementMapper<T> replacementMapper, List<UserLoginShortView> existingLoginList) {
+        List<ReplaceLoginWithUsernameInfo<T>> replacementInfoList = new ArrayList<>();
+
+        for (T object : objects) {
+            replacementInfoList.add(new ReplaceLoginWithUsernameInfo<>(object));
+        }
+
+        for (UserLoginShortView nextUserLogin : existingLoginList) {
+            for (ReplaceLoginWithUsernameInfo<T> info : replacementInfoList) {
+                String textBeforeReplace = objectToStringFunction.apply(info.getObject());
+
+                T objectWithReplace = replacementMapper
+                        .replace(info.getObject(), "@" + nextUserLogin.getUlogin(), "@" + nextUserLogin.getLastName() + " " + nextUserLogin.getFirstName());
+
+                String textAfterReplace = objectToStringFunction.apply(objectWithReplace);
+
+                boolean isReplaced = !Objects.equals(textBeforeReplace, textAfterReplace);
+
+                if (isReplaced) {
+                    info.setObject(objectWithReplace);
+                    info.addUserLoginShortView(nextUserLogin);
+                }
+            }
+        }
+
+        return replacementInfoList;
+    }
+
+    private Result<Set<String>> getPossibleLoginSet(List<String> texts) {
+        if (isEmpty(texts)) {
+            return ok(new HashSet<>());
+        }
+
+        Set<String> possibleLoginSet = new HashSet<>();
+
+        fillPossibleLoginSet(texts, possibleLoginSet);
+
+        return ok(possibleLoginSet);
+    }
+
+    private void fillPossibleLoginSet(List<String> texts, Set<String> possibleLoginSet) {
+        texts
+                .stream()
+                .filter(StringUtils::isNotBlank)
+                .map(String::trim)
+                .flatMap(text -> Arrays.stream(text.split(CrmConstants.Masks.ONE_OR_MORE_SPACES)))
+                .flatMap(text -> Arrays.stream(text.split(CrmConstants.Masks.ROUND_AND_SQUARE_BRACKETS)))
+                .filter(text -> text.startsWith("@"))
+                .map(text -> text.substring(1))
+                .filter(text -> text.length() <= CrmConstants.ContactConstants.LOGIN_SIZE)
+                .forEach(text -> {
+                    List<String> result = new ArrayList<>();
+                    result.add(text);
+                    result.addAll(subLoginList(text));
+                    possibleLoginSet.addAll(prepareLoginList(result));
+                });
+    }
+
+    private List<String> subLoginList(String text) {
+        List<String> subLoginList = new ArrayList<>();
+
+        for (int i = 1; i < text.toCharArray().length; i++) {
+            subLoginList.add(text.substring(0, i));
+        }
+
+        return subLoginList;
+    }
+
+    private CaseComment replaceTextAndGetComment(CaseComment comment, String replaceFrom, String replaceTo) {
+        if (comment.getText() == null) {
+            return comment;
+        }
+
+        comment.setText(comment.getText().replace(replaceFrom, replaceTo));
+        return comment;
+    }
+
+    private <T> List<T> objectListFromReplacementInfoList(List<ReplaceLoginWithUsernameInfo<T>> infos) {
+        return infos.stream().map(ReplaceLoginWithUsernameInfo::getObject).collect(Collectors.toList());
+    }
+
+    private List<String> prepareLoginList(List<String> loginList) {
+        return stream(loginList).map(login -> login.replace("'", "\\'")).collect(Collectors.toList());
+    }
+
     @Autowired
     CaseService caseService;
     @Autowired
     AttachmentService attachmentService;
+    @Autowired
+    ProjectService projectService;
     @Autowired
     EventPublisherService publisherService;
 

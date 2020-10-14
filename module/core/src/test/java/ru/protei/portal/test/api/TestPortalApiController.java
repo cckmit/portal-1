@@ -37,6 +37,7 @@ import ru.protei.portal.core.model.youtrack.dto.user.YtUser;
 import ru.protei.portal.core.service.CaseCommentService;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
+import ru.protei.portal.embeddeddb.EmbeddedDB;
 import ru.protei.portal.mock.AuthServiceMock;
 import ru.protei.portal.test.service.BaseServiceTest;
 import ru.protei.winter.core.CoreConfigurationContext;
@@ -71,6 +72,9 @@ public class TestPortalApiController extends BaseServiceTest {
     private YtDtoFieldsMapper fieldsMapper;
     @Autowired
     private CaseCommentService caseCommentService;
+    @Autowired
+    EmbeddedDB embeddedDB;
+
 
     @Autowired
     private void authService(AuthService authService) {

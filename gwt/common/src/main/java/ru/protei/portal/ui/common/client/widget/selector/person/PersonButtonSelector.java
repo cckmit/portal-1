@@ -67,7 +67,7 @@ public class PersonButtonSelector extends ButtonPopupSingleSelector< PersonShort
             item.setName(lang.initiatorSelectACompany());
             item.getElement().addClassName(UiConstants.Styles.TEXT_CENTER);
             getPopup().getChildContainer().add(item);
-            getPopup().showNear( button );
+            getPopup().showNear( button.getElement() );
         }
     }
 

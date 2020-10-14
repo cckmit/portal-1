@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.activity.casecomment.item;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
@@ -35,8 +36,6 @@ public interface AbstractCaseCommentItemView extends IsWidget {
 
     void enableReply(boolean isEnabled);
 
-    void enableUpdateTimeElapsedType(boolean isTimeElapsedTypeEnabled);
-
     void showAttachments(boolean isShow);
 
     HasAttachments attachmentContainer();
@@ -60,4 +59,6 @@ public interface AbstractCaseCommentItemView extends IsWidget {
     void displayUpdatedAnimation();
 
     void displayAddedAnimation();
+
+    HasVisibility timeElapsedTypePopupVisibility();
 }

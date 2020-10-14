@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import ru.protei.portal.config.PortalConfig;
@@ -13,7 +14,10 @@ import ru.protei.portal.core.event.SchedulePauseTimeOnStartupEvent;
 import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.service.*;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
+import ru.protei.portal.core.service.bootstrap.BootstrapService;
 import ru.protei.portal.core.service.events.EventPublisherService;
+import ru.protei.portal.core.service.syncronization.EmployeeRegistrationYoutrackSynchronizer;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -28,9 +32,28 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
 
         log.info("onApplicationStartOrRefresh() Context refresh counter={} refresh source: {}",  contextRefreshedEventCounter.getAndIncrement(), event.getSource());
 
+        /**
+         * Run ONCE tasks
+         */
         if (isPortalStarted.getAndSet( true )) return;
 
-        scheduleReports();
+        /**
+         * Bootstrap data of application
+         * First of ALL
+         */
+        bootstrapService.bootstrapApplication();
+        documentService.documentBuildFullIndex();
+
+        /**
+         * Scheduled tasks
+         */
+
+        if (employeeRegistrationYoutrackSynchronizer.isScheduleSynchronizationNeeded()) {
+            String syncCronSchedule = config.data().youtrack().getEmployeeRegistrationSyncSchedule();
+            scheduler.schedule( () -> employeeRegistrationYoutrackSynchronizer.synchronizeAll(), new CronTrigger( syncCronSchedule ) );
+        }
+
+        autoOpenCaseService.scheduleCaseOpen();
 
         if (!config.data().isTaskSchedulerEnabled()) {
             log.info("portal task's scheduler is not started because disabled in configuration");
@@ -49,10 +72,13 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         scheduler.schedule(this::notifyAboutBirthdays, new CronTrigger( "0 0 9 * * MON"));
         // every 5 minutes
         scheduler.scheduleAtFixedRate(mailReceiverService::performReceiveMailAndAddComments, TimeUnit.MINUTES.toMillis(5));
+        // at 06:00:00 am every day
+        scheduler.schedule(this::processScheduledMailReportsDaily, new CronTrigger( "0 0 6 * * ?"));
+        // at 05:00:00 am every MONDAY
+        scheduler.schedule(this::processScheduledMailReportsWeekly, new CronTrigger( "0 0 5 * * MON"));
 
         scheduleNotificationsAboutPauseTime();
 
-        scheduleMailReports();
     }
 
     public void remindAboutEmployeeProbationPeriod() {
@@ -61,47 +87,39 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         employeeRegistrationReminderService.notifyAboutEmployeeFeedback();
     }
 
-    public void scheduleReports() {
-        if (HelperFunc.isEmpty(config.data().getCommonConfig().getSystemId())) {
-            log.warn("reports is not started because system id not set in configuration");
-            return;
-        }
-        // every 30 seconds
-        scheduler.scheduleAtFixedRate(this::processNewReportsSchedule, 30 * 1000);
-        // at 05:00:00 am every day
-        scheduler.schedule(this::processOldReportsSchedule, new CronTrigger( "0 0 5 * * ?"));
-    }
-
-    public void scheduleMailReports() {
-        if (HelperFunc.isEmpty(config.data().getCommonConfig().getSystemId())) {
-            log.warn("reports is not started because system id not set in configuration");
-            return;
-        }
-        // at 06:00:00 am every day
-        scheduler.schedule(this::processScheduledMailReportsDaily, new CronTrigger( "0 0 6 * * ?"));
-        // at 05:00:00 am every MONDAY
-        scheduler.schedule(this::processScheduledMailReportsWeekly, new CronTrigger( "0 0 5 * * MON"));
-    }
-
+    @Scheduled(fixedRate = 30 * 1000) // every 30 seconds
     public void processNewReportsSchedule() {
+        if (isNotConfiguredSystemId()) {
+            return;
+        }
         reportControlService.processNewReports().ifError(response ->
                 log.warn( "fail to process reports : status={}", response.getStatus() )
          );
     }
 
+    @Scheduled(cron = "0 0 5 * * ?") // at 05:00:00 am every day
     public void processOldReportsSchedule() {
+        if (isNotConfiguredSystemId()) {
+            return;
+        }
         reportControlService.processOldReports().ifError(response ->
                 log.warn("fail to process reports : status={}", response.getStatus() )
         );
     }
 
     public void processScheduledMailReportsDaily() {
+        if (isNotConfiguredSystemId()) {
+            return;
+        }
         reportControlService.processScheduledMailReports(En_ReportScheduledType.DAILY).ifError(response ->
                 log.warn("fail to process reports : status={}", response.getStatus() )
         );
     }
 
     public void processScheduledMailReportsWeekly() {
+        if (isNotConfiguredSystemId()) {
+            return;
+        }
         reportControlService.processScheduledMailReports(En_ReportScheduledType.WEEKLY).ifError(response ->
                 log.warn("fail to process reports : status={}", response.getStatus() )
         );
@@ -138,8 +156,18 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         employeeService.notifyAboutBirthdays();
     }
 
+    private boolean isNotConfiguredSystemId() {
+        if (HelperFunc.isEmpty(config.data().getCommonConfig().getSystemId())) {
+            log.warn("reports is not started because system.id not set in configuration");
+            return true;
+        }
+        return false;
+    }
+
     @Autowired
     PortalConfig config;
+    @Autowired
+    BootstrapService bootstrapService;
 
     @Autowired
     private ThreadPoolTaskScheduler scheduler;
@@ -160,7 +188,12 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
     EventPublisherService publisherService;
     @Autowired
     MailReceiverService mailReceiverService;
-
+    @Autowired
+    AutoOpenCaseService autoOpenCaseService;
+    @Autowired
+    DocumentService documentService;
+    @Autowired
+    EmployeeRegistrationYoutrackSynchronizer employeeRegistrationYoutrackSynchronizer;
     private static AtomicBoolean isPortalStarted = new AtomicBoolean(false);
     private static AtomicInteger contextRefreshedEventCounter = new AtomicInteger(0);
 

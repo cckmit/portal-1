@@ -205,9 +205,19 @@ public enum En_ResultStatus {
     EMPLOYEE_NOT_FIRED_FROM_THESE_COMPANIES,
 
     /**
+     * отрудник с таким email уже существует
+     */
+    EMPLOYEE_EMAIL_ALREADY_EXIST,
+
+    /**
      * Ошибка миграции сотрудника на старый портал
      */
     EMPLOYEE_MIGRATION_FAILED,
+
+    /**
+     * Логин уже существует
+     */
+    LOGIN_ALREADY_EXIST,
 
     /**
      * Подсеть не существует
@@ -272,5 +282,20 @@ public enum En_ResultStatus {
      * Организация в контракте должна быть не равна организации в приходном контракте
      */
     CONTRACT_ORGANIZATION_SHOULD_BE_DIFFERENT_FROM_PARENT,
+
+    /**
+     * Запрещено редактирование комментария по истечению времени
+     */
+    NOT_ALLOWED_EDIT_COMMENT_BY_TIME,
+
+    /**
+     * Запрещено удаление комментария по истечению времени
+     */
+    NOT_ALLOWED_REMOVE_COMMENT_BY_TIME,
+
+    /**
+     * Сервис отчётов не настроен
+     */
+    REPORTING_SERVICE_NOT_CONFIGURED
     ;
 }

@@ -192,7 +192,7 @@ public class TabWidget extends Composite implements HasWidgets, TabWidgetHandler
     @UiHandler("navDropdownTabsSelected")
     public void navDropdownTabsSelectedClick(ClickEvent event) {
         event.preventDefault();
-        popup.showNear(navDropdownTabsSelected);
+        popup.show(navDropdownTabsSelected);
     }
 
     @UiField

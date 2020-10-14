@@ -28,6 +28,7 @@ import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterMode
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.view.selector.ElapsedTimeTypeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.issueimportance.ImportanceBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.issuestate.IssueStatesOptionList;
@@ -54,7 +55,8 @@ import static ru.protei.portal.core.model.util.AlternativeKeyboardLayoutTextServ
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
 import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.searchCaseNumber;
-import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.*;
+import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.fromDateRange;
+import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.toDateRange;
 
 public class IssueFilterParamView extends Composite implements AbstractIssueFilterParamView {
 
@@ -101,21 +103,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public HasValue<Boolean> searchByComments() {
-        return searchByComments;
-    }
-
-    @Override
     public HasVisibility searchByCommentsWarningVisibility() {
         return searchByCommentsWarning;
-    }
-
-    @Override
-    public HasValue<DateIntervalWithType> dateCreatedRange() { return dateCreatedRange; }
-
-    @Override
-    public HasValue<DateIntervalWithType> dateModifiedRange() {
-        return dateModifiedRange;
     }
 
     @Override
@@ -124,18 +113,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public void setCreatedRangeValid(boolean isValid) {
-        dateCreatedRange.setValid(true, isValid);
-    }
-
-    @Override
     public void setCreatedRangeValid(boolean isTypeValid, boolean isRangeValid) {
         dateCreatedRange.setValid(isTypeValid, isRangeValid);
-    }
-
-    @Override
-    public void setModifiedRangeValid(boolean isValid) {
-        dateModifiedRange.setValid(true, isValid);
     }
 
     @Override
@@ -169,38 +148,13 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public HasValue<Set<PersonShortView>> initiators() {
-        return initiators;
-    }
-
-    @Override
     public HasValue<Set<PersonShortView>> managers() {
         return managers;
     }
 
     @Override
-    public HasValue<Set<PersonShortView>> commentAuthors() {
-        return commentAuthors;
-    }
-
-    @Override
-    public HasValue<Set<PersonShortView>> creators() {
-        return creators;
-    }
-
-    @Override
     public HasValue<Set<CaseTag>> tags() {
         return tags;
-    }
-
-    @Override
-    public HasValue<Boolean> searchPrivate() {
-        return searchPrivate;
-    }
-
-    @Override
-    public HasValue<Set<En_ImportanceLevel>> importances() {
-        return importance;
     }
 
     @Override
@@ -218,15 +172,14 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         return creators;
     }
 
-
-    @Override
-    public HasVisibility managersVisibility() {
-        return managers;
-    }
-
     @Override
     public HasVisibility commentAuthorsVisibility() {
         return commentAuthors;
+    }
+
+    @Override
+    public HasVisibility timeElapsedVisibility() {
+        return timeElapsedTypes;
     }
 
     @Override
@@ -247,6 +200,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         managerCompanies.setValue(null);
         initiators.setValue(null);
         commentAuthors.setValue(null);
+        timeElapsedTypes.setValue(null);
         creators.setValue(null);
         importance.setValue(null);
         state.setValue(null);
@@ -319,6 +273,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
         initiators.setValue(applyPersons(filter, caseQuery.getInitiatorIds()));
         commentAuthors.setValue(applyPersons(filter, caseQuery.getCommentAuthorIds()));
+        timeElapsedTypes.setValue(toSet(caseQuery.getTimeElapsedTypeIds(), En_TimeElapsedType::findById));
         creators.setValue(applyPersons(filter, caseQuery.getCreatorIds()));
         plan.setValue(filter.getPlanOption());
 
@@ -380,6 +335,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 query.setCompanyIds(getCompaniesIdList(companies.getValue()));
                 query.setProductIds(getProductsIdList(products.getValue()));
                 query.setCommentAuthorIds(getManagersIdList(commentAuthors.getValue()));
+                query.setTimeElapsedTypeIds(toList(timeElapsedTypes.getValue(), en_timeElapsedType -> en_timeElapsedType.getId()));
                 query.setCreatedRange(toDateRange(dateCreatedRange.getValue()));
                 break;
             }
@@ -390,6 +346,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 query.setImportances(nullIfEmpty(importance.getValue()));
                 query.setStateIds(nullIfEmpty(toList(state.getValue(), state -> state.getId())));
                 query.setCreatedRange(toDateRange(dateCreatedRange.getValue()));
+                break;
+            case PROJECT:
                 break;
         }
         return query;
@@ -501,14 +459,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         onFilterChanged();
     }
 
-    public void watchForScrollOf(Widget widget) {
-        sortField.watchForScrollOf(widget);
-    }
-
-    public void stopWatchForScrollOf(Widget widget) {
-        sortField.stopWatchForScrollOf(widget);
-    }
-
     public void applyVisibilityByFilterType(En_CaseFilterType filterType) {
         if (filterType == null) {
             return;
@@ -531,6 +481,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         managerCompanies.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         managers.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         commentAuthors.setVisible(filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED));
+        timeElapsedTypes.setVisible(filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED));
         tags.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS) || filterType.equals(En_CaseFilterType.CASE_RESOLUTION_TIME));
         searchPrivateContainer.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         plan.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS) && policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PLAN_VIEW));
@@ -618,8 +569,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     private void ensureDebugIds() {
-        search.setEnsureDebugIdTextBox(DebugIds.FILTER.SEARCH_INPUT);
-        search.setEnsureDebugIdAction(DebugIds.FILTER.SEARCH_CLEAR_BUTTON);
+        search.setDebugIdTextBox(DebugIds.FILTER.SEARCH_INPUT);
+        search.setDebugIdAction(DebugIds.FILTER.SEARCH_CLEAR_BUTTON);
         plan.setEnsureDebugId(DebugIds.FILTER.PLAN_SELECTOR);
         searchByComments.ensureDebugId(DebugIds.FILTER.SEARCH_BY_COMMENTS_TOGGLE);
         searchByCommentsWarning.ensureDebugId(DebugIds.FILTER.SEARCH_BY_WARNING_COMMENTS_LABEL);
@@ -665,6 +616,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         creators.setAddEnsureDebugId(DebugIds.FILTER.CREATOR_ADD_BUTTON);
         creators.setClearEnsureDebugId(DebugIds.FILTER.CREATOR_CLEAR_BUTTON);
         creators.setItemContainerEnsureDebugId(DebugIds.FILTER.CREATOR_ITEM_CONTAINER);
+        timeElapsedTypes.ensureDebugId(DebugIds.ISSUE_REPORT.TIME_ELAPSED_TYPES);
+        timeElapsedTypes.setAddEnsureDebugId(DebugIds.ISSUE_REPORT.TIME_ELAPSED_TYPES_ADD_BUTTON);
+        timeElapsedTypes.setClearEnsureDebugId(DebugIds.ISSUE_REPORT.TIME_ELAPSED_TYPES_CLEAR_BUTTON);
+        timeElapsedTypes.setItemContainerEnsureDebugId(DebugIds.ISSUE_REPORT.TIME_ELAPSED_TYPES_ITEM_CONTAINER);
+        timeElapsedTypes.setLabelEnsureDebugId(DebugIds.ISSUE_REPORT.TIME_ELAPSED_TYPES_LABEL);
     }
 
     private void onFilterChanged() {
@@ -821,6 +777,9 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @Inject
     @UiField(provided = true)
     EmployeeMultiSelector commentAuthors;
+    @Inject
+    @UiField(provided = true)
+    ElapsedTimeTypeMultiSelector timeElapsedTypes;
     @Inject
     @UiField(provided = true)
     PersonMultiSelector creators;

@@ -250,9 +250,13 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errEmployeeAlreadyExist();
 
+    String errEmployeeEmailAlreadyExist();
+
     String errEmployeeNotFiredFromTheseCompanies();
 
     String errEmployeeMigrationFailed();
+
+    String errLoginAlreadyExist();
 
     String errDepartmentAlreadyExistInThisCompany();
 
@@ -719,6 +723,10 @@ public interface Lang extends Messages, ContactItemLang {
     String errRemoveIssueComment();
 
     String errEditIssueComment();
+
+    String errEditIssueCommentByTime();
+
+    String errRemoveIssueCommentByTime();
 
     String errEditTimeElapsedType();
 
@@ -3104,5 +3112,15 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractDatesWarningCostOverflow();
 
+    String errEmployeeNotFound();
+
     String reservedIpExistedIpInRange();
+
+    String issueReportHumanReadable();
+
+    String issueReportHumanReadableTitle();
+
+    String errReportingServiceNotConfigured();
+
+    String dutyTypeCOV();
 }

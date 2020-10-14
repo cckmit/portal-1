@@ -55,12 +55,17 @@ import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.auth.AuthServiceImpl;
 import ru.protei.portal.core.service.auth.LDAPAuthProvider;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseTaskHandler;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceTaskHandlerImpl;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceImpl;
 import ru.protei.portal.core.service.bootstrap.BootstrapService;
+import ru.protei.portal.core.service.bootstrap.BootstrapServiceImpl;
 import ru.protei.portal.core.service.events.*;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
+import ru.protei.portal.core.service.syncronization.EmployeeRegistrationYoutrackSynchronizer;
+import ru.protei.portal.core.service.syncronization.EmployeeRegistrationYoutrackSynchronizerImpl;
 import ru.protei.portal.core.service.template.TemplateService;
 import ru.protei.portal.core.service.template.TemplateServiceImpl;
 import ru.protei.portal.core.svn.document.DocumentSvnApi;
@@ -136,14 +141,7 @@ public class MainConfiguration {
         return executor;
     }
 
-/*
-    @Bean
-    public ClientEventService getClientEventService() {
-        return new ClientEventServiceImpl();
-    }
-*/
-
-    @Bean
+    @Bean()
     public FileStorage getFileStorage(@Autowired PortalConfig config) {
         PortalConfigData.CloudConfig cloud = config.data().cloud();
         return new FileStorage(cloud.getStoragePath(), cloud.getUser(), cloud.getPassword());
@@ -272,6 +270,11 @@ public class MainConfiguration {
     @Bean
     public CaseObjectDAO getCaseDAO() {
         return new CaseObjectDAO_Impl();
+    }
+
+    @Bean
+    public BootstrapAppDAO getBootstrapAppDAO() {
+        return new BootstrapAppDAO_Impl();
     }
 
     @Bean
@@ -813,7 +816,7 @@ public class MainConfiguration {
 
     @Bean
     public BootstrapService getBootstrapService() {
-        return new BootstrapService();
+        return new BootstrapServiceImpl();
     }
 
     @Bean
@@ -989,6 +992,16 @@ public class MainConfiguration {
     @Bean
     public AutoOpenCaseService getAutoOpenCaseService() {
         return new AutoOpenCaseServiceImpl();
+    }
+
+    @Bean
+    public AutoOpenCaseTaskHandler getAutoOpenCaseHandler() {
+        return new AutoOpenCaseServiceTaskHandlerImpl();
+    }
+
+    @Bean
+    public EmployeeRegistrationYoutrackSynchronizer getEmployeeRegistrationYoutrackSynchronizer() {
+        return new EmployeeRegistrationYoutrackSynchronizerImpl();
     }
 
     @Bean

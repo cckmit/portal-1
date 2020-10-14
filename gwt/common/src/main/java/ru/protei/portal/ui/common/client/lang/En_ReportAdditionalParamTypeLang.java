@@ -19,6 +19,7 @@ public class En_ReportAdditionalParamTypeLang {
             case DESCRIPTION: return lang.issueReportWithDescription();
             case TAGS: return lang.issueReportWithTags();
             case LINKED_ISSUES: return lang.issueReportWithLinkedIssues();
+            case HUMAN_READABLE: return lang.issueReportHumanReadable();
             default: return lang.unknownField();
         }
     }

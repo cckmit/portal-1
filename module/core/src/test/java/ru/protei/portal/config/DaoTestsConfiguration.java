@@ -429,4 +429,15 @@ public class DaoTestsConfiguration {
     public ContactItemDAO getContactItemDAO() {
         return new ContactItemDAO_Impl();
     }
+
+    @Bean
+    public ImportanceLevelDAO getImportanceLevelDAO() {
+        return new ImportanceLevelDAO_Impl();
+    }
+
+    @Bean
+    public BootstrapAppDAO getBootstrapAppDAO() {
+        return new BootstrapAppDAO_Impl();
+    }
+
 }

@@ -85,7 +85,7 @@ public class ReportServiceImpl implements ReportService {
 
         final String systemId = config.data().getCommonConfig().getSystemId();
         if (HelperFunc.isEmpty(systemId)) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.REPORTING_SERVICE_NOT_CONFIGURED);
         }
 
         En_ReportType reportType = report.getReportType();
@@ -140,7 +140,7 @@ public class ReportServiceImpl implements ReportService {
 
         final String systemId = config.data().getCommonConfig().getSystemId();
         if (HelperFunc.isEmpty(systemId)) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.REPORTING_SERVICE_NOT_CONFIGURED);
         }
 
         Report report = reportDAO.getReport(token.getPersonId(), id);
@@ -154,7 +154,7 @@ public class ReportServiceImpl implements ReportService {
         }
 
         if (!Objects.equals(report.getSystemId(), systemId)) {
-            return error(En_ResultStatus.PERMISSION_DENIED);
+            return error(En_ResultStatus.NOT_AVAILABLE);
         }
 
         boolean hasAccess = canEdit(token, reportType);
@@ -189,7 +189,7 @@ public class ReportServiceImpl implements ReportService {
 
         final String systemId = config.data().getCommonConfig().getSystemId();
         if (HelperFunc.isEmpty(systemId)) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.REPORTING_SERVICE_NOT_CONFIGURED);
         }
 
         Report report = reportDAO.getReport(token.getPersonId(), id);
@@ -198,7 +198,7 @@ public class ReportServiceImpl implements ReportService {
         }
 
         if (!Objects.equals(report.getSystemId(), systemId)) {
-            return error(En_ResultStatus.PERMISSION_DENIED);
+            return error(En_ResultStatus.NOT_AVAILABLE);
         }
 
         boolean hasAccess = canView(token, report.getReportType());
@@ -219,7 +219,7 @@ public class ReportServiceImpl implements ReportService {
 
         final String systemId = config.data().getCommonConfig().getSystemId();
         if (HelperFunc.isEmpty(systemId)) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.REPORTING_SERVICE_NOT_CONFIGURED);
         }
 
         query.setSystemId(systemId);
@@ -243,7 +243,7 @@ public class ReportServiceImpl implements ReportService {
 
         final String systemId = config.data().getCommonConfig().getSystemId();
         if (HelperFunc.isEmpty(systemId)) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.REPORTING_SERVICE_NOT_CONFIGURED);
         }
 
         Report report = reportDAO.getReport(token.getPersonId(), id);
@@ -252,7 +252,7 @@ public class ReportServiceImpl implements ReportService {
         }
 
         if (!Objects.equals(report.getSystemId(), systemId)) {
-            return error(En_ResultStatus.PERMISSION_DENIED);
+            return error(En_ResultStatus.NOT_AVAILABLE);
         }
 
         boolean hasAccess = canView(token, report.getReportType());
@@ -277,7 +277,7 @@ public class ReportServiceImpl implements ReportService {
 
         final String systemId = config.data().getCommonConfig().getSystemId();
         if (HelperFunc.isEmpty(systemId)) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.REPORTING_SERVICE_NOT_CONFIGURED);
         }
 
         List<En_ReportType> reportTypes = availableReportTypes(token);
@@ -300,7 +300,7 @@ public class ReportServiceImpl implements ReportService {
 
         final String systemId = config.data().getCommonConfig().getSystemId();
         if (HelperFunc.isEmpty(systemId)) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.REPORTING_SERVICE_NOT_CONFIGURED);
         }
 
         query.setSystemId(systemId);
@@ -324,7 +324,7 @@ public class ReportServiceImpl implements ReportService {
 
         final String systemId = config.data().getCommonConfig().getSystemId();
         if (HelperFunc.isEmpty(systemId)) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.REPORTING_SERVICE_NOT_CONFIGURED);
         }
 
         Report report = reportDAO.getReport(token.getPersonId(), id);
@@ -333,7 +333,7 @@ public class ReportServiceImpl implements ReportService {
         }
 
         if (!Objects.equals(report.getSystemId(), systemId)) {
-            return error(En_ResultStatus.PERMISSION_DENIED);
+            return error(En_ResultStatus.NOT_AVAILABLE);
         }
 
         boolean hasAccess = canEdit(token, report.getReportType());
@@ -356,7 +356,7 @@ public class ReportServiceImpl implements ReportService {
 
         final String systemId = config.data().getCommonConfig().getSystemId();
         if (HelperFunc.isEmpty(systemId)) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.REPORTING_SERVICE_NOT_CONFIGURED);
         }
 
         List<Long> idsToRemove = stream(reports)

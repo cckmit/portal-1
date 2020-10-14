@@ -46,11 +46,15 @@
   <include file="2020-08-14-migrate-money.xml" relativeToChangelogFile="true"/>
   <include file="2020-08-17-add-order_number-column-to-user_dashboard-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-08-24-add-duty_log-table.xml" relativeToChangelogFile="true"/>
-  <include file="2020-09-10-add-contract_type-column-to-contract-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-09-10-add-with_tags-and-with_linked_issues-columns-to-report-table.xml" relativeToChangelogFile="true"/>
-  <include file="2020-09-14-add-cost-and-currency-columns-to-contract_date-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-09-10-add-contract_type-column-to-contract-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-09-16-create-contact_item-tables.xml" relativeToChangelogFile="true"/>
   <include file="2020-09-18-add-is_contract_agreement-column-to-worker_entry-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-09-14-add-cost-and-currency-columns-to-contract_date-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-09-24-add-clm-id-in-jira-issue.xml" relativeToChangelogFile="true"/>
+  <include file="2020-09-24-create-plan-to-project-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-09-30-modify-report-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-10-01-add-human_readable-column-to-report-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-10-02-bootstrap-table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

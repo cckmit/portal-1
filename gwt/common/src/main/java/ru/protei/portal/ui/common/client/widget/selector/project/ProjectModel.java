@@ -35,11 +35,11 @@ public abstract class ProjectModel extends LifecycleSelectorModel<EntityOption> 
     }
 
     void setPlatformIndependentProject(Boolean platformIndependentProject) {
-        this.projectQuery = makePlatformQuery(platformIndependentProject);
+        this.projectQuery = makeProjectQuery(platformIndependentProject);
         refreshOptions();
     }
 
-    private ProjectQuery makePlatformQuery(Boolean platformIndependentProject) {
+    private ProjectQuery makeProjectQuery(Boolean platformIndependentProject) {
         ProjectQuery projectQuery = new ProjectQuery();
         projectQuery.setPlatformIndependentProject(platformIndependentProject);
 

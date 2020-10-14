@@ -26,11 +26,13 @@ public class ExcelReportWriter implements
     private final JXLSHelper.ReportBook<ReportProjectWithLastComment> book;
     private final Lang.LocalizedLang lang;
     private final EnumLangUtil enumLangUtil;
+    private final String[] formats;
 
     public ExcelReportWriter(Lang.LocalizedLang localizedLang, EnumLangUtil enumLangUtil) {
         this.book = new JXLSHelper.ReportBook<>(localizedLang, this);
         this.lang = localizedLang;
         this.enumLangUtil = enumLangUtil;
+        this.formats = getFormats();
     }
 
     @Override
@@ -64,16 +66,8 @@ public class ExcelReportWriter implements
             cs.setFont(book.getDefaultFont());
             cs.setVerticalAlignment(VerticalAlignment.CENTER);
             cs.setDataFormat(workbook.createDataFormat()
-                    .getFormat(getFormats()[columnIndex]));
+                    .getFormat(formats[columnIndex]));
         });
-    }
-
-    private String[] getFormats() {
-        return new String[] {
-                ExcelFormat.STANDARD, ExcelFormat.STANDARD, ExcelFormat.STANDARD,
-                ExcelFormat.STANDARD, ExcelFormat.STANDARD, ExcelFormat.STANDARD,
-                ExcelFormat.STANDARD, ExcelFormat.FULL_DATE, ExcelFormat.FULL_DATE_TIME, ExcelFormat.STANDARD
-        };
     }
 
     @Override
@@ -115,5 +109,13 @@ public class ExcelReportWriter implements
         values.add(comment != null ? comment.getText() : "");
 
         return values.toArray();
+    }
+
+    private String[] getFormats() {
+        return new String[] {
+                ExcelFormat.STANDARD, ExcelFormat.STANDARD, ExcelFormat.STANDARD,
+                ExcelFormat.STANDARD, ExcelFormat.STANDARD, ExcelFormat.STANDARD,
+                ExcelFormat.STANDARD, ExcelFormat.FULL_DATE, ExcelFormat.FULL_DATE_TIME, ExcelFormat.STANDARD
+        };
     }
 }

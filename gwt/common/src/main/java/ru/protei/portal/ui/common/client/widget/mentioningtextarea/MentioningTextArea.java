@@ -1,13 +1,10 @@
 package ru.protei.portal.ui.common.client.widget.mentioningtextarea;
 
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.Timer;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.ui.common.client.popup.BasePopupView;
 import ru.protei.portal.ui.common.client.widget.dndautoresizetextarea.DndAutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.selector.login.UserLoginModel;
 import ru.protei.portal.ui.common.client.widget.selector.login.UserLoginSelector;
@@ -32,7 +29,7 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
 
     private void initUserLoginSelector(final UserLoginModel userLoginModel, final UserLoginSelector userLoginSelector) {
         userLoginSelector.setAsyncSearchModel(userLoginModel);
-        userLoginSelector.setRelative(this);
+        userLoginSelector.setRelative(getElement(), true);
         userLoginSelector.addValueChangeHandler(event -> {
             int pointerPosition = pointerPosition(getElement());
 
@@ -41,7 +38,7 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
 
             setValue(beforeReplace + userLoginSelector.getValue().getUlogin() + " " + afterReplace);
 
-            userLoginSelector.getPopup().hide();
+            hidePopup(userLoginSelector);
 
             getElement().focus();
         });
@@ -54,9 +51,7 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
                 PossibleLoginInfo possibleLoginInfo = possibleLogin(pointerPosition(getElement()));
 
                 if (possibleLoginInfo == null) {
-                    userLoginSelector.getPopup().getChildContainer().clear();
-                    userLoginSelector.getPopup().hide();
-
+                    hidePopup(userLoginSelector);
                     return;
                 }
 
@@ -70,21 +65,31 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
 
     private PossibleLoginInfo possibleLogin(int pointerPosition) {
         String substring = getValue().substring(0, pointerPosition);
-        int spacePosition = substring.lastIndexOf(' ');
-        int enterPosition = substring.lastIndexOf('\n');
-        final int atPosition = Math.max(spacePosition, enterPosition) + 1; // "at" means "@"
 
-        String possibleMention = getValue().substring(atPosition, pointerPosition);
+        int spaceEnterPosition = Math.max(substring.lastIndexOf(' '), substring.lastIndexOf('\n'));
+        int roundBracketsPosition = Math.max(substring.lastIndexOf('('), substring.lastIndexOf(')'));
+        int squareBracketsPosition = Math.max(substring.lastIndexOf('['), substring.lastIndexOf(']'));
+
+        int desiredPosition = Math.max(spaceEnterPosition, Math.max(roundBracketsPosition, squareBracketsPosition));
+
+        final int possibleAtPosition = desiredPosition + 1; // "at" means "@"
+
+        String possibleMention = getValue().substring(possibleAtPosition, pointerPosition);
 
         return ofNullable(MENTION_REGEXP.exec(possibleMention))
                 .map(matchResult -> matchResult.getGroup(0).equals(possibleMention) ? matchResult : null)
-                .map(matchResult -> new PossibleLoginInfo(matchResult.getGroup(0).substring(1), atPosition + 1))
+                .map(matchResult -> new PossibleLoginInfo(matchResult.getGroup(0).substring(1), possibleAtPosition + 1))
                 .orElse(null);
     }
 
     private void showPopup(UserLoginSelector userLoginSelector) {
-        userLoginSelector.getPopup().showNear(this, BasePopupView.Position.BY_LEFT_SIDE, getOffsetWidth() + (COMMENT_INNER_PADDING + COMMENT_BORDER_SIZE) * 2);
+        userLoginSelector.showPopup();
         userLoginSelector.clearAndFill();
+    }
+
+    private void hidePopup(UserLoginSelector userLoginSelector) {
+        userLoginSelector.clearPopup();
+        userLoginSelector.hidePopup();
     }
 
     private void updateModel(String searchString, UserLoginModel userLoginModel) {
@@ -110,6 +115,4 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
     }
 
     private static final RegExp MENTION_REGEXP = RegExp.compile(CrmConstants.Masks.MENTION);
-    private static final Integer COMMENT_BORDER_SIZE = 1;
-    private static final Integer COMMENT_INNER_PADDING = 12;
 }

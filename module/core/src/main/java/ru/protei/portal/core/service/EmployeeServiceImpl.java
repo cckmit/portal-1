@@ -7,11 +7,11 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.BirthdaysNotificationEvent;
+import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
@@ -244,7 +244,17 @@ public class EmployeeServiceImpl implements EmployeeService {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
-        if (checkExistEmployee(person)){
+        String email = new PlainContactInfoFacade(person.getContactInfo()).getEmail();
+
+        if (isEmailExists(person.getId(), email)) {
+            return error(En_ResultStatus.EMPLOYEE_EMAIL_ALREADY_EXIST);
+        }
+
+        if (isUserLoginExist(email)){
+            return error(En_ResultStatus.LOGIN_ALREADY_EXIST);
+        }
+
+        if (isEmployeeExist(person)){
             return error(En_ResultStatus.EMPLOYEE_ALREADY_EXIST);
         }
 
@@ -265,16 +275,18 @@ public class EmployeeServiceImpl implements EmployeeService {
             contactItemDAO.saveOrUpdateBatch(person.getContactItems());
             jdbcManyRelationsHelper.persist(person, Person.Fields.CONTACT_ITEMS);
 
-            person.setId(personId);
             return createLDAPAccount(person)
                     .flatMap(userLogin -> {
                         userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
-                        saveAccount(userLogin, token);
+                        if (!saveUserLogin(userLogin, token)) {
+                            throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+                        }
                         return ok();
                     }).map(ignore -> person);
         }
 
-        return error(En_ResultStatus.INTERNAL_ERROR);
+        log.warn("createEmployeePerson(): person not created. id = null. person={}, token={}", person, token);
+        return error(En_ResultStatus.NOT_CREATED);
     }
 
     @Override
@@ -292,6 +304,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         if (!validatePerson(person) || person.getId() == null) {
             return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
+        String email = new PlainContactInfoFacade(person.getContactInfo()).getEmail();
+
+        if (isEmailExists(person.getId(), email)) {
+            return error(En_ResultStatus.EMPLOYEE_EMAIL_ALREADY_EXIST);
         }
 
         final boolean YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEmployeeSyncEnabled();
@@ -731,9 +749,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         return !(worker.getContractAgreement() || companyDAO.getAllHomeCompanyIdsWithoutSync().contains(worker.getCompanyId()));
     }
 
-    private boolean checkExistEmployee (Person person){
+    private boolean isEmployeeExist(Person person){
         EmployeeQuery employeeQuery = new EmployeeQuery();
-        employeeQuery.setFired(false);
         employeeQuery.setDeleted(false);
         employeeQuery.setFirstName(person.getFirstName());
         employeeQuery.setLastName(person.getLastName());
@@ -804,38 +821,60 @@ public class EmployeeServiceImpl implements EmployeeService {
         return true;
     }
 
-    private List<WorkerEntryShortView> changeCompanyNameIfHidden(List<WorkerEntryShortView> list){
-        list.forEach(workerEntry ->
-                workerEntry.setCompanyName(workerEntry.getCompanyIsHidden() != null && workerEntry.getCompanyIsHidden()
+    private boolean isEmailExists(Long personId, String email) {
+
+        List<Person> employeeByEmail = personDAO.findEmployeeByEmail(email);
+
+        if (CollectionUtils.isNotEmpty(employeeByEmail)){
+            if (personId == null) {
+                return true;
+            }
+
+            if (employeeByEmail.stream()
+                    .noneMatch(personFromDB -> personFromDB.getId().equals(personId))){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private List<WorkerEntryShortView> changeCompanyNameIfHidden(List<WorkerEntryShortView> list) {
+        stream(list).forEach(workerEntry ->
+                workerEntry.setCompanyName(Boolean.TRUE.equals(workerEntry.getCompanyIsHidden())
                         ? CrmConstants.Company.MAIN_HOME_COMPANY_NAME
-                        : workerEntry.getCompanyName())
-                );
+                        : workerEntry.getCompanyName()
+                )
+        );
         return list;
     }
 
     private Result<UserLogin> createLDAPAccount(Person person) {
-
-        ContactItem email = person.getContactInfo().findFirst(En_ContactItemType.EMAIL, En_ContactDataAccess.PUBLIC);
-        if (!email.isEmpty() && HelperFunc.isNotEmpty(email.value())) {
-            String login = email.value().substring(0, email.value().indexOf("@"));
-            if (!userLoginDAO.isUnique(login.trim())) {
-                log.debug("error: Login already exist.");
-                return error(En_ResultStatus.ALREADY_EXIST);
-            }
+            String email = new PlainContactInfoFacade(person.getContactInfo()).getEmail();
 
             UserLogin userLogin = userLoginDAO.createNewUserLogin(person);
-            userLogin.setUlogin(login.trim());
+            userLogin.setUlogin(makeLogin(email));
             userLogin.setAuthType(En_AuthType.LDAP);
             userLogin.setRoles(new HashSet<>(userRoleDAO.getDefaultEmployeeRoles()));
             return ok(userLogin);
-        }
-        return error(En_ResultStatus.INCORRECT_PARAMS);
     }
 
-    private void saveAccount(UserLogin userLogin, AuthToken authToken) {
+    private String makeLogin(String email) {
+        return email.substring(0, email.indexOf("@")).trim();
+    }
+
+    private boolean isUserLoginExist(String email) {
+        return !userLoginDAO.isUnique(makeLogin(email));
+    }
+
+    private boolean saveUserLogin(UserLogin userLogin, AuthToken authToken) {
         if (userLoginDAO.saveOrUpdate(userLogin)) {
             jdbcManyRelationsHelper.persist( userLogin, "roles" );
             makeAudit(userLogin, En_AuditType.ACCOUNT_CREATE, authToken);
+            return true;
+        } else {
+            log.warn("saveUserLogin(): fail to create login. Rollback transaction. userLogin={}, authToken={}", userLogin, authToken);
+           return false;
         }
     }
 

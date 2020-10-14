@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.CaseTypeDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -147,11 +148,23 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
                 .where("case_object.state" ).equal(CrmConstants.State.CREATED)
                 .and("case_object.case_type").equal(CRM_SUPPORT.getId())
                 .and(query()
-                        .select( "SELECT company.auto_open_issue" ).from( "FROM company WHERE" )
+                        .select( "SELECT company.auto_open_issue" ).from( "company" )
                             .whereExpression( "company.id = case_object.initiator_company" ))
                 .asQuery();
 
         return jdbcTemplate.queryForList(query.buildSql(), query.args(), Long.class);
+    }
+
+    @Override
+    public boolean isJiraDuplicateByClmId(String clmId) {
+        Query subQuery = query().select("JSON_EXTRACT(EXT_APP_DATA, '$.clmId') clmIds")
+                .from("case_object")
+                .where("EXT_APP").equal("jira")
+            .asQuery();
+
+        String query = "SELECT true WHERE '" + clmId + "' IN (" + subQuery.buildSql() + ");";
+
+        return !jdbcTemplate.queryForList(query, subQuery.args()).isEmpty();
     }
 
     @SqlConditionBuilder
@@ -176,13 +189,27 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
         parameters.withOffset(query.getOffset());
         parameters.withLimit(query.getLimit());
         parameters.withSort(TypeConverters.createSort( query ));
-        if (isSearchAtComments(query)
-            || (query.isCheckImportanceHistory()!=null && query.isCheckImportanceHistory())
-        ) {
+        if (isNeedJoinComments(query)) {
             parameters.withDistinct(true);
             parameters.withJoins(LEFT_JOIN_CASE_COMMENT);
         }
 
         return parameters;
+    }
+
+    private boolean isNeedJoinComments(CaseQuery caseQuery) {
+        if (isSearchAtComments(caseQuery)) {
+            return true;
+        }
+
+        if (caseQuery.isCheckImportanceHistory()!=null && caseQuery.isCheckImportanceHistory()) {
+            return true;
+        }
+
+        if (CollectionUtils.isNotEmpty(caseQuery.getTimeElapsedTypeIds())) {
+            return true;
+        }
+
+        return false;
     }
 }

@@ -65,8 +65,10 @@ public class En_ResultStatusLang {
             case DEPARTMENT_ALREADY_EXIST: return lang.errDepartmentAlreadyExistInThisCompany();
             case POSITION_ALREADY_EXIST: return lang.errPositionAlreadyExistInThisCompany();
             case EMPLOYEE_ALREADY_EXIST: return lang.errEmployeeAlreadyExist();
+            case EMPLOYEE_EMAIL_ALREADY_EXIST: return lang.errEmployeeEmailAlreadyExist();
             case EMPLOYEE_NOT_FIRED_FROM_THESE_COMPANIES: return lang.errEmployeeNotFiredFromTheseCompanies();
             case EMPLOYEE_MIGRATION_FAILED: return lang.errEmployeeMigrationFailed();
+            case LOGIN_ALREADY_EXIST: return lang.errLoginAlreadyExist();
             case SUBNET_DOES_NOT_EXIST: return lang.errSaveReservedIpSubnetDoesNotExist();
             case SUBNET_NOT_ALLOWED_FOR_RESERVE: return lang.errSaveReservedIpSubnetNotAvailable();
             case ROOM_RESERVATION_FINISHED: return lang.errRoomReservationFinished();
@@ -80,6 +82,9 @@ public class En_ResultStatusLang {
             case PROJECT_NOT_SELECTED: return lang.errContractProjectRequired();
             case CONTRACTOR_NOT_REMOVED_HAS_CONTRACTS: return lang.errContractorNotRemovedHasContracts();
             case CONTRACT_ORGANIZATION_SHOULD_BE_DIFFERENT_FROM_PARENT: return lang.errContractOrganizationShouldBeDifferentFromParent();
+            case NOT_ALLOWED_EDIT_COMMENT_BY_TIME: return lang.errEditIssueCommentByTime();
+            case NOT_ALLOWED_REMOVE_COMMENT_BY_TIME: return lang.errRemoveIssueCommentByTime();
+            case REPORTING_SERVICE_NOT_CONFIGURED: return lang.errReportingServiceNotConfigured();
             default: return lang.errUnknownResult();
         }
     }

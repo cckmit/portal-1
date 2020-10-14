@@ -423,7 +423,17 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     }
 
     private void fillView(Long employeeId) {
-        employeeService.getEmployeeWithChangedHiddenCompanyNames(employeeId, new FluentCallback<EmployeeShortView>().withSuccess(this::fillView));
+        employeeService.getEmployeeWithChangedHiddenCompanyNames(employeeId, new FluentCallback<EmployeeShortView>()
+                .withError(throwable -> {
+                    if (En_ResultStatus.NOT_FOUND.equals(getStatus(throwable))) {
+                        fireEvent(new ErrorPageEvents.ShowNotFound(initDetails.parent, lang.errEmployeeNotFound()));
+                        return;
+                    }
+
+                    errorHandler.accept(throwable);
+                })
+                .withSuccess(this::fillView)
+        );
     }
 
     private void fillView(EmployeeShortView employee){
@@ -647,6 +657,14 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
     private boolean isNew(Long personId) {
         return personId == null;
+    }
+
+    private En_ResultStatus getStatus(Throwable throwable) {
+        if (!(throwable instanceof RequestFailedException)) {
+            return null;
+        }
+
+        return ((RequestFailedException) throwable).status;
     }
 
     @Inject

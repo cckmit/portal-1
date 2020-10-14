@@ -2448,7 +2448,6 @@ a {
         border: 0;
         background-color: transparent;
         margin-right: -15px;
-        margin-bottom: 10px;
       }
     }
   }
@@ -4122,6 +4121,10 @@ table {
     width: calc(100% - 47px);
     margin: -1px -1px 0 -3px;
   }
+
+  .dropdown-menu {
+    width: max-content;
+  }
 }
 
 .type-selector-item,
@@ -4762,6 +4765,10 @@ table {
     padding-left: 0;
     padding-right: 0;
   }
+
+  .nav-tabs ~ .tab-content {
+    overflow: unset;
+  }
 }
 
 .history-item-history-type {
@@ -5139,5 +5146,63 @@ table {
     // 1px - граница комментария;
     // 12px - внутренний паддинг комментария
     margin-left: -13px;
+    width: calc(100% + 26px);
+  }
+}
+
+.time-elapsed-popup {
+  z-index: 1;
+  display: flex;
+  position: absolute;
+  top: 20px;
+  right: 0;
+
+  .time-elapsed-popup-selector {
+    min-width: 210px;
+  }
+}
+
+.selector-popup {
+  position: absolute;
+  display: block;
+  float: left;
+  z-index: 160;
+
+  .dropdown-menu {
+    position: relative;
+  }
+
+  &[data-popper-placement^='top'] {
+    bottom: -1px !important;
+
+    .dropdown-menu {
+      box-shadow: 1px 0 3px -1px rgba(136, 153, 178, 0.68);
+      -webkit-box-shadow: 1px 0 3px -1px rgba(136, 153, 178, 0.68);
+    }
+  }
+
+  &[data-popper-placement^='bottom'] {
+    top: -1px !important;
+  }
+}
+
+.form-group {
+  .selector-popup {
+    label {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.01em;
+      text-transform: unset;
+    }
+  }
+}
+
+.min-width-150 {
+  min-width: 150px;
+}
+
+.locale-selector {
+  .dropdown-menu {
+    width: max-content;
   }
 }

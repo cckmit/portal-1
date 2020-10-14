@@ -11,26 +11,23 @@ import ru.protei.portal.core.model.dao.AttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseAttachment;
-import ru.protei.portal.core.model.event.CaseCommentSavedClientEvent;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventAssemblerService;
 import ru.protei.portal.core.service.events.EventProjectAssemblerService;
 import ru.protei.portal.core.service.policy.PolicyService;
-import ru.protei.portal.core.service.pushevent.ClientEventService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 /**
  * Created by bondarenko on 23.01.17.
@@ -145,24 +142,24 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     @Override
     public Result<List<Attachment>> getAttachmentsByCaseId( AuthToken token, En_CaseType caseType, Long caseId) {
-        List<Attachment> list = attachmentDAO.getListByCondition(
-                "ID in (Select ATT_ID from case_attachment where CASE_ID = ?)", caseId
-        );
+        if (hasAccessForPrivateAttachments(token, caseType)) {
+            return ok(attachmentDAO.getAttachmentsByCaseId(caseId));
+        }
 
-        if(list == null)
-            return error( En_ResultStatus.GET_DATA_ERROR);
-
-        return ok( list);
+        return ok(attachmentDAO.getPublicAttachmentsByCaseId(caseId));
     }
 
     @Override
     public Result<List<Attachment>> getAttachments( AuthToken token, En_CaseType caseType, List<Long> ids) {
-        List<Attachment> list = attachmentDAO.getListByKeys(ids);
+        if (isEmpty(ids)) {
+            return ok(new ArrayList<>());
+        }
 
-        if(list == null)
-            return error( En_ResultStatus.GET_DATA_ERROR);
+        if (hasAccessForPrivateAttachments(token, caseType)) {
+            return ok(attachmentDAO.getListByKeys(ids));
+        }
 
-        return ok( list);
+        return ok(attachmentDAO.getPublicAttachmentsByIds(ids));
     }
 
     @Override
@@ -202,5 +199,17 @@ public class AttachmentServiceImpl implements AttachmentService {
             return error( En_ResultStatus.NOT_FOUND);
         }
         return ok( attachment );
+    }
+
+    private boolean hasAccessForPrivateAttachments(AuthToken token, En_CaseType caseType) {
+        if (!En_CaseType.CRM_SUPPORT.equals(caseType)) {
+            return true;
+        }
+
+        if (policyService.hasGrantAccessFor(token.getRoles(), En_Privilege.ISSUE_VIEW)) {
+            return true;
+        }
+
+        return false;
     }
 }

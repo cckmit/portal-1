@@ -77,7 +77,7 @@ public class TemplateServiceImpl implements TemplateService {
 
     @Override
     public PreparedTemplate getCrmEmailNotificationBody(
-            AssembledCaseEvent event, List<CaseComment> caseComments, DiffCollectionResult<LinkData> mergeLinks, String urlTemplate, Collection<String> recipients
+            AssembledCaseEvent event, List<CaseComment> caseComments, Collection<Attachment> attachments, DiffCollectionResult<LinkData> mergeLinks, String urlTemplate, Collection<String> recipients
     ) {
         CaseObject newState = event.getCaseObject();
         En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(newState);
@@ -114,7 +114,7 @@ public class TemplateServiceImpl implements TemplateService {
 
         templateModel.putAll(
                 buildAttachmentModelKeys(
-                        event.getExistingAttachments(),
+                        attachments,
                         event.getAddedAttachments(),
                         event.getRemovedAttachments())
         );

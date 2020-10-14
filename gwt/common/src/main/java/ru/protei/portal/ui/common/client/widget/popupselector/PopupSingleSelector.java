@@ -1,17 +1,22 @@
 package ru.protei.portal.ui.common.client.widget.popupselector;
 
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.UIObject;
+import com.google.gwt.user.client.ui.RootPanel;
 import ru.protei.portal.ui.common.client.selector.AbstractPopupSelector;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
+import ru.protei.portal.ui.common.client.selector.SelectorPopup;
 import ru.protei.portal.ui.common.client.selector.pageable.AbstractPageableSelector;
 import ru.protei.portal.ui.common.client.selector.pageable.SingleValuePageableSelector;
 import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
+import ru.protei.portal.ui.common.client.widget.composite.popper.PopperComposite;
 
-public abstract class PopupSingleSelector<T> extends AbstractPopupSelector<T> implements HasValue<T> {
+public class PopupSingleSelector<T> extends AbstractPopupSelector<T> implements HasValue<T> {
 
     @Override
     public T getValue() {
@@ -43,6 +48,49 @@ public abstract class PopupSingleSelector<T> extends AbstractPopupSelector<T> im
     public void setEnabled(boolean enabled) {}
 
     @Override
+    public boolean isAttached() {
+        return true;
+    }
+
+    public void setRelative(Element relative) {
+        setRelative(relative, false);
+    }
+
+    public void setRelative(Element relative, boolean isAutoResize) {
+        this.relative = relative;
+        getPopup().setAutoResize(isAutoResize);
+
+        if (relative.getParentElement() != null) {
+            relative.getParentElement().appendChild(getPopup().asWidget().getElement());
+        } else {
+            Scheduler.get().scheduleDeferred((Command) () -> relative.getParentElement().appendChild(getPopup().asWidget().getElement()));
+        }
+    }
+
+    public void fill() {
+        getSelector().fillFromBegin(this);
+    }
+
+    public void showPopup() {
+        getPopup().showNear(relative);
+        RootPanel.get().add(getPopup());
+    }
+
+    public void showPopup(PopperComposite.Placement placement, int skidding, int distance) {
+        getPopup().showNear(relative, placement, skidding, distance);
+        RootPanel.get().add(getPopup());
+    }
+
+    public void hidePopup() {
+        getPopup().hide();
+        RootPanel.get().remove(getPopup());
+    }
+
+    public void clearPopup() {
+        getPopup().getChildContainer().clear();
+    }
+
+    @Override
     protected void onSelectionChanged() {
         getPopup().showNear(relative);
         ValueChangeEvent.fire(this, getValue());
@@ -60,19 +108,6 @@ public abstract class PopupSingleSelector<T> extends AbstractPopupSelector<T> im
         return selector;
     }
 
-    @Override
-    public boolean isAttached() {
-        return true;
-    }
-
-    public void setRelative(UIObject relative) {
-        this.relative = relative;
-    }
-
-    public void fill() {
-        getSelector().fillFromBegin(this);
-    }
-
     protected SingleValuePageableSelector<T> selector = new SingleValuePageableSelector<>();
-    protected UIObject relative;
+    protected Element relative;
 }

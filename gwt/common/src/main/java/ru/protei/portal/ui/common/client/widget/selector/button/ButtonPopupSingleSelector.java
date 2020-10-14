@@ -15,11 +15,10 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.selector.AbstractPopupSelector;
-import ru.protei.portal.ui.common.client.selector.pageable.AbstractPageableSelector;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
+import ru.protei.portal.ui.common.client.selector.pageable.AbstractPageableSelector;
 import ru.protei.portal.ui.common.client.selector.pageable.SingleValuePageableSelector;
 import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -39,6 +38,7 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
         setEmptySearchText( lang.searchNoMatchesFound() );
         setSearchAutoFocus( true );
         setPageSize( CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE );
+        root.add(getPopup());
     }
 
     @Override
@@ -88,9 +88,14 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
 
     @UiHandler("button")
     public void onShowPopupClicked(ClickEvent event) {
-        getPopup().getChildContainer().clear();
-        getSelector().fillFromBegin(this);
-        getPopup().showNear(button);
+        if (getPopup().isVisible()) {
+            button.getElement().blur();
+        } else {
+            getPopup().getChildContainer().clear();
+            getSelector().fillFromBegin(this);
+            checkNoElements();
+            getPopup().showNear(button.getElement());
+        }
     }
 
     public void setEnsureDebugIdLabel( String company ) {

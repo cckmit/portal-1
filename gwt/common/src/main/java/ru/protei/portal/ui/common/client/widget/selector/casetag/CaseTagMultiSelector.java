@@ -2,19 +2,9 @@ package ru.protei.portal.ui.common.client.widget.selector.casetag;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseTag;
-import ru.protei.portal.core.model.helper.CollectionUtils;
-
-import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.input.InputPopupMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.input.MultipleInputSelector;
-
-import java.util.List;
 
 public class CaseTagMultiSelector extends InputPopupMultiSelector<CaseTag>
 {

@@ -18,6 +18,8 @@ public interface PersonDAO extends PortalBaseDAO<Person> {
 
     List<Person> getEmployeesAll();
 
+    List<Person> findEmployeeByEmail(String email);
+
     Person getEmployee(long id);
 
     Person getEmployeeByOldId(long id);

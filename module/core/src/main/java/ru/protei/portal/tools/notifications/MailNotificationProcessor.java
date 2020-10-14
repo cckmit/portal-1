@@ -118,19 +118,20 @@ public class MailNotificationProcessor {
             DiffCollectionResult<LinkData> publicLinks = convertToLinkData(selectPublicLinks(event.getLinks()), publicCaseUrl );
 
             List<CaseComment> comments = toList(commentReplacementInfoList, ReplaceLoginWithUsernameInfo::getObject);
+            Collection<Attachment> attachments = event.getExistingAttachments();
 
             Long lastMessageId = caseService.getAndIncrementEmailLastId(event.getCaseObjectId() ).orElseGet( r-> Result.ok(0L) ).getData();
 
             if ( isPrivateNotification(event) ) {
                 List<String> recipients = getNotifiersAddresses( privateRecipients );
 
-                performCaseObjectNotification( event, comments, privateLinks, lastMessageId, recipients, IS_PRIVATE_RECIPIENT, privateCaseUrl, privateRecipients );
+                performCaseObjectNotification( event, comments, attachments, privateLinks, lastMessageId, recipients, IS_PRIVATE_RECIPIENT, privateCaseUrl, privateRecipients );
 
             } else {
                 List<String> recipients = getNotifiersAddresses(notifiers);
 
-                performCaseObjectNotification( event, comments, privateLinks, lastMessageId, recipients, IS_PRIVATE_RECIPIENT, privateCaseUrl, privateRecipients );
-                performCaseObjectNotification( event, selectPublicComments( comments ), publicLinks, lastMessageId, recipients, !IS_PRIVATE_RECIPIENT, publicCaseUrl, publicRecipients );
+                performCaseObjectNotification( event, comments, attachments, privateLinks, lastMessageId, recipients, IS_PRIVATE_RECIPIENT, privateCaseUrl, privateRecipients );
+                performCaseObjectNotification( event, selectPublicComments( comments ), selectPublicAttachments(attachments), publicLinks, lastMessageId, recipients, !IS_PRIVATE_RECIPIENT, publicCaseUrl, publicRecipients );
             }
         } catch (Exception e) {
             log.error( "Can't sent mail notification with case id = {}. Exception: ", event.getCaseObjectId(), e );
@@ -206,6 +207,12 @@ public class MailNotificationProcessor {
                 .collect( Collectors.toList());
     }
 
+    private Collection<Attachment> selectPublicAttachments(Collection<Attachment> attachments) {
+        return stream(attachments)
+                .filter(not(Attachment::isPrivate))
+                .collect(Collectors.toList());
+    }
+
     private MimeMessageHeadersFacade makeHeaders( Long caseNumber, Long lastMessageId, int recipientAddressHashCode ) {
         return new MimeMessageHeadersFacade()
                 .withMessageId(makeCaseObjectMessageId(caseNumber, lastMessageId + 1, recipientAddressHashCode))
@@ -217,7 +224,7 @@ public class MailNotificationProcessor {
     }
 
     private void performCaseObjectNotification(
-            AssembledCaseEvent event, List<CaseComment> comments, DiffCollectionResult<LinkData> linksToTasks, Long lastMessageId, List<String> recipients,
+            AssembledCaseEvent event, List<CaseComment> comments, Collection<Attachment> attachments, DiffCollectionResult<LinkData> linksToTasks, Long lastMessageId, List<String> recipients,
             boolean isProteiRecipients, String crmCaseUrl, Collection<NotificationEntry> notifiers
     ) {
 
@@ -229,7 +236,7 @@ public class MailNotificationProcessor {
 
         CaseObject caseObject = event.getCaseObject();
 
-        PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(event, comments, linksToTasks, crmCaseUrl, recipients);
+        PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(event, comments, attachments, linksToTasks, crmCaseUrl, recipients);
         if (bodyTemplate == null) {
             log.error("Failed to prepare body template for caseId={}", caseObject.getId());
             return;
@@ -1063,19 +1070,17 @@ public class MailNotificationProcessor {
             return false;
         }
 
-        if (assembledCaseEvent.isPublicCommentsChanged()) {
-            return false;
-        }
-
-        if (publicChangesExistWithoutComments(assembledCaseEvent)) {
+        if (isPublicChangesExist(assembledCaseEvent)) {
             return false;
         }
 
         return true;
     }
 
-    private boolean publicChangesExistWithoutComments(AssembledCaseEvent assembledCaseEvent) {
-        return  assembledCaseEvent.isCaseImportanceChanged()
+    private boolean isPublicChangesExist(AssembledCaseEvent assembledCaseEvent) {
+        return  assembledCaseEvent.isPublicCommentsChanged()
+                || assembledCaseEvent.isPublicAttachmentsChanged()
+                || assembledCaseEvent.isCaseImportanceChanged()
                 || assembledCaseEvent.isCaseStateChanged()
                 || assembledCaseEvent.isPauseDateChanged()
                 || assembledCaseEvent.isInitiatorChanged()

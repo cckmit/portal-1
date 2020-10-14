@@ -43,9 +43,16 @@ import ru.protei.portal.core.report.projects.ReportProjectImpl;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceImpl;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceTaskHandlerImpl;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseTaskHandler;
+import ru.protei.portal.core.service.bootstrap.BootstrapService;
+import ru.protei.portal.core.service.bootstrap.BootstrapServiceImpl;
 import ru.protei.portal.core.service.events.*;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
+import ru.protei.portal.core.service.syncronization.EmployeeRegistrationYoutrackSynchronizer;
+import ru.protei.portal.core.service.syncronization.EmployeeRegistrationYoutrackSynchronizerImpl;
 import ru.protei.portal.core.service.template.TemplateService;
 import ru.protei.portal.core.service.template.TemplateServiceImpl;
 import ru.protei.portal.core.svn.document.DocumentSvnApi;
@@ -78,13 +85,6 @@ public class ServiceTestsConfiguration {
         executor.setMaxPoolSize(config.data().reportConfig().getThreadsNumber());
         return executor;
     }
-
-/*
-    @Bean
-    public ClientEventService getClientEventService() {
-        return new ClientEventServiceImpl();
-    }
-*/
 
     @Bean
     public FileStorage getFileStorage (@Autowired PortalConfig config){
@@ -366,7 +366,22 @@ public class ServiceTestsConfiguration {
 
     @Bean
     public AutoOpenCaseService getAutoOpenCaseService() {
-        return mock(AutoOpenCaseService.class);
+        return new AutoOpenCaseServiceImpl();
+    }
+
+    @Bean
+    public AutoOpenCaseTaskHandler getAutoOpenCaseTaskHandler() {
+        return new AutoOpenCaseServiceTaskHandlerImpl();
+    }
+
+    @Bean
+    public EmployeeRegistrationYoutrackSynchronizer getEmployeeRegistrationYoutrackSynchronizer() {
+        return new EmployeeRegistrationYoutrackSynchronizerImpl();
+    }
+
+    @Bean
+    public BootstrapService getBootstrapService() {
+        return new BootstrapServiceImpl();
     }
 
     @Bean

@@ -115,6 +115,8 @@ public abstract class EquipmentEditActivity
             return;
         }
 
+        view.saveProcessable().setProcessing(true);
+
         equipmentService.saveEquipment(equipment, new FluentCallback<Equipment>()
                 .withError(t -> {
                     if (t instanceof RequestFailedException) {
@@ -126,10 +128,14 @@ public abstract class EquipmentEditActivity
 
                     defaultErrorHandler.accept(t);
                     fireEvent(new NotifyEvents.Show(t.getMessage(), NotifyEvents.NotifyType.ERROR));
+
+                    view.saveProcessable().setProcessing(false);
                 })
                 .withSuccess(result -> {
                     fireEvent(new EquipmentEvents.ChangeModel());
                     fireEvent(new EquipmentEvents.Show(!isNew(this.equipment)));
+
+                    view.saveProcessable().setProcessing(false);
                 })
         );
     }

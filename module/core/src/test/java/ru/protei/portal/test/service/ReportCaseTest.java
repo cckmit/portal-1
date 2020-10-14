@@ -82,7 +82,7 @@ public class ReportCaseTest extends BaseServiceTest {
     public void withImportanceHistory() throws Exception {
         List<CaseObject> cases = initData();
 
-        CaseQuery caseQuery = makeCaseQuery();
+        CaseQuery caseQuery = makeCaseQuery(IMPORTANT, CRITICAL);
         caseQuery.setCheckImportanceHistory(true);
 
         List<CaseObjectReportRequest> caseObjectComments = ((ReportCaseImpl) reportCase).processChunk( caseQuery, new Report() );

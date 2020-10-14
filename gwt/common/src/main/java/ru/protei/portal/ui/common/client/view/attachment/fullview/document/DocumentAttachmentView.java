@@ -14,6 +14,7 @@ import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentList;
 import ru.protei.portal.ui.common.client.activity.attachment.fullview.AbstractAttachmentFullView;
+import ru.protei.portal.ui.common.client.widget.button.AnchorLikeButton;
 
 import java.util.Date;
 
@@ -23,7 +24,6 @@ import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 public class DocumentAttachmentView extends Composite implements AbstractAttachmentFullView {
     public DocumentAttachmentView() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        root.addDomHandler(event -> Window.open(url, null, null), ClickEvent.getType());
         setTestAttributes();
     }
 
@@ -34,7 +34,8 @@ public class DocumentAttachmentView extends Composite implements AbstractAttachm
 
     @Override
     public void setDownloadUrl(String url) {
-        this.url = url;
+        root.addDomHandler(event -> Window.open(url, null, null), ClickEvent.getType());
+        downloadButton.setHref(url);
     }
 
     @Override
@@ -75,18 +76,21 @@ public class DocumentAttachmentView extends Composite implements AbstractAttachm
         return deleteButton;
     }
 
+    @Override
+    public void setPrivateIconVisible(boolean isVisible) {
+        privateIcon.removeClassName("hide");
+
+        if (!isVisible) {
+            privateIcon.addClassName("hide");
+        }
+    }
+
     @UiHandler("deleteButton")
     public void onRemove(ClickEvent event) {
         event.stopPropagation();
         if (activity != null) {
             activity.onAttachmentRemove(this);
         }
-    }
-
-    @UiHandler("downloadButton")
-    public void onDownloadClicked(ClickEvent event) {
-        event.stopPropagation();
-        Window.open(url, null, null);
     }
 
     private void setTestAttributes() {
@@ -99,13 +103,15 @@ public class DocumentAttachmentView extends Composite implements AbstractAttachm
     @UiField
     Button deleteButton;
     @UiField
+    Element privateIcon;
+    @UiField
     Element fileName;
     @UiField
     SpanElement fileSize;
     @UiField
     SpanElement createdDate;
     @UiField
-    Button downloadButton;
+    AnchorLikeButton downloadButton;
     @UiField
     Image authorAvatar;
     @UiField
@@ -117,7 +123,6 @@ public class DocumentAttachmentView extends Composite implements AbstractAttachm
 
     private AbstractAttachmentList activity;
 
-    private String url;
     private DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat("dd.MM.yyyy HH:mm");
 
     interface FullAttachmentViewUiBinder extends UiBinder<HTMLPanel, DocumentAttachmentView> {}

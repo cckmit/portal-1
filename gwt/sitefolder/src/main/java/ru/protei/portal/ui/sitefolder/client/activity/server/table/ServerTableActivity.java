@@ -158,7 +158,7 @@ public abstract class ServerTableActivity implements
     @Override
     public void onOpenAppsClicked(Server value) {
         if (value != null) {
-            fireEvent(new SiteFolderAppEvents.Show(value.getId(), false));
+            fireEvent(new SiteFolderAppEvents.Show(makeEntityOption(value), false));
         }
     }
 
@@ -198,6 +198,10 @@ public abstract class ServerTableActivity implements
     @Override
     public void onFilterChanged() {
         loadTable();
+    }
+
+    private EntityOption makeEntityOption(Server server) {
+        return server == null ? null : new EntityOption(server.getName(), server.getId());
     }
 
     private void requestPlatformAndLoadTable() {

@@ -71,6 +71,9 @@ public class Report implements Serializable {
     @JdbcColumn(name = Columns.SYSTEM_ID)
     private String systemId;
 
+    @JdbcColumn(name = "human_readable")
+    private boolean isHumanReadable;
+
     public Long getId() {
         return id;
     }
@@ -215,6 +218,14 @@ public class Report implements Serializable {
         this.systemId = systemId;
     }
 
+    public boolean isHumanReadable() {
+        return isHumanReadable;
+    }
+
+    public void setHumanReadable(boolean humanReadable) {
+        isHumanReadable = humanReadable;
+    }
+
     @Override
     public String toString() {
         return "Report{" +
@@ -235,6 +246,7 @@ public class Report implements Serializable {
                 ", withLinkedIssues=" + withLinkedIssues +
                 ", isRemoved=" + isRemoved +
                 ", systemId='" + systemId + '\'' +
+                ", isHumanReadable=" + isHumanReadable +
                 '}';
     }
 

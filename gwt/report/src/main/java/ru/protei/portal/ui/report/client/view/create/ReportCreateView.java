@@ -13,7 +13,6 @@ import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.selector.report.additionalparams.ReportAdditionalParamsMultiSelector;
-import ru.protei.portal.ui.common.client.widget.switcher.Switcher;
 import ru.protei.portal.ui.report.client.activity.create.AbstractReportCreateActivity;
 import ru.protei.portal.ui.report.client.activity.create.AbstractReportCreateView;
 import ru.protei.portal.ui.report.client.widget.reporttype.ReportScheduledTypeButtonSelector;
