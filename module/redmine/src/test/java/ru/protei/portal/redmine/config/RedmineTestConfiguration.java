@@ -21,8 +21,6 @@ import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
 import ru.protei.portal.core.service.events.*;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
-import ru.protei.portal.core.service.pushevent.ClientEventService;
-import ru.protei.portal.core.service.pushevent.ClientEventServiceImpl;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.redmine.aspect.RedmineServiceLayerInterceptor;
 import ru.protei.portal.redmine.handlers.BackchannelEventHandler;

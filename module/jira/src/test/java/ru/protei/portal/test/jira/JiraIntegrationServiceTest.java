@@ -44,7 +44,11 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.getFirst;
 import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, JiraTestConfiguration.class})
+@ContextConfiguration(classes = {
+        CoreConfigurationContext.class,
+        JdbcConfigurationContext.class,
+        DatabaseConfiguration.class,
+        JiraTestConfiguration.class})
 public class JiraIntegrationServiceTest {
 
     @Autowired

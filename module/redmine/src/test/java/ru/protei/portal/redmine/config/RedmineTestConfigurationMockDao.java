@@ -279,6 +279,11 @@ public class RedmineTestConfigurationMockDao {
     }
 
     @Bean
+    public ProjectDAO getProjectDAO() {
+        return mock( ProjectDAO.class );
+    }
+
+    @Bean
     public ServerDAO getServerDAO() {
         return mock( ServerDAO.class );
     }

@@ -346,6 +346,11 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public ProjectDAO getProjectDAO() {
+        return new ProjectDAO_Impl();
+    }
+
+    @Bean
     public YoutrackService getYoutrackService() {
         return new YoutrackServiceImpl();
     }
