@@ -50,11 +50,6 @@ public class SelectorPopupWithSearch extends PopperComposite
     }
 
     @Override
-    public ComplexPanel getChildContainerAsComplexPanel() {
-        return childContainer;
-    }
-
-    @Override
     public HandlerRegistration addAddHandler( AddHandler handler) {
         return addHandler(handler, AddEvent.getType());
     }

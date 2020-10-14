@@ -23,8 +23,8 @@ public class MentioningTextArea extends DndAutoResizeTextArea implements TextAre
         ArrowSelectableSelectorPopup selectorPopup = new ArrowSelectableSelectorPopup(this);
 
         initUserLoginSelector(userLoginModel, userLoginSelector, selectorPopup);
-        addKeyDownHandler(createKeyDownHandler(userLoginSelector, selectorPopup));
 
+        addKeyDownHandler(createKeyDownHandler(userLoginSelector, selectorPopup, changeTimer));
         addClickHandler(event -> changeTimer.run());
     }
 
@@ -42,7 +42,7 @@ public class MentioningTextArea extends DndAutoResizeTextArea implements TextAre
         userLoginModel.setPersonFirstId(personId);
     }
 
-    private KeyDownHandler createKeyDownHandler(UserLoginSelector userLoginSelector, ArrowSelectableSelectorPopup selectorPopup) {
+    private KeyDownHandler createKeyDownHandler(UserLoginSelector userLoginSelector, ArrowSelectableSelectorPopup selectorPopup, Timer changeTimer) {
         return event -> {
             if (event.getNativeKeyCode() != KeyCodes.KEY_DOWN) {
                 changeTimer.schedule(200);

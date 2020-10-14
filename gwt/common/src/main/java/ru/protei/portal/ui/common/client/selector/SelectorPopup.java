@@ -16,8 +16,6 @@ public interface SelectorPopup extends IsWidget {
 
     HasWidgets getChildContainer();
 
-    ComplexPanel getChildContainerAsComplexPanel();
-
     void setSearchHandler( SearchHandler searchHandler );
 
     void showNear( Element showNear );

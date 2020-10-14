@@ -12,7 +12,7 @@ import static java.util.Optional.of;
 
 public class ArrowSelectableSelectorPopup extends SelectorPopupWithSearch {
     public ArrowSelectableSelectorPopup(TextAreaHandler textAreaHandler) {
-        childContainer.setStyleName("arrow-selectable");
+        childContainer.addStyleName("arrow-selectable");
         childContainer.addDomHandler(event -> textAreaHandler.focus(), MouseOverEvent.getType());
         childContainer.addDomHandler(createPopupKeyDownHandler(childContainer, textAreaHandler), KeyDownEvent.getType());
     }
