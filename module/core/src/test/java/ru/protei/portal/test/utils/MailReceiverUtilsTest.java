@@ -16,22 +16,15 @@ public class MailReceiverUtilsTest {
     private final String FILE_PATH_MAIL_REMOVED_TXT = "mail.removed.html";
     private final String FILE_PATH_MAIL_NOT_REMOVED_THUNDERBIRD_HTML = "mail.not.removed.thunderbird.html";
     private final String FILE_PATH_MAIL_NOT_REMOVED_MOBILEGMAIL_HTML = "mail.not.removed.mobilegmail.html";
-    private final String FILE_PATH_MAIL_DOT_HTML = "mail.dot.html";
-    private final String FILE_PATH_MAIL_DASH_HTML = "mail.dash.html";
 
     private String mailRemovedTxt;
     private String mailNotRemovedThunderbirdHtml;
     private String mailNotRemovedMobileGmailHtml;
-    private String mailDotHtml;
-    private String mailDashHtml;
-
     @Before
     public void readFiles() throws IOException {
         mailRemovedTxt = getFileContent(FILE_PATH_MAIL_REMOVED_TXT);
         mailNotRemovedThunderbirdHtml = getFileContent(FILE_PATH_MAIL_NOT_REMOVED_THUNDERBIRD_HTML);
         mailNotRemovedMobileGmailHtml = getFileContent(FILE_PATH_MAIL_NOT_REMOVED_MOBILEGMAIL_HTML);
-        mailDotHtml = getFileContent(FILE_PATH_MAIL_DOT_HTML);
-        mailDashHtml = getFileContent(FILE_PATH_MAIL_DASH_HTML);
     }
 
     @Test
@@ -58,24 +51,6 @@ public class MailReceiverUtilsTest {
                         "Без разделителя\n" +
                         "3\n" +
                         "4",
-                cleanedContent);
-    }
-
-    @Test
-    public void mailDotHtml() {
-        String cleanedContent = MailReceiverUtils.getCleanedContent(MIME_TEXT_HTML, mailDotHtml);
-        Assert.assertEquals("с точками \n" +
-                        "2 \n" +
-                        "3",
-                cleanedContent);
-    }
-
-    @Test
-    public void mailDashHtml() {
-        String cleanedContent = MailReceiverUtils.getCleanedContent(MIME_TEXT_HTML, mailDashHtml);
-        Assert.assertEquals("C запятыми   \n" +
-                        "2 \n" +
-                        "3",
                 cleanedContent);
     }
 

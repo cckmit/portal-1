@@ -153,42 +153,21 @@ public class MailReceiverUtils {
 
     static private String htmlClean(String content) {
         Document document = Jsoup.parse(content);
-        boolean isContentRemoved = removeById(document, CONTENT_ID_CRM_BODY_FTL);
-        if (!isContentRemoved) isContentRemoved = removeByClass(document, CONTENT_ID_CRM_BODY_FTL);
-        if (!isContentRemoved) isContentRemoved = removeByMark(document, CONTENT_BEGIN_MARK_CRM_BODY_FTL);
+        removeByMark(document, CONTENT_BEGIN_MARK_CRM_BODY_FTL);
         return Jsoup.clean(document.html(),
                 "", Whitelist.none(), new Document.OutputSettings().prettyPrint(false));
     }
 
-    static private boolean removeById(Document document, String id) {
-        Element elementById = document.getElementById(id);
-        if (elementById != null) {
-            elementById.remove();
-            return true;
-        }
-        return false;
-    }
-
-    static private boolean removeByClass(Document document, String elementClass) {
-        Elements elementsByClass = document.getElementsByClass(elementClass);
-        if (elementsByClass != null && !elementsByClass.isEmpty()) {
-            elementsByClass.remove();
-            return true;
-        }
-        return false;
-    }
-
-    static private boolean removeByMark(Document document, String beginMark) {
+    static private void removeByMark(Document document, String beginMark) {
         Elements beginMarkElements = document.getElementsContainingText(beginMark);
         if (beginMarkElements != null) {
             Element last = beginMarkElements.last();
-            Element element = last.nextElementSibling();
+            Elements element = last.siblingElements();
             if (element != null) {
                 element.remove();
-                return true;
             }
+            last.remove();
         }
-        return false;
     }
 
     static private String plainClean(String content) {
@@ -215,7 +194,6 @@ public class MailReceiverUtils {
     static private final String MIME_MULTIPART_ALTERNATIVE = "multipart/alternative";
     static public final String MIME_TEXT_HTML = "TEXT/HTML";
 
-    static private final String DOT_DASH_LINE = "\n *(\\.|,){7,} *\n";
     static private final String ANY_SYMBOL = "(\\s|\\S)*";
     static private final String DATE = "\\d{1,2}(\\.|\\\\|-)\\d{1,2}(\\.|\\\\|-)\\d{4}";
     static private final String GMAIL_DATE = "\\d{1,2} \\S{2,7}\\. \\d{4} г\\.";
@@ -223,27 +201,16 @@ public class MailReceiverUtils {
     static private final String EMAIL = "[-a-zA-Z0-9_\\.]+@[-a-zA-Z0-9_\\.]+\\.\\w{2,4}";
     static private final String THUNDERBIRD_REPLAY = DATE + "\\s+" + TIME + ",\\s+" + EMAIL;
     static private final String MOBILEGMAIL_REPLAY = GMAIL_DATE + "\\s+" + TIME + ANY_SYMBOL + EMAIL;
-    static private final String CONTENT_BEGIN_CRM_BODY_FTL = "===ContentBegin_crm\\.body\\.ftl===";
-    static private final String CONTENT_END_CRM_BODY_FTL = "===ContentEnd_crm\\.body\\.ftl===";
-    static private final String CONTENT_ID_CRM_BODY_FTL = "CrmMailContent";
     static private final String CONTENT_BEGIN_MARK_CRM_BODY_FTL = "===ContentBegin_crm.body.ftl===";
 
     static private final String CONTENT_NEW_LINE_DUPLICATE = "(\n+) *";
 
-    static private final String DOT_DASH_PATTERN_CONTENT_CRM_BODY_FTL = DOT_DASH_LINE + ANY_SYMBOL + "$";
-    static private final String THUNDERBIRD_PATTERN_CONTENT_CRM_BODY_FTL = THUNDERBIRD_REPLAY + ANY_SYMBOL + CONTENT_BEGIN_CRM_BODY_FTL + ANY_SYMBOL  + CONTENT_END_CRM_BODY_FTL;
-    static private final String MOBILEGMAIL_PATTERN_CONTENT_CRM_BODY_FTL = MOBILEGMAIL_REPLAY + ANY_SYMBOL + CONTENT_BEGIN_CRM_BODY_FTL + ANY_SYMBOL  + CONTENT_END_CRM_BODY_FTL;
-    static private final String BEGIN_END_PATTERN_CONTENT_CRM_BODY_FTL = CONTENT_BEGIN_CRM_BODY_FTL +  ANY_SYMBOL + CONTENT_END_CRM_BODY_FTL;
-    static private final String ONLY_BEGIN_PATTERN_CONTENT_CRM_BODY_FTL = CONTENT_BEGIN_CRM_BODY_FTL + ANY_SYMBOL + "$";
-    static private final String ONLY_END_PATTERN_CONTENT_CRM_BODY_FTL = CONTENT_END_CRM_BODY_FTL;
+    static private final String THUNDERBIRD_PATTERN_CONTENT_CRM_BODY_FTL = THUNDERBIRD_REPLAY + ".{0,10}\\s*$";
+    static private final String MOBILEGMAIL_PATTERN_CONTENT_CRM_BODY_FTL = MOBILEGMAIL_REPLAY + ".{0,10}\\s*$";
 
     static private final List<Pattern> crmContentPatterns = Arrays.asList(
-            Pattern.compile(DOT_DASH_PATTERN_CONTENT_CRM_BODY_FTL),
             Pattern.compile(THUNDERBIRD_PATTERN_CONTENT_CRM_BODY_FTL),
-            Pattern.compile(MOBILEGMAIL_PATTERN_CONTENT_CRM_BODY_FTL),
-            Pattern.compile(BEGIN_END_PATTERN_CONTENT_CRM_BODY_FTL),
-            Pattern.compile(ONLY_BEGIN_PATTERN_CONTENT_CRM_BODY_FTL),
-            Pattern.compile(ONLY_END_PATTERN_CONTENT_CRM_BODY_FTL)
+            Pattern.compile(MOBILEGMAIL_PATTERN_CONTENT_CRM_BODY_FTL)
     );
     static private final Pattern newLineDuplicatePattern = Pattern.compile(CONTENT_NEW_LINE_DUPLICATE);
 
