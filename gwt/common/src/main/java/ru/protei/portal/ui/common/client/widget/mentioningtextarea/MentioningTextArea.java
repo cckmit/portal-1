@@ -2,7 +2,8 @@ package ru.protei.portal.ui.common.client.widget.mentioningtextarea;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.user.client.Timer;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.selector.SelectorPopup;
 import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
@@ -18,13 +19,14 @@ public class MentioningTextArea extends DndAutoResizeTextArea implements TextAre
 
         this.userLoginModel = userLoginModel;
         this.userLoginSelector = userLoginSelector;
+        this.changeTimer = initTimer(userLoginModel, userLoginSelector);
 
         ArrowSelectableSelectorPopup selectorPopup = new ArrowSelectableSelectorPopup(this);
 
         initUserLoginSelector(userLoginModel, userLoginSelector, selectorPopup);
 
-        addKeyUpHandler(createKeyUpHandler(userLoginSelector, selectorPopup));
-        addClickHandler(event -> onValueChanged());
+        addKeyDownHandler(event -> onKeyDown(event, selectorPopup, changeTimer));
+        addClickHandler(event -> changeTimer.run());
     }
 
     @Override
@@ -34,29 +36,29 @@ public class MentioningTextArea extends DndAutoResizeTextArea implements TextAre
 
     @Override
     public void onValueChanged() {
-        onValueChanged(userLoginModel, userLoginSelector);
+        changeTimer.run();
     }
 
     public void setPersonId(Long personId) {
         userLoginModel.setPersonFirstId(personId);
     }
 
-    private KeyUpHandler createKeyUpHandler(UserLoginSelector userLoginSelector, ArrowSelectableSelectorPopup selectorPopup) {
-        return event -> {
-            if (event.getNativeKeyCode() != KeyCodes.KEY_DOWN) {
-                onValueChanged();
-                return;
-            }
+    private void onKeyDown(KeyDownEvent event, ArrowSelectableSelectorPopup selectorPopup,
+                           Timer changeTimer) {
 
-            if (!userLoginSelector.isPopupVisible()) {
-                onValueChanged();
-                return;
-            }
+        if (event.getNativeKeyCode() != KeyCodes.KEY_DOWN) {
+            changeTimer.schedule(200);
+            return;
+        }
 
-            event.preventDefault();
+        if (!selectorPopup.isVisible()) {
+            changeTimer.schedule(200);
+            return;
+        }
 
-            selectorPopup.focus();
-        };
+        event.preventDefault();
+
+        selectorPopup.focus();
     }
 
     private void initUserLoginSelector(final UserLoginModel userLoginModel,
@@ -81,18 +83,23 @@ public class MentioningTextArea extends DndAutoResizeTextArea implements TextAre
         });
     }
 
-    private void onValueChanged(final UserLoginModel userLoginModel, final UserLoginSelector userLoginSelector) {
-        PossibleLoginInfo possibleLoginInfo = possibleLogin(cursorPosition(getElement()));
+    private Timer initTimer(final UserLoginModel userLoginModel, final UserLoginSelector userLoginSelector) {
+        return new Timer() {
+            @Override
+            public void run() {
+                PossibleLoginInfo possibleLoginInfo = possibleLogin(cursorPosition(getElement()));
 
-        if (possibleLoginInfo == null) {
-            hidePopup(userLoginSelector);
-            return;
-        }
+                if (possibleLoginInfo == null) {
+                    hidePopup(userLoginSelector);
+                    return;
+                }
 
-        userLoginModel.setSearchString(possibleLoginInfo.possibleLogin);
-        showPopup(userLoginSelector);
+                userLoginModel.setSearchString(possibleLoginInfo.possibleLogin);
+                showPopup(userLoginSelector);
 
-        this.possibleLoginInfo = possibleLoginInfo;
+                MentioningTextArea.this.possibleLoginInfo = possibleLoginInfo;
+            }
+        };
     }
 
     private PossibleLoginInfo possibleLogin(int cursorPosition) {
@@ -137,6 +144,7 @@ public class MentioningTextArea extends DndAutoResizeTextArea implements TextAre
 
     private final UserLoginModel userLoginModel;
     private final UserLoginSelector userLoginSelector;
+    private final Timer changeTimer;
 
     private PossibleLoginInfo possibleLoginInfo;
 
