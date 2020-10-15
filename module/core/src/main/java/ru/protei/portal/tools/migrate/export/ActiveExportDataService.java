@@ -119,9 +119,8 @@ public class ActiveExportDataService implements ExportDataService {
                 logger.error("unable to register export-entry, type={}, obj-id={}", exportEntry.getEntityType(), exportEntry.getLocalId());
             }
         } catch (Exception exception) {
-            logger.error("unable to register export-entry, type={}, obj-id={}, exception={}",
-                    exportEntry.getEntityType(), exportEntry.getLocalId(), exception.getMessage());
-            throw exception;
+            logger.error("unable to register export-entry, type={}, obj-id={}", exportEntry.getEntityType(), exportEntry.getLocalId());
+            logger.error("unable to register export-entry", exception);
         }
 
         return false;
