@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -187,7 +186,7 @@ public class ExcelReportWriter implements
         values.add(issue.getImportanceLevel() != null ? issue.getImportanceLevel().getCode() : "");
         values.add(HelperFunc.isNotEmpty(issue.getStateName()) ? issue.getStateName() : "");
         if (withTags) values.add(String.join(",", toList(emptyIfNull(object.getCaseTags()), CaseTag::getName)));
-        if (withLinkedIssues) values.add(String.join(",", toList(emptyIfNull(object.getCaseLinks()), CaseLink::getRemoteId)));
+        if (withLinkedIssues) values.add(String.join(",", toList(emptyIfNull(object.getCaseLinks()), caseLink -> String.valueOf(caseLink.getCaseInfo().getCaseNumber()))));
         values.add(created != null ? created : "");
         values.add(opened != null ? opened : "");
         values.add(workaround != null ? workaround : "");
