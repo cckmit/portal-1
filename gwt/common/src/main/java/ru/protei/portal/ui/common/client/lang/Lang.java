@@ -3133,4 +3133,16 @@ public interface Lang extends Messages, ContactItemLang {
     String reservedIpReservationStart();
 
     String errUserNotFound();
+
+    String workTriggerPSGO();
+
+    String workTriggerNewRequirements();
+
+    String workTriggerPreCommissioningContract();
+
+    String workTriggerNewPreCommissioningRequirements();
+
+    String workTriggerMarketing();
+
+    String workTriggerOther();
 }
