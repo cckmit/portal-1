@@ -311,6 +311,11 @@ public enum En_ResultStatus {
     /**
      *  Недостаточно свободных IP адресов
      */
-    NRPE_NO_FREE_IPS
+    NRPE_NO_FREE_IPS,
+
+    /**
+     * Пользователь не найдем
+     */
+    USER_NOT_FOUND
     ;
 }

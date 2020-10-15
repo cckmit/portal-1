@@ -88,6 +88,7 @@ public class En_ResultStatusLang {
             case NRPE_IP_NON_AVAILABLE: return lang.errNRPEIpNonAvailable();
             case NRPE_ERROR: return lang.errNRPEError();
             case NRPE_NO_FREE_IPS: return lang.errNRPENoFreeIps();
+            case USER_NOT_FOUND: return lang.errUserNotFound();
             default: return lang.errUnknownResult();
         }
     }

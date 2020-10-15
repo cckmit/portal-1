@@ -3131,4 +3131,6 @@ public interface Lang extends Messages, ContactItemLang {
     String dutyTypeCOV();
 
     String reservedIpReservationStart();
+
+    String errUserNotFound();
 }

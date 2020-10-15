@@ -1,9 +1,6 @@
 package ru.protei.portal.core.service;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.safety.Whitelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +39,8 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.access.ProjectAccessUtil.*;
+import static ru.protei.portal.core.access.ProjectAccessUtil.canAccessProject;
+import static ru.protei.portal.core.access.ProjectAccessUtil.canAccessProjectPrivateElements;
 import static ru.protei.portal.core.model.dict.En_CaseType.CRM_SUPPORT;
 import static ru.protei.portal.core.model.dict.En_CaseType.PROJECT;
 import static ru.protei.portal.core.model.dict.En_Privilege.ISSUE_EDIT;
@@ -543,7 +541,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         List<Person> persons = personDAO.findContactByEmail(receivedMail.getSenderEmail());
         if (persons.isEmpty()) {
             log.warn("addCommentsReceivedByMail(): no found person person by mail ={}", receivedMail.getSenderEmail());
-            return error(En_ResultStatus.NOT_FOUND);
+            return error(En_ResultStatus.USER_NOT_FOUND);
         }
 
         if (persons.size() > 1) {
@@ -555,7 +553,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         List<UserLogin> userLogins = userLoginDAO.findByPersonId( person.getId() );
         if (userLogins.isEmpty()) {
             log.warn("addCommentsReceivedByMail(): no found user login by email ={}", receivedMail.getSenderEmail());
-            return error(En_ResultStatus.NOT_FOUND);
+            return error(En_ResultStatus.USER_NOT_FOUND);
         }
 
         jdbcManyRelationsHelper.fill( userLogins, "roles" );
@@ -583,7 +581,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
 
         log.info("addCommentsReceivedByMail(): process receivedMail={}", receivedMail);
-        CaseComment comment = createComment(caseObject, person, cleanHTMLContent(receivedMail.getContent()));
+        CaseComment comment = createComment(caseObject, person, receivedMail.getContent());
         caseCommentDAO.persist(comment);
 
         boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( comment.getCaseId() ) );
@@ -610,11 +608,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         company.setId(companyId);
         jdbcManyRelationsHelper.fill(company, "childCompanies");
         return company.getCompanyAndChildIds();
-    }
-
-    private String cleanHTMLContent(String htmlContent) {
-        return Jsoup.clean(Jsoup.parse(htmlContent).html(),
-                "", Whitelist.none(), new Document.OutputSettings().prettyPrint(false));
     }
 
     private Result<List<CaseComment>> getList(CaseCommentQuery query) {
@@ -894,8 +887,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     @Autowired
     private ClientEventService clientEventService;
 */
-
-
     private static final long CHANGE_LIMIT_TIME = 300000;  // 5 минут (в мсек)
-    private static Logger log = LoggerFactory.getLogger(CaseCommentServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(CaseCommentServiceImpl.class);
 }
