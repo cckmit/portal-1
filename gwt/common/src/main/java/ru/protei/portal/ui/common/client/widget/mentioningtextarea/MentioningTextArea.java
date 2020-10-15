@@ -1,40 +1,79 @@
 package ru.protei.portal.ui.common.client.widget.mentioningtextarea;
 
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.regexp.shared.RegExp;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.user.client.Timer;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.ui.common.client.selector.SelectorPopup;
+import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
+import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.TextAreaHandler;
 import ru.protei.portal.ui.common.client.widget.dndautoresizetextarea.DndAutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.selector.login.UserLoginModel;
 import ru.protei.portal.ui.common.client.widget.selector.login.UserLoginSelector;
 
-import static java.util.Optional.ofNullable;
-
-public class MentioningTextArea extends DndAutoResizeTextArea {
+public class MentioningTextArea extends DndAutoResizeTextArea implements TextAreaHandler {
     @Inject
-    public MentioningTextArea(UserLoginModel userLoginModel, UserLoginSelector userLoginSelector) {
+    public MentioningTextArea(UserLoginModel userLoginModel,
+                              UserLoginSelector userLoginSelector) {
+
         this.userLoginModel = userLoginModel;
+        this.userLoginSelector = userLoginSelector;
+        this.changeTimer = initTimer(userLoginModel, userLoginSelector);
 
-        initUserLoginSelector(userLoginModel, userLoginSelector);
-        final Timer changeTimer = initTimer(userLoginModel, userLoginSelector);
+        ArrowSelectableSelectorPopup selectorPopup = new ArrowSelectableSelectorPopup(this);
 
-        addKeyUpHandler(event -> changeTimer.schedule(200));
+        initUserLoginSelector(userLoginModel, userLoginSelector, selectorPopup);
+
+        addKeyDownHandler(event -> onKeyDown(event, selectorPopup, changeTimer));
         addClickHandler(event -> changeTimer.run());
+    }
+
+    @Override
+    public void focusTextArea() {
+        getElement().focus();
+    }
+
+    @Override
+    public void onValueChanged() {
+        changeTimer.run();
     }
 
     public void setPersonId(Long personId) {
         userLoginModel.setPersonFirstId(personId);
     }
 
-    private void initUserLoginSelector(final UserLoginModel userLoginModel, final UserLoginSelector userLoginSelector) {
+    private void onKeyDown(KeyDownEvent event, ArrowSelectableSelectorPopup selectorPopup,
+                           Timer changeTimer) {
+
+        if (event.getNativeKeyCode() != KeyCodes.KEY_DOWN) {
+            changeTimer.schedule(200);
+            return;
+        }
+
+        if (!selectorPopup.isVisible()) {
+            changeTimer.schedule(200);
+            return;
+        }
+
+        event.preventDefault();
+
+        selectorPopup.focus();
+    }
+
+    private void initUserLoginSelector(final UserLoginModel userLoginModel,
+                                       final UserLoginSelector userLoginSelector,
+                                       SelectorPopup selectorPopup) {
+
+        userLoginSelector.setPopup(selectorPopup);
         userLoginSelector.setAsyncSearchModel(userLoginModel);
         userLoginSelector.setRelative(getElement(), true);
+        userLoginSelector.setSearchEnabled(false);
         userLoginSelector.addValueChangeHandler(event -> {
-            int pointerPosition = pointerPosition(getElement());
+            int cursorPosition = cursorPosition(getElement());
 
             String beforeReplace = getValue().substring(0, possibleLoginInfo.index);
-            String afterReplace = getValue().substring(pointerPosition);
+            String afterReplace = getValue().substring(cursorPosition);
 
             setValue(beforeReplace + userLoginSelector.getValue().getUlogin() + " " + afterReplace);
 
@@ -48,14 +87,14 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
         return new Timer() {
             @Override
             public void run() {
-                PossibleLoginInfo possibleLoginInfo = possibleLogin(pointerPosition(getElement()));
+                PossibleLoginInfo possibleLoginInfo = possibleLogin(cursorPosition(getElement()));
 
                 if (possibleLoginInfo == null) {
                     hidePopup(userLoginSelector);
                     return;
                 }
 
-                updateModel(possibleLoginInfo.possibleLogin, userLoginModel);
+                userLoginModel.setSearchString(possibleLoginInfo.possibleLogin);
                 showPopup(userLoginSelector);
 
                 MentioningTextArea.this.possibleLoginInfo = possibleLoginInfo;
@@ -63,8 +102,8 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
         };
     }
 
-    private PossibleLoginInfo possibleLogin(int pointerPosition) {
-        String substring = getValue().substring(0, pointerPosition);
+    private PossibleLoginInfo possibleLogin(int cursorPosition) {
+        String substring = getValue().substring(0, cursorPosition);
 
         int spaceEnterPosition = Math.max(substring.lastIndexOf(' '), substring.lastIndexOf('\n'));
         int roundBracketsPosition = Math.max(substring.lastIndexOf('('), substring.lastIndexOf(')'));
@@ -74,12 +113,19 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
 
         final int possibleAtPosition = desiredPosition + 1; // "at" means "@"
 
-        String possibleMention = getValue().substring(possibleAtPosition, pointerPosition);
+        if (possibleAtPosition >= substring.length()) {
+            return null;
+        }
 
-        return ofNullable(MENTION_REGEXP.exec(possibleMention))
-                .map(matchResult -> matchResult.getGroup(0).equals(possibleMention) ? matchResult : null)
-                .map(matchResult -> new PossibleLoginInfo(matchResult.getGroup(0).substring(1), possibleAtPosition + 1))
-                .orElse(null);
+        if (substring.charAt(possibleAtPosition) != '@') {
+            return null;
+        }
+
+        int loginStartPosition = possibleAtPosition + 1; // without "@" at the beginning
+
+        String possibleLogin = getValue().substring(loginStartPosition, cursorPosition);
+
+        return new PossibleLoginInfo(possibleLogin, loginStartPosition);
     }
 
     private void showPopup(UserLoginSelector userLoginSelector) {
@@ -92,15 +138,13 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
         userLoginSelector.hidePopup();
     }
 
-    private void updateModel(String searchString, UserLoginModel userLoginModel) {
-        userLoginModel.setSearchString(searchString);
-    }
-
-    private native int pointerPosition(Element textArea) /*-{
+    private native int cursorPosition(Element textArea) /*-{
         return textArea.selectionStart;
     }-*/;
 
     private final UserLoginModel userLoginModel;
+    private final UserLoginSelector userLoginSelector;
+    private final Timer changeTimer;
 
     private PossibleLoginInfo possibleLoginInfo;
 
@@ -113,6 +157,4 @@ public class MentioningTextArea extends DndAutoResizeTextArea {
             this.index = index;
         }
     }
-
-    private static final RegExp MENTION_REGEXP = RegExp.compile(CrmConstants.Masks.MENTION);
 }
