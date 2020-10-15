@@ -14,15 +14,13 @@ import javax.mail.*;
 import javax.mail.internet.*;
 import javax.mail.search.FlagTerm;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.stream;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.util.MailReceiverUtils.*;
 
 public class MailReceiverServiceImpl implements MailReceiverService {
@@ -206,10 +204,15 @@ public class MailReceiverServiceImpl implements MailReceiverService {
             }
             Long caseNo = parseCaseNo(message);
             String senderEmail = parseSenderEmail(message);
-            MailContent content = (caseNo != null && senderEmail != null) ? parseContent(message) : null;
-            return Optional.of(new ReceivedMail(caseNo, senderEmail,
-                    content != null ? content.getContent() : null,
-                    content != null ? content.getContentType() : null));
+            List<MailContent> mailContents = (caseNo != null && senderEmail != null) ? parseContent(message) : null;
+            String mailContent = null;
+            if (isNotEmpty(mailContents)) {
+                mailContent = mailContents.stream()
+                        .filter(Objects::nonNull)
+                        .map(content -> getCleanedContent(content.getContentType(), content.getContent()))
+                        .collect(Collectors.joining("\n"));
+            }
+            return Optional.of(new ReceivedMail(caseNo, senderEmail, mailContent));
 
         } catch (MessagingException | IOException e) {
             log.error("parseMessage(): fail, e = {}", e.getMessage());

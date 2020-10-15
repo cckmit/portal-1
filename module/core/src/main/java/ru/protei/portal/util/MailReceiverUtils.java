@@ -13,33 +13,32 @@ import javax.mail.internet.InternetAddress;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class MailReceiverUtils {
-    static public MailContent parseContent(Part part) throws IOException, MessagingException {
+    static public List<MailContent> parseContent(Part part) throws IOException, MessagingException {
         Object content = part.getContent();
         if (content == null) {
             return null;
         }
         ContentType contentType = new ContentType(part.getContentType());
         if (contentType.getPrimaryType().equals(MIME_TEXT_TYPE)) {
-            return new MailContent((String)content, contentType.getBaseType());
+            return Collections.singletonList(new MailContent((String) content, contentType.getBaseType()));
         } else if (content instanceof Part) {
             return parseContent((Part)content);
         } else if (content instanceof Multipart) {
             return parseContent((Multipart) content);
         } else if (content instanceof InputStream) {
-            return new MailContent(IOUtils.toString((InputStream) content, StandardCharsets.UTF_8), contentType.getBaseType());
+            return Collections.singletonList(new MailContent(IOUtils.toString((InputStream) content, StandardCharsets.UTF_8), contentType.getBaseType()));
         }
         return null;
     }
 
-    static private MailContent parseContent(Multipart multipart) throws MessagingException {
+    static private List<MailContent> parseContent(Multipart multipart) throws MessagingException {
         if (new ContentType(multipart.getContentType()).match(MIME_MULTIPART_ALTERNATIVE)) {
             return extractMostRichAlternativeContent(multipart);
         } else {
@@ -47,28 +46,28 @@ public class MailReceiverUtils {
         }
     }
 
-    static private MailContent extractContentAll(Multipart multipart) throws MessagingException {
+    static private List<MailContent> extractContentAll(Multipart multipart) throws MessagingException {
         return IntStream.range(0, multipart.getCount())
                 .mapToObj(i -> parseContentBodyPart(multipart, i))
-                .findAny()
-                .orElse(null);
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
     }
 
-    static private MailContent extractMostRichAlternativeContent(Multipart multipart) throws MessagingException {
+    static private List<MailContent> extractMostRichAlternativeContent(Multipart multipart) throws MessagingException {
         int size = multipart.getCount();
-        return IntStream.range(0, size)
+        return Collections.singletonList(IntStream.range(0, size)
                 .mapToObj(i -> parseContentBodyPart(multipart, (size - 1) - i))
+                .flatMap(Collection::stream)
                 .filter(Objects::nonNull)
-                .findAny()
-                .orElse(null);
+                .findFirst()
+                .orElse(null));
     }
 
-    static private MailContent parseContentBodyPart(Multipart multipart, int i) {
+    static private List<MailContent> parseContentBodyPart(Multipart multipart, int i) {
         try {
             return parseContent(multipart.getBodyPart(i));
         } catch (MessagingException | IOException e) {
-            e.printStackTrace();
-            return null;
+            throw new RuntimeException(e);
         }
     }
 
