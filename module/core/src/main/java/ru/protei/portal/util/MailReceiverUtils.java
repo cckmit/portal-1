@@ -59,7 +59,8 @@ public class MailReceiverUtils {
                 .flatMap(Collection::stream)
                 .filter(Objects::nonNull)
                 .findFirst()
-                .map(Collections::singletonList).orElseGet(ArrayList::new);
+                .map(Collections::singletonList)
+                .orElseGet(ArrayList::new);
     }
 
     static private List<MailContent> parseContentBodyPart(Multipart multipart, int i) {

@@ -60,6 +60,10 @@ public class CollectionUtils {
         return null == collection ? Stream.empty() : collection.stream();
     }
 
+    public static <T> Stream<T> stream(T[] array) {
+        return null == array ? Stream.empty() : stream(array);
+    }
+
     public static <E> boolean contains( Collection<E> collection, E element ) {
         return null != collection ? collection.contains( element ) : false;
     }
