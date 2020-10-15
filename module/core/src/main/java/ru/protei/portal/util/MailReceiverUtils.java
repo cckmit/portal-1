@@ -1,6 +1,5 @@
 package ru.protei.portal.util;
 
-import org.apache.commons.io.IOUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -12,7 +11,6 @@ import javax.mail.internet.ContentType;
 import javax.mail.internet.InternetAddress;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,19 +21,20 @@ public class MailReceiverUtils {
     static public List<MailContent> parseContent(Part part) throws IOException, MessagingException {
         Object content = part.getContent();
         if (content == null) {
-            return null;
+            return new ArrayList<>();
         }
         ContentType contentType = new ContentType(part.getContentType());
-        if (contentType.getPrimaryType().equals(MIME_TEXT_TYPE)) {
+        if (content instanceof String) {
             return Collections.singletonList(new MailContent((String) content, contentType.getBaseType()));
         } else if (content instanceof Part) {
             return parseContent((Part)content);
         } else if (content instanceof Multipart) {
             return parseContent((Multipart) content);
         } else if (content instanceof InputStream) {
-            return Collections.singletonList(new MailContent(IOUtils.toString((InputStream) content, StandardCharsets.UTF_8), contentType.getBaseType()));
+            // пока поддерживаем только текст, аттачменты пропускаем
+            return new ArrayList<>();
         }
-        return null;
+        return new ArrayList<>();
     }
 
     static private List<MailContent> parseContent(Multipart multipart) throws MessagingException {
@@ -55,12 +54,12 @@ public class MailReceiverUtils {
 
     static private List<MailContent> extractMostRichAlternativeContent(Multipart multipart) throws MessagingException {
         int size = multipart.getCount();
-        return Collections.singletonList(IntStream.range(0, size)
+        return IntStream.range(0, size)
                 .mapToObj(i -> parseContentBodyPart(multipart, (size - 1) - i))
                 .flatMap(Collection::stream)
                 .filter(Objects::nonNull)
                 .findFirst()
-                .orElse(null));
+                .map(Collections::singletonList).orElseGet(ArrayList::new);
     }
 
     static private List<MailContent> parseContentBodyPart(Multipart multipart, int i) {
