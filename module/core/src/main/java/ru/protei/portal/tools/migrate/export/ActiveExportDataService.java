@@ -110,14 +110,18 @@ public class ActiveExportDataService implements ExportDataService {
 
         ExportSybEntry exportEntry = new ExportSybEntry(event.getAuditObject().getEntryInfo(),
                 config.data().legacySysConfig().getInstanceId());
-
-        if (exportSybEntryDAO.persist(exportEntry) != null) {
-            logger.debug("registered exported entry for type {}, obj-id={}, reg-id={}", exportEntry.getEntityType(), exportEntry.getLocalId(), exportEntry.getId());
-            queue.offer(exportEntry);
-            return true;
-        }
-        else {
-            logger.error("unable to register export-entry, type={}, obj-id={}", exportEntry.getEntityType(), exportEntry.getLocalId());
+        try {
+            if (exportSybEntryDAO.persist(exportEntry) != null) {
+                logger.debug("registered exported entry for type {}, obj-id={}, reg-id={}", exportEntry.getEntityType(), exportEntry.getLocalId(), exportEntry.getId());
+                queue.offer(exportEntry);
+                return true;
+            } else {
+                logger.error("unable to register export-entry, type={}, obj-id={}", exportEntry.getEntityType(), exportEntry.getLocalId());
+            }
+        } catch (Exception exception) {
+            logger.error("unable to register export-entry, type={}, obj-id={}, exception={}",
+                    exportEntry.getEntityType(), exportEntry.getLocalId(), exception.getMessage());
+            throw exception;
         }
 
         return false;
