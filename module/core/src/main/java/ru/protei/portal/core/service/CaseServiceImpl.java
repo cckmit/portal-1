@@ -833,13 +833,6 @@ public class CaseServiceImpl implements CaseService {
         return allowedCompanies.isEmpty() ? new ArrayList<>( allowedCompaniesIds ) : allowedCompanies;
     }
 
-    private boolean isCaseChanged(CaseObject co1, CaseObject co2){
-        // without links
-        return     !Objects.equals(co1.getName(), co2.getName())
-                || !Objects.equals(co1.getInfo(), co2.getInfo())
-                || !Objects.equals(co1.isPrivateCase(), co2.isPrivateCase());
-    }
-
     private boolean isCaseMetaChanged(CaseObjectMeta co1, CaseObjectMeta co2){
         // without state
         // without imp level
@@ -853,13 +846,6 @@ public class CaseServiceImpl implements CaseService {
                 || !Objects.equals(co1.getManagerCompanyId(), co2.getManagerCompanyId())
                 || !Objects.equals(co1.getManagerId(), co2.getManagerId())
                 || !Objects.equals(co1.getPlatformId(), co2.getPlatformId());
-    }
-
-    private boolean isLinksChanged( DiffCollectionResult<CaseLink> mergeLinks ){
-        if(mergeLinks == null) return false;
-        if(!isEmpty(mergeLinks.getAddedEntries())) return true;
-        if(!isEmpty(mergeLinks.getRemovedEntries())) return true;
-        return false;
     }
 
     private void applyCaseByScope( AuthToken token, CaseObject caseObject ) {
@@ -882,11 +868,6 @@ public class CaseServiceImpl implements CaseService {
     private boolean isStateReopenNotAllowed(CaseObjectMeta oldMeta, CaseObjectMeta newMeta) {
         return isTerminalState(oldMeta.getStateId()) &&
               !isTerminalState(newMeta.getStateId());
-    }
-
-    private boolean isPersonHasGrantAccess(AuthToken token, En_Privilege privilege) {
-        Set<UserRole> roles = getRoles(token);
-        return policyService.hasGrantAccessFor(roles, privilege);
     }
 
     private Set<UserRole> getRoles(AuthToken token) {
@@ -950,15 +931,15 @@ public class CaseServiceImpl implements CaseService {
 
     private boolean validateFields(CaseObject caseObject) {
         if (caseObject == null) {
-            log.error("Case object cannot be null");
+            log.warn("Case object cannot be null");
             return false;
         }
         if (StringUtils.isEmpty(caseObject.getName())) {
-            log.error("Name must be specified. caseId={}", caseObject.getId());
+            log.warn("Name must be specified. caseId={}", caseObject.getId());
             return false;
         }
         if (caseObject.getType() == null) {
-            log.error("Type must be specified. caseId={}", caseObject.getId());
+            log.warn("Type must be specified. caseId={}", caseObject.getId());
             return false;
         }
         return true;
@@ -966,50 +947,50 @@ public class CaseServiceImpl implements CaseService {
 
     private boolean validateMetaFields(AuthToken token, CaseObjectMeta caseMeta) {
         if (caseMeta == null) {
-            log.error("Case meta cannot be null");
+            log.warn("Case meta cannot be null");
             return false;
         }
         if (caseMeta.getImpLevel() == null) {
-            log.error("Importance level must be specified. caseId={}", caseMeta.getId());
+            log.warn("Importance level must be specified. caseId={}", caseMeta.getId());
             return false;
         }
         if (En_ImportanceLevel.find(caseMeta.getImpLevel()) == null) {
-            log.error("Unknown importance level. caseId={}, importance={}", caseMeta.getId(), caseMeta.getImpLevel());
+            log.warn("Unknown importance level. caseId={}, importance={}", caseMeta.getId(), caseMeta.getImpLevel());
             return false;
         }
         if (!isStateValid(caseMeta.getStateId(), caseMeta.getManagerId(), caseMeta.getPauseDate())) {
-            log.error("State is not valid. caseId={}", caseMeta.getId());
+            log.warn("State is not valid. caseId={}", caseMeta.getId());
             return false;
         }
         if (caseMeta.getManagerCompanyId() == null) {
-            log.error("Manager company must be specified. caseId={}", caseMeta.getId());
+            log.warn("Manager company must be specified. caseId={}", caseMeta.getId());
             return false;
         }
         if (caseMeta.getManagerId() != null && !personBelongsToCompany(caseMeta.getManagerId(), caseMeta.getManagerCompanyId())) {
-            log.error("Manager doesn't belong to company. caseId={}, managerId={}, managerCompanyId={}",
+            log.warn("Manager doesn't belong to company. caseId={}, managerId={}, managerCompanyId={}",
                     caseMeta.getId(), caseMeta.getManagerId(), caseMeta.getManagerCompanyId());
             return false;
         }
         if (caseMeta.getManagerId() != null && caseMeta.getProductId() == null) {
-            log.error("Manager must be specified with product. caseId={}", caseMeta.getId());
+            log.warn("Manager must be specified with product. caseId={}", caseMeta.getId());
             return false;
         }
         if (caseMeta.getInitiatorCompanyId() == null) {
-            log.error("Initiator company must be specified. caseId={}", caseMeta.getId());
+            log.warn("Initiator company must be specified. caseId={}", caseMeta.getId());
             return false;
         }
         if (caseMeta.getInitiatorId() != null && !personBelongsToCompany( caseMeta.getInitiatorId(), caseMeta.getInitiatorCompanyId() )) {
-            log.error("Initiator doesn't belong to company. caseId={}, initiatorId={}, initiatorCompanyId={}",
+            log.warn("Initiator doesn't belong to company. caseId={}, initiatorId={}, initiatorCompanyId={}",
                     caseMeta.getId(), caseMeta.getInitiatorId(), caseMeta.getInitiatorCompanyId());
             return false;
         }
         if (caseMeta.getPlatformId() != null && !platformBelongsToCompany(token, caseMeta.getPlatformId(), caseMeta.getInitiatorCompanyId())) {
-            log.error("Platform doesn't belong to initiator company. caseId={}, platformId={}, initiatorCompanyId={}",
+            log.warn("Platform doesn't belong to initiator company. caseId={}, platformId={}, initiatorCompanyId={}",
                     caseMeta.getId(), caseMeta.getPlatformId(), caseMeta.getInitiatorCompanyId());
             return false;
         }
         if (!isProductValid(token, caseMeta.getProductId(), caseMeta.getPlatformId(), caseMeta.getInitiatorCompanyId())) {
-            log.error("Product is not valid. caseId={}", caseMeta.getId());
+            log.warn("Product is not valid. caseId={}", caseMeta.getId());
             return false;
         }
         return true;
@@ -1023,15 +1004,15 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if (productId == null) {
-            log.error("Product must be specified with company with auto open issue");
+            log.warn("Product must be specified with company with auto open issue");
             return false;
         }
 
         if (!isProductContainsInPlatformsProducts(token, productId, platformId, companyId)) {
             if (platformId != null) {
-                log.error("Product must be present in specified platform. platformId={}", platformId);
+                log.warn("Product must be present in specified platform. platformId={}", platformId);
             } else {
-                log.error("Product must be present at least in one company platform. companyId={}", companyId);
+                log.warn("Product must be present at least in one company platform. companyId={}", companyId);
             }
             return false;
         }
@@ -1093,7 +1074,7 @@ public class CaseServiceImpl implements CaseService {
         if (!(listOf(CrmConstants.State.CREATED, CrmConstants.State.CANCELED)
                 .contains(caseStateId)) && managerId == null) {
 
-            log.error("State must be CREATED or CANCELED without manager");
+            log.warn("State must be CREATED or CANCELED without manager");
             return false;
         }
 
@@ -1101,7 +1082,7 @@ public class CaseServiceImpl implements CaseService {
             boolean isPauseDateValid = pauseDate != null && (System.currentTimeMillis() < pauseDate);
 
             if (!isPauseDateValid) {
-                log.error("Pause date was passed");
+                log.warn("Pause date was passed");
             }
 
             return isPauseDateValid;

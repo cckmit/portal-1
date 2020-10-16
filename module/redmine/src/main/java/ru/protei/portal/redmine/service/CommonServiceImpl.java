@@ -4,6 +4,7 @@ import com.taskadapter.redmineapi.bean.Journal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.controller.cloud.FileController;
@@ -34,6 +35,45 @@ import static ru.protei.portal.api.struct.Result.ok;
 
 public final class CommonServiceImpl implements CommonService {
 
+    @Autowired
+    private FileController fileController;
+
+    @Autowired
+    private CaseCommentDAO caseCommentDAO;
+
+    @Autowired
+    private AttachmentDAO attachmentDAO;
+
+    @Autowired
+    private RedminePriorityMapEntryDAO priorityMapEntryDAO;
+
+    @Autowired
+    private RedmineToCrmStatusMapEntryDAO toCrmStatusMapEntryDAO;
+
+    @Autowired
+    private RedmineStatusMapEntryDAO statusMapEntryDAO;
+
+    @Autowired
+    private CaseObjectDAO caseObjectDAO;
+
+    @Autowired
+    private ExternalCaseAppDAO externalCaseAppDAO;
+
+    @Autowired
+    private RedmineEndpointDAO endpointDAO;
+
+    @Autowired
+    private PersonDAO personDAO;
+
+    @Autowired
+    private ContactItemDAO contactItemDAO;
+
+    @Autowired
+    private JdbcManyRelationsHelper jdbcManyRelationsHelper;
+
+    @Autowired
+    PlatformDAO platformDAO;
+
     @Override
     public Result<Long> saveAttachment( Attachment attachment, Person author, HttpInputSource httpInputSource, Long fileSize, String contentType, Long caseObjId ) {
         Long id;
@@ -59,6 +99,7 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
+    @Transactional
     public Result<Long> saveCase( CaseObject obj ) {
         Long id = caseObjectDAO.insertCase(obj);
         if (id == null) return error( En_ResultStatus.NOT_FOUND );
@@ -66,6 +107,7 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
+    @Transactional
     public Result<Long> mergeExtAppData( ExternalCaseAppData appData ) {
         if(externalCaseAppDAO.merge(appData)) return error( En_ResultStatus.NOT_UPDATED );
         return ok(appData.getId());
@@ -97,28 +139,21 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
+    @Transactional
     public Result<Boolean> updateCreatedOn( RedmineEndpoint endpoint ) {
          if(!endpointDAO.updateCreatedOn( endpoint )) return error( En_ResultStatus.NOT_UPDATED );
          return ok(true);
     }
 
     @Override
+    @Transactional
     public Result<Boolean> updateUpdatedOn( RedmineEndpoint endpoint ) {
         if(!endpointDAO.updateUpdatedOn( endpoint )) return error( En_ResultStatus.NOT_UPDATED );
         return ok(true);
     }
 
-    private CaseComment createAndStoreComment(Date creationDate, String text, Person author, Long caseId) {
-        final CaseComment comment = new CaseComment();
-        comment.setCreated(creationDate);
-        comment.setAuthor(author);
-        comment.setText(text);
-        comment.setCaseId(caseId);
-        caseCommentDAO.persist(comment);
-        return comment;
-    }
-
     @Override
+    @Transactional
     public Result<Long> createAndStoreStateComment( Date created, Long authorId, Long stateId, Long caseId) {
         final CaseComment statusComment = new CaseComment();
         statusComment.setCreated(created);
@@ -131,6 +166,7 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
+    @Transactional
     public Result<Long> createAndStoreImportanceComment( Date created, Long authorId, Integer importance, Long caseId) {
         final CaseComment stateChangeMessage = new CaseComment();
         stateChangeMessage.setCreated(created);
@@ -143,6 +179,7 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
+    @Transactional
     public Result<Long> updateCaseStatus( CaseObject object, Long statusMapId, Date creationOn, String value, Person author ) {
         Integer newStatus = parseToInteger( value );
         logger.debug( "Trying to get portal status id matching with redmine {}", newStatus );
@@ -177,6 +214,7 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
+    @Transactional
     public Result<Long> updateCasePriority( CaseObject object, Long priorityMapId, Journal journal, String value, Person author ) {
         Integer newPriority = parseToInteger( value );
         logger.debug( "Trying to get portal priority level id matching with redmine {}", value );
@@ -209,6 +247,7 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
+    @Transactional
     public Result<Long> updateCaseDescription( CaseObject object, String value, Person author ) {
 
         final DiffResult<String> infoDiff = new DiffResult<>(object.getInfo(), value);
@@ -230,6 +269,7 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
+    @Transactional
     public Result<Long> updateCaseSubject( CaseObject object, String value, Person author ) {
         final DiffResult<String> nameDiff = new DiffResult<>(object.getName(), value);
 
@@ -250,6 +290,7 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
+    @Transactional
     public Result<Long> updateComment( Long objectId, Date creationDate, String text, Person author ){
         CaseComment caseComment = createAndStoreComment( creationDate,  text, author, objectId);
         logger.info("Added new case comment id={} to case with id {}",caseComment.getId(),  objectId);
@@ -297,15 +338,6 @@ public final class CommonServiceImpl implements CommonService {
         return new CachedPersonMapper(personDAO, contactItemDAO, jdbcManyRelationsHelper, endpoint.getCompanyId(), endpoint.getDefaultUserLocalId(), null);
     }
 
-    private Integer parseToInteger(String value) {
-        try {
-            return Integer.parseInt(value);
-        } catch (NumberFormatException e) {
-            logger.warn("Can't parse value {} to Integer", value);
-            return null;
-        }
-    }
-
     @Override
     public Result<Set<Integer>> getExistingAttachmentsHashCodes( long caseObjId ) {
         return ok( attachmentDAO.getAttachmentsByCaseId(caseObjId).stream()
@@ -320,44 +352,24 @@ public final class CommonServiceImpl implements CommonService {
         return platformDAO.listByQuery(query);
     }
 
-    @Autowired
-    private FileController fileController;
+    private CaseComment createAndStoreComment(Date creationDate, String text, Person author, Long caseId) {
+        final CaseComment comment = new CaseComment();
+        comment.setCreated(creationDate);
+        comment.setAuthor(author);
+        comment.setText(text);
+        comment.setCaseId(caseId);
+        caseCommentDAO.persist(comment);
+        return comment;
+    }
 
-    @Autowired
-    private CaseCommentDAO caseCommentDAO;
-
-    @Autowired
-    private AttachmentDAO attachmentDAO;
-
-    @Autowired
-    private RedminePriorityMapEntryDAO priorityMapEntryDAO;
-
-    @Autowired
-    private RedmineToCrmStatusMapEntryDAO toCrmStatusMapEntryDAO;
-
-    @Autowired
-    private RedmineStatusMapEntryDAO statusMapEntryDAO;
-
-    @Autowired
-    private CaseObjectDAO caseObjectDAO;
-
-   @Autowired
-    private ExternalCaseAppDAO externalCaseAppDAO;
-
-    @Autowired
-    private RedmineEndpointDAO endpointDAO;
-
-    @Autowired
-    private PersonDAO personDAO;
-
-    @Autowired
-    private ContactItemDAO contactItemDAO;
-
-    @Autowired
-    private JdbcManyRelationsHelper jdbcManyRelationsHelper;
-
-    @Autowired
-    PlatformDAO platformDAO;
+    private Integer parseToInteger(String value) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            logger.warn("Can't parse value {} to Integer", value);
+            return null;
+        }
+    }
 
     private final static Logger logger = LoggerFactory.getLogger(CommonServiceImpl.class);
 }
