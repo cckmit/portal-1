@@ -86,10 +86,9 @@ public class AssemblerProjectServiceImpl implements AssemblerProjectService {
             return ok(event);
         }
 
-        CaseObject caseObject = caseObjectDAO.get(event.getProjectId());
-        jdbcManyRelationsHelper.fillAll(caseObject);
+        Project project = projectDAO.get(event.getProjectId());
+        jdbcManyRelationsHelper.fillAll(project);
 
-        Project project = Project.fromCaseObject(caseObject);
         event.setNewProjectState(project);
 
         return ok(event);
@@ -148,7 +147,7 @@ public class AssemblerProjectServiceImpl implements AssemblerProjectService {
     @Autowired
     PersonDAO personDAO;
     @Autowired
-    CaseObjectDAO caseObjectDAO;
+    ProjectDAO projectDAO;
     @Autowired
     CaseCommentDAO caseCommentDAO;
     @Autowired
@@ -157,7 +156,6 @@ public class AssemblerProjectServiceImpl implements AssemblerProjectService {
     AttachmentDAO attachmentDAO;
     @Autowired
     PortalScheduleTasks scheduledTasksService;
-
     @Autowired
     EventPublisherService publisherService;
     @Autowired

@@ -1,7 +1,6 @@
 package ru.protei.portal.core.model.dto;
 
 import ru.protei.portal.core.model.dict.En_CustomerType;
-import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.ProductShortView;
@@ -106,7 +105,7 @@ public class ProjectInfo implements Serializable {
         this.technicalSupportValidity = technicalSupportValidity;
     }
 
-    public static ProjectInfo fromCaseObject(CaseObject project) {
+    public static ProjectInfo fromProject(Project project) {
         if (project == null)
             return null;
 
@@ -114,11 +113,11 @@ public class ProjectInfo implements Serializable {
                 project.getId(),
                 project.getName(),
                 project.getCreated(),
-                En_CustomerType.find(project.getLocal()),
+                project.getCustomerType(),
                 CollectionUtils.isEmpty(project.getLocations()) ? null : EntityOption.fromLocation(project.getLocations().get(0).getLocation()),
-                project.getProduct() == null ? null : new EntityOption(project.getProduct().getName(), project.getProduct().getId()),
-                project.getManager() == null ? null : new EntityOption(project.getManager().getDisplayShortName(), project.getManagerId()),
-                project.getInitiatorCompany() == null ? null : new EntityOption(project.getInitiatorCompany().getCname(), project.getInitiatorCompanyId()),
+                project.getProductDirectionId() == null || project.getProductDirectionName() == null ? null : new EntityOption(project.getProductDirectionName(), project.getProductDirectionId()),
+                project.getManagerId() == null || project.getManagerName() == null ? null : new EntityOption(project.getManagerName(), project.getManagerId()),
+                project.getCustomer() == null ? null : new EntityOption(project.getCustomer().getCname(), project.getCustomer().getId()),
                 project.getProducts() == null ? null : project.getProducts().stream().map(ProductShortView::fromProduct).collect(Collectors.toSet()),
                 project.getTechnicalSupportValidity());
     }

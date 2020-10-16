@@ -22,6 +22,8 @@ public class En_SortFieldLang {
                 return lang.name();
             case project_name:
                 return lang.name();
+            case project_number:
+                return lang.projectNumber();
             case last_update:
                 return lang.updated();
             case person_full_name:

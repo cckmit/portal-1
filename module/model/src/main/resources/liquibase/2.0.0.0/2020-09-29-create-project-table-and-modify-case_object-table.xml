@@ -1,0 +1,66 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="create-project-table" author="vologzhanin">
+        <createTable tableName="project">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="customer_type" type="int" defaultValue="0"/>
+            <column name="technical_support_validity" type="date">
+                <constraints nullable="true"/>
+            </column>
+            <column name="work_completion_date" type="date">
+                <constraints nullable="true"/>
+            </column>
+            <column name="purchase_date" type="date">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="fill-project-table" author="vologzhanin">
+        <sql>
+            insert into project (id, customer_type, technical_support_validity) select id, islocal, technical_support_validity from case_object where case_type = 9;
+        </sql>
+    </changeSet>
+
+
+    <changeSet id="add-project_case_object_fk" author="vologzhanin">
+        <addForeignKeyConstraint baseTableName="project"
+                                 baseColumnNames="id"
+                                 constraintName="project-case_object-id-fk"
+                                 referencedTableName="case_object"
+                                 referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="change-project_to_product_project_id_fk" author="vologzhanin">
+        <dropForeignKeyConstraint baseTableName="project_to_product"
+                                  constraintName="project_to_product_project_id_fk"/>
+
+        <addForeignKeyConstraint baseTableName="project_to_product"
+                                 baseColumnNames="project_id"
+                                 constraintName="project_to_product_project_id_fk"
+                                 referencedTableName="project"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+
+    <changeSet id="change-project_sla-case_object-id-fk" author="vologzhanin">
+        <dropForeignKeyConstraint baseTableName="project_sla"
+                                  constraintName="project_sla-case_object-id-fk"/>
+
+        <addForeignKeyConstraint baseTableName="project_sla"
+                                 baseColumnNames="project_id"
+                                 constraintName="project_sla-project-id-fk"
+                                 referencedTableName="project"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+
+
+</databaseChangeLog>

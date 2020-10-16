@@ -4646,7 +4646,7 @@ table {
 }
 
 .form-group {
-  &.form-group-default.pause-date {
+  &.form-group-default.date-picker {
     height: 54px !important;
 
     .form-control {
@@ -4682,10 +4682,6 @@ table {
       margin-top: 20px;
     }
   }
-}
-
-.technical-validity {
-  height: 56px;
 }
 
 .max-z-index {

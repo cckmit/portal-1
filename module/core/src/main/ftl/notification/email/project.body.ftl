@@ -18,6 +18,8 @@
 <@set name="_projectProductDirection" value="${projectProductDirection}"/>
 <@set name="_projectProduct" value="${projectProduct}"/>
 <@set name="_projectTechnicalSupportValidity" value="${projectTechnicalSupportValidity}"/>
+<@set name="_projectWorkCompletionDate" value="${projectWorkCompletionDate}"/>
+<@set name="_projectPurchaseDate" value="${projectPurchaseDate}"/>
 <@set name="_projectImportance" value="${projectImportance}"/>
 <@set name="_projectSlaReactionTime" value="${projectSlaReactionTime}"/>
 <@set name="_projectSlaTemporaryTime" value="${projectSlaTemporaryTime}"/>
@@ -260,6 +262,38 @@
                 <#else>
                     ${(newSupportValidity??)?then(newSupportValidity?date, '?')}
                 </#if>
+            </td>
+        </tr>
+
+        <tr>
+            <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
+                ${_projectWorkCompletionDate}
+            </td>
+            <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
+                <#if workCompletionDateChanged>
+                <@changeTo
+                old="${(oldWorkCompletionDate??)?then(oldWorkCompletionDate?date, '?')}"
+                new="${(newWorkCompletionDate??)?then(newWorkCompletionDate?date, '?')}"
+                />
+                <#else>
+                ${(newWorkCompletionDate??)?then(newWorkCompletionDate?date, '?')}
+            </#if>
+            </td>
+        </tr>
+
+        <tr>
+            <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
+                ${_projectPurchaseDate}
+            </td>
+            <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
+                <#if purchaseDateChanged>
+                <@changeTo
+                old="${(oldPurchaseDate??)?then(oldPurchaseDate?date, '?')}"
+                new="${(newPurchaseDate??)?then(newPurchaseDate?date, '?')}"
+                />
+                <#else>
+                ${(newPurchaseDate??)?then(newPurchaseDate?date, '?')}
+            </#if>
             </td>
         </tr>
 

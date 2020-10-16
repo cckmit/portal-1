@@ -906,6 +906,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String projects();
 
+    String projectNumber();
+
     String projectDirection();
 
     String projectInfo();
@@ -1761,6 +1763,10 @@ public interface Lang extends Messages, ContactItemLang {
     String errSavePlatformConnectedIssuesExist();
 
     String technicalSupportValidity();
+
+    String workCompletionDate();
+
+    String purchaseDate();
 
     String technicalSupportValidityNotFound( String p0 );
 
@@ -3117,6 +3123,8 @@ public interface Lang extends Messages, ContactItemLang {
     String attention();
 
     String contractDatesWarningCostOverflow();
+
+    String valueNotSet();
 
     String errEmployeeNotFound();
 
