@@ -141,6 +141,12 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     }
 
     @Override
+    public HasEnabled productEnabled() {
+        return product;
+    }
+
+
+    @Override
     public HasWidgets getLinksContainer() {
         return linksContainer;
     }

@@ -49,6 +49,8 @@ public interface AbstractProjectEditView extends IsWidget {
 
     HasEnabled saveEnabled();
 
+    HasEnabled productEnabled();
+
     HasWidgets getLinksContainer();
 
     HasVisibility addLinkButtonVisibility();

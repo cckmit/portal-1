@@ -124,6 +124,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     public void onDirectionChanged() {
         view.updateProductDirection(view.direction().getValue() == null ? null : view.direction().getValue().id);
         view.product().setValue(null);
+        view.productEnabled().setEnabled(true);
     }
 
     @Override
@@ -153,6 +154,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.name().setValue( isNew( project ) ? "" : project.getName());
         view.state().setValue( isNew( project ) ? En_RegionState.UNKNOWN : project.getState() );
         view.direction().setValue( project.getProductDirectionEntityOption() == null ? null : new ProductDirectionInfo( project.getProductDirectionEntityOption() ) );
+        view.productEnabled().setEnabled(project.getProductDirectionEntityOption() != null);
         view.team().setValue( project.getTeam() == null ? null : new HashSet<>( project.getTeam() ) );
         view.region().setValue( project.getRegion() );
         Company customer = project.getCustomer();
