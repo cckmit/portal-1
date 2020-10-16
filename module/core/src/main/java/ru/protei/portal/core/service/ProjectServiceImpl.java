@@ -332,10 +332,6 @@ public class ProjectServiceImpl implements ProjectService {
             if (currentResult.isError()) addLinksResult = currentResult;
         }
 
-        Person creator = personDAO.get(project.getCreatorId());
-        jdbcManyRelationsHelper.fill(creator, Person.Fields.CONTACT_ITEMS);
-        project.setCreator(creator);
-
         ProjectCreateEvent projectCreateEvent = new ProjectCreateEvent(this, token.getPersonId(), project.getId());
 
         return new Result<>(En_ResultStatus.OK, project, (addLinksResult.isOk() ? null : SOME_LINKS_NOT_SAVED), Collections.singletonList(projectCreateEvent));
@@ -491,7 +487,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         if ( caseObject.getLocations() != null ) {
             for ( CaseLocation loc : caseObject.getLocations() ) {
-                if ( loc.getLocationId().equals( location ) ) {
+                if ( loc.getLocationId().equals( location.getId() ) ) {
                     locationFound = true;
                     continue;
                 }

@@ -145,8 +145,6 @@ public class AssemblerProjectServiceImpl implements AssemblerProjectService {
     @Autowired
     PersonDAO personDAO;
     @Autowired
-    CaseObjectDAO caseObjectDAO;
-    @Autowired
     ProjectDAO projectDAO;
     @Autowired
     CaseCommentDAO caseCommentDAO;
@@ -156,7 +154,6 @@ public class AssemblerProjectServiceImpl implements AssemblerProjectService {
     AttachmentDAO attachmentDAO;
     @Autowired
     PortalScheduleTasks scheduledTasksService;
-
     @Autowired
     EventPublisherService publisherService;
     @Autowired

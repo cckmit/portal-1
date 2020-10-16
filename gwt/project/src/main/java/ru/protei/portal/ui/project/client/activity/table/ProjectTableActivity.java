@@ -9,6 +9,7 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
@@ -25,6 +26,7 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectFilterActivity;
 import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectFilterView;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -219,8 +221,10 @@ public abstract class ProjectTableActivity
         if(filterView.onlyMineProjects().getValue() != null && filterView.onlyMineProjects().getValue()) {
             query.setMemberId(policyService.getProfile().getId());
         }
-        query.setInitiatorCompanyIds(filterView.initiatorCompanies().getValue().stream()
-                .map(entityOption -> entityOption.getId()).collect(Collectors.toSet()));
+        if (CollectionUtils.isNotEmpty(filterView.initiatorCompanies().getValue())) {
+            query.setInitiatorCompanyIds(filterView.initiatorCompanies().getValue().stream()
+                    .map(entityOption -> entityOption.getId()).collect(Collectors.toSet()));
+        }
         return query;
     }
 
