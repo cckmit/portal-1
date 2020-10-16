@@ -450,6 +450,8 @@ public class DebugIds {
         String COMPANY_SELECTOR = "project-company-selector";
         String LINKS_BUTTON = "project-links-button";
         String TECHNICAL_SUPPORT_VALIDITY_CONTAINER = "project-technical-support-validity-container";
+        String WORK_COMPLETION_DATE = "project-work-completion-date";
+        String PURCHASE_DATE = "project-purchase-date";
         String SLA_INPUT = "project-sla-input";
 
         String SAVE_BUTTON = "project-save-button";
@@ -474,6 +476,8 @@ public class DebugIds {
         String CONTRACTS_CONTAINER = "project-preview-contracts-container";
         String PLATFORM_LABEL = "project-preview-platform-label";
         String TECHNICAL_SUPPORT_VALIDITY_CONTAINER = "project-preview-technical-support-validity-container";
+        String WORK_COMPLETION_DATE = "project-preview-work-completion-date";
+        String PURCHASE_DATE = "project-preview-purchase-date";
         String SLA_INPUT = "project-preview-sla-input";
     }
 

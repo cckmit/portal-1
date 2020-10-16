@@ -131,6 +131,11 @@ public enum En_SortField {
     project_name("CASE_NAME"),
 
     /**
+     * project number
+     */
+    project_number("id"),
+
+    /**
      * ip address
      */
     ip_address("INET_ATON(ip_address)"),

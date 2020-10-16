@@ -16,7 +16,6 @@ import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Report;
-import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.ReportProjectWithLastComment;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
@@ -26,7 +25,6 @@ import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.io.ByteArrayOutputStream;
-import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -103,7 +101,7 @@ public class ReportProjectTest extends BaseServiceTest {
         query.setSearchString(REPORT_PROJECT_TEST);
         query.setStates(new HashSet<>(Collections.singletonList(En_RegionState.FINISHED)));
         Report report = new Report();
-        report.setQuery(serializeAsJson(query.toCaseQuery(1L)));
+        report.setQuery(serializeAsJson(query));
         report.setLocale("ru");
 
         boolean result = false;
@@ -112,7 +110,7 @@ public class ReportProjectTest extends BaseServiceTest {
             result = reportProject.writeReport(
                     buffer,
                     report,
-                    deserializeFromJson(report.getQuery(), CaseQuery.class),
+                    deserializeFromJson(report.getQuery(), ProjectQuery.class),
                     id -> false
             );
         } catch (Exception exception) {
@@ -131,7 +129,7 @@ public class ReportProjectTest extends BaseServiceTest {
         query.setSearchString(REPORT_PROJECT_TEST);
         query.setStates(new HashSet<>(Collections.singletonList(En_RegionState.UNKNOWN)));
         Report report = new Report();
-        report.setQuery(serializeAsJson(query.toCaseQuery(1L)));
+        report.setQuery(serializeAsJson(query));
         report.setLocale("ru");
 
         boolean result = false;
@@ -140,7 +138,7 @@ public class ReportProjectTest extends BaseServiceTest {
             result = reportProject.writeReport(
                     buffer,
                     report,
-                    deserializeFromJson(report.getQuery(), CaseQuery.class),
+                    deserializeFromJson(report.getQuery(), ProjectQuery.class),
                     id -> false
             );
         } catch (Exception exception) {
@@ -160,10 +158,10 @@ public class ReportProjectTest extends BaseServiceTest {
         query.setSearchString(REPORT_PROJECT_TEST);
         query.setStates(new HashSet<>(Collections.singletonList(En_RegionState.PRESALE)));
         Report report = new Report();
-        report.setQuery(serializeAsJson(query.toCaseQuery(1L)));
+        report.setQuery(serializeAsJson(query));
         report.setLocale("ru");
 
-        List<ReportProjectWithLastComment> data = reportProject.createData(deserializeFromJson(report.getQuery(), CaseQuery.class));
+        List<ReportProjectWithLastComment> data = reportProject.createData(deserializeFromJson(report.getQuery(), ProjectQuery.class));
 
         Assert.assertEquals("Selected 2 cases", 2, data.size());
         Assert.assertEquals("name case #1", REPORT_PROJECT_TEST + " : Test_Project 1", data.get(0).getProject().getName());
@@ -181,10 +179,10 @@ public class ReportProjectTest extends BaseServiceTest {
         query.setSearchString(REPORT_PROJECT_TEST);
         query.setStates(new HashSet<>(Collections.singletonList(En_RegionState.UNKNOWN)));
         Report report = new Report();
-        report.setQuery(serializeAsJson(query.toCaseQuery(1L)));
+        report.setQuery(serializeAsJson(query));
         report.setLocale("ru");
 
-        List<ReportProjectWithLastComment> data = reportProject.createData(deserializeFromJson(report.getQuery(), CaseQuery.class));
+        List<ReportProjectWithLastComment> data = reportProject.createData(deserializeFromJson(report.getQuery(), ProjectQuery.class));
 
         Assert.assertEquals("no cases", 0, data.size());
     }

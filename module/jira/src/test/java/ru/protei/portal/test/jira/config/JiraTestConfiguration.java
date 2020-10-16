@@ -354,6 +354,11 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public ProjectDAO getProjectDAO() {
+        return new ProjectDAO_Impl();
+    }
+
+    @Bean
     public YoutrackService getYoutrackService() {
         return new YoutrackServiceImpl();
     }
@@ -538,10 +543,6 @@ public class JiraTestConfiguration {
         return new ContractDAO_Impl();
     }
 
-    @Bean
-    public ProjectDAO getProjectDAO() {
-        return new ProjectEntityDAO_Impl();
-    }
 
     /* DAO converters */
 

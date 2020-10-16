@@ -280,6 +280,11 @@ public class RedmineTestConfigurationMockDao {
     }
 
     @Bean
+    public ProjectDAO getProjectDAO() {
+        return mock( ProjectDAO.class );
+    }
+
+    @Bean
     public ServerDAO getServerDAO() {
         return mock( ServerDAO.class );
     }
@@ -377,11 +382,6 @@ public class RedmineTestConfigurationMockDao {
     @Bean
     public ContactItemDAO getContactItemDAO() {
         return mock(ContactItemDAO.class);
-    }
-
-    @Bean
-    public ProjectDAO getProjectDAO() {
-        return mock(ProjectDAO.class);
     }
 
     /* DAO converters */

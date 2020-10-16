@@ -10,15 +10,16 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.util.UiResult;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -82,7 +83,10 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.saveEnabled().setEnabled(false);
 
         regionService.saveProject(project, new FluentCallback<UiResult<Project>>()
-                .withError(throwable -> view.saveEnabled().setEnabled(true))
+                .withError(throwable -> {
+                    view.saveEnabled().setEnabled(true);
+                    defaultErrorHandler.accept(throwable);
+                })
                 .withSuccess(projectSaveResult -> {
                     view.saveEnabled().setEnabled(true);
 
@@ -125,6 +129,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     public void onDirectionChanged() {
         view.updateProductDirection(view.direction().getValue() == null ? null : view.direction().getValue().id);
         view.product().setValue(null);
+        view.productEnabled().setEnabled(true);
     }
 
     @Override
@@ -153,7 +158,8 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.setNumber( isNew( project ) ? null : project.getId().intValue() );
         view.name().setValue( isNew( project ) ? "" : project.getName());
         view.state().setValue( isNew( project ) ? En_RegionState.UNKNOWN : project.getState() );
-        view.direction().setValue( project.getProductDirection() == null ? null : new ProductDirectionInfo( project.getProductDirection() ) );
+        view.direction().setValue( project.getProductDirectionEntityOption() == null ? null : new ProductDirectionInfo( project.getProductDirectionEntityOption() ) );
+        view.productEnabled().setEnabled(project.getProductDirectionEntityOption() != null);
         view.team().setValue( project.getTeam() == null ? null : new HashSet<>( project.getTeam() ) );
         view.region().setValue( project.getRegion() );
         Company customer = project.getCustomer();
@@ -163,7 +169,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.product().setValue(project.getSingleProduct());
         if (isNew( project )) view.setHideNullValue(true);
         view.customerType().setValue(project.getCustomerType());
-        view.updateProductDirection(project.getProductDirection() == null ? null : project.getProductDirection().getId());
+        view.updateProductDirection(project.getProductDirectionEntityOption() == null ? null : project.getProductDirectionEntityOption().getId());
         view.pauseDateContainerVisibility().setVisible( PAUSED == project.getState() );
         view.pauseDate().setValue( project.getPauseDate() == null ? null : new Date( project.getPauseDate() ) );
 
@@ -176,11 +182,12 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.showDocuments(!isNew( project ));
 
         view.technicalSupportValidity().setValue(project.getTechnicalSupportValidity());
-        if (isNew( project )) view.setDateValid( true );
 
         view.plans().setValue(stream(project.getProjectPlans())
                 .map(PlanOption::fromPlan)
                 .collect(Collectors.toSet()));
+        view.workCompletionDate().setValue(project.getWorkCompletionDate());
+        view.purchaseDate().setValue(project.getPurchaseDate());
 
         fillCaseLinks(project);
 
@@ -206,6 +213,10 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
         view.saveVisibility().setVisible(canAccessProject(policyService, actionPrivilege, project.getTeam()));
         view.saveEnabled().setEnabled(true);
+
+        view.setTechnicalSupportDateValid(true);
+        view.setWorkCompletionDateValid(true);
+        view.setPurchaseDateValid(true);
     }
 
     private Project fillProject(Project project) {
@@ -215,9 +226,12 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         project.setPauseDate( (PAUSED != view.state().getValue()) ? null : view.pauseDate().getValue().getTime() );
         project.setCustomer(Company.fromEntityOption(view.company().getValue()));
         project.setCustomerType(view.customerType().getValue());
-        project.setProducts(new HashSet<>(view.product().getValue() == null ? Collections.emptyList() : Collections.singleton(view.product().getValue())));
+        project.setProducts(fillDevUnits());
         project.setTechnicalSupportValidity(view.technicalSupportValidity().getValue());
-        project.setProductDirection(EntityOption.fromProductDirectionInfo( view.direction().getValue() ));
+        project.setWorkCompletionDate(view.workCompletionDate().getValue());
+        project.setPurchaseDate(view.purchaseDate().getValue());
+        project.setProductDirectionName(view.direction().getValue().name );
+        project.setProductDirectionId(view.direction().getValue().id );
         project.setRegion(view.region().getValue());
         project.setTeam(new ArrayList<>(view.team().getValue()));
         project.setProjectSlas(view.slaInput().getValue());
@@ -225,6 +239,15 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
                 .map(PlanOption::toPlan)
                 .collect(Collectors.toList()));
         return project;
+    }
+
+    private Set<DevUnit> fillDevUnits(){
+        if (view.product().getValue() == null) {
+            return new HashSet<>();
+        } else {
+            DevUnit product = DevUnit.fromProductShortView(view.product().getValue());
+            return new HashSet<>(Collections.singleton(product));
+        }
     }
 
     private void fillCaseLinks(Project project) {
@@ -302,6 +325,8 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     RegionControllerAsync regionService;
     @Inject
     PolicyService policyService;
+    @Inject
+    DefaultErrorHandler defaultErrorHandler;
 
     private Project project;
 
