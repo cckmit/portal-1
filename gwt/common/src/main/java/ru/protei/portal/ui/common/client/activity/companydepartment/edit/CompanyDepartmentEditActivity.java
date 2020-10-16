@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.CompanyDepartment;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CompanyQuery;
@@ -15,7 +16,9 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.CompanyDepartmentControllerAsync;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
+import ru.protei.portal.ui.common.shared.model.HandleOnError;
 
 import java.util.List;
 
@@ -77,16 +80,30 @@ public abstract class CompanyDepartmentEditActivity implements Activity, Abstrac
 
         if (isNew(companyDepartment)) {
             companyDepartmentController.createCompanyDepartment(companyDepartment, new FluentCallback<Long>()
-                    .withSuccess( id -> {
-                        companyDepartment.setId( id );
+                    .withError((throwable, defaultErrorHandler, status) -> {
+                        if (En_ResultStatus.ALREADY_EXIST.equals(status)) {
+                            fireEvent(new NotifyEvents.Show(lang.errDepartmentAlreadyExistInThisCompany(), NotifyEvents.NotifyType.ERROR));
+                        }
+
+                        defaultErrorHandler.accept(throwable);
+                    })
+                    .withSuccess(id -> {
+                        companyDepartment.setId(id);
                         dialogView.hidePopup();
-                        fireEvent( new CompanyDepartmentEvents.Created(companyDepartment) );
-                    } )
+                        fireEvent(new CompanyDepartmentEvents.Created(companyDepartment));
+                    })
             );
             return;
         }
 
         companyDepartmentController.updateCompanyDepartmentName(companyDepartment, new FluentCallback<Long>()
+                .withError((throwable, defaultErrorHandler, status) -> {
+                    if (En_ResultStatus.ALREADY_EXIST.equals(status)) {
+                        fireEvent(new NotifyEvents.Show(lang.errDepartmentAlreadyExistInThisCompany(), NotifyEvents.NotifyType.ERROR));
+                    }
+
+                    defaultErrorHandler.accept(throwable);
+                })
                 .withSuccess(id -> {
                     dialogView.hidePopup();
                     fireEvent(new CompanyDepartmentEvents.Changed(companyDepartment));

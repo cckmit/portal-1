@@ -153,15 +153,18 @@ public class PlanServiceImpl implements PlanService{
             return error(En_ResultStatus.NOT_CREATED);
         }
 
-        if (CollectionUtils.isNotEmpty(plan.getIssueList())){
+        if (CollectionUtils.isNotEmpty(plan.getIssueList())) {
             plan.getIssueList().stream()
                     .distinct()
                     .forEach(issue -> {
                         PlanToCaseObject planToCaseObject = new PlanToCaseObject(planId, issue.getId());
                         planToCaseObject.setOrderNumber(plan.getIssueList().indexOf(issue));
                         planToCaseObjectDAO.persist(planToCaseObject);
-                        createHistory(token, issue.getId(), En_HistoryType.PLAN, En_HistoryAction.ADD, null, plan);
-            });
+
+                        if (createHistory(token, issue.getId(), En_HistoryAction.ADD, null, plan).isError()) {
+                            throw createHistoryException(En_ResultStatus.NOT_CREATED, En_HistoryAction.ADD, null);
+                        }
+                    });
         }
 
         return ok(planId);
@@ -226,7 +229,10 @@ public class PlanServiceImpl implements PlanService{
         }
 
         Plan plan = planDAO.get(planId);
-        createHistory(token, issueId, En_HistoryType.PLAN, En_HistoryAction.ADD, null, plan);
+
+        if (createHistory(token, issueId, En_HistoryAction.ADD, null, plan).isError()) {
+            throw createHistoryException(En_ResultStatus.NOT_CREATED, En_HistoryAction.ADD, planId);
+        }
 
         return getPlanWithIssues(token, planId);
     }
@@ -249,7 +255,10 @@ public class PlanServiceImpl implements PlanService{
 
         if (rowCount == 1) {
             updateOrderNumbers(planId);
-            createHistory(token, issueId, En_HistoryType.PLAN, En_HistoryAction.REMOVE, plan, null);
+            if (createHistory(token, issueId, En_HistoryAction.REMOVE, plan, null).isError()) {
+                throw createHistoryException(En_ResultStatus.NOT_REMOVED, En_HistoryAction.REMOVE, planId);
+            }
+
             return ok();
         }
 
@@ -341,7 +350,9 @@ public class PlanServiceImpl implements PlanService{
         Plan previousPlan = planDAO.get(currentPlanId);
         Plan newPlan = planDAO.get(newPlanId);
 
-        createHistory(token, issueId, En_HistoryType.PLAN, En_HistoryAction.CHANGE, previousPlan, newPlan);
+        if (createHistory(token, issueId, En_HistoryAction.CHANGE, previousPlan, newPlan).isError()) {
+            throw createHistoryException(En_ResultStatus.NOT_UPDATED, En_HistoryAction.CHANGE, currentPlanId);
+        }
 
         return ok();
     }
@@ -366,7 +377,13 @@ public class PlanServiceImpl implements PlanService{
         }
 
         if (plan.getIssueList() != null){
-            plan.getIssueList().forEach(issue -> createHistory(token, issue.getId(), En_HistoryType.PLAN, En_HistoryAction.REMOVE, plan, null));
+            plan.getIssueList().forEach(issue -> {
+                if (createHistory(token, issue.getId(), En_HistoryAction.REMOVE, plan, null).isError()) {
+                    throw new ResultStatusException(En_ResultStatus.NOT_REMOVED, "Failed to create history for plan. " +
+                            "action=" + En_HistoryAction.REMOVE +
+                            ", planId=" + planId);
+                }
+            });
         }
 
         return ok();
@@ -436,12 +453,19 @@ public class PlanServiceImpl implements PlanService{
         return text.trim().replaceAll("[\\s]{2,}", " ");
     }
 
-    private Result<Long> createHistory(AuthToken token, Long id, En_HistoryType type, En_HistoryAction action, Plan oldPlan, Plan newPlan) {
-        return historyService.createHistory(token, id, action, type,
+    private Result<Long> createHistory(AuthToken token, Long id, En_HistoryAction action, Plan oldPlan, Plan newPlan) {
+        return historyService.createHistory(token, id, action, En_HistoryType.PLAN,
                 oldPlan == null ? null : oldPlan.getId(),
                 oldPlan == null ? null : oldPlan.getName(),
                 newPlan == null ? null : newPlan.getId(),
                 newPlan == null ? null : newPlan.getName()
+        );
+    }
+
+    private ResultStatusException createHistoryException(En_ResultStatus status, En_HistoryAction action, Long planId) {
+        return new ResultStatusException(
+                status,
+                String.format("Failed to create history for plan. action=%s, planId=%d", action, planId)
         );
     }
 }

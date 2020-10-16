@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.view.filterwidget.Filter;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 @JdbcEntity( table = "absence_filter" )
 public class AbsenceFilter implements Filter<AbsenceFilterShortView, AbsenceQuery>, Serializable {
@@ -69,6 +70,21 @@ public class AbsenceFilter implements Filter<AbsenceFilterShortView, AbsenceQuer
     @Override
     public AbsenceFilterShortView toShortView() {
         return new AbsenceFilterShortView( this.id, this.name );
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AbsenceFilter that = (AbsenceFilter) o;
+        return Objects.equals(id, that.id) ||
+                Objects.equals(name, that.name) &&
+                Objects.equals(loginId, that.loginId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, loginId);
     }
 
     @Override

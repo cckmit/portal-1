@@ -1,0 +1,42 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-unique-constraint-to-absence_filter-table" author="fomin">
+        <addUniqueConstraint tableName="absence_filter"
+                             columnNames="name, login_id"
+                             constraintName="name-login_id-uc"/>
+    </changeSet>
+
+    <changeSet id="add-unique-constraint-to-case_object_tag-table" author="fomin">
+        <addUniqueConstraint tableName="case_object_tag"
+                             columnNames="case_id, tag_id"
+                             constraintName="case_id-tag_id-uc"/>
+    </changeSet>
+
+    <changeSet id="add-unique-constraint-to-case_filter-table" author="fomin">
+        <addUniqueConstraint tableName="case_filter"
+                             columnNames="name, login_id, type"
+                             constraintName="name-login_id-type-uc"/>
+    </changeSet>
+
+    <changeSet id="add-unique-constraint-to-dev_unit-table" author="fomin">
+        <addUniqueConstraint tableName="dev_unit"
+                             columnNames="utype_id, unit_name"
+                             constraintName="utype_id-unit_name-uc"/>
+    </changeSet>
+
+    <changeSet id="add-unique-constraint-to-worker_position-table" author="fomin">
+        <addUniqueConstraint tableName="worker_position"
+                             columnNames="pos_name, company_id"
+                             constraintName="pos_name-company_id-uc"/>
+    </changeSet>
+
+    <changeSet id="add-unique-constraint-to-company_dep-table" author="fomin">
+        <addUniqueConstraint tableName="company_dep"
+                             columnNames="company_id, dep_name"
+                             constraintName="company_id-dep_name-uc"/>
+    </changeSet>
+</databaseChangeLog>

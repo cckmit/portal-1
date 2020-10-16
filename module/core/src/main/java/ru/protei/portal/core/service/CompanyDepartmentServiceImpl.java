@@ -40,10 +40,6 @@ public class CompanyDepartmentServiceImpl implements CompanyDepartmentService{
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        if (companyDepartmentDAO.checkExistsByName(companyDepartment.getName(), companyDepartment.getCompanyId())){
-            return error(En_ResultStatus.DEPARTMENT_ALREADY_EXIST);
-        }
-
         companyDepartment.setCreated(new Date());
         Long companyDepartmentId = companyDepartmentDAO.persist(companyDepartment);
 
@@ -59,10 +55,6 @@ public class CompanyDepartmentServiceImpl implements CompanyDepartmentService{
     public Result<Long> updateCompanyDepartmentName(AuthToken token, CompanyDepartment companyDepartment) {
         if (!isValid(companyDepartment)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
-        }
-
-        if (companyDepartmentDAO.checkExistsByNameAndDepId(companyDepartment.getName(), companyDepartment.getCompanyId(), companyDepartment.getId())){
-            return error(En_ResultStatus.DEPARTMENT_ALREADY_EXIST);
         }
 
         boolean result = companyDepartmentDAO.partialMerge(companyDepartment, "dep_name");

@@ -6,5 +6,6 @@ import java.util.List;
 
 public interface AbsenceFilterDAO extends PortalBaseDAO<AbsenceFilter> {
     List<AbsenceFilter> getListByLoginId(Long loginId);
-    AbsenceFilter checkExistsByParams( String name, Long loginId );
+
+    void removeNotUniqueFilters();
 }

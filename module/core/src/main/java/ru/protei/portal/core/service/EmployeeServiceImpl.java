@@ -250,10 +250,6 @@ public class EmployeeServiceImpl implements EmployeeService {
             return error(En_ResultStatus.EMPLOYEE_EMAIL_ALREADY_EXIST);
         }
 
-        if (isUserLoginExist(email)){
-            return error(En_ResultStatus.LOGIN_ALREADY_EXIST);
-        }
-
         if (isEmployeeExist(person)){
             return error(En_ResultStatus.EMPLOYEE_ALREADY_EXIST);
         }
@@ -863,10 +859,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private String makeLogin(String email) {
         return email.substring(0, email.indexOf("@")).trim();
-    }
-
-    private boolean isUserLoginExist(String email) {
-        return !userLoginDAO.isUnique(makeLogin(email));
     }
 
     private boolean saveUserLogin(UserLogin userLogin, AuthToken authToken) {

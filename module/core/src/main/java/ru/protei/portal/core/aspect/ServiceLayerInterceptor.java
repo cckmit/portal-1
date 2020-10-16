@@ -87,7 +87,7 @@ public class ServiceLayerInterceptor {
             checkPrivileges( pjp );
             logger.trace( "serviceFacadeProcessing(): begin" );
             // Все сервис методы "Фасада" обязаны возвращать объект результата выполения "Result"...
-            Result result = (Result) pjp.proceed(); // Нужно падать если не приводтся к Result!
+            Result<?> result = (Result) pjp.proceed(); // Нужно падать если не приводтся к Result!
             logger.trace( "serviceFacadeProcessing(): succsess" );
             tryDoAudit( pjp, result );
             publishEvents( result == null ? null : result.getEvents() );
@@ -98,6 +98,10 @@ public class ServiceLayerInterceptor {
 
             if (JdbcHelper.isTemporaryDatabaseError (e)) {
                 return error( En_ResultStatus.DB_TEMP_ERROR);
+            }
+
+            if (e instanceof DuplicateKeyException) {
+                return error(En_ResultStatus.ALREADY_EXIST);
             }
 
             if (e instanceof SQLException) {
