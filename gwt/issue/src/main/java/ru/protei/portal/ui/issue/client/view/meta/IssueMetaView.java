@@ -15,6 +15,7 @@ import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SingleP
 import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
+import ru.protei.portal.core.model.dict.En_WorkTrigger;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
@@ -39,6 +40,7 @@ import ru.protei.portal.ui.common.client.widget.selector.plan.selector.PlanMulti
 import ru.protei.portal.ui.common.client.widget.selector.platform.PlatformFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.worktrigger.WorkTriggerFormSelector;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeLabel;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeTextBox;
@@ -435,6 +437,31 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         }
     }
 
+    @Override
+    public HasVisibility deadlineContainerVisibility() {
+        return deadlineContainer;
+    }
+
+    @Override
+    public HasValue<Date> deadline() {
+        return deadline;
+    }
+
+    @Override
+    public void setDeadlineValid(boolean isValid) {
+        deadline.markInputValid(isValid);
+    }
+
+    @Override
+    public HasVisibility workTriggerVisibility() {
+        return workTriggerContainer;
+    }
+
+    @Override
+    public HasValue<En_WorkTrigger> workTrigger() {
+        return workTrigger;
+    }
+
     private void initView() {
         importance.setDefaultValue(lang.selectIssueImportance());
         platform.setDefaultValue(lang.selectPlatform());
@@ -483,6 +510,8 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         plans.setItemContainerEnsureDebugId(DebugIds.ISSUE.PLANS_SELECTOR_ITEM_CONTAINER);
         plans.setLabelEnsureDebugId(DebugIds.ISSUE.PLANS_SELECTOR_LABEL);
         plans.ensureDebugId(DebugIds.ISSUE.PLANS_SELECTOR);
+        deadline.setEnsureDebugId(DebugIds.ISSUE.DEADLINE_CONTAINER);
+        workTrigger.setEnsureDebugId(DebugIds.ISSUE.WORK_TRIGGER_SELECTOR);
     }
 
     private String transliteration(String input) {
@@ -570,6 +599,16 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @UiHandler("plans")
     public void onPlanChanged(ValueChangeEvent<Set<PlanOption>> event) {
         activity.onPlansChanged();
+    }
+
+    @UiHandler("deadline")
+    public void onDeadlineChanged(ValueChangeEvent<Date> event) {
+        activity.onDeadlineChanged();
+    }
+
+    @UiHandler("workTrigger")
+    public void onWorkTriggerChanged(ValueChangeEvent<En_WorkTrigger> event) {
+        activity.onWorkTriggerChanged();
     }
 
     @UiField
@@ -665,6 +704,18 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @Inject
     @UiField(provided = true)
     EmployeeMultiSelector notifiers;
+
+    @UiField
+    HTMLPanel deadlineContainer;
+    @Inject
+    @UiField(provided = true)
+    SinglePicker deadline;
+
+    @UiField
+    HTMLPanel workTriggerContainer;
+    @Inject
+    @UiField(provided = true)
+    WorkTriggerFormSelector workTrigger;
 
     @Inject
     CompanyModel companyModel;

@@ -2,7 +2,7 @@ package ru.protei.portal.core.model.dict;
 
 import ru.protei.winter.core.utils.enums.HasId;
 
-public enum  En_WorkTrigger implements HasId {
+public enum En_WorkTrigger implements HasId {
     /**
      *   Нет
      */

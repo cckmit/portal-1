@@ -6,6 +6,8 @@ import ru.protei.portal.core.model.dict.En_WorkTrigger;
 public class En_WorkTriggerLang {
     public String getName(En_WorkTrigger value) {
         switch (value) {
+            case NONE:
+                return lang.workTriggerNone();
             case PSGO:
                 return lang.workTriggerPSGO();
             case NEW_REQUIREMENTS:

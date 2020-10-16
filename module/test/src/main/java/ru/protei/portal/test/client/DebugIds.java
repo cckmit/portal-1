@@ -333,6 +333,8 @@ public class DebugIds {
         String PLANS_SELECTOR_ITEM_CONTAINER = "issue-plans-selector-item-container";
         String PLANS_SELECTOR_LABEL = "issue-plans-selector-label";
         String PLANS_SELECTOR = "issue-plans-selector";
+        String DEADLINE_CONTAINER = "issue-deadline-container";
+        String WORK_TRIGGER_SELECTOR = "issue-work-trigger-selector";
 
         interface LABEL {
             String NAME = "issue-label-name";

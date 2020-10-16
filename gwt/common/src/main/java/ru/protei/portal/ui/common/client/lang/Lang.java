@@ -3000,6 +3000,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueSyncedWith();
 
+    String issueDeadline();
+
+    String issueWorkTrigger();
+
     String employeeBirthdays();
 
     String employeeBirthdayPrevMonth();
@@ -3133,6 +3137,10 @@ public interface Lang extends Messages, ContactItemLang {
     String reservedIpReservationStart();
 
     String errUserNotFound();
+
+    String errDeadlineError();
+
+    String workTriggerNone();
 
     String workTriggerPSGO();
 
