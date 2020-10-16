@@ -3,10 +3,10 @@ package ru.protei.portal.ui.common.client.activity.issuefilter;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.Widget;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.dict.En_WorkTrigger;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.Company;
@@ -50,6 +50,10 @@ public interface AbstractIssueFilterParamView extends IsWidget {
 
     HasValue<Set<CaseState>> states();
 
+    HasValue<Set<En_WorkTrigger>> workTriggers();
+
+    HasValue<Boolean> overdueDeadlines();
+
     HasVisibility searchByCommentsWarningVisibility();
 
     HasVisibility productsVisibility();
@@ -63,6 +67,10 @@ public interface AbstractIssueFilterParamView extends IsWidget {
     HasVisibility searchPrivateVisibility();
 
     HasVisibility planVisibility();
+
+    HasVisibility workTriggerVisibility();
+
+    HasVisibility overdueDeadlinesVisibility();
 
     void resetFilter();
 

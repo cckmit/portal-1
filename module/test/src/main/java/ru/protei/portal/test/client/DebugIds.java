@@ -204,6 +204,10 @@ public class DebugIds {
 
         String PLAN_SELECTOR = "filter-plan-selector";
 
+        String OVERDUE_DEADLINES_YES_BUTTON = "filter-overdue-deadlines-yes-button";
+        String OVERDUE_DEADLINES_NO_BUTTON = "filter-overdue-deadlines-no-button";
+        String OVERDUE_DEADLINES_NOT_DEFINED_BUTTON = "filter-overdue-deadlines-not-defined-button";
+
         interface USER_FILTER {
             String FILTERS_BUTTON = "filter-user-filters-button";
             String FILTER_NAME_INPUT = "filter-user-filter-name-input";
@@ -373,6 +377,11 @@ public class DebugIds {
         String TIME_ELAPSED_TYPES_LABEL = "issue-report-time-elapsed-types-label";
         String CREATE_BUTTON = "issue-report-create-button";
         String CANCEL_BUTTON = "issue-report-cancel-button";
+        String WORK_TRIGGER_TYPES = "issue-report-work-trigger-types";
+        String WORK_TRIGGER_TYPES_ADD_BUTTON = "issue-report-work-trigger-types-add-button";
+        String WORK_TRIGGER_TYPES_CLEAR_BUTTON = "issue-report-work-trigger-types-clear-button";
+        String WORK_TRIGGER_TYPES_ITEM_CONTAINER = "issue-report-work-trigger-types-item-container";
+        String WORK_TRIGGER_TYPES_LABEL = "issue-report-work-trigger-types-label";
     }
 
     public interface CASE_COMMENT {
