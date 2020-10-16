@@ -11,15 +11,15 @@ import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dto.Project;
+import ru.protei.portal.core.model.dto.ProjectInfo;
+import ru.protei.portal.core.model.dto.RegionInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.LocationQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
-import ru.protei.portal.core.model.dto.Project;
-import ru.protei.portal.core.model.dto.ProjectInfo;
-import ru.protei.portal.core.model.dto.RegionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -44,6 +44,7 @@ import static ru.protei.portal.core.access.ProjectAccessUtil.canAccessProject;
 import static ru.protei.portal.core.access.ProjectAccessUtil.getProjectAccessType;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
+import static ru.protei.portal.core.model.view.PersonProjectMemberView.fromFullNamePerson;
 
 /**
  * Реализация сервиса управления проектами
@@ -465,12 +466,12 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public Result<PersonProjectMemberView> getProjectLeader(AuthToken authToken, Long projectId) {
-        Result<Project> projectResult = getProject(authToken, projectId);
-        if (projectResult.isError()) {
-            return error(projectResult.getStatus());
-        }
-
-        return projectResult.map(Project::getLeader);
+        return caseMemberDAO.getLeaders(projectId)
+                .stream()
+                .findFirst()
+                .map(leader -> fromFullNamePerson(leader.getMember(), En_DevUnitPersonRoleType.HEAD_MANAGER))
+                .map(Result::ok)
+                .orElse(ok(null));
     }
 
     private boolean validateFields(Project project) {
@@ -522,7 +523,7 @@ public class ProjectServiceImpl implements ProjectService {
                 if (!projectRoles.contains(member.getRole())) {
                     continue;
                 }
-                int nPos = toAdd.indexOf(PersonProjectMemberView.fromFullNamePerson(member.getMember(), member.getRole()));
+                int nPos = toAdd.indexOf(fromFullNamePerson(member.getMember(), member.getRole()));
                 if (nPos == -1) {
                     toRemove.add(member.getId());
                 } else {
