@@ -1,33 +1,61 @@
 package ru.protei.portal.core.model.dict;
 
-public enum  En_WorkTrigger {
+import ru.protei.winter.core.utils.enums.HasId;
+
+public enum  En_WorkTrigger implements HasId {
+    /**
+     *   Нет
+     */
+    NONE(0),
+
     /**
      * ПСГО
      */
-    PSGO,
+    PSGO(1),
 
     /**
      * Новые требования
      */
-    NEW_REQUIREMENTS,
+    NEW_REQUIREMENTS(2),
 
     /**
      * Контракт ПНР
      */
-    PRE_COMMISSIONING_CONTRACT,
+    PRE_COMMISSIONING_CONTRACT(3),
 
     /**
      * Доп.договоренности ПНР
      */
-    NEW_PRE_COMMISSIONING_REQUIREMENTS,
+    NEW_PRE_COMMISSIONING_REQUIREMENTS(4),
 
     /**
      * Маркетинг
      */
-    MARKETING,
+    MARKETING(5),
 
     /**
      * Иное
      */
-    OTHER;
+    OTHER(6);
+
+    En_WorkTrigger( int id ) {
+        this.id = id;
+    }
+
+    @Override
+    public int getId() {
+        return id;
+    }
+
+    public static En_WorkTrigger findById(int id) {
+        for (En_WorkTrigger value : En_WorkTrigger.values()) {
+            if (value.getId() == id) {
+                return value;
+            }
+        }
+
+        return null;
+    }
+
+    private final int id;
 }
