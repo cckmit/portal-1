@@ -1,6 +1,5 @@
 package ru.protei.portal.core.service;
 
-import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
@@ -38,6 +37,8 @@ public interface CaseLinkService {
     @Privileged(requireAny = { En_Privilege.ISSUE_EDIT, En_Privilege.PROJECT_EDIT })
     @Auditable(En_AuditType.LINK_REMOVE)
     Result deleteLinkWithPublish(AuthToken authToken, Long id, En_CaseType caseType);
+
+    Result<YouTrackIssueInfo> addYoutrackLinks(AuthToken token, List<CaseLink> links, En_CaseType caseType);
 
     Result<String> setYoutrackIdToCaseNumbers(AuthToken token, String youtrackId, List<Long> caseNumberList);
 

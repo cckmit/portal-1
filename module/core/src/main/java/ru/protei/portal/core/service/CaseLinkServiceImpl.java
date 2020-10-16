@@ -31,9 +31,10 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.find;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public class CaseLinkServiceImpl implements CaseLinkService {
 
@@ -108,6 +109,9 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         }
 
         Long createdLinkId = addLink(link, caseType).getData();
+
+        addYoutrackLinks(authToken, Collections.singletonList(link), caseType);
+
         CaseLink createdLink = caseLinkDAO.get(createdLinkId);
 
         Result<CaseLink> completeResult = ok(createdLink);
@@ -312,6 +316,42 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                 .ifOk(caseLink -> log.debug("getYtLink(): OK. caseLink={}", caseLink));
     }
 
+    @Override
+    @Transactional
+    public Result<YouTrackIssueInfo> addYoutrackLinks(AuthToken token, List<CaseLink> links, En_CaseType caseType) {
+        links = getYouTrackLinks(links);
+
+        if (isEmpty(links)) {
+            return ok();
+        }
+
+        Set<String> remoteIds = toSet(links, CaseLink::getRemoteId);
+
+        if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
+            for (String remoteId : remoteIds) {
+                List<Long> caseNumbers = getCaseNumbersCrosslinkedWithYoutrack(remoteId, En_CaseType.CRM_SUPPORT);
+                Result<YouTrackIssueInfo> result = youtrackService.setIssueCrmNumbers(remoteId, caseNumbers);
+
+                if (result.isError()) {
+                    log.warn("some links wasn't added. caseType={}, remoteId={}, caseNumbers={}", caseType, remoteId, caseNumbers);
+                }
+            }
+        }
+
+        if (En_CaseType.PROJECT.equals(caseType)) {
+            for (String remoteId : remoteIds) {
+                List<Long> caseIds = getCaseIdsCrosslinkedWithYoutrack(remoteId, En_CaseType.PROJECT);
+                Result<YouTrackIssueInfo> result = youtrackService.setIssueProjectNumbers(remoteId, caseIds);
+
+                if (result.isError()) {
+                    log.warn("some links wasn't added. caseType={}, remoteId={}, caseIds={}", caseType, remoteId, caseIds);
+                }
+            }
+        }
+
+        return ok();
+    }
+
     private Result removeLink (CaseLink link){
         Set<Long> toRemoveIds = new HashSet<>();
         toRemoveIds.add(link.getId());
@@ -394,10 +434,6 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                             caseLinkDAO.persist(crossCrmLink);
                         }
                     }
-                    //Обновляем список ссылок на Youtrack
-                    if (En_CaseLink.YT.equals(link.getType())) {
-                        youtrackService.setIssueCrmNumbers(link.getRemoteId(), getCaseNumbersCrosslinkedWithYoutrack(link.getRemoteId(), En_CaseType.CRM_SUPPORT));
-                    }
                     return ok(createdLinkId);
 
                 case PROJECT:
@@ -405,10 +441,6 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                     link.setWithCrosslink(En_CaseLink.YT.equals(link.getType()));
                     createdLinkId = caseLinkDAO.persist(link);
                     link.setId(createdLinkId);
-
-                    if (En_CaseLink.YT.equals(link.getType())) {
-                        youtrackService.setIssueProjectNumbers(link.getRemoteId(), getCaseIdsCrosslinkedWithYoutrack(link.getRemoteId(), En_CaseType.PROJECT));
-                    }
 
                     return ok(createdLinkId);
 
@@ -646,5 +678,11 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     private boolean isShowOnlyPublicLinks(AuthToken token) {
         return !policyService.hasGrantAccessFor(token.getRoles(), En_Privilege.ISSUE_VIEW);
+    }
+
+    private List<CaseLink> getYouTrackLinks(Collection<CaseLink> links) {
+        return stream(links)
+                .filter(caseLink -> En_CaseLink.YT.equals(caseLink.getType()))
+                .collect(toList());
     }
 }

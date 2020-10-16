@@ -349,11 +349,19 @@ public class ProjectServiceImpl implements ProjectService {
 
         Result addLinksResult = ok();
 
+        List<CaseLink> successfullyAddedLinks = new ArrayList<>();
+
         for (CaseLink caseLink : CollectionUtils.emptyIfNull(project.getLinks())) {
             caseLink.setCaseId(caseObject.getId());
             Result currentResult = caseLinkService.createLink(token, caseLink, caseObject.getType());
-            if (currentResult.isError()) addLinksResult = currentResult;
+            if (currentResult.isError()) {
+                addLinksResult = currentResult;
+            } else {
+                successfullyAddedLinks.add(caseLink);
+            }
         }
+
+        caseLinkService.addYoutrackLinks(token, successfullyAddedLinks, En_CaseType.PROJECT);
 
         Person creator = personDAO.get(project.getCreatorId());
         jdbcManyRelationsHelper.fill(creator, Person.Fields.CONTACT_ITEMS);
