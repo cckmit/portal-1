@@ -22,7 +22,6 @@ import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.service.YoutrackService;
 import ru.protei.portal.core.svn.document.DocumentSvnApi;
 import ru.protei.portal.tools.migrate.struct.ExternalPersonAbsence;
@@ -113,23 +112,9 @@ public class BootstrapServiceImpl implements BootstrapService {
         /**
          *  end Спринт 58 */
 
-        /* begin Спринт 59 */
-
-        unifyAbsenceFilterTable();
-
-        /* end Спринт 59 */
-
-
         log.info( "bootstrapApplication(): BootstrapService complete."  );
     }
 
-    private void unifyAbsenceFilterTable() {
-        absenceFilterDAO.removeNotUniqueFilters();
-    }
-
-    private void unifyCaseFilterTable() {
-        caseFilterDAO.removeByCondition()
-    }
 
     private void updateUserDashboardOrders() {
         List<UserDashboard> dashboards = userDashboardDAO.getAll();
@@ -972,8 +957,6 @@ public class BootstrapServiceImpl implements BootstrapService {
     ObjectMapper objectMapper;
     @Autowired
     ApplicationContext applicationContext;
-    @Autowired
-    AbsenceFilterDAO absenceFilterDAO;
 
     SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd");
 

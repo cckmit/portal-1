@@ -86,9 +86,7 @@ public class ServiceLayerInterceptorLogging {
 
         if (result instanceof Result) {
             Result resultObject = ((Result) result);
-            return resultObject.getStatus() + " "
-                    + (resultObject.getMessage() == null ? "" : "- " + resultObject.getMessage() + ". ")
-                    + makeStringFromObject( resultObject.getData() );
+            return resultObject.getStatus() + " " + makeStringFromObject( resultObject.getData() );
         }
 
         return makeStringFromObject( result );

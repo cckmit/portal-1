@@ -106,6 +106,10 @@ public class AbsenceFilterServiceImpl implements AbsenceFilterService {
 
         filter.setName(filter.getName().trim());
 
+        if (!isUniqueFilter(filter.getName(), filter.getLoginId(), filter.getId())) {
+            return error(En_ResultStatus.ALREADY_EXIST);
+        }
+
         if (absenceFilterDAO.saveOrUpdate(filter)) {
             return ok(filter);
         }
@@ -134,5 +138,10 @@ public class AbsenceFilterServiceImpl implements AbsenceFilterService {
         return filter == null ||
                 HelperFunc.isEmpty(filter.getName()) ||
                 filter.getQuery() == null;
+    }
+
+    private boolean isUniqueFilter(String name, Long loginId, Long excludeId ) {
+        AbsenceFilter filter = absenceFilterDAO.checkExistsByParams( name, loginId );
+        return filter == null || filter.getId().equals( excludeId );
     }
 }

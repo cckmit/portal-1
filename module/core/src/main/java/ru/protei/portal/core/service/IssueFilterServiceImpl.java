@@ -161,6 +161,10 @@ public class IssueFilterServiceImpl implements IssueFilterService {
 
         filter.setName(filter.getName().trim());
 
+        if (!isUniqueFilter(filter.getName(), filter.getLoginId(), filter.getType(), filter.getId())) {
+            return error(En_ResultStatus.ALREADY_EXIST);
+        }
+
         if (caseFilterDAO.saveOrUpdate(filter)) {
             return ok(filter);
         }
@@ -206,6 +210,11 @@ public class IssueFilterServiceImpl implements IssueFilterService {
         ArrayList allowedCompanies = new ArrayList( companyIds );
         allowedCompanies.retainAll( allowedCompaniesIds );
         return allowedCompanies.isEmpty() ? new ArrayList<>( allowedCompaniesIds ) : allowedCompanies;
+    }
+
+    private boolean isUniqueFilter( String name, Long loginId, En_CaseFilterType type, Long excludeId ) {
+        CaseFilter caseFilter = caseFilterDAO.checkExistsByParams( name, loginId, type );
+        return caseFilter == null || caseFilter.getId().equals( excludeId );
     }
 
     private List<Long> collectPersonIds(CaseQuery caseQuery){

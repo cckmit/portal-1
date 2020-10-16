@@ -62,6 +62,8 @@ public class En_ResultStatusLang {
             case SVN_ERROR: return lang.errSVN();
             case WORKER_WITH_THIS_DEPARTMENT_ALREADY_EXIST: return lang.errWorkerWithThisDepartmentAlreadyExist();
             case WORKER_WITH_THIS_POSITION_ALREADY_EXIST: return lang.errWorkerWithThisPositionAlreadyExist();
+            case DEPARTMENT_ALREADY_EXIST: return lang.errDepartmentAlreadyExistInThisCompany();
+            case POSITION_ALREADY_EXIST: return lang.errPositionAlreadyExistInThisCompany();
             case EMPLOYEE_ALREADY_EXIST: return lang.errEmployeeAlreadyExist();
             case EMPLOYEE_EMAIL_ALREADY_EXIST: return lang.errEmployeeEmailAlreadyExist();
             case EMPLOYEE_NOT_FIRED_FROM_THESE_COMPANIES: return lang.errEmployeeNotFiredFromTheseCompanies();

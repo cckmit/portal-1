@@ -360,7 +360,6 @@ public abstract class IssueEditActivity implements
                 .withError((throwable, defaultErrorHandler, status) -> {
                     if (En_ResultStatus.PERMISSION_DENIED.equals(status)) {
                         fireEvent(new ErrorPageEvents.ShowForbidden());
-                        return;
                     }
 
                     defaultErrorHandler.accept(throwable);

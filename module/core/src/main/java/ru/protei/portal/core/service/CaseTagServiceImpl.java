@@ -3,7 +3,6 @@ package ru.protei.portal.core.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.CaseObjectTagDAO;
 import ru.protei.portal.core.model.dao.CaseTagDAO;
 import ru.protei.portal.core.model.dict.En_HistoryAction;
@@ -143,12 +142,13 @@ public class CaseTagServiceImpl implements CaseTagService {
             if ( caseTag == null ) {
                 return error(En_ResultStatus.NOT_FOUND);
             }
+            if (caseObjectTagDAO.checkExists(caseId, tagId)) {
+                return error(En_ResultStatus.ALREADY_EXIST);
+            }
             CaseObjectTag cot = new CaseObjectTag(caseId, tagId);
             caseObjectTagDAO.persist(cot);
 
-            if (createHistory(authToken, caseId, En_HistoryAction.ADD, null, caseTag).isError()) {
-                throw createHistoryException(En_ResultStatus.NOT_CREATED, En_HistoryAction.ADD, tagId);
-            }
+            createHistory(authToken, caseId, En_HistoryAction.ADD, null, caseTag);
 
             return ok();
         });
@@ -168,21 +168,14 @@ public class CaseTagServiceImpl implements CaseTagService {
 
         caseObjectTagDAO.removeByCaseIdAndTagId(caseId, tagId);
 
-        if (createHistory(authToken, caseId, En_HistoryAction.REMOVE, caseTag, null).isError()) {
-            throw createHistoryException(En_ResultStatus.NOT_REMOVED, En_HistoryAction.REMOVE, tagId);
-        }
+        createHistory(authToken, caseId, En_HistoryAction.REMOVE, caseTag, null);
 
         return ok(tagId);
     }
 
     @Override
-    @Transactional
     public void addItemsToHistory(AuthToken authToken, Long caseId, List<CaseTag> tags) {
-        tags.forEach(tag -> {
-            if (createHistory(authToken, caseId, En_HistoryAction.ADD, null, tag).isError()) {
-                throw createHistoryException(En_ResultStatus.NOT_CREATED, En_HistoryAction.ADD, tag.getId());
-            }
-        });
+        tags.forEach(tag -> createHistory(authToken, caseId, En_HistoryAction.ADD, null, tag));
     }
 
     private boolean isCaseTagValid(CaseTag caseTag) {
@@ -208,13 +201,6 @@ public class CaseTagServiceImpl implements CaseTagService {
                 oldCaseTag == null ? null : oldCaseTag.getName(),
                 newCaseTag == null ? null : newCaseTag.getId(),
                 newCaseTag == null ? null : newCaseTag.getName()
-        );
-    }
-
-    private ResultStatusException createHistoryException(En_ResultStatus status, En_HistoryAction action, Long caseTagId) {
-        return new ResultStatusException(
-                status,
-                String.format("Failed to create history for case tag. action=%s, caseTagId=%d", action, caseTagId)
         );
     }
 }

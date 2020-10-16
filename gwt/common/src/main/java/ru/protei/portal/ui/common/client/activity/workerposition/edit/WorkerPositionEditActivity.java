@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.WorkerPosition;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CompanyQuery;
@@ -78,14 +77,6 @@ public abstract class WorkerPositionEditActivity implements Activity, AbstractWo
 
         if (isNew(workerPosition)) {
             workerPositionController.createWorkerPosition(workerPosition, new FluentCallback<Long>()
-                    .withError((throwable, defaultErrorHandler, status) -> {
-                        if (En_ResultStatus.ALREADY_EXIST.equals(status)) {
-                            fireEvent(new NotifyEvents.Show(lang.errPositionAlreadyExistInThisCompany(), NotifyEvents.NotifyType.ERROR));
-                            return;
-                        }
-
-                        defaultErrorHandler.accept(throwable);
-                    })
                     .withSuccess( id -> {
                         workerPosition.setId( id );
                         dialogView.hidePopup();
@@ -96,14 +87,6 @@ public abstract class WorkerPositionEditActivity implements Activity, AbstractWo
         }
 
         workerPositionController.updateWorkerPosition(workerPosition, new FluentCallback<Long>()
-                .withError((throwable, defaultErrorHandler, status) -> {
-                    if (En_ResultStatus.ALREADY_EXIST.equals(status)) {
-                        fireEvent(new NotifyEvents.Show(lang.errPositionAlreadyExistInThisCompany(), NotifyEvents.NotifyType.ERROR));
-                        return;
-                    }
-
-                    defaultErrorHandler.accept(throwable);
-                })
                 .withSuccess(id -> {
                     dialogView.hidePopup();
                     fireEvent(new WorkerPositionEvents.Changed(workerPosition));

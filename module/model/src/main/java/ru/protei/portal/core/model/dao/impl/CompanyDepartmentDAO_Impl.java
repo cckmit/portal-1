@@ -20,8 +20,23 @@ public class CompanyDepartmentDAO_Impl extends PortalBaseJdbcDAO<CompanyDepartme
     private final static String WORKER_ENTRY_JOIN = "LEFT JOIN worker_entry WE ON WE.dep_id = company_dep.id";
 
     @Override
+    public boolean checkExistsByParentId(Long departmentId) {
+        return checkExistsByCondition ("company_dep.parent_dep=?", departmentId);
+    }
+
+    @Override
     public boolean checkExistsByParent(String extId, Long companyId) {
         return checkExistsByCondition ("company_dep.parent_dep=(select id from company_dep cd where cd.dep_extId=? and cd.company_id=?)", extId, companyId);
+    }
+
+    @Override
+    public boolean checkExistsByName(String name, Long companyId) {
+        return checkExistsByCondition ("company_dep.dep_name=? and company_dep.company_id=?", name, companyId);
+    }
+
+    @Override
+    public boolean checkExistsByNameAndDepId(String name, Long companyId, Long departmentId) {
+        return checkExistsByCondition ("company_dep.dep_name=? and company_dep.company_id=? and company_dep.id!=?", name, companyId, departmentId);
     }
 
     @Override
