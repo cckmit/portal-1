@@ -19,6 +19,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_BundleType;
 import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseLink;
@@ -99,6 +100,7 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
         CaseLink caseLink = new CaseLink();
         caseLink.setRemoteId(remoteId);
         caseLink.setType(type);
+        caseLink.setBundleType(En_BundleType.LINKED_WITH);
         ValueChangeEvent.fire(this, caseLink);
 
         hide();

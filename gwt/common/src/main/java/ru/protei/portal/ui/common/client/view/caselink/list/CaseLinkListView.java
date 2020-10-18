@@ -14,6 +14,7 @@ import ru.protei.portal.ui.common.client.activity.caselink.list.AbstractCaseLink
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.widget.accordion.AccordionWidget;
 import ru.protei.portal.ui.common.client.widget.caselink.popup.CreateCaseLinkPopup;
+import ru.protei.portal.ui.common.client.widget.tab.pane.TabWidgetPane;
 
 public class CaseLinkListView
         extends Composite
@@ -41,24 +42,30 @@ public class CaseLinkListView
     }
 
     @Override
-    public HasWidgets getLinksContainer() {
-        return linksPanel;
-    }
-
-    @Override
     public HasVisibility getContainerVisibility() {
         return root;
     }
 
     @Override
     public void setHeader(String value) {
-        accordionWidget.setHeader(value);
+        //accordionWidget.setHeader(value);
+    }
+
+    @Override
+    public void addTabWidgetPane(TabWidgetPane tabWidgetPane) {
+        accordionWidget.add(tabWidgetPane);
+
+    }
+
+    @Override
+    public void tabVisibility(String tabName, boolean isVisible) {
+        accordionWidget.tabVisibility(tabName).setVisible(isVisible);
     }
 
     private void initDebugIds() {
-        linksPanel.ensureDebugId(DebugIds.ISSUE.LINKS_CONTAINER);
+        //linksPanel.ensureDebugId(DebugIds.ISSUE.LINKS_CONTAINER);
 
-        accordionWidget.setHeaderLabelDebugId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.LINKS);
+        //accordionWidget.setHeaderLabelDebugId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.LINKS);
         accordionWidget.setCollapseButtonDebugId(DebugIds.ISSUE.LINKS_COLLAPSE_BUTTON);
 
         createCaseLinkPopup.setEnsureDebugIdSelector(DebugIds.ISSUE.LINKS_TYPE_SELECTOR);
@@ -68,8 +75,6 @@ public class CaseLinkListView
 
     @UiField
     HTMLPanel root;
-    @UiField
-    HTMLPanel linksPanel;
     @Inject
     @UiField(provided = true)
     AccordionWidget accordionWidget;

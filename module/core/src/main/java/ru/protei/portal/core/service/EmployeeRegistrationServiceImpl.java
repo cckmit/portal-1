@@ -320,6 +320,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         CaseLink caseLink = new CaseLink();
         caseLink.setCaseId(employeeRegistrationId);
         caseLink.setType(En_CaseLink.YT);
+        caseLink.setBundleType(En_BundleType.LINKED_WITH);
         caseLink.setRemoteId(issueId);
         caseLink.setWithCrosslink(false);
         caseLinkDAO.persist(caseLink);

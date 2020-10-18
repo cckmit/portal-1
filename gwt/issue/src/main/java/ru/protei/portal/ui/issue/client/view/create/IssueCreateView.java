@@ -137,7 +137,7 @@ public class IssueCreateView extends Composite implements AbstractIssueCreateVie
 
     @Override
     public void setCountOfAttachments(int countOfAttachments) {
-        accordionWidget.setHeader(lang.attachmentsHeader(String.valueOf(countOfAttachments)));
+        //accordionWidget.setHeader(lang.attachmentsHeader(String.valueOf(countOfAttachments)));
     }
 
     @Override
@@ -210,7 +210,7 @@ public class IssueCreateView extends Composite implements AbstractIssueCreateVie
 
         nameLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.NAME);
         descriptionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.INFO);
-        accordionWidget.setHeaderLabelDebugId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.ATTACHMENTS);
+        //accordionWidget.setHeaderLabelDebugId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.ATTACHMENTS);
         accordionWidget.setCollapseButtonDebugId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.ATTACHMENT_COLLAPSE_BUTTON);
     }
 

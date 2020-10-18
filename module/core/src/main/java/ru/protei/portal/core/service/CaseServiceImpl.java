@@ -1082,6 +1082,7 @@ public class CaseServiceImpl implements CaseService {
 
         CaseLink caseLink = new CaseLink();
         caseLink.setType(En_CaseLink.CRM);
+        caseLink.setBundleType(En_BundleType.SUBTASK);
         caseLink.setRemoteId(parent.getId().toString());
         caseLink.setWithCrosslink(true);
         createRequest.addLink(caseLink);

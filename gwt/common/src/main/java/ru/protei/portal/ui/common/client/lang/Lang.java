@@ -3122,8 +3122,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String subtaskCreate();
 
-    String errSaveSubtaskParentFieldsInvalid();
-
     String errSaveSubtaskCompanyWithAutoOpenIssues();
 
     String errSaveSubtaskFieldsInvalid();
@@ -3131,4 +3129,8 @@ public interface Lang extends Messages, ContactItemLang {
     String errNotFoundParent();
 
     String errNotAllowedCreateSubtask();
+
+    String parentFor();
+
+    String subtask();
 }

@@ -1,10 +1,9 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_BundleType;
 import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
-
-import java.io.Serializable;
 
 @JdbcEntity(table = "case_link")
 public class CaseLink extends AuditableObject {
@@ -19,6 +18,10 @@ public class CaseLink extends AuditableObject {
     @JdbcColumn(name = "link_type")
     @JdbcEnumerated(EnumType.STRING)
     private En_CaseLink type;
+
+    @JdbcColumn(name = "bundle_type")
+    @JdbcEnumerated(EnumType.ID)
+    private En_BundleType bundleType;
 
     @JdbcColumn(name="remote_id")
     private String remoteId;
@@ -62,6 +65,14 @@ public class CaseLink extends AuditableObject {
 
     public void setType(En_CaseLink type) {
         this.type = type;
+    }
+
+    public En_BundleType getBundleType() {
+        return bundleType;
+    }
+
+    public void setBundleType(En_BundleType bundleType) {
+        this.bundleType = bundleType;
     }
 
     public String getRemoteId() {
@@ -132,6 +143,7 @@ public class CaseLink extends AuditableObject {
                 "id=" + id +
                 ", caseId=" + caseId +
                 ", type=" + type +
+                ", bundleType=" + bundleType +
                 ", remoteId='" + remoteId + '\'' +
                 ", withCrosslink=" + withCrosslink +
                 ", caseInfo=" + caseInfo +

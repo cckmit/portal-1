@@ -6,31 +6,24 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
+import ru.protei.portal.ui.common.client.widget.tab.base.Tab;
+import ru.protei.portal.ui.common.client.widget.accordion.navitem.AccordionWidgetNavItem;
 import ru.protei.portal.ui.common.client.widget.htmlpanel.ClickableHTMLPanel;
+import ru.protei.portal.ui.common.client.widget.tab.pane.TabWidgetPane;
 
-import java.util.Iterator;
+import java.util.*;
 
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.SHOW;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.STYLE_ATTRIBUTE;
 
-public class AccordionWidget extends Composite implements HasWidgets {
+public class AccordionWidget extends Tab {
+
     public AccordionWidget() {
         initWidget(ourUiBinder.createAndBindUi(this));
         setMaxHeightToElement(accordionCardBody, maxHeight);
-    }
-
-    public HasWidgets getBodyContainer() {
-        return bodyContainer;
-    }
-
-    public void setHeader(String headerContainer) {
-        headerLabel.setInnerText(headerContainer);
     }
 
     public void setMaxHeight(int maxHeight) {
@@ -42,32 +35,54 @@ public class AccordionWidget extends Composite implements HasWidgets {
         this.localStorageKey = localStorageKey;
     }
 
-    public void setHeaderLabelDebugId(String debugId) {
-        headerLabel.setId(debugId);
-    }
-
     public void setCollapseButtonDebugId(String debugId) {
         collapseButton.setId(debugId);
     }
 
-    @Override
-    public void add(Widget w) {
-        bodyContainer.add(w);
+    public void setBadge(String tabName, String badge) {
+        tabNameToNavItem.entrySet().forEach(entry -> {
+            if (Objects.equals(tabName, entry.getKey())) {
+                ((AccordionWidgetNavItem)entry.getValue()).setBadge(badge);
+            }
+        });
     }
 
     @Override
-    public void clear() {
+    protected void onAttach() {
+        super.onAttach();
+
+        initCollapseState(localStorageKey);
+    }
+
+    @Override
+    public void onTabClicked(String tabName) {
+        super.onTabSelected(tabName);
+        if (!accordionContainer.hasClassName(SHOW)) {
+            expandBody();
+        }
+    }
+
+    @Override
+    protected HTMLPanel getContainer() {
+        return bodyContainer;
+    }
+
+    @Override
+    protected void addTab(TabWidgetPane pane) {
+
+        AccordionWidgetNavItem navItem = makeNavItem(pane);
+
+        navTabs.add(navItem);
+        tabNameToNavItem.put(pane.getTabName(), navItem);
+        tabNameToPane.put(pane.getTabName(), pane);
+
+        selectTabIfNeeded(pane);
+    }
+
+    @Override
+    protected void clearTabs() {
         bodyContainer.clear();
-    }
-
-    @Override
-    public Iterator<Widget> iterator() {
-        return bodyContainer.iterator();
-    }
-
-    @Override
-    public boolean remove(Widget w) {
-        return bodyContainer.remove(w);
+        navTabs.clear();
     }
 
     @UiHandler("headerContainer")
@@ -77,13 +92,6 @@ public class AccordionWidget extends Composite implements HasWidgets {
         } else {
             expandBody();
         }
-    }
-
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-
-        initCollapseState(localStorageKey);
     }
 
     private void initCollapseState(String localStorageKey) {
@@ -128,10 +136,16 @@ public class AccordionWidget extends Composite implements HasWidgets {
         localStorageService.set(key, String.valueOf(value));
     }
 
+    private AccordionWidgetNavItem makeNavItem(TabWidgetPane pane) {
+        AccordionWidgetNavItem navItem = new AccordionWidgetNavItem();
+        navItem.setTabName(pane.getTabName());
+        navItem.setActivity(this);
+        navItem.setInActive();
+        return navItem;
+    }
+
     @UiField
     ClickableHTMLPanel headerContainer;
-    @UiField
-    LabelElement headerLabel;
     @UiField
     HTMLPanel bodyContainer;
     @UiField
@@ -142,12 +156,15 @@ public class AccordionWidget extends Composite implements HasWidgets {
     DivElement accordionCardBody;
     @UiField
     AnchorElement collapseButton;
+    @UiField
+    HTMLPanel navTabs;
 
     @Inject
     private LocalStorageService localStorageService;
 
     private int maxHeight = Integer.MAX_VALUE;
     private String localStorageKey;
+
 
     interface AccordionWidgetUiBinder extends UiBinder<HTMLPanel, AccordionWidget> {}
     private static AccordionWidgetUiBinder ourUiBinder = GWT.create(AccordionWidgetUiBinder.class);

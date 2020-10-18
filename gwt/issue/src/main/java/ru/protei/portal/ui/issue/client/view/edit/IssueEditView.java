@@ -166,6 +166,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         return fileUploader;
     }
 
+    @Override
+    public HasVisibility createSubtaskButtonVisibility() {
+        return createSubtaskButton;
+    }
+
     @UiHandler("nameAndDescriptionEditButton")
     public void onEditNameAndDescriptionButtonClick(ClickEvent event) {
         if (activity != null) {

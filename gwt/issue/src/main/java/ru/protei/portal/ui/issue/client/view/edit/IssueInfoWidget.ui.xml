@@ -13,7 +13,9 @@
         <div class="row form-group">
             <div class="col-md-12">
                 <accordion:AccordionWidget ui:field="accordionWidget">
-                    <attachment:fullview.FullViewAttachmentList ui:field="attachmentListContainer"/>
+                    <tab:pane.TabWidgetPane tabName="{lang.attachment}">
+                        <attachment:fullview.FullViewAttachmentList ui:field="attachmentListContainer"/>
+                    </tab:pane.TabWidgetPane>
                 </accordion:AccordionWidget>
             </div>
         </div>

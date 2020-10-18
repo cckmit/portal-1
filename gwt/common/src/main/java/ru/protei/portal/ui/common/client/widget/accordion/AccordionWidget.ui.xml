@@ -6,12 +6,13 @@
             <div class="col-md-12">
                 <div ui:field="accordionContainer" class="card card-default accordion">
                     <htmlPanel:ClickableHTMLPanel ui:field="headerContainer" styleName="card-header">
-                        <label ui:field="headerLabel"/>
+                        <g:HTMLPanel ui:field="navTabs" tag="span"/>
                         <a ui:field="collapseButton" class="pull-right collapse-btn p-b-0 p-t-0" href="javascript:void(0)"/>
                     </htmlPanel:ClickableHTMLPanel>
+
                     <div ui:field="accordionBody" class="accordion-body">
                         <div ui:field="accordionCardBody" class="card-body">
-                            <g:HTMLPanel ui:field="bodyContainer"/>
+                            <g:HTMLPanel ui:field="bodyContainer" styleName="tab-content"/>
                         </div>
                     </div>
                 </div>

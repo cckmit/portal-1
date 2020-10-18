@@ -386,6 +386,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                             crossCrmLink.setCaseId(remoteId);
                             crossCrmLink.setRemoteId(link.getCaseId().toString());
                             crossCrmLink.setType(En_CaseLink.CRM);
+                            crossCrmLink.setBundleType(Objects.equals(link.getBundleType(), En_BundleType.PARENT_FOR) ? En_BundleType.SUBTASK : En_BundleType.LINKED_WITH);
                             caseLinkDAO.persist(crossCrmLink);
                         }
                     }
@@ -577,20 +578,21 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                 .collect(Collectors.toList());
     }
 
-    private Result<CaseLink> addYoutrackCaseLink(Long caseId, String youtrackId ) {
+    private Result<CaseLink> addYoutrackCaseLink(Long caseId, String youtrackId) {
         log.debug("addYoutrackCaseLink(): caseId={}, youtrackId={}", caseId, youtrackId);
         CaseLink newLink = new CaseLink();
-        newLink.setCaseId( caseId );
-        newLink.setType( En_CaseLink.YT );
-        newLink.setRemoteId( youtrackId );
+        newLink.setCaseId(caseId);
+        newLink.setType(En_CaseLink.YT);
+        newLink.setBundleType(En_BundleType.LINKED_WITH);
+        newLink.setRemoteId(youtrackId);
         newLink.setWithCrosslink(true);
-        Long id = caseLinkDAO.persist( newLink );
+        Long id = caseLinkDAO.persist(newLink);
         if (id == null) {
-            log.error( "addYoutrackCaseLink(): Can`t add link on to youtrack into case, persistence error" );
-            throw new RollbackTransactionException( "addYoutrackCaseLink(): rollback transaction" );
+            log.error("addYoutrackCaseLink(): Can`t add link on to youtrack into case, persistence error");
+            throw new RollbackTransactionException("addYoutrackCaseLink(): rollback transaction");
         }
-        newLink.setId( id );
-        return ok( newLink );
+        newLink.setId(id);
+        return ok(newLink);
     }
 
     private Result<CaseLink> removeYoutrackCaseLink(CaseLink caseLink ) {

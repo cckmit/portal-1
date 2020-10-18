@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.casetag.taglist.AbstractCaseTagListActivity;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -474,6 +475,8 @@ public abstract class IssueEditActivity implements
 
         view.nameAndDescriptionEditButtonVisibility().setVisible(!readOnly && selfIssue);
         view.setFavoriteButtonActive(issue.isFavorite());
+
+        view.createSubtaskButtonVisibility().setVisible(!isStateCreatingSubtaskNotAllowed(issue));
     }
 
     private void viewModeIsPreview( boolean isPreviewMode){
@@ -549,6 +552,11 @@ public abstract class IssueEditActivity implements
             return null;
         }
         return name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
+    }
+
+    private boolean isStateCreatingSubtaskNotAllowed(CaseObject caseObject) {
+        return isTerminalState(caseObject.getStateId()) ||
+                CrmConstants.State.CREATED == caseObject.getStateId();
     }
 
     @Inject

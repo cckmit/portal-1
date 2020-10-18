@@ -1,8 +1,7 @@
-package ru.protei.portal.ui.common.client.widget.tab.navitem;
+package ru.protei.portal.ui.common.client.widget.accordion.navitem;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -13,9 +12,9 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import ru.protei.portal.ui.common.client.widget.tab.base.AbstractNavItem;
 import ru.protei.portal.ui.common.client.widget.tab.base.TabHandler;
 
-public class TabWidgetNavItem extends Composite implements AbstractNavItem {
+public class AccordionWidgetNavItem extends Composite implements AbstractNavItem {
 
-    public TabWidgetNavItem() {
+    public AccordionWidgetNavItem() {
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 
@@ -36,20 +35,18 @@ public class TabWidgetNavItem extends Composite implements AbstractNavItem {
         text.setInnerText(tabName);
     }
 
-    public void setTabIcon(String tabIcon) {
-        if (tabIcon != null) {
-            icon.removeClassName("hide");
-            icon.addClassName(tabIcon);
-        }
-    }
-
     public void setTabNameDebugId(String debugId) {
         anchor.ensureDebugId(debugId);
+    }
+
+    public void setBadge(String badge) {
+        this.badge.setInnerText(badge);
     }
 
     @UiHandler("anchor")
     public void anchorClick(ClickEvent event) {
         event.preventDefault();
+        event.stopPropagation();
         if (activity != null) {
             activity.onTabClicked(tabName);
         }
@@ -60,13 +57,13 @@ public class TabWidgetNavItem extends Composite implements AbstractNavItem {
     @UiField
     Anchor anchor;
     @UiField
-    Element icon;
+    LabelElement text;
     @UiField
-    SpanElement text;
+    LabelElement badge;
 
     private String tabName;
     private TabHandler activity;
-
-    interface TabWidgetNavItemUiBinder extends UiBinder<HTMLPanel, TabWidgetNavItem> {}
-    private static TabWidgetNavItemUiBinder ourUiBinder = GWT.create(TabWidgetNavItemUiBinder.class);
+    
+    interface AccordionWidgetNavItemUiBinder extends UiBinder<HTMLPanel, AccordionWidgetNavItem> {}
+    private static AccordionWidgetNavItemUiBinder ourUiBinder = GWT.create(AccordionWidgetNavItemUiBinder.class);
 }
