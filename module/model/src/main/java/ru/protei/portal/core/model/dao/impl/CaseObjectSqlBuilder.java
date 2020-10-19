@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.dao.impl;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
+import ru.protei.portal.core.model.dict.En_WorkTrigger;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -13,6 +14,7 @@ import ru.protei.portal.core.model.util.sqlcondition.Condition;
 import ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static ru.protei.portal.core.model.dao.impl.CaseShortViewDAO_Impl.isSearchAtComments;
@@ -325,6 +327,29 @@ public class CaseObjectSqlBuilder {
                 condition
                         .append(String.join(" or ", orConditions))
                         .append(")");
+            }
+
+            if (CollectionUtils.isNotEmpty(query.getWorkTriggersIds())) {
+                List<String> orConditions = new ArrayList<>();
+
+                condition.append(" and (");
+
+                if (query.getWorkTriggersIds().contains(En_WorkTrigger.NONE.getId())) {
+                    orConditions.add("case_object.work_trigger IS NULL");
+                }
+
+                if (isNotEmpty(query.getWorkTriggersIds())) {
+                    orConditions.add("case_object.work_trigger IN " + HelperFunc.makeInArg(query.getWorkTriggersIds(), false));
+                }
+
+                condition
+                        .append(String.join(" or ", orConditions))
+                        .append(")");
+            }
+
+            if (query.getOverdueDeadlines() != null) {
+                condition.append(" and case_object.deadline " + (query.getOverdueDeadlines()? "<=" : ">") +" ?");
+                args.add(new Date().getTime());
             }
         });
     }

@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.dict.En_WorkTrigger;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PlatformOption;
@@ -8,6 +9,9 @@ import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
 import java.util.List;
+
+import static ru.protei.portal.core.model.ent.CaseObject.Columns.DEADLINE;
+import static ru.protei.portal.core.model.ent.CaseObject.Columns.WORK_TRIGGER;
 
 @JdbcEntity(table = "case_object")
 public class CaseObjectMeta extends AuditableObject {
@@ -77,7 +81,14 @@ public class CaseObjectMeta extends AuditableObject {
     @JdbcJoinedColumn(localColumn = "manager_company_id", remoteColumn = "id", table = "company", mappedColumn = "cname")
     private String managerCompanyName;
 
-//    not db column
+    @JdbcColumn(name = DEADLINE)
+    private Long deadline;
+
+    @JdbcColumn(name = WORK_TRIGGER)
+    @JdbcEnumerated(EnumType.ID)
+    private En_WorkTrigger workTrigger;
+
+    //    not db column
     private List<Plan> plans;
 
     public CaseObjectMeta() {}
@@ -105,6 +116,8 @@ public class CaseObjectMeta extends AuditableObject {
         if (co.getManagerCompanyId() != null) setManagerCompanyId(co.getManagerCompanyId());
         if (co.getManagerCompanyName() != null) setManagerCompanyName(co.getManagerCompanyName());
         if (co.getPlans() != null) setPlans(co.getPlans());
+        if (co.getDeadline() != null) setDeadline(co.getDeadline());
+        if (co.getWorkTrigger() != null) setWorkTrigger(co.getWorkTrigger());
         setPrivateCase(co.isPrivateCase());
     }
 
@@ -130,6 +143,8 @@ public class CaseObjectMeta extends AuditableObject {
         if (getExtAppType() != null) co.setExtAppType(getExtAppType());
         if (getManagerCompanyId() != null) co.setManagerCompanyId(getManagerCompanyId());
         if (getPlans() != null) co.setPlans(getPlans());
+        if (co.getDeadline() != null) setDeadline(co.getDeadline());
+        if (co.getWorkTrigger() != null) setWorkTrigger(co.getWorkTrigger());
         co.setPrivateCase(isPrivateCase());
         return co;
     }
@@ -342,6 +357,22 @@ public class CaseObjectMeta extends AuditableObject {
         this.plans = plans;
     }
 
+    public Long getDeadline() {
+        return deadline;
+    }
+
+    public void setDeadline(Long deadline) {
+        this.deadline = deadline;
+    }
+
+    public En_WorkTrigger getWorkTrigger() {
+        return workTrigger;
+    }
+
+    public void setWorkTrigger(En_WorkTrigger workTrigger) {
+        this.workTrigger = workTrigger;
+    }
+
     @Override
     public String toString() {
         return "CaseObjectMeta{" +
@@ -367,6 +398,8 @@ public class CaseObjectMeta extends AuditableObject {
                 ", managerCompanyId=" + managerCompanyId +
                 ", managerCompanyName='" + managerCompanyName + '\'' +
                 ", plans=" + plans +
+                ", deadline=" + deadline +
+                ", workTrigger=" + workTrigger +
                 '}';
     }
 }
