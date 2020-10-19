@@ -192,7 +192,7 @@ public class AssembledCaseEvent extends ApplicationEvent implements HasCaseComme
     }
 
     public boolean isWorkTriggerChanged() {
-        return isUpdateEventMeta() && !lastMetaState.getWorkTrigger().equals(initMetaState.getWorkTrigger());
+        return isUpdateEventMeta() && !Objects.equals(lastMetaState.getWorkTrigger(), initMetaState.getWorkTrigger());
     }
 
     public void putAddedComments( List<CaseComment> commentList) {

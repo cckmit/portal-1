@@ -77,13 +77,14 @@ public class TemplateServiceImpl implements TemplateService {
 
     @Override
     public PreparedTemplate getCrmEmailNotificationBody(
-            AssembledCaseEvent event, List<CaseComment> caseComments, Collection<Attachment> attachments, DiffCollectionResult<LinkData> mergeLinks, String urlTemplate, Collection<String> recipients
+            AssembledCaseEvent event, List<CaseComment> caseComments, Collection<Attachment> attachments,
+            DiffCollectionResult<LinkData> mergeLinks, String urlTemplate, Collection<String> recipients, EnumLangUtil enumLangUtil
     ) {
         CaseObject newState = event.getCaseObject();
         En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(newState);
 
         Map<String, Object> templateModel = new HashMap<>();
-        templateModel.putAll(makeTemplateModelUtils());
+        templateModel.putAll(makeTemplateModelUtils(enumLangUtil));
         templateModel.putAll(makeTemplateModelMeta(event));
 
 //        templateModel.put( "case", newState );
@@ -127,11 +128,12 @@ public class TemplateServiceImpl implements TemplateService {
         return template;
     }
 
-    private Map<String, Object> makeTemplateModelUtils() {
+    private Map<String, Object> makeTemplateModelUtils(EnumLangUtil enumLangUtil) {
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("TextUtils", new TextUtils());
         templateModel.put("TimeElapsedFormatter", new WorkTimeFormatter());
         templateModel.put("TranslitUtils", new TransliterationUtils());
+        templateModel.put("EnumLangUtil", enumLangUtil);
         return templateModel;
     }
 

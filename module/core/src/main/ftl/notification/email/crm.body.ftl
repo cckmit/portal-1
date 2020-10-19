@@ -48,29 +48,6 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 </#macro>
 <#macro diff old, new>${TextUtils.diff(old, new, "color:#11731d;background:#dff7e2;text-decoration:none", "color:#bd1313;text-decoration:line-through")}</#macro>
 <#macro diffHTML old, new>${TextUtils.diffHTML(old, new, "color:#11731d;background:#dff7e2;text-decoration:none", "color:#bd1313;text-decoration:line-through")}</#macro>
-<#function workTriggerLang item>
-    <#if item.name() == "NONE">
-    <#return _workTriggerNone>
-    </#if>
-    <#if item.name() == "PSGO">
-    <#return _workTriggerPSGO>
-    </#if>
-    <#if item.name() == "NEW_REQUIREMENTS">
-    <#return _workTriggerNewRequirements>
-    </#if>
-    <#if item.name() == "PRE_COMMISSIONING_CONTRACT">
-    <#return _workTriggerPreCommissioningContract>
-    </#if>
-    <#if item.name() == "NEW_PRE_COMMISSIONING_REQUIREMENTS">
-    <#return _workTriggerNewPreCommissioningRequirements>
-    </#if>
-    <#if item.name() == "MARKETING">
-    <#return _workTriggerMarketing>
-    </#if>
-    <#if item.name() == "OTHER">
-    <#return _workTriggerOther>
-    </#if>
-</#function>
 
 <#--  TranslitUtils.transliterate is ONLY for company names and person (creator, manager etc.) names  -->
 
@@ -297,12 +274,12 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                         </td>
                         <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
                             <#if workTriggerChanged>
-                                <#assign oldWorkTriggerLang = workTriggerLang (oldWorkTrigger)
-                                            workTriggerLang = workTriggerLang (workTrigger)
-                                >
-                                <@changeTo old=oldWorkTriggerLang new=workTriggerLang/>
+                            <@changeTo
+                            old="${EnumLangUtil.workTriggerLang(oldWorkTrigger, lang)!'?'}"
+                            new="${EnumLangUtil.workTriggerLang(workTrigger, lang)}"
+                            />
                             <#else>
-                                ${workTriggerLang (workTrigger)}
+                                ${EnumLangUtil.workTriggerLang(workTrigger, lang)}
                             </#if>
                         </td>
                     </tr>
