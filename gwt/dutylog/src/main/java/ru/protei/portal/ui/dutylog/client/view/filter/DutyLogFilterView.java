@@ -47,7 +47,7 @@ public class DutyLogFilterView extends Composite implements AbstractDutyLogFilte
     @Override
     public void resetFilter() {
         sortField.setValue(En_SortField.duty_log_date_from);
-        sortDir.setValue(false);
+        sortDir.setValue(true);
         employee.setValue(null);
         date.setValue(null);
     }

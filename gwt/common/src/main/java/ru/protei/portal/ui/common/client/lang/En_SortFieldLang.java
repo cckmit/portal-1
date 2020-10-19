@@ -74,8 +74,11 @@ public class En_SortFieldLang {
             case contract_signing_date:
                 return lang.signingDate();
             case duty_log_date_from:
-                return lang.dutyLogDateFrom();
-
+                return lang.dutyLogSortDateFrom();
+            case duty_log_employee:
+                return lang.dutyLogEmployee();
+            case duty_log_type:
+                return lang.dutyLogType();
             default:
                 return lang.unknownField();
         }

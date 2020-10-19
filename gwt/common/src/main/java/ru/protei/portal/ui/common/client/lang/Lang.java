@@ -3108,7 +3108,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String dutyLog();
 
-    String dutyLogDateFrom();
+    String dutyLogSortDateFrom();
 
     String dutyLogValidationDateRange();
 
