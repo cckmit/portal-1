@@ -45,8 +45,8 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     public void onInit() {
         initWidget(outUiBinder.createAndBindUi(this));
         sortField.setType(ModuleType.CONTRACT);
-        dateSigningRange.fillSelector(En_DateIntervalType.allTypes());
-        dateValidRange.fillSelector(En_DateIntervalType.allTypes());
+        dateSigningRange.fillSelector(En_DateIntervalType.defaultTypes());
+        dateValidRange.fillSelector(En_DateIntervalType.defaultTypes());
     }
 
     @Override

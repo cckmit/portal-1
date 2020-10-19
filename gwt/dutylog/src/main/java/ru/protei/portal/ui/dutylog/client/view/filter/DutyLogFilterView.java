@@ -29,7 +29,7 @@ public class DutyLogFilterView extends Composite implements AbstractDutyLogFilte
     @Inject
     public void onInit() {
         initWidget(outUiBinder.createAndBindUi(this));
-        date.fillSelector(En_DateIntervalType.allTypes());
+        date.fillSelector(En_DateIntervalType.dutyTypes());
         type.setModel(elementIndex -> {
             DutyType[] list = DutyType.values();
             if (list.length <= elementIndex) return null;
@@ -104,7 +104,8 @@ public class DutyLogFilterView extends Composite implements AbstractDutyLogFilte
 
     @UiHandler("resetBtn")
     public void onResetClicked(ClickEvent event) {
-        activity.onResetFilterClicked();
+        resetFilter();
+        fireFilterChanged();
     }
     private void fireFilterChanged() {
         activity.onFilterChanged();
