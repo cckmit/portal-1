@@ -247,6 +247,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public PersonShortViewDAO gePersonShortViewDAO() {
+        return new PersonShortViewDAOImpl();
+    }
+
+    @Bean
     public DevUnitDAO getDevUnitDAO() {
         return new DevUnitDAO_Impl();
     }

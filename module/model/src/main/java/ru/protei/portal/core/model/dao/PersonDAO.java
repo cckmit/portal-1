@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.net.Inet4Address;
@@ -75,4 +76,5 @@ public interface PersonDAO extends PortalBaseDAO<Person> {
      * @return
      */
     Map<Long,Long> mapLegacyId ();
+
 }

@@ -17,6 +17,7 @@ import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.sqlcondition.Condition;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.utils.EntityCache;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.core.utils.beans.SearchResult;

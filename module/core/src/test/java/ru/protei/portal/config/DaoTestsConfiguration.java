@@ -67,6 +67,11 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
+    public PersonShortViewDAO getPersonShortViewDAO() {
+        return new PersonShortViewDAOImpl();
+    }
+
+    @Bean
     public DevUnitDAO getDevUnitDAO() {
         return new DevUnitDAO_Impl();
     }

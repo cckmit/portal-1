@@ -70,6 +70,11 @@ public class DaoMockTestConfiguration {
     }
 
     @Bean
+    public PersonShortViewDAO getPersonShortViewDAO() {
+        return  mock(PersonShortViewDAO.class);
+    }
+
+    @Bean
     public DevUnitDAO getDevUnitDAO() {
         return  mock(DevUnitDAO.class);
     }

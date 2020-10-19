@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dao.PersonShortViewDAO;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
@@ -63,8 +64,9 @@ public class PersonServiceImpl implements PersonService {
         List<Person> persons = personDAO.getPersons( query );
         sp.check( "personDAO limit=" + query.limit );
         Result<List<PersonShortView>> listResult = makeListPersonShortView( persons );
+        List<PersonShortView> personList = personShortViewDAO.getPersonsShortView(query);
         sp.stop( "shortViewList end " );
-        return listResult;
+        return ok(personList);
     }
 
     @Override
@@ -129,7 +131,8 @@ public class PersonServiceImpl implements PersonService {
     AuthService authService;
     @Autowired
     PolicyService policyService;
-
+    @Autowired
+    PersonShortViewDAO personShortViewDAO;
     private static final Logger log = LoggerFactory.getLogger(PersonServiceImpl.class);
 
 }
