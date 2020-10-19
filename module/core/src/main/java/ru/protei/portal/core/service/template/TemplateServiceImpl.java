@@ -178,6 +178,14 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("product", newMetaState.getProduct() == null ? null : newMetaState.getProduct().getName());
         templateModel.put("oldProduct", oldMetaState == null || oldMetaState.getProduct() == null ? null : oldMetaState.getProduct().getName());
 
+        templateModel.put("deadlineChanged", event.isDeadlineChanged());
+        templateModel.put("deadline", newMetaState.getDeadline() == null ? null : new Date(newMetaState.getDeadline()));
+        templateModel.put("oldDeadline", (oldMetaState == null || oldMetaState.getDeadline() == null) ? null : new Date(oldMetaState.getDeadline()));
+
+        templateModel.put("workTriggerChanged", event.isWorkTriggerChanged());
+        templateModel.put("workTrigger", newMetaState.getWorkTrigger() == null ? null : newMetaState.getWorkTrigger());
+        templateModel.put("oldWorkTrigger", oldMetaState == null || oldMetaState.getWorkTrigger() == null ? null : oldMetaState.getWorkTrigger());
+
         return templateModel;
     }
 

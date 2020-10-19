@@ -186,6 +186,15 @@ public class AssembledCaseEvent extends ApplicationEvent implements HasCaseComme
         }
     }
 
+
+    public boolean isDeadlineChanged() {
+        return isUpdateEventMeta() && !Objects.equals(lastMetaState.getDeadline(), initMetaState.getDeadline());
+    }
+
+    public boolean isWorkTriggerChanged() {
+        return isUpdateEventMeta() && !lastMetaState.getWorkTrigger().equals(initMetaState.getWorkTrigger());
+    }
+
     public void putAddedComments( List<CaseComment> commentList) {
         comments.putAddedEntries( commentList );
         lastUpdated = currentTimeMillis();

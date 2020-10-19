@@ -30,6 +30,15 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 <@set name="_timeMinuteLiteral" value="${timeMinuteLiteral}"/>
 <@set name="_privateComment" value="${privateComment}"/>
 <@set name="_platform" value="${issuePlatform}"/>
+<@set name="_deadline" value="${deadline}"/>
+<@set name="_workTrigger" value="${workTrigger}"/>
+<@set name="_workTriggerNone" value="${workTriggerNone}"/>
+<@set name="_workTriggerPSGO" value="${workTriggerPSGO}"/>
+<@set name="_workTriggerNewRequirements" value="${workTriggerNewRequirements}"/>
+<@set name="_workTriggerPreCommissioningContract" value="${workTriggerPreCommissioningContract}"/>
+<@set name="_workTriggerNewPreCommissioningRequirements" value="${workTriggerNewPreCommissioningRequirements}"/>
+<@set name="_workTriggerMarketing" value="${workTriggerMarketing}"/>
+<@set name="_workTriggerOther" value="${workTriggerOther}"/>
 
 <#noparse>
 <#macro changeTo old, new>
@@ -39,6 +48,29 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 </#macro>
 <#macro diff old, new>${TextUtils.diff(old, new, "color:#11731d;background:#dff7e2;text-decoration:none", "color:#bd1313;text-decoration:line-through")}</#macro>
 <#macro diffHTML old, new>${TextUtils.diffHTML(old, new, "color:#11731d;background:#dff7e2;text-decoration:none", "color:#bd1313;text-decoration:line-through")}</#macro>
+<#function workTriggerLang item>
+    <#if item.name() == "NONE">
+    <#return _workTriggerNone>
+    </#if>
+    <#if item.name() == "PSGO">
+    <#return _workTriggerPSGO>
+    </#if>
+    <#if item.name() == "NEW_REQUIREMENTS">
+    <#return _workTriggerNewRequirements>
+    </#if>
+    <#if item.name() == "PRE_COMMISSIONING_CONTRACT">
+    <#return _workTriggerPreCommissioningContract>
+    </#if>
+    <#if item.name() == "NEW_PRE_COMMISSIONING_REQUIREMENTS">
+    <#return _workTriggerNewPreCommissioningRequirements>
+    </#if>
+    <#if item.name() == "MARKETING">
+    <#return _workTriggerMarketing>
+    </#if>
+    <#if item.name() == "OTHER">
+    <#return _workTriggerOther>
+    </#if>
+</#function>
 
 <#--  TranslitUtils.transliterate is ONLY for company names and person (creator, manager etc.) names  -->
 
@@ -241,6 +273,40 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                         </#if>
                     </td>
                 </tr>
+                <#if showPrivacy>
+                    <tr>
+                        <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
+                            ${_deadline}
+                        </td>
+                        <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
+                            <#if deadlineChanged>
+                            <@changeTo
+                            old="${oldDeadline???then(oldDeadline?date, '?')}"
+                            new="${deadline???then(deadline?date, '?')}"
+                            />
+                            <#else>
+                            ${deadline???then(deadline?date, '?')}
+                        </#if>
+                        </td>
+                    </tr>
+                </#if>
+                <#if showPrivacy>
+                    <tr>
+                        <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
+                            ${_workTrigger}
+                        </td>
+                        <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
+                            <#if workTriggerChanged>
+                                <#assign oldWorkTriggerLang = workTriggerLang (oldWorkTrigger)
+                                            workTriggerLang = workTriggerLang (workTrigger)
+                                >
+                                <@changeTo old=oldWorkTriggerLang new=workTriggerLang/>
+                            <#else>
+                                ${workTriggerLang (workTrigger)}
+                            </#if>
+                        </td>
+                    </tr>
+                </#if>
                 <#if showPrivacy>
                     <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
                         ${_platform}
