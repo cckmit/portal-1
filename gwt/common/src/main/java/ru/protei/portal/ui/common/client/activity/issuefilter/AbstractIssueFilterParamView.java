@@ -68,10 +68,6 @@ public interface AbstractIssueFilterParamView extends IsWidget {
 
     HasVisibility planVisibility();
 
-    HasVisibility workTriggerVisibility();
-
-    HasVisibility overdueDeadlinesVisibility();
-
     void resetFilter();
 
     void presetCompany(Company company);

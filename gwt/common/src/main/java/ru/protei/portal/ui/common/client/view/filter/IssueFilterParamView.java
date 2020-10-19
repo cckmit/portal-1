@@ -204,16 +204,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public HasVisibility workTriggerVisibility() {
-        return workTriggers;
-    }
-
-    @Override
-    public HasVisibility overdueDeadlinesVisibility() {
-        return overdueDeadlines;
-    }
-
-    @Override
     public void resetFilter() {
         companies.setValue(null);
         products.setValue(null);
