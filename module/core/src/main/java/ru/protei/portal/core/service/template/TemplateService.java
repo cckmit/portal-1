@@ -21,7 +21,8 @@ import java.util.List;
  */
 public interface TemplateService {
     PreparedTemplate getCrmEmailNotificationBody(
-            AssembledCaseEvent caseObject, List<CaseComment> caseComments, Collection<Attachment> attachments, DiffCollectionResult<LinkData> mergeLinks, String urlTemplate, Collection<String> recipients);
+            AssembledCaseEvent caseObject, List<CaseComment> caseComments, Collection<Attachment> attachments,
+            DiffCollectionResult<LinkData> mergeLinks, String urlTemplate, Collection<String> recipients, EnumLangUtil enumLangUtil);
 
     PreparedTemplate getCrmEmailNotificationSubject( AssembledCaseEvent event, Person currentPerson );
 

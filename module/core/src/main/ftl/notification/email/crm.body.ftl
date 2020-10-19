@@ -30,6 +30,8 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 <@set name="_timeMinuteLiteral" value="${timeMinuteLiteral}"/>
 <@set name="_privateComment" value="${privateComment}"/>
 <@set name="_platform" value="${issuePlatform}"/>
+<@set name="_deadline" value="${deadline}"/>
+<@set name="_workTrigger" value="${workTrigger}"/>
 
 <#noparse>
 <#macro changeTo old, new>
@@ -241,6 +243,40 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                         </#if>
                     </td>
                 </tr>
+                <#if showPrivacy>
+                    <tr>
+                        <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
+                            ${_deadline}
+                        </td>
+                        <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
+                            <#if deadlineChanged>
+                            <@changeTo
+                            old="${oldDeadline???then(oldDeadline?date, '?')}"
+                            new="${deadline???then(deadline?date, '?')}"
+                            />
+                            <#else>
+                            ${deadline???then(deadline?date, '?')}
+                        </#if>
+                        </td>
+                    </tr>
+                </#if>
+                <#if showPrivacy>
+                    <tr>
+                        <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
+                            ${_workTrigger}
+                        </td>
+                        <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
+                            <#if workTriggerChanged>
+                            <@changeTo
+                            old="${EnumLangUtil.workTriggerLang(oldWorkTrigger, lang)!'?'}"
+                            new="${EnumLangUtil.workTriggerLang(workTrigger, lang)}"
+                            />
+                            <#else>
+                                ${EnumLangUtil.workTriggerLang(workTrigger, lang)}
+                            </#if>
+                        </td>
+                    </tr>
+                </#if>
                 <#if showPrivacy>
                     <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
                         ${_platform}

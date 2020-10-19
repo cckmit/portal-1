@@ -192,4 +192,30 @@ public class EnumLangUtil {
         }
         return "";
     }
+
+    public String workTriggerLang(En_WorkTrigger value, String langCode) {
+        if (value == null) {
+            return "";
+        }
+        if (localizedLang == null) {
+            localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
+        }
+        switch (value) {
+            case NONE:
+                return localizedLang.get("workTriggerNone");
+            case PSGO:
+                return localizedLang.get("workTriggerPSGO");
+            case NEW_REQUIREMENTS:
+                return  localizedLang.get("workTriggerNewRequirements");
+            case PRE_COMMISSIONING_CONTRACT:
+                return localizedLang.get("workTriggerPreCommissioningContract");
+            case NEW_PRE_COMMISSIONING_REQUIREMENTS:
+                return localizedLang.get("workTriggerNewPreCommissioningRequirements");
+            case MARKETING:
+                return localizedLang.get("workTriggerMarketing");
+            case OTHER:
+                return localizedLang.get("workTriggerOther");
+        }
+        return "";
+    }
 }
