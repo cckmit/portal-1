@@ -11,16 +11,17 @@ import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dto.Project;
+import ru.protei.portal.core.model.dto.ProjectInfo;
+import ru.protei.portal.core.model.dto.RegionInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.LocationQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
-import ru.protei.portal.core.model.dto.Project;
-import ru.protei.portal.core.model.dto.ProjectInfo;
-import ru.protei.portal.core.model.dto.RegionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
@@ -41,6 +42,7 @@ import static ru.protei.portal.core.access.ProjectAccessUtil.canAccessProject;
 import static ru.protei.portal.core.access.ProjectAccessUtil.getProjectAccessType;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
+import static ru.protei.portal.core.model.view.PersonProjectMemberView.fromFullNamePerson;
 
 /**
  * Реализация сервиса управления проектами
@@ -395,12 +397,6 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public Result<List<EntityOption>> listOptionProjects(AuthToken token, ProjectQuery query) {
-
-        En_ProjectAccessType accessType = getProjectAccessType(policyService, token, En_Privilege.PROJECT_VIEW);
-        if (accessType == En_ProjectAccessType.SELF_PROJECTS) {
-            query.setMemberId(token.getPersonId());
-        }
-
         List<Project> projects = projectDAO.listByQuery(query);
 
         List<EntityOption> result = projects.stream()
@@ -410,12 +406,6 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public Result<List<ProjectInfo>> listInfoProjects(AuthToken token, ProjectQuery query) {
-
-        En_ProjectAccessType accessType = getProjectAccessType(policyService, token, En_Privilege.PROJECT_VIEW);
-        if (accessType == En_ProjectAccessType.SELF_PROJECTS) {
-            query.setMemberId(token.getPersonId());
-        }
-
         List<Project> projects = projectDAO.listByQuery(query);
 
         jdbcManyRelationsHelper.fill(projects, "products");
@@ -442,13 +432,13 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Result<PersonProjectMemberView> getProjectLeader(AuthToken authToken, Long projectId) {
-        Result<Project> projectResult = getProject(authToken, projectId);
-        if (projectResult.isError()) {
-            return error(projectResult.getStatus());
-        }
-
-        return projectResult.map(Project::getLeader);
+    public Result<PersonShortView> getProjectLeader(AuthToken authToken, Long projectId) {
+        return caseMemberDAO.getLeaders(projectId)
+                .stream()
+                .findFirst()
+                .map(leader -> PersonShortView.fromFullNamePerson(leader.getMember()))
+                .map(Result::ok)
+                .orElse(ok(null));
     }
 
     private boolean validateFields(Project project) {
@@ -504,7 +494,7 @@ public class ProjectServiceImpl implements ProjectService {
                 if (!projectRoles.contains(member.getRole())) {
                     continue;
                 }
-                int nPos = toAdd.indexOf(PersonProjectMemberView.fromFullNamePerson(member.getMember(), member.getRole()));
+                int nPos = toAdd.indexOf(fromFullNamePerson(member.getMember(), member.getRole()));
                 if (nPos == -1) {
                     toRemove.add(member.getId());
                 } else {

@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.dto.RegionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -44,5 +45,5 @@ public interface RegionController extends RemoteService {
 
     ProjectInfo getProjectInfo(Long id) throws RequestFailedException;
 
-    PersonProjectMemberView getProjectLeader(Long projectId) throws RequestFailedException;
+    PersonShortView getProjectLeader(Long projectId) throws RequestFailedException;
 }
