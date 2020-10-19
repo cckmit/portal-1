@@ -186,7 +186,6 @@ public class AssembledCaseEvent extends ApplicationEvent implements HasCaseComme
         }
     }
 
-
     public boolean isDeadlineChanged() {
         return isUpdateEventMeta() && !Objects.equals(lastMetaState.getDeadline(), initMetaState.getDeadline());
     }

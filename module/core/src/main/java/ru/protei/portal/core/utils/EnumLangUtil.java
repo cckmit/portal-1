@@ -204,17 +204,17 @@ public class EnumLangUtil {
             case NONE:
                 return localizedLang.get("workTriggerNone");
             case PSGO:
-                return  localizedLang.get("workTriggerPSGO");
+                return localizedLang.get("workTriggerPSGO");
             case NEW_REQUIREMENTS:
                 return  localizedLang.get("workTriggerNewRequirements");
             case PRE_COMMISSIONING_CONTRACT:
-                return  localizedLang.get("workTriggerPreCommissioningContract");
+                return localizedLang.get("workTriggerPreCommissioningContract");
             case NEW_PRE_COMMISSIONING_REQUIREMENTS:
-                return  localizedLang.get("workTriggerNewPreCommissioningRequirements");
+                return localizedLang.get("workTriggerNewPreCommissioningRequirements");
             case MARKETING:
-                return  localizedLang.get("workTriggerMarketing");
+                return localizedLang.get("workTriggerMarketing");
             case OTHER:
-                return  localizedLang.get("workTriggerOther");
+                return localizedLang.get("workTriggerOther");
         }
         return "";
     }

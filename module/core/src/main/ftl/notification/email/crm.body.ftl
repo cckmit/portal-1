@@ -32,13 +32,6 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 <@set name="_platform" value="${issuePlatform}"/>
 <@set name="_deadline" value="${deadline}"/>
 <@set name="_workTrigger" value="${workTrigger}"/>
-<@set name="_workTriggerNone" value="${workTriggerNone}"/>
-<@set name="_workTriggerPSGO" value="${workTriggerPSGO}"/>
-<@set name="_workTriggerNewRequirements" value="${workTriggerNewRequirements}"/>
-<@set name="_workTriggerPreCommissioningContract" value="${workTriggerPreCommissioningContract}"/>
-<@set name="_workTriggerNewPreCommissioningRequirements" value="${workTriggerNewPreCommissioningRequirements}"/>
-<@set name="_workTriggerMarketing" value="${workTriggerMarketing}"/>
-<@set name="_workTriggerOther" value="${workTriggerOther}"/>
 
 <#noparse>
 <#macro changeTo old, new>
