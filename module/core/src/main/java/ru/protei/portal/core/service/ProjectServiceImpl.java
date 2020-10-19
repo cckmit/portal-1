@@ -416,12 +416,6 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public Result<List<EntityOption>> listOptionProjects(AuthToken token, ProjectQuery query) {
-
-        En_ProjectAccessType accessType = getProjectAccessType(policyService, token, En_Privilege.PROJECT_VIEW);
-        if (accessType == En_ProjectAccessType.SELF_PROJECTS) {
-            query.setOnlyMineProjects(true);
-        }
-
         CaseQuery caseQuery = query.toCaseQuery(token.getPersonId());
         List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
 
@@ -433,12 +427,6 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public Result<List<ProjectInfo>> listInfoProjects(AuthToken token, ProjectQuery query) {
-
-        En_ProjectAccessType accessType = getProjectAccessType(policyService, token, En_Privilege.PROJECT_VIEW);
-        if (accessType == En_ProjectAccessType.SELF_PROJECTS) {
-            query.setOnlyMineProjects(true);
-        }
-
         CaseQuery caseQuery = query.toCaseQuery(token.getPersonId());
         List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
 
