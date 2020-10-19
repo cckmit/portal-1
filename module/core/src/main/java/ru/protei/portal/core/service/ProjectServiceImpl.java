@@ -453,11 +453,11 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Result<PersonProjectMemberView> getProjectLeader(AuthToken authToken, Long projectId) {
+    public Result<PersonShortView> getProjectLeader(AuthToken authToken, Long projectId) {
         return caseMemberDAO.getLeaders(projectId)
                 .stream()
                 .findFirst()
-                .map(leader -> fromFullNamePerson(leader.getMember(), En_DevUnitPersonRoleType.HEAD_MANAGER))
+                .map(leader -> PersonShortView.fromFullNamePerson(leader.getMember()))
                 .map(Result::ok)
                 .orElse(ok(null));
     }
