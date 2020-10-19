@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.util.sqlcondition.Query;
 
 import java.util.List;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
 import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.condition;
 import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
 
@@ -18,8 +19,9 @@ public class AttachmentDAO_Impl extends PortalBaseJdbcDAO<Attachment> implements
     @Override
     public List<Attachment> getAttachmentsByCaseId(Long caseId) {
         Query query = query()
-                .where("attachment.id").in(
-                        getSelectConditionByCaseId("case_attachment.att_id", caseId).asQuery()
+                .where( "attachment.id" ).in( query()
+                        .select( "case_attachment.att_id" ).from( "case_attachment" )
+                        .where( "case_attachment.case_id" ).equal( caseId ).asQuery()
                 ).asQuery();
 
         return getListByCondition(query.buildSql(), query.args());
@@ -28,22 +30,24 @@ public class AttachmentDAO_Impl extends PortalBaseJdbcDAO<Attachment> implements
     @Override
     public List<Attachment> getPublicAttachmentsByCaseId(Long caseId) {
         Query query = query()
-                .where("attachment.id").in(
-                        getSelectConditionByCaseId("case_attachment.att_id", caseId)
-                                .and(getPublicCondition())
-                                .asQuery()
+                .where( "attachment.id" ).in( query()
+                        .select( "case_attachment.att_id" ).from( "case_attachment" )
+                        .where( "case_attachment.case_id" ).equal( caseId )
+                        .and( getPublicCondition() )
+                        .asQuery()
                 ).asQuery();
 
         return getListByCondition(query.buildSql(), query.args());
     }
 
     @Override
-    public boolean hasPublicAttachments(Long caseId) {
-        Query query = getSelectConditionByCaseId("count(*)", caseId)
-                .and(getPublicCondition())
+    public List<Long> findCasesIdsWithPublicAttachments( List<Long> caseIds) {
+        Query query = query().select( "distinct case_attachment.CASE_ID" ).from( "case_attachment" )
+                .where("case_attachment.case_id").in(caseIds)
+                .and( getPublicCondition() )
                 .asQuery();
 
-        return jdbcTemplate.queryForObject(query.buildSql(), query.args(), Integer.class) > 0;
+        return jdbcTemplate.queryForList(query.buildSql(), query.args(), Long.class);
     }
 
     @Override
@@ -72,10 +76,4 @@ public class AttachmentDAO_Impl extends PortalBaseJdbcDAO<Attachment> implements
                 );
     }
 
-    private Condition getSelectConditionByCaseId(String selectExpression, Long caseId) {
-        return query()
-                .select(selectExpression)
-                .from("case_attachment")
-                .where("case_attachment.case_id").equal(caseId);
-    }
 }

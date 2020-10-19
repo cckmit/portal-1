@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.portal.core.utils.SimpleProfiler;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
@@ -40,7 +41,7 @@ public class PersonServiceImpl implements PersonService {
         person.resetPrivacyInfo();
         return ok(person);
     }
-
+    SimpleProfiler sp = new SimpleProfiler( true, ( message, currentTime ) -> log.info( "sp {} {}", message,currentTime  ) );
     @Override
     public Result<PersonShortView> getPersonShortView(AuthToken token, Long personId) {
 
@@ -50,13 +51,20 @@ public class PersonServiceImpl implements PersonService {
 
         Person person = personDAO.get(personId);
         if(person==null) return error(En_ResultStatus.NOT_FOUND);
+
         return ok(person.toFullNameShortView());
     }
 
     @Override
     public Result< List< PersonShortView > > shortViewList( AuthToken authToken, PersonQuery query) {
+        sp.start( "shortViewList start limit=" + query.limit );
         query = processQueryByPolicyScope(authToken, query);
-        return makeListPersonShortView(personDAO.getPersons( query ));
+        sp.check( "processQueryByPolicyScope" );
+        List<Person> persons = personDAO.getPersons( query );
+        sp.check( "personDAO limit=" + query.limit );
+        Result<List<PersonShortView>> listResult = makeListPersonShortView( persons );
+        sp.stop( "shortViewList end " );
+        return listResult;
     }
 
     @Override
