@@ -10,4 +10,6 @@ import java.util.List;
 public interface CaseMemberDAO extends PortalBaseDAO<CaseMember> {
 
     List<CaseMember> listByCaseId(Long caseId);
+
+    List<CaseMember> getLeaders(Long caseId);
 }
