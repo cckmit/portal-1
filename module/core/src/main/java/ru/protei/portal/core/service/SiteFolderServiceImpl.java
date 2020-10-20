@@ -329,6 +329,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
+    @Transactional
     public Result<Server> updateServer( AuthToken token, Server server) {
 
         boolean status = serverDAO.merge(server);
@@ -347,6 +348,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
+    @Transactional
     public Result<Application> updateApplication( AuthToken token, Application application) {
 
         boolean status = applicationDAO.merge(application);
@@ -366,6 +368,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
 
 
     @Override
+    @Transactional
     public Result<Boolean> removePlatform( AuthToken token, long id) {
 
         Platform platform = platformDAO.get(id);
@@ -386,6 +389,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
+    @Transactional
     public Result<Boolean> removeServer( AuthToken token, long id) {
 
         boolean result = serverDAO.removeByKey(id);
@@ -394,6 +398,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
+    @Transactional
     public Result<Boolean> removeApplication( AuthToken token, long id) {
 
         boolean result = applicationDAO.removeByKey(id);

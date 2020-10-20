@@ -454,14 +454,14 @@ public class EmployeeServiceImpl implements EmployeeService {
                     Result createResult  = createEmployeeWorker(token, entry.getKey());
                     makeAudit(entry.getKey(), En_AuditType.WORKER_CREATE, token);
                     if (createResult.isError()){
-                        return error(createResult.getStatus());
+                        throw new ResultStatusException(createResult.getStatus(), "Error while worker entry creating");
                     }
                     break;
                 case TO_REMOVE :
                     Result removeStatus  = removeWorkerEntry(entry.getKey());
                     makeAudit(entry.getKey(), En_AuditType.WORKER_REMOVE, token);
                     if (removeStatus.isError()){
-                        return error(removeStatus.getStatus());
+                        throw new ResultStatusException(removeStatus.getStatus(), "Error while worker entry removing");
                     }
                     break;
             }

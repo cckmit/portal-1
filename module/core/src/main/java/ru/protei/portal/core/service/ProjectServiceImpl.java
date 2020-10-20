@@ -347,21 +347,8 @@ public class ProjectServiceImpl implements ProjectService {
             throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
         }
 
-        Result addLinksResult = ok();
-
-        List<CaseLink> successfullyAddedLinks = new ArrayList<>();
-
-        for (CaseLink caseLink : CollectionUtils.emptyIfNull(project.getLinks())) {
-            caseLink.setCaseId(caseObject.getId());
-            Result currentResult = caseLinkService.createLink(token, caseLink, caseObject.getType());
-            if (currentResult.isError()) {
-                addLinksResult = currentResult;
-            } else {
-                successfullyAddedLinks.add(caseLink);
-            }
-        }
-
-        caseLinkService.addYoutrackLinks(token, successfullyAddedLinks, En_CaseType.PROJECT);
+        Result<List<CaseLink>> createdLinksResult
+                = caseLinkService.createLinks(token, emptyIfNull(project.getLinks()), En_CaseType.PROJECT);
 
         Person creator = personDAO.get(project.getCreatorId());
         jdbcManyRelationsHelper.fill(creator, Person.Fields.CONTACT_ITEMS);
@@ -369,7 +356,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         ProjectCreateEvent projectCreateEvent = new ProjectCreateEvent(this, token.getPersonId(), project.getId());
 
-        return new Result<>(En_ResultStatus.OK, project, (addLinksResult.isOk() ? null : SOME_LINKS_NOT_SAVED), Collections.singletonList(projectCreateEvent));
+        return new Result<>(En_ResultStatus.OK, project, createdLinksResult.getMessage(), Collections.singletonList(projectCreateEvent));
     }
 
     @Override
@@ -392,9 +379,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         if (result) {
             caseLinkService.getLinks(token, caseObject.getId())
-                .ifOk(links -> links.forEach(caseLink -> {
-                    caseLinkService.deleteLink(token, caseLink.getId());
-                }));
+                .ifOk(links -> caseLinkService.deleteLinks(token, links));
         }
         return ok(result);
     }

@@ -192,7 +192,7 @@ public class AbsenceServiceImpl implements AbsenceService {
         }
 
         if (!personAbsenceDAO.removeByKey(storedAbsence.getId())) {
-            return error(En_ResultStatus.NOT_REMOVED);
+            return error(En_ResultStatus.NOT_REMOVED, "Absence was not removed. It could be removed earlier");
         }
 
         Person initiator = personDAO.get(token.getPersonId());

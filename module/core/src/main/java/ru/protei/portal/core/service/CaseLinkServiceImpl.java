@@ -35,6 +35,7 @@ import static java.util.stream.Collectors.toList;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 
 public class CaseLinkServiceImpl implements CaseLinkService {
 
@@ -87,38 +88,52 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     @Override
     @Transactional
     public Result<CaseLink> createLink(AuthToken authToken, CaseLink link, En_CaseType caseType) {
+        Result<CaseLink> addedLinkResult = createLink(link, caseType, authToken);
 
-        En_ResultStatus validationStatus = validateLinkBeforeAdd(link, authToken);
-        if (!En_ResultStatus.OK.equals(validationStatus)) {
-            return error(validationStatus);
+        if (addedLinkResult.isOk()) {
+            synchronizeYouTrackLinks(authToken, Collections.singletonList(addedLinkResult.getData()), caseType);
+        } else {
+            return error(addedLinkResult.getStatus());
         }
 
-        Long createdLinkId = addLink(link, caseType).getData();
-        CaseLink createdLink = caseLinkDAO.get(createdLinkId);
+        return ok(addedLinkResult.getData());
+    }
 
-        return ok(createdLink);
+    @Override
+    @Transactional
+    public Result<List<CaseLink>> createLinks(AuthToken authToken, List<CaseLink> linksToCreate, En_CaseType caseType) {
+        if (isEmpty(linksToCreate)) {
+            return ok();
+        }
+
+        List<CaseLink> successfullyCreatedLinks = new ArrayList<>();
+
+        linksToCreate.forEach(link -> {
+            Result<CaseLink> createdLinkResult = createLink(link, caseType, authToken);
+
+            if (createdLinkResult.isOk()) {
+                successfullyCreatedLinks.add(createdLinkResult.getData());
+            }
+        });
+
+        synchronizeYouTrackLinks(authToken, linksToCreate, caseType);
+
+        return ok(
+                successfullyCreatedLinks,
+                successfullyCreatedLinks.size() == linksToCreate.size() ? null : SOME_LINKS_NOT_SAVED
+        );
     }
 
     @Override
     @Transactional
     public Result<CaseLink> createLinkWithPublish(AuthToken authToken, CaseLink link, En_CaseType caseType) {
+        Result<CaseLink> addedLinkResult = createLink(link, caseType, authToken);
 
-        En_ResultStatus validationStatus = validateLinkBeforeAdd(link, authToken);
-        if (!En_ResultStatus.OK.equals(validationStatus)) {
-            return error(validationStatus);
+        if (addedLinkResult.isError()) {
+            return error(addedLinkResult.getStatus());
         }
 
-        Long createdLinkId = addLink(link, caseType).getData();
-
-        addYoutrackLinks(authToken, Collections.singletonList(link), caseType);
-
-        CaseLink createdLink = caseLinkDAO.get(createdLinkId);
-
-        Result<CaseLink> completeResult = ok(createdLink);
-
-        if (completeResult.isError()) {
-            return error(completeResult.getStatus());
-        }
+        synchronizeYouTrackLinks(authToken, Collections.singletonList(link), caseType);
 
         return sendNotificationLinkAdded(authToken, link.getCaseId(), link, caseType);
     }
@@ -126,29 +141,45 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     @Override
     @Transactional
     public Result deleteLink (AuthToken authToken, Long id) {
-        Result<CaseLink> validationResult = validateLinkBeforeRemove(id);
-        if (validationResult.isError())
-            return error(validationResult.getStatus());
+        Result<CaseLink> deletedLinkResult = deleteLink(id);
 
-        return removeLink(validationResult.getData());
+        if (deletedLinkResult.isOk()) {
+            synchronizeYouTrackLinks(authToken, Collections.singletonList(deletedLinkResult.getData()));
+        } else {
+            return error(deletedLinkResult.getStatus());
+        }
+
+        return ok();
+    }
+
+    @Override
+    @Transactional
+    public Result deleteLinks(AuthToken token, List<CaseLink> links) {
+        if (isEmpty(links)) {
+            return ok();
+        }
+
+        links.forEach(link -> deleteLink(link.getId()));
+
+        synchronizeYouTrackLinks(token, links);
+
+        return ok();
     }
 
     @Override
     @Transactional
     public Result deleteLinkWithPublish (AuthToken authToken, Long id, En_CaseType caseType) {
-        Result<CaseLink> validationResult = validateLinkBeforeRemove(id);
-        if (validationResult.isError())
-            return error(validationResult.getStatus());
+        Result<CaseLink> deletedLinkResult = deleteLink(id);
 
-        CaseLink existedLink = validationResult.getData();
-
-        Result result = removeLink(existedLink);
-
-        if (result.isError()) {
-            return error(result.getStatus());
+        if (deletedLinkResult.isError()) {
+            return error(deletedLinkResult.getStatus());
         }
 
-        return sendNotificationLinkRemoved(authToken, existedLink.getCaseId(), existedLink, caseType);
+        CaseLink deletedLink = deletedLinkResult.getData();
+
+        synchronizeYouTrackLinks(authToken, Collections.singletonList(deletedLink), caseType);
+
+        return sendNotificationLinkRemoved(authToken, deletedLink.getCaseId(), deletedLink, caseType);
     }
 
 
@@ -317,8 +348,15 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     }
 
     @Override
-    @Transactional
-    public Result<YouTrackIssueInfo> addYoutrackLinks(AuthToken token, List<CaseLink> links, En_CaseType caseType) {
+    public Result<YouTrackIssueInfo> synchronizeYouTrackLinks(AuthToken token, List<CaseLink> links) {
+        synchronizeYouTrackLinks(token, links, En_CaseType.CRM_SUPPORT);
+        synchronizeYouTrackLinks(token, links, En_CaseType.PROJECT);
+
+        return ok();
+    }
+
+    @Override
+    public Result synchronizeYouTrackLinks(AuthToken token, List<CaseLink> links, En_CaseType caseType) {
         links = getYouTrackLinks(links);
 
         if (isEmpty(links)) {
@@ -333,7 +371,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                 Result<YouTrackIssueInfo> result = youtrackService.setIssueCrmNumbers(remoteId, caseNumbers);
 
                 if (result.isError()) {
-                    log.warn("some links wasn't added. caseType={}, remoteId={}, caseNumbers={}", caseType, remoteId, caseNumbers);
+                    log.warn("some links wasn't synchronized with youtrack. caseType={}, remoteId={}, caseNumbers={}", caseType, remoteId, caseNumbers);
                 }
             }
         }
@@ -344,12 +382,29 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                 Result<YouTrackIssueInfo> result = youtrackService.setIssueProjectNumbers(remoteId, caseIds);
 
                 if (result.isError()) {
-                    log.warn("some links wasn't added. caseType={}, remoteId={}, caseIds={}", caseType, remoteId, caseIds);
+                    log.warn("some links wasn't synchronized with youtrack. caseType={}, remoteId={}, caseIds={}", caseType, remoteId, caseIds);
                 }
             }
         }
 
         return ok();
+    }
+
+    private Result<CaseLink> deleteLink(Long linkId) {
+        Result<CaseLink> validationResult = validateLinkBeforeRemove(linkId);
+        if (validationResult.isError()) {
+            return error(validationResult.getStatus());
+        }
+
+        CaseLink linkToRemove = validationResult.getData();
+
+        Result removedLinkResult = removeLink(linkToRemove);
+
+        if (removedLinkResult.isOk()) {
+            return ok(linkToRemove);
+        }
+
+        return error(removedLinkResult.getStatus(), "Link was not deleted");
     }
 
     private Result removeLink (CaseLink link){
@@ -365,12 +420,6 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         }
 
         int removedCount = caseLinkDAO.removeByKeys(toRemoveIds);
-
-        //Обновляем список ссылок на Youtrack
-        if (En_CaseLink.YT.equals(link.getType())) {
-            youtrackService.setIssueCrmNumbers(link.getRemoteId(), getCaseNumbersCrosslinkedWithYoutrack(link.getRemoteId(), En_CaseType.CRM_SUPPORT));
-            youtrackService.setIssueProjectNumbers(link.getRemoteId(), getCaseIdsCrosslinkedWithYoutrack(link.getRemoteId(), En_CaseType.PROJECT));
-        }
 
         return removedCount == toRemoveIds.size() ? ok() : error(En_ResultStatus.INTERNAL_ERROR);
     }
@@ -406,6 +455,22 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             return En_ResultStatus.THIS_LINK_ALREADY_ADDED;
         }
         return En_ResultStatus.OK;
+    }
+
+    private Result<CaseLink> createLink(CaseLink link, En_CaseType caseType, AuthToken token) {
+        En_ResultStatus validationStatus = validateLinkBeforeAdd(link, token);
+        if (!En_ResultStatus.OK.equals(validationStatus)) {
+            return error(validationStatus);
+        }
+
+        Result<Long> addedLinkResult = addLink(link, caseType);
+
+        if (addedLinkResult.isOk()) {
+            return ok(caseLinkDAO.get(addedLinkResult.getData()));
+
+        }
+
+        return error(addedLinkResult.getStatus(), "Link was not created");
     }
 
     private Result<Long> addLink (CaseLink link, En_CaseType caseType) {

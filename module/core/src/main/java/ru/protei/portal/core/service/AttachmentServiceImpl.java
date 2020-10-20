@@ -133,11 +133,17 @@ public class AttachmentServiceImpl implements AttachmentService {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
-        boolean result = attachmentDAO.removeByKey(id)
-                && fileStorage.deleteFile(attachment.getExtLink());
+        boolean removeFromFileStorage;
 
-        if (!result) {
-            throw new ResultStatusException(En_ResultStatus.NOT_REMOVED);
+        if (attachmentDAO.removeByKey(id)) {
+            removeFromFileStorage = fileStorage.deleteFile(attachment.getExtLink());
+        } else {
+            return error(En_ResultStatus.NOT_REMOVED,
+                    "File was not removed from data base. It could be removed earlier");
+        }
+
+        if (!removeFromFileStorage) {
+            throw new ResultStatusException(En_ResultStatus.NOT_REMOVED, "File was not removed from file storage");
         }
 
         return ok(true);

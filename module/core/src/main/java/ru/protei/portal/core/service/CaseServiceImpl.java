@@ -293,21 +293,8 @@ public class CaseServiceImpl implements CaseService {
             }
         }
 
-        Result addLinksResult = ok();
-
-        List<CaseLink> successfullyAddedLinks = new ArrayList<>();
-
-        for (CaseLink caseLink : CollectionUtils.emptyIfNull(caseObjectCreateRequest.getLinks())) {
-            caseLink.setCaseId(caseObject.getId());
-            Result currentResult = caseLinkService.createLink(token, caseLink, caseObject.getType());
-            if (currentResult.isError()) {
-                addLinksResult = currentResult;
-            } else {
-                successfullyAddedLinks.add(caseLink);
-            }
-        }
-
-        caseLinkService.addYoutrackLinks(token, successfullyAddedLinks, CRM_SUPPORT);
+        Result<List<CaseLink>> createLinksResult =
+                caseLinkService.createLinks(token, emptyIfNull(caseObjectCreateRequest.getLinks()), CRM_SUPPORT);
 
         autoOpenCaseService.processNewCreatedCaseToAutoOpen(caseId, caseObject.getInitiatorCompanyId());
 
@@ -317,7 +304,7 @@ public class CaseServiceImpl implements CaseService {
         newState.setNotifiers(caseObject.getNotifiers());
         CaseObjectCreateEvent caseObjectCreateEvent = new CaseObjectCreateEvent(this, ServiceModule.GENERAL, token.getPersonId(), newState);
 
-        return new Result<>(En_ResultStatus.OK, newState, (addLinksResult.isOk() ? null : SOME_LINKS_NOT_SAVED), Collections.singletonList(caseObjectCreateEvent));
+        return new Result<>(En_ResultStatus.OK, newState, createLinksResult.getMessage(), Collections.singletonList(caseObjectCreateEvent));
     }
 
     @Override
@@ -1012,7 +999,7 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if (productId == null) {
-            log.warn("Product must be specified with company with auto open issue");
+            log.warn("Company with auto open issues must be specified with product");
             return false;
         }
 

@@ -379,9 +379,7 @@ public class PlanServiceImpl implements PlanService{
         if (plan.getIssueList() != null){
             plan.getIssueList().forEach(issue -> {
                 if (createHistory(token, issue.getId(), En_HistoryAction.REMOVE, plan, null).isError()) {
-                    throw new ResultStatusException(En_ResultStatus.NOT_REMOVED, "Failed to create history for plan. " +
-                            "action=" + En_HistoryAction.REMOVE +
-                            ", planId=" + planId);
+                    throw createHistoryException(En_ResultStatus.NOT_REMOVED, En_HistoryAction.REMOVE, planId);
                 }
             });
         }
