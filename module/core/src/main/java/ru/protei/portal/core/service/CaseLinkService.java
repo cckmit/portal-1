@@ -47,10 +47,6 @@ public interface CaseLinkService {
     @Auditable(En_AuditType.LINK_REMOVE)
     Result deleteLinkWithPublish(AuthToken authToken, Long id, En_CaseType caseType);
 
-    Result synchronizeYouTrackLinks(AuthToken token, List<CaseLink> links);
-
-    Result synchronizeYouTrackLinks(AuthToken token, List<CaseLink> links, En_CaseType caseType);
-
     Result<String> setYoutrackIdToCaseNumbers(AuthToken token, String youtrackId, List<Long> caseNumberList);
 
     Result<String> setYoutrackIdToProjectNumbers(AuthToken token, String youtrackId, List<Long> projectNumberList);

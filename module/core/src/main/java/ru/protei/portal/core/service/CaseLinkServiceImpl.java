@@ -91,7 +91,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         Result<CaseLink> addedLinkResult = createLink(link, caseType, authToken);
 
         if (addedLinkResult.isOk()) {
-            synchronizeYouTrackLinks(authToken, Collections.singletonList(addedLinkResult.getData()), caseType);
+            synchronizeYouTrackLinks(Collections.singletonList(addedLinkResult.getData()), caseType);
         } else {
             return error(addedLinkResult.getStatus());
         }
@@ -116,7 +116,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             }
         });
 
-        synchronizeYouTrackLinks(authToken, linksToCreate, caseType);
+        synchronizeYouTrackLinks(linksToCreate, caseType);
 
         return ok(
                 successfullyCreatedLinks,
@@ -133,7 +133,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             return error(addedLinkResult.getStatus());
         }
 
-        synchronizeYouTrackLinks(authToken, Collections.singletonList(link), caseType);
+        synchronizeYouTrackLinks(Collections.singletonList(link), caseType);
 
         return sendNotificationLinkAdded(authToken, link.getCaseId(), link, caseType);
     }
@@ -144,7 +144,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         Result<CaseLink> deletedLinkResult = deleteLink(id);
 
         if (deletedLinkResult.isOk()) {
-            synchronizeYouTrackLinks(authToken, Collections.singletonList(deletedLinkResult.getData()));
+            synchronizeYouTrackLinks(Collections.singletonList(deletedLinkResult.getData()));
         } else {
             return error(deletedLinkResult.getStatus());
         }
@@ -161,7 +161,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         links.forEach(link -> deleteLink(link.getId()));
 
-        synchronizeYouTrackLinks(token, links);
+        synchronizeYouTrackLinks(links);
 
         return ok();
     }
@@ -177,7 +177,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         CaseLink deletedLink = deletedLinkResult.getData();
 
-        synchronizeYouTrackLinks(authToken, Collections.singletonList(deletedLink), caseType);
+        synchronizeYouTrackLinks(Collections.singletonList(deletedLink), caseType);
 
         return sendNotificationLinkRemoved(authToken, deletedLink.getCaseId(), deletedLink, caseType);
     }
@@ -347,20 +347,16 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                 .ifOk(caseLink -> log.debug("getYtLink(): OK. caseLink={}", caseLink));
     }
 
-    @Override
-    public Result<YouTrackIssueInfo> synchronizeYouTrackLinks(AuthToken token, List<CaseLink> links) {
-        synchronizeYouTrackLinks(token, links, En_CaseType.CRM_SUPPORT);
-        synchronizeYouTrackLinks(token, links, En_CaseType.PROJECT);
-
-        return ok();
+    private void synchronizeYouTrackLinks(List<CaseLink> links) {
+        synchronizeYouTrackLinks(links, En_CaseType.CRM_SUPPORT);
+        synchronizeYouTrackLinks(links, En_CaseType.PROJECT);
     }
 
-    @Override
-    public Result synchronizeYouTrackLinks(AuthToken token, List<CaseLink> links, En_CaseType caseType) {
+    private void synchronizeYouTrackLinks(List<CaseLink> links, En_CaseType caseType) {
         links = getYouTrackLinks(links);
 
         if (isEmpty(links)) {
-            return ok();
+            return;
         }
 
         Set<String> remoteIds = toSet(links, CaseLink::getRemoteId);
@@ -386,8 +382,6 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                 }
             }
         }
-
-        return ok();
     }
 
     private Result<CaseLink> deleteLink(Long linkId) {
