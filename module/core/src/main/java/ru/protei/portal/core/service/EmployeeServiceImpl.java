@@ -314,10 +314,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         final boolean YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEmployeeSyncEnabled();
 
-        if (needToChangeAccount && YOUTRACK_INTEGRATION_ENABLED) {
-            createChangeLastNameYoutrackIssueIfNeeded(person.getId(), person.getFirstName(), person.getLastName(), person.getSecondName(), oldPerson.getLastName());
-        }
-
         person.setDisplayName(person.getLastName() + " " + person.getFirstName() + (StringUtils.isNotEmpty(person.getSecondName()) ? " " + person.getSecondName() : ""));
         person.setDisplayShortName(createPersonShortName(person));
         person.setCompanyId(CrmConstants.Company.HOME_COMPANY_ID);
@@ -330,6 +326,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         contactItemDAO.saveOrUpdateBatch(person.getContactItems());
         jdbcManyRelationsHelper.persist(person, Person.Fields.CONTACT_ITEMS);
+
+        if (needToChangeAccount && YOUTRACK_INTEGRATION_ENABLED) {
+            createChangeLastNameYoutrackIssueIfNeeded(person.getId(), person.getFirstName(), person.getLastName(), person.getSecondName(), oldPerson.getLastName());
+        }
 
         return ok(true);
     }

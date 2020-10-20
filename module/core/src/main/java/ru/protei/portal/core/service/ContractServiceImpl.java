@@ -537,7 +537,10 @@ public class ContractServiceImpl implements ContractService {
             contractorDAO.persist(contractor);
         } else {
             contractor.setId(contractorByRefKey.getId());
-            contractorDAO.merge(contractor);
+
+            if (!contractorDAO.merge(contractor)) {
+                return error(En_ResultStatus.NOT_UPDATED, "Contractor was not merged");
+            }
         }
 
         return ok(contractor.getId());

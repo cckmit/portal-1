@@ -3,6 +3,7 @@ package ru.protei.portal.core.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.PersonNotifierDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
@@ -51,9 +52,13 @@ public class PersonSubscriptionServiceImpl implements PersonSubscriptionService 
                 .collect(Collectors.toList()));
 
         List<PersonNotifier> result = personNotifierDAO.getByNotifierId(token.getPersonId());
-        if (result == null)
-            return error(En_ResultStatus.GET_DATA_ERROR);
 
-        return ok(result.stream().map(PersonNotifier::getPerson).map(Person::toFullNameShortView).collect(Collectors.toSet()));
+        return ok(
+                result
+                        .stream()
+                        .map(PersonNotifier::getPerson)
+                        .map(Person::toFullNameShortView)
+                        .collect(Collectors.toSet())
+        );
     }
 }

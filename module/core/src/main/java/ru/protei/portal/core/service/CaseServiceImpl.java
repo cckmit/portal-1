@@ -288,7 +288,10 @@ public class CaseServiceImpl implements CaseService {
                 Result<Plan> planResult = planService.addIssueToPlan(token, planOption.getId(), caseId);
 
                 if (planResult.isError()) {
-                    throw new ResultStatusException(planResult.getStatus());
+                    throw new ResultStatusException(
+                            planResult.getStatus(),
+                            String.format("Issue was not added to plan. planId=%d", planOption.getId())
+                    );
                 }
             }
         }
@@ -336,7 +339,12 @@ public class CaseServiceImpl implements CaseService {
 
             if(isNotEmpty(changeRequest.getAttachments())){
                 caseObject.setAttachmentExists(true);
-                caseObjectDAO.partialMerge(caseObject, "ATTACHMENT_EXISTS");
+                boolean isAttachmentsExistUpdated
+                        = caseObjectDAO.partialMerge(caseObject, "ATTACHMENT_EXISTS");
+
+                if (!isAttachmentsExistUpdated) {
+                    throw new ResultStatusException(En_ResultStatus.NOT_UPDATED, "Attachment exists flag was not updated");
+                }
 
                 caseAttachmentDAO.persistBatch(
                         changeRequest.getAttachments()
@@ -653,8 +661,9 @@ public class CaseServiceImpl implements CaseService {
         caseObject.setModified(new Date());
         boolean isCaseUpdated = caseObjectDAO.partialMerge(caseObject, "ATTACHMENT_EXISTS", "MODIFIED");
 
-        if(!isCaseUpdated)
-            throw new RuntimeException("failed to update case object");
+        if (!isCaseUpdated) {
+            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED, "failed to update case object");
+        }
 
         return ok(caseAttachId);
     }
@@ -701,7 +710,10 @@ public class CaseServiceImpl implements CaseService {
 
         CaseObject caseObject = caseObjectDAO.partialGet(caseId, "MODIFIED");
         caseObject.setModified(new Date());
-        caseObjectDAO.partialMerge(caseObject, "MODIFIED");
+
+        if (!caseObjectDAO.partialMerge(caseObject, "MODIFIED")) {
+            return error(En_ResultStatus.NOT_UPDATED, "Modified column was not added");
+        }
 
         PlanQuery planQuery = new PlanQuery();
         planQuery.setIssueId(caseId);
@@ -710,7 +722,7 @@ public class CaseServiceImpl implements CaseService {
         Result<List<PlanOption>> oldPlansResult = planService.listPlanOptions(token, planQuery);
 
         if (oldPlansResult.isError()) {
-            return error(oldPlansResult.getStatus());
+            throw new ResultStatusException(oldPlansResult.getStatus());
         }
 
         En_ResultStatus resultStatus = updatePlans(token, caseId, new HashSet<>(oldPlansResult.getData()), plans);

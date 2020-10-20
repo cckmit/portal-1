@@ -240,13 +240,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             return error(En_ResultStatus.NOT_CREATED);
         }
 
-        Server result = serverDAO.get(id);
-
-        if (result == null) {
-            return error(En_ResultStatus.INTERNAL_ERROR);
-        }
-
-        return ok(result);
+        return ok(serverDAO.get(id));
     }
 
     @Override
@@ -272,13 +266,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             return error(En_ResultStatus.NOT_CREATED);
         }
 
-        Application result = applicationDAO.get(id);
-
-        if (result == null) {
-            return error(En_ResultStatus.INTERNAL_ERROR);
-        }
-
-        return ok(result);
+        return ok(applicationDAO.get(id));
     }
 
     @Override
@@ -319,13 +307,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
         }
 
-        Platform result = platformDAO.get(platform.getId());
-
-        if (result == null) {
-            throw new ResultStatusException(En_ResultStatus.INTERNAL_ERROR);
-        }
-
-        return ok(result);
+        return ok(platformDAO.get(platform.getId()));
     }
 
     @Override
@@ -338,13 +320,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             return error(En_ResultStatus.NOT_UPDATED);
         }
 
-        Server result = serverDAO.get(server.getId());
-
-        if (result == null) {
-            return error(En_ResultStatus.INTERNAL_ERROR);
-        }
-
-        return ok(result);
+        return ok(serverDAO.get(server.getId()));
     }
 
     @Override
@@ -357,13 +333,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             return error(En_ResultStatus.NOT_UPDATED);
         }
 
-        Application result = applicationDAO.get(application.getId());
-
-        if (result == null) {
-            return error(En_ResultStatus.INTERNAL_ERROR);
-        }
-
-        return ok(result);
+        return ok(applicationDAO.get(application.getId()));
     }
 
 
@@ -384,8 +354,11 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         boolean resultCase = caseObjectDAO.partialMerge(caseObject, "deleted");
         boolean result = platformDAO.removeByKey(id);
 
-        if (result && resultCase) return ok (result);
-        else return error(En_ResultStatus.NOT_REMOVED);
+        if (result && resultCase) {
+            return ok(true);
+        }
+
+        throw new ResultStatusException(En_ResultStatus.NOT_REMOVED);
     }
 
     @Override

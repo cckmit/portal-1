@@ -461,7 +461,6 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         if (addedLinkResult.isOk()) {
             return ok(caseLinkDAO.get(addedLinkResult.getData()));
-
         }
 
         return error(addedLinkResult.getStatus(), "Link was not created");

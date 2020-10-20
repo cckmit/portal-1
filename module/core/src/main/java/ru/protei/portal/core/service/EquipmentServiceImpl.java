@@ -168,6 +168,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
+    @Transactional
     public Result<Long> copyEquipment( AuthToken token, Long equipmentId, String newName, Long authorId ) {
         if (equipmentId == null || newName == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -192,6 +193,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
+    @Transactional
     public Result<Boolean> removeEquipment(AuthToken token, Long equipmentId, String author) {
 
         if (equipmentId == null) {
@@ -326,22 +328,25 @@ public class EquipmentServiceImpl implements EquipmentService {
             return;
         }
 
-        List<Document> documents2merge = new ArrayList<>();
+        List<Document> documents2merge = documents
+                .stream()
+                .filter(Document::getApproved)
+                .peek(document -> document.setEquipment(null))
+                .collect(Collectors.toList());
+
+        if (CollectionUtils.isNotEmpty(documents2merge)) {
+            documentDAO.mergeBatch(documents2merge);
+        }
 
         for (Document document : documents) {
             if (document.getApproved()) {
-                document.setEquipment(null);
-                documents2merge.add(document);
                 continue;
             }
+
             Result<Long> result = documentService.removeDocument(token, document.getId(), document.getProjectId(), author);
             if (result.isError()) {
                 log.error("removeLinkedDocuments(): failed to remove document | status={}", result.getStatus());
             }
-        }
-
-        if (CollectionUtils.isNotEmpty(documents2merge)) {
-            documentDAO.mergeBatch(documents2merge);
         }
     }
 }

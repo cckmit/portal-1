@@ -370,7 +370,7 @@ public class ProductServiceImpl implements ProductService {
         }
 
         if ( !CollectionUtils.isEmpty( oldSubscriptions ) ) {
-            log.info( "merge product subscriptions = {}cre", oldSubscriptions );
+            log.info( "merge product subscriptions = {}", oldSubscriptions );
             int countMerged = productSubscriptionDAO.mergeBatch( oldSubscriptions );
             if ( countMerged != oldSubscriptions.size() ) {
                 return false;

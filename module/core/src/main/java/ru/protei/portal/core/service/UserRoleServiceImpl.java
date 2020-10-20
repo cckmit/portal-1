@@ -97,7 +97,7 @@ public class UserRoleServiceImpl implements UserRoleService {
             return ok(true );
         }
 
-        return error(En_ResultStatus.INTERNAL_ERROR );
+        return error(En_ResultStatus.NOT_REMOVED, "Role was not removed. It could be removed earlier");
     }
 
     private void applyFilterByScope( AuthToken token, UserRoleQuery query ) {

@@ -714,10 +714,6 @@ public class DocumentServiceImpl implements DocumentService {
         return true;
     }
 
-    private boolean saveToSVN(byte[] bytes, Long documentId, Long projectId, En_DocumentFormat documentFormat, String commitMessage) {
-        return saveToSVN(new ByteArrayInputStream(bytes), documentId, projectId, documentFormat, commitMessage);
-    }
-
     private boolean saveToSVN(InputStream inputStream, Long documentId, Long projectId, En_DocumentFormat documentFormat, String commitMessage) {
         try {
             documentSvnApi.saveDocument(projectId, documentId, documentFormat, commitMessage, inputStream);
