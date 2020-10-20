@@ -108,20 +108,15 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Result<List<PersonShortView>> shortViewList( EmployeeQuery query) {
-        List<Person> list = personDAO.getEmployees(query);
+        List<PersonShortView> list = personShortViewDAO.getEmployees(query);
 
         if (list == null) {
             return Result.error( En_ResultStatus.GET_DATA_ERROR);
         }
 
-        List<PersonShortView> result = list.stream().map( this::toFullNameShortView ).collect(Collectors.toList());
-
-        return ok(result);
+        return ok(list);
     }
 
-    public PersonShortView toFullNameShortView(Person person) {
-        return new PersonShortView( person.getDisplayName(), person.getId(), person.isFired() );
-    }
 
     @Override
     public Result<SearchResult<EmployeeShortView>> employeeList(AuthToken token, EmployeeQuery query) {
@@ -234,10 +229,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         CompanyDepartment department = companyDepartmentDAO.get(departmentId);
-
-        return ok(department == null ? null : (department.getHead() == null ?
-                        (department.getParentHead() == null ? null : department.getParentHead().toFullNameShortView()) :
-                department.getHead().toFullNameShortView()));
+        if (department == null) return ok( null );
+        if (department.getHead() != null) return ok( department.getHead() );
+        if (department.getParentHead() != null) return ok( department.getParentHead() );
+        return ok( null );
     }
 
     @Transactional

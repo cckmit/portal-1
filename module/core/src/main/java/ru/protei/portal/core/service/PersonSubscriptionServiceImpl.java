@@ -30,7 +30,7 @@ public class PersonSubscriptionServiceImpl implements PersonSubscriptionService 
         if (result == null)
             return error(En_ResultStatus.GET_DATA_ERROR);
 
-        return ok(result.stream().map(PersonNotifier::getPerson).map(Person::toFullNameShortView).collect(Collectors.toSet()));
+        return ok(result.stream().map(PersonNotifier::getPerson).map(this::toFullNameShortView).collect(Collectors.toSet()));
     }
 
     @Override
@@ -52,6 +52,10 @@ public class PersonSubscriptionServiceImpl implements PersonSubscriptionService 
         if (result == null)
             return error(En_ResultStatus.GET_DATA_ERROR);
 
-        return ok(result.stream().map(PersonNotifier::getPerson).map(Person::toFullNameShortView).collect(Collectors.toSet()));
+        return ok(result.stream().map(PersonNotifier::getPerson).map(this::toFullNameShortView).collect(Collectors.toSet()));
+    }
+
+    public PersonShortView toFullNameShortView(Person person) {
+        return new PersonShortView( person.getDisplayName(), person.getId(), person.isFired() );
     }
 }

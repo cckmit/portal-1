@@ -20,6 +20,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * Асинхронная модель Person
@@ -48,10 +49,12 @@ public abstract class AsyncPersonModel implements AsyncSearchSelectorModel<Perso
         cache.setLoadHandler(makeLoadHandler(makeQuery(searchString)));
     }
 
+    private static final Logger log = Logger.getLogger( AsyncPersonModel.class.getName() );
     private SelectorDataCacheLoadHandler<PersonShortView> makeLoadHandler(PersonQuery query) {
         return (offset, limit, handler) -> {
             query.setOffset(offset);
             query.setLimit(limit);
+            log.info( "makeLoadHandler(): AsyncPersonModel.java" );
             personService.getPersonViewList(query, new FluentCallback<List<PersonShortView>>()
                     .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR)))
                     .withSuccess(handler::onSuccess)

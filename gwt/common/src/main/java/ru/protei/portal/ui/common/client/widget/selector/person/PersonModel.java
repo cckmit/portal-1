@@ -19,6 +19,7 @@ import ru.protei.portal.ui.common.client.selector.pageable.SelectorModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.nullIfEmpty;
 /**
@@ -31,8 +32,10 @@ public abstract class PersonModel implements Activity, SelectorModel<PersonShort
         myId = event.profile.getId();
     }
 
+    private static final Logger log = Logger.getLogger( PersonModel.class.getName() );
     void updateCompanies(Refreshable selector, Boolean people, Set<Long> companyIds, Boolean fired) {
         PersonQuery query = new PersonQuery(nullIfEmpty( companyIds ), people, fired, false, null, En_SortField.person_full_name, En_SortDir.ASC, null);
+        log.info( "updateCompanies(): PersonModel.java" );
         personService.getPersonViewList(query, new RequestCallback<List<PersonShortView>>() {
 
             @Override

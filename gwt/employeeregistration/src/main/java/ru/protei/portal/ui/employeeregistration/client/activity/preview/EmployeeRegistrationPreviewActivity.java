@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
@@ -114,7 +115,7 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
         view.setEquipmentList( join(value.getEquipmentList(), equipment -> equipmentLang.getName(equipment), ", "));
         view.setResourceList( join(value.getResourceList(), resource -> resourceLang.getName(resource), ", "));
         view.setPhoneOfficeTypeList( join(value.getPhoneOfficeTypeList(), phoneOfficeType -> phoneOfficeTypeLang.getName(phoneOfficeType), ", "));
-        view.setCurators( join( value.getCurators(), Person::getDisplayShortName, "," ) );
+        view.setCurators( join( value.getCurators(), PersonShortView::getDisplayShortName, "," ) );
         view.setPosition(value.getPosition());
         view.setProbationPeriodMonth(value.getProbationPeriodMonth() == null ?
                 lang.employeeRegistrationWithoutProbationPeriod() :

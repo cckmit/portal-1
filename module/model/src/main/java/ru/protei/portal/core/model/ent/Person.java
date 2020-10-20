@@ -71,7 +71,7 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
     @JdbcColumn(name="isdeleted")
     private boolean isDeleted;
 
-    @JdbcColumn(name = "isfired")
+    @JdbcColumn(name = Columns.IS_FIRED)
     private boolean isFired;
 
     @JdbcColumn(name = "firedate")
@@ -400,5 +400,6 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
         String CONTACT_ITEMS = "contactItems";
         String DISPLAY_SHORT_NAME = "displayShortName";
         String DISPLAY_NAME = "displayname";
+        String IS_FIRED = "isfired";
     }
 }

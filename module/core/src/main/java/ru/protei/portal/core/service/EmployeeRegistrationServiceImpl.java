@@ -39,6 +39,8 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
     @Autowired
     PersonDAO personDAO;
     @Autowired
+    PersonShortViewDAO personShortDAO;
+    @Autowired
     YoutrackService youtrackService;
     @Autowired
     CaseLinkDAO caseLinkDAO;
@@ -61,7 +63,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         if (employeeRegistration == null)
             return error(En_ResultStatus.NOT_FOUND);
         if(!isEmpty(employeeRegistration.getCuratorsIds())){
-            employeeRegistration.setCurators ( personDAO.partialGetListByKeys( employeeRegistration.getCuratorsIds(), "id", "displayShortName", "displayname" ) );
+            employeeRegistration.setCurators ( personShortDAO.getListByKeys( employeeRegistration.getCuratorsIds() ));
         }
         return ok(employeeRegistration);
     }
@@ -89,7 +91,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         if(employeeRegistration == null)
             return error(En_ResultStatus.INTERNAL_ERROR);
 
-        employeeRegistration.setCurators(personDAO.partialGetListByKeys(employeeRegistration.getCuratorsIds(), "id", "displayname"));
+        employeeRegistration.setCurators(personShortDAO.getListByKeys(employeeRegistration.getCuratorsIds()));
 
         final boolean YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEnabled();
 
@@ -110,7 +112,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         }
 
         EmployeeRegistration oldEmployeeRegistration = employeeRegistrationDAO.get(employeeRegistrationShortView.getId());
-        oldEmployeeRegistration.setCurators(personDAO.partialGetListByKeys(oldEmployeeRegistration.getCuratorsIds(), "id", "displayname"));
+        oldEmployeeRegistration.setCurators(personShortDAO.getListByKeys(oldEmployeeRegistration.getCuratorsIds()));
 
         if (!isEmployeeRegistrationChanged(oldEmployeeRegistration, employeeRegistrationShortView)) {
             return ok(oldEmployeeRegistration.getId());
@@ -121,7 +123,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         newEmployeeRegistration.setEmploymentDate(employeeRegistrationShortView.getEmploymentDate());
 
         employeeRegistrationDAO.partialMerge(newEmployeeRegistration, "employment_date", "curators");
-        newEmployeeRegistration.setCurators(personDAO.partialGetListByKeys(newEmployeeRegistration.getCuratorsIds(), "id", "displayname"));
+        newEmployeeRegistration.setCurators(personShortDAO.getListByKeys(newEmployeeRegistration.getCuratorsIds()));
 
         boolean isEmploymentDateChanged = !Objects.equals(oldEmployeeRegistration.getEmploymentDate(), newEmployeeRegistration.getEmploymentDate());
 

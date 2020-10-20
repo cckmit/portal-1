@@ -25,7 +25,7 @@ public class PersonShortView implements Serializable, HasLongId {
     @JdbcColumn(name= Person.Columns.DISPLAY_SHORT_NAME)
     private String displayShortName;
 
-    @JdbcColumn(name = "isfired")
+    @JdbcColumn(name = Person.Columns.IS_FIRED)
     private boolean isFired;
 
     public PersonShortView() {}

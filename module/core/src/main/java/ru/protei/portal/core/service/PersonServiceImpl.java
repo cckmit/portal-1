@@ -50,10 +50,10 @@ public class PersonServiceImpl implements PersonService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        Person person = personDAO.get(personId);
+        PersonShortView person = personShortViewDAO.get(personId);
         if(person==null) return error(En_ResultStatus.NOT_FOUND);
 
-        return ok(person.toFullNameShortView());
+        return ok(person);
     }
 
     @Override
@@ -114,15 +114,6 @@ public class PersonServiceImpl implements PersonService {
         log.info("processQueryByPolicyScope(): PersonQuery modified: {}", personQuery);
         return personQuery;
     }
-
-//    private Result<List<PersonShortView>> makeListPersonShortView(List<Person> persons) {
-//        if ( persons == null )
-//            return error(En_ResultStatus.GET_DATA_ERROR );
-//
-//        List< PersonShortView > result = persons.stream().map( Person::toFullNameShortView ).collect( Collectors.toList() );
-//
-//        return ok(result);
-//    }
 
     @Autowired
     AuthService authService;
