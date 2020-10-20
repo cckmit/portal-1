@@ -768,7 +768,9 @@ public class CaseServiceImpl implements CaseService {
                 || !Objects.equals(co1.getImpLevel(), co2.getImpLevel())
                 || !Objects.equals(co1.getManagerCompanyId(), co2.getManagerCompanyId())
                 || !Objects.equals(co1.getManagerId(), co2.getManagerId())
-                || !Objects.equals(co1.getPlatformId(), co2.getPlatformId());
+                || !Objects.equals(co1.getPlatformId(), co2.getPlatformId())
+                || !Objects.equals(co1.getDeadline(), co2.getDeadline())
+                || !Objects.equals(co1.getWorkTrigger(), co2.getWorkTrigger());
     }
 
     private boolean isLinksChanged( DiffCollectionResult<CaseLink> mergeLinks ){
@@ -884,6 +886,7 @@ public class CaseServiceImpl implements CaseService {
         if (caseMeta.getInitiatorId() != null && !personBelongsToCompany( caseMeta.getInitiatorId(), caseMeta.getInitiatorCompanyId() )) return false;
         if (caseMeta.getPlatformId() != null && !platformBelongsToCompany(token, caseMeta.getPlatformId(), caseMeta.getInitiatorCompanyId())) return false;
         if (!isProductValid(token, caseMeta.getProductId(), caseMeta.getPlatformId(), caseMeta.getInitiatorCompanyId())) return false;
+        if (!isDeadlineValid(caseMeta.getDeadline())) return false;
         return true;
     }
 
@@ -963,6 +966,14 @@ public class CaseServiceImpl implements CaseService {
 
         if (CrmConstants.State.PAUSED == caseStateId) {
             return pauseDate != null && (System.currentTimeMillis() < pauseDate);
+        }
+
+        return true;
+    }
+
+    private boolean isDeadlineValid(Long date) {
+        if (date == null || date > System.currentTimeMillis()) {
+            return true;
         }
 
         return true;

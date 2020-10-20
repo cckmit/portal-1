@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.view;
 
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_WorkTrigger;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.CaseTag;
@@ -9,6 +10,9 @@ import ru.protei.winter.jdbc.annotations.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+
+import static ru.protei.portal.core.model.ent.CaseObject.Columns.DEADLINE;
+import static ru.protei.portal.core.model.ent.CaseObject.Columns.WORK_TRIGGER;
 
 /**
  * Сокращенное представление кейса
@@ -90,6 +94,13 @@ public class CaseShortView implements Serializable, Identifiable {
 
     @JdbcJoinedColumn(localColumn = "manager_company_id", remoteColumn = "id", table = "company", mappedColumn = "cname")
     private String managerCompanyName;
+
+    @JdbcColumn(name = DEADLINE)
+    private Long deadline;
+
+    @JdbcColumn(name = WORK_TRIGGER)
+    @JdbcEnumerated(EnumType.ID)
+    private En_WorkTrigger workTrigger;
 
     // ManyToMany via CaseTagService
     private List<CaseTag> tags;
@@ -321,6 +332,22 @@ public class CaseShortView implements Serializable, Identifiable {
         this.isPublicAttachmentExist = isPublicAttachmentExist;
     }
 
+    public Long getDeadline() {
+        return deadline;
+    }
+
+    public void setDeadline(Long deadline) {
+        this.deadline = deadline;
+    }
+
+    public En_WorkTrigger getWorkTrigger() {
+        return workTrigger;
+    }
+
+    public void setWorkTrigger(En_WorkTrigger workTrigger) {
+        this.workTrigger = workTrigger;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (id != null) {
@@ -360,6 +387,8 @@ public class CaseShortView implements Serializable, Identifiable {
                 ", tags=" + tags +
                 ", isFavorite=" + isFavorite +
                 ", isPublicAttachmentExist=" + isPublicAttachmentExist +
+                ", deadline=" + deadline +
+                ", workTrigger=" + workTrigger +
                 '}';
     }
 }

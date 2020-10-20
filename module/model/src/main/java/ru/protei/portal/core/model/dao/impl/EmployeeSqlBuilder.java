@@ -6,9 +6,12 @@ import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.DateRangeUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.struct.Interval;
+import ru.protei.portal.core.utils.TypeConverters;
+import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.time.ZoneId;
 import java.util.*;
@@ -19,6 +22,32 @@ import static java.time.temporal.TemporalAdjusters.lastDayOfYear;
 import static ru.protei.portal.core.utils.DateUtils.resetSeconds;
 
 public class EmployeeSqlBuilder {
+
+    private final static String WORKER_ENTRY_JOIN = "LEFT JOIN worker_entry WE ON WE.personId = person.id";
+
+    public JdbcQueryParameters makeParameters( EmployeeQuery query ) {
+        SqlCondition where = createSqlCondition(query);
+
+        JdbcQueryParameters jdbcQueryParameters = new JdbcQueryParameters().
+                withJoins(WORKER_ENTRY_JOIN).
+                withCondition(where.condition, where.args).
+                withDistinct(true).
+                withOffset(query.getOffset()).
+                withLimit(query.getLimit()).
+                withSort( TypeConverters.createSort(query));
+
+        String havingCondition = makeHavingCondition(query);
+
+        if (StringUtils.isNotEmpty(havingCondition)) {
+            jdbcQueryParameters
+                    .withGroupBy("id")
+                    .withHaving(havingCondition);
+        }
+
+        return jdbcQueryParameters;
+
+    }
+
     public SqlCondition createSqlCondition(EmployeeQuery query) {
         return new SqlCondition().build((condition, args) -> {
             condition.append("person.company_id in (select companyId from company_group_home)");
@@ -189,5 +218,29 @@ public class EmployeeSqlBuilder {
                 args.add(resetSeconds(new Date()));
             }
         });
+    }
+
+    private String makeHavingCondition(EmployeeQuery query) {
+        String result = "";
+
+        int countId = 0;
+
+        if (HelperFunc.isLikeRequired(query.getWorkPhone())) {
+            countId++;
+        }
+
+        if (HelperFunc.isLikeRequired(query.getMobilePhone())) {
+            countId++;
+        }
+
+        if (HelperFunc.isLikeRequired(query.getEmail())) {
+            countId++;
+        }
+
+        if (countId > 0) {
+            result = "count(id) = " + countId;
+        }
+
+        return result;
     }
 }

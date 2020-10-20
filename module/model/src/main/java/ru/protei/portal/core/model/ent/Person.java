@@ -47,10 +47,10 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
     @JdbcColumn(name="secondname")
     private String secondName;
 
-    @JdbcColumn(name="displayname")
+    @JdbcColumn(name=Columns.DISPLAY_NAME)
     private String displayName;
 
-    @JdbcColumn(name="displayShortName")
+    @JdbcColumn(name=Columns.DISPLAY_SHORT_NAME)
     private String displayShortName;
 
     /**
@@ -394,5 +394,11 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
 
     public interface Fields {
         String CONTACT_ITEMS = "contactItems";
+    }
+
+    public interface Columns {
+        String CONTACT_ITEMS = "contactItems";
+        String DISPLAY_SHORT_NAME = "displayShortName";
+        String DISPLAY_NAME = "displayname";
     }
 }

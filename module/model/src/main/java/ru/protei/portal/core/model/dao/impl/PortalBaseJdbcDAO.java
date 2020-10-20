@@ -132,6 +132,10 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
             sp.start( "getSearchResult" );
             SearchResult<T> searchResult = new SearchResult<>( getList( parameters ) );
             sp.check( "getList" );
+            if( searchResult.getTotalCount() < parameters.getLimit() ){
+                sp.check( "lower than limit" );
+                return searchResult;
+            }
             if (parameters.getOffset() <= 0 && parameters.getLimit() > 0) {
                 searchResult.setTotalCount( getObjectsCount( parameters.getSqlCondition(), parameters.getParamValues() ) );
                 sp.check( "setTotalCount" );

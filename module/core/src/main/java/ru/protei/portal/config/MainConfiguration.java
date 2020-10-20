@@ -212,6 +212,11 @@ public class MainConfiguration {
         return new EmployeeSqlBuilder();
     }
 
+    @Bean
+    public PersonSqlBuilder getPersonSqlBuilder() {
+        return new PersonSqlBuilder();
+    }
+
     /* DAO converters */
 
     @Bean

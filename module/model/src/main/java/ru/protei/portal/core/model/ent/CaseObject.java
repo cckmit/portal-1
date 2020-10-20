@@ -3,10 +3,10 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
+import ru.protei.portal.core.model.dict.En_WorkTrigger;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.Identifiable;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Collections;
@@ -142,6 +142,13 @@ public class CaseObject extends AuditableObject {
 
     @JdbcManyToMany(localLinkColumn = "case_object_id", remoteLinkColumn = "plan_id", linkTable = "plan_to_case_object")
     private List<Plan> plans;
+
+    @JdbcColumn(name = DEADLINE)
+    private Long deadline;
+
+    @JdbcColumn(name = WORK_TRIGGER)
+    @JdbcEnumerated(EnumType.ID)
+    private En_WorkTrigger workTrigger;
 
     // not db column
     private En_TimeElapsedType timeElapsedType;
@@ -547,6 +554,22 @@ public class CaseObject extends AuditableObject {
         isFavorite = favorite;
     }
 
+    public Long getDeadline() {
+        return deadline;
+    }
+
+    public void setDeadline(Long deadline) {
+        this.deadline = deadline;
+    }
+
+    public En_WorkTrigger getWorkTrigger() {
+        return workTrigger;
+    }
+
+    public void setWorkTrigger(En_WorkTrigger workTrigger) {
+        this.workTrigger = workTrigger;
+    }
+
     @Override
     public String getAuditType() {
         return "CaseObject";
@@ -564,6 +587,8 @@ public class CaseObject extends AuditableObject {
         String CASE_NAME = "CASE_NAME";
         String MANAGER = "MANAGER";
         String PLATFORM_ID = "platform_id";
+        String DEADLINE = "deadline";
+        String WORK_TRIGGER = "work_trigger";
     }
 
     public static final int NOT_DELETED = 0;
@@ -615,6 +640,8 @@ public class CaseObject extends AuditableObject {
                 ", caseObjectMetaJira=" + caseObjectMetaJira +
                 ", jiraUrl='" + jiraUrl + '\'' +
                 ", isFavorite=" + isFavorite +
+                ", deadline=" + deadline +
+                ", workTrigger=" + workTrigger +
                 '}';
     }
 }

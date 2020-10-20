@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.dto.RegionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
@@ -94,5 +95,5 @@ public interface ProjectService {
     @Privileged(En_Privilege.PROJECT_VIEW)
     Result<List<PersonProjectMemberView>> getProjectTeam(AuthToken token, Long projectId);
 
-    Result<PersonProjectMemberView> getProjectLeader(AuthToken authToken, Long projectId);
+    Result<PersonShortView> getProjectLeader(AuthToken authToken, Long projectId);
 }

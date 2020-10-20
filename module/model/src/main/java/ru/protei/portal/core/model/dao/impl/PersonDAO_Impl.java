@@ -41,7 +41,8 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     @Autowired
     EmployeeSqlBuilder employeeSqlBuilder;
 
-    private final static String WORKER_ENTRY_JOIN = "LEFT JOIN worker_entry WE ON WE.personId = person.id";
+    @Autowired
+    PersonSqlBuilder personSqlBuilder;
 
     @Override
     public boolean existsByLegacyId(Long legacyId) {
@@ -155,13 +156,13 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
 
     @Override
     public SearchResult<Person> getEmployeesSearchResult(EmployeeQuery query) {
-        JdbcQueryParameters parameters = buildEmployeeJdbcQueryParameters(query);
+        JdbcQueryParameters parameters = employeeSqlBuilder.makeParameters(query);
         return getSearchResult(parameters);
     }
 
     @Override
     public List<Person> getEmployees(EmployeeQuery query) {
-        JdbcQueryParameters parameters = buildEmployeeJdbcQueryParameters(query);
+        JdbcQueryParameters parameters = employeeSqlBuilder.makeParameters( query );
         return getList(parameters);
     }
 
@@ -190,12 +191,12 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
 
     @Override
     public SearchResult<Person> getPersonsSearchResult(PersonQuery query) {
-        return getSearchResultByQuery(query);
+        return getSearchResult( personSqlBuilder.makeParameters( query ) );
     }
 
     @Override
     public List<Person> getPersons(PersonQuery query) {
-        return listByQuery( query );
+        return getList( personSqlBuilder.makeParameters( query ) );
     }
 
     @Override
@@ -223,78 +224,17 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     }
 
 
-    @Override
-    @SqlConditionBuilder
-    public SqlCondition createEmployeeSqlCondition(EmployeeQuery query) {
-        return employeeSqlBuilder.createSqlCondition(query);
-    }
-
-    @Override
-    @SqlConditionBuilder
-    public SqlCondition createPersonSqlCondition(PersonQuery query) {
-        Condition cnd = condition()
-                .and( "person.id" ).in( query.getPersonIds() )
-                .and( "person.company_id" ).in( query.getCompanyIds() )
-                .and( condition()
-                        .or( "person.displayName" ).like( query.getSearchString() )
-                )
-                .and( "person.isfired" ).equal( booleanAsNumber( query.getFired() ) )
-                .and( "person.isdeleted" ).equal( booleanAsNumber( query.getDeleted() ) )
-                .and( "person.sex" ).not( query.getPeople() ).equal( query.getPeople() == null ? null : En_Gender.UNDEFINED.getCode() );
-
-        if (query.getHasCaseFilter() != null) {
-            cnd.and( "person.id" ).in( query()
-                    .select( "distinct(person_id)" ).from( "person_to_case_filter" ) );
-        }
-
-        return new SqlCondition( cnd.getSqlCondition(), cnd.getSqlParameters() );
-    }
-
-    private JdbcQueryParameters buildEmployeeJdbcQueryParameters(EmployeeQuery query) {
-        SqlCondition where = createSqlCondition(query);
-
-        JdbcQueryParameters jdbcQueryParameters = new JdbcQueryParameters().
-                withJoins(WORKER_ENTRY_JOIN).
-                withCondition(where.condition, where.args).
-                withDistinct(true).
-                withOffset(query.getOffset()).
-                withLimit(query.getLimit()).
-                withSort(TypeConverters.createSort(query));
-
-        String havingCondition = makeHavingCondition(query);
-
-        if (StringUtils.isNotEmpty(havingCondition)) {
-            jdbcQueryParameters
-                    .withGroupBy("id")
-                    .withHaving(havingCondition);
-        }
-
-        return jdbcQueryParameters;
-    }
-
-    private String makeHavingCondition(EmployeeQuery query) {
-        String result = "";
-
-        int countId = 0;
-
-        if (HelperFunc.isLikeRequired(query.getWorkPhone())) {
-            countId++;
-        }
-
-        if (HelperFunc.isLikeRequired(query.getMobilePhone())) {
-            countId++;
-        }
-
-        if (HelperFunc.isLikeRequired(query.getEmail())) {
-            countId++;
-        }
-
-        if (countId > 0) {
-            result = "count(id) = " + countId;
-        }
-
-        return result;
-    }
+//    @Override
+//    @SqlConditionBuilder
+//    public SqlCondition createEmployeeSqlCondition(EmployeeQuery query) {
+//        return employeeSqlBuilder.createSqlCondition(query);
+//    }
+//
+//    @Override
+//    @SqlConditionBuilder
+//    public SqlCondition createPersonSqlCondition(PersonQuery query) {
+//        return  personSqlBuilder.createPersonSqlCondition(query);
+//    }
 
     private boolean ifPersonIsEmployee(final Person employee) {
         return homeGroupCache().exists( entity -> employee.getCompanyId().equals(entity.getCompanyId()) );

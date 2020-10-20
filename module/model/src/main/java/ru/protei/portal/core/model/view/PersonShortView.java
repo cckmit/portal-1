@@ -17,8 +17,13 @@ public class PersonShortView implements Serializable, HasLongId {
     @JdbcId(name = "id")
     private Long id;
 
-    @JdbcColumn(name="displayShortName")
     private String name;
+
+    @JdbcColumn(name= Person.Columns.DISPLAY_NAME)
+    private String displayName;
+
+    @JdbcColumn(name= Person.Columns.DISPLAY_SHORT_NAME)
+    private String displayShortName;
 
     @JdbcColumn(name = "isfired")
     private boolean isFired;
@@ -26,7 +31,7 @@ public class PersonShortView implements Serializable, HasLongId {
     public PersonShortView() {}
 
     public PersonShortView(Long id) {
-        this.id = id;
+        this(null, id);
     }
 
     public PersonShortView(String name, Long id, boolean isFired ) {
@@ -36,17 +41,15 @@ public class PersonShortView implements Serializable, HasLongId {
     }
 
     public PersonShortView(String name, Long id) {
-        this.name = name;
-        this.id = id;
+        this(name, id, false);
     }
 
     public PersonShortView(EntityOption entityOption) {
-        this.name = entityOption.getDisplayText();
-        this.id = entityOption.getId();
+        this(entityOption.getDisplayText(), entityOption.getId());
     }
 
     public String getName() {
-        return name;
+        return name != null ? name : displayName != null ? displayName : displayShortName;
     }
 
     public void setName(String name) {
@@ -69,6 +72,22 @@ public class PersonShortView implements Serializable, HasLongId {
         this.isFired = isFired;
     }
 
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName( String displayName ) {
+        this.displayName = displayName;
+    }
+
+    public String getDisplayShortName() {
+        return displayShortName;
+    }
+
+    public void setDisplayShortName( String displayShortName ) {
+        this.displayShortName = displayShortName;
+    }
+
     @Override
     public boolean equals( Object obj ) {
         if (obj instanceof PersonShortView) {
@@ -84,17 +103,25 @@ public class PersonShortView implements Serializable, HasLongId {
         return id != null ? id.hashCode() : 0;
     }
 
-    public static PersonShortView fromPerson( Person person ){
+    public static PersonShortView fromShortNamePerson(Person person){
         if(person == null)
             return null;
         return new PersonShortView( person.getDisplayShortName(), person.getId(), person.isFired() );
+    }
+
+    public static PersonShortView fromFullNamePerson(Person person) {
+        if (person == null) {
+            return null;
+        }
+
+        return new PersonShortView(person.getDisplayName(), person.getId(), person.isFired());
     }
 
     @Override
     public String toString() {
         return "PersonShortView{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
+                ", name='" + getName() + '\'' +
                 ", isFired=" + isFired +
                 '}';
     }

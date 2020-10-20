@@ -53,11 +53,11 @@ public interface PersonDAO extends PortalBaseDAO<Person> {
     @SqlConditionBuilder
     SqlCondition createContactSqlCondition(ContactQuery query);
 
-    @SqlConditionBuilder
-    SqlCondition createEmployeeSqlCondition(EmployeeQuery query);
-
-    @SqlConditionBuilder
-    SqlCondition createPersonSqlCondition(PersonQuery query);
+//    @SqlConditionBuilder
+//    SqlCondition createEmployeeSqlCondition(EmployeeQuery query);
+//
+//    @SqlConditionBuilder
+//    SqlCondition createPersonSqlCondition(PersonQuery query);
 
 
     default Person createNewPerson(Long companyId) throws Exception {

@@ -63,6 +63,11 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
     }
 
     @Bean
+    public PersonSqlBuilder getPersonSqlBuilder() {
+        return new PersonSqlBuilder();
+    }
+
+    @Bean
     public CompanyGroupHomeDAO getCompanyGroupHomeDAO() {
         return new CompanyGroupHomeDAO_Impl();
     }

@@ -56,6 +56,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     PersonDAO personDAO;
 
     @Autowired
+    PersonShortViewDAO personShortViewDAO;
+
+    @Autowired
     CompanyDAO companyDAO;
 
     @Autowired
@@ -111,9 +114,13 @@ public class EmployeeServiceImpl implements EmployeeService {
             return Result.error( En_ResultStatus.GET_DATA_ERROR);
         }
 
-        List<PersonShortView> result = list.stream().map( Person::toFullNameShortView ).collect(Collectors.toList());
+        List<PersonShortView> result = list.stream().map( this::toFullNameShortView ).collect(Collectors.toList());
 
         return ok(result);
+    }
+
+    public PersonShortView toFullNameShortView(Person person) {
+        return new PersonShortView( person.getDisplayName(), person.getId(), person.isFired() );
     }
 
     @Override

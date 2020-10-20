@@ -10,7 +10,9 @@
              xmlns:jirasla="urn:import:ru.protei.portal.ui.common.client.widget.jirasla"
              xmlns:issueimportance="urn:import:ru.protei.portal.ui.common.client.widget.issueimportance"
              xmlns:platform="urn:import:ru.protei.portal.ui.common.client.widget.selector.platform"
-             xmlns:datepicker="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single">
+             xmlns:datepicker="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
+             xmlns:worktrigger="urn:import:ru.protei.portal.ui.common.client.widget.selector.worktrigger"
+>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -33,7 +35,7 @@
             </div>
             <g:HTMLPanel ui:field="pauseDateContainer" styleName="row">
                 <div class="col-md-12">
-                    <div class="form-group form-group-default pause-date" ui:field="approvalDateContainer">
+                    <div class="form-group form-group-default date-picker" ui:field="approvalDateContainer">
                         <label class="fade" ui:field="approvalDateLabel"><ui:text from="{lang.issuePauseDateValidity}"/></label>
                         <datepicker:SinglePicker ui:field="pauseDate" type="DATE" formatValue="dd-MM-yyyy" mandatory="true"/>
                     </div>
@@ -46,6 +48,25 @@
                                                  header="{lang.issueProduct}"
                                                  hasNullValue="true"
                                                  mandatory="false"/>
+                </div>
+            </g:HTMLPanel>
+            <g:HTMLPanel ui:field="deadlineContainer" styleName="row">
+                <div class="col-md-12">
+                    <div class="form-group form-group-default date-picker">
+                        <label class="fade"><ui:text from="{lang.issueDeadline}"/></label>
+                        <datepicker:SinglePicker ui:field="deadline" type="DATE" formatValue="dd-MM-yyyy" mandatory="true"/>
+                    </div>
+                </div>
+            </g:HTMLPanel>
+            <g:HTMLPanel ui:field="workTriggerContainer" styleName="row">
+                <div class="col-md-12">
+                    <worktrigger:WorkTriggerFormSelector ui:field="workTrigger"
+                                                 validation="false"
+                                                 header="{lang.issueWorkTrigger}"
+                                                 hasNullValue="false"
+                                                 mandatory="false"
+                                                 searchEnabled="false"
+                    />
                 </div>
             </g:HTMLPanel>
         </div>

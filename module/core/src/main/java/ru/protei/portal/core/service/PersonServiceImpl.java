@@ -61,9 +61,6 @@ public class PersonServiceImpl implements PersonService {
         sp.start( "shortViewList start limit=" + query.limit );
         query = processQueryByPolicyScope(authToken, query);
         sp.check( "processQueryByPolicyScope" );
-        List<Person> persons = personDAO.getPersons( query );
-        sp.check( "personDAO limit=" + query.limit );
-        Result<List<PersonShortView>> listResult = makeListPersonShortView( persons );
         List<PersonShortView> personList = personShortViewDAO.getPersonsShortView(query);
         sp.stop( "shortViewList end " );
         return ok(personList);
@@ -78,7 +75,7 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public Result<List<PersonShortView>> shortViewListByIds( List<Long> ids ) {
-        return makeListPersonShortView(personDAO.getListByKeys( ids ));
+        return ok(personShortViewDAO.getListByKeys( ids ));
     }
 
     @Override
@@ -118,14 +115,14 @@ public class PersonServiceImpl implements PersonService {
         return personQuery;
     }
 
-    private Result<List<PersonShortView>> makeListPersonShortView(List<Person> persons) {
-        if ( persons == null )
-            return error(En_ResultStatus.GET_DATA_ERROR );
-
-        List< PersonShortView > result = persons.stream().map( Person::toFullNameShortView ).collect( Collectors.toList() );
-
-        return ok(result);
-    }
+//    private Result<List<PersonShortView>> makeListPersonShortView(List<Person> persons) {
+//        if ( persons == null )
+//            return error(En_ResultStatus.GET_DATA_ERROR );
+//
+//        List< PersonShortView > result = persons.stream().map( Person::toFullNameShortView ).collect( Collectors.toList() );
+//
+//        return ok(result);
+//    }
 
     @Autowired
     AuthService authService;

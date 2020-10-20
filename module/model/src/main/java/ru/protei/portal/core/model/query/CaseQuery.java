@@ -108,6 +108,10 @@ public class CaseQuery extends BaseQuery {
 
     private List<Integer> timeElapsedTypeIds;
 
+    private List<Integer> workTriggersIds;
+
+    private Boolean overdueDeadlines;
+
     public CaseQuery() {}
 
     public CaseQuery(Long id) {
@@ -163,6 +167,8 @@ public class CaseQuery extends BaseQuery {
         setPlanId(query.getPlanId());
         setPersonIdToIsFavorite(query.getPersonIdToIsFavorite());
         setTimeElapsedTypeIds(query.getTimeElapsedTypeIds());
+        setWorkTriggersIds(query.getWorkTriggersIds());
+        setOverdueDeadlines(query.getOverdueDeadlines());
     }
 
     public Long getId() {
@@ -438,6 +444,22 @@ public class CaseQuery extends BaseQuery {
         this.timeElapsedTypeIds = timeElapsedTypeIds;
     }
 
+    public List<Integer> getWorkTriggersIds() {
+        return workTriggersIds;
+    }
+
+    public void setWorkTriggersIds(List<Integer> workTriggersIds) {
+        this.workTriggersIds = workTriggersIds;
+    }
+
+    public Boolean getOverdueDeadlines() {
+        return overdueDeadlines;
+    }
+
+    public void setOverdueDeadlines(Boolean overdueDeadlines) {
+        this.overdueDeadlines = overdueDeadlines;
+    }
+
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
                 id != null ||
@@ -467,7 +489,8 @@ public class CaseQuery extends BaseQuery {
                 managerOrInitiatorCondition != null ||
                 planId != null ||
                 personIdToIsFavorite != null ||
-                CollectionUtils.isNotEmpty(timeElapsedTypeIds);
+                CollectionUtils.isNotEmpty(timeElapsedTypeIds) ||
+                CollectionUtils.isNotEmpty(workTriggersIds);
     }
 
     @Override
@@ -511,6 +534,8 @@ public class CaseQuery extends BaseQuery {
                 ", managerOrInitiatorCondition=" + managerOrInitiatorCondition +
                 ", planId=" + planId +
                 ", timeElapsedTypeIds=" + timeElapsedTypeIds +
+                ", workTriggersIds=" + workTriggersIds +
+                ", overdueDeadlines=" + overdueDeadlines +
                 '}';
     }
 
@@ -551,7 +576,9 @@ public class CaseQuery extends BaseQuery {
                 Objects.equals(managerOrInitiatorCondition, caseQuery.managerOrInitiatorCondition) &&
                 Objects.equals(planId, caseQuery.planId) &&
                 Objects.equals(personIdToIsFavorite, caseQuery.personIdToIsFavorite) &&
-                Objects.equals(timeElapsedTypeIds, caseQuery.timeElapsedTypeIds);
+                Objects.equals(timeElapsedTypeIds, caseQuery.timeElapsedTypeIds) &&
+                Objects.equals(workTriggersIds, caseQuery.workTriggersIds) &&
+                Objects.equals(overdueDeadlines, caseQuery.overdueDeadlines);
     }
 
     @Override
@@ -560,6 +587,7 @@ public class CaseQuery extends BaseQuery {
                 type, stateIds, importanceIds, allowViewPrivate, viewPrivate, createdRange, modifiedRange,
                 searchStringAtComments, searchCasenoString, commentAuthorIds, caseTagsIds,
                 customerSearch, findRecordByCaseComments, local, productDirectionIds,
-                creatorIds, regionIds, headManagerIds, caseMemberIds, managerOrInitiatorCondition, planId, personIdToIsFavorite, timeElapsedTypeIds);
+                creatorIds, regionIds, headManagerIds, caseMemberIds, managerOrInitiatorCondition, planId, personIdToIsFavorite,
+                timeElapsedTypeIds, workTriggersIds, overdueDeadlines);
     }
 }

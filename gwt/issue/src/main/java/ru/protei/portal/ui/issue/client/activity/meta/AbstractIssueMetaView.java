@@ -4,10 +4,12 @@ import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
-import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.dict.En_TimeElapsedType;
+import ru.protei.portal.core.model.dict.En_WorkTrigger;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.*;
@@ -133,4 +135,11 @@ public interface AbstractIssueMetaView extends IsWidget {
     void setOtherPlans(String value);
 
     void setPlansLabelVisible(boolean isVisible);
+
+    HasVisibility deadlineContainerVisibility();
+    HasValue<Date> deadline();
+    void setDeadlineValid(boolean isValid);
+
+    HasVisibility workTriggerVisibility();
+    HasValue<En_WorkTrigger> workTrigger();
 }
