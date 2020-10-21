@@ -11,8 +11,6 @@ public interface AbstractContractEditContractorView {
 
     void setOrganization(String organization);
 
-    void setNotAvailableOrganizations(List<Long> organizationsToHide);
-
     HasValue<EntityOption> organization();
 
     HasValue<Contractor> contractor();

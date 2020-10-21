@@ -18,7 +18,6 @@ public class HomeCompanyButtonSelector extends ButtonPopupSingleSelector<EntityO
         setAsyncModel(homeCompanyModel);
         setSearchEnabled(false);
         setItemRenderer( value ->value == null ? lang.selectValue() : value.getDisplayText());
-        setFilter(value -> value == null || !idsToHide.contains(value.getId()));
     }
 
     @Override
@@ -38,12 +37,5 @@ public class HomeCompanyButtonSelector extends ButtonPopupSingleSelector<EntityO
 
     }
 
-    public void setIdsToHide(List<Long> idsToHide) {
-        this.idsToHide.clear();
-        this.idsToHide.addAll(idsToHide);
-        clearSelector();
-    }
-
-    private List<Long> idsToHide = new ArrayList<>();
     private HomeCompanyModel model;
 }
