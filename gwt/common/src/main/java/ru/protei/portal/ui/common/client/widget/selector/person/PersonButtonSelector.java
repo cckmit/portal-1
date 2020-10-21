@@ -70,8 +70,9 @@ public class PersonButtonSelector extends ButtonPopupSingleSelector< PersonShort
             getPopup().showNear( button.getElement() );
         }
     }
-
+    static int index = 0; //ToDO debug
     public void updateCompanies(Set<Long> companyIds) {
+        log.info( "updateCompanies(): " + (index++)+ " " + defaultValue );
         this.companyIds = companyIds;
         if (model != null) {
             model.updateCompanies(this, isPeople, companyIds, fired);

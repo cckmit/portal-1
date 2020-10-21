@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.selector.person;
 
 import com.google.gwt.i18n.client.LocaleInfo;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -35,7 +36,7 @@ public abstract class PersonModel implements Activity, SelectorModel<PersonShort
     private static final Logger log = Logger.getLogger( PersonModel.class.getName() );
     void updateCompanies(Refreshable selector, Boolean people, Set<Long> companyIds, Boolean fired) {
         PersonQuery query = new PersonQuery(nullIfEmpty( companyIds ), people, fired, false, null, En_SortField.person_full_name, En_SortDir.ASC, null);
-        log.info( "updateCompanies(): PersonModel.java" );
+        log.info( "updateCompanies(): PersonModel.java, " + ((Widget)selector).getStyleName() );
         personService.getPersonViewList(query, new RequestCallback<List<PersonShortView>>() {
 
             @Override

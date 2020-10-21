@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.net.Inet4Address;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;

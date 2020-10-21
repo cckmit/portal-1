@@ -6,6 +6,10 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContactItemQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.struct.ContactItem;
+import ru.protei.portal.core.model.util.sqlcondition.Query;
+import ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder;
+
+import java.util.List;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
@@ -59,5 +63,12 @@ public class ContactItemDAO_Impl extends PortalBaseJdbcDAO<ContactItem> implemen
             }
 
         }));
+    }
+
+    @Override
+    public List<ContactItem> getForPersonsIds( List<Long> peronsIds ) {
+        Query query = SqlQueryBuilder.query().withJoins( "JOIN contact_item_person on contact_item.id = contact_item_person.contact_item_id" )
+                .where( "contact_item_person.person_id" ).in( peronsIds ).asQuery();
+        return getList( query.build() );
     }
 }

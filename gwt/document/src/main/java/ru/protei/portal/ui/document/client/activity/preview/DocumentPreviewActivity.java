@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.dto.ProjectInfo;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -123,14 +124,12 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
         view.setDownloadLinkApprovalSheet(hasAccessToPdf ? DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId() + "/as" : null);
         view.setContractor(document.getContractor() == null ? "" : document.getContractor().getDisplayShortName());
         view.setRegistrar(document.getRegistrar() == null ? "" : document.getRegistrar().getDisplayShortName());
-        view.setMembers(CollectionUtils.stream(document.getMembers())
-                .map(Person::getDisplayShortName)
-                .collect(Collectors.joining(", ")));
+        view.setMembers(StringUtils.join( document.getMembers(), PersonShortView::getDisplayShortName, ", "));
         view.documentDocUploader().resetForm();
         view.documentDocComment().setValue("");
         view.documentDocVisibility().setVisible(hasAccessToDocModification);
         view.approvalContainerVisibility().setVisible(document.getApproved());
-        view.setApprovedBy(!document.getApproved() || document.getApprovedBy() == null ? "" : document.getApprovedBy().toShortNameShortView().getName());
+        view.setApprovedBy(!document.getApproved() || document.getApprovedBy() == null ? "" : document.getApprovedBy().getDisplayShortName());
         view.setApprovalDate(!document.getApproved() || document.getApprovalDate() == null ? "" : DateTimeFormat.getFormat("dd.MM.yyyy").format(document.getApprovalDate()));
         view.documentDocUploadContainerLoading().setVisible(false);
         fillProject(document);
@@ -172,7 +171,7 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
         }
         Long currentPersonId = policyService.getProfile().getId();
         return CollectionUtils.stream(document.getMembers())
-                .map(Person::getId)
+                .map(PersonShortView::getId)
                 .collect(Collectors.toList())
                 .contains(currentPersonId);
     }
