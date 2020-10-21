@@ -145,6 +145,10 @@ public abstract class DutyLogEditActivity implements AbstractDutyLogEditActivity
     private void saveDutyLog() {
         enableButtons(false);
         dutyLogController.saveDutyLog(fillDTO(), new FluentCallback<Long>()
+                .withError(error -> {
+                    enableButtons(true);
+                    defaultErrorHandler.accept(error);
+                })
                 .withSuccess(result -> {
                     enableButtons(true);
                     fireEvent(new NotifyEvents.Show(isNew() ? lang.dutyLogCreated() : lang.dutyLogUpdated(), NotifyEvents.NotifyType.SUCCESS));
