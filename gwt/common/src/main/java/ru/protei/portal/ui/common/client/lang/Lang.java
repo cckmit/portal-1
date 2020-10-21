@@ -2846,11 +2846,17 @@ public interface Lang extends Messages, ContactItemLang {
 
     String thisWeekInterval();
 
+    String thisWeekAndBeyondInterval();
+
     String lastWeekInterval();
+
+    String nextWeekInterval();
 
     String thisMonthInterval();
 
     String lastMonthInterval();
+
+    String nextMonthInterval();
 
     String thisYearInterval();
 
@@ -3102,7 +3108,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String dutyLog();
 
-    String dutyLogDateFrom();
+    String dutyLogSortDateFrom();
 
     String dutyLogValidationDateRange();
 
