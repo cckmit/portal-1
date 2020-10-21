@@ -1,10 +1,15 @@
 package ru.protei.portal.ui.common.client.widget.composite.popper;
 
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.RootPanel;
 import ru.protei.portal.ui.common.client.widget.composite.PopupLikeComposite;
 
 public abstract class PopperComposite extends PopupLikeComposite {
@@ -75,7 +80,7 @@ public abstract class PopperComposite extends PopupLikeComposite {
         popper = createPopper(relative, getElement(), placement.getCode(), skidding, distance);
 
         if (isAutoResize) {
-            if (resizeHandlerReg != null) {
+            if (resizeHandlerReg == null) {
                 addResizeHandler(relative, getElement());
             }
 
