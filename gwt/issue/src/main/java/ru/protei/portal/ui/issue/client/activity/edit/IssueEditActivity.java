@@ -30,7 +30,9 @@ import ru.protei.portal.ui.common.client.util.ClipboardUtils;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.PasteInfo;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
+import ru.protei.portal.ui.common.shared.model.HandleOnError;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.issue.client.view.edit.IssueInfoWidget;
 import ru.protei.portal.ui.issue.client.view.edit.IssueNameDescriptionEditWidget;
@@ -234,7 +236,19 @@ public abstract class IssueEditActivity implements
     public void removeAttachment(Attachment attachment) {
         if (isReadOnly()) return;
         attachmentController.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, attachment.getId(), new FluentCallback<Boolean>()
-                .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR)))
+                .withError((throwable, defaultErrorHandler, status) -> {
+                    if (En_ResultStatus.NOT_FOUND.equals(status)) {
+                        fireEvent(new NotifyEvents.Show(lang.fileNotFoundError(), NotifyEvents.NotifyType.ERROR));
+                        return;
+                    }
+
+                    if (En_ResultStatus.NOT_REMOVED.equals(status)) {
+                        fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR));
+                        return;
+                    }
+
+                    defaultErrorHandler.accept(throwable);
+                })
                 .withSuccess(result -> {
                     issueInfoWidget.attachmentsListContainer().remove(attachment);
                     issue.getAttachments().remove(attachment);

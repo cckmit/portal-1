@@ -3,7 +3,6 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.DutyLogDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -13,9 +12,6 @@ import ru.protei.portal.core.model.query.DutyLogQuery;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
-
-import java.util.Date;
-import java.util.Objects;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
@@ -52,7 +48,6 @@ public class DutyLogServiceImpl implements DutyLogService {
     }
 
     @Override
-    @Transactional
     public Result<Long> updateDutyLog(AuthToken authToken, DutyLog value) {
         if (value.getId() == null || !value.isValid()) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -67,7 +62,6 @@ public class DutyLogServiceImpl implements DutyLogService {
     }
 
     @Override
-    @Transactional
     public Result<Long> createDutyLog(AuthToken authToken, DutyLog value) {
         if (value.getId() != null || !value.isValid()) {
             return error(En_ResultStatus.INCORRECT_PARAMS);

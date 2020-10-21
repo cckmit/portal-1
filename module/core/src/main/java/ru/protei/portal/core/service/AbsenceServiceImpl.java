@@ -191,14 +191,12 @@ public class AbsenceServiceImpl implements AbsenceService {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
-        if (!personAbsenceDAO.removeByKey(storedAbsence.getId())) {
-            return error(En_ResultStatus.NOT_REMOVED, "Absence was not removed. It could be removed earlier");
-        }
+        Result<Boolean> result = ok(personAbsenceDAO.removeByKey(storedAbsence.getId()));
 
         Person initiator = personDAO.get(token.getPersonId());
         jdbcManyRelationsHelper.fill(initiator, Person.Fields.CONTACT_ITEMS);
 
-        return ok(true).publishEvent(new AbsenceNotificationEvent(
+        return result.publishEvent(new AbsenceNotificationEvent(
                 this,
                 EventAction.REMOVED,
                 initiator,

@@ -171,7 +171,6 @@ public class PlanServiceImpl implements PlanService{
     }
 
     @Override
-    @Transactional
     public Result<Boolean> editPlanParams(AuthToken token, Plan plan) {
         if (plan == null || plan.getId() == null || !validatePlan(plan)){
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -373,7 +372,7 @@ public class PlanServiceImpl implements PlanService{
 
         if (!planDAO.removeByKey(planId)) {
             log.warn("removePlan(): NOT_REMOVED. planId={}, token personId={}", planId, token.getPersonId());
-            return error(En_ResultStatus.NOT_REMOVED);
+            return ok(false);
         }
 
         if (plan.getIssueList() != null){
@@ -384,7 +383,7 @@ public class PlanServiceImpl implements PlanService{
             });
         }
 
-        return ok();
+        return ok(true);
     }
 
     private boolean userIsCreator (AuthToken token, Plan plan){

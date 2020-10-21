@@ -65,7 +65,6 @@ public class UserRoleServiceImpl implements UserRoleService {
 
 
     @Override
-    @Transactional
     public Result<UserRole> saveUserRole( AuthToken token, UserRole role ) {
 
         if (HelperFunc.isEmpty(role.getCode())) {
@@ -91,13 +90,8 @@ public class UserRoleServiceImpl implements UserRoleService {
     }
 
     @Override
-    @Transactional
     public Result<Boolean> removeRole( AuthToken authToken, Long id ) {
-        if ( userRoleDAO.removeByKey( id ) ) {
-            return ok(true );
-        }
-
-        return error(En_ResultStatus.NOT_REMOVED, "Role was not removed. It could be removed earlier");
+        return ok(userRoleDAO.removeByKey(id));
     }
 
     private void applyFilterByScope( AuthToken token, UserRoleQuery query ) {

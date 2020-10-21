@@ -406,7 +406,6 @@ public class IpReservationServiceImpl implements IpReservationService {
     }
 
     @Override
-    @Transactional
     public Result<ReservedIp> removeReservedIp( AuthToken token, ReservedIp reservedIp ) {
         if (reservedIp == null) {
             return error(En_ResultStatus.NOT_FOUND);

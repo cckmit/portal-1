@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.AuditObjectDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -51,7 +50,6 @@ public class AuditServiceImpl implements AuditService {
 
     @Async(BACKGROUND_TASKS)
     @Override
-    @Transactional
     public Result< AuditObject > saveAuditObject( AuditObject auditObject ) {
 
         if (auditObject == null)

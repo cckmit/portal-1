@@ -231,7 +231,6 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
-    @Transactional
     public Result<Server> createServer( AuthToken token, Server server) {
 
         Long id = serverDAO.persist(server);
@@ -257,7 +256,6 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
-    @Transactional
     public Result<Application> createApplication( AuthToken token, Application application) {
 
         Long id = applicationDAO.persist(application);
@@ -311,7 +309,6 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
-    @Transactional
     public Result<Server> updateServer( AuthToken token, Server server) {
 
         boolean status = serverDAO.merge(server);
@@ -324,7 +321,6 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
-    @Transactional
     public Result<Application> updateApplication( AuthToken token, Application application) {
 
         boolean status = applicationDAO.merge(application);

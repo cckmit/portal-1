@@ -42,7 +42,8 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.access.ProjectAccessUtil.*;
+import static ru.protei.portal.core.access.ProjectAccessUtil.canAccessProject;
+import static ru.protei.portal.core.access.ProjectAccessUtil.canAccessProjectPrivateElements;
 import static ru.protei.portal.core.model.dict.En_CaseType.CRM_SUPPORT;
 import static ru.protei.portal.core.model.dict.En_CaseType.PROJECT;
 import static ru.protei.portal.core.model.dict.En_Privilege.ISSUE_EDIT;
@@ -437,14 +438,12 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     @Override
-    @Transactional
     public Result<Boolean> updateTimeElapsed( AuthToken token, Long caseId) {
         long timeElapsed = getTimeElapsed(caseId).getData();
         return updateCaseTimeElapsed(token, caseId, timeElapsed);
     }
 
     @Override
-    @Transactional
     public Result<Boolean> updateCaseTimeElapsed( AuthToken token, Long caseId, long timeElapsed) {
         if (caseId == null || !caseObjectDAO.checkExistsByKey(caseId)) {
             return error( En_ResultStatus.INCORRECT_PARAMS);
@@ -459,7 +458,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     @Override
-    @Transactional
     public Result<Boolean> updateCaseTimeElapsedType(AuthToken token, Long caseCommentId, En_TimeElapsedType type) {
         CaseComment caseComment;
 

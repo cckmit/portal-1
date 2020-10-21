@@ -34,7 +34,6 @@ public class WorkerPositionServiceImpl implements WorkerPositionService{
     }
 
     @Override
-    @Transactional
     public Result<Long> createWorkerPosition(AuthToken token, WorkerPosition workerPosition) {
         if (!isValid(workerPosition)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -54,7 +53,6 @@ public class WorkerPositionServiceImpl implements WorkerPositionService{
     }
 
     @Override
-    @Transactional
     public Result<Long> updateWorkerPosition(AuthToken token, WorkerPosition workerPosition) {
         if (!isValid(workerPosition)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -73,17 +71,13 @@ public class WorkerPositionServiceImpl implements WorkerPositionService{
     }
 
     @Override
-    @Transactional
     public Result<Long> removeWorkerPosition(AuthToken token, WorkerPosition workerPosition) {
 
         if(workerEntryDAO.checkExistsByPosId(workerPosition.getId())){
             return error(En_ResultStatus.WORKER_WITH_THIS_POSITION_ALREADY_EXIST);
         }
 
-        boolean result = workerPositionDAO.removeByKey(workerPosition.getId());
-
-        if ( !result )
-            return error(En_ResultStatus.NOT_REMOVED);
+        workerPositionDAO.removeByKey(workerPosition.getId());
 
         return ok(workerPosition.getId());
     }

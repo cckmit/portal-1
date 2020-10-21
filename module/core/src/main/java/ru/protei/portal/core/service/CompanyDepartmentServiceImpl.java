@@ -1,8 +1,6 @@
 package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.CompanyDepartmentDAO;
 import ru.protei.portal.core.model.dao.WorkerEntryDAO;
@@ -13,7 +11,10 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CompanyDepartmentQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
@@ -34,7 +35,6 @@ public class CompanyDepartmentServiceImpl implements CompanyDepartmentService{
     }
 
     @Override
-    @Transactional
     public Result<Long> createCompanyDepartment(AuthToken token, CompanyDepartment companyDepartment) {
         if (!isValid(companyDepartment)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -55,7 +55,6 @@ public class CompanyDepartmentServiceImpl implements CompanyDepartmentService{
     }
 
     @Override
-    @Transactional
     public Result<Long> updateCompanyDepartmentName(AuthToken token, CompanyDepartment companyDepartment) {
         if (!isValid(companyDepartment)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -74,17 +73,13 @@ public class CompanyDepartmentServiceImpl implements CompanyDepartmentService{
     }
 
     @Override
-    @Transactional
     public Result<Long> removeCompanyDepartment(AuthToken token, CompanyDepartment companyDepartment) {
 
         if(workerEntryDAO.checkExistsByDepId(companyDepartment.getId())){
             return error(En_ResultStatus.WORKER_WITH_THIS_DEPARTMENT_ALREADY_EXIST);
         }
 
-        boolean result = companyDepartmentDAO.removeByKey(companyDepartment.getId());
-
-        if ( !result )
-            return error(En_ResultStatus.NOT_REMOVED);
+        companyDepartmentDAO.removeByKey(companyDepartment.getId());
 
         return ok(companyDepartment.getId());
     }

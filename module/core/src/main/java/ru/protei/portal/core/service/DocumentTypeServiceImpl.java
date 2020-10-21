@@ -2,7 +2,6 @@ package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.DocumentTypeDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -29,7 +28,6 @@ public class DocumentTypeServiceImpl implements DocumentTypeService {
     }
 
     @Override
-    @Transactional
     public Result<DocumentType> saveDocumentType( AuthToken token, DocumentType documentType ) {
         if ( !documentTypeDAO.saveOrUpdate(documentType) ) {
             return error(En_ResultStatus.INTERNAL_ERROR);
@@ -39,12 +37,9 @@ public class DocumentTypeServiceImpl implements DocumentTypeService {
     }
 
     @Override
-    @Transactional
     public Result<Long> removeDocumentType(AuthToken authToken, DocumentType documentType) {
         try {
-            if (!documentTypeDAO.removeByKey(documentType.getId())) {
-                return error(En_ResultStatus.INTERNAL_ERROR);
-            }
+            documentTypeDAO.removeByKey(documentType.getId());
         } catch (DataIntegrityViolationException e) {
             return error(En_ResultStatus.UPDATE_OR_REMOVE_LINKED_OBJECT_ERROR);
         }

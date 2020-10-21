@@ -126,13 +126,12 @@ public class AttachmentServiceImpl implements AttachmentService {
         Attachment attachment = attachmentDAO.partialGet(id, "ext_link");
 
         if (attachment == null) {
-//            Файл был удален
-            return ok(true);
+            return error(En_ResultStatus.NOT_FOUND);
         }
 
         if (!attachmentDAO.removeByKey(id)) {
 //            Файл был удален
-            return ok(true);
+            return ok(false);
         }
 
         if (fileStorage.deleteFile(attachment.getExtLink())) {
@@ -176,7 +175,6 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     @Override
-    @Transactional
     public Result<Long> saveAttachment( Attachment attachment) {
         /* В redmine и jira дата устанавливается из источника */
         if (attachment.getCreated() == null) {

@@ -168,7 +168,6 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    @Transactional
     public Result<Long> copyEquipment( AuthToken token, Long equipmentId, String newName, Long authorId ) {
         if (equipmentId == null || newName == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -202,8 +201,7 @@ public class EquipmentServiceImpl implements EquipmentService {
 
         removeLinkedDocuments(token, equipmentId, author);
 
-        Boolean removeStatus = equipmentDAO.removeByKey(equipmentId);
-        return ok(removeStatus );
+        return ok(equipmentDAO.removeByKey(equipmentId));
     }
 
     private boolean updateDecimalNumbers( Equipment equipment ) {

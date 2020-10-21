@@ -347,8 +347,12 @@ public class ProjectServiceImpl implements ProjectService {
             throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
         }
 
+        List<CaseLink> links = emptyIfNull(project.getLinks());
+
+        links.forEach(link -> link.setCaseId(id));
+
         Result<List<CaseLink>> createdLinksResult
-                = caseLinkService.createLinks(token, emptyIfNull(project.getLinks()), En_CaseType.PROJECT);
+                = caseLinkService.createLinks(token, links, En_CaseType.PROJECT);
 
         Person creator = personDAO.get(project.getCreatorId());
         jdbcManyRelationsHelper.fill(creator, Person.Fields.CONTACT_ITEMS);

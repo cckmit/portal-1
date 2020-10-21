@@ -414,7 +414,6 @@ public class ContractServiceImpl implements ContractService {
     }
 
     @Override
-    @Transactional
     public Result<Contractor> createContractor(AuthToken token, Contractor contractor) {
         if (contractor == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);

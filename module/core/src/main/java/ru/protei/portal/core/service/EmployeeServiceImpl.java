@@ -312,8 +312,6 @@ public class EmployeeServiceImpl implements EmployeeService {
             return error(En_ResultStatus.EMPLOYEE_EMAIL_ALREADY_EXIST);
         }
 
-        final boolean YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEmployeeSyncEnabled();
-
         person.setDisplayName(person.getLastName() + " " + person.getFirstName() + (StringUtils.isNotEmpty(person.getSecondName()) ? " " + person.getSecondName() : ""));
         person.setDisplayShortName(createPersonShortName(person));
         person.setCompanyId(CrmConstants.Company.HOME_COMPANY_ID);
@@ -327,6 +325,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         contactItemDAO.saveOrUpdateBatch(person.getContactItems());
         jdbcManyRelationsHelper.persist(person, Person.Fields.CONTACT_ITEMS);
 
+        final boolean YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEmployeeSyncEnabled();
+
         if (needToChangeAccount && YOUTRACK_INTEGRATION_ENABLED) {
             createChangeLastNameYoutrackIssueIfNeeded(person.getId(), person.getFirstName(), person.getLastName(), person.getSecondName(), oldPerson.getLastName());
         }
@@ -335,7 +335,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    @Transactional
     public Result<Boolean> updateEmployeeWorker(AuthToken token, WorkerEntry worker) {
         if (worker == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -355,7 +354,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    @Transactional
     public Result<WorkerEntry> createEmployeeWorker(AuthToken token, WorkerEntry worker) {
         if (worker == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);

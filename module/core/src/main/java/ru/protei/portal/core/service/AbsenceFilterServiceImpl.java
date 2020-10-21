@@ -91,7 +91,6 @@ public class AbsenceFilterServiceImpl implements AbsenceFilterService {
     }
 
     @Override
-    @Transactional
     public Result<AbsenceFilter> saveFilter(AuthToken token, AbsenceFilter filter) {
 
         log.debug("saveFilter(): filter={} ", filter);
@@ -118,16 +117,10 @@ public class AbsenceFilterServiceImpl implements AbsenceFilterService {
     }
 
     @Override
-    @Transactional
     public Result<Boolean> removeFilter(Long id) {
-
         log.debug( "removeFilter(): id={} ", id );
 
-        if ( absenceFilterDAO.removeByKey( id ) ) {
-            return ok(true);
-        }
-
-        return error(En_ResultStatus.INTERNAL_ERROR );
+        return ok(absenceFilterDAO.removeByKey( id ));
     }
 
     private List<Long> collectEmployeeIds(AbsenceQuery query){

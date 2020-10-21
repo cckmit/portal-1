@@ -99,7 +99,6 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    @Transactional
     public Result<Long> saveCase( CaseObject obj ) {
         Long id = caseObjectDAO.insertCase(obj);
         if (id == null) return error( En_ResultStatus.NOT_FOUND );
@@ -107,7 +106,6 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    @Transactional
     public Result<Long> mergeExtAppData( ExternalCaseAppData appData ) {
         if(externalCaseAppDAO.merge(appData)) return error( En_ResultStatus.NOT_UPDATED );
         return ok(appData.getId());
@@ -139,21 +137,18 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    @Transactional
     public Result<Boolean> updateCreatedOn( RedmineEndpoint endpoint ) {
          if(!endpointDAO.updateCreatedOn( endpoint )) return error( En_ResultStatus.NOT_UPDATED );
          return ok(true);
     }
 
     @Override
-    @Transactional
     public Result<Boolean> updateUpdatedOn( RedmineEndpoint endpoint ) {
         if(!endpointDAO.updateUpdatedOn( endpoint )) return error( En_ResultStatus.NOT_UPDATED );
         return ok(true);
     }
 
     @Override
-    @Transactional
     public Result<Long> createAndStoreStateComment( Date created, Long authorId, Long stateId, Long caseId) {
         final CaseComment statusComment = new CaseComment();
         statusComment.setCreated(created);
@@ -166,7 +161,6 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    @Transactional
     public Result<Long> createAndStoreImportanceComment( Date created, Long authorId, Integer importance, Long caseId) {
         final CaseComment stateChangeMessage = new CaseComment();
         stateChangeMessage.setCreated(created);
@@ -247,7 +241,6 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    @Transactional
     public Result<Long> updateCaseDescription( CaseObject object, String value, Person author ) {
 
         final DiffResult<String> infoDiff = new DiffResult<>(object.getInfo(), value);
@@ -269,7 +262,6 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    @Transactional
     public Result<Long> updateCaseSubject( CaseObject object, String value, Person author ) {
         final DiffResult<String> nameDiff = new DiffResult<>(object.getName(), value);
 
@@ -290,7 +282,6 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    @Transactional
     public Result<Long> updateComment( Long objectId, Date creationDate, String text, Person author ){
         CaseComment caseComment = createAndStoreComment( creationDate,  text, author, objectId);
         logger.info("Added new case comment id={} to case with id {}",caseComment.getId(),  objectId);

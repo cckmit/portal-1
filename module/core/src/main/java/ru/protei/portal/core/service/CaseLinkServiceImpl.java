@@ -87,20 +87,6 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     @Override
     @Transactional
-    public Result<CaseLink> createLink(AuthToken authToken, CaseLink link, En_CaseType caseType) {
-        Result<CaseLink> addedLinkResult = createLink(link, caseType, authToken);
-
-        if (addedLinkResult.isOk()) {
-            synchronizeYouTrackLinks(Collections.singletonList(addedLinkResult.getData()), caseType);
-        } else {
-            return error(addedLinkResult.getStatus());
-        }
-
-        return ok(addedLinkResult.getData());
-    }
-
-    @Override
-    @Transactional
     public Result<List<CaseLink>> createLinks(AuthToken authToken, List<CaseLink> linksToCreate, En_CaseType caseType) {
         if (isEmpty(linksToCreate)) {
             return ok();
@@ -136,20 +122,6 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         synchronizeYouTrackLinks(Collections.singletonList(link), caseType);
 
         return sendNotificationLinkAdded(authToken, link.getCaseId(), link, caseType);
-    }
-
-    @Override
-    @Transactional
-    public Result deleteLink (AuthToken authToken, Long id) {
-        Result<CaseLink> deletedLinkResult = deleteLink(id);
-
-        if (deletedLinkResult.isOk()) {
-            synchronizeYouTrackLinks(Collections.singletonList(deletedLinkResult.getData()));
-        } else {
-            return error(deletedLinkResult.getStatus());
-        }
-
-        return ok();
     }
 
     @Override
@@ -316,7 +288,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             }
         } catch (Exception e){
             log.error("changeYoutrackId(): change failed", e);
-            throw  new ResultStatusException(En_ResultStatus.INTERNAL_ERROR);
+            throw new ResultStatusException(En_ResultStatus.INTERNAL_ERROR);
         }
 
         return ok();
@@ -392,30 +364,20 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         CaseLink linkToRemove = validationResult.getData();
 
-        Result removedLinkResult = removeLink(linkToRemove);
-
-        if (removedLinkResult.isOk()) {
-            return ok(linkToRemove);
-        }
-
-        return error(removedLinkResult.getStatus(), "Link was not deleted");
-    }
-
-    private Result removeLink (CaseLink link){
         Set<Long> toRemoveIds = new HashSet<>();
-        toRemoveIds.add(link.getId());
+        toRemoveIds.add(linkToRemove.getId());
 
-        if (En_CaseLink.CRM.equals(link.getType())){
+        if (En_CaseLink.CRM.equals(linkToRemove.getType())){
             // удаляем зеркальные CRM-линки
-            CaseLink crmCrosslink = caseLinkDAO.getCrmLink(En_CaseLink.CRM, NumberUtils.toLong(link.getRemoteId()), link.getCaseId().toString());
+            CaseLink crmCrosslink = caseLinkDAO.getCrmLink(En_CaseLink.CRM, NumberUtils.toLong(linkToRemove.getRemoteId()), linkToRemove.getCaseId().toString());
             if (crmCrosslink != null) {
                 toRemoveIds.add(crmCrosslink.getId());
             }
         }
 
-        int removedCount = caseLinkDAO.removeByKeys(toRemoveIds);
+        caseLinkDAO.removeByKeys(toRemoveIds);
 
-        return removedCount == toRemoveIds.size() ? ok() : error(En_ResultStatus.INTERNAL_ERROR);
+        return ok(linkToRemove);
     }
 
     private Result<CaseLink> validateLinkBeforeRemove(Long id){
@@ -457,22 +419,10 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             return error(validationStatus);
         }
 
-        Result<Long> addedLinkResult = addLink(link, caseType);
-
-        if (addedLinkResult.isOk()) {
-            return ok(caseLinkDAO.get(addedLinkResult.getData()));
-        }
-
-        return error(addedLinkResult.getStatus(), "Link was not created");
-    }
-
-    private Result<Long> addLink (CaseLink link, En_CaseType caseType) {
-        return lockService.doWithLockAndTransaction(CaseLink.class, link.getCaseId(), TimeUnit.SECONDS, 5, transactionTemplate, () -> {
-
-            Long createdLinkId = null;
+        Result<Long> addedLinkResult = lockService.doWithLockAndTransaction(CaseLink.class, link.getCaseId(), TimeUnit.SECONDS, 5, transactionTemplate, () -> {
+            Long createdLinkId;
 
             switch (caseType) {
-
                 case CRM_SUPPORT:
 
                     link.setWithCrosslink(true);
@@ -510,6 +460,12 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                     return ok(createdLinkId);
             }
         });
+
+        if (addedLinkResult.isOk()) {
+            return ok(caseLinkDAO.get(addedLinkResult.getData()));
+        }
+
+        return error(addedLinkResult.getStatus(), "Link was not created");
     }
 
     private Result<List<CaseLink>> getYoutrackLinks( Long caseId ) {

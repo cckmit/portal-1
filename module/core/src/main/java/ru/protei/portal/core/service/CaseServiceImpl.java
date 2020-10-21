@@ -14,7 +14,6 @@ import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
@@ -47,7 +46,6 @@ import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
 import static ru.protei.portal.core.model.dict.En_CaseType.CRM_SUPPORT;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.util.CaseStateUtil.isTerminalState;
-import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 
 /**
  * Реализация сервиса управления обращениями
@@ -296,8 +294,12 @@ public class CaseServiceImpl implements CaseService {
             }
         }
 
+        List<CaseLink> links = emptyIfNull(caseObjectCreateRequest.getLinks());
+
+        links.forEach(link -> link.setCaseId(caseId));
+
         Result<List<CaseLink>> createLinksResult =
-                caseLinkService.createLinks(token, emptyIfNull(caseObjectCreateRequest.getLinks()), CRM_SUPPORT);
+                caseLinkService.createLinks(token, links, CRM_SUPPORT);
 
         autoOpenCaseService.processNewCreatedCaseToAutoOpen(caseId, caseObject.getInitiatorCompanyId());
 
@@ -566,7 +568,6 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    @Transactional
     public Result<Boolean> updateCaseModified( AuthToken token, Long caseId, Date modified) {
         if(caseId == null || !caseObjectDAO.checkExistsByKey(caseId))
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -580,7 +581,6 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    @Transactional
     public Result<Boolean> updateExistsAttachmentsFlag( Long caseId, boolean flag){
         if(caseId == null)
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -595,7 +595,6 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    @Transactional
     public Result<Boolean> updateExistsAttachmentsFlag( Long caseId){
         return isExistsAttachments(caseId).flatMap( isExists ->
                 updateExistsAttachmentsFlag(caseId, isExists));
