@@ -17,6 +17,7 @@ import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.ExportSybEntry;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.service.CompanyService;
 import ru.protei.portal.tools.migrate.struct.ExternalCompany;
 import ru.protei.portal.tools.migrate.struct.ExternalPerson;
 import ru.protei.portal.tools.migrate.struct.ExternalProduct;
@@ -52,6 +53,9 @@ public class ActiveExportDataService implements ExportDataService {
 
     @Autowired
     DevUnitDAO devUnitDAO;
+
+    @Autowired
+    CompanyService companyService;
 
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
@@ -177,7 +181,8 @@ public class ActiveExportDataService implements ExportDataService {
 
     @Override
     public En_ResultStatus exportPerson(Person person) {
-        if (personDAO.isEmployee(person)) {
+        if(companyService.isHomeCompany( person.getCompanyId() ).getData()){
+//        if (personDAO.isEmployee(person)) {
             /**
              * Теперь этим занимается новое API для 1C
              */

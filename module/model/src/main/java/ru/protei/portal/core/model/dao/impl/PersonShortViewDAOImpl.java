@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.dao.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.dao.PersonShortViewDAO;
+import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -16,6 +17,8 @@ public class PersonShortViewDAOImpl extends PortalBaseJdbcDAO<PersonShortView> i
 
     @Autowired
     PersonSqlBuilder personSqlBuilder;
+    @Autowired
+    ContactSqlBuilder contactSqlBuilder;
 
     @Override
     public List<PersonShortView> getPersonsShortView( PersonQuery query ) {
@@ -24,11 +27,13 @@ public class PersonShortViewDAOImpl extends PortalBaseJdbcDAO<PersonShortView> i
 
     @Override
     public List<PersonShortView> getEmployees( EmployeeQuery query ) {
-        JdbcQueryParameters parameters = employeeSqlBuilder.makeParameters( query );
-
-        return getList(parameters);
+        return getList(employeeSqlBuilder.makeParameters( query ));
     }
 
+    @Override
+    public List<PersonShortView> getContacts( ContactQuery query) {
+        return getList( contactSqlBuilder.makeParameters( query ) );
+    }
 
 
 }

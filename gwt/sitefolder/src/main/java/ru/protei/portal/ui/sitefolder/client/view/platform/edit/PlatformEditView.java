@@ -11,6 +11,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
@@ -29,7 +30,7 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
     public void onInit() {
 
         initWidget(ourUiBinder.createAndBindUi(this));
-
+        manager.setItemRenderer( value -> value == null ? lang.selectManager() : value.getDisplayShortName() );
     }
 
     @Override
@@ -221,7 +222,8 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
     @Inject
     @UiField(provided = true)
     ProjectButtonSelector project;
-
+    @Inject
+    Lang lang;
     private AbstractPlatformEditActivity activity;
 
     interface SiteFolderEditViewUiBinder extends UiBinder<HTMLPanel, PlatformEditView> {}

@@ -217,6 +217,11 @@ public class MainConfiguration {
         return new PersonSqlBuilder();
     }
 
+    @Bean
+    public ContactSqlBuilder getContactSqlBuilder() {
+        return new ContactSqlBuilder();
+    }
+
     /* DAO converters */
 
     @Bean

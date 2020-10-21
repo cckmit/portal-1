@@ -7,7 +7,6 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.protei.portal.config.PortalConfig;
@@ -17,6 +16,7 @@ import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.UploadResult;
+import ru.protei.portal.core.service.CompanyService;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.util.AvatarUtils;
 
@@ -32,12 +32,15 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import static org.slf4j.LoggerFactory.getLogger;
+import static ru.protei.portal.api.struct.Result.error;
+
 @RestController
 public class AvatarController {
 
     private static final String NOPHOTO_PATH = "./images/nophoto.png";
 
-    private static final Logger logger = LoggerFactory.getLogger( AvatarController.class );
+    private static final Logger logger = getLogger( AvatarController.class );
 
     private ServletFileUpload upload = new ServletFileUpload();
     private ObjectMapper mapper = new ObjectMapper();
@@ -84,6 +87,10 @@ public class AvatarController {
         loadFile( context.getRealPath( NOPHOTO_PATH ), response );
     }
 
+    @Autowired
+    CompanyService companyService;
+    private static final Logger log = getLogger( AvatarController.class );
+
     @RequestMapping( value = "/avatars/old/{id}" )
     public void getAvatarByOldId(
             @PathVariable String id,
@@ -93,6 +100,11 @@ public class AvatarController {
 
         Person person = personDAO.getEmployeeByOldId(Long.parseLong(id));
         if (person == null) return;
+
+        if(!companyService.isHomeCompany( person.getCompanyId() ).getData()){
+            log.warn( "getAvatarByOldId(): Not Accepatable company for person {}", person  );
+            return;
+        }
 
         String newFileName = person.getId() + ".jpg";
 

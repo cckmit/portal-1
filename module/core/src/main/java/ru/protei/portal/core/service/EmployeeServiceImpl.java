@@ -105,6 +105,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     EventPublisherService publisherService;
+    @Autowired
+    CompanyService companyService;
 
     @Override
     public Result<List<PersonShortView>> shortViewList( EmployeeQuery query) {
@@ -379,6 +381,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional
     public Result<Boolean> fireEmployee(AuthToken token, Person person) {
+        if(!companyService.isHomeCompany( person.getCompanyId() ).getData()){
+            return error(En_ResultStatus.NOT_AVAILABLE);
+        }
 
         Person personFromDb = personDAO.getEmployee(person.getId());
 

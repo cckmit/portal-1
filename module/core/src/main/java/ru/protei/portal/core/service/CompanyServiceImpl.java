@@ -15,12 +15,14 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.portal.core.utils.EntityCache;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
@@ -63,7 +65,12 @@ public class CompanyServiceImpl implements CompanyService {
     YoutrackService youtrackService;
 
     @Autowired
+    CompanyGroupHomeDAO groupHomeDAO;
+
+    @Autowired
     PortalConfig portalConfig;
+
+    private EntityCache<CompanyHomeGroupItem> homeGroupCache;
 
     @Override
     public Result<SearchResult<Company>> getCompanies( AuthToken token, CompanyQuery query) {
@@ -323,6 +330,19 @@ public class CompanyServiceImpl implements CompanyService {
     public Result<List<CompanyImportanceItem>> getImportanceLevels(Long companyId) {
         List<CompanyImportanceItem> result = companyImportanceItemDAO.getSortedImportanceLevels(companyId);
         return ok(result);
+    }
+
+    @Override
+    public Result<Boolean> isHomeCompany( Long companyId ) {
+        return ok( homeGroupCache().exists( entity -> entity.getCompanyId().equals( companyId ) ) );
+//        return ok(groupHomeDAO.checkExistsByKey( companyId ));
+    }
+
+    private EntityCache<CompanyHomeGroupItem> homeGroupCache() {
+        if (homeGroupCache == null) {
+            homeGroupCache = new EntityCache<>(groupHomeDAO, TimeUnit.MINUTES.toMillis(10));
+        }
+        return homeGroupCache;
     }
 
     private List<Long> collectParentCompanyIds(List<Company> companies) {

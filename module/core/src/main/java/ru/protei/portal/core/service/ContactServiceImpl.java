@@ -5,10 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.model.dao.CompanySubscriptionDAO;
-import ru.protei.portal.core.model.dao.ContactItemDAO;
-import ru.protei.portal.core.model.dao.PersonDAO;
-import ru.protei.portal.core.model.dao.UserLoginDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
@@ -23,6 +20,7 @@ import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,6 +38,8 @@ public class ContactServiceImpl implements ContactService {
     @Autowired
     PersonDAO personDAO;
     @Autowired
+    PersonShortViewDAO personShortViewDAO;
+    @Autowired
     UserLoginDAO userLoginDAO;
     @Autowired
     CompanySubscriptionDAO companySubscriptionDAO;
@@ -48,7 +48,12 @@ public class ContactServiceImpl implements ContactService {
     @Autowired
     PolicyService policyService;
     @Autowired
+    CompanyGroupHomeDAO groupHomeDAO;
+    @Autowired
+    CompanyService companyService;
+    @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
+
 
     @Override
     public Result<SearchResult<Person>> getContactsSearchResult( AuthToken token, ContactQuery query) {
@@ -58,25 +63,36 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public Result<List<PersonShortView>> shortViewList( AuthToken token, ContactQuery query) {
-        List<Person> list = personDAO.getContacts(query);
+    public Result<List<PersonShortView>> shortViewList( AuthToken token, ContactQuery query ) {
+        Result<List<PersonShortView>> listResult = companyService.isHomeCompany( query.getCompanyId() )
+                .map( isAcceptable -> {
+                    if (!isAcceptable) {
+                        return Collections.emptyList();
+                    }
 
-        if (list == null)
-            return error(En_ResultStatus.GET_DATA_ERROR);
+                    return personShortViewDAO.getContacts( query );
+                } );
 
-        List<PersonShortView> result = list.stream().map(Person::toShortNameShortView ).collect(Collectors.toList());
 
-        return ok(result);
+        if (listResult.getData() == null)
+            return error( En_ResultStatus.GET_DATA_ERROR );
+        else
+            return listResult;
     }
 
     @Override
     public Result<Person> getContact( AuthToken token, long id ) {
 
         Person person = personDAO.getContact(id);
+        if(person == null) return error( En_ResultStatus.NOT_FOUND);
+
+        if(companyService.isHomeCompany( person.getCompanyId() ).getData()){
+            return error( En_ResultStatus.NOT_AVAILABLE);
+        }
+
         jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
 
-        return person != null ? ok( person)
-                : error( En_ResultStatus.NOT_FOUND);
+        return  ok( person);
     }
 
     @Override
@@ -137,6 +153,10 @@ public class ContactServiceImpl implements ContactService {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
+        if(companyService.isHomeCompany( person.getCompanyId() ).getData()){
+            return error( En_ResultStatus.NOT_AVAILABLE);
+        }
+
         person.setFired(true);
 
         boolean result = personDAO.merge(person);
@@ -158,6 +178,10 @@ public class ContactServiceImpl implements ContactService {
 
         if (person == null) {
             return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        if(companyService.isHomeCompany( person.getCompanyId() ).getData()){
+            return error(En_ResultStatus.NOT_AVAILABLE);
         }
 
         person.setDeleted(true);
@@ -184,8 +208,8 @@ public class ContactServiceImpl implements ContactService {
             return false;
         }
 
-        if (personDAO.isEmployee(person)) {
-            log.warn("person with id = {} is employee",person.getId());
+        if(companyService.isHomeCompany( person.getCompanyId() ).getData()){
+            log.warn("person with id = {} is employee", person.getId());
             return false;
         }
 

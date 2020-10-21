@@ -117,6 +117,11 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public ContactSqlBuilder getContactSqlBuilder() {
+        return new ContactSqlBuilder();
+    }
+
+    @Bean
     public CompanyDAO getCompanyDAO() {
         return new CompanyDAO_Impl();
     }

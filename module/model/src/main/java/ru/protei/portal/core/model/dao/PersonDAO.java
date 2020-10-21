@@ -18,8 +18,6 @@ import java.util.Map;
 public interface PersonDAO extends PortalBaseDAO<Person> {
 
 
-    List<Person> getEmployeesAll();
-
     List<Person> findEmployeeByEmail(String email);
 
     Person getEmployee(long id);
@@ -30,12 +28,12 @@ public interface PersonDAO extends PortalBaseDAO<Person> {
 
     List<Person> getEmployees(EmployeeQuery query);
 
-    boolean isEmployee(Person p);
+//    boolean isEmployee(Person p);
 
 
     SearchResult<Person> getContactsSearchResult(ContactQuery query);
 
-    List<Person> getContacts(ContactQuery query);
+
 
     Person getContact(long id);
 
@@ -50,16 +48,6 @@ public interface PersonDAO extends PortalBaseDAO<Person> {
     List<Person> getPersons(PersonQuery query);
 
     Person getCommonManagerByProductId(Long productId);
-
-    @SqlConditionBuilder
-    SqlCondition createContactSqlCondition(ContactQuery query);
-
-//    @SqlConditionBuilder
-//    SqlCondition createEmployeeSqlCondition(EmployeeQuery query);
-//
-//    @SqlConditionBuilder
-//    SqlCondition createPersonSqlCondition(PersonQuery query);
-
 
     default Person createNewPerson(Long companyId) throws Exception {
         Person person = new Person();
