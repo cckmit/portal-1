@@ -78,14 +78,9 @@ public class AttachmentServiceImpl implements AttachmentService {
     public Result<Boolean> removeAttachmentEverywhere( AuthToken token, En_CaseType caseType, Long id) {
         CaseAttachment caseAttachment = caseAttachmentDAO.getByAttachmentId(id);
 
-        if (caseAttachment == null) {
+        if (caseAttachment == null || !caseAttachmentDAO.removeByKey(caseAttachment.getId())) {
             return removeAttachment(token, caseType, id);
         } else {
-            boolean isDeleted = caseAttachmentDAO.removeByKey(caseAttachment.getId());
-            if (!isDeleted) {
-                return error(En_ResultStatus.NOT_REMOVED);
-            }
-
             caseService.updateCaseModified(token, caseAttachment.getCaseId(), new Date());
 
             caseService.isExistsAttachments(caseAttachment.getCaseId()).ifOk(isExists -> {
@@ -129,24 +124,22 @@ public class AttachmentServiceImpl implements AttachmentService {
     @Transactional
     public Result<Boolean> removeAttachment( AuthToken token, En_CaseType caseType, Long id) {
         Attachment attachment = attachmentDAO.partialGet(id, "ext_link");
+
         if (attachment == null) {
-            return error(En_ResultStatus.NOT_FOUND);
+//            Файл был удален
+            return ok(true);
         }
 
-        boolean removeFromFileStorage;
-
-        if (attachmentDAO.removeByKey(id)) {
-            removeFromFileStorage = fileStorage.deleteFile(attachment.getExtLink());
-        } else {
-            return error(En_ResultStatus.NOT_REMOVED,
-                    "File was not removed from data base. It could be removed earlier");
+        if (!attachmentDAO.removeByKey(id)) {
+//            Файл был удален
+            return ok(true);
         }
 
-        if (!removeFromFileStorage) {
-            throw new ResultStatusException(En_ResultStatus.NOT_REMOVED, "File was not removed from file storage");
+        if (fileStorage.deleteFile(attachment.getExtLink())) {
+            return ok(true);
         }
 
-        return ok(true);
+        throw new ResultStatusException(En_ResultStatus.NOT_REMOVED, "File was not removed from file storage");
     }
 
     @Override
