@@ -104,7 +104,7 @@ public class DutyLogFilterView extends Composite implements AbstractDutyLogFilte
 
     @UiHandler("resetBtn")
     public void onResetClicked(ClickEvent event) {
-        resetFilter();
+        activity.onResetFilterClicked();
         fireFilterChanged();
     }
     private void fireFilterChanged() {
