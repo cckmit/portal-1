@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.absence.server;
+package ru.protei.portal.ui.dutylog.server;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -6,14 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.AbsenceFilter;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.DutyLogFilter;
 import ru.protei.portal.core.model.ent.SelectorsParams;
-import ru.protei.portal.core.model.query.AbsenceQuery;
+import ru.protei.portal.core.model.query.DutyLogQuery;
 import ru.protei.portal.core.model.view.FilterShortView;
-import ru.protei.portal.core.service.AbsenceFilterService;
+import ru.protei.portal.core.service.DutyLogFilterService;
 import ru.protei.portal.core.service.session.SessionService;
-import ru.protei.portal.ui.common.client.service.AbsenceFilterController;
+import ru.protei.portal.ui.common.client.service.DutyLogFilterController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
@@ -23,8 +23,8 @@ import java.util.List;
 import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
 import static ru.protei.portal.ui.common.server.ServiceUtils.getAuthToken;
 
-@Service( "AbsenceFilterController" )
-public class AbsenceFilterControllerImpl implements AbsenceFilterController {
+@Service( "DutyLogFilterController" )
+public class DutyLogFilterControllerImpl implements DutyLogFilterController {
 
     @Override
     public List<FilterShortView> getShortViewList() throws RequestFailedException {
@@ -32,31 +32,31 @@ public class AbsenceFilterControllerImpl implements AbsenceFilterController {
 
         log.info( "getShortViewList(): loginId={}", token.getUserLoginId() );
 
-        Result< List<FilterShortView> > response = absenceFilterService.getShortViewList( token.getUserLoginId() );
+        Result< List<FilterShortView> > response = dutyLogFilterService.getShortViewList( token.getUserLoginId() );
 
         return checkResultAndGetData(response);
     }
 
     @Override
-    public AbsenceFilter getFilter(Long id) throws RequestFailedException {
+    public DutyLogFilter getFilter(Long id) throws RequestFailedException {
         log.info("getFilter, id: {}", id);
 
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
 
-        Result<AbsenceFilter> response = absenceFilterService.getFilter( token, id );
+        Result<DutyLogFilter> response = dutyLogFilterService.getFilter( token, id );
 
-        log.info("AbsenceFilter, id: {}, response: {} ", id, response.isError() ? "error" : response.getData());
+        log.info("DutyLogFilter, id: {}, response: {} ", id, response.isError() ? "error" : response.getData());
 
         return checkResultAndGetData(response);
     }
 
     @Override
-    public SelectorsParams getSelectorsParams(AbsenceQuery caseQuery) throws RequestFailedException {
+    public SelectorsParams getSelectorsParams(DutyLogQuery caseQuery) throws RequestFailedException {
         log.info("getSelectorsParams, selectorsParamsRequest: {}", caseQuery );
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<SelectorsParams> response = absenceFilterService.getSelectorsParams( token, caseQuery );
+        Result<SelectorsParams> response = dutyLogFilterService.getSelectorsParams( token, caseQuery );
 
         log.info("getSelectorsParams, id: {}, response: {} ", caseQuery, response.isError() ? "error" : response.getData());
 
@@ -64,17 +64,17 @@ public class AbsenceFilterControllerImpl implements AbsenceFilterController {
     }
 
     @Override
-    public AbsenceFilter saveFilter(AbsenceFilter filter) throws RequestFailedException {
+    public DutyLogFilter saveFilter(DutyLogFilter filter) throws RequestFailedException {
         log.info("saveFilter, filter: {}", filter);
 
         if (filter == null) {
-            log.warn("Not null AbsenceFilter is required");
+            log.warn("Not null DutyFilter is required");
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<AbsenceFilter> response = absenceFilterService.saveFilter(token, filter);
+        Result<DutyLogFilter> response = dutyLogFilterService.saveFilter(token, filter);
 
         log.info("saveFilter, result: {}", response.getStatus());
 
@@ -85,14 +85,14 @@ public class AbsenceFilterControllerImpl implements AbsenceFilterController {
     public Boolean removeFilter(Long id)  throws RequestFailedException {
         log.info( "removeFilter(): id={}", id );
 
-        Result< Boolean > response = absenceFilterService.removeFilter( id );
+        Result< Boolean > response = dutyLogFilterService.removeFilter( id );
         log.info( "removeFilter(): result={}", response.getStatus() );
 
         return checkResultAndGetData(response);
     }
 
     @Autowired
-    AbsenceFilterService absenceFilterService;
+    DutyLogFilterService dutyLogFilterService;
 
     @Autowired
     HttpServletRequest httpServletRequest;
@@ -100,5 +100,5 @@ public class AbsenceFilterControllerImpl implements AbsenceFilterController {
     @Autowired
     SessionService sessionService;
 
-    private static final Logger log = LoggerFactory.getLogger(AbsenceFilterControllerImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(DutyLogFilterControllerImpl.class);
 }

@@ -1,14 +1,14 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.query.AbsenceQuery;
+import ru.protei.portal.core.model.query.DutyLogQuery;
 import ru.protei.portal.core.model.view.FilterShortView;
 import ru.protei.portal.core.model.view.filterwidget.Filter;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 
-@JdbcEntity( table = "absence_filter" )
-public class AbsenceFilter implements Filter<FilterShortView, AbsenceQuery>, Serializable {
+@JdbcEntity( table = "duty_log_filter" )
+public class DutyLogFilter implements Filter<FilterShortView, DutyLogQuery>, Serializable {
 
     @JdbcId( name = "id", idInsertMode = IdInsertMode.AUTO )
     private Long id;
@@ -17,7 +17,7 @@ public class AbsenceFilter implements Filter<FilterShortView, AbsenceQuery>, Ser
     private String name;
 
     @JdbcColumn( name = "query", converterType = ConverterType.JSON )
-    private AbsenceQuery query;
+    private DutyLogQuery query;
 
     @JdbcColumn( name = "login_id" )
     private Long loginId;
@@ -41,11 +41,11 @@ public class AbsenceFilter implements Filter<FilterShortView, AbsenceQuery>, Ser
     }
 
     @Override
-    public AbsenceQuery getQuery() {
+    public DutyLogQuery getQuery() {
         return query;
     }
 
-    public void setQuery(AbsenceQuery query) {
+    public void setQuery(DutyLogQuery query) {
         this.query = query;
     }
 
@@ -73,7 +73,7 @@ public class AbsenceFilter implements Filter<FilterShortView, AbsenceQuery>, Ser
 
     @Override
     public String toString() {
-        return "AbsenceFilter{" +
+        return "DutyLogFilter{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", query=" + query +

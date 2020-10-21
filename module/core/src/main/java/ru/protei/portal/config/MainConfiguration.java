@@ -697,6 +697,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public DutyLogFilterDAO getDutyLogFilterDAO() {
+        return new DutyLogFilterDAO_Impl();
+    }
+
+    @Bean
     public PersonFavoriteIssuesDAO getPersonFavoritesIssuesDAO() {
         return new PersonFavoriteIssuesDAO_Impl();
     }
@@ -1022,6 +1027,12 @@ public class MainConfiguration {
     public AbsenceFilterService getAbsenceFilterService() {
         return new AbsenceFilterServiceImpl();
     }
+
+    @Bean
+    public DutyLogFilterService getDutyLogFilterService() {
+        return new DutyLogLogFilterServiceImpl();
+    }
+
 
     @Bean
     public PersonSubscriptionService getPersonSubscriptionService() {

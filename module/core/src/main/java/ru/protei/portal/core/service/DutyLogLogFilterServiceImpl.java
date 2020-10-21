@@ -4,13 +4,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.model.dao.AbsenceFilterDAO;
+import ru.protei.portal.core.model.dao.DutyLogFilterDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.AbsenceFilter;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.DutyLogFilter;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.query.AbsenceQuery;
+import ru.protei.portal.core.model.query.DutyLogQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.FilterShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -24,12 +24,12 @@ import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
-public class AbsenceFilterServiceImpl implements AbsenceFilterService {
+public class DutyLogLogFilterServiceImpl implements DutyLogFilterService {
 
-    private static Logger log = LoggerFactory.getLogger( AbsenceFilterServiceImpl.class );
+    private static Logger log = LoggerFactory.getLogger( DutyLogLogFilterServiceImpl.class );
 
     @Autowired
-    AbsenceFilterDAO absenceFilterDAO;
+    DutyLogFilterDAO dutyLogFilterDAO;
     @Autowired
     EmployeeService employeeService;
 
@@ -37,21 +37,21 @@ public class AbsenceFilterServiceImpl implements AbsenceFilterService {
     public Result<List<FilterShortView>> getShortViewList(Long loginId) {
         log.debug( "getShortViewList(): loginId={}", loginId );
 
-        List<AbsenceFilter> list = absenceFilterDAO.getListByLoginId( loginId );
+        List<DutyLogFilter> list = dutyLogFilterDAO.getListByLoginId( loginId );
 
         if ( list == null )
             return error(En_ResultStatus.GET_DATA_ERROR );
 
-        List<FilterShortView> result = list.stream().map( AbsenceFilter::toShortView ).collect( Collectors.toList() );
+        List<FilterShortView> result = list.stream().map( DutyLogFilter::toShortView ).collect( Collectors.toList() );
 
         return ok(result );
     }
 
     @Override
-    public Result<AbsenceFilter> getFilter(AuthToken token, Long id) {
+    public Result<DutyLogFilter> getFilter(AuthToken token, Long id) {
         log.debug( "getFilter(): id={} ", id );
 
-        AbsenceFilter filter = absenceFilterDAO.get( id );
+        DutyLogFilter filter = dutyLogFilterDAO.get( id );
 
         if (filter == null) {
             return error( En_ResultStatus.NOT_FOUND );
@@ -69,7 +69,7 @@ public class AbsenceFilterServiceImpl implements AbsenceFilterService {
     }
 
     @Override
-    public Result<SelectorsParams> getSelectorsParams(AuthToken token, AbsenceQuery query) {
+    public Result<SelectorsParams> getSelectorsParams(AuthToken token, DutyLogQuery query) {
         log.debug( "getSelectorsParams(): query={} ", query );
         SelectorsParams selectorsParams = new SelectorsParams();
 
@@ -90,7 +90,7 @@ public class AbsenceFilterServiceImpl implements AbsenceFilterService {
     }
 
     @Override
-    public Result<AbsenceFilter> saveFilter(AuthToken token, AbsenceFilter filter) {
+    public Result<DutyLogFilter> saveFilter(AuthToken token, DutyLogFilter filter) {
 
         log.debug("saveFilter(): filter={} ", filter);
 
@@ -108,7 +108,7 @@ public class AbsenceFilterServiceImpl implements AbsenceFilterService {
             return error(En_ResultStatus.ALREADY_EXIST);
         }
 
-        if (absenceFilterDAO.saveOrUpdate(filter)) {
+        if (dutyLogFilterDAO.saveOrUpdate(filter)) {
             return ok(filter);
         }
 
@@ -120,25 +120,25 @@ public class AbsenceFilterServiceImpl implements AbsenceFilterService {
 
         log.debug( "removeFilter(): id={} ", id );
 
-        if ( absenceFilterDAO.removeByKey( id ) ) {
+        if ( dutyLogFilterDAO.removeByKey( id ) ) {
             return ok(true);
         }
 
         return error(En_ResultStatus.INTERNAL_ERROR );
     }
 
-    private List<Long> collectEmployeeIds(AbsenceQuery query){
-        return new ArrayList<>(emptyIfNull(query.getEmployeeIds()));
+    private List<Long> collectEmployeeIds(DutyLogQuery query){
+        return new ArrayList<>(emptyIfNull(query.getPersonIds()));
     }
 
-    private boolean isNotValid( AbsenceFilter filter ) {
+    private boolean isNotValid( DutyLogFilter filter ) {
         return filter == null ||
                 HelperFunc.isEmpty(filter.getName()) ||
                 filter.getQuery() == null;
     }
 
     private boolean isUniqueFilter(String name, Long loginId, Long excludeId ) {
-        AbsenceFilter filter = absenceFilterDAO.checkExistsByParams( name, loginId );
+        DutyLogFilter filter = dutyLogFilterDAO.checkExistsByParams( name, loginId );
         return filter == null || filter.getId().equals( excludeId );
     }
 }
