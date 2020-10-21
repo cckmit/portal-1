@@ -61,7 +61,7 @@ public class CollectionUtils {
     }
 
     public static <T> Stream<T> stream(T[] array) {
-        return null == array ? Stream.empty() : stream(array);
+        return null == array ? Stream.empty() : Arrays.stream(array);
     }
 
     public static <E> boolean contains( Collection<E> collection, E element ) {
