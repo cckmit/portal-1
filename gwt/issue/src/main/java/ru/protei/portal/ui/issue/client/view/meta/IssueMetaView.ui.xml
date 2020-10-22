@@ -54,7 +54,7 @@
                 <div class="col-md-12">
                     <div class="form-group form-group-default date-picker">
                         <label class="fade"><ui:text from="{lang.issueDeadline}"/></label>
-                        <datepicker:SinglePicker ui:field="deadline" type="DATE" formatValue="dd-MM-yyyy" mandatory="true"/>
+                        <datepicker:SinglePicker ui:field="deadline" type="DATE" formatValue="dd-MM-yyyy"/>
                     </div>
                 </div>
             </g:HTMLPanel>
