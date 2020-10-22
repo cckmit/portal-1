@@ -161,11 +161,13 @@ public class MailReceiverUtils {
         Elements beginMarkElements = document.getElementsContainingText(beginMark);
         if (beginMarkElements != null) {
             Element last = beginMarkElements.last();
-            Elements element = last.siblingElements();
-            if (element != null) {
-                element.remove();
+            if (last != null) {
+                Elements element = last.siblingElements();
+                if (element != null) {
+                    element.remove();
+                }
+                last.remove();
             }
-            last.remove();
         }
     }
 
