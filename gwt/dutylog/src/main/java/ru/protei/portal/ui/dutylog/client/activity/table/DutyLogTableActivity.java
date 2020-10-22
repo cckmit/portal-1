@@ -57,6 +57,10 @@ public abstract class DutyLogTableActivity
                 new ActionBarEvents.Clear()
         );
 
+        if (policyService.hasPrivilegeFor(En_Privilege.DUTY_LOG_REPORT)) {
+            fireEvent(new ActionBarEvents.Add(lang.buttonReport(), "", UiConstants.ActionBarIdentity.DUTY_LOG_CREATE_REPORT));
+        }
+
         requestData(0);
     }
 
@@ -74,6 +78,20 @@ public abstract class DutyLogTableActivity
         if (view.asWidget().isAttached()) {
             requestData(page);
         }
+    }
+
+    @Event
+    public void onDutyLogReportClicked(ActionBarEvents.Clicked event) {
+        if (!UiConstants.ActionBarIdentity.DUTY_LOG_CREATE_REPORT.equals(event.identity)) {
+            return;
+        }
+
+        if (!policyService.hasPrivilegeFor(En_Privilege.DUTY_LOG_REPORT)) {
+            fireEvent(new ErrorPageEvents.ShowForbidden());
+            return;
+        }
+
+        fireEvent(new DutyLogEvents.CreateReport());
     }
 
     @Override

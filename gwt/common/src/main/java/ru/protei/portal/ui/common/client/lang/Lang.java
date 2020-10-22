@@ -3088,6 +3088,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String dutyLogUpdated();
 
+    String dutyLogReport();
+
     String dutyTypeBG();
 
     String dutyTypeIP();
