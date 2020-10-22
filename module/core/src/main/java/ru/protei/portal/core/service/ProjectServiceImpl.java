@@ -218,10 +218,6 @@ public class ProjectServiceImpl implements ProjectService {
         jdbcManyRelationsHelper.fill(projectFromDb, "locations");
         jdbcManyRelationsHelper.fill(projectFromDb, "members");
 
-        if (!canAccessProject(policyService, token, En_Privilege.PROJECT_VIEW, projectFromDb.getTeam())) {
-            return error(En_ResultStatus.PERMISSION_DENIED);
-        }
-
         ProjectInfo project = ProjectInfo.fromProject(projectFromDb);
         return ok(project);
     }
@@ -433,6 +429,10 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public Result<PersonShortView> getProjectLeader(AuthToken authToken, Long projectId) {
+        if (projectId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         return caseMemberDAO.getLeaders(projectId)
                 .stream()
                 .findFirst()
