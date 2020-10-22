@@ -1,6 +1,8 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:table="urn:import:ru.brainworm.factory.widget.table.client">
+             xmlns:table="urn:import:ru.brainworm.factory.widget.table.client"
+             xmlns:filter="urn:import:ru.protei.portal.ui.dutylog.client.widget.filter"
+>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -14,7 +16,9 @@
                     </div>
                 </div>
             </g:HTMLPanel>
-            <g:HTMLPanel ui:field="filterContainer" styleName="filter-container col-md-3"/>
+            <div class="filter-container col-md-3" >
+                <filter:DutyLogFilterWidget ui:field="filterWidget" styleName="card card-default no-border card-fixed absence-filter"/>
+            </div>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

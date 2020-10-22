@@ -11,7 +11,7 @@ import java.util.List;
 public interface DutyLogFilterControllerAsync {
     void getShortViewList(AsyncCallback<List<FilterShortView>> async);
 
-    void getFilter(Long id, AsyncCallback<DutyLogQuery> async);
+    void getFilter(Long id, AsyncCallback<DutyLogFilter> async);
 
     void getSelectorsParams(DutyLogQuery caseQuery, AsyncCallback<SelectorsParams> async);
 
