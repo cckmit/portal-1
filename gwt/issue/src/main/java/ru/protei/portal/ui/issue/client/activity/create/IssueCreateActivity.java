@@ -330,8 +330,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     @Override
     public void onDeadlineChanged() {
         issueMetaView.setDeadlineValid(
-                isDeadlineValid( issueMetaView.deadline().getValue() == null ? null : issueMetaView.deadline().getValue().getTime())
-        );
+                isDeadlineFieldValid(issueMetaView.isDeadlineEmpty(), issueMetaView.deadline().getValue()));
     }
 
     private void placeView(HasWidgets parent, AbstractIssueCreateView view) {
@@ -475,7 +474,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         setCustomerVisibility(issueMetaView, policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_CREATE));
         issueMetaView.deadline().setValue(caseObjectMeta.getDeadline() != null ? new Date(caseObjectMeta.getDeadline()) : null);
-        issueMetaView.setDeadlineValid(isDeadlineValid(caseObjectMeta.getDeadline() != null ? caseObjectMeta.getDeadline() : null));
+        issueMetaView.setDeadlineValid(isDeadlineValid(caseObjectMeta.getDeadline()));
         issueMetaView.workTrigger().setValue(caseObjectMeta.getWorkTrigger());
     }
 
@@ -754,7 +753,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
             return false;
         }
 
-        if (!isDeadlineValid(issueMetaView.deadline().getValue() == null ? null : issueMetaView.deadline().getValue().getTime())) {
+        if (!isDeadlineFieldValid(issueMetaView.isDeadlineEmpty(), issueMetaView.deadline().getValue())) {
             fireEvent(new NotifyEvents.Show(lang.errDeadlineError(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
@@ -842,12 +841,16 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         return false;
     }
 
-    private boolean isDeadlineValid(Long date) {
-        if (date == null || date > System.currentTimeMillis()) {
-            return true;
+    private boolean isDeadlineFieldValid(boolean isEmptyDeadlineField, Date date) {
+        if (date == null) {
+            return isEmptyDeadlineField;
         }
 
-        return false;
+        return isDeadlineValid(date.getTime());
+    }
+
+    private boolean isDeadlineValid(Long date) {
+        return date == null || date > System.currentTimeMillis();
     }
 
     private void setPlatformVisibility(AbstractIssueMetaView issueMetaView, boolean isVisible) {

@@ -141,6 +141,7 @@ public interface AbstractIssueMetaView extends IsWidget {
 
     HasVisibility deadlineContainerVisibility();
     HasValue<Date> deadline();
+    boolean isDeadlineEmpty();
     void setDeadlineValid(boolean isValid);
 
     HasVisibility workTriggerVisibility();

@@ -333,7 +333,12 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     @Override
     public void onDeadlineChanged() {
-        if (!isDeadlineValid(metaView.deadline().getValue() == null ? null : metaView.deadline().getValue().getTime())) {
+        if (isDeadlineEquals(metaView.deadline().getValue(), meta.getDeadline())) {
+            metaView.setDeadlineValid(isDeadlineFieldValid(metaView.isDeadlineEmpty(), metaView.deadline().getValue()));
+            return;
+        }
+
+        if (!isDeadlineFieldValid(metaView.isDeadlineEmpty(), metaView.deadline().getValue())) {
             metaView.setDeadlineValid(false);
             return;
         }
@@ -729,12 +734,24 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         return false;
     }
 
-    private boolean isDeadlineValid(Long date) {
-        if (date == null || date > System.currentTimeMillis()) {
-            return true;
+    private boolean isDeadlineEquals(Date deadlineField, Long deadlineMeta) {
+        if (deadlineField == null) {
+            return deadlineMeta == null;
+        } else {
+            return Objects.equals(deadlineField.getTime(), deadlineMeta);
+        }
+    }
+
+    private boolean isDeadlineFieldValid(boolean isEmptyDeadlineField, Date date) {
+        if (date == null) {
+            return isEmptyDeadlineField;
         }
 
-        return false;
+        return isDeadlineValid(date.getTime());
+    }
+
+    private boolean isDeadlineValid(Long date) {
+        return date == null || date > System.currentTimeMillis();
     }
 
     private boolean isSystemScope() {
