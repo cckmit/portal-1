@@ -67,7 +67,7 @@ public abstract class ProjectSearchActivity implements Activity, AbstractProject
     }
 
     private ProjectQuery makeQuery() {
-        ProjectQuery query = new ProjectQuery(view.name().getValue(), En_SortField.creation_date, En_SortDir.DESC);
+        ProjectQuery query = new ProjectQuery(view.name().getValue(), En_SortField.project_creation_date, En_SortDir.DESC);
         DateInterval createdInterval = view.dateCreatedRange().getValue();
         if (createdInterval != null) {
             query.setCreatedFrom(createdInterval.from);
