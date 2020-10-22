@@ -429,6 +429,10 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public Result<PersonShortView> getProjectLeader(AuthToken authToken, Long projectId) {
+        if (projectId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         return caseMemberDAO.getLeaders(projectId)
                 .stream()
                 .findFirst()
