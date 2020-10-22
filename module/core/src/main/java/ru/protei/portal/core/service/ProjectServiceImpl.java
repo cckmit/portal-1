@@ -218,10 +218,6 @@ public class ProjectServiceImpl implements ProjectService {
         jdbcManyRelationsHelper.fill(projectFromDb, "locations");
         jdbcManyRelationsHelper.fill(projectFromDb, "members");
 
-        if (!canAccessProject(policyService, token, En_Privilege.PROJECT_VIEW, projectFromDb.getTeam())) {
-            return error(En_ResultStatus.PERMISSION_DENIED);
-        }
-
         ProjectInfo project = ProjectInfo.fromProject(projectFromDb);
         return ok(project);
     }

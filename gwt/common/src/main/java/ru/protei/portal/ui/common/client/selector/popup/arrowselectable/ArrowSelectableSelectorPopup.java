@@ -2,7 +2,6 @@ package ru.protei.portal.ui.common.client.selector.popup.arrowselectable;
 
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -14,14 +13,14 @@ public class ArrowSelectableSelectorPopup extends SelectorPopupWithSearch {
     public ArrowSelectableSelectorPopup(TextAreaHandler textAreaHandler) {
         childContainer.addStyleName("arrow-selectable");
         childContainer.addDomHandler(event -> textAreaHandler.focusTextArea(), MouseOverEvent.getType());
-        childContainer.addDomHandler(event -> createPopupKeyDownHandler(event, childContainer, textAreaHandler), KeyDownEvent.getType());
+        childContainer.addDomHandler(event -> onKeyDown(event, childContainer, textAreaHandler), KeyDownEvent.getType());
     }
 
     public void focus() {
         focusWidget(getNext(childContainer, null));
     }
 
-    private void createPopupKeyDownHandler(KeyDownEvent event, ComplexPanel childContainer, TextAreaHandler textAreaHandler) {
+    private void onKeyDown(KeyDownEvent event, ComplexPanel childContainer, TextAreaHandler textAreaHandler) {
         if (KeyCodes.KEY_ESCAPE == event.getNativeKeyCode()) {
             event.preventDefault();
             textAreaHandler.focusTextArea();
