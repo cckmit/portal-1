@@ -75,7 +75,7 @@ public abstract class PopperComposite extends PopupLikeComposite {
         popper = createPopper(relative, getElement(), placement.getCode(), skidding, distance);
 
         if (isAutoResize) {
-            if (resizeHandlerReg != null) {
+            if (resizeHandlerReg == null) {
                 addResizeHandler(relative, getElement());
             }
 
