@@ -1,6 +1,8 @@
 package ru.protei.portal.core.model.query;
 
 import ru.protei.portal.core.model.dict.DutyType;
+import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.view.filterwidget.FilterQuery;
 
@@ -11,6 +13,16 @@ public class DutyLogQuery extends BaseQuery implements FilterQuery {
     private Set<Long> personIds;
     private Set<DutyType> types;
     private DateRange dateRange;
+
+    public DutyLogQuery() {
+    }
+
+    public DutyLogQuery(DateRange dateRange, Set<Long> personIds, Set<DutyType> types,  En_SortField sortField, En_SortDir sortDir) {
+        super(null, sortField, sortDir);
+        this.personIds = personIds;
+        this.types = types;
+        this.dateRange = dateRange;
+    }
 
     public DateRange getDateRange() {
         return dateRange;
