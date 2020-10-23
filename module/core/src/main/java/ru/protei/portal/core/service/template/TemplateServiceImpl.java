@@ -688,7 +688,7 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getDutyLogBody(String name, Date createdDate, String creator, List<String> recipients) {
+    public PreparedTemplate getReportBody(String name, Date createdDate, String creator, List<String> recipients) {
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("name", name);
         templateModel.put("created", createdDate);

@@ -313,6 +313,7 @@ public class ReportControlServiceImpl implements ReportControlService {
                         this,
                         initiator,
                         title,
+                        new Date(),
                         new ByteArrayInputStream(buffer.toByteArray())));
                 return ok();
             }

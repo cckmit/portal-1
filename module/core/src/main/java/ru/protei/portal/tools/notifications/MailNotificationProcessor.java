@@ -925,9 +925,18 @@ public class MailNotificationProcessor {
 
         NotificationEntry notificationEntry = fetchNotificationEntryFromPerson(initiator);
 
+        PreparedTemplate bodyTemplate = templateService.getReportBody(title, event.getCreationDate(),
+                initiator.getDisplayShortName(), Arrays.asList(notificationEntry.getAddress()));
+
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for absence report notification");
+            return;
+        }
+
         try {
             String subject = subjectTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), true);
-            sendMailWithAttachment(notificationEntry.getAddress(), subject, null, getFromAddressReport(), title + ".xlsx", event.getContent());
+            String body = bodyTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), true);
+            sendMailWithAttachment(notificationEntry.getAddress(), subject, body, getFromAddressReport(), title + ".xlsx", event.getContent());
         } catch (Exception e) {
             log.error("Failed to make MimeMessage", e);
         }
@@ -946,7 +955,7 @@ public class MailNotificationProcessor {
 
         NotificationEntry notificationEntry = fetchNotificationEntryFromPerson(initiator);
 
-        PreparedTemplate bodyTemplate = templateService.getDutyLogBody(title, event.getCreationDate(),
+        PreparedTemplate bodyTemplate = templateService.getReportBody(title, event.getCreationDate(),
                 initiator.getDisplayShortName(), Arrays.asList(notificationEntry.getAddress()));
 
         if (bodyTemplate == null) {
