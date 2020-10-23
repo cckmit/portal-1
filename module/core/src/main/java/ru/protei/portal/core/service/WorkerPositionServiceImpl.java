@@ -57,7 +57,7 @@ public class WorkerPositionServiceImpl implements WorkerPositionService{
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        if (workerPositionDAO.checkExistsByNameAndPosId(workerPosition.getName(), workerPosition.getCompanyId(), workerPosition.getId())){
+        if (workerPositionDAO.checkExistsByName(workerPosition.getName(), workerPosition.getCompanyId(), workerPosition.getId())){
             return error(En_ResultStatus.POSITION_ALREADY_EXIST);
         }
 
