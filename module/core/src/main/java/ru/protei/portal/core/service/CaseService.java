@@ -88,7 +88,7 @@ public interface CaseService {
     Result<Set<PlanOption>> updateCasePlans(AuthToken token, Set<PlanOption> plans, Long caseId);
 
     @Privileged({En_Privilege.ISSUE_VIEW})
-    Result<Boolean> removeFavoriteState(AuthToken token, Long personId, Long issueId);
+    Result<Long> removeFavoriteState(AuthToken token, Long personId, Long issueId);
 
     @Privileged({En_Privilege.ISSUE_VIEW})
     Result<Long> addFavoriteState(AuthToken token, Long personId, Long issueId);

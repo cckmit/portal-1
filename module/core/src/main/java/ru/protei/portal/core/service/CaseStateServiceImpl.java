@@ -75,7 +75,7 @@ public class CaseStateServiceImpl implements CaseStateService {
 
     @Override
     @Transactional
-    public Result createCaseState(AuthToken authToken, CaseState state) {
+    public Result<CaseState> createCaseState(AuthToken authToken, CaseState state) {
         if (state == null)
             return error(En_ResultStatus.INCORRECT_PARAMS);
 

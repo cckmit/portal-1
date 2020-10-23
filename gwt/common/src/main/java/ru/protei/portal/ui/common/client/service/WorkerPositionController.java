@@ -15,7 +15,7 @@ public interface WorkerPositionController extends RemoteService {
 
     List<WorkerPosition> getWorkerPositions(Long companyId) throws RequestFailedException;
 
-    Boolean removeWorkerPosition(WorkerPosition workerPosition) throws RequestFailedException;
+    Long removeWorkerPosition(WorkerPosition workerPosition) throws RequestFailedException;
 
     Long createWorkerPosition (WorkerPosition workerPosition) throws RequestFailedException;
 

@@ -104,7 +104,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
                         userLogin.setInfo(person.getDisplayName());
                     }
 
-                    contactService.saveAccount(userLogin, sendWelcomeEmailVisibility && sendWelcomeEmail, new RequestCallback<Boolean>() {
+                    contactService.saveAccount(userLogin, sendWelcomeEmailVisibility && sendWelcomeEmail, new RequestCallback<Long>() {
                         @Override
                         public void onError(Throwable throwable) {
                             fireErrorMessage(lang.errEditContactLogin());
@@ -112,7 +112,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
                         }
 
                         @Override
-                        public void onSuccess(Boolean result) {
+                        public void onSuccess(Long result) {
                             fireEvent(new NotifyEvents.Show(lang.contactSaved(), NotifyEvents.NotifyType.SUCCESS));
                             fireEvent(new PersonEvents.PersonCreated(person, origin));
                             fireBackEvent.run();

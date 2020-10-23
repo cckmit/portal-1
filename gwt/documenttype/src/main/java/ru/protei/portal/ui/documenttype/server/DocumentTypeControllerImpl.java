@@ -57,9 +57,9 @@ public class DocumentTypeControllerImpl implements DocumentTypeController {
     }
 
     @Override
-    public Boolean removeDocumentType(DocumentType documentType) throws RequestFailedException {
+    public Long removeDocumentType(DocumentType documentType) throws RequestFailedException {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
-        Result<Boolean> response = documentTypeService.removeDocumentType(token, documentType);
+        Result<Long> response = documentTypeService.removeDocumentType(token, documentType);
 
         if (response.isOk()) {
             return response.getData();

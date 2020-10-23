@@ -72,10 +72,11 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     /**
      * remove attachment from fileStorage, DataBase (item and relations)
+     * @return Идентификатор удаленного вложения
      */
     @Override
     @Transactional
-    public Result<Boolean> removeAttachmentEverywhere( AuthToken token, En_CaseType caseType, Long id) {
+    public Result<Long> removeAttachmentEverywhere(AuthToken token, En_CaseType caseType, Long id) {
         CaseAttachment caseAttachment = caseAttachmentDAO.getByAttachmentId(id);
 
         if (caseAttachment == null || !caseAttachmentDAO.removeByKey(caseAttachment.getId())) {
@@ -91,9 +92,11 @@ public class AttachmentServiceImpl implements AttachmentService {
 
             Attachment attachment = attachmentDAO.get(id);
 
-            Result<Boolean> result = removeAttachment(token, caseType, id);
+            Result<Long> result = removeAttachment(token, caseType, id);
 
-            if (result.isOk() && token != null) {
+            if (!result.isOk() || token == null) {
+                return error(result.getStatus());
+            } else {
 
 /*
                 if (caseAttachment.getCommentId() != null) {
@@ -119,10 +122,11 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     /**
      * remove attachment from fileStorage and DataBase (only item)
+     * @return attachment id
      */
     @Override
     @Transactional
-    public Result<Boolean> removeAttachment( AuthToken token, En_CaseType caseType, Long id) {
+    public Result<Long> removeAttachment(AuthToken token, En_CaseType caseType, Long id) {
         Attachment attachment = attachmentDAO.partialGet(id, "ext_link");
 
         if (attachment == null) {
@@ -130,12 +134,11 @@ public class AttachmentServiceImpl implements AttachmentService {
         }
 
         if (!attachmentDAO.removeByKey(id)) {
-//            Файл был удален
-            return ok(false);
+            return error(En_ResultStatus.NOT_FOUND);
         }
 
         if (fileStorage.deleteFile(attachment.getExtLink())) {
-            return ok(true);
+            return ok(id);
         }
 
         throw new ResultStatusException(En_ResultStatus.NOT_REMOVED, "File was not removed from file storage");
@@ -175,6 +178,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     @Override
+    @Transactional
     public Result<Long> saveAttachment( Attachment attachment) {
         /* В redmine и jira дата устанавливается из источника */
         if (attachment.getCreated() == null) {

@@ -65,9 +65,9 @@ abstract public class PersonCaseFilterWidget extends Composite implements Activi
 
             @Override
             public void remove(Long caseFilterId) {
-                controller.removePersonToCaseFilter(personId, caseFilterId, new FluentCallback<Boolean>()
+                controller.removePersonToCaseFilter(personId, caseFilterId, new FluentCallback<Long>()
                         .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errPersonCaseFilterChangeError(), NotifyEvents.NotifyType.ERROR)))
-                        .withSuccess(b -> {
+                        .withSuccess(result -> {
                             fireEvent(new NotifyEvents.Show(lang.personCaseFilterChange(), NotifyEvents.NotifyType.SUCCESS));
                             updateFilterSelectors();
                         }));

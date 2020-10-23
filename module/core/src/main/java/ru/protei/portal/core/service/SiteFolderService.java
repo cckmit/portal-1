@@ -74,13 +74,13 @@ public interface SiteFolderService {
 
     @Privileged(En_Privilege.SITE_FOLDER_REMOVE)
     @Auditable(En_AuditType.PLATFORM_REMOVE)
-    Result<Boolean> removePlatform( AuthToken token, long id);
+    Result<Long> removePlatform( AuthToken token, long id);
 
     @Privileged(En_Privilege.SITE_FOLDER_REMOVE)
     @Auditable(En_AuditType.SERVER_REMOVE)
-    Result<Boolean> removeServer( AuthToken token, long id);
+    Result<Long> removeServer( AuthToken token, long id);
 
     @Privileged(En_Privilege.SITE_FOLDER_REMOVE)
     @Auditable(En_AuditType.APPLICATION_REMOVE)
-    Result<Boolean> removeApplication( AuthToken token, long id);
+    Result<Long> removeApplication( AuthToken token, long id);
 }

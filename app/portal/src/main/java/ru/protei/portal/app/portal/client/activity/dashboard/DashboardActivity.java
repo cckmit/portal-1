@@ -252,8 +252,8 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     }
 
     private Runnable removeAction(Long dashboardId) {
-        return () -> userLoginController.removeUserDashboard(dashboardId, new FluentCallback<Void>()
-                .withSuccess(v -> {
+        return () -> userLoginController.removeUserDashboard(dashboardId, new FluentCallback<Long>()
+                .withSuccess(result -> {
                     fireEvent(new NotifyEvents.Show(lang.dashboardTableRemoved(), NotifyEvents.NotifyType.SUCCESS));
                     loadDashboard();
                 }));

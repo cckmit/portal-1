@@ -196,10 +196,12 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
     }
 
     private Runnable removeAction(Long accountId) {
-        return () -> accountService.removeAccount(accountId, new FluentCallback<Boolean>().withSuccess(result -> {
-            fireEvent(new AccountEvents.Show(false));
-            fireEvent(new NotifyEvents.Show(lang.accountRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
-        }));
+        return () -> accountService.removeAccount(accountId, new FluentCallback<Long>()
+                .withSuccess(result -> {
+                    fireEvent(new AccountEvents.Show(false));
+                    fireEvent(new NotifyEvents.Show(lang.accountRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
+                })
+        );
     }
 
     @Inject

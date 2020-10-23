@@ -29,7 +29,7 @@ public interface CompanyDepartmentService {
 
     @Auditable(En_AuditType.DEPARTMENT_REMOVE)
     @Privileged(requireAny = {En_Privilege.EMPLOYEE_CREATE, En_Privilege.EMPLOYEE_EDIT})
-    Result<Boolean> removeCompanyDepartment(AuthToken token, CompanyDepartment companyDepartment);
+    Result<Long> removeCompanyDepartment(AuthToken token, CompanyDepartment companyDepartment);
 
     Result<List<EntityOption>> getPersonDepartments(AuthToken authToken, Long personId, boolean withParentDepartments);
 }

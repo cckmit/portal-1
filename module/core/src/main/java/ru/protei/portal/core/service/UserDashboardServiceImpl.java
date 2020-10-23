@@ -24,6 +24,7 @@ public class UserDashboardServiceImpl implements UserDashboardService {
     UserDashboardDAO userDashboardDAO;
 
     @Override
+    @Transactional
     public Result<Long> createUserDashboard(AuthToken token, UserDashboard dashboard) {
 
         if (!validateToken(token)) {
@@ -48,6 +49,7 @@ public class UserDashboardServiceImpl implements UserDashboardService {
     }
 
     @Override
+    @Transactional
     public Result<UserDashboard> editUserDashboard(AuthToken token, UserDashboard dashboard) {
 
         if (!validateToken(token)) {
@@ -85,7 +87,7 @@ public class UserDashboardServiceImpl implements UserDashboardService {
 
     @Override
     @Transactional
-    public Result<Boolean> removeUserDashboard(AuthToken token, Long dashboardId) {
+    public Result<Long> removeUserDashboard(AuthToken token, Long dashboardId) {
 
         if (!validateToken(token)) {
             return error(En_ResultStatus.PERMISSION_DENIED);
@@ -106,12 +108,12 @@ public class UserDashboardServiceImpl implements UserDashboardService {
         }
 
         if (!userDashboardDAO.removeByKey(dashboardId)) {
-            return ok(false);
+            return error(En_ResultStatus.NOT_FOUND);
         }
 
         userDashboardDAO.mergeBatch(updateOrders(userDashboardDAO.findByLoginId(loginId)));
 
-        return ok(true);
+        return ok(dashboardId);
     }
 
     @Override

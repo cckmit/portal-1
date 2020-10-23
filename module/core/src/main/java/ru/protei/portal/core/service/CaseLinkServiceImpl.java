@@ -102,7 +102,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             }
         });
 
-        synchronizeYouTrackLinks(linksToCreate, caseType);
+        synchronizeYouTrackLinks(successfullyCreatedLinks, caseType);
 
         return ok(
                 successfullyCreatedLinks,

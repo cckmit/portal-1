@@ -43,7 +43,6 @@ import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
 import static ru.protei.portal.core.access.ProjectAccessUtil.canAccessProject;
 import static ru.protei.portal.core.access.ProjectAccessUtil.getProjectAccessType;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
-import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 
 /**
  * Реализация сервиса управления проектами
@@ -365,7 +364,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     @Transactional
-    public Result<Boolean> removeProject( AuthToken token, Long projectId) {
+    public Result<Long> removeProject(AuthToken token, Long projectId) {
 
         CaseObject caseObject = caseObjectDAO.get(projectId);
         if (caseObject == null) {
@@ -385,7 +384,7 @@ public class ProjectServiceImpl implements ProjectService {
             caseLinkService.getLinks(token, caseObject.getId())
                 .ifOk(links -> caseLinkService.deleteLinks(token, links));
         }
-        return ok(result);
+        return ok(projectId);
     }
 
     @Override

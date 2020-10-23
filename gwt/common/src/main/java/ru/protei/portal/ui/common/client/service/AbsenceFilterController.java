@@ -3,8 +3,6 @@ package ru.protei.portal.ui.common.client.service;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.ent.AbsenceFilter;
-import ru.protei.portal.core.model.ent.SelectorsParams;
-import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.core.model.view.AbsenceFilterShortView;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
@@ -16,9 +14,7 @@ public interface AbsenceFilterController extends RemoteService {
 
     AbsenceFilter getFilter(Long id) throws RequestFailedException;
 
-    SelectorsParams getSelectorsParams(AbsenceQuery query) throws RequestFailedException;
-
     AbsenceFilter saveFilter(AbsenceFilter filter) throws RequestFailedException;
 
-    Boolean removeFilter(Long id) throws RequestFailedException;
+    Long removeFilter(Long id) throws RequestFailedException;
 }

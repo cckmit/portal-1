@@ -235,7 +235,7 @@ public abstract class IssueEditActivity implements
     @Override
     public void removeAttachment(Attachment attachment) {
         if (isReadOnly()) return;
-        attachmentController.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, attachment.getId(), new FluentCallback<Boolean>()
+        attachmentController.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, attachment.getId(), new FluentCallback<Long>()
                 .withError((throwable, defaultErrorHandler, status) -> {
                     if (En_ResultStatus.NOT_FOUND.equals(status)) {
                         fireEvent(new NotifyEvents.Show(lang.fileNotFoundError(), NotifyEvents.NotifyType.ERROR));
@@ -329,7 +329,7 @@ public abstract class IssueEditActivity implements
         }
 
         if (issue.isFavorite()) {
-            issueController.removeFavoriteState(policyService.getProfileId(), issue.getId(), new FluentCallback<Boolean>()
+            issueController.removeFavoriteState(policyService.getProfileId(), issue.getId(), new FluentCallback<Long>()
                     .withSuccess(result -> onSuccessChangeFavoriteState(issue, view))
             );
         } else {

@@ -98,10 +98,10 @@ public class IssueFilterControllerImpl implements IssueFilterController {
     }
 
     @Override
-    public boolean removeIssueFilter( Long id ) throws RequestFailedException {
+    public Long removeIssueFilter(Long id ) throws RequestFailedException {
         log.info( "removeIssueFilter(): id={}", id );
 
-        Result< Boolean > response = issueFilterService.removeIssueFilter( id );
+        Result< Long > response = issueFilterService.removeIssueFilter( id );
         log.info( "removeIssueFilter(): result={}", response.getStatus() );
 
         if ( response.isError() ) {

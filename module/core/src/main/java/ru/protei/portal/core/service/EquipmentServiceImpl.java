@@ -87,18 +87,6 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public Result<List<DecimalNumber>> getDecimalNumbersOfEquipment( AuthToken token, long id) {
-
-        List<DecimalNumber> numbers = decimalNumberDAO.getDecimalNumbersByEquipmentId(id);
-
-        if (numbers == null) {
-            return error(En_ResultStatus.GET_DATA_ERROR);
-        }
-
-        return ok(numbers);
-    }
-
-    @Override
     @Transactional
     public Result<Equipment> saveEquipment( AuthToken token, Equipment equipment ) {
         if (StringUtils.isBlank(equipment.getName())) {
@@ -160,14 +148,6 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public Result<DecimalNumber> findDecimalNumber( AuthToken token, DecimalNumber number) {
-        DecimalNumber foundedNumber = decimalNumberDAO.find(number);
-        if (foundedNumber == null)
-            return error(En_ResultStatus.NOT_FOUND);
-        return ok(foundedNumber);
-    }
-
-    @Override
     public Result<Long> copyEquipment( AuthToken token, Long equipmentId, String newName, Long authorId ) {
         if (equipmentId == null || newName == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -193,7 +173,7 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Override
     @Transactional
-    public Result<Boolean> removeEquipment(AuthToken token, Long equipmentId, String author) {
+    public Result<Long> removeEquipment(AuthToken token, Long equipmentId, String author) {
 
         if (equipmentId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -201,7 +181,11 @@ public class EquipmentServiceImpl implements EquipmentService {
 
         removeLinkedDocuments(token, equipmentId, author);
 
-        return ok(equipmentDAO.removeByKey(equipmentId));
+        if (!equipmentDAO.removeByKey(equipmentId)) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        return ok(equipmentId);
     }
 
     private boolean updateDecimalNumbers( Equipment equipment ) {

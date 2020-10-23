@@ -28,6 +28,6 @@ public interface WorkerPositionService {
 
     @Auditable(En_AuditType.POSITION_REMOVE)
     @Privileged(requireAny = {En_Privilege.EMPLOYEE_CREATE, En_Privilege.EMPLOYEE_EDIT})
-    Result<Boolean> removeWorkerPosition(AuthToken token, WorkerPosition workerPosition);
+    Result<Long> removeWorkerPosition(AuthToken token, WorkerPosition workerPosition);
 
 }

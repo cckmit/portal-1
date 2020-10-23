@@ -49,6 +49,7 @@ public class UserCaseAssignmentServiceImpl implements UserCaseAssignmentService 
     PortalConfig config;
 
     @Override
+    @Transactional
     public Result<UserCaseAssignmentTable> saveTableEntity(AuthToken token, UserCaseAssignment userCaseAssignment) {
 
         if (token == null || token.getUserLoginId() == null) {
@@ -77,6 +78,7 @@ public class UserCaseAssignmentServiceImpl implements UserCaseAssignmentService 
     }
 
     @Override
+    @Transactional
     public Result<UserCaseAssignmentTable> removeTableEntity(AuthToken token, Long id) {
 
         if (token == null || token.getUserLoginId() == null) {

@@ -37,12 +37,6 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.*;
  * Реализация сервиса управления продуктами
  */
 public class ProductServiceImpl implements ProductService {
-
-    /**
-     *  @TODO
-     *  - вынести обработку ответов БД в отдельный Interceptor
-     */
-
     @Autowired
     DevUnitDAO devUnitDAO;
 

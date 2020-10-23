@@ -39,7 +39,7 @@ public interface RegionControllerAsync {
 
     void getRegionList(AsyncCallback<List<EntityOption>> callback);
 
-    void removeProject(Long projectId, AsyncCallback<Boolean> async);
+    void removeProject(Long projectId, AsyncCallback<Long> async);
 
     void getProjectLeader(Long projectId, AsyncCallback<PersonProjectMemberView> async);
 }

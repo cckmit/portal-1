@@ -42,9 +42,9 @@ public interface SiteFolderControllerAsync {
     void saveApplication(Application application, AsyncCallback<Application> async);
 
 
-    void removePlatform(long id, AsyncCallback<Boolean> async);
+    void removePlatform(long id, AsyncCallback<Long> async);
 
-    void removeServer(long id, AsyncCallback<Boolean> async);
+    void removeServer(long id, AsyncCallback<Long> async);
 
-    void removeApplication(long id, AsyncCallback<Boolean> async);
+    void removeApplication(long id, AsyncCallback<Long> async);
 }

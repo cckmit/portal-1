@@ -175,11 +175,11 @@ public class SiteFolderControllerImpl implements SiteFolderController {
     }
 
     @Override
-    public boolean removePlatform(long id) throws RequestFailedException {
+    public Long removePlatform(long id) throws RequestFailedException {
 
         log.info("removePlatform(id={})", id);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        Result<Boolean> response = siteFolderService.removePlatform(token, id);
+        Result<Long> response = siteFolderService.removePlatform(token, id);
         log.info("removePlatform(id={}): {}", id, response.isOk() ? "ok" : response.getStatus());
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
@@ -188,11 +188,11 @@ public class SiteFolderControllerImpl implements SiteFolderController {
     }
 
     @Override
-    public boolean removeServer(long id) throws RequestFailedException {
+    public Long removeServer(long id) throws RequestFailedException {
 
         log.info("removeServer(id={})", id);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        Result<Boolean> response = siteFolderService.removeServer(token, id);
+        Result<Long> response = siteFolderService.removeServer(token, id);
         log.info("removeServer(id={}): {}", id, response.isOk() ? "ok" : response.getStatus());
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
@@ -201,11 +201,11 @@ public class SiteFolderControllerImpl implements SiteFolderController {
     }
 
     @Override
-    public boolean removeApplication(long id) throws RequestFailedException {
+    public Long removeApplication(long id) throws RequestFailedException {
 
         log.info("removeApplication(id={})", id);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        Result<Boolean> response = siteFolderService.removeApplication(token, id);
+        Result<Long> response = siteFolderService.removeApplication(token, id);
         log.info("removeApplication(id={}): {}", id, response.isOk() ? "ok" : response.getStatus());
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());

@@ -163,17 +163,15 @@ public abstract class PlannedIssuesTableActivity implements AbstractPlannedIssue
     }
 
     private Runnable removeAction(CaseShortView value) {
-        return () -> {
-            planService.removeIssueFromPlan(planId, value.getId(), new FluentCallback<Boolean>()
-                    .withError(throwable -> {
-                        defaultErrorHandler.accept(throwable);
-                        loadTable(planId);
-                    })
-                    .withSuccess(flag -> {
-                        loadTable(planId);
-                        fireEvent(new NotifyEvents.Show(lang.planIssueRemoved(), NotifyEvents.NotifyType.SUCCESS));
-                    }));
-        };
+        return () -> planService.removeIssueFromPlan(planId, value.getId(), new FluentCallback<Long>()
+                .withError(throwable -> {
+                    defaultErrorHandler.accept(throwable);
+                    loadTable(planId);
+                })
+                .withSuccess(issueId -> {
+                    loadTable(planId);
+                    fireEvent(new NotifyEvents.Show(lang.planIssueRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                }));
     }
 
     private void showPlanSingleSelector(Element relative, Consumer<Plan> onChanged) {

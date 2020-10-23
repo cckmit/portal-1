@@ -231,6 +231,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
+    @Transactional
     public Result<Server> createServer( AuthToken token, Server server) {
 
         Long id = serverDAO.persist(server);
@@ -256,6 +257,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
+    @Transactional
     public Result<Application> createApplication( AuthToken token, Application application) {
 
         Long id = applicationDAO.persist(application);
@@ -309,6 +311,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
+    @Transactional
     public Result<Server> updateServer( AuthToken token, Server server) {
 
         boolean status = serverDAO.merge(server);
@@ -321,6 +324,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
+    @Transactional
     public Result<Application> updateApplication( AuthToken token, Application application) {
 
         boolean status = applicationDAO.merge(application);
@@ -335,7 +339,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
 
     @Override
     @Transactional
-    public Result<Boolean> removePlatform( AuthToken token, long id) {
+    public Result<Long> removePlatform(AuthToken token, long id) {
 
         Platform platform = platformDAO.get(id);
 
@@ -347,28 +351,39 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         caseObject.setId(platform.getCaseId());
         caseObject.setDeleted(true);
 
-        boolean resultCase = caseObjectDAO.partialMerge(caseObject, "deleted");
-        boolean result = platformDAO.removeByKey(id);
+        boolean caseObjectMergeResult = caseObjectDAO.partialMerge(caseObject, "deleted");
+        boolean removePlatformResult = platformDAO.removeByKey(id);
 
-        if (result && resultCase) {
-            return ok(true);
+        if (!removePlatformResult) {
+            throw new ResultStatusException(En_ResultStatus.NOT_REMOVED,
+                    "Platform was not removed. It could be removed earlier");
         }
 
-        throw new ResultStatusException(En_ResultStatus.NOT_REMOVED);
+        if (!caseObjectMergeResult) {
+            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+        }
+
+        return ok(id);
     }
 
     @Override
-    public Result<Boolean> removeServer( AuthToken token, long id) {
-        boolean result = serverDAO.removeByKey(id);
+    @Transactional
+    public Result<Long> removeServer(AuthToken token, long id) {
+        if (!serverDAO.removeByKey(id)) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
 
-        return ok(result);
+        return ok(id);
     }
 
     @Override
-    public Result<Boolean> removeApplication( AuthToken token, long id) {
-        boolean result = applicationDAO.removeByKey(id);
+    @Transactional
+    public Result<Long> removeApplication(AuthToken token, long id) {
+        if (!applicationDAO.removeByKey(id)) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
 
-        return ok(result);
+        return ok(id);
     }
 
     private void cloneApplicationsForServer(Long serverId, Long serverIdOfAppsToBeCloned) {

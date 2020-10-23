@@ -18,7 +18,7 @@ public interface RoomReservationControllerAsync {
 
     void updateReservation(RoomReservation reservation, AsyncCallback<RoomReservation> async);
 
-    void removeReservation(Long reservationId, AsyncCallback<RoomReservation> async);
+    void removeReservation(Long reservationId, AsyncCallback<Long> async);
 
     void getRooms(AsyncCallback<List<RoomReservable>> async);
 }

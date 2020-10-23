@@ -34,19 +34,12 @@ public interface EquipmentController extends RemoteService {
 
     Long copyEquipment( Long equipmentId, String newName ) throws RequestFailedException;
 
-    boolean removeEquipment( Long equipmentId ) throws RequestFailedException;
-
-    List<DecimalNumber> getDecimalNumbersOfEquipment( long equipmentId ) throws RequestFailedException;
+    Long removeEquipment(Long equipmentId ) throws RequestFailedException;
 
     /**
      * Проверка валидности заданного децимального номера
      */
     boolean checkIfExistDecimalNumber( DecimalNumber number ) throws RequestFailedException;
-
-    /**
-     * Поиск децимального номера
-     */
-    DecimalNumber findDecimalNumber(DecimalNumber number) throws RequestFailedException;
 
     /**
      * Получение следующего доступного номера
@@ -57,10 +50,5 @@ public interface EquipmentController extends RemoteService {
 
     Integer getNextAvailableRegisterNumberModification( DecimalNumberQuery filter ) throws RequestFailedException;
 
-
     SearchResult<Document> getDocuments(Long equipmentId) throws RequestFailedException;
-
-    Document getDocument(Long id) throws RequestFailedException;
-
-    Document saveDocument(Document document) throws RequestFailedException;
 }

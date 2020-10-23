@@ -29,7 +29,7 @@ public class CompanyDepartmentControllerImpl implements CompanyDepartmentControl
     }
 
     @Override
-    public Boolean removeCompanyDepartment(CompanyDepartment companyDepartment) throws RequestFailedException {
+    public Long removeCompanyDepartment(CompanyDepartment companyDepartment) throws RequestFailedException {
         log.info("removeCompanyDepartment(): companyDepartment={}", companyDepartment);
         AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         return checkResultAndGetData(companyDepartmentService.removeCompanyDepartment(authToken, companyDepartment));

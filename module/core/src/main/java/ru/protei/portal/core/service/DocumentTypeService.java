@@ -20,5 +20,5 @@ public interface DocumentTypeService {
 
     @Privileged(En_Privilege.DOCUMENT_TYPE_REMOVE)
     @Auditable(En_AuditType.DOCUMENT_TYPE_REMOVE)
-    Result<Boolean> removeDocumentType(AuthToken authToken, DocumentType documentType);
+    Result<Long> removeDocumentType(AuthToken authToken, DocumentType documentType);
 }

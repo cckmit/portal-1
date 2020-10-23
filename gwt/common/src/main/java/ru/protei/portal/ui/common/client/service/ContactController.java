@@ -30,7 +30,7 @@ public interface ContactController extends RemoteService {
 
     boolean fireContact( long id ) throws RequestFailedException;
 
-    boolean removeContact( long id ) throws RequestFailedException;
+    Long removeContact(long id ) throws RequestFailedException;
 
     /**
      * Получение списка сокращенного представления контакта
@@ -39,5 +39,5 @@ public interface ContactController extends RemoteService {
      */
     List<PersonShortView> getContactViewList( ContactQuery query ) throws RequestFailedException;
 
-    boolean saveAccount ( UserLogin userLogin, Boolean sendWelcomeEmail ) throws RequestFailedException;
+    Long saveAccount ( UserLogin userLogin, Boolean sendWelcomeEmail ) throws RequestFailedException;
 }

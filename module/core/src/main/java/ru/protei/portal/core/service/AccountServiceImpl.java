@@ -188,11 +188,16 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Result<Boolean> removeAccount(AuthToken token, Long accountId) {
-        return ok(userLoginDAO.removeByKey(accountId));
+    @Transactional
+    public Result<Long> removeAccount(AuthToken token, Long accountId) {
+        if (!userLoginDAO.removeByKey(accountId)) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+        return ok(accountId);
     }
 
     @Override
+    @Transactional
     public Result<?> updateAccountPassword( AuthToken token, Long loginId, String currentPassword, String newPassword) {
         UserLogin userLogin = getAccount(token, loginId).getData();
 

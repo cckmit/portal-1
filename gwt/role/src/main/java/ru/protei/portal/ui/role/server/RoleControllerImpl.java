@@ -78,27 +78,12 @@ public class RoleControllerImpl implements RoleController {
     }
 
     @Override
-    public List< EntityOption > getRolesOptionList( UserRoleQuery query ) throws RequestFailedException {
-        log.info( "getRolesOptionList(): searchPattern={} ",
-                query.getSearchString() );
-
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-
-        Result<List<EntityOption>> response = roleService.userRoleOptionList( token, query );
-
-        if ( response.isError() ) {
-            throw new RequestFailedException( response.getStatus() );
-        }
-        return response.getData();
-    }
-
-    @Override
-    public boolean removeRole( Long id ) throws RequestFailedException {
+    public Long removeRole(Long id) throws RequestFailedException {
         log.info( "removeRole(): id={}", id );
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result< Boolean > response = roleService.removeRole( token, id );
+        Result< Long > response = roleService.removeRole( token, id );
         log.info( "removeRole(): result={}", response.isOk() ? "ok" : response.getStatus() );
 
         if (response.isOk()) {

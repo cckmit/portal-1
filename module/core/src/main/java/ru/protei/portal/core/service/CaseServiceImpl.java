@@ -568,6 +568,7 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
+    @Transactional
     public Result<Boolean> updateCaseModified( AuthToken token, Long caseId, Date modified) {
         if(caseId == null || !caseObjectDAO.checkExistsByKey(caseId))
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -581,6 +582,7 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
+    @Transactional
     public Result<Boolean> updateExistsAttachmentsFlag( Long caseId, boolean flag){
         if(caseId == null)
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -595,6 +597,7 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
+    @Transactional
     public Result<Boolean> updateExistsAttachmentsFlag( Long caseId){
         return isExistsAttachments(caseId).flatMap( isExists ->
                 updateExistsAttachmentsFlag(caseId, isExists));
@@ -734,17 +737,19 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public Result<Boolean> removeFavoriteState(AuthToken token, Long personId, Long issueId) {
+    @Transactional
+    public Result<Long> removeFavoriteState(AuthToken token, Long personId, Long issueId) {
         if (personId == null || issueId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         personFavoriteIssuesDAO.removeState(personId, issueId);
 
-        return ok(true);
+        return ok(issueId);
     }
 
     @Override
+    @Transactional
     public Result<Long> addFavoriteState(AuthToken token, Long personId, Long issueId) {
         if (personId == null || issueId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -770,7 +775,7 @@ public class CaseServiceImpl implements CaseService {
         }
 
         for (PlanOption planOption : emptyIfNull(planDiffs.getRemovedEntries())) {
-            Result<Boolean> planResult = planService.removeIssueFromPlan(token, planOption.getId(), caseId);
+            Result<Long> planResult = planService.removeIssueFromPlan(token, planOption.getId(), caseId);
 
             if (planResult.isError()) {
                 return planResult.getStatus();

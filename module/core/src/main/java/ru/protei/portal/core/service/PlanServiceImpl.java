@@ -171,6 +171,7 @@ public class PlanServiceImpl implements PlanService{
     }
 
     @Override
+    @Transactional
     public Result<Boolean> editPlanParams(AuthToken token, Plan plan) {
         if (plan == null || plan.getId() == null || !validatePlan(plan)){
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -238,7 +239,7 @@ public class PlanServiceImpl implements PlanService{
 
     @Override
     @Transactional
-    public Result<Boolean> removeIssueFromPlan(AuthToken token, Long planId, Long issueId) {
+    public Result<Long> removeIssueFromPlan(AuthToken token, Long planId, Long issueId) {
         if (planId == null || issueId == null){
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -258,16 +259,16 @@ public class PlanServiceImpl implements PlanService{
                 throw createHistoryException(En_ResultStatus.NOT_REMOVED, En_HistoryAction.REMOVE, planId);
             }
 
-            return ok();
+            return ok(issueId);
         }
 
         if (rowCount == 0) {
-            log.warn("removeIssueFromPlan(): NOT_REMOVED. plan id={}, token personId={}", planId, token.getPersonId());
+            log.warn("removeIssueFromPlan(): NOT_FOUND. plan id={}, token personId={}", planId, token.getPersonId());
+            throw new ResultStatusException(En_ResultStatus.NOT_FOUND);
         } else {
             log.warn("removeIssueFromPlan(): More than one was removed! Rollback. plan id={}, token personId={}", planId, token.getPersonId());
+            throw new ResultStatusException(En_ResultStatus.NOT_REMOVED);
         }
-
-        throw new ResultStatusException(En_ResultStatus.NOT_REMOVED);
     }
 
     @Override
@@ -358,7 +359,7 @@ public class PlanServiceImpl implements PlanService{
 
     @Override
     @Transactional
-    public Result<Boolean> removePlan(AuthToken token, Long planId) {
+    public Result<Long> removePlan(AuthToken token, Long planId) {
         if (planId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -371,8 +372,8 @@ public class PlanServiceImpl implements PlanService{
         }
 
         if (!planDAO.removeByKey(planId)) {
-            log.warn("removePlan(): NOT_REMOVED. planId={}, token personId={}", planId, token.getPersonId());
-            return ok(false);
+            log.warn("removePlan(): NOT_FOUND. planId={}, token personId={}", planId, token.getPersonId());
+            return error(En_ResultStatus.NOT_FOUND);
         }
 
         if (plan.getIssueList() != null){
@@ -383,7 +384,7 @@ public class PlanServiceImpl implements PlanService{
             });
         }
 
-        return ok(true);
+        return ok(planId);
     }
 
     private boolean userIsCreator (AuthToken token, Plan plan){

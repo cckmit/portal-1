@@ -48,10 +48,10 @@ public class AttachmentControllerImpl implements AttachmentController {
     }
 
     @Override
-    public boolean removeAttachmentEverywhere(En_CaseType caseType, Long attachmentId) throws RequestFailedException{
+    public Long removeAttachmentEverywhere(En_CaseType caseType, Long attachmentId) throws RequestFailedException{
         log.info("removeAttachmentEverywhere(): caseType={}, attachmentId={}", caseType, attachmentId);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        Result<Boolean> response =  attachmentService.removeAttachmentEverywhere( token, caseType, attachmentId);
+        Result<Long> response =  attachmentService.removeAttachmentEverywhere( token, caseType, attachmentId);
 
         if(response.isError())
             throw new RequestFailedException( response.getStatus() );

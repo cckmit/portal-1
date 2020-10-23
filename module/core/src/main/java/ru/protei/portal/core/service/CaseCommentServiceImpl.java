@@ -341,7 +341,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     @Override
     @Transactional
-    public Result<Boolean> removeCaseComment( AuthToken token, En_CaseType caseType, CaseComment removedComment) {
+    public Result<Long> removeCaseComment(AuthToken token, En_CaseType caseType, CaseComment removedComment) {
 
         En_ResultStatus checkAccessStatus = null;
         if (removedComment == null || removedComment.getId() == null || token.getPersonId() == null) {
@@ -399,7 +399,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             throw new ResultStatusException(En_ResultStatus.NOT_REMOVED);
         }
 
-        Result<Boolean> okResult = ok(isRemoved);
+        Result<Long> okResult = ok(removedComment.getId());
 
         if (PROJECT.equals(caseType)) {
             okResult.publishEvent(new ProjectCommentEvent(this,
@@ -438,12 +438,14 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     @Override
+    @Transactional
     public Result<Boolean> updateTimeElapsed( AuthToken token, Long caseId) {
         long timeElapsed = getTimeElapsed(caseId).getData();
         return updateCaseTimeElapsed(token, caseId, timeElapsed);
     }
 
     @Override
+    @Transactional
     public Result<Boolean> updateCaseTimeElapsed( AuthToken token, Long caseId, long timeElapsed) {
         if (caseId == null || !caseObjectDAO.checkExistsByKey(caseId)) {
             return error( En_ResultStatus.INCORRECT_PARAMS);
@@ -458,6 +460,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     @Override
+    @Transactional
     public Result<Boolean> updateCaseTimeElapsedType(AuthToken token, Long caseCommentId, En_TimeElapsedType type) {
         CaseComment caseComment;
 
@@ -477,6 +480,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     @Override
+    @Transactional
     public Result<Long> addCommentOnSentReminder( CaseComment comment ) {
         comment.setCreated( new Date() );
         comment.setAuthorId( CrmConstants.Person.SYSTEM_USER_ID );

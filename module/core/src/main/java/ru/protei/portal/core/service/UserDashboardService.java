@@ -17,7 +17,7 @@ public interface UserDashboardService {
     Result<UserDashboard> editUserDashboard(AuthToken token, UserDashboard dashboard);
 
     @Privileged(En_Privilege.DASHBOARD_VIEW)
-    Result<Boolean> removeUserDashboard(AuthToken token, Long dashboardId);
+    Result<Long> removeUserDashboard(AuthToken token, Long dashboardId);
 
     @Privileged(En_Privilege.DASHBOARD_VIEW)
     Result<List<UserDashboard>> getUserDashboards(AuthToken token);

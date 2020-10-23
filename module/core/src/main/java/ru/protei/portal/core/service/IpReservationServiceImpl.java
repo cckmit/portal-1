@@ -178,6 +178,7 @@ public class IpReservationServiceImpl implements IpReservationService {
     }
 
     @Override
+    @Transactional
     public Result<Subnet> createSubnet( AuthToken token, Subnet subnet) {
 
         if (!isValidSubnet(subnet)) {
@@ -199,6 +200,7 @@ public class IpReservationServiceImpl implements IpReservationService {
     }
 
     @Override
+    @Transactional
     public Result<Subnet> updateSubnet( AuthToken token, Subnet subnet ) {
 
         if (subnet == null || subnet.getId() == null) {
@@ -233,9 +235,9 @@ public class IpReservationServiceImpl implements IpReservationService {
 
     @Override
     @Transactional
-    public Result<Subnet> removeSubnet( AuthToken token, Subnet subnet, boolean removeWithIps) {
+    public Result<Long> removeSubnet( AuthToken token, Subnet subnet, boolean removeWithIps) {
         if (subnet == null) {
-            return error(En_ResultStatus.NOT_FOUND);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         if (removeWithIps || subnetAvailableToRemove(subnet.getId())) {
@@ -243,14 +245,15 @@ public class IpReservationServiceImpl implements IpReservationService {
             Subnet stored = subnetDAO.get(subnet.getId());
             List<ReservedIp> reservedIps = reservedIpDAO.getReservedIpsBySubnetId(subnet.getId());
 
-            if (!subnetDAO.removeByKey(subnet.getId()))
-                return error(En_ResultStatus.INTERNAL_ERROR);
-
-            if (CollectionUtils.isEmpty(reservedIps)) {
-                return ok(stored);
+            if (!subnetDAO.removeByKey(subnet.getId())) {
+                return error(En_ResultStatus.NOT_FOUND);
             }
 
-            return ok(stored)
+            if (CollectionUtils.isEmpty(reservedIps)) {
+                return ok(stored.getId());
+            }
+
+            return ok(stored.getId())
                     .publishEvent(new SubnetNotificationEvent(
                             this,
                             stored,
@@ -405,9 +408,9 @@ public class IpReservationServiceImpl implements IpReservationService {
 
     @Override
     @Transactional
-    public Result<ReservedIp> removeReservedIp( AuthToken token, ReservedIp reservedIp ) {
+    public Result<Long> removeReservedIp(AuthToken token, ReservedIp reservedIp ) {
         if (reservedIp == null) {
-            return error(En_ResultStatus.NOT_FOUND);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         if (token == null || !hasAccessForReservedIp(token, En_Privilege.RESERVED_IP_REMOVE, reservedIp)) {
@@ -417,10 +420,10 @@ public class IpReservationServiceImpl implements IpReservationService {
         ReservedIp stored = getReservedIp(reservedIp.getId());
 
         if (!reservedIpDAO.removeByKey(reservedIp.getId())) {
-            return error(En_ResultStatus.INTERNAL_ERROR);
+            return error(En_ResultStatus.NOT_FOUND);
         }
 
-        return ok(stored)
+        return ok(stored.getId())
                 .publishEvent(new ReservedIpNotificationEvent(
                         this,
                         stored,

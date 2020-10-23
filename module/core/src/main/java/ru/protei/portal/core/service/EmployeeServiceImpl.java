@@ -335,6 +335,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
     public Result<Boolean> updateEmployeeWorker(AuthToken token, WorkerEntry worker) {
         if (worker == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -354,6 +355,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
     public Result<WorkerEntry> createEmployeeWorker(AuthToken token, WorkerEntry worker) {
         if (worker == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);

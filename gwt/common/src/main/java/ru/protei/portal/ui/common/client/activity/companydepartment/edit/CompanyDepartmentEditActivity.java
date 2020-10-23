@@ -58,8 +58,8 @@ public abstract class CompanyDepartmentEditActivity implements Activity, Abstrac
 
     @Override
     public void onRemoveClicked() {
-        companyDepartmentController.removeCompanyDepartment(companyDepartment, new FluentCallback<Boolean>()
-                .withSuccess(v -> {
+        companyDepartmentController.removeCompanyDepartment(companyDepartment, new FluentCallback<Long>()
+                .withSuccess(result -> {
                     dialogView.hidePopup();
                     fireEvent(new CompanyDepartmentEvents.Removed(companyDepartment));
                 })

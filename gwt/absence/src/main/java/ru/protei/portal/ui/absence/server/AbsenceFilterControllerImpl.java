@@ -51,19 +51,6 @@ public class AbsenceFilterControllerImpl implements AbsenceFilterController {
     }
 
     @Override
-    public SelectorsParams getSelectorsParams(AbsenceQuery caseQuery) throws RequestFailedException {
-        log.info("getSelectorsParams, selectorsParamsRequest: {}", caseQuery );
-
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-
-        Result<SelectorsParams> response = absenceFilterService.getSelectorsParams( token, caseQuery );
-
-        log.info("getSelectorsParams, id: {}, response: {} ", caseQuery, response.isError() ? "error" : response.getData());
-
-        return checkResultAndGetData(response);
-    }
-
-    @Override
     public AbsenceFilter saveFilter(AbsenceFilter filter) throws RequestFailedException {
         log.info("saveFilter, filter: {}", filter);
 
@@ -82,10 +69,10 @@ public class AbsenceFilterControllerImpl implements AbsenceFilterController {
     }
 
     @Override
-    public Boolean removeFilter(Long id)  throws RequestFailedException {
+    public Long removeFilter(Long id)  throws RequestFailedException {
         log.info( "removeIssueFilter(): id={}", id );
 
-        Result< Boolean > response = absenceFilterService.removeFilter( id );
+        Result< Long > response = absenceFilterService.removeFilter( id );
         log.info( "removeIssueFilter(): result={}", response.getStatus() );
 
         return checkResultAndGetData(response);

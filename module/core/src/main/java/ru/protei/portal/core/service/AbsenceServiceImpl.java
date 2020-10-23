@@ -180,7 +180,7 @@ public class AbsenceServiceImpl implements AbsenceService {
 
     @Override
     @Transactional
-    public Result<Boolean> removeAbsence(AuthToken token, PersonAbsence absence) {
+    public Result<Long> removeAbsence(AuthToken token, PersonAbsence absence) {
 
         if (absence == null || absence.getId() == null) {
             return error( En_ResultStatus.INCORRECT_PARAMS);
@@ -192,13 +192,13 @@ public class AbsenceServiceImpl implements AbsenceService {
         }
 
         if (!personAbsenceDAO.removeByKey(storedAbsence.getId())) {
-            return ok(false);
+            return error(En_ResultStatus.NOT_FOUND);
         }
 
         Person initiator = personDAO.get(token.getPersonId());
         jdbcManyRelationsHelper.fill(initiator, Person.Fields.CONTACT_ITEMS);
 
-        return ok(true).publishEvent(new AbsenceNotificationEvent(
+        return ok(absence.getId()).publishEvent(new AbsenceNotificationEvent(
                 this,
                 EventAction.REMOVED,
                 initiator,

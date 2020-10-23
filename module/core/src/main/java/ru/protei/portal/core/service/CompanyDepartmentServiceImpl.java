@@ -1,6 +1,7 @@
 package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.CompanyDepartmentDAO;
 import ru.protei.portal.core.model.dao.WorkerEntryDAO;
@@ -35,6 +36,7 @@ public class CompanyDepartmentServiceImpl implements CompanyDepartmentService{
     }
 
     @Override
+    @Transactional
     public Result<Long> createCompanyDepartment(AuthToken token, CompanyDepartment companyDepartment) {
         if (!isValid(companyDepartment)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -55,6 +57,7 @@ public class CompanyDepartmentServiceImpl implements CompanyDepartmentService{
     }
 
     @Override
+    @Transactional
     public Result<Long> updateCompanyDepartmentName(AuthToken token, CompanyDepartment companyDepartment) {
         if (!isValid(companyDepartment)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -73,13 +76,18 @@ public class CompanyDepartmentServiceImpl implements CompanyDepartmentService{
     }
 
     @Override
-    public Result<Boolean> removeCompanyDepartment(AuthToken token, CompanyDepartment companyDepartment) {
+    @Transactional
+    public Result<Long> removeCompanyDepartment(AuthToken token, CompanyDepartment companyDepartment) {
 
         if(workerEntryDAO.checkExistsByDepId(companyDepartment.getId())){
             return error(En_ResultStatus.WORKER_WITH_THIS_DEPARTMENT_ALREADY_EXIST);
         }
 
-        return ok(companyDepartmentDAO.removeByKey(companyDepartment.getId()));
+        if (!companyDepartmentDAO.removeByKey(companyDepartment.getId())) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        return ok(companyDepartment.getId());
     }
 
     @Override

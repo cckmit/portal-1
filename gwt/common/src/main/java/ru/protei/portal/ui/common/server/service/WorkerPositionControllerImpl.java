@@ -28,7 +28,7 @@ public class WorkerPositionControllerImpl implements WorkerPositionController {
     }
 
     @Override
-    public Boolean removeWorkerPosition(WorkerPosition workerPosition) throws RequestFailedException {
+    public Long removeWorkerPosition(WorkerPosition workerPosition) throws RequestFailedException {
         log.info("removeWorkerPosition(): workerPosition={}", workerPosition);
         AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         return checkResultAndGetData(workerPositionService.removeWorkerPosition(authToken, workerPosition));

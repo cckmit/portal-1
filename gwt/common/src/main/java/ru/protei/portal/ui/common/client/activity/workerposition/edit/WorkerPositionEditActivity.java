@@ -58,7 +58,7 @@ public abstract class WorkerPositionEditActivity implements Activity, AbstractWo
 
     @Override
     public void onRemoveClicked() {
-        workerPositionController.removeWorkerPosition(workerPosition, new FluentCallback<Boolean>()
+        workerPositionController.removeWorkerPosition(workerPosition, new FluentCallback<Long>()
                 .withSuccess(v -> {
                     dialogView.hidePopup();
                     fireEvent(new WorkerPositionEvents.Removed(workerPosition));

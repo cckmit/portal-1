@@ -169,7 +169,7 @@ public class RoomReservationServiceImpl implements RoomReservationService {
 
     @Override
     @Transactional
-    public Result<RoomReservation> removeReservation(AuthToken token, Long reservationId) {
+    public Result<Long> removeReservation(AuthToken token, Long reservationId) {
 
         boolean valid = token != null && reservationId != null;
         if (!valid) {
@@ -193,10 +193,10 @@ public class RoomReservationServiceImpl implements RoomReservationService {
 
         boolean removed = roomReservationDAO.removeByKey(reservationId);
         if (!removed) {
-            return error(En_ResultStatus.NOT_REMOVED);
+            return error(En_ResultStatus.NOT_FOUND);
         }
 
-        return ok(stored)
+        return ok(stored.getId())
             .publishEvent(new RoomReservationNotificationEvent(
                 this,
                 stored,

@@ -18,7 +18,6 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PlanControllerAsync;
-import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.plan.client.activity.filter.AbstractPlanFilterActivity;
 import ru.protei.portal.ui.plan.client.activity.filter.AbstractPlanFilterView;
@@ -144,12 +143,12 @@ public abstract class PlanTableActivity implements AbstractPlanTableActivity, Ab
 
     private Runnable removeAction(Plan value) {
         return () -> {
-            planService.removePlan(value.getId(), new FluentCallback<Boolean>()
-                    .withError(throwable -> {
+            planService.removePlan(value.getId(), new FluentCallback<Long>()
+                    .withError((throwable, defaultErrorHandler, status) -> {
                         defaultErrorHandler.accept(throwable);
                         loadTable();
                     })
-                    .withSuccess(flag -> {
+                    .withSuccess(result -> {
                         loadTable();
                         fireEvent(new NotifyEvents.Show(lang.planRemoved(), NotifyEvents.NotifyType.SUCCESS));
                     }));
@@ -213,8 +212,6 @@ public abstract class PlanTableActivity implements AbstractPlanTableActivity, Ab
     PlanControllerAsync planService;
     @Inject
     AbstractPlanFilterView filterView;
-    @Inject
-    DefaultErrorHandler defaultErrorHandler;
 
     private static String CREATE_ACTION;
     private Integer scrollTo = 0;

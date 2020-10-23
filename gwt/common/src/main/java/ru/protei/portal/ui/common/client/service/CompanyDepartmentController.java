@@ -16,7 +16,7 @@ public interface CompanyDepartmentController extends RemoteService {
 
     List<CompanyDepartment> getCompanyDepartments(Long companyId) throws RequestFailedException;
 
-    Boolean removeCompanyDepartment(CompanyDepartment companyDepartment) throws RequestFailedException;
+    Long removeCompanyDepartment(CompanyDepartment companyDepartment) throws RequestFailedException;
 
     Long createCompanyDepartment (CompanyDepartment companyDepartment) throws RequestFailedException;
 

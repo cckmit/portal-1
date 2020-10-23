@@ -108,12 +108,12 @@ public class AccountControllerImpl implements AccountController {
     }
 
     @Override
-    public boolean removeAccount( Long accountId ) throws RequestFailedException {
+    public Long removeAccount( Long accountId ) throws RequestFailedException {
         log.info( "removeAccount(): id={}", accountId );
 
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
 
-        Result< Boolean > response = accountService.removeAccount( token, accountId );
+        Result< Long > response = accountService.removeAccount( token, accountId );
         log.info( "removeAccount(): result={}", response.isOk() ? "ok" : response.getStatus() );
 
         if (response.isOk()) {

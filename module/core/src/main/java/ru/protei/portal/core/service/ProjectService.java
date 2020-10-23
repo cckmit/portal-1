@@ -81,7 +81,7 @@ public interface ProjectService {
 
     @Privileged(En_Privilege.PROJECT_REMOVE)
     @Auditable(En_AuditType.PROJECT_REMOVE)
-    Result<Boolean> removeProject(AuthToken token, Long projectId);
+    Result<Long> removeProject(AuthToken token, Long projectId);
 
     @EventListener
     @Async(BACKGROUND_TASKS)
