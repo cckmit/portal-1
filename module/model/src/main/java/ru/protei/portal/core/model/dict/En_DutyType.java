@@ -2,7 +2,7 @@ package ru.protei.portal.core.model.dict;
 
 import ru.protei.winter.core.utils.enums.HasId;
 
-public enum DutyType implements HasId {
+public enum En_DutyType implements HasId {
 
     // дежурный 112 (безопасный город)
     BG(1),
@@ -23,15 +23,15 @@ public enum DutyType implements HasId {
     // дежурный ЦОВ
     COV(9);
 
-    DutyType(int id) {
+    En_DutyType(int id) {
         this.id = id;
     }
 
     private final int id;
     public int getId() { return id; }
 
-    public static DutyType byId(int id) {
-        for (DutyType type : DutyType.values()) {
+    public static En_DutyType byId(int id) {
+        for (En_DutyType type : En_DutyType.values()) {
             if (type.getId() == id) {
                 return type;
             }

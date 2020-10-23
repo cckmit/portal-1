@@ -1,6 +1,6 @@
 package ru.protei.portal.core.model.query;
 
-import ru.protei.portal.core.model.dict.DutyType;
+import ru.protei.portal.core.model.dict.En_DutyType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.struct.DateRange;
@@ -11,16 +11,21 @@ import java.util.Set;
 public class DutyLogQuery extends BaseQuery implements FilterQuery {
 
     private Set<Long> personIds;
-    private Set<DutyType> types;
+    private Set<En_DutyType> types;
     private DateRange dateRange;
 
     public DutyLogQuery() {
     }
 
-    public DutyLogQuery(DateRange dateRange, Set<Long> personIds, Set<DutyType> types,  En_SortField sortField, En_SortDir sortDir) {
+    public DutyLogQuery(DateRange dateRange, Set<Long> personIds, Set<En_DutyType> types, En_SortField sortField, En_SortDir sortDir) {
         super(null, sortField, sortDir);
         this.personIds = personIds;
         this.types = types;
+        this.dateRange = dateRange;
+    }
+
+    public DutyLogQuery(DateRange dateRange) {
+        super (null, En_SortField.duty_log_date_from, En_SortDir.ASC);
         this.dateRange = dateRange;
     }
 
@@ -40,11 +45,11 @@ public class DutyLogQuery extends BaseQuery implements FilterQuery {
         this.personIds = personIds;
     }
 
-    public Set<DutyType> getTypes() {
+    public Set<En_DutyType> getTypes() {
         return types;
     }
 
-    public void setTypes(Set<DutyType> types) {
+    public void setTypes(Set<En_DutyType> types) {
         this.types = types;
     }
 

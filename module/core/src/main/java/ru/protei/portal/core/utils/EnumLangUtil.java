@@ -255,14 +255,14 @@ public class EnumLangUtil {
         return "";
     }
 
-    public String dutyLogTypeLang(DutyType dutyType, String langCode) {
-        if (dutyType == null) {
+    public String dutyLogTypeLang(En_DutyType en_DutyType, String langCode) {
+        if (en_DutyType == null) {
             return "";
         }
         if (localizedLang == null) {
             localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
         }
-        switch (dutyType) {
+        switch (en_DutyType) {
             case BG:
                 return localizedLang.get("dutyTypeBG");
             case IP:

@@ -11,7 +11,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.DutyType;
+import ru.protei.portal.core.model.dict.En_DutyType;
 import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
@@ -45,7 +45,7 @@ public class DutyLogFilterParamWidget extends Composite implements AbstractDutyL
         initWidget(outUiBinder.createAndBindUi(this));
         date.fillSelector(En_DateIntervalType.dutyTypes());
         type.setModel(elementIndex -> {
-            DutyType[] list = DutyType.values();
+            En_DutyType[] list = En_DutyType.values();
             if (list.length <= elementIndex) return null;
             return list[elementIndex];
         });
@@ -104,7 +104,7 @@ public class DutyLogFilterParamWidget extends Composite implements AbstractDutyL
     }
 
     @UiHandler("type")
-    public void onTypeSelected(ValueChangeEvent<Set<DutyType>> event){
+    public void onTypeSelected(ValueChangeEvent<Set<En_DutyType>> event){
         onFilterChanged();
     }
 
@@ -196,7 +196,7 @@ public class DutyLogFilterParamWidget extends Composite implements AbstractDutyL
     EmployeeMultiSelector employee;
     @Inject
     @UiField(provided = true)
-    InputPopupMultiSelector<DutyType> type;
+    InputPopupMultiSelector<En_DutyType> type;
 
     @Inject
     DutyTypeLang typeLang;
