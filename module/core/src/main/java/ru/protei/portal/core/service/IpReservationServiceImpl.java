@@ -178,7 +178,6 @@ public class IpReservationServiceImpl implements IpReservationService {
     }
 
     @Override
-    @Transactional
     public Result<Subnet> createSubnet( AuthToken token, Subnet subnet) {
 
         if (!isValidSubnet(subnet)) {
@@ -200,7 +199,6 @@ public class IpReservationServiceImpl implements IpReservationService {
     }
 
     @Override
-    @Transactional
     public Result<Subnet> updateSubnet( AuthToken token, Subnet subnet ) {
 
         if (subnet == null || subnet.getId() == null) {
@@ -406,6 +404,7 @@ public class IpReservationServiceImpl implements IpReservationService {
     }
 
     @Override
+    @Transactional
     public Result<ReservedIp> removeReservedIp( AuthToken token, ReservedIp reservedIp ) {
         if (reservedIp == null) {
             return error(En_ResultStatus.NOT_FOUND);

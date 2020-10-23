@@ -128,7 +128,7 @@ public abstract class DocumentTypeTableActivity
     }
 
     private Runnable onConfirmRemoveClicked(DocumentType value) {
-        return () -> documentTypeService.removeDocumentType(value, new FluentCallback<Long>()
+        return () -> documentTypeService.removeDocumentType(value, new FluentCallback<Boolean>()
                 .withError(throwable -> {
                     if ((throwable instanceof RequestFailedException) && En_ResultStatus.UPDATE_OR_REMOVE_LINKED_OBJECT_ERROR.equals(((RequestFailedException) throwable).status)) {
                         fireEvent(new NotifyEvents.Show(lang.documentTypeUnableToRemoveUsedDocumentType(), NotifyEvents.NotifyType.ERROR));

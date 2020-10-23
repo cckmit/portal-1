@@ -37,13 +37,11 @@ public class DocumentTypeServiceImpl implements DocumentTypeService {
     }
 
     @Override
-    public Result<Long> removeDocumentType(AuthToken authToken, DocumentType documentType) {
+    public Result<Boolean> removeDocumentType(AuthToken authToken, DocumentType documentType) {
         try {
-            documentTypeDAO.removeByKey(documentType.getId());
+            return ok(documentTypeDAO.removeByKey(documentType.getId()));
         } catch (DataIntegrityViolationException e) {
             return error(En_ResultStatus.UPDATE_OR_REMOVE_LINKED_OBJECT_ERROR);
         }
-
-        return ok(documentType.getId());
     }
 }

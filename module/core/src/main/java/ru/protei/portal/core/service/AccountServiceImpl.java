@@ -188,7 +188,6 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    @Transactional
     public Result<Boolean> removeAccount(AuthToken token, Long accountId) {
         return ok(userLoginDAO.removeByKey(accountId));
     }

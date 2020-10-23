@@ -295,7 +295,6 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     }
 
     @Override
-    @Transactional
     public Result<List<Long>> getProjectIdsByYoutrackId(AuthToken token, String youtrackId) {
         log.debug("getProjectIdsByYoutrackId(): youtrackId={}", youtrackId);
 
@@ -306,7 +305,6 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     }
 
     @Override
-    @Transactional
     public Result<CaseLink> getYtLink(AuthToken token, String youtrackId, Long caseId) {
         log.debug("getYtLink(): youtrackId={}, caseId={}", youtrackId, caseId);
 

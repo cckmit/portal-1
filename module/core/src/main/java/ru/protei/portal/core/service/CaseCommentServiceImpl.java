@@ -477,7 +477,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     @Override
-    @Transactional
     public Result<Long> addCommentOnSentReminder( CaseComment comment ) {
         comment.setCreated( new Date() );
         comment.setAuthorId( CrmConstants.Person.SYSTEM_USER_ID );

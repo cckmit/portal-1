@@ -1,7 +1,6 @@
 package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.WorkerEntryDAO;
 import ru.protei.portal.core.model.dao.WorkerPositionDAO;
@@ -71,15 +70,13 @@ public class WorkerPositionServiceImpl implements WorkerPositionService{
     }
 
     @Override
-    public Result<Long> removeWorkerPosition(AuthToken token, WorkerPosition workerPosition) {
+    public Result<Boolean> removeWorkerPosition(AuthToken token, WorkerPosition workerPosition) {
 
         if(workerEntryDAO.checkExistsByPosId(workerPosition.getId())){
             return error(En_ResultStatus.WORKER_WITH_THIS_POSITION_ALREADY_EXIST);
         }
 
-        workerPositionDAO.removeByKey(workerPosition.getId());
-
-        return ok(workerPosition.getId());
+        return ok(workerPositionDAO.removeByKey(workerPosition.getId()));
     }
 
     private boolean isValid (WorkerPosition workerPosition){

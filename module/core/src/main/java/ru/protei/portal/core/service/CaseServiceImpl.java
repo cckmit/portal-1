@@ -734,7 +734,6 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    @Transactional
     public Result<Boolean> removeFavoriteState(AuthToken token, Long personId, Long issueId) {
         if (personId == null || issueId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -746,7 +745,6 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    @Transactional
     public Result<Long> addFavoriteState(AuthToken token, Long personId, Long issueId) {
         if (personId == null || issueId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);

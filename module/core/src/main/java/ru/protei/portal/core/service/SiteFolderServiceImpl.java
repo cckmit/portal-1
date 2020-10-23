@@ -358,18 +358,14 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
-    @Transactional
     public Result<Boolean> removeServer( AuthToken token, long id) {
-
         boolean result = serverDAO.removeByKey(id);
 
         return ok(result);
     }
 
     @Override
-    @Transactional
     public Result<Boolean> removeApplication( AuthToken token, long id) {
-
         boolean result = applicationDAO.removeByKey(id);
 
         return ok(result);

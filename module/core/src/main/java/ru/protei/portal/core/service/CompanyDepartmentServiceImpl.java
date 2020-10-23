@@ -73,15 +73,13 @@ public class CompanyDepartmentServiceImpl implements CompanyDepartmentService{
     }
 
     @Override
-    public Result<Long> removeCompanyDepartment(AuthToken token, CompanyDepartment companyDepartment) {
+    public Result<Boolean> removeCompanyDepartment(AuthToken token, CompanyDepartment companyDepartment) {
 
         if(workerEntryDAO.checkExistsByDepId(companyDepartment.getId())){
             return error(En_ResultStatus.WORKER_WITH_THIS_DEPARTMENT_ALREADY_EXIST);
         }
 
-        companyDepartmentDAO.removeByKey(companyDepartment.getId());
-
-        return ok(companyDepartment.getId());
+        return ok(companyDepartmentDAO.removeByKey(companyDepartment.getId()));
     }
 
     @Override

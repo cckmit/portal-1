@@ -11,7 +11,7 @@ public interface CompanyDepartmentControllerAsync {
 
     void getPersonDepartments(Long personId, boolean withParentDepartments, AsyncCallback<List<EntityOption>> async);
 
-    void removeCompanyDepartment(CompanyDepartment companyDepartment, AsyncCallback<Long> async);
+    void removeCompanyDepartment(CompanyDepartment companyDepartment, AsyncCallback<Boolean> async);
 
     void createCompanyDepartment(CompanyDepartment companyDepartment, AsyncCallback<Long> async);
 
