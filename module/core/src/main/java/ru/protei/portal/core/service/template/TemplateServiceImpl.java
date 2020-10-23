@@ -677,6 +677,31 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
+    public PreparedTemplate getDutyLogReportSubject(String title) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("reportTitle", title);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/report.duty.log.subject.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getDutyLogBody(String name, Date createdDate, String creator, List<String> recipients) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("name", name);
+        templateModel.put("created", createdDate);
+        templateModel.put("creator", creator);
+        templateModel.put("recipients", recipients);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/report.duty.log.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
     public PreparedTemplate getSubnetNotificationSubject(Subnet subnet, Person initiator, SubnetNotificationEvent.Action action) {
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("is_created", action == SubnetNotificationEvent.Action.CREATED);
