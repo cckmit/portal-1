@@ -17,8 +17,7 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
-import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
-import static ru.protei.portal.ui.common.server.ServiceUtils.getAuthToken;
+import static ru.protei.portal.ui.common.server.ServiceUtils.*;
 
 /**
  * Реализация сервиса по работе с журналом дежурств
@@ -62,11 +61,11 @@ public class DutyLogControllerImpl implements DutyLogController {
 
     @Override
     public void createReport(String name, DutyLogQuery query) throws RequestFailedException {
-        log.info("createReport(): name={}, query={}", query);
+        log.info("createReport(): name={}, query={}", name, query);
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
-//        Result<Void> result = absenceService.createReport(token, name, query);
-//        log.info("createReport(): result={}", result.isOk() ? "ok" : result.getStatus());
-//        checkResult(result);
+        Result<Void> result = service.createReport(token, name, query);
+        log.info("createReport(): result={}", result.isOk() ? "ok" : result.getStatus());
+        checkResult(result);
     }
 
     @Autowired

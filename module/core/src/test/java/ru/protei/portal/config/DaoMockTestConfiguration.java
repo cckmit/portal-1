@@ -423,4 +423,9 @@ public class DaoMockTestConfiguration {
     public BootstrapAppDAO getBootstrapAppDAO() {
         return  mock( BootstrapAppDAO.class );
     }
+
+    @Bean
+    public DutyLogDAO getDutyLogDAO() {
+        return mock( DutyLogDAO.class );
+    }
 }

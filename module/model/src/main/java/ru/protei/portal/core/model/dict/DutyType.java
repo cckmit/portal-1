@@ -2,7 +2,7 @@ package ru.protei.portal.core.model.dict;
 
 import ru.protei.winter.core.utils.enums.HasId;
 
-public enum DutyType  implements HasId {
+public enum DutyType implements HasId {
 
     // дежурный 112 (безопасный город)
     BG(1),

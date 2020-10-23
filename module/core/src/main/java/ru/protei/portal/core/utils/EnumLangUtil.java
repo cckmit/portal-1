@@ -218,4 +218,70 @@ public class EnumLangUtil {
         }
         return "";
     }
+
+    public String dutyLogTypeLang(En_AbsenceReason absenceReason, String langCode) {
+        if (absenceReason == null) {
+            return "";
+        }
+        if (localizedLang == null) {
+            localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
+        }
+        switch (absenceReason) {
+            case PERSONAL_AFFAIR:
+                return localizedLang.get("absenceReasonPersonAffair");
+            case GUEST_PASS:
+                return localizedLang.get("absenceReasonGuestPass");
+            case BUSINESS_TRIP:
+                return localizedLang.get("absenceReasonBusinessTrip");
+            case LOCAL_BUSINESS_TRIP:
+                return localizedLang.get("absenceReasonLocalBusinessTrip");
+            case DISEASE:
+                return localizedLang.get("absenceReasonDisease");
+            case SICK_LEAVE:
+                return localizedLang.get("absenceReasonSickLeave");
+            case NIGHT_WORK:
+                return localizedLang.get("absenceReasonNightWork");
+            case DUTY:
+                return localizedLang.get("absenceReasonDuty");
+            case STUDY:
+                return localizedLang.get("absenceReasonStudy");
+            case REMOTE_WORK:
+                return localizedLang.get("absenceReasonRemoteWork");
+            case LEAVE:
+                return localizedLang.get("absenceReasonLeave");
+            case LEAVE_WITHOUT_PAY:
+                return localizedLang.get("absenceReasonLeaveWithoutPay");
+        }
+        return "";
+    }
+
+    public String dutyLogTypeLang(DutyType dutyType, String langCode) {
+        if (dutyType == null) {
+            return "";
+        }
+        if (localizedLang == null) {
+            localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
+        }
+        switch (dutyType) {
+            case BG:
+                return localizedLang.get("dutyTypeBG");
+            case IP:
+                return localizedLang.get("dutyTypeIP");
+            case BILLING:
+                return localizedLang.get("dutyTypeBilling");
+            case MOBILE:
+                return localizedLang.get("dutyTypeMobile");
+            case DPI:
+                return localizedLang.get("dutyTypeDPI");
+            case MKSP_VKS:
+                return localizedLang.get("dutyTypeMKSP_VKS");
+            case NGN:
+                return localizedLang.get("dutyTypeNGN");
+            case SORM:
+                return localizedLang.get("dutyTypeSORM");
+            case COV:
+                return localizedLang.get("dutyTypeCOV");
+        }
+        return "";
+    }
 }

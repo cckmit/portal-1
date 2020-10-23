@@ -933,6 +933,11 @@ public class MailNotificationProcessor {
         }
     }
 
+    @EventListener
+    public void onDutyLogReportEvent(DutyLogReportEvent event) {
+        log.info("DutyLogReportEvent title = {}", event.getTitle());
+    }
+
     // -----------------------
     // Birthdays notifications
     // -----------------------

@@ -440,4 +440,8 @@ public class DaoTestsConfiguration {
         return new BootstrapAppDAO_Impl();
     }
 
+    @Bean
+    public DutyLogDAO getDutyLogDAO() {
+        return new DutyLogDAO_Impl();
+    }
 }
