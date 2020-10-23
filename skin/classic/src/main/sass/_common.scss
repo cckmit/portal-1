@@ -5202,3 +5202,11 @@ table {
     width: max-content;
   }
 }
+
+.room-reservable-button-selector,
+.year-button-selector,
+.month-button-selector {
+  .dropdown-menu ul > li > a {
+    padding: 3px 10px;
+  }
+}

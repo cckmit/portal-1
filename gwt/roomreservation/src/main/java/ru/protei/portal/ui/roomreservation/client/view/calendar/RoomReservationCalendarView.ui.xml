@@ -11,13 +11,13 @@
             <div class="options p-r-15">
                 <selector:room.RoomReservableButtonSelector ui:field="roomSelector"
                                                             validation="false" hasNullValue="false"
-                                                            addStyleNames="inline-block align-middle m-r-5"/>
+                                                            addStyleNames="inline-block room-reservable-button-selector align-middle m-r-5"/>
                 <selector:year.YearButtonSelector ui:field="yearSelector"
                                                   validation="false" hasNullValue="false"
-                                                  addStyleNames="inline-block align-middle m-r-5"/>
+                                                  addStyleNames="inline-block align-middle year-button-selector m-r-5"/>
                 <selector:month.MonthButtonSelector ui:field="monthSelector"
                                                     validation="false" hasNullValue="false"
-                                                    addStyleNames="inline-block align-middle m-r-5"/>
+                                                    addStyleNames="inline-block align-middle month-button-selector m-r-5"/>
                 <h5 ui:field="dayAndName" class="semi-bold inline-block align-middle m-t-0 m-b-0 m-l-5"/>
                 <div class="btn-toolbar pull-right">
                     <div class="btn-group form-group">
