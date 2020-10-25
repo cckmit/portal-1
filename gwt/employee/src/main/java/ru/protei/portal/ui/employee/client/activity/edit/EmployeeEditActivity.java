@@ -515,7 +515,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
             return true;
         }
 
-        if (workerEntry.getContractAgreement()){
+        if (workerEntry.getContractAgreement() != null && workerEntry.getContractAgreement()){
             return false;
         }
 
