@@ -10,10 +10,9 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import ru.protei.portal.ui.common.client.widget.tab.base.AbstractNavItem;
 import ru.protei.portal.ui.common.client.widget.tab.base.TabHandler;
 
-public class TabWidgetNavItem extends Composite implements AbstractNavItem {
+public class TabWidgetNavItem extends Composite {
 
     public TabWidgetNavItem() {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -43,6 +42,10 @@ public class TabWidgetNavItem extends Composite implements AbstractNavItem {
         }
     }
 
+    public void setBadge(String badge) {
+        this.badge.setInnerText("(" + badge + ")");
+    }
+
     public void setTabNameDebugId(String debugId) {
         anchor.ensureDebugId(debugId);
     }
@@ -50,6 +53,7 @@ public class TabWidgetNavItem extends Composite implements AbstractNavItem {
     @UiHandler("anchor")
     public void anchorClick(ClickEvent event) {
         event.preventDefault();
+        event.stopPropagation();
         if (activity != null) {
             activity.onTabClicked(tabName);
         }
@@ -63,6 +67,8 @@ public class TabWidgetNavItem extends Composite implements AbstractNavItem {
     Element icon;
     @UiField
     SpanElement text;
+    @UiField
+    SpanElement badge;
 
     private String tabName;
     private TabHandler activity;

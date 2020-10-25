@@ -5079,6 +5079,30 @@ table {
     padding-bottom: 10px;
     padding-top: 10px;
     min-height: auto;
+
+    .nav-tabs .nav-item {
+      margin-right: 10px;
+    }
+
+    .nav-tabs > li > a {
+      padding: 0;
+    }
+
+    .nav-tabs-simple > li > a:after {
+      background-color: #333;
+    }
+
+    .nav-tabs-simple > li > a.active:after, .nav-tabs-simple > li > a:hover:after {
+      height: 0;
+    }
+
+    .nav-tabs-simple:after {
+      border: 0;
+    }
+
+    .nav-item > a {
+      opacity: 1;
+    }
   }
 
   .accordion-body {
@@ -5104,9 +5128,6 @@ table {
     }
 
     .card-header {
-      label {
-        border-bottom: 2px solid;
-      }
 
       padding-bottom: 0;
 
@@ -5117,7 +5138,11 @@ table {
         left: 20px;
         right: 16px;
         position: absolute;
-        bottom: 2px;
+        bottom: 0;
+      }
+
+      .nav-tabs-simple > li > a.active:after {
+        height: 2px;
       }
     }
   }

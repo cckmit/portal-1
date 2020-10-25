@@ -5,6 +5,7 @@
         <g:Anchor ui:field="anchor" href="#">
             <i ui:field="icon" class="tab-icon hide"/>
             <span ui:field="text"/>
+            <span ui:field="badge"/>
         </g:Anchor>
     </g:HTMLPanel>
 </ui:UiBinder>

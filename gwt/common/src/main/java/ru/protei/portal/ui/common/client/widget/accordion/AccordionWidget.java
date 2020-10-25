@@ -10,8 +10,8 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.widget.tab.base.Tab;
-import ru.protei.portal.ui.common.client.widget.accordion.navitem.AccordionWidgetNavItem;
 import ru.protei.portal.ui.common.client.widget.htmlpanel.ClickableHTMLPanel;
+import ru.protei.portal.ui.common.client.widget.tab.navitem.TabWidgetNavItem;
 import ru.protei.portal.ui.common.client.widget.tab.pane.TabWidgetPane;
 
 import java.util.*;
@@ -42,7 +42,7 @@ public class AccordionWidget extends Tab {
     public void setBadge(String tabName, String badge) {
         tabNameToNavItem.entrySet().forEach(entry -> {
             if (Objects.equals(tabName, entry.getKey())) {
-                ((AccordionWidgetNavItem)entry.getValue()).setBadge(badge);
+                ((TabWidgetNavItem)entry.getValue()).setBadge(badge);
             }
         });
     }
@@ -70,7 +70,7 @@ public class AccordionWidget extends Tab {
     @Override
     protected void addTab(TabWidgetPane pane) {
 
-        AccordionWidgetNavItem navItem = makeNavItem(pane);
+        TabWidgetNavItem navItem = makeNavItem(pane);
 
         navTabs.add(navItem);
         tabNameToNavItem.put(pane.getTabName(), navItem);
@@ -136,8 +136,8 @@ public class AccordionWidget extends Tab {
         localStorageService.set(key, String.valueOf(value));
     }
 
-    private AccordionWidgetNavItem makeNavItem(TabWidgetPane pane) {
-        AccordionWidgetNavItem navItem = new AccordionWidgetNavItem();
+    private TabWidgetNavItem makeNavItem(TabWidgetPane pane) {
+        TabWidgetNavItem navItem = new TabWidgetNavItem();
         navItem.setTabName(pane.getTabName());
         navItem.setActivity(this);
         navItem.setInActive();

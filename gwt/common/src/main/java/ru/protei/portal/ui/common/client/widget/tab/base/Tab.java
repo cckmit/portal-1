@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.tab.base;
 
 import com.google.gwt.user.client.ui.*;
+import ru.protei.portal.ui.common.client.widget.tab.navitem.TabWidgetNavItem;
 import ru.protei.portal.ui.common.client.widget.tab.pane.TabWidgetPane;
 
 import java.util.*;
@@ -48,7 +49,7 @@ public abstract class Tab extends Composite implements HasWidgets, TabHandler {
     }
 
     public void setTabNameDebugId(String tabName, String debugId) {
-        AbstractNavItem navItem = tabNameToNavItem.get(tabName);
+        TabWidgetNavItem navItem = tabNameToNavItem.get(tabName);
         if (navItem == null) return;
         navItem.setTabNameDebugId(debugId);
     }
@@ -61,7 +62,7 @@ public abstract class Tab extends Composite implements HasWidgets, TabHandler {
     }
 
     public void setTabVisible(String tabName, boolean isVisible) {
-        AbstractNavItem navItem = tabNameToNavItem.get(tabName);
+        TabWidgetNavItem navItem = tabNameToNavItem.get(tabName);
         if (navItem != null) {
             navItem.setVisible(isVisible);
         }
@@ -107,7 +108,7 @@ public abstract class Tab extends Composite implements HasWidgets, TabHandler {
     }
 
     private void setNavItemSelected(String tabName) {
-        for (Map.Entry<String, AbstractNavItem> entry : tabNameToNavItem.entrySet()) {
+        for (Map.Entry<String, TabWidgetNavItem> entry : tabNameToNavItem.entrySet()) {
             entry.getValue().setInActive();
             if (Objects.equals(tabName, entry.getKey())) {
                 entry.getValue().setActive();
@@ -138,7 +139,7 @@ public abstract class Tab extends Composite implements HasWidgets, TabHandler {
         clearTabs();
     }
 
-    protected Map<String, AbstractNavItem> tabNameToNavItem = new HashMap<>();
+    protected Map<String, TabWidgetNavItem> tabNameToNavItem = new HashMap<>();
     protected Map<String, TabWidgetPane> tabNameToPane = new HashMap<>();
     private String selectedTabName = null;
     private String currentTabName = null;

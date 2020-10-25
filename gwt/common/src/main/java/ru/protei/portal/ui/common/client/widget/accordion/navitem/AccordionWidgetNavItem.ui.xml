@@ -1,9 +1,0 @@
-<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
-    <g:HTMLPanel ui:field="root" styleName="p-r-5" tag="span">
-        <g:Anchor ui:field="anchor" href="#">
-            <label ui:field="text"/>
-            <label ui:field="badge"/>
-        </g:Anchor>
-    </g:HTMLPanel>
-</ui:UiBinder>

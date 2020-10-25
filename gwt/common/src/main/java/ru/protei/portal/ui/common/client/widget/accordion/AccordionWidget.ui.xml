@@ -6,7 +6,8 @@
             <div class="col-md-12">
                 <div ui:field="accordionContainer" class="card card-default accordion">
                     <htmlPanel:ClickableHTMLPanel ui:field="headerContainer" styleName="card-header">
-                        <g:HTMLPanel ui:field="navTabs" tag="span"/>
+                        <g:HTMLPanel ui:field="navTabs" tag="ul"
+                                     styleName="nav nav-tabs nav-tabs-simple d-none d-inline-flex"/>
                         <a ui:field="collapseButton" class="pull-right collapse-btn p-b-0 p-t-0" href="javascript:void(0)"/>
                     </htmlPanel:ClickableHTMLPanel>
 

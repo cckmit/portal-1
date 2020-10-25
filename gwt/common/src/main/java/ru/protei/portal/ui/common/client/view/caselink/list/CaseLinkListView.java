@@ -47,8 +47,8 @@ public class CaseLinkListView
     }
 
     @Override
-    public void setHeader(String value) {
-        //accordionWidget.setHeader(value);
+    public void setCountOfLinks(String tabName, String count) {
+        accordionWidget.setBadge(tabName, count);
     }
 
     @Override
@@ -60,6 +60,11 @@ public class CaseLinkListView
     @Override
     public void tabVisibility(String tabName, boolean isVisible) {
         accordionWidget.tabVisibility(tabName).setVisible(isVisible);
+    }
+
+    @Override
+    public void resetTabs() {
+        accordionWidget.selectFirstTab();
     }
 
     private void initDebugIds() {

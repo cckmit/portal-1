@@ -149,6 +149,7 @@ public abstract class CaseLinkListActivity
         });
 
         hideOrShowIfNoLinks();
+        view.resetTabs();
     }
 
     private void addYtLink( CaseLink caseLink ) {
@@ -268,9 +269,10 @@ public abstract class CaseLinkListActivity
         resetLinksContainerStateByLinksCount();
     }
 
-    //@ToDo set badge
     private void resetLinksContainerStateByLinksCount() {
-        //view.setHeader(lang.linkedWith() + (linksSet.size() == 0 ? "" : " (" + linksSet.size() + ")"));
+        bundleTypeToCaseLink.forEach((bundleType, links) -> {
+            view.setCountOfLinks(bundleTypeLang.getName(bundleType), String.valueOf(links.size()));
+        });
     }
 
     private boolean isCaseCreationMode() {

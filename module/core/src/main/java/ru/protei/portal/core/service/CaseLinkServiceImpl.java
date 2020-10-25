@@ -386,7 +386,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                             crossCrmLink.setCaseId(remoteId);
                             crossCrmLink.setRemoteId(link.getCaseId().toString());
                             crossCrmLink.setType(En_CaseLink.CRM);
-                            crossCrmLink.setBundleType(Objects.equals(link.getBundleType(), En_BundleType.PARENT_FOR) ? En_BundleType.SUBTASK : En_BundleType.LINKED_WITH);
+                            crossCrmLink.setBundleType(makeCrossBundleType(link.getBundleType()));
                             caseLinkDAO.persist(crossCrmLink);
                         }
                     }
@@ -416,6 +416,17 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                     return ok(createdLinkId);
             }
         });
+    }
+
+    private En_BundleType makeCrossBundleType(En_BundleType type) {
+        switch (type) {
+            case SUBTASK:
+                return En_BundleType.PARENT_FOR;
+            case PARENT_FOR:
+                return En_BundleType.SUBTASK;
+            default:
+                return En_BundleType.LINKED_WITH;
+        }
     }
 
     private Result<List<CaseLink>> getYoutrackLinks( Long caseId ) {

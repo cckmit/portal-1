@@ -15,9 +15,11 @@ public interface AbstractCaseLinkListView extends IsWidget {
 
     HasVisibility getContainerVisibility();
 
-    void setHeader(String value);
+    void setCountOfLinks(String tabName, String count);
 
     void addTabWidgetPane(TabWidgetPane tabWidgetPane);
 
     void tabVisibility(String tabName, boolean isVisible);
+
+    void resetTabs();
 }
