@@ -249,7 +249,6 @@ public class AbsenceServiceImpl implements AbsenceService {
     }
 
     @Override
-    @Transactional
     public Result<Void> createReport(AuthToken token, String name, AbsenceQuery query) {
 
         if (query == null || query.getDateRange() == null) {
