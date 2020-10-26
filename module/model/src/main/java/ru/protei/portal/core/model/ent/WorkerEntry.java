@@ -57,7 +57,7 @@ public class WorkerEntry extends AuditableObject {
     private String externalId;
 
     @JdbcColumn(name = "is_contract_agreement")
-    private Boolean isContractAgreement;
+    private boolean isContractAgreement;
 
 
     @Override
@@ -194,11 +194,11 @@ public class WorkerEntry extends AuditableObject {
         return activeFlag > 0;
     }
 
-    public Boolean getContractAgreement() {
+    public boolean getContractAgreement() {
         return isContractAgreement;
     }
 
-    public void setContractAgreement(Boolean contractAgreement) {
+    public void setContractAgreement(boolean contractAgreement) {
         isContractAgreement = contractAgreement;
     }
 }
