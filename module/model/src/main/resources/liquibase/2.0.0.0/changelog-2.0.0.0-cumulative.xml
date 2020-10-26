@@ -59,5 +59,6 @@
   <include file="2020-10-02-bootstrap-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-10-15-drop-uniq-instance_id-in-export_syb_entry-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-10-16-add-deadline-work_trigger-in-case-object-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-10-26-add-notnull-constraint-to-worker_entry-table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

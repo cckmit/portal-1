@@ -41,7 +41,7 @@ public class PositionEditItemView extends Composite implements AbstractPositionE
 
     @Override
     public void setContractAgreement(Boolean isContractAgreement) {
-        contractAgreement.setInnerText(isContractAgreement != null && isContractAgreement.equals(true) ? lang.yes() : lang.no());
+        contractAgreement.setInnerText(isContractAgreement.equals(true) ? lang.yes() : lang.no());
     }
 
     @Override
