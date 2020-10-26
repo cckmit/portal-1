@@ -5162,7 +5162,7 @@ table {
   position: absolute;
   display: block;
   float: left;
-  z-index: 160;
+  z-index: 1000;
 
   .dropdown-menu {
     position: relative;
@@ -5200,5 +5200,13 @@ table {
 .locale-selector {
   .dropdown-menu {
     width: max-content;
+  }
+}
+
+.room-reservable-button-selector,
+.year-button-selector,
+.month-button-selector {
+  .dropdown-menu ul > li > a {
+    padding: 3px 10px;
   }
 }

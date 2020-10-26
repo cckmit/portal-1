@@ -19,6 +19,7 @@ import ru.protei.portal.core.model.dict.En_WorkTrigger;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.*;
@@ -445,6 +446,11 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @Override
     public HasValue<Date> deadline() {
         return deadline;
+    }
+
+    @Override
+    public boolean isDeadlineEmpty() {
+        return HelperFunc.isEmpty(deadline.getInputValue());
     }
 
     @Override

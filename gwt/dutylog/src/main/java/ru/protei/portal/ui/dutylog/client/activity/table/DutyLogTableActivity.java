@@ -10,7 +10,6 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.DutyLog;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.DutyLogQuery;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
@@ -54,7 +53,7 @@ public abstract class DutyLogTableActivity
     public void onAuthSuccess ( AuthEvents.Success event ) {
         filterView.resetFilter();
 
-        filterView.date().setValue(new DateIntervalWithType(null, En_DateIntervalType.THIS_WEEK));
+        filterView.date().setValue(new DateIntervalWithType(null, En_DateIntervalType.THIS_WEEK_AND_BEYOND));
     }
 
     @Event

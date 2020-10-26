@@ -23,13 +23,7 @@ public class EmployeeCustomButtonSelector extends ButtonPopupSingleSelector<Pers
 
     @Override
     protected SelectorItem makeSelectorItem(PersonShortView value, String elementHtml ) {
-        PopupSelectorItem item = new PopupSelectorItem();
-        item.setName(elementHtml);
-        if (value != null) {
-            item.setIcon(value.isFired() ? "not-active" : "");
-            item.setIcon(value.isFired() ? "fa fa-ban ban" : "");
-        }
-        return item;
+        return PersonSelectorItemRenderer.makeSingleSelectorItem(value, elementHtml);
     }
 
     @Override

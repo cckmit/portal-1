@@ -136,6 +136,11 @@ public enum En_SortField {
     project_number("id"),
 
     /**
+     * project number
+     */
+    project_creation_date("CO.created"),
+
+    /**
      * ip address
      */
     ip_address("INET_ATON(ip_address)"),
@@ -205,6 +210,16 @@ public enum En_SortField {
      * Журнал дежурств date from
      */
     duty_log_date_from("duty_log.date_from"),
+
+    /**
+     * Журнал дежурств employee
+     */
+    duty_log_employee("duty_log.person_id"),
+
+    /**
+     * Журнал дежурств type
+     */
+    duty_log_type("duty_log.type"),
 
     /**
      * Просто значение

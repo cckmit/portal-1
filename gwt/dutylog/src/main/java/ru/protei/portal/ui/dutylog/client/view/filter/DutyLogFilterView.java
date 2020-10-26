@@ -29,7 +29,7 @@ public class DutyLogFilterView extends Composite implements AbstractDutyLogFilte
     @Inject
     public void onInit() {
         initWidget(outUiBinder.createAndBindUi(this));
-        date.fillSelector(En_DateIntervalType.allTypes());
+        date.fillSelector(En_DateIntervalType.dutyTypes());
         type.setModel(elementIndex -> {
             DutyType[] list = DutyType.values();
             if (list.length <= elementIndex) return null;
@@ -47,7 +47,7 @@ public class DutyLogFilterView extends Composite implements AbstractDutyLogFilte
     @Override
     public void resetFilter() {
         sortField.setValue(En_SortField.duty_log_date_from);
-        sortDir.setValue(false);
+        sortDir.setValue(true);
         employee.setValue(null);
         date.setValue(null);
     }
@@ -105,6 +105,7 @@ public class DutyLogFilterView extends Composite implements AbstractDutyLogFilte
     @UiHandler("resetBtn")
     public void onResetClicked(ClickEvent event) {
         activity.onResetFilterClicked();
+        fireFilterChanged();
     }
     private void fireFilterChanged() {
         activity.onFilterChanged();

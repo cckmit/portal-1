@@ -27,7 +27,7 @@
                 <person:EmployeeMultiSelector ui:field="employee"
                                               header="{lang.dutyLogEmployee}"
                                               addStyleNames="form-group col-md-12"
-                                              firedEmployeesVisible="true"/>
+                                              firedEmployeesVisible="false"/>
 
                 <div class="form-group col-12">
                     <label>

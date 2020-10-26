@@ -972,11 +972,7 @@ public class CaseServiceImpl implements CaseService {
     }
 
     private boolean isDeadlineValid(Long date) {
-        if (date == null || date > System.currentTimeMillis()) {
-            return true;
-        }
-
-        return true;
+        return date == null || date > System.currentTimeMillis();
     }
 
     private List<CaseLink> fillYouTrackInfo( List<CaseLink> caseLinks ) {

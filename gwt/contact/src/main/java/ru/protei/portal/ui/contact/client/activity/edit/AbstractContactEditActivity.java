@@ -7,7 +7,7 @@ public interface AbstractContactEditActivity {
     void onSaveClicked();
     void onCancelClicked();
     void onFireClicked();
-    void onChangeContactLogin();
+    void onChangeContactLoginInfo();
     void onChangeSendWelcomeEmail();
     void validateLimitedFields();
     void onCompanySelected();
