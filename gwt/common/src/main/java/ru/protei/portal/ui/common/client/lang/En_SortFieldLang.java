@@ -13,6 +13,7 @@ public class En_SortFieldLang {
         {
             case creation_date:
             case contract_creation_date:
+            case project_creation_date:
                 return lang.created();
             case name:
                 return lang.name();
@@ -22,6 +23,8 @@ public class En_SortFieldLang {
                 return lang.name();
             case project_name:
                 return lang.name();
+            case project_number:
+                return lang.projectNumber();
             case last_update:
                 return lang.updated();
             case person_full_name:

@@ -238,7 +238,7 @@ public class ReportControlServiceImpl implements ReportControlService {
                 return reportProject.writeReport(
                         buffer,
                         report,
-                        getQuery(report, CaseQuery.class),
+                        getQuery(report, ProjectQuery.class),
                         this::isCancel
                 );
             case CONTRACT:
@@ -359,7 +359,7 @@ public class ReportControlServiceImpl implements ReportControlService {
 
         if (En_ReportType.CASE_OBJECTS.equals(report.getReportType())) {
             modifyCaseQuery(report, caseQuery -> {
-                caseQuery.setCreatedRange(makeFixedRange(null, null));
+                caseQuery.setCreatedRange(null);
                 caseQuery.setModifiedRange(makeFixedRange(new Date(now.getTime() - days * CrmConstants.Time.DAY), now));
             });
         }

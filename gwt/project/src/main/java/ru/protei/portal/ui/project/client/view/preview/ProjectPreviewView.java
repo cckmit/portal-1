@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.ent.ProjectSla;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.En_RegionStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -83,6 +84,16 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     }
 
     @Override
+    public void setWorkCompletionDate(String value) {
+        workCompletionDate.setInnerText(value);
+    }
+
+    @Override
+    public void setPurchaseDate(String value) {
+        purchaseDate.setInnerText(value);
+    }
+
+    @Override
     public void setPauseDateValidity(String value) {
         pauseDate.setInnerText(value);
     }
@@ -141,6 +152,34 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         }
     }
 
+    @Override
+    public void setTechnicalSupportValidityVisible(boolean isVisible){
+        if (isVisible) {
+            technicalSupportValidityNotSetLabel.removeClassName(CrmConstants.Style.HIDE);
+        } else {
+            technicalSupportValidityNotSetLabel.addClassName(CrmConstants.Style.HIDE);
+        }
+    }
+
+    @Override
+    public void setWorkCompletionDateLabelVisible(boolean isVisible){
+        if (isVisible) {
+            workCompletionDateNotSetLabel.removeClassName(CrmConstants.Style.HIDE);
+        } else {
+            workCompletionDateNotSetLabel.addClassName(CrmConstants.Style.HIDE);
+        }
+    }
+
+    @Override
+    public void setPurchaseDateLabelVisible(boolean isVisible){
+        if (isVisible) {
+            purchaseDateNotSetLabel.removeClassName(CrmConstants.Style.HIDE);
+        } else {
+            purchaseDateNotSetLabel.addClassName(CrmConstants.Style.HIDE);
+        }
+    }
+
+
     @UiHandler( "header" )
     public void onFullScreenClicked ( ClickEvent event) {
         event.preventDefault();
@@ -198,6 +237,8 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         contracts.ensureDebugId(DebugIds.PROJECT_PREVIEW.CONTRACTS_CONTAINER);
         platform.ensureDebugId(DebugIds.PROJECT_PREVIEW.PLATFORM_LABEL);
         technicalSupportValidity.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.TECHNICAL_SUPPORT_VALIDITY_CONTAINER);
+        workCompletionDate.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.WORK_COMPLETION_DATE);
+        purchaseDate.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.PURCHASE_DATE);
         slaInputReadOnly.ensureDebugId(DebugIds.PROJECT_PREVIEW.SLA_INPUT);
     }
 
@@ -219,6 +260,10 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     SpanElement projectDirection;
     @UiField
     DivElement technicalSupportValidity;
+    @UiField
+    DivElement workCompletionDate;
+    @UiField
+    DivElement purchaseDate;
     @UiField
     SpanElement company;
     @UiField
@@ -248,6 +293,13 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     SlaInputReadOnly slaInputReadOnly;
     @UiField
     HTMLPanel slaContainer;
+
+    @UiField
+    SpanElement technicalSupportValidityNotSetLabel;
+    @UiField
+    SpanElement workCompletionDateNotSetLabel;
+    @UiField
+    SpanElement purchaseDateNotSetLabel;
 
     @Inject
     @UiField

@@ -28,15 +28,7 @@ public class EmployeeMultiSelector
 
     @Override
     protected SelectorItem<PersonShortView> makeSelectorItem(PersonShortView value, String elementHtml) {
-        PopupSelectableItem<PersonShortView> item = new PopupSelectableItem<>();
-
-        if (!CrmConstants.Employee.UNDEFINED.equals(value.getId()) && value.isFired()) {
-            item.setIcon("fa fa-ban ban m-r-5");
-        }
-
-        item.setElementHtml(elementHtml);
-        item.setSelected(isSelected(value));
-        return item;
+        return PersonSelectorItemRenderer.makeMultipleSelectorItem(value, elementHtml, isSelected(value));
     }
 
     @Override

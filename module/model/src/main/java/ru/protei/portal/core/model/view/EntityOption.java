@@ -78,13 +78,6 @@ public class EntityOption implements Serializable, HasLongId {
         return new EntityOption(company.getCname(), company.getId());
     }
 
-    public static EntityOption fromProductDirectionInfo( ProductDirectionInfo info ) {
-        if ( info == null ) {
-            return null;
-        }
-        return new EntityOption( info.name, info.id );
-    }
-
     public static EntityOption fromLocation( Location location ) {
         if ( location == null ) {
             return null;

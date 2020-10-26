@@ -11,7 +11,9 @@
              xmlns:issuestate="urn:import:ru.protei.portal.ui.common.client.widget.issuestate"
              xmlns:plan="urn:import:ru.protei.portal.ui.common.client.widget.selector.plan.selector"
              xmlns:issueimportance="urn:import:ru.protei.portal.ui.common.client.widget.issueimportance"
-             xmlns:timeelapsedtypeselector="urn:import:ru.protei.portal.ui.common.client.view.selector">
+             xmlns:timeelapsedtypeselector="urn:import:ru.protei.portal.ui.common.client.view.selector"
+             xmlns:worktrigger="urn:import:ru.protei.portal.ui.common.client.widget.selector.worktrigger"
+>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -92,6 +94,12 @@
                                          header="{lang.plan}"/>
             </div>
 
+            <worktrigger:WorkTriggerButtonMultiSelector ui:field="workTriggers"
+                                                        header="{lang.issueWorkTrigger}"
+                                                        addStyleNames="form-group col-md-4 resize-md-12"
+                                                        searchEnabled="false"
+
+            />
         </div>
         <div class="row">
             <g:HTMLPanel ui:field="searchPrivateContainer" styleName="form-group col-md-4 resize-md-12">
@@ -102,6 +110,11 @@
             <g:HTMLPanel ui:field="searchFavoriteContainer" styleName="form-group col-md-4 resize-md-12">
                 <label><ui:text from="{lang.issueFavorites}"/></label>
                 <threestate:ThreeStateButton ui:field="searchFavorite"/>
+            </g:HTMLPanel>
+
+            <g:HTMLPanel ui:field="overdueDeadlinesContainer" styleName="form-group col-md-4 resize-md-12">
+                <label><ui:text from="{lang.overdueDeadlines}"/></label>
+                <threestate:ThreeStateButton ui:field="overdueDeadlines"/>
             </g:HTMLPanel>
 
             <div ui:field="stateContainer" class="form-group col-md-8 resize-md-12">

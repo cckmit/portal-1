@@ -19,7 +19,7 @@
 
             <div ui:field="metaTable" class="form-group-attached">
                 <div class="row clearfix">
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <div class="form-group form-group-default">
                             <label>
                                 <ui:text from="{lang.projectState}"/>
@@ -31,7 +31,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <div class="form-group form-group-default">
                             <label>
                                 <ui:text from="{lang.projectCustomerType}"/>
@@ -39,7 +39,7 @@
                             <span ui:field="customerType"/>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group form-group-default">
                             <label>
                                 <ui:text from="{lang.projectCustomerCompany}"/>
@@ -49,7 +49,7 @@
                     </div>
                 </div>
                 <div class="row clearfix">
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <div class="form-group form-group-default">
                             <label>
                                 <ui:text from="{lang.projectRegion}"/>
@@ -57,7 +57,7 @@
                             <span ui:field="projectRegion"/>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <div class="form-group form-group-default">
                             <label>
                                 <ui:text from="{lang.projectDirection}"/>
@@ -65,7 +65,7 @@
                             <span ui:field="projectDirection"/>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group form-group-default">
                             <label>
                                 <ui:text from="{lang.projectProducts}"/>
@@ -74,16 +74,39 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="row clearfix">
-                    <div class="col-md-12">
+                    <div class="col-md-4">
                         <div class="form-group form-group-default">
                             <label>
                                 <ui:text from="{lang.technicalSupportValidity}"/>
                             </label>
                             <div ui:field="technicalSupportValidity"/>
+                            <span ui:field="technicalSupportValidityNotSetLabel" class="hide"><ui:text from="{lang.valueNotSet}"/></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group form-group-default">
+                            <label>
+                                <ui:text from="{lang.workCompletionDate}"/>
+                            </label>
+                            <div ui:field="workCompletionDate"/>
+                            <span ui:field="workCompletionDateNotSetLabel" class="hide"><ui:text from="{lang.valueNotSet}"/></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group form-group-default">
+                            <label>
+                                <ui:text from="{lang.purchaseDate}"/>
+                            </label>
+                            <div ui:field="purchaseDate"/>
+                            <span ui:field="purchaseDateNotSetLabel" class="hide"><ui:text from="{lang.valueNotSet}"/></span>
                         </div>
                     </div>
                 </div>
+
             </div>
 
             <div class="form-group small hint-text pre-formatted-info m-t-10" ui:field="description"/>

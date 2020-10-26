@@ -26,6 +26,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dto.CaseTagInfo;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.*;
@@ -203,13 +204,18 @@ public class TestPortalApiController extends BaseServiceTest {
 
         DevUnit devUnit = makeProduct("createIssueWithAutoOpenIssueWithCorrectProduct");
 
-        CaseObject project = createNewCaseObject(person);
-        project.setName("createIssueWithAutoOpenIssueWithCorrectProduct");
-        project.setInitiatorCompanyId(company.getId());
-        project.setType(En_CaseType.PROJECT);
-        project.setProductId(devUnit.getId());
+        CaseObject caseObject = createNewCaseObject(person);
+        caseObject.setName("createIssueWithAutoOpenIssueWithCorrectProduct");
+        caseObject.setInitiatorCompanyId(company.getId());
+        caseObject.setType(En_CaseType.PROJECT);
+        caseObject.setProductId(devUnit.getId());
 
-        Long projectId = caseObjectDAO.persist(project);
+        Long projectId = caseObjectDAO.persist(caseObject);
+
+        Project project = new Project();
+        project.setId(projectId);
+
+        projectDAO.persist(project);
 
         Platform platform = new Platform();
         platform.setName("createIssueWithAutoOpenIssueWithCorrectProduct");
@@ -221,15 +227,15 @@ public class TestPortalApiController extends BaseServiceTest {
 
         Long platformId = platformDAO.persist(platform);
 
-        CaseObject caseObject = createNewCaseObject(person);
-        caseObject.setName("createIssueWithAutoOpenIssueWithoutProduct");
-        caseObject.setInitiator(person);
-        caseObject.setInitiatorCompany(company);
-        caseObject.setPlatformId(platformId);
-        caseObject.setProductId(devUnit.getId());
+        CaseObject caseObjectFromDb = createNewCaseObject(person);
+        caseObjectFromDb.setName("createIssueWithAutoOpenIssueWithoutProduct");
+        caseObjectFromDb.setInitiator(person);
+        caseObjectFromDb.setInitiatorCompany(company);
+        caseObjectFromDb.setPlatformId(platformId);
+        caseObjectFromDb.setProductId(devUnit.getId());
 
         authService.makeThreadAuthToken( userLogin );
-        ResultActions actions = createPostResultAction("/api/cases/create", caseObject);
+        ResultActions actions = createPostResultAction("/api/cases/create", caseObjectFromDb);
         actions
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))

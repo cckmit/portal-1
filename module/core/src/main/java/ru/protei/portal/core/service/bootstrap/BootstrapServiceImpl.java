@@ -304,52 +304,6 @@ public class BootstrapServiceImpl implements BootstrapService {
         log.info("Correction company id in tags completed successfully");
     }
 
-    private void uniteSeveralProductsInProjectToComplex() {
-        CaseQuery caseQuery = new CaseQuery();
-        caseQuery.setType(En_CaseType.PROJECT);
-        caseQuery.setSortDir(En_SortDir.ASC);
-        caseQuery.setSortField(En_SortField.case_name);
-
-        List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
-
-        jdbcManyRelationsHelper.fill(projects, "products");
-
-        if (projects.isEmpty()) {
-            return;
-        }
-
-        projects = projects
-                .stream()
-                .filter(project -> project.getProducts() != null && project.getProducts().size() > 1)
-                .collect(toList());
-
-        if (projects.isEmpty()) {
-            return;
-        }
-
-        projects.forEach(project -> {
-            String complexName = project.getProducts()
-                    .stream()
-                    .map(DevUnit::getName)
-                    .reduce((name1, name2) -> name1 + " " + name2)
-                    .get();
-
-            DevUnit complex = new DevUnit();
-            complex.setName(complexName);
-            complex.setStateId(En_DevUnitState.ACTIVE.getId());
-            complex.setType(En_DevUnitType.COMPLEX);
-            complex.setChildren(project.getProducts().stream().filter(DevUnit::isProduct).collect(toList()));
-            complex.setCreated(new Date());
-
-            Long complexId = devUnitDAO.persist(complex);
-            complex.setId(complexId);
-            jdbcManyRelationsHelper.persist(complex, "children");
-
-            projectToProductDAO.removeAllProductsFromProject(project.getId());
-            projectToProductDAO.persist(new ProjectToProduct(project.getId(), complexId));
-        });
-    }
-
     private void migrateIpReservation() {
         log.info("Migrate subnets and reservedIps started");
 

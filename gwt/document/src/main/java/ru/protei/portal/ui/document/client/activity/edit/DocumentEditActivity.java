@@ -515,7 +515,7 @@ public abstract class DocumentEditActivity
         view.setDocumentCategoryValue(availableDocumentCategories);
         view.documentCategory().setValue(document.getType() == null ? null : document.getType().getDocumentCategory());
         view.documentType().setValue(document.getType());
-        view.members().setValue(CollectionUtils.stream(document.getMembers()).map(PersonShortView::fromPerson).collect(Collectors.toSet()));
+        view.members().setValue(CollectionUtils.stream(document.getMembers()).map(PersonShortView::fromShortNamePerson).collect(Collectors.toSet()));
         view.keywords().setValue(document.getKeywords());
         view.version().setValue(document.getVersion());
         view.inventoryNumber().setValue(document.getInventoryNumber());

@@ -62,6 +62,7 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
         }
 
         view.saveEnabled().setEnabled(false);
+        fireEvent(new NotifyEvents.Show(lang.reservedIpReservationStart(), NotifyEvents.NotifyType.INFO));
 
         ReservedIpRequest reservedIpRequest = fillReservedIpRequest();
 

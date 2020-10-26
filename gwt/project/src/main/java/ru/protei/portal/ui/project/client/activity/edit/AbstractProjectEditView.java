@@ -50,6 +50,8 @@ public interface AbstractProjectEditView extends IsWidget {
 
     HasEnabled saveEnabled();
 
+    HasEnabled productEnabled();
+
     HasWidgets getLinksContainer();
 
     HasVisibility addLinkButtonVisibility();
@@ -58,11 +60,19 @@ public interface AbstractProjectEditView extends IsWidget {
 
     HasValue<List<ProjectSla>> slaInput();
 
+    void setWorkCompletionDateValid(boolean valid);
+
+    void setTechnicalSupportDateValid(boolean valid);
+
+    HasValue<Date> workCompletionDate();
+
+    HasValue<Date> purchaseDate();
+
+    void setPurchaseDateValid(boolean valid);
+
     HasValidable slaValidator();
 
     void updateProductDirection(Long directionId);
-
-    void setDateValid(boolean valid);
 
     void showComments(boolean isShow);
     void showDocuments(boolean isShow);

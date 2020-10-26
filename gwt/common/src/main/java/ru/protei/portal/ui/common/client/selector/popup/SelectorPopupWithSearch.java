@@ -3,9 +3,7 @@ package ru.protei.portal.ui.common.client.selector.popup;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ScrollEvent;
-import com.google.gwt.event.dom.client.ScrollHandler;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -120,16 +118,6 @@ public class SelectorPopupWithSearch extends PopperComposite
         setAddButton(addVisible);
     }
 
-    @UiHandler( "search" )
-    public void onSearchInputChanged( InputEvent event ) {
-        changeSearchTimer.schedule(200);
-    }
-
-    @UiHandler("addButton")
-    public void onAddButtonClick( ClickEvent event) {
-        AddEvent.fire(this);
-    }
-
     @Override
     public void setNoElements(boolean isSearchResultEmpty, String noElementsMessage) {
         message.setVisible(isSearchResultEmpty && noElementsMessage != null);
@@ -139,6 +127,16 @@ public class SelectorPopupWithSearch extends PopperComposite
     @Override
     public void setAddButtonVisibility(boolean isVisible) {
         addButton.setVisible( isVisible );
+    }
+
+    @UiHandler( "search" )
+    public void onSearchInputChanged( InputEvent event ) {
+        changeSearchTimer.schedule(200);
+    }
+
+    @UiHandler("addButton")
+    public void onAddButtonClick( ClickEvent event) {
+        AddEvent.fire(this);
     }
 
     public void clearSearchField() {
@@ -204,7 +202,7 @@ public class SelectorPopupWithSearch extends PopperComposite
     }
 
     @UiField
-    HTMLPanel childContainer;
+    protected HTMLPanel childContainer;
 
     @UiField
     HTMLPanel root;

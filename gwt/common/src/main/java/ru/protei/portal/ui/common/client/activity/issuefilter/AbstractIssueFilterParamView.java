@@ -3,7 +3,6 @@ package ru.protei.portal.ui.common.client.activity.issuefilter;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.Widget;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_SortField;

@@ -177,7 +177,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "CASE_NAME", sqlTableAlias = "case_object")
     private String projectName;
 
-    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = Project.Columns.CUSTOMER_TYPE, sqlTableAlias = "case_object")
+    @JdbcJoinedColumn(localColumn = "project_id", table = "project", remoteColumn = "id", mappedColumn = Project.Columns.CUSTOMER_TYPE, sqlTableAlias = "project")
     @JdbcEnumerated(EnumType.ID)
     private En_CustomerType projectCustomerType;
 

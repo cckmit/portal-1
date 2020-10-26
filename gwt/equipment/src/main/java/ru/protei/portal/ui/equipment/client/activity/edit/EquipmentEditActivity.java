@@ -154,8 +154,8 @@ public abstract class EquipmentEditActivity
             return;
         }
 
-        projectService.getProjectLeader(project.getId(), new FluentCallback<PersonProjectMemberView>()
-                .withSuccess(personProjectMemberView -> view.manager().setValue(personProjectMemberView))
+        projectService.getProjectLeader(project.getId(), new FluentCallback<PersonShortView>()
+                .withSuccess(view.manager()::setValue)
         );
     }
 

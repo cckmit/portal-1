@@ -33,6 +33,8 @@ public class ContractQuery extends BaseQuery {
 
     private List<Long> parentContractIds;
 
+    private List<Long> curatorIds;
+
     public Long getDirectionId() {
         return directionId;
     }
@@ -121,6 +123,14 @@ public class ContractQuery extends BaseQuery {
         this.parentContractIds = parentContractIds;
     }
 
+    public List<Long> getCuratorIds() {
+        return curatorIds;
+    }
+
+    public void setCuratorIds(List<Long> curatorIds) {
+        this.curatorIds = curatorIds;
+    }
+
     @Override
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
@@ -133,6 +143,7 @@ public class ContractQuery extends BaseQuery {
                 isNotEmpty(caseTagsIds) ||
                 isNotEmpty(managerIds) ||
                 isNotEmpty(contractorIds) ||
+                isNotEmpty(curatorIds) ||
                 isNotEmpty(organizationIds) ||
                 isNotEmpty(parentContractIds);
     }
@@ -149,6 +160,7 @@ public class ContractQuery extends BaseQuery {
                 ", caseTagsIds=" + caseTagsIds +
                 ", managerIds=" + managerIds +
                 ", contractorIds=" + contractorIds +
+                ", curatorIds=" + curatorIds +
                 ", organizationIds=" + organizationIds +
                 ", parentContractIds=" + parentContractIds +
                 '}';

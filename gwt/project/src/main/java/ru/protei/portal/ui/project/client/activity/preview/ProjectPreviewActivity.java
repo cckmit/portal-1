@@ -116,7 +116,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.setName( value.getName() );
         view.setCreatedBy(lang.createBy(value.getCreator().getDisplayShortName(), DateFormatter.formatDateTime(value.getCreated())));
         view.setState( value.getState().getId() );
-        view.setDirection( value.getProductDirection() == null ? "" : value.getProductDirection().getDisplayText() );
+        view.setDirection( value.getProductDirectionEntityOption() == null ? "" : value.getProductDirectionEntityOption().getDisplayText() );
         view.setDescription( value.getDescription() == null ? "" : value.getDescription() );
         view.setRegion( value.getRegion() == null ? "" : value.getRegion().getDisplayText() );
         view.setCompany(value.getCustomer() == null ? "" : value.getCustomer().getCname());
@@ -143,6 +143,11 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.slaInputReadOnly().setValue(project.getProjectSlas());
         view.slaContainerVisibility().setVisible(isSlaContainerVisible(project.getProjectSlas()));
         view.setTechnicalSupportValidity(project.getTechnicalSupportValidity() == null ? null : DateTimeFormat.getFormat("dd.MM.yyyy").format(project.getTechnicalSupportValidity()));
+        view.setTechnicalSupportValidityVisible(project.getTechnicalSupportValidity() == null);
+        view.setWorkCompletionDateLabelVisible(project.getWorkCompletionDate() == null);
+        view.setPurchaseDateLabelVisible(project.getPurchaseDate() == null);
+        view.setWorkCompletionDate(project.getWorkCompletionDate() == null ? null : DateTimeFormat.getFormat("dd.MM.yyyy").format(project.getWorkCompletionDate()));
+        view.setPurchaseDate(project.getPurchaseDate() == null ? null : DateTimeFormat.getFormat("dd.MM.yyyy").format(project.getPurchaseDate()));
         view.setPauseDateValidity(project.getPauseDate() == null ? "" : lang.projectPauseDate(DateTimeFormat.getFormat("dd.MM.yyyy").format(new Date(project.getPauseDate()))));
 
         if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_VIEW)) {

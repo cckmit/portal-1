@@ -21,7 +21,8 @@ import java.util.List;
  */
 public interface TemplateService {
     PreparedTemplate getCrmEmailNotificationBody(
-            AssembledCaseEvent caseObject, List<CaseComment> caseComments, Collection<Attachment> attachments, DiffCollectionResult<LinkData> mergeLinks, String urlTemplate, Collection<String> recipients);
+            AssembledCaseEvent caseObject, List<CaseComment> caseComments, Collection<Attachment> attachments,
+            DiffCollectionResult<LinkData> mergeLinks, String urlTemplate, Collection<String> recipients, EnumLangUtil enumLangUtil);
 
     PreparedTemplate getCrmEmailNotificationSubject( AssembledCaseEvent event, Person currentPerson );
 
@@ -99,4 +100,6 @@ public interface TemplateService {
     PreparedTemplate getBirthdaysNotificationSubject(Date from, Date to);
     PreparedTemplate getBirthdaysNotificationBody(List<EmployeeShortView> employees, Collection<String> recipients);
 
+    PreparedTemplate getNRPENonAvailableIpsNotificationSubject();
+    PreparedTemplate getNRPENonAvailableIpsNotificationBody(List<String> nonAvailableIps, Collection<String> recipients);
 }

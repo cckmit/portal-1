@@ -8,7 +8,13 @@ import ru.protei.winter.core.utils.duration.DurationUtils;
 import ru.protei.winter.core.utils.duration.IncorrectDurationException;
 
 import java.net.Inet4Address;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 
 /**
  * Created by michael on 31.05.17.
@@ -35,7 +41,8 @@ public class PortalConfigData {
     private final LdapConfig ldapConfig;
     private final MarkupHelpLink markupHelpLink;
     private final UiConfig uiConfig;
-    private final MailReceiverConfig mailReceiverConfig;
+    private final MailCommentConfig mailCommentConfig;
+    private final NRPEConfig nrpeConfig;
 
     private final String loginSuffixConfig;
     private final boolean taskSchedulerEnabled;
@@ -61,7 +68,8 @@ public class PortalConfigData {
         ldapConfig = new LdapConfig(wrapper);
         markupHelpLink = new MarkupHelpLink(wrapper);
         uiConfig = new UiConfig(wrapper);
-        mailReceiverConfig = new MailReceiverConfig(wrapper);
+        mailCommentConfig = new MailCommentConfig(wrapper);
+        nrpeConfig = new NRPEConfig(wrapper);
 
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
         taskSchedulerEnabled = wrapper.getProperty("task.scheduler.enabled", Boolean.class,false);
@@ -144,8 +152,12 @@ public class PortalConfigData {
         return uiConfig;
     }
 
-    public MailReceiverConfig getMailReceiver() {
-        return mailReceiverConfig;
+    public MailCommentConfig getMailCommentConfig() {
+        return mailCommentConfig;
+    }
+
+    public NRPEConfig getNrpeConfig() {
+        return nrpeConfig;
     }
 
     public boolean isTaskSchedulerEnabled() {
@@ -790,15 +802,30 @@ public class PortalConfigData {
         }
     }
 
-    public static class MailReceiverConfig {
+    public static class MailCommentConfig {
         final String user;
         final String pass;
         final String host;
 
-        public MailReceiverConfig(PropertiesWrapper properties) {
-            user = properties.getProperty("imap.user", "portal@protei.ru");
+        final boolean enable;
+        final List<String> blackList;
+        final boolean enableForwardMail;
+        final String forwardMail;
+
+        public MailCommentConfig(PropertiesWrapper properties) {
+            user = properties.getProperty("imap.user", "crm@protei.ru");
             pass = properties.getProperty("imap.pass");
             host = properties.getProperty("imap.host", "imap.protei.ru");
+
+            enable = properties.getProperty("mail.comment.enable", Boolean.class, false);
+            String temp = properties.getProperty("mail.comment.subject.black.list", "");
+            if (isNotEmpty(temp)) {
+                blackList = Arrays.stream(temp.split(",")).collect(Collectors.toList());
+            } else {
+                blackList = new ArrayList<>();
+            }
+            enableForwardMail = properties.getProperty("mail.comment.forward.enable", Boolean.class, false);
+            forwardMail = properties.getProperty("mail.comment.forward.email", "support@protei.ru");
         }
 
         public String getUser() {
@@ -811,6 +838,52 @@ public class PortalConfigData {
 
         public String getHost() {
             return host;
+        }
+
+        public boolean isEnable() {
+            return enable;
+        }
+
+        public List<String> getBlackList() {
+            return blackList;
+        }
+
+        public String getForwardMail() {
+            return forwardMail;
+        }
+
+        public boolean isEnableForwardMail() {
+            return enableForwardMail;
+        }
+    }
+
+    public static class NRPEConfig {
+        final String template;
+        final Boolean enable;
+        final List<String> adminMails;
+
+        public NRPEConfig(PropertiesWrapper properties) {
+            this.template = properties.getProperty("nrpe.template",
+                    "/usr/lib64/nagios/plugins/check_nrpe -H router.protei.ru -c check_arping_lan -a %s ; echo $?");
+            this.enable = properties.getProperty("nrpe.enable", Boolean.class, false);
+            String temp = properties.getProperty("nrpe.admin.mails");
+            if (isNotEmpty(temp)) {
+                adminMails = Arrays.stream(temp.split(",")).collect(Collectors.toList());
+            } else {
+                adminMails = new ArrayList<>();
+            }
+        }
+
+        public String getTemplate() {
+            return template;
+        }
+
+        public Boolean getEnable() {
+            return enable;
+        }
+
+        public List<String> getAdminMails() {
+            return adminMails;
         }
     }
 

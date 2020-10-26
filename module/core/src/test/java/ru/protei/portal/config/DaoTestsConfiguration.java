@@ -305,8 +305,8 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
-    public ProjectDAO getProjectEntityDAO() {
-        return new ProjectEntityDAO_Impl();
+    public ProjectDAO getProjectDAO() {
+        return new ProjectDAO_Impl();
     }
 
     @Bean

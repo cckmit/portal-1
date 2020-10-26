@@ -1,12 +1,10 @@
 package ru.protei.portal.ui.common.client.widget.selector.login;
 
 import com.google.gwt.user.client.ui.HasVisibility;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.UserLoginShortView;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
-import ru.protei.portal.ui.common.client.selector.SelectorPopup;
 import ru.protei.portal.ui.common.client.selector.popup.item.PopupUserLoginSelectorItem;
 import ru.protei.portal.ui.common.client.util.AvatarUtils;
 import ru.protei.portal.ui.common.client.widget.popupselector.PopupSingleSelector;
@@ -18,8 +16,6 @@ import static ru.protei.portal.core.model.util.CrmConstants.DEFAULT_SELECTOR_PAG
 public class UserLoginSelector extends PopupSingleSelector<UserLoginShortView> implements HasVisibility {
     public UserLoginSelector() {
         setPageSize(DEFAULT_SELECTOR_PAGE_SIZE);
-        setSearchEnabled(false);
-        getPopup().addStyleName("user-login-selector");
     }
 
     public void clearAndFill() {

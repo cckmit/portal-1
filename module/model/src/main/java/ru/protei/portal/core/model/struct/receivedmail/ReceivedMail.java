@@ -1,9 +1,9 @@
 package ru.protei.portal.core.model.struct.receivedmail;
 
 public class ReceivedMail {
-    private Long caseNo;
-    private String senderEmail;
-    private String content;
+    private final Long caseNo;
+    private final String senderEmail;
+    private final String content;
 
     public ReceivedMail(Long caseNo, String senderEmail, String content) {
         this.caseNo = caseNo;
