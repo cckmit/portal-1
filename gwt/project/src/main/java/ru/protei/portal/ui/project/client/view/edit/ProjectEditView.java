@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
+import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.UiConstants;
@@ -25,6 +26,7 @@ import ru.protei.portal.ui.common.client.widget.selector.company.CompanyFormSele
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.plan.selector.PlanMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.region.RegionFormSelector;
@@ -144,6 +146,12 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     }
 
     @Override
+    public HasEnabled productEnabled() {
+        return product;
+    }
+
+
+    @Override
     public HasWidgets getLinksContainer() {
         return linksContainer;
     }
@@ -164,6 +172,31 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     }
 
     @Override
+    public HasValue<Date> workCompletionDate() {
+        return workCompletionDate;
+    }
+
+    @Override
+    public HasValue<Date> purchaseDate() {
+        return purchaseDate;
+    }
+
+    @Override
+    public void setTechnicalSupportDateValid(boolean valid) {
+        technicalSupportValidity.markInputValid(valid);
+    }
+
+    @Override
+    public void setWorkCompletionDateValid(boolean valid) {
+        workCompletionDate.markInputValid(valid);
+    }
+
+    @Override
+    public void setPurchaseDateValid(boolean valid) {
+        purchaseDate.markInputValid(valid);
+    }
+
+    @Override
     public HasValidable slaValidator() {
         return slaInput;
     }
@@ -171,11 +204,6 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     @Override
     public void updateProductDirection(Long directionId) {
         product.setDirectionId(directionId);
-    }
-
-    @Override
-    public void setDateValid(boolean valid) {
-        technicalSupportValidity.markInputValid(valid);
     }
 
     @UiHandler("saveButton")
@@ -224,6 +252,11 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     }
 
     @Override
+    public HasValue<Set<PlanOption>> plans() {
+        return plans;
+    }
+
+    @Override
     public HasValue<Set<EntityOption>> subcontractors() {
         return subcontractors;
     }
@@ -266,6 +299,8 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         addLinkButton.ensureDebugId(DebugIds.PROJECT.LINKS_BUTTON);
         slaInput.setEnsureDebugId(DebugIds.PROJECT.SLA_INPUT);
         technicalSupportValidity.setEnsureDebugId(DebugIds.PROJECT.TECHNICAL_SUPPORT_VALIDITY_CONTAINER);
+        workCompletionDate.setEnsureDebugId(DebugIds.PROJECT.WORK_COMPLETION_DATE);
+        purchaseDate.setEnsureDebugId(DebugIds.PROJECT.PURCHASE_DATE);
         subcontractors.setAddEnsureDebugId(DebugIds.PROJECT.SUBCONTRACTOR_SELECTOR_ADD_BUTTON);
         subcontractors.setClearEnsureDebugId(DebugIds.PROJECT.SUBCONTRACTOR_SELECTOR_CLEAR_BUTTON);
         subcontractors.setItemContainerEnsureDebugId(DebugIds.PROJECT.SUBCONTRACTOR_SELECTOR_ITEM_CONTAINER);
@@ -274,68 +309,62 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
 
     @UiField
     HTMLPanel root;
-
     @UiField
     Label number;
-
     @UiField
     ValidableTextBox projectName;
-
     @UiField
     TextArea description;
-
     @Inject
     @UiField(provided = true)
     TeamSelector team;
-
     @Inject
     @UiField( provided = true )
     ProductDirectionFormSelector productDirection;
-
     @Inject
     @UiField( provided = true )
     RegionStateFormSelector projectState;
-
     @Inject
     @UiField( provided = true )
     RegionFormSelector projectRegion;
-
     @Inject
     @UiField(provided = true)
     CompanyFormSelector company;
-
     @Inject
     @UiField(provided = true)
     DevUnitFormSelector product;
-
     @Inject
     @UiField(provided = true)
     CustomerFormSelector customerType;
-
     @Inject
     @UiField(provided = true)
     SlaInput slaInput;
-
     @Inject
     @UiField(provided = true)
     SinglePicker technicalSupportValidity;
-
+    @Inject
+    @UiField(provided = true)
+    SinglePicker workCompletionDate;
+    @Inject
+    @UiField(provided = true)
+    SinglePicker purchaseDate;
     @UiField
     HTMLPanel pauseDateContainer;
     @Inject
     @UiField(provided = true)
     SinglePicker pauseDate;
+    @Inject
+    @UiField(provided = true)
+    PlanMultiSelector plans;
 
     @UiField
     DivElement comments;
     @UiField
     HTMLPanel commentsContainer;
-
     @UiField
     DivElement documents;
     @UiField
     HTMLPanel documentsContainer;
-
     @UiField
     HTMLPanel linksContainer;
 
@@ -351,11 +380,9 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     Button saveButton;
     @UiField
     Button cancelButton;
-
     @Inject
     @UiField
     Lang lang;
-
     @Inject
     En_RegionStateLang regionStateLang;
 

@@ -22,14 +22,13 @@ import ru.protei.portal.core.service.events.EventProjectAssemblerService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.getFirst;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 /**
  * Created by bondarenko on 23.01.17.
@@ -144,16 +143,24 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     @Override
     public Result<List<Attachment>> getAttachmentsByCaseId( AuthToken token, En_CaseType caseType, Long caseId) {
-        if (En_CaseType.CRM_SUPPORT.equals(caseType) && !policyService.hasGrantAccessFor(token.getRoles(), En_Privilege.ISSUE_VIEW)) {
-            return ok(attachmentDAO.getPublicAttachmentsByCaseId(caseId));
+        if (hasAccessForPrivateAttachments(token, caseType)) {
+            return ok(attachmentDAO.getAttachmentsByCaseId(caseId).stream().distinct().collect(Collectors.toList()));
         }
 
-        return ok(attachmentDAO.getAttachmentsByCaseId(caseId));
+        return ok(attachmentDAO.getPublicAttachmentsByCaseId(caseId).stream().distinct().collect(Collectors.toList()));
     }
 
     @Override
     public Result<List<Attachment>> getAttachments( AuthToken token, En_CaseType caseType, List<Long> ids) {
-        return ok(attachmentDAO.getListByKeys(ids));
+        if (isEmpty(ids)) {
+            return ok(new ArrayList<>());
+        }
+
+        if (hasAccessForPrivateAttachments(token, caseType)) {
+            return ok(attachmentDAO.getListByKeys(ids).stream().distinct().collect(Collectors.toList()));
+        }
+
+        return ok(attachmentDAO.getPublicAttachmentsByIds(ids).stream().distinct().collect(Collectors.toList()));
     }
 
     @Override
@@ -188,10 +195,22 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     @Override
     public Result<Attachment> getAttachmentByExtLink( String extLink ) {
-        Attachment attachment = attachmentDAO.getByCondition("ext_link = ?", Collections.singletonList(extLink));
-        if (attachment == null) {
+        List<Attachment> attachments = attachmentDAO.getListByCondition("ext_link = ?", Collections.singletonList(extLink));
+        if (isEmpty(attachments)) {
             return error( En_ResultStatus.NOT_FOUND);
         }
-        return ok( attachment );
+        return ok( getFirst(attachments) );
+    }
+
+    private boolean hasAccessForPrivateAttachments(AuthToken token, En_CaseType caseType) {
+        if (!En_CaseType.CRM_SUPPORT.equals(caseType)) {
+            return true;
+        }
+
+        if (policyService.hasGrantAccessFor(token.getRoles(), En_Privilege.ISSUE_VIEW)) {
+            return true;
+        }
+
+        return false;
     }
 }

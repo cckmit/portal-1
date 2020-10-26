@@ -15,6 +15,7 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
@@ -302,6 +303,12 @@ public class WorkerController {
 
                     convert(rec, person);
 
+                    String email = new PlainContactInfoFacade(person.getContactInfo()).getEmail();
+                    if (isEmailExists(person.getId(), email)){
+                        logger.debug("addWorker(): worker with email={} already exists", email);
+                        return error(En_ResultStatus.EMPLOYEE_EMAIL_ALREADY_EXIST, En_ErrorCode.EMAIL_ALREADY_EXIST.getMessage());
+                    }
+
                     person.setFired(false);
                     person.setDeleted(false);
 
@@ -314,7 +321,13 @@ public class WorkerController {
 
                     List<UserLogin> userLogins = operationData.account();
                     if (isEmpty(userLogins)) {
-                        UserLogin userLogin = createLDAPAccount(person);
+
+                        Result<UserLogin> userLoginResult = createLDAPAccount(person);
+                        if (userLoginResult.isError()){
+                            return error(userLoginResult.getStatus(), userLoginResult.getMessage());
+                        }
+
+                        UserLogin userLogin = userLoginResult.getData();
                         if (userLogin != null) {
                             userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
                             saveAccount(userLogin);
@@ -963,23 +976,24 @@ public class WorkerController {
         return position;
     }
 
-    private UserLogin createLDAPAccount(Person person) throws Exception {
+    private Result<UserLogin> createLDAPAccount(Person person) throws Exception {
 
         ContactItem email = person.getContactInfo().findFirst(En_ContactItemType.EMAIL, En_ContactDataAccess.PUBLIC);
         if (!email.isEmpty() && HelperFunc.isNotEmpty(email.value())) {
             String login = email.value().substring(0, email.value().indexOf("@"));
             if (!userLoginDAO.isUnique(login.trim())) {
                 logger.debug("error: Login already exist.");
-                return null;
+                return error(En_ResultStatus.LOGIN_ALREADY_EXIST, En_ErrorCode.LOGIN_ALREADY_EXIST.getMessage());
             }
 
             UserLogin userLogin = userLoginDAO.createNewUserLogin(person);
             userLogin.setUlogin(login.trim());
             userLogin.setAuthType(En_AuthType.LDAP);
             userLogin.setRoles(new HashSet<>(userRoleDAO.getDefaultEmployeeRoles()));
-            return userLogin;
+            return ok(userLogin);
         }
-        return null;
+
+        return ok();
     }
 
     private String makeFileName(Long id) {
@@ -1508,6 +1522,12 @@ public class WorkerController {
 
                     convert(rec, person);
 
+                    String email = new PlainContactInfoFacade(person.getContactInfo()).getEmail();
+                    if (isEmailExists(person.getId(), email)){
+                        logger.debug("addWorker(): worker with email={} already exists", email);
+                        return error(En_ResultStatus.EMPLOYEE_EMAIL_ALREADY_EXIST, En_ErrorCode.EMAIL_ALREADY_EXIST.getMessage());
+                    }
+
                     if (rec.isFired() || rec.isDeleted()) {
 
                         workerEntryDAO.remove(worker);
@@ -1552,7 +1572,13 @@ public class WorkerController {
                     }*/
 
                     if (isEmpty(userLogins)) {
-                        UserLogin userLogin = createLDAPAccount(person);
+                        Result<UserLogin> userLoginResult = createLDAPAccount(person);
+                        if (userLoginResult.isError()){
+                            return error(userLoginResult.getStatus(), userLoginResult.getMessage());
+                        }
+
+                         UserLogin userLogin = userLoginResult.getData();
+
                         if (userLogin != null) {
                             userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
                             saveAccount(userLogin);
@@ -1703,4 +1729,27 @@ public class WorkerController {
 
         youtrackService.createIssue( ADMIN_PROJECT_NAME, summary, description );
     }
+
+    private boolean isEmailExists(Long personId, String email) {
+
+        if (email == null) {
+            return false;
+        }
+
+        List<Person> employeeByEmail = personDAO.findEmployeeByEmail(email);
+
+        if (CollectionUtils.isNotEmpty(employeeByEmail)){
+            if (personId == null) {
+                return true;
+            }
+
+            if (employeeByEmail.stream()
+                    .noneMatch(personFromDB -> personFromDB.getId().equals(personId))){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 }

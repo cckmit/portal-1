@@ -1,9 +1,6 @@
 package ru.protei.portal.core.service;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.safety.Whitelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +26,7 @@ import ru.protei.portal.core.model.struct.ReplaceLoginWithUsernameInfo;
 import ru.protei.portal.core.model.struct.receivedmail.ReceivedMail;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseCommentShortView;
+import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
@@ -41,6 +39,8 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.access.ProjectAccessUtil.canAccessProject;
+import static ru.protei.portal.core.access.ProjectAccessUtil.canAccessProjectPrivateElements;
 import static ru.protei.portal.core.model.dict.En_CaseType.CRM_SUPPORT;
 import static ru.protei.portal.core.model.dict.En_CaseType.PROJECT;
 import static ru.protei.portal.core.model.dict.En_Privilege.ISSUE_EDIT;
@@ -55,7 +55,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             return error(checkAccessStatus);
         }
         CaseCommentQuery query = new CaseCommentQuery(caseObjectId);
-        applyFilterByScope(token, query);
+        applyFilterByScope(token, caseType, query);
 
         return getList(query);
     }
@@ -66,7 +66,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         if (checkAccessStatus != null) {
             return error(checkAccessStatus);
         }
-        applyFilterByScope(token, query);
+        applyFilterByScope(token, caseType, query);
 
         return ok(caseCommentShortViewDAO.getSearchResult(query));
     }
@@ -130,7 +130,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             throw new ResultStatusException(checkAccessStatus);
         }
 
-        if (caseType == CRM_SUPPORT && prohibitedPrivateComment(token, comment)) {
+        if (caseType == CRM_SUPPORT && !allowedPrivateComment(token, caseType, comment)) {
             throw new ResultStatusException(En_ResultStatus.PROHIBITED_PRIVATE_COMMENT);
         }
 
@@ -236,7 +236,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             throw new ResultStatusException(checkAccessStatus);
         }
 
-        if (caseType == CRM_SUPPORT && prohibitedPrivateComment(token, comment)) {
+        if (caseType == CRM_SUPPORT && !allowedPrivateComment(token, caseType, comment)) {
             throw new ResultStatusException(En_ResultStatus.PROHIBITED_PRIVATE_COMMENT);
         }
 
@@ -530,6 +530,206 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         return replaceLoginWithUsername(comments, CaseComment::getText, this::replaceTextAndGetComment);
     }
 
+    @Override
+    @Transactional
+    public Result<Boolean> addCommentReceivedByMail(ReceivedMail receivedMail) {
+        if (receivedMail.getCaseNo() == null || receivedMail.getSenderEmail() == null) {
+            log.warn("addCommentsReceivedByMail(): no case no or sender mail receivedMail ={}", receivedMail);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        List<Person> persons = personDAO.findContactByEmail(receivedMail.getSenderEmail());
+        if (persons.isEmpty()) {
+            log.warn("addCommentsReceivedByMail(): no found person person by mail ={}", receivedMail.getSenderEmail());
+            return error(En_ResultStatus.USER_NOT_FOUND);
+        }
+
+        if (persons.size() > 1) {
+            log.warn("addCommentsReceivedByMail(): more than one found person by mail ={}", receivedMail.getSenderEmail());
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
+        Person person = persons.get(0);
+        List<UserLogin> userLogins = userLoginDAO.findByPersonId( person.getId() );
+        if (userLogins.isEmpty()) {
+            log.warn("addCommentsReceivedByMail(): no found user login by email ={}", receivedMail.getSenderEmail());
+            return error(En_ResultStatus.USER_NOT_FOUND);
+        }
+
+        jdbcManyRelationsHelper.fill( userLogins, "roles" );
+        if (stream(userLogins)
+                .noneMatch(userLogin -> policyService.hasPrivilegeFor(ISSUE_EDIT, userLogin.getRoles()))) {
+            log.warn("addCommentsReceivedByMail(): no privilege for create comment ={}", receivedMail.getSenderEmail());
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
+        CaseObject caseObject = caseObjectDAO.getCaseByNumber(CRM_SUPPORT, receivedMail.getCaseNo());
+        if (caseObject == null) {
+            log.warn("addCommentsReceivedByMail(): no found case for case no ={}", receivedMail.getCaseNo());
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        boolean isCustomer = !companyDAO.isEmployeeInHomeCompanies(person.getCompanyId());
+        if (isCustomer && caseObject.isPrivateCase()) {
+            log.warn("addCommentsReceivedByMail(): private case, forbidden for customer company ={}", person.getCompanyId());
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
+        if (isCustomer && !getCompanyAndChildIds(person.getCompanyId()).contains(caseObject.getInitiatorCompanyId())) {
+            log.warn("addCommentsReceivedByMail(): case is not owned customer company, forbidden for customer, company = {}", person.getCompanyId());
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
+        log.info("addCommentsReceivedByMail(): process receivedMail={}", receivedMail);
+        CaseComment comment = createComment(caseObject, person, receivedMail.getContent());
+        caseCommentDAO.persist(comment);
+
+        boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( comment.getCaseId() ) );
+
+        return ok(true).publishEvent( new CaseCommentEvent( this, ServiceModule.GENERAL, person.getId(), comment.getCaseId(), isEagerEvent,
+                null, comment, null) );
+    }
+
+    private CaseComment createComment(CaseObject caseObject, Person person, String comment) {
+        CaseComment caseComment = new CaseComment();
+        caseComment.setCaseId(caseObject.getId());
+        caseComment.setAuthor(person);
+        caseComment.setCreated(new Date());
+        caseComment.setOriginalAuthorFullName(person.getDisplayName());
+        caseComment.setOriginalAuthorName(person.getDisplayName());
+        caseComment.setText(comment);
+        caseComment.setPrivateComment(caseObject.isPrivateCase());
+
+        return caseComment;
+    }
+
+    private Collection<Long> getCompanyAndChildIds(Long companyId) {
+        Company company = new Company();
+        company.setId(companyId);
+        jdbcManyRelationsHelper.fill(company, "childCompanies");
+        return company.getCompanyAndChildIds();
+    }
+
+    private Result<List<CaseComment>> getList(CaseCommentQuery query) {
+        List<CaseComment> comments = caseCommentDAO.getCaseComments(query);
+        return getList(comments);
+    }
+
+    private void applyFilterByScope( AuthToken token, En_CaseType caseType, CaseCommentQuery query ) {
+        if (token == null || caseType == null) {
+            return;
+        }
+        Set<UserRole> roles = token.getRoles();
+        switch (caseType) {
+            case CRM_SUPPORT: {
+                if (!policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
+                    query.setViewPrivate(false);
+                }
+                return;
+            }
+            case PROJECT: {
+                Result<List<PersonProjectMemberView>> team = projectService.getProjectTeam(token, getFirst(query.getCaseObjectIds()));
+                if (team.isError()) {
+                    query.setViewPrivate(false);
+                    return;
+                }
+                if (!canAccessProjectPrivateElements(policyService, token, En_Privilege.PROJECT_VIEW, team.getData())) {
+                    query.setViewPrivate(false);
+                }
+                return;
+            }
+        }
+    }
+
+    private boolean allowedPrivateComment(AuthToken token, En_CaseType caseType, CaseComment comment) {
+        if (token == null || caseType == null) {
+            return true;
+        }
+        Set< UserRole > roles = token.getRoles();
+        switch (caseType) {
+            case CRM_SUPPORT: {
+                if (!comment.isPrivateComment()) {
+                    return true;
+                }
+                return policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW);
+            }
+            case PROJECT: {
+                if (!comment.isPrivateComment()) {
+                    return true;
+                }
+                Result<List<PersonProjectMemberView>> team = projectService.getProjectTeam(token, comment.getCaseId());
+                if (team.isError()) {
+                    return false;
+                }
+                return canAccessProjectPrivateElements(policyService, token, En_Privilege.PROJECT_VIEW, team.getData());
+            }
+        }
+        return false;
+    }
+
+    private Result<List<CaseComment>> getList(List<CaseComment> comments) {
+        if (comments == null) {
+            return error( En_ResultStatus.GET_DATA_ERROR);
+        }
+
+        jdbcManyRelationsHelper.fill(comments, "caseAttachments");
+
+        // RESET PRIVACY INFO
+        comments.forEach(comment -> {
+            if (comment.getAuthor() != null) {
+                comment.getAuthor().resetPrivacyInfo();
+            }
+        });
+
+        return ok(comments);
+    }
+
+    private En_ResultStatus checkAccessForCaseObjectById(AuthToken token, En_CaseType caseType, Long id) {
+        return checkAccessForCaseObject(token, caseType, caseObjectDAO.get(id));
+    }
+
+    private En_ResultStatus checkAccessForCaseObjectByNumber(AuthToken token, En_CaseType caseType, Long caseNumber) {
+        return checkAccessForCaseObject(token, caseType, caseObjectDAO.getCaseByNumber(caseType, caseNumber));
+    }
+
+    private En_ResultStatus checkAccessForCaseObject(AuthToken token, En_CaseType caseType, CaseObject caseObject) {
+        if (token == null || caseType == null) {
+            return null;
+        }
+        switch (caseType) {
+            case CRM_SUPPORT: {
+                if (!policyService.hasAccessForCaseObject(token, En_Privilege.ISSUE_VIEW, caseObject)) {
+                    return En_ResultStatus.PERMISSION_DENIED;
+                }
+                break;
+            }
+            case PROJECT: {
+                Result<List<PersonProjectMemberView>> team = projectService.getProjectTeam(token, caseObject.getId());
+                if (team.isError()) {
+                    return team.getStatus();
+                }
+                if (!canAccessProject(policyService, token, En_Privilege.PROJECT_VIEW, team.getData())) {
+                    return En_ResultStatus.PERMISSION_DENIED;
+                }
+                break;
+            }
+        }
+        return null;
+    }
+
+    private boolean isCaseCommentReadOnlyByTime(Date date) {
+        Calendar c = Calendar.getInstance();
+        long current = c.getTimeInMillis();
+        c.setTime(date);
+        long checked = c.getTimeInMillis();
+
+        return current - checked > CHANGE_LIMIT_TIME;
+    }
+
+    private void removeAttachments(AuthToken token, En_CaseType caseType, Collection<CaseAttachment> list) {
+        list.forEach(ca -> attachmentService.removeAttachment(token, caseType, ca.getAttachmentId()));
+    }
+
     /**
      * Заменяет в списке объектов возможные логины, которые начинаются с символа "@", на Фамилия Имя
      *
@@ -609,12 +809,15 @@ public class CaseCommentServiceImpl implements CaseCommentService {
                 .filter(StringUtils::isNotBlank)
                 .map(String::trim)
                 .flatMap(text -> Arrays.stream(text.split(CrmConstants.Masks.ONE_OR_MORE_SPACES)))
+                .flatMap(text -> Arrays.stream(text.split(CrmConstants.Masks.ROUND_AND_SQUARE_BRACKETS)))
                 .filter(text -> text.startsWith("@"))
                 .map(text -> text.substring(1))
                 .filter(text -> text.length() <= CrmConstants.ContactConstants.LOGIN_SIZE)
                 .forEach(text -> {
-                    possibleLoginSet.add(text);
-                    possibleLoginSet.addAll(subLoginList(text));
+                    List<String> result = new ArrayList<>();
+                    result.add(text);
+                    result.addAll(subLoginList(text));
+                    possibleLoginSet.addAll(prepareLoginList(result));
                 });
     }
 
@@ -641,168 +844,16 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         return infos.stream().map(ReplaceLoginWithUsernameInfo::getObject).collect(Collectors.toList());
     }
 
-    private boolean needReplaceLoginWithUsername(En_CaseType caseType) {
-        return CRM_SUPPORT.equals(caseType);
-    }
-
-    @Override
-    @Transactional
-    public Result<Boolean> addCommentReceivedByMail(ReceivedMail receivedMail) {
-        if (receivedMail.getCaseNo() == null || receivedMail.getSenderEmail() == null) {
-            log.warn("addCommentsReceivedByMail(): no case no or sender mail receivedMail ={}", receivedMail);
-            return error(En_ResultStatus.INCORRECT_PARAMS);
-        }
-
-        List<Person> persons = personDAO.findContactByEmail(receivedMail.getSenderEmail());
-        if (persons.isEmpty()) {
-            log.warn("addCommentsReceivedByMail(): no found person person by mail ={}", receivedMail.getSenderEmail());
-            return error(En_ResultStatus.NOT_FOUND);
-        }
-
-        if (persons.size() > 1) {
-            log.warn("addCommentsReceivedByMail(): more than one found person by mail ={}", receivedMail.getSenderEmail());
-            return error(En_ResultStatus.PERMISSION_DENIED);
-        }
-
-        Person person = persons.get(0);
-        List<UserLogin> userLogins = userLoginDAO.findByPersonId( person.getId() );
-        if (userLogins.isEmpty()) {
-            log.warn("addCommentsReceivedByMail(): no found user login by email ={}", receivedMail.getSenderEmail());
-            return error(En_ResultStatus.NOT_FOUND);
-        }
-
-        jdbcManyRelationsHelper.fill( userLogins, "roles" );
-        if (stream(userLogins)
-                .noneMatch(userLogin -> policyService.hasPrivilegeFor(ISSUE_EDIT, userLogin.getRoles()))) {
-            log.warn("addCommentsReceivedByMail(): no privilege for create comment ={}", receivedMail.getSenderEmail());
-            return error(En_ResultStatus.PERMISSION_DENIED);
-        }
-
-        CaseObject caseObject = caseObjectDAO.getCaseByNumber(CRM_SUPPORT, receivedMail.getCaseNo());
-        if (caseObject == null) {
-            log.warn("addCommentsReceivedByMail(): no found case for case no ={}", receivedMail.getCaseNo());
-            return error(En_ResultStatus.NOT_FOUND);
-        }
-
-        boolean isCustomer = !companyDAO.isEmployeeInHomeCompanies(person.getCompanyId());
-        if (isCustomer && caseObject.isPrivateCase()) {
-            log.warn("addCommentsReceivedByMail(): private case, forbidden for customer company ={}", person.getCompanyId());
-            return error(En_ResultStatus.PERMISSION_DENIED);
-        }
-
-        if (isCustomer && !getCompanyAndChildIds(person.getCompanyId()).contains(caseObject.getInitiatorCompanyId())) {
-            log.warn("addCommentsReceivedByMail(): case is not owned customer company, forbidden for customer, company = {}", person.getCompanyId());
-            return error(En_ResultStatus.PERMISSION_DENIED);
-        }
-
-        log.info("addCommentsReceivedByMail(): process receivedMail={}", receivedMail);
-        CaseComment comment = createComment(caseObject, person, cleanHTMLContent(receivedMail.getContent()));
-        caseCommentDAO.persist(comment);
-
-        boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( comment.getCaseId() ) );
-
-        return ok(true).publishEvent( new CaseCommentEvent( this, ServiceModule.GENERAL, person.getId(), comment.getCaseId(), isEagerEvent,
-                null, comment, null) );
-    }
-
-    private CaseComment createComment(CaseObject caseObject, Person person, String comment) {
-        CaseComment caseComment = new CaseComment();
-        caseComment.setCaseId(caseObject.getId());
-        caseComment.setAuthor(person);
-        caseComment.setCreated(new Date());
-        caseComment.setOriginalAuthorFullName(person.getDisplayName());
-        caseComment.setOriginalAuthorName(person.getDisplayName());
-        caseComment.setText(comment);
-        caseComment.setPrivateComment(caseObject.isPrivateCase());
-
-        return caseComment;
-    }
-
-    private Collection<Long> getCompanyAndChildIds(Long companyId) {
-        Company company = new Company();
-        company.setId(companyId);
-        jdbcManyRelationsHelper.fill(company, "childCompanies");
-        return company.getCompanyAndChildIds();
-    }
-
-    private String cleanHTMLContent(String htmlContent) {
-        return Jsoup.clean(Jsoup.parse(htmlContent).html(),
-                "", Whitelist.none(), new Document.OutputSettings().prettyPrint(false));
-    }
-
-    private Result<List<CaseComment>> getList(CaseCommentQuery query) {
-        List<CaseComment> comments = caseCommentDAO.getCaseComments(query);
-        return getList(comments);
-    }
-
-    private void applyFilterByScope( AuthToken token, CaseCommentQuery query ) {
-        if (token != null) {
-            Set<UserRole> roles = token.getRoles();
-            if (!policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
-                query.setViewPrivate(false);
-            }
-        }
-    }
-    private boolean prohibitedPrivateComment(AuthToken token, CaseComment comment) {
-        if (token != null) {
-            Set< UserRole > roles = token.getRoles();
-            return comment.isPrivateComment() && !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_VIEW );
-        } else {
-            return false;
-        }
-    }
-
-    private Result<List<CaseComment>> getList(List<CaseComment> comments) {
-        if (comments == null) {
-            return error( En_ResultStatus.GET_DATA_ERROR);
-        }
-
-        jdbcManyRelationsHelper.fill(comments, "caseAttachments");
-
-        // RESET PRIVACY INFO
-        comments.forEach(comment -> {
-            if (comment.getAuthor() != null) {
-                comment.getAuthor().resetPrivacyInfo();
-            }
-        });
-
-        return ok(comments);
-    }
-
-    private En_ResultStatus checkAccessForCaseObjectById(AuthToken token, En_CaseType caseType, Long id) {
-        return checkAccessForCaseObject(token, caseType, caseObjectDAO.get(id));
-    }
-
-    private En_ResultStatus checkAccessForCaseObjectByNumber(AuthToken token, En_CaseType caseType, Long caseNumber) {
-        return checkAccessForCaseObject(token, caseType, caseObjectDAO.getCaseByNumber(caseType, caseNumber));
-    }
-
-    private En_ResultStatus checkAccessForCaseObject(AuthToken token, En_CaseType caseType, CaseObject caseObject) {
-        if (CRM_SUPPORT.equals(caseType)) {
-            if (!policyService.hasAccessForCaseObject(token, En_Privilege.ISSUE_VIEW, caseObject)) {
-                return En_ResultStatus.PERMISSION_DENIED;
-            }
-        }
-        return null;
-    }
-
-    private boolean isCaseCommentReadOnlyByTime(Date date) {
-        Calendar c = Calendar.getInstance();
-        long current = c.getTimeInMillis();
-        c.setTime(date);
-        long checked = c.getTimeInMillis();
-
-        return current - checked > CHANGE_LIMIT_TIME;
-    }
-
-    private void removeAttachments(AuthToken token, En_CaseType caseType, Collection<CaseAttachment> list) {
-        list.forEach(ca -> attachmentService.removeAttachment(token, caseType, ca.getAttachmentId()));
+    private List<String> prepareLoginList(List<String> loginList) {
+        return stream(loginList).map(login -> login.replace("'", "\\'")).collect(Collectors.toList());
     }
 
     @Autowired
     CaseService caseService;
     @Autowired
     AttachmentService attachmentService;
+    @Autowired
+    ProjectService projectService;
     @Autowired
     EventPublisherService publisherService;
 
@@ -836,8 +887,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     @Autowired
     private ClientEventService clientEventService;
 */
-
-
     private static final long CHANGE_LIMIT_TIME = 300000;  // 5 минут (в мсек)
-    private static Logger log = LoggerFactory.getLogger(CaseCommentServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(CaseCommentServiceImpl.class);
 }

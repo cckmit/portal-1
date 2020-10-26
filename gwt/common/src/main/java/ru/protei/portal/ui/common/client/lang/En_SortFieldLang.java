@@ -13,6 +13,7 @@ public class En_SortFieldLang {
         {
             case creation_date:
             case contract_creation_date:
+            case project_creation_date:
                 return lang.created();
             case name:
                 return lang.name();
@@ -22,6 +23,8 @@ public class En_SortFieldLang {
                 return lang.name();
             case project_name:
                 return lang.name();
+            case project_number:
+                return lang.projectNumber();
             case last_update:
                 return lang.updated();
             case person_full_name:
@@ -72,8 +75,11 @@ public class En_SortFieldLang {
             case contract_signing_date:
                 return lang.signingDate();
             case duty_log_date_from:
-                return lang.dutyLogDateFrom();
-
+                return lang.dutyLogSortDateFrom();
+            case duty_log_employee:
+                return lang.dutyLogEmployee();
+            case duty_log_type:
+                return lang.dutyLogType();
             default:
                 return lang.unknownField();
         }

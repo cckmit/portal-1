@@ -20,8 +20,18 @@ public class PlanOption extends EntityOption {
         if (plan == null) {
             return null;
         }
-
         return new PlanOption(plan.getId(), plan.getName(), plan.getCreatorId());
+    }
+
+    public static Plan toPlan(PlanOption planOption) {
+        if (planOption == null) {
+            return null;
+        }
+        Plan plan = new Plan();
+        plan.setId(planOption.getId());
+        plan.setName(planOption.getDisplayText());
+        plan.setCreatorId(planOption.getCreatorId());
+        return plan;
     }
 
     @Override

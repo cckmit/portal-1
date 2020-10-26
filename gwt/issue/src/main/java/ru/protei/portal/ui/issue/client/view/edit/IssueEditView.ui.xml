@@ -28,7 +28,8 @@
                                 <i class="fas fa-link"/>
                             </g:Button>
                             <buttonpanel:ButtonPanelAttachmentUploader ui:field="fileUploader"
-                                                                       styleName="btn btn-default btn-xs btn-cons-toolbar attachment-full-view-uploader"/>
+                                                                       styleName="btn btn-default btn-xs btn-cons-toolbar attachment-full-view-uploader"
+                                                                       title="{lang.attachmentAdd}"/>
 
                             <g:Button ui:field="nameAndDescriptionEditButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.editNameAndDescription}">
                                 <i class="fa fa-pencil-alt"/>

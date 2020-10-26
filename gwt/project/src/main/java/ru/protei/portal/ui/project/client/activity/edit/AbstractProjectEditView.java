@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
+import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
@@ -49,6 +50,8 @@ public interface AbstractProjectEditView extends IsWidget {
 
     HasEnabled saveEnabled();
 
+    HasEnabled productEnabled();
+
     HasWidgets getLinksContainer();
 
     HasVisibility addLinkButtonVisibility();
@@ -57,11 +60,19 @@ public interface AbstractProjectEditView extends IsWidget {
 
     HasValue<List<ProjectSla>> slaInput();
 
+    void setWorkCompletionDateValid(boolean valid);
+
+    void setTechnicalSupportDateValid(boolean valid);
+
+    HasValue<Date> workCompletionDate();
+
+    HasValue<Date> purchaseDate();
+
+    void setPurchaseDateValid(boolean valid);
+
     HasValidable slaValidator();
 
     void updateProductDirection(Long directionId);
-
-    void setDateValid(boolean valid);
 
     void showComments(boolean isShow);
     void showDocuments(boolean isShow);
@@ -69,6 +80,9 @@ public interface AbstractProjectEditView extends IsWidget {
     HasVisibility pauseDateContainerVisibility();
 
     HasValue<Date> pauseDate();
+
+    HasValue<Set<PlanOption>> plans();
+
 
     HasValue<Set<EntityOption>> subcontractors();
 }

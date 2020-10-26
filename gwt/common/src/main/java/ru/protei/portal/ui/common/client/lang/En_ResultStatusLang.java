@@ -65,8 +65,10 @@ public class En_ResultStatusLang {
             case DEPARTMENT_ALREADY_EXIST: return lang.errDepartmentAlreadyExistInThisCompany();
             case POSITION_ALREADY_EXIST: return lang.errPositionAlreadyExistInThisCompany();
             case EMPLOYEE_ALREADY_EXIST: return lang.errEmployeeAlreadyExist();
+            case EMPLOYEE_EMAIL_ALREADY_EXIST: return lang.errEmployeeEmailAlreadyExist();
             case EMPLOYEE_NOT_FIRED_FROM_THESE_COMPANIES: return lang.errEmployeeNotFiredFromTheseCompanies();
             case EMPLOYEE_MIGRATION_FAILED: return lang.errEmployeeMigrationFailed();
+            case LOGIN_ALREADY_EXIST: return lang.errLoginAlreadyExist();
             case SUBNET_DOES_NOT_EXIST: return lang.errSaveReservedIpSubnetDoesNotExist();
             case SUBNET_NOT_ALLOWED_FOR_RESERVE: return lang.errSaveReservedIpSubnetNotAvailable();
             case ROOM_RESERVATION_FINISHED: return lang.errRoomReservationFinished();
@@ -83,6 +85,10 @@ public class En_ResultStatusLang {
             case NOT_ALLOWED_EDIT_COMMENT_BY_TIME: return lang.errEditIssueCommentByTime();
             case NOT_ALLOWED_REMOVE_COMMENT_BY_TIME: return lang.errRemoveIssueCommentByTime();
             case REPORTING_SERVICE_NOT_CONFIGURED: return lang.errReportingServiceNotConfigured();
+            case NRPE_IP_NON_AVAILABLE: return lang.errNRPEIpNonAvailable();
+            case NRPE_ERROR: return lang.errNRPEError();
+            case NRPE_NO_FREE_IPS: return lang.errNRPENoFreeIps();
+            case USER_NOT_FOUND: return lang.errUserNotFound();
             case NOT_FOUND_PARENT: return lang.errNotFoundParent();
             case NOT_ALLOWED_CREATE_SUBTASK: return lang.errNotAllowedCreateSubtask();
             default: return lang.errUnknownResult();

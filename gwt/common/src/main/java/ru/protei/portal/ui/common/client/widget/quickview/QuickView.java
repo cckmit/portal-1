@@ -38,15 +38,7 @@ public class QuickView extends Composite implements HasWidgets {
     @UiHandler("substrate")
     void substrateClick(ClickEvent event) {
         event.preventDefault();
-        event.stopPropagation();
         hide();
-    }
-
-    public void setBelowHeader(boolean isBelow) {
-        quickview.removeStyleName("quickview-wrapper-below-header");
-        if (isBelow) {
-            quickview.addStyleName("quickview-wrapper-below-header");
-        }
     }
 
     public void setShow(boolean isShow) {

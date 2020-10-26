@@ -90,10 +90,6 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasVisibility expenditureContractsVisibility();
 
-    void setNotAvailableOrganizations(List<Long> organizationsToHide);
-
-    void setSecondContractNotAvailableOrganizations(List<Long> organizationsToHide);
-
     HasVisibility tagsVisibility();
 
     HasVisibility tagsButtonVisibility();

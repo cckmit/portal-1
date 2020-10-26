@@ -19,104 +19,147 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 /**
  * Информация о проекте в регионе
  */
-@JdbcEntity(table = "case_object")
+@JdbcEntity(table = "project")
 public class Project extends AuditableObject {
 
-    public static final int NOT_DELETED = CaseObject.NOT_DELETED;
     public static final String AUDIT_TYPE = "Project";
+
+    public static final int NOT_DELETED = CaseObject.NOT_DELETED;
+    public static final String CASE_OBJECT_ALIAS = "CO";
+
     /**
      * Идентификатор записи о проекте
      */
-    @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
+    @JdbcId(name = "id", idInsertMode = IdInsertMode.EXPLICIT)
     private Long id;
 
     /**
      * Название проекта
      */
-    @JdbcColumn(name = Columns.NAME)
+    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = "CASE_NAME", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
     private String name;
 
     /**
      * Описание проекта
      */
-    @JdbcColumn(name = Columns.DESCRIPTION)
+    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Columns.DESCRIPTION, table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
     private String description;
 
     /**
      * Текущее состояние проекта
      */
-    @JdbcColumn(name = Columns.STATE)
+    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Columns.STATE, table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
     private Long stateId;
 
     /**
      * Тип заказчика
      */
     @JdbcColumn(name = Columns.CUSTOMER_TYPE)
-    @JdbcEnumerated( EnumType.ID )
+    @JdbcEnumerated( value = EnumType.ID, mandatory = false )
     private En_CustomerType customerType;
 
     /**
      * Заказчик
      */
+    @JdbcJoinedObject(joinPath = {
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = "initiator_company", remoteColumn = "id", table = "company")})
     private Company customer;
 
     /**
-     * продуктовое направление
+     * Имя продукта
      */
-    private EntityOption productDirection;
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = "product_id", remoteColumn = "id", table = "dev_unit")}, mappedColumn = "UNIT_NAME")
+    private String productDirectionName;
+
+    /**
+     * id продукта
+     */
+    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = "product_id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
+    private Long productDirectionId;
 
     /**
      * Дата создания
      */
-    @JdbcColumn(name = Columns.CREATED)
+    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Columns.CREATED, table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
     private Date created;
 
     /**
      * Создатель проекта
      */
-    @JdbcColumn(name = Project.Columns.CREATOR)
+    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Columns.CREATOR, table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
     private Long creatorId;
 
     @JdbcOneToMany( table = "case_member", localColumn = "id", remoteColumn = "CASE_ID" )
     private List<CaseMember> members;
 
+    @JdbcOneToMany(table = "case_location", localColumn = "id", remoteColumn = "CASE_ID" )
+    private List<CaseLocation> locations;
+
+    @JdbcManyToMany(linkTable = "project_to_product", localLinkColumn = "project_id", remoteLinkColumn = "product_id")
+    private Set<DevUnit> products;
+
+    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Columns.DELETED, table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
+    private boolean deleted;
+
+    @JdbcJoinedObject(joinPath = {
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = "CREATOR", remoteColumn = "id", table = "person")})
+    private Person creator;
+
+    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Columns.MANAGER, table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
+    private Long managerId;
+
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = Columns.MANAGER, remoteColumn = "id", table = "person")}, mappedColumn = "displayShortName")
+    private String managerName;
+
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = Columns.PLATFORM_ID, remoteColumn = "id", table = "platform")}, mappedColumn = "name")
+    private String platformName;
+
+    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Columns.PLATFORM_ID, table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
+    private Long platformId;
+
+    @JdbcColumn(name = "technical_support_validity")
+    private Date technicalSupportValidity;
+
+    @JdbcColumn(name = "work_completion_date")
+    private Date workCompletionDate;
+
+    @JdbcColumn(name = "purchase_date")
+    private Date purchaseDate;
+
+    @JdbcOneToMany(table = "project_sla", localColumn = "id", remoteColumn = "project_id")
+    private List<ProjectSla> projectSlas;
+
+    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Columns.PAUSE_DATE, table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
+    private Long pauseDate;
+
+    @JdbcManyToMany(linkTable = "plan_to_project", localLinkColumn = "project_id", remoteLinkColumn = "plan_id")
+    private List<Plan> projectPlans;
+
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "CASE_ID", table = "case_location", sqlTableAlias = "location"),
+            @JdbcJoinPath(localColumn = "LOCATION_ID", remoteColumn = "id", table = "location", sqlTableAlias = "region"),
+    }, mappedColumn = "name")
+    private String regionName;
+
+    private Set<Company> subcontractors;
     /**
      * Команда проекта
      */
     private List<PersonProjectMemberView> team;
 
-    @JdbcJoinedObject(table = "case_location", localColumn = "id", remoteColumn = "CASE_ID" )
-    private CaseLocation location;
-
     private EntityOption region;
 
     private List<CaseLink> links;
 
-    private Set<ProductShortView> products;
-
-    private Person creator;
-
     private List<EntityOption> contracts;
-
-    @JdbcColumn(name = Project.Columns.DELETED)
-    private boolean deleted;
-
-    private EntityOption manager;
-
-    private EntityOption contragent;
-
-    private String platformName;
-
-    private Long platformId;
-
-    private Date technicalSupportValidity;
-
-    private List<ProjectSla> projectSlas;
-
-    private Set<Company> subcontractors;
-
-    @JdbcColumn(name = Project.Columns.PAUSE_DATE)
-    private Long pauseDate;
 
     public Long getId() {
         return id;
@@ -142,19 +185,43 @@ public class Project extends AuditableObject {
         this.stateId = state.getId();
     }
 
-    public EntityOption getProductDirection() {
-        return productDirection;
+    public EntityOption getProductDirectionEntityOption() {
+        if (productDirectionName != null && productDirectionId != null) {
+            return new EntityOption(productDirectionName, productDirectionId);
+        } else {
+            return null;
+        }
     }
 
-    public void setProductDirection( EntityOption productDirection ) {
-        this.productDirection = productDirection;
+    public String getProductDirectionName() {
+        return productDirectionName;
+    }
+
+    public void setProductDirectionName(String productDirectionName) {
+        this.productDirectionName = productDirectionName;
+    }
+
+    public Long getProductDirectionId() {
+        return productDirectionId;
+    }
+
+    public void setProductDirectionId(Long productDirectionId) {
+        this.productDirectionId = productDirectionId;
     }
 
     public Date getCreated() {
         return created;
     }
 
-    public void setCreated( Date created ) {
+    public List<CaseLocation> getLocations() {
+        return locations;
+    }
+
+    public void setLocations(List<CaseLocation> locations) {
+        this.locations = locations;
+    }
+
+    public void setCreated(Date created ) {
         this.created = created;
     }
 
@@ -167,8 +234,8 @@ public class Project extends AuditableObject {
     }
 
     public EntityOption getRegion() {
-        if (region == null && location != null) {
-            region = EntityOption.fromLocation( location.getLocation() );
+        if (region == null && CollectionUtils.isNotEmpty(locations)) {
+            region = EntityOption.fromLocation( locations.get(0).getLocation() );
         }
         return region;
     }
@@ -201,11 +268,11 @@ public class Project extends AuditableObject {
         this.customer = customer;
     }
 
-    public Set<ProductShortView> getProducts() {
+    public Set<DevUnit> getProducts() {
         return products;
     }
 
-    public void setProducts(Set<ProductShortView> products) {
+    public void setProducts(Set<DevUnit> products) {
         this.products = products;
     }
 
@@ -270,7 +337,7 @@ public class Project extends AuditableObject {
     }
 
     public ProductShortView getSingleProduct() {
-        return products == null ? null : products.stream().findAny().orElse(null);
+        return products == null ? null : getProducts().stream().map(ProductShortView::fromProduct).findAny().orElse(null);
     }
 
     public List<EntityOption> getContracts() {
@@ -281,20 +348,20 @@ public class Project extends AuditableObject {
         this.contracts = contracts;
     }
 
-    public EntityOption getManager() {
-        return manager;
+    public Long getManagerId() {
+        return managerId;
     }
 
-    public void setManager(EntityOption manager) {
-        this.manager = manager;
+    public void setManagerId(Long managerId) {
+        this.managerId = managerId;
     }
 
-    public EntityOption getContragent() {
-        return contragent;
+    public String getManagerName() {
+        return managerName;
     }
 
-    public void setContragent(EntityOption contragent) {
-        this.contragent = contragent;
+    public void setManagerName(String managerName) {
+        this.managerName = managerName;
     }
 
     public String getPlatformName() {
@@ -321,12 +388,36 @@ public class Project extends AuditableObject {
         this.technicalSupportValidity = technicalSupportValidity;
     }
 
+    public Date getWorkCompletionDate() {
+        return workCompletionDate;
+    }
+
+    public void setWorkCompletionDate(Date workCompletionDate) {
+        this.workCompletionDate = workCompletionDate;
+    }
+
+    public Date getPurchaseDate() {
+        return purchaseDate;
+    }
+
+    public void setPurchaseDate(Date purchaseDate) {
+        this.purchaseDate = purchaseDate;
+    }
+
     public List<ProjectSla> getProjectSlas() {
         return projectSlas;
     }
 
     public void setProjectSlas(List<ProjectSla> projectSlas) {
         this.projectSlas = projectSlas;
+    }
+
+    public List<Plan> getProjectPlans() {
+        return projectPlans;
+    }
+
+    public void setProjectPlans(List<Plan> projectPlans) {
+        this.projectPlans = projectPlans;
     }
 
     public Set<Company> getSubcontractors() {
@@ -337,76 +428,8 @@ public class Project extends AuditableObject {
         this.subcontractors = subcontractors;
     }
 
-    public static Project fromCaseObject(CaseObject caseObject) {
-        if (caseObject == null) {
-            return null;
-        }
-
-        Project project = new Project();
-        project.setId( caseObject.getId() );
-        project.setName( caseObject.getName() );
-        project.setCreator(caseObject.getCreator());
-        project.setDescription(caseObject.getInfo());
-        project.setState( En_RegionState.forId( caseObject.getStateId() ) );
-        project.setDeleted(caseObject.isDeleted());
-        if ( caseObject.getProduct() != null ) {
-            project.setProductDirection( new EntityOption(
-                caseObject.getProduct().getName(), caseObject.getProduct().getId()
-            ) );
-        }
-
-        project.setCustomerType(En_CustomerType.find(caseObject.getLocal()));
-        project.setCustomer(caseObject.getInitiatorCompany());
-
-        if (caseObject.getMembers() != null) {
-            List<En_DevUnitPersonRoleType> projectRoles = En_DevUnitPersonRoleType.getProjectRoles();
-            project.setTeam( caseObject.getMembers().stream()
-                    .filter(member -> projectRoles.contains(member.getRole()))
-                    .map(member -> PersonProjectMemberView.fromFullNamePerson(member.getMember(), member.getRole()))
-                    .collect(Collectors.toList()) );
-        }
-
-        project.setCreated( caseObject.getCreated() );
-
-        List<CaseLocation> locations = caseObject.getLocations();
-        if ( locations != null && !locations.isEmpty() ) {
-            project.setRegion( EntityOption.fromLocation( locations.get( 0 ).getLocation() ) );
-        }
-
-        if (caseObject.getProducts() != null) {
-            project.setProducts( caseObject.getProducts().stream()
-                                        .map(ProductShortView::fromProduct)
-                                        .collect(Collectors.toSet()) );
-        }
-
-        project.setContracts(caseObject.getContracts());
-
-        if (caseObject.getManager() != null) {
-            project.setManager(new EntityOption(caseObject.getManager().getDisplayShortName(), caseObject.getManagerId()));
-        }
-
-        if (caseObject.getInitiatorCompany() != null) {
-            project.setContragent(new EntityOption(caseObject.getInitiatorCompany().getCname(), caseObject.getInitiatorCompanyId()));
-        }
-
-        if (caseObject.getPlatformId() != null){
-            project.setPlatformId(caseObject.getPlatformId());
-            project.setPlatformName(caseObject.getPlatformName());
-
-        }
-
-        project.setTechnicalSupportValidity(caseObject.getTechnicalSupportValidity());
-
-        project.setProjectSlas(caseObject.getProjectSlas());
-
-        project.setPauseDate( caseObject.getPauseDate() );
-
-        return project;
-    }
-
-    @Override
-    public String getAuditType() {
-        return AUDIT_TYPE;
+    public EntityOption toEntityOption() {
+        return new EntityOption(this.getName(), this.getId());
     }
 
     public void setPauseDate( Long pauseDateTimestamp ) {
@@ -415,6 +438,11 @@ public class Project extends AuditableObject {
 
     public Long getPauseDate() {
         return pauseDate;
+    }
+
+    @Override
+    public String getAuditType() {
+        return AUDIT_TYPE;
     }
 
     @Override
@@ -443,23 +471,30 @@ public class Project extends AuditableObject {
                 ", stateId=" + stateId +
                 ", customerType=" + customerType +
                 ", customer=" + customer +
-                ", productDirection=" + productDirection +
+                ", productDirectionName='" + productDirectionName + '\'' +
+                ", productDirectionId=" + productDirectionId +
                 ", created=" + created +
                 ", creatorId=" + creatorId +
-                ", team=" + team +
-                ", region=" + region +
-                ", links=" + links +
+                ", members=" + members +
+                ", locations=" + locations +
                 ", products=" + products +
-                ", creator=" + creator +
-                ", contracts=" + contracts +
                 ", deleted=" + deleted +
-                ", manager=" + manager +
-                ", contragent=" + contragent +
+                ", creator=" + creator +
+                ", managerId=" + managerId +
+                ", managerName='" + managerName + '\'' +
                 ", platformName='" + platformName + '\'' +
                 ", platformId=" + platformId +
                 ", technicalSupportValidity=" + technicalSupportValidity +
+                ", workCompletionDate=" + workCompletionDate +
+                ", purchaseDate=" + purchaseDate +
                 ", projectSlas=" + projectSlas +
                 ", pauseDate=" + pauseDate +
+                ", regionName='" + regionName + '\'' +
+                ", team=" + team +
+                ", region=" + region +
+                ", links=" + links +
+                ", contracts=" + contracts +
+                ", projectPlans=" + projectPlans +
                 '}';
     }
 
@@ -469,11 +504,16 @@ public class Project extends AuditableObject {
         String CASE_TYPE = CaseObject.Columns.CASE_TYPE;
         String DELETED = CaseObject.Columns.DELETED;
         String DESCRIPTION = CaseObject.Columns.INFO;
-        String CUSTOMER_TYPE = CaseObject.Columns.ISLOCAL;
+        String CUSTOMER_TYPE = "customer_type";
         String CREATED = CaseObject.Columns.CREATED;
         String CREATOR = CaseObject.Columns.CREATOR;
         String STATE = CaseObject.Columns.STATE;
         String NAME = CaseObject.Columns.CASE_NAME;
+        String MANAGER = CaseObject.Columns.MANAGER;
+        String PLATFORM_ID = CaseObject.Columns.PLATFORM_ID;
         String COMPANY = CaseObject.Columns.INITIATOR_COMPANY;
+    }
+    public interface Fields {
+        String PROJECT_PLANS = "projectPlans";
     }
 }

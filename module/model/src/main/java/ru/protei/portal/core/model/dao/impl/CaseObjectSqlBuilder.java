@@ -1,9 +1,9 @@
 package ru.protei.portal.core.model.dao.impl;
 
-import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
+import ru.protei.portal.core.model.dict.En_WorkTrigger;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.util.sqlcondition.Condition;
 import ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static ru.protei.portal.core.model.dao.impl.CaseShortViewDAO_Impl.isSearchAtComments;
@@ -31,9 +32,6 @@ public class CaseObjectSqlBuilder {
             if ( query.getId() != null ) {
                 condition.append( " and case_object.id=?" );
                 args.add( query.getId() );
-            } else if (query.getMemberId() != null) {
-                condition.append(" and (case_object.id in (select case_id from case_member where member_id = ").append(query.getMemberId()).append(")");
-                condition.append(" or case_object.creator = ").append(query.getMemberId()).append(")");
             } else if (isNotEmpty(query.getCaseTagsIds())) {
                 if (query.getCaseTagsIds().remove(CrmConstants.CaseTag.NOT_SPECIFIED)) {
                     if (query.isCustomerSearch()) {
@@ -109,38 +107,31 @@ public class CaseObjectSqlBuilder {
             condition.append(isInitiatorCompaniesNotEmpty ? ")" : "");
 
             if (isNotEmpty(query.getProductIds())) {
-                if (query.getType() != null && query.getType().equals(En_CaseType.PROJECT)) {
-                    if (!query.getProductIds().remove(CrmConstants.Product.UNDEFINED) || !query.getProductIds().isEmpty()) {
-                        condition.append(" and case_object.id in")
-                                .append(" (select project_id from project_to_product where product_id in " + makeInArg(query.getProductIds(), false) + ")");
+                if (query.getProductIds().remove(CrmConstants.Product.UNDEFINED)) {
+                    condition.append(" and (product_id is null");
+                    if (!query.getProductIds().isEmpty()) {
+                        condition.append(" or product_id in " + makeInArg(query.getProductIds(), false));
                     }
+                    condition.append(")");
                 } else {
-                    if (query.getProductIds().remove(CrmConstants.Product.UNDEFINED)) {
-                        condition.append(" and (product_id is null");
-                        if (!query.getProductIds().isEmpty()) {
-                            condition.append(" or product_id in " + makeInArg(query.getProductIds(), false));
-                        }
-                        condition.append(")");
-                    } else {
-                        condition.append(" and product_id in " + makeInArg(query.getProductIds(), false));
-                    }
+                    condition.append(" and product_id in " + makeInArg(query.getProductIds(), false));
                 }
             }
 
-            if ( query.getLocationIds() != null && !query.getLocationIds().isEmpty() ) {
+            if ( isNotEmpty(query.getLocationIds()) ) {
                 condition.append(" and case_object.id in (SELECT case_location.case_id FROM case_location " +
                         "WHERE case_location.location_id in " + makeInArg(query.getLocationIds(), false) + ")");
             }
-            else if ( query.getDistrictIds() != null && !query.getDistrictIds().isEmpty() ) {
+            else if ( isNotEmpty(query.getDistrictIds()) ) {
                 condition.append(" and case_object.id in (SELECT case_location.case_id FROM case_location " +
                         "WHERE case_location.location_id in (SELECT location.id FROM location WHERE location.parent_id in " + makeInArg(query.getDistrictIds(), false) + "))");
             }
 
-            if ( query.getStateIds() != null && !query.getStateIds().isEmpty() ) {
+            if ( isNotEmpty(query.getStateIds()) ) {
                 condition.append(" and case_object.state in " + makeInArg(query.getStateIds(), false));
             }
 
-            if ( query.getImportanceIds() != null && !query.getImportanceIds().isEmpty() ) {
+            if ( isNotEmpty(query.getImportanceIds()) ) {
                 String importantces = makeInArg( query.getImportanceIds(), false );
                 if (query.isCheckImportanceHistory() == null || !query.isCheckImportanceHistory()) {
                     condition.append( " and importance in " ).append( importantces );
@@ -222,15 +213,6 @@ public class CaseObjectSqlBuilder {
                 }
 
                 condition.append(")");
-            }
-
-            if (query.getLocal() != null) {
-                condition.append( " and case_object.islocal = ?" );
-                args.add(query.getLocal());
-            }
-
-            if (query.getPlatformIndependentProject() != null && query.getPlatformIndependentProject()) {
-                condition.append(" and case_object.id NOT IN (SELECT platform.project_id FROM platform WHERE platform.project_id IS NOT NULL)");
             }
 
             if ( isNotEmpty(query.getProductDirectionIds()) ) {
@@ -345,6 +327,29 @@ public class CaseObjectSqlBuilder {
                 condition
                         .append(String.join(" or ", orConditions))
                         .append(")");
+            }
+
+            if (CollectionUtils.isNotEmpty(query.getWorkTriggersIds())) {
+                List<String> orConditions = new ArrayList<>();
+
+                condition.append(" and (");
+
+                if (query.getWorkTriggersIds().contains(En_WorkTrigger.NONE.getId())) {
+                    orConditions.add("case_object.work_trigger IS NULL");
+                }
+
+                if (isNotEmpty(query.getWorkTriggersIds())) {
+                    orConditions.add("case_object.work_trigger IN " + HelperFunc.makeInArg(query.getWorkTriggersIds(), false));
+                }
+
+                condition
+                        .append(String.join(" or ", orConditions))
+                        .append(")");
+            }
+
+            if (query.getOverdueDeadlines() != null) {
+                condition.append(" and case_object.deadline " + (query.getOverdueDeadlines()? "<=" : ">") +" ?");
+                args.add(new Date().getTime());
             }
         });
     }

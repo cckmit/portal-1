@@ -153,9 +153,15 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
                 args.add(query.getDirectionId());
             }
 
+
             if (CollectionUtils.isNotEmpty(query.getContractorIds())) {
                 String inArg = HelperFunc.makeInArg(query.getContractorIds(), false);
                 condition.append(" and contractor_id in ").append(inArg);
+            }
+
+            if (CollectionUtils.isNotEmpty(query.getCuratorIds())) {
+                String inArg = HelperFunc.makeInArg(query.getCuratorIds(), false);
+                condition.append(" and CO.initiator in ").append(inArg);
             }
 
             if (CollectionUtils.isNotEmpty(query.getOrganizationIds())) {

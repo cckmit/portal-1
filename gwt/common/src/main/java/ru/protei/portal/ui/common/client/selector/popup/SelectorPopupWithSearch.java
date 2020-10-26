@@ -3,9 +3,7 @@ package ru.protei.portal.ui.common.client.selector.popup;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ScrollEvent;
-import com.google.gwt.event.dom.client.ScrollHandler;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -120,16 +118,6 @@ public class SelectorPopupWithSearch extends PopperComposite
         setAddButton(addVisible);
     }
 
-    @UiHandler( "search" )
-    public void onSearchInputChanged( InputEvent event ) {
-        changeSearchTimer.schedule(200);
-    }
-
-    @UiHandler("addButton")
-    public void onAddButtonClick( ClickEvent event) {
-        AddEvent.fire(this);
-    }
-
     @Override
     public void setNoElements(boolean isSearchResultEmpty, String noElementsMessage) {
         message.setVisible(isSearchResultEmpty && noElementsMessage != null);
@@ -141,6 +129,16 @@ public class SelectorPopupWithSearch extends PopperComposite
         addButton.setVisible( isVisible );
     }
 
+    @UiHandler( "search" )
+    public void onSearchInputChanged( InputEvent event ) {
+        changeSearchTimer.schedule(200);
+    }
+
+    @UiHandler("addButton")
+    public void onAddButtonClick( ClickEvent event) {
+        AddEvent.fire(this);
+    }
+
     public void clearSearchField() {
             search.setValue( "" );
     }
@@ -150,20 +148,20 @@ public class SelectorPopupWithSearch extends PopperComposite
     }
 
 
-    public void setEnsureDebugIdAddEntryAction(String debugId) {
-        addButton.ensureDebugId(debugId);
+    public void setDebugAttributeAddEntryAction(String debugId) {
+        addButton.getElement().setAttribute(DebugIds.DEBUG_ID_ATTRIBUTE, debugId);
     }
 
-    public void setEnsureDebugIdSearch(String debugId) {
-        search.setEnsureDebugIdTextBox(debugId);
+    public void setDebugAttributeSearch(String debugId) {
+        search.setDebugAttributeTextBox(debugId);
     }
 
-    public void setEnsureDebugIdSearchAction(String debugId) {
-        search.setEnsureDebugIdAction(debugId);
+    public void setDebugAttributeSearchAction(String debugId) {
+        search.setDebugAttributeAction(debugId);
     }
 
-    public void setEnsureDebugIdListContainer(String debugId) {
-        childContainer.ensureDebugId(debugId);
+    public void setDebugAttributeListContainer(String debugId) {
+        childContainer.getElement().setAttribute(DebugIds.DEBUG_ID_ATTRIBUTE, debugId);
     }
 
     public void setSearchAutoFocus( boolean isSearchAutoFocus ) {
@@ -197,14 +195,14 @@ public class SelectorPopupWithSearch extends PopperComposite
     }
 
     private void ensureDefaultDebugIds() {
-        setEnsureDebugIdAddEntryAction( DebugIds.SELECTOR.POPUP.ADD_NEW_ENTRY_BUTTON);
-        setEnsureDebugIdSearch(DebugIds.SELECTOR.POPUP.SEARCH_INPUT);
-        setEnsureDebugIdSearchAction(DebugIds.SELECTOR.POPUP.SEARCH_ACTION);
-        setEnsureDebugIdListContainer(DebugIds.SELECTOR.POPUP.ENTRY_LIST_CONTAINER);
+        setDebugAttributeAddEntryAction( DebugIds.SELECTOR.POPUP.ADD_NEW_ENTRY_BUTTON);
+        setDebugAttributeSearch(DebugIds.SELECTOR.POPUP.SEARCH_INPUT);
+        setDebugAttributeSearchAction(DebugIds.SELECTOR.POPUP.SEARCH_ACTION);
+        setDebugAttributeListContainer(DebugIds.SELECTOR.POPUP.ENTRY_LIST_CONTAINER);
     }
 
     @UiField
-    HTMLPanel childContainer;
+    protected HTMLPanel childContainer;
 
     @UiField
     HTMLPanel root;

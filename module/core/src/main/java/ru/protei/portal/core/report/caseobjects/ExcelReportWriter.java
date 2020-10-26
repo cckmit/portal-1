@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -45,6 +44,7 @@ public class ExcelReportWriter implements
     private final boolean withTags;
     private final boolean withLinkedIssues;
     private final boolean isHumanReadable;
+    private final boolean withImportanceHistory;
     private final String[] formats;
 
     public ExcelReportWriter(Lang.LocalizedLang localizedLang,
@@ -52,7 +52,8 @@ public class ExcelReportWriter implements
                              boolean withDescription,
                              boolean withTags,
                              boolean withLinkedIssues,
-                             boolean isHumanReadable) {
+                             boolean isHumanReadable,
+                             boolean withImportanceHistory) {
 
         this.book = new JXLSHelper.ReportBook<>(localizedLang, this);
         this.lang = localizedLang;
@@ -62,7 +63,15 @@ public class ExcelReportWriter implements
         this.withTags = withTags;
         this.withLinkedIssues = withLinkedIssues;
         this.isHumanReadable = isHumanReadable;
-        this.formats = getFormats(isNotRestricted, withDescription, withTags, withLinkedIssues, isHumanReadable);
+        this.withImportanceHistory = withImportanceHistory;
+        this.formats = getFormats(
+                isNotRestricted,
+                withDescription,
+                withTags,
+                withLinkedIssues,
+                isHumanReadable,
+                withImportanceHistory
+        );
     }
 
     @Override
@@ -92,12 +101,26 @@ public class ExcelReportWriter implements
 
     @Override
     public int[] getColumnsWidth() {
-        return getColumnsWidth(isNotRestricted, withDescription, withTags, withLinkedIssues, isHumanReadable);
+        return getColumnsWidth(
+                isNotRestricted,
+                withDescription,
+                withTags,
+                withLinkedIssues,
+                isHumanReadable,
+                withImportanceHistory
+        );
     }
 
     @Override
     public String[] getColumnNames() {
-        return getColumns(isNotRestricted, withDescription, withTags, withLinkedIssues, isHumanReadable);
+        return getColumns(
+                isNotRestricted,
+                withDescription,
+                withTags,
+                withLinkedIssues,
+                isHumanReadable,
+                withImportanceHistory
+        );
     }
 
     @Override
@@ -163,15 +186,16 @@ public class ExcelReportWriter implements
         values.add(issue.getImportanceLevel() != null ? issue.getImportanceLevel().getCode() : "");
         values.add(HelperFunc.isNotEmpty(issue.getStateName()) ? issue.getStateName() : "");
         if (withTags) values.add(String.join(",", toList(emptyIfNull(object.getCaseTags()), CaseTag::getName)));
-        if (withLinkedIssues) values.add(String.join(",", toList(emptyIfNull(object.getCaseLinks()), CaseLink::getRemoteId)));
+        if (withLinkedIssues) values.add(String.join(",", toList(emptyIfNull(object.getCaseLinks()), caseLink -> String.valueOf(caseLink.getCaseInfo().getCaseNumber()))));
         values.add(created != null ? created : "");
         values.add(opened != null ? opened : "");
         values.add(workaround != null ? workaround : "");
         values.add(customerTest != null ? customerTest : "");
         values.add(done != null ? done : "");
         values.add(verified != null ? verified : "");
-        values.add(important != null ? important : "");
-        values.add(critical != null ? critical : "");
+
+        if (withImportanceHistory) values.add(important != null ? important : "");
+        if (withImportanceHistory) values.add(critical != null ? critical : "");
 
         if (isNotRestricted) values.add(solutionDurationFirst == null ? "" : toExcelTimeFormat(solutionDurationFirst));
         if (isNotRestricted && isHumanReadable) values.add(solutionDurationFirst == null ? "" : toDaysHoursMinutes(solutionDurationFirst));
@@ -237,14 +261,14 @@ public class ExcelReportWriter implements
         return null;
     }
 
-    private String[] getFormats(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues, boolean isHumanReadable) {
+    private String[] getFormats(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues, boolean isHumanReadable, boolean withImportanceHistory) {
         List<String> formatList = new ListBuilder<String>()
                 .add(ExcelFormat.STANDARD).addIf(ExcelFormat.STANDARD, isNotRestricted).add(ExcelFormat.STANDARD).addIf(ExcelFormat.STANDARD, withDescription)
                 .add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD)
                 .add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).addIf(ExcelFormat.STANDARD, withTags).addIf(ExcelFormat.STANDARD, withLinkedIssues)
                 .add(ExcelFormat.DATE_TIME).add(ExcelFormat.DATE_TIME).add(ExcelFormat.DATE_TIME)
                 .add(ExcelFormat.DATE_TIME).add(ExcelFormat.DATE_TIME).add(ExcelFormat.DATE_TIME)
-                .add(ExcelFormat.DATE_TIME).add(ExcelFormat.DATE_TIME)
+                .addIf(ExcelFormat.DATE_TIME, withImportanceHistory).addIf(ExcelFormat.DATE_TIME, withImportanceHistory)
                 .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted).addIf(ExcelFormat.STANDARD, isNotRestricted && isHumanReadable)
                 .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted).addIf(ExcelFormat.STANDARD, isNotRestricted && isHumanReadable)
                 .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted).addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted)
@@ -253,14 +277,14 @@ public class ExcelReportWriter implements
         return formatList.toArray(new String[]{});
     }
 
-    private int[] getColumnsWidth(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues, boolean isHumanReadable) {
+    private int[] getColumnsWidth(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues, boolean isHumanReadable, boolean withImportanceHistory) {
         List<Integer> columnsWidthList = new ListBuilder<Integer>()
                 .add(3650).addIf(3430, isNotRestricted).add(8570).addIf(9000, withDescription)
                 .add(4590).add(4200).add(4200).add(4200)
                 .add(6000).add(3350).add(4600).addIf(4600, withTags).addIf(6000, withLinkedIssues)
                 .add(4200).add(5800).add(5800)
                 .add(5800).add(5800).add(5800)
-                .add(5800).add(5800)
+                .addIf(5800, withImportanceHistory).addIf(5800, withImportanceHistory)
                 .addIf(12000, isNotRestricted).addIf(12000, isNotRestricted && isHumanReadable)
                 .addIf(12000, isNotRestricted).addIf(12000, isNotRestricted && isHumanReadable)
                 .addIf(5800, isNotRestricted).addIf(12000, isNotRestricted)
@@ -269,14 +293,14 @@ public class ExcelReportWriter implements
         return toPrimitiveIntegerArray(columnsWidthList);
     }
 
-    private String[] getColumns(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues, boolean isHumanReadable) {
+    private String[] getColumns(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues, boolean isHumanReadable, boolean withImportanceHistory) {
         List<String> columnsList = new ListBuilder<String>()
                 .add("ir_caseno").addIf("ir_private", isNotRestricted).add("ir_name").addIf("ir_description", withDescription)
                 .add("ir_company").add("ir_initiator").add("ir_manager").add("ir_manager_company")
                 .add("ir_product").add("ir_importance").add("ir_state").addIf("ir_tags", withTags).addIf("ir_links", withLinkedIssues)
                 .add("ir_date_created").add("ir_date_opened").add("ir_date_workaround")
                 .add("ir_date_customer_test").add("ir_date_done").add("ir_date_verify")
-                .add("ir_date_important").add("ir_date_critical")
+                .addIf("ir_date_important", withImportanceHistory).addIf("ir_date_critical", withImportanceHistory)
                 .addIf("ir_time_solution_first", isNotRestricted).addIf("ir_time_solution_first_with_days", isNotRestricted && isHumanReadable)
                 .addIf("ir_time_solution_full", isNotRestricted).addIf("ir_time_solution_full_with_days", isNotRestricted && isHumanReadable)
                 .addIf("ir_time_elapsed", isNotRestricted).addIf("ir_time_elapsed_selected_range", isNotRestricted)

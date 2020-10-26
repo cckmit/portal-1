@@ -2462,7 +2462,6 @@ a {
         border: 0;
         background-color: transparent;
         margin-right: -15px;
-        margin-bottom: 10px;
       }
     }
   }
@@ -4136,6 +4135,10 @@ table {
     width: calc(100% - 47px);
     margin: -1px -1px 0 -3px;
   }
+
+  .dropdown-menu {
+    width: max-content;
+  }
 }
 
 .type-selector-item,
@@ -4657,7 +4660,7 @@ table {
 }
 
 .form-group {
-  &.form-group-default.pause-date {
+  &.form-group-default.date-picker {
     height: 54px !important;
 
     .form-control {
@@ -4693,10 +4696,6 @@ table {
       margin-top: 20px;
     }
   }
-}
-
-.technical-validity {
-  height: 56px;
 }
 
 .max-z-index {
@@ -5154,7 +5153,7 @@ table {
   }
 }
 
-.user-login-selector {
+.arrow-selectable {
   li {
     height: 40px;
 
@@ -5202,7 +5201,7 @@ table {
   position: absolute;
   display: block;
   float: left;
-  z-index: 160;
+  z-index: 1000;
 
   .dropdown-menu {
     position: relative;
@@ -5235,4 +5234,18 @@ table {
 
 .min-width-150 {
   min-width: 150px;
+}
+
+.locale-selector {
+  .dropdown-menu {
+    width: max-content;
+  }
+}
+
+.room-reservable-button-selector,
+.year-button-selector,
+.month-button-selector {
+  .dropdown-menu ul > li > a {
+    padding: 3px 10px;
+  }
 }

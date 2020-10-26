@@ -77,13 +77,14 @@ public class TemplateServiceImpl implements TemplateService {
 
     @Override
     public PreparedTemplate getCrmEmailNotificationBody(
-            AssembledCaseEvent event, List<CaseComment> caseComments, Collection<Attachment> attachments, DiffCollectionResult<LinkData> mergeLinks, String urlTemplate, Collection<String> recipients
+            AssembledCaseEvent event, List<CaseComment> caseComments, Collection<Attachment> attachments,
+            DiffCollectionResult<LinkData> mergeLinks, String urlTemplate, Collection<String> recipients, EnumLangUtil enumLangUtil
     ) {
         CaseObject newState = event.getCaseObject();
         En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(newState);
 
         Map<String, Object> templateModel = new HashMap<>();
-        templateModel.putAll(makeTemplateModelUtils());
+        templateModel.putAll(makeTemplateModelUtils(enumLangUtil));
         templateModel.putAll(makeTemplateModelMeta(event));
 
 //        templateModel.put( "case", newState );
@@ -127,11 +128,12 @@ public class TemplateServiceImpl implements TemplateService {
         return template;
     }
 
-    private Map<String, Object> makeTemplateModelUtils() {
+    private Map<String, Object> makeTemplateModelUtils(EnumLangUtil enumLangUtil) {
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("TextUtils", new TextUtils());
         templateModel.put("TimeElapsedFormatter", new WorkTimeFormatter());
         templateModel.put("TranslitUtils", new TransliterationUtils());
+        templateModel.put("EnumLangUtil", enumLangUtil);
         return templateModel;
     }
 
@@ -177,6 +179,14 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("productChanged", event.isProductChanged());
         templateModel.put("product", newMetaState.getProduct() == null ? null : newMetaState.getProduct().getName());
         templateModel.put("oldProduct", oldMetaState == null || oldMetaState.getProduct() == null ? null : oldMetaState.getProduct().getName());
+
+        templateModel.put("deadlineChanged", event.isDeadlineChanged());
+        templateModel.put("deadline", newMetaState.getDeadline() == null ? null : new Date(newMetaState.getDeadline()));
+        templateModel.put("oldDeadline", (oldMetaState == null || oldMetaState.getDeadline() == null) ? null : new Date(oldMetaState.getDeadline()));
+
+        templateModel.put("workTriggerChanged", event.isWorkTriggerChanged());
+        templateModel.put("workTrigger", newMetaState.getWorkTrigger() == null ? null : newMetaState.getWorkTrigger());
+        templateModel.put("oldWorkTrigger", oldMetaState == null || oldMetaState.getWorkTrigger() == null ? null : oldMetaState.getWorkTrigger());
 
         return templateModel;
     }
@@ -513,8 +523,8 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("newCustomerType", newProjectState.getCustomerType());
 
         templateModel.put("productDirectionChanged", event.isProductDirectionChanged());
-        templateModel.put("oldProductDirection", getNullOrElse(getNullOrElse(oldProjectState, Project::getProductDirection), EntityOption::getDisplayText));
-        templateModel.put("newProductDirection", newProjectState.getProductDirection().getDisplayText());
+        templateModel.put("oldProductDirection", getNullOrElse(getNullOrElse(oldProjectState, Project::getProductDirectionEntityOption), EntityOption::getDisplayText));
+        templateModel.put("newProductDirection", newProjectState.getProductDirectionEntityOption().getDisplayText());
 
         templateModel.put("productChanged", event.isProductChanged());
         templateModel.put("oldProduct", getNullOrElse(getNullOrElse(oldProjectState, Project::getSingleProduct), ProductShortView::getName));
@@ -523,6 +533,14 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("supportValidityChanged", event.isSupportValidityChanged());
         templateModel.put("oldSupportValidity", getNullOrElse(oldProjectState, Project::getTechnicalSupportValidity));
         templateModel.put("newSupportValidity", newProjectState.getTechnicalSupportValidity());
+
+        templateModel.put("workCompletionDateChanged", event.isWorkCompletionDateChanged());
+        templateModel.put("oldWorkCompletionDate", getNullOrElse(oldProjectState, Project::getWorkCompletionDate));
+        templateModel.put("newWorkCompletionDate", newProjectState.getWorkCompletionDate());
+
+        templateModel.put("purchaseDateChanged", event.isPurchaseDateChanged());
+        templateModel.put("oldPurchaseDate", getNullOrElse(oldProjectState, Project::getPurchaseDate));
+        templateModel.put("newPurchaseDate", newProjectState.getPurchaseDate());
 
         templateModel.put("team", event.getTeamDiffs());
         templateModel.put("sla", event.getSlaDiffs());
@@ -819,6 +837,27 @@ public class TemplateServiceImpl implements TemplateService {
         model.put("recipients", recipients);
 
         PreparedTemplate template = new PreparedTemplate("notification/email/birthdays.body.%s.ftl");
+        template.setModel(model);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getNRPENonAvailableIpsNotificationSubject() {
+        Map<String, Object> model = new HashMap<>();
+        PreparedTemplate template = new PreparedTemplate("notification/email/nrpe.ips.subject.%s.ftl");
+        template.setModel(model);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getNRPENonAvailableIpsNotificationBody(List<String> nonAvailableIps, Collection<String> recipients) {
+        Map<String, Object> model = new HashMap<>();
+        model.put("nonAvailableIps", nonAvailableIps);
+        model.put("recipients", recipients);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/nrpe.ips.body.%s.ftl");
         template.setModel(model);
         template.setTemplateConfiguration(templateConfiguration);
         return template;

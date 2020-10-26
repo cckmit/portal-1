@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.dto.RegionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
@@ -48,6 +49,7 @@ public interface ProjectService {
     Result<List<EntityOption>> listOptionProjects(AuthToken token, ProjectQuery query);
 
     Result<List<ProjectInfo>> listInfoProjects(AuthToken token, ProjectQuery query);
+
     /**
      * Получает информацию о проекте
      * @param id
@@ -90,5 +92,8 @@ public interface ProjectService {
     @Async(BACKGROUND_TASKS)
     void onPauseTimeNotification( ProjectPauseTimeHasComeEvent event );
 
-    Result<PersonProjectMemberView> getProjectLeader(AuthToken authToken, Long projectId);
+    @Privileged(En_Privilege.PROJECT_VIEW)
+    Result<List<PersonProjectMemberView>> getProjectTeam(AuthToken token, Long projectId);
+
+    Result<PersonShortView> getProjectLeader(AuthToken authToken, Long projectId);
 }

@@ -74,6 +74,7 @@ public class CrmConstants {
         String ONLY_DIGITS = "^\\d*$";
         String MONEY = "^(\\d+([\\.,]\\d{1,2})?|.{0})$";
         String ONE_OR_MORE_SPACES = "\\s+";
+        String ROUND_AND_SQUARE_BRACKETS = "[()\\[\\]]+";
         String IP = "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
         String COMPANY_NAME_ILLEGAL_CHARS = ".*[<>/]+.*";
         String CONTRACT_SPECIFICATION_CLAUSE = "^\\d{1,3}(\\.\\d{1,3})*$";
@@ -82,7 +83,6 @@ public class CrmConstants {
         String CONTRACTOR_KPP = "^\\d{9}$";
         String CONTRACTOR_NAME = "^.{1,100}$";
         String CONTRACTOR_FULL_NAME = "^.{1,250}$";
-        String MENTION = "^\\@.*";
     }
 
     public interface Time {

@@ -367,8 +367,8 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     @UiHandler("login")
     public void onChangeContactLogin( InputEvent inputEvent ) {
         verifiableIcon.setClassName( NameStatus.UNDEFINED.getStyle() );
-        changeContactLoginTimer.cancel();
-        changeContactLoginTimer.schedule( 300 );
+        changeContactLoginInfoTimer.cancel();
+        changeContactLoginInfoTimer.schedule( 300 );
     }
 
     @UiHandler({"workEmail", "personalEmail"})
@@ -403,7 +403,7 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
 
     @UiHandler("password")
     public void onPasswordChanged(InputEvent event) {
-        changeContactLoginTimer.schedule( 300 );
+        changeContactLoginInfoTimer.schedule( 300 );
         showGenPasswordPopupIfNeeded();
     }
 
@@ -565,11 +565,11 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     @UiField
     Lang lang;
 
-    private Timer changeContactLoginTimer = new Timer() {
+    private Timer changeContactLoginInfoTimer = new Timer() {
         @Override
         public void run() {
             if ( activity != null ) {
-                activity.onChangeContactLogin();
+                activity.onChangeContactLoginInfo();
             }
         }
     };

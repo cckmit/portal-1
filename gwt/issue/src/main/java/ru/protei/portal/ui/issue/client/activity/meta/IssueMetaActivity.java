@@ -6,10 +6,7 @@ import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_DevUnitState;
-import ru.protei.portal.core.model.dict.En_DevUnitType;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.PlatformQuery;
@@ -334,6 +331,34 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         );
     }
 
+    @Override
+    public void onDeadlineChanged() {
+        if (isDeadlineEquals(metaView.deadline().getValue(), meta.getDeadline())) {
+            metaView.setDeadlineValid(isDeadlineFieldValid(metaView.isDeadlineEmpty(), metaView.deadline().getValue()));
+            return;
+        }
+
+        if (!isDeadlineFieldValid(metaView.isDeadlineEmpty(), metaView.deadline().getValue())) {
+            metaView.setDeadlineValid(false);
+            return;
+        }
+
+        meta.setDeadline(metaView.deadline().getValue() != null ? metaView.deadline().getValue().getTime() : null );
+        metaView.setDeadlineValid(true);
+
+        onCaseMetaChanged(meta, () -> {
+            fireEvent(new IssueEvents.IssueMetaChanged(meta));
+        });
+    }
+
+    @Override
+    public void onWorkTriggerChanged() {
+        meta.setWorkTrigger(metaView.workTrigger().getValue());
+        onCaseMetaChanged( meta, () -> {
+            fireEvent(new IssueEvents.IssueMetaChanged(meta));
+        } );
+    }
+
     private void updateSubscriptions(Long... companyIds) {
         companyService.getCompanyWithParentCompanySubscriptions(
                 new HashSet<>(Arrays.asList(companyIds)),
@@ -518,6 +543,12 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         metaView.slaContainerVisibility().setVisible(!isJiraIssue() && isSystemScope());
         requestSla(meta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, meta.getImpLevel())));
+
+        metaView.deadline().setValue(meta.getDeadline() == null ? null : new Date(meta.getDeadline()));
+        metaView.setDeadlineValid(isDeadlineValid(meta.getDeadline()));
+        metaView.workTrigger().setValue(meta.getWorkTrigger() == null ? En_WorkTrigger.NONE : meta.getWorkTrigger());
+
+        setCustomerVisibility(metaView, policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_CREATE));
     }
 
     private void fillManagerInfoContainer(final AbstractIssueMetaView issueMetaView, final CaseObjectMeta caseObjectMeta, boolean isReadOnly) {
@@ -703,6 +734,26 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         return false;
     }
 
+    private boolean isDeadlineEquals(Date deadlineField, Long deadlineMeta) {
+        if (deadlineField == null) {
+            return deadlineMeta == null;
+        } else {
+            return Objects.equals(deadlineField.getTime(), deadlineMeta);
+        }
+    }
+
+    private boolean isDeadlineFieldValid(boolean isEmptyDeadlineField, Date date) {
+        if (date == null) {
+            return isEmptyDeadlineField;
+        }
+
+        return isDeadlineValid(date.getTime());
+    }
+
+    private boolean isDeadlineValid(Long date) {
+        return date == null || date > System.currentTimeMillis();
+    }
+
     private boolean isSystemScope() {
         return policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
     }
@@ -710,6 +761,11 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     private void setPlatformVisibility(AbstractIssueMetaView issueMetaView, boolean isVisible) {
         issueMetaView.platformVisibility().setVisible(isVisible);
         issueMetaView.setInitiatorBorderBottomVisible(!isVisible);
+    }
+
+    private void setCustomerVisibility(AbstractIssueMetaView issueMetaView, boolean isVisible) {
+        issueMetaView.deadlineContainerVisibility().setVisible(isVisible);
+        issueMetaView.workTriggerVisibility().setVisible(isVisible);
     }
 
     private void setManagerCompanyEnabled(AbstractIssueMetaView issueMetaView, Long stateId) {

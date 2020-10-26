@@ -7,7 +7,6 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.context.client.events.Back;
-import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
@@ -328,6 +327,12 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         view.setFavoriteButtonActive(!view.isFavoriteButtonActive());
     }
 
+    @Override
+    public void onDeadlineChanged() {
+        issueMetaView.setDeadlineValid(
+                isDeadlineFieldValid(issueMetaView.isDeadlineEmpty(), issueMetaView.deadline().getValue()));
+    }
+
     private void placeView(HasWidgets parent, AbstractIssueCreateView view) {
         parent.clear();
         parent.add(view.asWidget());
@@ -466,6 +471,11 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.setPlatformFilter(platformOption -> caseObjectMeta.getInitiatorCompanyId().equals(platformOption.getCompanyId()));
 
         updateCompanyCaseStates(initiatorCompany.getId());
+
+        setCustomerVisibility(issueMetaView, policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_CREATE));
+        issueMetaView.deadline().setValue(caseObjectMeta.getDeadline() != null ? new Date(caseObjectMeta.getDeadline()) : null);
+        issueMetaView.setDeadlineValid(isDeadlineValid(caseObjectMeta.getDeadline()));
+        issueMetaView.workTrigger().setValue(caseObjectMeta.getWorkTrigger());
     }
 
     private void fillInitiatorValue(final AbstractIssueMetaView issueMetaView, Company initiatorCompany) {
@@ -630,6 +640,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         caseObject.setImpLevel(En_ImportanceLevel.BASIC.getId());
         caseObject.setPrivateCase(true);
         caseObject.setInitiatorCompany(policyService.getUserCompany());
+        caseObject.setWorkTrigger(En_WorkTrigger.NONE);
 
         return caseObject;
     }
@@ -676,6 +687,10 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         caseObject.setAttachments(new ArrayList<>(view.attachmentsListContainer().getAll()));
         caseObject.setManagerCompanyId(issueMetaView.getManagerCompany().getId());
         caseObject.setManagerCompanyName(issueMetaView.getManagerCompany().getDisplayText());
+        if (policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_CREATE)) {
+            caseObject.setDeadline(issueMetaView.deadline().getValue() != null? issueMetaView.deadline().getValue().getTime() : null);
+            caseObject.setWorkTrigger(issueMetaView.workTrigger().getValue());
+        }
         caseObject.setFavorite(view.isFavoriteButtonActive());
 
         if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW) && policyService.personBelongsToHomeCompany()) {
@@ -735,6 +750,11 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         if (issueMetaView.getManager() != null && issueMetaView.product().getValue() == null) {
             fireEvent(new NotifyEvents.Show(lang.errProductNotSelected(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
+        if (!isDeadlineFieldValid(issueMetaView.isDeadlineEmpty(), issueMetaView.deadline().getValue())) {
+            fireEvent(new NotifyEvents.Show(lang.errDeadlineError(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
 
@@ -821,9 +841,26 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         return false;
     }
 
+    private boolean isDeadlineFieldValid(boolean isEmptyDeadlineField, Date date) {
+        if (date == null) {
+            return isEmptyDeadlineField;
+        }
+
+        return isDeadlineValid(date.getTime());
+    }
+
+    private boolean isDeadlineValid(Long date) {
+        return date == null || date > System.currentTimeMillis();
+    }
+
     private void setPlatformVisibility(AbstractIssueMetaView issueMetaView, boolean isVisible) {
         issueMetaView.platformVisibility().setVisible(isVisible);
         issueMetaView.setInitiatorBorderBottomVisible(!isVisible);
+    }
+
+    private void setCustomerVisibility(AbstractIssueMetaView issueMetaView, boolean isVisible) {
+        issueMetaView.deadlineContainerVisibility().setVisible(isVisible);
+        issueMetaView.workTriggerVisibility().setVisible(isVisible);
     }
 
     private void setManagerCompanyEnabled(AbstractIssueMetaView issueMetaView, Long stateId) {

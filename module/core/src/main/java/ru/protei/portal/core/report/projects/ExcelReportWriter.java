@@ -102,8 +102,8 @@ public class ExcelReportWriter implements
         values.add(project.getCustomer() != null ? project.getCustomer().getCname() : "");
         values.add(project.getRegion() != null && project.getRegion().getDisplayText() != null ?
                 project.getRegion().getDisplayText() : "");
-        values.add(project.getProductDirection() != null && project.getProductDirection().getDisplayText() != null ?
-                project.getProductDirection().getDisplayText() : "");
+        values.add(project.getProductDirectionEntityOption() != null && project.getProductDirectionEntityOption().getDisplayText() != null ?
+                project.getProductDirectionEntityOption().getDisplayText() : "");
         values.add(project.getPauseDate() != null ? new Date(project.getPauseDate()) : "");
         values.add(comment != null ? comment.getCreated() : "");
         values.add(comment != null ? comment.getText() : "");

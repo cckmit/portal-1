@@ -18,6 +18,8 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.Contractor;
+import ru.protei.portal.core.model.query.EmployeeQuery;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -27,6 +29,7 @@ import ru.protei.portal.ui.common.client.widget.selector.casetag.CaseTagMultiSel
 import ru.protei.portal.ui.common.client.widget.selector.contract.state.ContractStatesMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.type.ContractTypesMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contractor.multicontractor.MultiContractorSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeCustomMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
@@ -37,6 +40,8 @@ import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedSelectorRa
 import ru.protei.portal.ui.common.client.activity.contractfilter.AbstractContractFilterActivity;
 import ru.protei.portal.ui.common.client.activity.contractfilter.AbstractContractFilterView;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 public class ContractFilterView extends Composite implements AbstractContractFilterView {
@@ -44,9 +49,10 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     @Inject
     public void onInit() {
         initWidget(outUiBinder.createAndBindUi(this));
+        initCuratorsSelector();
         sortField.setType(ModuleType.CONTRACT);
-        dateSigningRange.fillSelector(En_DateIntervalType.allTypes());
-        dateValidRange.fillSelector(En_DateIntervalType.allTypes());
+        dateSigningRange.fillSelector(En_DateIntervalType.defaultTypes());
+        dateValidRange.fillSelector(En_DateIntervalType.defaultTypes());
     }
 
     @Override
@@ -154,6 +160,11 @@ public class ContractFilterView extends Composite implements AbstractContractFil
         return dateValidRange;
     }
 
+    @Override
+    public HasValue<Set<PersonShortView>> curators() {
+        return curators;
+    }
+
     @UiHandler("resetBtn")
     public void onResetClicked(ClickEvent event) {
         if (activity != null) {
@@ -177,8 +188,8 @@ public class ContractFilterView extends Composite implements AbstractContractFil
         restartChangeTimer();
     }
 
-    @UiHandler("managers")
-    public void onManagersChanged(ValueChangeEvent<Set<PersonShortView>> event) {
+    @UiHandler({"managers", "curators"})
+    public void onManagersOrCuratorsChanged(ValueChangeEvent<Set<PersonShortView>> event) {
         restartChangeTimer();
     }
 
@@ -225,6 +236,12 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     @UiHandler("dateValidRange")
     public void onDateValidRangeChanged(ValueChangeEvent<DateIntervalWithType> event) {
         restartChangeTimer();
+    }
+
+    private void initCuratorsSelector() {
+        EmployeeQuery query = new EmployeeQuery(null, false, true, En_SortField.person_full_name, En_SortDir.ASC);
+        query.setDepartmentIds(new HashSet<>(Collections.singletonList(CrmConstants.Department.CONTRACT)));
+        curators.setEmployeeQuery(query);
     }
 
     private void restartChangeTimer() {
@@ -284,6 +301,9 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     TypedSelectorRangePicker dateValidRange;
     @UiField
     DivElement footer;
+    @Inject
+    @UiField(provided = true)
+    EmployeeCustomMultiSelector curators;
 
     private AbstractContractFilterActivity activity;
 

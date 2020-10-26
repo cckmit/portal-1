@@ -11,6 +11,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
+import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
@@ -26,6 +27,11 @@ public class NavImageSelector< T > extends Selector< T > implements HasEnabled {
 
     public NavImageSelector() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+    }
+
+    @Inject
+    public void onInit() {
+        inputContainer.add(popup);
     }
 
     @Override

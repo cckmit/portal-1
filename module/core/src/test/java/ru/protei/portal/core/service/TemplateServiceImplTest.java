@@ -10,10 +10,12 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.config.PortalConfigTestConfiguration;
 import ru.protei.portal.config.RendererTestConfiguration;
+import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.dao.CaseStateDAO;
@@ -29,6 +31,7 @@ import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 import ru.protei.portal.core.service.template.TemplateService;
 import ru.protei.portal.core.service.template.TemplateServiceImpl;
+import ru.protei.portal.core.utils.EnumLangUtil;
 import ru.protei.portal.core.utils.LinkData;
 import ru.protei.portal.test.service.BaseServiceTest;
 import ru.protei.portal.test.service.CaseCommentServiceTest;
@@ -40,7 +43,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static ru.protei.portal.core.event.AssembledEventFactory.makeComment;
@@ -68,6 +72,13 @@ public class TemplateServiceImplTest {
         @Bean
         public EmployeeShortViewDAO getEmployeeShortViewDAO() {
             return mock( EmployeeShortViewDAO.class );
+        }
+        @Bean
+        public Lang lang() {
+            ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+            messageSource.setBasenames("Lang");
+            messageSource.setDefaultEncoding("UTF-8");
+            return new Lang(messageSource);
         }
     }
 
@@ -141,7 +152,8 @@ public class TemplateServiceImplTest {
 
 
         PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(
-                assembledCaseEvent, comments, new ArrayList<>(), null, "url", Collections.EMPTY_LIST
+                assembledCaseEvent, comments, new ArrayList<>(), null, "url",
+                Collections.EMPTY_LIST, new EnumLangUtil(lang)
         );
 
         assertNotNull( bodyTemplate );
@@ -189,7 +201,8 @@ public class TemplateServiceImplTest {
         linkData.putRemovedEntry( new LinkData( "http://crm/202", "302" ) );
 
         PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(
-                assembledCaseEvent, comments, new ArrayList<>(), linkData, "url", Collections.EMPTY_LIST
+                assembledCaseEvent, comments, new ArrayList<>(), linkData, "url",
+                Collections.EMPTY_LIST, new EnumLangUtil(lang)
         );
 
         assertNotNull( bodyTemplate );
@@ -264,7 +277,8 @@ public class TemplateServiceImplTest {
         when( caseStateDAO.getAllByCaseType( En_CaseType.CRM_SUPPORT ) ).thenReturn( caseStateList );
 
         PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(
-                assembled, assembled.getAllComments(), new ArrayList<>(), null, "url", Collections.EMPTY_LIST
+                assembled, assembled.getAllComments(), new ArrayList<>(), null, "url",
+                Collections.EMPTY_LIST, new EnumLangUtil(lang)
         );
         assertNotNull( bodyTemplate );
         NotificationEntry entry = createNewNotificationEntry();
@@ -343,6 +357,8 @@ public class TemplateServiceImplTest {
     HTMLRenderer htmlRenderer;
     @Autowired
     CaseStateDAO caseStateDAO;
+    @Autowired
+    Lang lang;
 
     private String commentTextWithBreaks = " ```\n" +
             "ls -l\n" +

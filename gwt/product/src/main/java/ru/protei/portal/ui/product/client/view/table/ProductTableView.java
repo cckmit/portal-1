@@ -110,8 +110,8 @@ public class ProductTableView extends Composite implements AbstractProductTableV
 
     private void initTable () {
 
-        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.COMPANY_EDIT) && !v.isDeprecatedUnit() );
-        archiveClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.COMPANY_EDIT) );
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.PRODUCT_EDIT) && !v.isDeprecatedUnit());
+        archiveClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.PRODUCT_EDIT));
         archiveClickColumn.setArchiveFilter(DevUnit::isDeprecatedUnit);
 
         name = new DynamicColumn<>(lang.name(), "product-name", devUnit -> {

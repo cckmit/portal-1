@@ -205,9 +205,19 @@ public enum En_ResultStatus {
     EMPLOYEE_NOT_FIRED_FROM_THESE_COMPANIES,
 
     /**
+     * отрудник с таким email уже существует
+     */
+    EMPLOYEE_EMAIL_ALREADY_EXIST,
+
+    /**
      * Ошибка миграции сотрудника на старый портал
      */
     EMPLOYEE_MIGRATION_FAILED,
+
+    /**
+     * Логин уже существует
+     */
+    LOGIN_ALREADY_EXIST,
 
     /**
      * Подсеть не существует
@@ -287,6 +297,26 @@ public enum En_ResultStatus {
      * Сервис отчётов не настроен
      */
     REPORTING_SERVICE_NOT_CONFIGURED,
+
+    /**
+     * NRPE. IP адрес занят
+     */
+    NRPE_IP_NON_AVAILABLE,
+
+    /**
+     * NRPE. Ошибка сервиса
+     */
+    NRPE_ERROR,
+
+    /**
+     *  Недостаточно свободных IP адресов
+     */
+    NRPE_NO_FREE_IPS,
+
+    /**
+     * Пользователь не найдем
+     */
+    USER_NOT_FOUND,
 
     /**
      * Родительский объект не найден

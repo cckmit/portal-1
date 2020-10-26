@@ -8,12 +8,16 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_ProjectAccessType;
 import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectFilterActivity;
+import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectFilterView;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
@@ -22,13 +26,14 @@ import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.winter.core.utils.beans.SearchResult;
-import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectFilterActivity;
-import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectFilterView;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.searchCaseNumber;
+import static ru.protei.portal.ui.project.client.util.AccessUtil.getAccessType;
 
 /**
  * Активность таблицы проектов
@@ -53,13 +58,16 @@ public abstract class ProjectTableActivity
 
     @Event
     public void onAuthSuccess (AuthEvents.Success event) {
+        En_ProjectAccessType accessType = getAccessType(policyService, En_Privilege.PROJECT_VIEW);
         filterView.resetFilter();
+        filterView.onlyMineProjectsVisibility().setVisible(accessType == En_ProjectAccessType.ALL_PROJECTS);
     }
 
     @Event(Type.FILL_CONTENT)
     public void onShow( ProjectEvents.Show event ) {
-        if (!policyService.hasPrivilegeFor(En_Privilege.PROJECT_VIEW)) {
-            fireEvent(new ErrorPageEvents.ShowForbidden());
+        En_ProjectAccessType viewAccessType = getAccessType(policyService, En_Privilege.PROJECT_VIEW);
+        if (viewAccessType == En_ProjectAccessType.NONE) {
+            fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
 
@@ -67,7 +75,8 @@ public abstract class ProjectTableActivity
         initDetails.parent.add( view.asWidget() );
         view.getPagerContainer().add( pagerView.asWidget() );
 
-        fireEvent( policyService.hasPrivilegeFor( En_Privilege.PROJECT_CREATE ) ?
+        En_ProjectAccessType createAccessType = getAccessType(policyService, En_Privilege.PROJECT_CREATE);
+        fireEvent( createAccessType != En_ProjectAccessType.NONE ?
             new ActionBarEvents.Add( CREATE_ACTION, null, UiConstants.ActionBarIdentity.PROJECT ) :
             new ActionBarEvents.Clear()
         );
@@ -114,7 +123,8 @@ public abstract class ProjectTableActivity
 
     @Override
     public void onRemoveClicked(Project value) {
-        if (!policyService.hasPrivilegeFor(En_Privilege.PROJECT_REMOVE)) {
+        En_ProjectAccessType removeAccessType = getAccessType(policyService, En_Privilege.PROJECT_REMOVE);
+        if (removeAccessType == En_ProjectAccessType.NONE) {
             return;
         }
 
@@ -215,8 +225,13 @@ public abstract class ProjectTableActivity
         query.setDirections(filterView.direction().getValue());
         query.setSortField(filterView.sortField().getValue());
         query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
-        query.setOnlyMineProjects(filterView.onlyMineProjects().getValue());
-        query.setInitiatorCompanyIds(filterView.initiatorCompanies().getValue());
+        if(filterView.onlyMineProjects().getValue() != null && filterView.onlyMineProjects().getValue()) {
+            query.setMemberId(policyService.getProfile().getId());
+        }
+        if (CollectionUtils.isNotEmpty(filterView.initiatorCompanies().getValue())) {
+            query.setInitiatorCompanyIds(filterView.initiatorCompanies().getValue().stream()
+                    .map(entityOption -> entityOption.getId()).collect(Collectors.toSet()));
+        }
         return query;
     }
 

@@ -22,9 +22,11 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 public class AssemblerProjectServiceImpl implements AssemblerProjectService {
     @Async(BACKGROUND_TASKS)
@@ -84,10 +86,9 @@ public class AssemblerProjectServiceImpl implements AssemblerProjectService {
             return ok(event);
         }
 
-        CaseObject caseObject = caseObjectDAO.get(event.getProjectId());
-        jdbcManyRelationsHelper.fillAll(caseObject);
+        Project project = projectDAO.get(event.getProjectId());
+        jdbcManyRelationsHelper.fillAll(project);
 
-        Project project = Project.fromCaseObject(caseObject);
         event.setNewProjectState(project);
 
         return ok(event);
@@ -130,7 +131,7 @@ public class AssemblerProjectServiceImpl implements AssemblerProjectService {
             return ok(event);
         }
         log.info("fillAttachments(): CaseObjectID={} Try to fill attachments.", event.getProjectId());
-        event.setExistingAttachments(attachmentDAO.getAttachmentsByCaseId(event.getProjectId()));
+        event.setExistingAttachments(stream(attachmentDAO.getAttachmentsByCaseId(event.getProjectId())).distinct().collect(Collectors.toList()));
         log.info("fillAttachments(): CaseObjectID={} Attachments are successfully filled.", event.getProjectId());
 
         return ok(event);
@@ -146,7 +147,7 @@ public class AssemblerProjectServiceImpl implements AssemblerProjectService {
     @Autowired
     PersonDAO personDAO;
     @Autowired
-    CaseObjectDAO caseObjectDAO;
+    ProjectDAO projectDAO;
     @Autowired
     CaseCommentDAO caseCommentDAO;
     @Autowired
@@ -155,7 +156,6 @@ public class AssemblerProjectServiceImpl implements AssemblerProjectService {
     AttachmentDAO attachmentDAO;
     @Autowired
     PortalScheduleTasks scheduledTasksService;
-
     @Autowired
     EventPublisherService publisherService;
     @Autowired

@@ -250,9 +250,13 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errEmployeeAlreadyExist();
 
+    String errEmployeeEmailAlreadyExist();
+
     String errEmployeeNotFiredFromTheseCompanies();
 
     String errEmployeeMigrationFailed();
+
+    String errLoginAlreadyExist();
 
     String errDepartmentAlreadyExistInThisCompany();
 
@@ -724,6 +728,12 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errRemoveIssueCommentByTime();
 
+    String errNRPEIpNonAvailable();
+
+    String errNRPEError();
+
+    String errNRPENoFreeIps();
+
     String errEditTimeElapsedType();
 
     String errEditContactLogin();
@@ -895,6 +905,8 @@ public interface Lang extends Messages, ContactItemLang {
     String regionStatePaused();
 
     String projects();
+
+    String projectNumber();
 
     String projectDirection();
 
@@ -1751,6 +1763,10 @@ public interface Lang extends Messages, ContactItemLang {
     String errSavePlatformConnectedIssuesExist();
 
     String technicalSupportValidity();
+
+    String workCompletionDate();
+
+    String purchaseDate();
 
     String technicalSupportValidityNotFound( String p0 );
 
@@ -2830,11 +2846,17 @@ public interface Lang extends Messages, ContactItemLang {
 
     String thisWeekInterval();
 
+    String thisWeekAndBeyondInterval();
+
     String lastWeekInterval();
+
+    String nextWeekInterval();
 
     String thisMonthInterval();
 
     String lastMonthInterval();
+
+    String nextMonthInterval();
 
     String thisYearInterval();
 
@@ -2990,6 +3012,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueSyncedWith();
 
+    String issueDeadline();
+
+    String issueWorkTrigger();
+
     String employeeBirthdays();
 
     String employeeBirthdayPrevMonth();
@@ -3082,7 +3108,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String dutyLog();
 
-    String dutyLogDateFrom();
+    String dutyLogSortDateFrom();
 
     String dutyLogValidationDateRange();
 
@@ -3108,6 +3134,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractDatesWarningCostOverflow();
 
+    String valueNotSet();
+
     String errEmployeeNotFound();
 
     String reservedIpExistedIpInRange();
@@ -3117,6 +3145,30 @@ public interface Lang extends Messages, ContactItemLang {
     String issueReportHumanReadableTitle();
 
     String errReportingServiceNotConfigured();
+
+    String dutyTypeCOV();
+
+    String reservedIpReservationStart();
+
+    String errUserNotFound();
+
+    String errDeadlineError();
+
+    String workTriggerNone();
+
+    String workTriggerPSGO();
+
+    String workTriggerNewRequirements();
+
+    String workTriggerPreCommissioningContract();
+
+    String workTriggerNewPreCommissioningRequirements();
+
+    String workTriggerMarketing();
+
+    String workTriggerOther();
+
+    String overdueDeadlines();
 
     String projectSubcontractor();
 

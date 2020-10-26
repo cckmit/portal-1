@@ -42,6 +42,7 @@ import ru.protei.portal.ui.common.client.widget.selector.person.PersonMultiSelec
 import ru.protei.portal.ui.common.client.widget.selector.plan.selector.PlanButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
+import ru.protei.portal.ui.common.client.widget.selector.worktrigger.WorkTriggerButtonMultiSelector;
 import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedSelectorRangePicker;
@@ -216,6 +217,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         tags.setValue(null);
         tags.isProteiUser( policyService.hasSystemScopeForPrivilege( En_Privilege.ISSUE_VIEW ) );
         plan.setValue(null);
+        workTriggers.setValue(null);
+        overdueDeadlines.setValue(null);
 
         if (isAttached()) {
             onFilterChanged();
@@ -276,6 +279,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         timeElapsedTypes.setValue(toSet(caseQuery.getTimeElapsedTypeIds(), En_TimeElapsedType::findById));
         creators.setValue(applyPersons(filter, caseQuery.getCreatorIds()));
         plan.setValue(filter.getPlanOption());
+        workTriggers.setValue(toSet(caseQuery.getWorkTriggersIds(), En_WorkTrigger::findById));
+        overdueDeadlines.setValue(caseQuery.getOverdueDeadlines());
 
         Set<PersonShortView> personShortViews = new LinkedHashSet<>();
         if (emptyIfNull(caseQuery.getManagerIds()).contains(CrmConstants.Employee.UNDEFINED)) {
@@ -326,6 +331,9 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 query.setCreatorIds(nullIfEmpty(toList(creators.getValue(), personShortView -> personShortView == null ? null : personShortView.getId())));
                 query.setManagerCompanyIds(getCompaniesIdList(managerCompanies.getValue()));
                 query.setPlanId(plan.getValue() == null ? null : plan.getValue().getId());
+                query.setWorkTriggersIds(nullIfEmpty(toList(workTriggers.getValue(),
+                        workTrigger -> workTrigger == null ? En_WorkTrigger.NONE.getId() : workTrigger.getId())));
+                query.setOverdueDeadlines(overdueDeadlines.getValue());
 
                 query.setCreatedRange(toDateRange(dateCreatedRange.getValue()));
                 query.setModifiedRange(toDateRange(dateModifiedRange.getValue()));
@@ -459,6 +467,16 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         onFilterChanged();
     }
 
+    @UiHandler("workTriggers")
+    public void onWorkTriggersChanged(ValueChangeEvent<Set<En_WorkTrigger>> event) {
+        onFilterChanged();
+    }
+
+    @UiHandler("overdueDeadlines")
+    public void onOverdueDeadlinesChanged(ValueChangeEvent<Boolean> event) {
+        onFilterChanged();
+    }
+
     public void applyVisibilityByFilterType(En_CaseFilterType filterType) {
         if (filterType == null) {
             return;
@@ -485,6 +503,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         tags.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS) || filterType.equals(En_CaseFilterType.CASE_RESOLUTION_TIME));
         searchPrivateContainer.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         plan.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS) && policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PLAN_VIEW));
+        workTriggers.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        overdueDeadlinesContainer.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         if (filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED)) {
             importanceContainer.addClassName(HIDE);
             stateContainer.addClassName(HIDE);
@@ -569,8 +589,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     private void ensureDebugIds() {
-        search.setEnsureDebugIdTextBox(DebugIds.FILTER.SEARCH_INPUT);
-        search.setEnsureDebugIdAction(DebugIds.FILTER.SEARCH_CLEAR_BUTTON);
+        search.setDebugIdTextBox(DebugIds.FILTER.SEARCH_INPUT);
+        search.setDebugIdAction(DebugIds.FILTER.SEARCH_CLEAR_BUTTON);
         plan.setEnsureDebugId(DebugIds.FILTER.PLAN_SELECTOR);
         searchByComments.ensureDebugId(DebugIds.FILTER.SEARCH_BY_COMMENTS_TOGGLE);
         searchByCommentsWarning.ensureDebugId(DebugIds.FILTER.SEARCH_BY_WARNING_COMMENTS_LABEL);
@@ -621,6 +641,14 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         timeElapsedTypes.setClearEnsureDebugId(DebugIds.ISSUE_REPORT.TIME_ELAPSED_TYPES_CLEAR_BUTTON);
         timeElapsedTypes.setItemContainerEnsureDebugId(DebugIds.ISSUE_REPORT.TIME_ELAPSED_TYPES_ITEM_CONTAINER);
         timeElapsedTypes.setLabelEnsureDebugId(DebugIds.ISSUE_REPORT.TIME_ELAPSED_TYPES_LABEL);
+        workTriggers.ensureDebugId(DebugIds.ISSUE_REPORT.WORK_TRIGGER_TYPES);
+        workTriggers.setAddEnsureDebugId(DebugIds.ISSUE_REPORT.WORK_TRIGGER_TYPES_ADD_BUTTON);
+        workTriggers.setClearEnsureDebugId(DebugIds.ISSUE_REPORT.WORK_TRIGGER_TYPES_CLEAR_BUTTON);
+        workTriggers.setItemContainerEnsureDebugId(DebugIds.ISSUE_REPORT.WORK_TRIGGER_TYPES_ITEM_CONTAINER);
+        workTriggers.setLabelEnsureDebugId(DebugIds.ISSUE_REPORT.WORK_TRIGGER_TYPES_LABEL);
+        overdueDeadlines.setYesEnsureDebugId(DebugIds.FILTER.OVERDUE_DEADLINES_YES_BUTTON);
+        overdueDeadlines.setNotDefinedEnsureDebugId(DebugIds.FILTER.OVERDUE_DEADLINES_NOT_DEFINED_BUTTON);
+        overdueDeadlines.setNoEnsureDebugId(DebugIds.FILTER.OVERDUE_DEADLINES_NO_BUTTON);
     }
 
     private void onFilterChanged() {
@@ -811,7 +839,13 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @Inject
     @UiField(provided = true)
     IssueStatesOptionList state;
-
+    @Inject
+    @UiField(provided = true)
+    WorkTriggerButtonMultiSelector workTriggers ;
+    @UiField
+    HTMLPanel overdueDeadlinesContainer;
+    @UiField
+    ThreeStateButton overdueDeadlines;
 
     @UiField
     DivElement sortByContainer;

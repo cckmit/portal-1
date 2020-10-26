@@ -204,6 +204,10 @@ public class DebugIds {
 
         String PLAN_SELECTOR = "filter-plan-selector";
 
+        String OVERDUE_DEADLINES_YES_BUTTON = "filter-overdue-deadlines-yes-button";
+        String OVERDUE_DEADLINES_NO_BUTTON = "filter-overdue-deadlines-no-button";
+        String OVERDUE_DEADLINES_NOT_DEFINED_BUTTON = "filter-overdue-deadlines-not-defined-button";
+
         interface USER_FILTER {
             String FILTERS_BUTTON = "filter-user-filters-button";
             String FILTER_NAME_INPUT = "filter-user-filter-name-input";
@@ -333,6 +337,8 @@ public class DebugIds {
         String PLANS_SELECTOR_ITEM_CONTAINER = "issue-plans-selector-item-container";
         String PLANS_SELECTOR_LABEL = "issue-plans-selector-label";
         String PLANS_SELECTOR = "issue-plans-selector";
+        String DEADLINE_CONTAINER = "issue-deadline-container";
+        String WORK_TRIGGER_SELECTOR = "issue-work-trigger-selector";
         String SUBTASK_BUTTON = "issue-subtask-button";
 
         interface LABEL {
@@ -372,6 +378,11 @@ public class DebugIds {
         String TIME_ELAPSED_TYPES_LABEL = "issue-report-time-elapsed-types-label";
         String CREATE_BUTTON = "issue-report-create-button";
         String CANCEL_BUTTON = "issue-report-cancel-button";
+        String WORK_TRIGGER_TYPES = "issue-report-work-trigger-types";
+        String WORK_TRIGGER_TYPES_ADD_BUTTON = "issue-report-work-trigger-types-add-button";
+        String WORK_TRIGGER_TYPES_CLEAR_BUTTON = "issue-report-work-trigger-types-clear-button";
+        String WORK_TRIGGER_TYPES_ITEM_CONTAINER = "issue-report-work-trigger-types-item-container";
+        String WORK_TRIGGER_TYPES_LABEL = "issue-report-work-trigger-types-label";
     }
 
     public interface CASE_COMMENT {
@@ -451,6 +462,8 @@ public class DebugIds {
         String COMPANY_SELECTOR = "project-company-selector";
         String LINKS_BUTTON = "project-links-button";
         String TECHNICAL_SUPPORT_VALIDITY_CONTAINER = "project-technical-support-validity-container";
+        String WORK_COMPLETION_DATE = "project-work-completion-date";
+        String PURCHASE_DATE = "project-purchase-date";
         String SLA_INPUT = "project-sla-input";
 
         String SAVE_BUTTON = "project-save-button";
@@ -481,6 +494,8 @@ public class DebugIds {
         String CONTRACTS_CONTAINER = "project-preview-contracts-container";
         String PLATFORM_LABEL = "project-preview-platform-label";
         String TECHNICAL_SUPPORT_VALIDITY_CONTAINER = "project-preview-technical-support-validity-container";
+        String WORK_COMPLETION_DATE = "project-preview-work-completion-date";
+        String PURCHASE_DATE = "project-preview-purchase-date";
         String SLA_INPUT = "project-preview-sla-input";
     }
 

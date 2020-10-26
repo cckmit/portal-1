@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.sqlcondition.Condition;
 import ru.protei.portal.core.utils.EntityCache;
 import ru.protei.portal.core.utils.TypeConverters;
@@ -94,6 +95,23 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
             condition.append(" SELECT cip.person_id FROM contact_item_person AS cip WHERE cip.contact_item_id IN (");
             condition.append(" SELECT ci.id FROM contact_item AS ci WHERE 1=1");
             condition.append(" AND (ci.item_type = ? and ci.value like ?)");
+            args.add(En_ContactItemType.EMAIL.getId());
+            args.add(HelperFunc.makeLikeArg(email, true));
+            condition.append(" ))");
+        });
+
+        return getListByCondition(sql.condition, sql.args);
+    }
+
+    @Override
+    public List<Person> findEmployeeByEmail(String email) {
+        SqlCondition sql = new SqlCondition().build((condition, args) -> {
+            condition.append(" person.company_id = ?");
+            condition.append(" and person.id IN (");
+            condition.append(" SELECT cip.person_id FROM contact_item_person AS cip WHERE cip.contact_item_id IN (");
+            condition.append(" SELECT ci.id FROM contact_item AS ci WHERE 1=1");
+            condition.append(" AND (ci.item_type = ? and ci.value like ?)");
+            args.add(CrmConstants.Company.HOME_COMPANY_ID);
             args.add(En_ContactItemType.EMAIL.getId());
             args.add(HelperFunc.makeLikeArg(email, true));
             condition.append(" ))");

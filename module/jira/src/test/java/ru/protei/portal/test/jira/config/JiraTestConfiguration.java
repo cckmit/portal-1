@@ -17,6 +17,7 @@ import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.core.mail.VirtualMailSendChannel;
+import ru.protei.portal.core.model.converter.MoneyJdbcConverter;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.service.*;
@@ -28,6 +29,8 @@ import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceImpl;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceTaskHandlerImpl;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseTaskHandler;
 import ru.protei.portal.core.service.events.*;
+import ru.protei.portal.core.service.nrpe.NRPEService;
+import ru.protei.portal.core.service.nrpe.NRPEServiceImpl;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
 import ru.protei.portal.jira.aspect.JiraServiceLayerInterceptorLogging;
@@ -38,6 +41,8 @@ import ru.protei.portal.jira.service.JiraBackchannelHandlerImpl;
 import ru.protei.portal.jira.service.JiraIntegrationService;
 import ru.protei.portal.jira.service.JiraIntegrationServiceImpl;
 import ru.protei.portal.jira.utils.JiraQueueSingleThreadPoolTaskExecutor;
+import ru.protei.portal.nrpe.NRPEExecutorTest;
+import ru.protei.portal.nrpe.NRPEProcessor;
 import ru.protei.portal.schedule.PortalScheduleTasks;
 import ru.protei.portal.test.jira.mock.JiraEndpointDAO_ImplMock;
 import ru.protei.portal.test.jira.mock.JiraPriorityMapEntryDAO_ImplMock;
@@ -349,6 +354,11 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public ProjectDAO getProjectDAO() {
+        return new ProjectDAO_Impl();
+    }
+
+    @Bean
     public YoutrackService getYoutrackService() {
         return new YoutrackServiceImpl();
     }
@@ -401,6 +411,11 @@ public class JiraTestConfiguration {
     @Bean
     public ProductService getProductService() {
         return new ProductServiceImpl();
+    }
+
+    @Bean
+    public ProjectService getProjectService() {
+        return new ProjectServiceImpl();
     }
 
     @Bean
@@ -501,5 +516,49 @@ public class JiraTestConfiguration {
     @Bean
     public EmployeeShortViewDAO getEmployeeShortViewDAO() {
         return new EmployeeShortViewDAO_Impl();
+    }
+
+    @Bean
+    public LocationDAO getLocationDAO() {
+        return new LocationDAO_Impl();
+    }
+
+    @Bean
+    public CaseMemberDAO getCaseMemberDAO() {
+        return new CaseMemberDAO_Impl();
+    }
+
+    @Bean
+    public CaseLocationDAO getCaseLocationDAO() {
+        return new CaseLocationDAO_Impl();
+    }
+
+    @Bean
+    public ProjectToProductDAO getProjectToProductDAO() {
+        return new ProjectToProductDAO_Impl();
+    }
+
+    @Bean
+    public ContractDAO getContractDAO() {
+        return new ContractDAO_Impl();
+    }
+
+
+    /* DAO converters */
+
+    @Bean
+    public MoneyJdbcConverter moneyJdbcConverter() {
+        return new MoneyJdbcConverter();
+    }
+
+    @Bean
+    public NRPEService getNRPEService() {
+        return new NRPEServiceImpl();
+    }
+
+    /* NRPE */
+    @Bean
+    public NRPEProcessor getNRPERequest() {
+        return new NRPEProcessor(new NRPEExecutorTest());
     }
 }

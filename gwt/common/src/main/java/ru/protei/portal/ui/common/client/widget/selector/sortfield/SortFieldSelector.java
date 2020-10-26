@@ -82,7 +82,7 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
                 break;
             case PROJECT:
                 addOption( En_SortField.project_name );
-                addOption( En_SortField.issue_number );
+                addOption( En_SortField.project_number );
                 addOption( En_SortField.region_name );
                 break;
             case REGION:
@@ -109,6 +109,8 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
                 break;
             case DUTY_LOG:
                 addOption(En_SortField.duty_log_date_from);
+                addOption(En_SortField.duty_log_employee);
+                addOption(En_SortField.duty_log_type);
                 break;
         }
     }
