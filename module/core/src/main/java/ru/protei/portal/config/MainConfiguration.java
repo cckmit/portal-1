@@ -1032,7 +1032,7 @@ public class MainConfiguration {
 
     @Bean
     public DutyLogFilterService getDutyLogFilterService() {
-        return new DutyLogLogFilterServiceImpl();
+        return new DutyLogFilterServiceImpl();
     }
 
 

@@ -125,7 +125,6 @@ public abstract class FilterWidget<F extends Filter<FSV, Q>, Q extends FilterQue
 
         model.onUserFilterChanged(filterShortView.getId(), filterAfter -> {
             filterParamView.fillFilterFields(filterAfter.getQuery(), filterAfter.getSelectorsParams());
-            fillFilterAfter();
             filterName.setValue( filterAfter.getName() );
             removeFilterBtnVisibility().setVisible( true );
             saveBtn.setVisible( true );
@@ -194,7 +193,6 @@ public abstract class FilterWidget<F extends Filter<FSV, Q>, Q extends FilterQue
         }
     }
 
-    protected void fillFilterAfter() {};
     abstract protected F fillUserFilter();
 
     @Inject

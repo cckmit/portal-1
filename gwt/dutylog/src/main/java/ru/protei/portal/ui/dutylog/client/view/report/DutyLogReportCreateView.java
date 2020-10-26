@@ -15,7 +15,6 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.dutylog.client.activity.report.AbstractDutyLogReportCreateView;
 import ru.protei.portal.ui.dutylog.client.widget.filter.DutyLogFilterWidget;
 import ru.protei.portal.ui.dutylog.client.widget.filter.DutyLogFilterWidgetModel;
-import ru.protei.portal.ui.dutylog.client.widget.filter.paramview.DutyLogFilterParamWidget;
 
 public class DutyLogReportCreateView extends Composite implements AbstractDutyLogReportCreateView {
 
@@ -32,14 +31,8 @@ public class DutyLogReportCreateView extends Composite implements AbstractDutyLo
     }
 
     @Override
-    public DutyLogFilterParamWidget getFilterParams() {
-        return filterWidget.getFilterParamView();
-    }
-
-    @Override
-    public void resetFilter() {
-        name.setValue(null);
-        filterWidget.resetFilter();
+    public DutyLogFilterWidget getFilterWidget() {
+        return filterWidget;
     }
 
     private void ensureDebugIds() {

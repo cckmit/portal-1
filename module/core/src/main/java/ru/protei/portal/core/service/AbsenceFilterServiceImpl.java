@@ -3,6 +3,7 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.AbsenceFilterDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -90,6 +91,7 @@ public class AbsenceFilterServiceImpl implements AbsenceFilterService {
     }
 
     @Override
+    @Transactional
     public Result<AbsenceFilter> saveFilter(AuthToken token, AbsenceFilter filter) {
 
         log.debug("saveFilter(): filter={} ", filter);
@@ -116,15 +118,16 @@ public class AbsenceFilterServiceImpl implements AbsenceFilterService {
     }
 
     @Override
-    public Result<Boolean> removeFilter(Long id) {
+    @Transactional
+    public Result<Long> removeFilter(Long id) {
 
         log.debug( "removeFilter(): id={} ", id );
 
         if ( absenceFilterDAO.removeByKey( id ) ) {
-            return ok(true);
+            return ok(id);
+        } else {
+            return error(En_ResultStatus.NOT_FOUND);
         }
-
-        return error(En_ResultStatus.INTERNAL_ERROR );
     }
 
     private List<Long> collectEmployeeIds(AbsenceQuery query){

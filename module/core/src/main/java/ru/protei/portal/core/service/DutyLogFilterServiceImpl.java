@@ -3,6 +3,7 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.DutyLogFilterDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -24,9 +25,9 @@ import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
-public class DutyLogLogFilterServiceImpl implements DutyLogFilterService {
+public class DutyLogFilterServiceImpl implements DutyLogFilterService {
 
-    private static Logger log = LoggerFactory.getLogger( DutyLogLogFilterServiceImpl.class );
+    private static Logger log = LoggerFactory.getLogger( DutyLogFilterServiceImpl.class );
 
     @Autowired
     DutyLogFilterDAO dutyLogFilterDAO;
@@ -90,6 +91,7 @@ public class DutyLogLogFilterServiceImpl implements DutyLogFilterService {
     }
 
     @Override
+    @Transactional
     public Result<DutyLogFilter> saveFilter(AuthToken token, DutyLogFilter filter) {
 
         log.debug("saveFilter(): filter={} ", filter);
@@ -116,15 +118,16 @@ public class DutyLogLogFilterServiceImpl implements DutyLogFilterService {
     }
 
     @Override
-    public Result<Boolean> removeFilter(Long id) {
+    @Transactional
+    public Result<Long> removeFilter(Long id) {
 
         log.debug( "removeFilter(): id={} ", id );
 
         if ( dutyLogFilterDAO.removeByKey( id ) ) {
-            return ok(true);
+            return ok(id);
+        } else {
+            return error(En_ResultStatus.NOT_FOUND);
         }
-
-        return error(En_ResultStatus.INTERNAL_ERROR );
     }
 
     private List<Long> collectEmployeeIds(DutyLogQuery query){

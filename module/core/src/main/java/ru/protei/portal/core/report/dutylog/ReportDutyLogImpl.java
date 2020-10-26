@@ -13,7 +13,6 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.EnumLangUtil;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +34,7 @@ public class ReportDutyLogImpl implements ReportDutyLog {
     DutyLogDAO dutyLogDAO;
 
     @Override
-    public boolean writeReport(OutputStream buffer, final DutyLogQuery query) throws IOException {
+    public boolean writeReport(OutputStream buffer, final DutyLogQuery query) {
 
         Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(CrmConstants.DEFAULT_LOCALE));
 

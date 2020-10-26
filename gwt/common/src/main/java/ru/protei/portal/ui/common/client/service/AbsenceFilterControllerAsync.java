@@ -17,5 +17,5 @@ public interface AbsenceFilterControllerAsync {
 
     void saveFilter(AbsenceFilter filter, AsyncCallback<AbsenceFilter> async);
 
-    void removeFilter(Long id, AsyncCallback<Boolean> async);
+    void removeFilter(Long id, AsyncCallback<Long> async);
 }

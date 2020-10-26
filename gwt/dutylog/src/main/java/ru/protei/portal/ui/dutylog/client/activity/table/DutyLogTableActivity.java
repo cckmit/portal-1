@@ -120,7 +120,7 @@ public abstract class DutyLogTableActivity
 
     private void requestData(int page) {
         view.clearRecords();
-        query = fillQuery();
+        DutyLogQuery query = fillQuery();
 
         boolean isFirstChunk = page == 0;
         query.setOffset( page * PAGE_SIZE );
@@ -152,5 +152,4 @@ public abstract class DutyLogTableActivity
     private AppEvents.InitDetails init;
 
     private int page;
-    private DutyLogQuery query = new DutyLogQuery();
 }

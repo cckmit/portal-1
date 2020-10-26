@@ -41,7 +41,6 @@ public abstract class DutyLogReportCreateActivity implements AbstractDutyLogRepo
             return;
         }
 
-        view.resetFilter();
         dialogView.showPopup();
 
         resetView();
@@ -57,7 +56,7 @@ public abstract class DutyLogReportCreateActivity implements AbstractDutyLogRepo
                 lang.dutyLogReportDefaultNameTemplate(DateFormatter.formatDateTime(new Date())) :
                 view.name().getValue();
 
-        dutyLogController.createReport(name, view.getFilterParams().getQuery(),
+        dutyLogController.createReport(name, view.getFilterWidget().getFilterParamView().getQuery(),
                 new FluentCallback<Void>()
                         .withSuccess(result -> dialogView.hidePopup()));
     }
@@ -68,12 +67,11 @@ public abstract class DutyLogReportCreateActivity implements AbstractDutyLogRepo
     }
 
     private void resetView() {
-        view.name().setValue(null);
-        view.resetFilter();
+        view.getFilterWidget().resetFilter();
     }
 
     private boolean validateView() {
-        if (!view.getFilterParams().isValidDateRange()) {
+        if (!view.getFilterWidget().getFilterParamView().isValidDateRange()) {
             fireEvent(new NotifyEvents.Show(lang.dutyLogValidationDateRange(), NotifyEvents.NotifyType.ERROR));
             return false;
         }

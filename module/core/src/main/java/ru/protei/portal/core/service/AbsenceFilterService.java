@@ -19,5 +19,5 @@ public interface AbsenceFilterService {
 
     Result<AbsenceFilter> saveFilter(AuthToken token, AbsenceFilter filter);
 
-    Result<Boolean> removeFilter(Long id);
+    Result<Long> removeFilter(Long id);
 }

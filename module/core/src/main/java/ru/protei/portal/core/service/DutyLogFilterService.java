@@ -18,5 +18,5 @@ public interface DutyLogFilterService {
 
     Result<DutyLogFilter> saveFilter(AuthToken token, DutyLogFilter filter);
 
-    Result<Boolean> removeFilter(Long id);
+    Result<Long> removeFilter(Long id);
 }

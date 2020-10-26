@@ -17,5 +17,5 @@ public interface DutyLogFilterControllerAsync {
 
     void saveFilter(DutyLogFilter filter, AsyncCallback<DutyLogFilter> async);
 
-    void removeFilter(Long id, AsyncCallback<Boolean> async);
+    void removeFilter(Long id, AsyncCallback<Long> async);
 }

@@ -55,7 +55,7 @@ public abstract class FilterWidgetModel<F extends Filter<?, ?>>
 
     abstract protected void saveFilter(F filter, Consumer<Throwable> onError, Consumer<F> onSuccess);
     abstract protected void changeFilter(Long filter, Consumer<Throwable> onError, Consumer<F> onSuccess);
-    abstract protected void removeFilter(Long filter, Consumer<Throwable> onError, Consumer<Boolean> onSuccess);
+    abstract protected void removeFilter(Long filter, Consumer<Throwable> onError, Consumer<Long> onSuccess);
 
     @Inject
     Lang lang;

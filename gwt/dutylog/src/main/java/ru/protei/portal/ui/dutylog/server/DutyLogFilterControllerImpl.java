@@ -82,10 +82,10 @@ public class DutyLogFilterControllerImpl implements DutyLogFilterController {
     }
 
     @Override
-    public Boolean removeFilter(Long id)  throws RequestFailedException {
+    public Long removeFilter(Long id)  throws RequestFailedException {
         log.info( "removeFilter(): id={}", id );
 
-        Result< Boolean > response = dutyLogFilterService.removeFilter( id );
+        Result<Long> response = dutyLogFilterService.removeFilter( id );
         log.info( "removeFilter(): result={}", response.getStatus() );
 
         return checkResultAndGetData(response);

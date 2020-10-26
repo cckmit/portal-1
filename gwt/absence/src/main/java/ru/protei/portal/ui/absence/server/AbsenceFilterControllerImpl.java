@@ -82,10 +82,10 @@ public class AbsenceFilterControllerImpl implements AbsenceFilterController {
     }
 
     @Override
-    public Boolean removeFilter(Long id)  throws RequestFailedException {
+    public Long removeFilter(Long id)  throws RequestFailedException {
         log.info( "removeFilter(): id={}", id );
 
-        Result< Boolean > response = absenceFilterService.removeFilter( id );
+        Result<Long> response = absenceFilterService.removeFilter( id );
         log.info( "removeFilter(): result={}", response.getStatus() );
 
         return checkResultAndGetData(response);

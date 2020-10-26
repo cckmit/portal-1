@@ -20,5 +20,5 @@ public interface AbsenceFilterController extends RemoteService {
 
     AbsenceFilter saveFilter(AbsenceFilter filter) throws RequestFailedException;
 
-    Boolean removeFilter(Long id) throws RequestFailedException;
+    Long removeFilter(Long id) throws RequestFailedException;
 }
