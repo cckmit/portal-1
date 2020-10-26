@@ -796,7 +796,7 @@ public class IpReservationServiceImpl implements IpReservationService {
     }
 
     private NotificationEntry makeNotificationEntryFromPersonId(Long personId) {
-        Person person = personDAO.partialGet(personId, "locale");
+        Person person = personDAO.partialGet(personId, "id", "locale");
         if (person == null) {
             return null;
         }
