@@ -227,6 +227,14 @@ public class ExcelReportWriter implements
             return false;
         }
 
+        if (dateRange.getFrom() == null) {
+            return dateRange.getTo() == null || date.before(dateRange.getTo());
+        }
+
+        if (dateRange.getTo() == null) {
+            return dateRange.getFrom() == null || date.after(dateRange.getFrom());
+        }
+
         if (date.before(dateRange.getFrom())) {
             return false;
         }
