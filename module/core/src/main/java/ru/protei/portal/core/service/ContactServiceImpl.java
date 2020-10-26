@@ -50,7 +50,7 @@ public class ContactServiceImpl implements ContactService {
     @Autowired
     CompanyGroupHomeDAO groupHomeDAO;
     @Autowired
-    CompanyService companyService;
+    CompanyGroupHomeDAO companyGroupHomeDAO;
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
@@ -64,20 +64,16 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public Result<List<PersonShortView>> shortViewList( AuthToken token, ContactQuery query ) {
-        Result<List<PersonShortView>> listResult = companyService.isHomeCompany( query.getCompanyId() )
-                .map( isAcceptable -> {
-                    if (!isAcceptable) {
-                        return Collections.emptyList();
-                    }
+        if (personIsEmployee( query.getCompanyId() )) {
+            return ok(Collections.emptyList());
+        }
 
-                    return personShortViewDAO.getContacts( query );
-                } );
+        List<PersonShortView> persons  = personShortViewDAO.getContacts( query );
 
+        if (persons == null)
+            return error(En_ResultStatus.GET_DATA_ERROR);
 
-        if (listResult.getData() == null)
-            return error( En_ResultStatus.GET_DATA_ERROR );
-        else
-            return listResult;
+        return ok(persons);
     }
 
     @Override
@@ -86,7 +82,7 @@ public class ContactServiceImpl implements ContactService {
         Person person = personDAO.getContact(id);
         if(person == null) return error( En_ResultStatus.NOT_FOUND);
 
-        if(companyService.isHomeCompany( person.getCompanyId() ).getData()){
+        if (personIsEmployee( person.getCompanyId() )) {
             return error( En_ResultStatus.NOT_AVAILABLE);
         }
 
@@ -153,7 +149,7 @@ public class ContactServiceImpl implements ContactService {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
-        if(companyService.isHomeCompany( person.getCompanyId() ).getData()){
+        if (personIsEmployee( person.getCompanyId() )) {
             return error( En_ResultStatus.NOT_AVAILABLE);
         }
 
@@ -180,7 +176,7 @@ public class ContactServiceImpl implements ContactService {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
-        if(companyService.isHomeCompany( person.getCompanyId() ).getData()){
+        if (personIsEmployee( person.getCompanyId() )) {
             return error(En_ResultStatus.NOT_AVAILABLE);
         }
 
@@ -208,7 +204,7 @@ public class ContactServiceImpl implements ContactService {
             return false;
         }
 
-        if(companyService.isHomeCompany( person.getCompanyId() ).getData()){
+        if (personIsEmployee( person.getCompanyId() )) {
             log.warn("person with id = {} is employee", person.getId());
             return false;
         }
@@ -267,5 +263,9 @@ public class ContactServiceImpl implements ContactService {
         if (removed > 0) {
             log.debug("person({}) : removed email(s) from company with id {}", person.getDisplayName(), person.getCompanyId());
         }
+    }
+
+    private Boolean personIsEmployee( Long personCompanyId ) {
+        return companyGroupHomeDAO.isHomeCompany( personCompanyId );
     }
 }

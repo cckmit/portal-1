@@ -381,7 +381,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional
     public Result<Boolean> fireEmployee(AuthToken token, Person person) {
-        if(!companyService.isHomeCompany( person.getCompanyId() ).getData()){
+        if(!groupHomeDAO.isHomeCompany( person.getCompanyId() )){
             return error(En_ResultStatus.NOT_AVAILABLE);
         }
 

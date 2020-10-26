@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.model.dao.CompanyGroupHomeDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_FileUploadStatus;
 import ru.protei.portal.core.model.dict.En_Gender;
@@ -57,6 +58,11 @@ public class AvatarController {
     @Autowired
     SessionService sessionService;
 
+    @Autowired
+    CompanyGroupHomeDAO companyGroupHomeDAO;
+
+    private static final Logger log = getLogger( AvatarController.class );
+
 
     @PostConstruct
     public void onInit(){
@@ -87,10 +93,6 @@ public class AvatarController {
         loadFile( context.getRealPath( NOPHOTO_PATH ), response );
     }
 
-    @Autowired
-    CompanyService companyService;
-    private static final Logger log = getLogger( AvatarController.class );
-
     @RequestMapping( value = "/avatars/old/{id}" )
     public void getAvatarByOldId(
             @PathVariable String id,
@@ -101,8 +103,8 @@ public class AvatarController {
         Person person = personDAO.getEmployeeByOldId(Long.parseLong(id));
         if (person == null) return;
 
-        if(!companyService.isHomeCompany( person.getCompanyId() ).getData()){
-            log.warn( "getAvatarByOldId(): Not Accepatable company for person {}", person  );
+        if (!companyGroupHomeDAO.isHomeCompany( person.getCompanyId() )) {
+            log.warn( "getAvatarByOldId(): Not Acceptable company for person {}", person  );
             return;
         }
 

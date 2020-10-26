@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.CreateAuditObjectEvent;
-import ru.protei.portal.core.model.dao.CompanyDAO;
-import ru.protei.portal.core.model.dao.DevUnitDAO;
-import ru.protei.portal.core.model.dao.ExportSybEntryDAO;
-import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Company;
@@ -50,6 +47,9 @@ public class ActiveExportDataService implements ExportDataService {
 
     @Autowired
     PersonDAO personDAO;
+
+    @Autowired
+    CompanyGroupHomeDAO companyGroupHomeDAO;
 
     @Autowired
     DevUnitDAO devUnitDAO;
@@ -181,8 +181,7 @@ public class ActiveExportDataService implements ExportDataService {
 
     @Override
     public En_ResultStatus exportPerson(Person person) {
-        if(companyService.isHomeCompany( person.getCompanyId() ).getData()){
-//        if (personDAO.isEmployee(person)) {
+        if (personIsEmployee(person.getCompanyId())) {
             /**
              * Теперь этим занимается новое API для 1C
              */
@@ -326,5 +325,9 @@ public class ActiveExportDataService implements ExportDataService {
                     break;
             }
         }
+    }
+
+    private Boolean personIsEmployee( Long companyId ) {
+        return companyGroupHomeDAO.isHomeCompany( companyId );
     }
 }

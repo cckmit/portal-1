@@ -65,12 +65,7 @@ public class CompanyServiceImpl implements CompanyService {
     YoutrackService youtrackService;
 
     @Autowired
-    CompanyGroupHomeDAO groupHomeDAO;
-
-    @Autowired
     PortalConfig portalConfig;
-
-    private EntityCache<CompanyHomeGroupItem> homeGroupCache;
 
     @Override
     public Result<SearchResult<Company>> getCompanies( AuthToken token, CompanyQuery query) {
@@ -330,19 +325,6 @@ public class CompanyServiceImpl implements CompanyService {
     public Result<List<CompanyImportanceItem>> getImportanceLevels(Long companyId) {
         List<CompanyImportanceItem> result = companyImportanceItemDAO.getSortedImportanceLevels(companyId);
         return ok(result);
-    }
-
-    @Override
-    public Result<Boolean> isHomeCompany( Long companyId ) {
-        return ok( homeGroupCache().exists( entity -> entity.getCompanyId().equals( companyId ) ) );
-//        return ok(groupHomeDAO.checkExistsByKey( companyId ));
-    }
-
-    private EntityCache<CompanyHomeGroupItem> homeGroupCache() {
-        if (homeGroupCache == null) {
-            homeGroupCache = new EntityCache<>(groupHomeDAO, TimeUnit.MINUTES.toMillis(10));
-        }
-        return homeGroupCache;
     }
 
     private List<Long> collectParentCompanyIds(List<Company> companies) {
