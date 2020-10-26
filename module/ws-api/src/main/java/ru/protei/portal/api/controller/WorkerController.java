@@ -358,6 +358,7 @@ public class WorkerController {
                     worker.setHireOrderNo(HelperFunc.isNotEmpty(rec.getHireOrderNo()) ? rec.getHireOrderNo().trim() : null);
                     worker.setActiveFlag(rec.getActive());
                     worker.setExternalId(rec.getWorkerId().trim());
+                    worker.setContractAgreement(false);
 
                     persistWorker(worker);
 
