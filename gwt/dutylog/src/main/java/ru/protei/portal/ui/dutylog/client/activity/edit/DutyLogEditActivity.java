@@ -5,7 +5,7 @@ import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.DutyType;
+import ru.protei.portal.core.model.dict.En_DutyType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.DutyLog;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -46,7 +46,7 @@ public abstract class DutyLogEditActivity implements AbstractDutyLogEditActivity
             DutyLog dutyLog = new DutyLog();
             dutyLog.setPersonId(policyService.getProfileId());
             dutyLog.setPersonDisplayName(policyService.getProfile().getFullName());
-            dutyLog.setType(DutyType.BG);
+            dutyLog.setType(En_DutyType.BG);
             // дефолтный период дежурства – с пятницы по пятницу (PORTAL-1377)
             dutyLog.setFrom(getCurrentWeekFriday());
             dutyLog.setTo(DateUtils.addDays(dutyLog.getFrom(), 7L));
@@ -145,6 +145,10 @@ public abstract class DutyLogEditActivity implements AbstractDutyLogEditActivity
     private void saveDutyLog() {
         enableButtons(false);
         dutyLogController.saveDutyLog(fillDTO(), new FluentCallback<Long>()
+                .withError(error -> {
+                    enableButtons(true);
+                    defaultErrorHandler.accept(error);
+                })
                 .withSuccess(result -> {
                     enableButtons(true);
                     fireEvent(new NotifyEvents.Show(isNew() ? lang.dutyLogCreated() : lang.dutyLogUpdated(), NotifyEvents.NotifyType.SUCCESS));

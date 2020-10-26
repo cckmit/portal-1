@@ -6,4 +6,5 @@ import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 
 public interface AbstractDutyLogTableActivity extends ClickColumn.Handler<DutyLog>,
         EditClickColumn.EditHandler<DutyLog> {
+    void onFilterChange();
 }

@@ -10,7 +10,7 @@ import ru.protei.portal.core.model.ent.AbsenceFilter;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.AbsenceQuery;
-import ru.protei.portal.core.model.view.AbsenceFilterShortView;
+import ru.protei.portal.core.model.view.FilterShortView;
 import ru.protei.portal.core.service.AbsenceFilterService;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.AbsenceFilterController;
@@ -27,12 +27,12 @@ import static ru.protei.portal.ui.common.server.ServiceUtils.getAuthToken;
 public class AbsenceFilterControllerImpl implements AbsenceFilterController {
 
     @Override
-    public List<AbsenceFilterShortView> getShortViewList() throws RequestFailedException {
+    public List<FilterShortView> getShortViewList() throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
 
         log.info( "getShortViewList(): loginId={}", token.getUserLoginId() );
 
-        Result< List<AbsenceFilterShortView> > response = absenceFilterService.getShortViewList( token.getUserLoginId() );
+        Result< List<FilterShortView> > response = absenceFilterService.getShortViewList( token.getUserLoginId() );
 
         return checkResultAndGetData(response);
     }
@@ -82,11 +82,11 @@ public class AbsenceFilterControllerImpl implements AbsenceFilterController {
     }
 
     @Override
-    public Boolean removeFilter(Long id)  throws RequestFailedException {
-        log.info( "removeIssueFilter(): id={}", id );
+    public Long removeFilter(Long id)  throws RequestFailedException {
+        log.info( "removeFilter(): id={}", id );
 
-        Result< Boolean > response = absenceFilterService.removeFilter( id );
-        log.info( "removeIssueFilter(): result={}", response.getStatus() );
+        Result<Long> response = absenceFilterService.removeFilter( id );
+        log.info( "removeFilter(): result={}", response.getStatus() );
 
         return checkResultAndGetData(response);
     }

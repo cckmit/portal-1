@@ -12,9 +12,7 @@ import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.report.ReportWriter;
 
-import java.io.IOException;
 import java.io.OutputStream;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -35,7 +33,7 @@ public class ReportAbsenceImpl implements ReportAbsence {
     PersonAbsenceDAO personAbsenceDAO;
 
     @Override
-    public boolean writeReport(OutputStream buffer, final AbsenceQuery query) throws IOException {
+    public boolean writeReport(OutputStream buffer, final AbsenceQuery query) {
 
         Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(CrmConstants.DEFAULT_LOCALE));
 

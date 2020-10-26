@@ -5,15 +5,19 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.AbsenceEvents;
 import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AbsenceControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
+
+import java.util.Date;
 
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.WIDE_MODAL;
 
@@ -49,7 +53,11 @@ public abstract class AbsenceReportCreateActivity implements AbstractAbsenceRepo
             return;
         }
 
-        absenceController.createReport(view.name().getValue(), view.getFilterParams().getQuery(),
+        String name = HelperFunc.isEmpty(view.name().getValue()) ?
+                lang.absenceReportDefaultNameTemplate(DateFormatter.formatDateTime(new Date())) :
+                view.name().getValue();
+
+        absenceController.createReport(name, view.getFilterParams().getQuery(),
                 new FluentCallback<Void>()
                 .withSuccess(result -> dialogView.hidePopup()));
     }

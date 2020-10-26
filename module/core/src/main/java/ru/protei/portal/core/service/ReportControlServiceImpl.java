@@ -12,6 +12,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.event.AbsenceReportEvent;
+import ru.protei.portal.core.event.DutyLogReportEvent;
 import ru.protei.portal.core.event.MailReportEvent;
 import ru.protei.portal.core.event.ProcessNewReportsEvent;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
@@ -30,6 +31,7 @@ import ru.protei.portal.core.report.caseobjects.ReportCase;
 import ru.protei.portal.core.report.caseresolution.ReportCaseResolutionTime;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsed;
 import ru.protei.portal.core.report.contract.ReportContract;
+import ru.protei.portal.core.report.dutylog.ReportDutyLog;
 import ru.protei.portal.core.report.projects.ReportProject;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.utils.TimeFormatter;
@@ -83,6 +85,8 @@ public class ReportControlServiceImpl implements ReportControlService {
     EventPublisherService publisherService;
     @Autowired
     ReportAbsence reportAbsence;
+    @Autowired
+    ReportDutyLog reportDutyLog;
     @Autowired
     ReportContract reportContract;
     @Autowired
@@ -309,6 +313,7 @@ public class ReportControlServiceImpl implements ReportControlService {
                         this,
                         initiator,
                         title,
+                        new Date(),
                         new ByteArrayInputStream(buffer.toByteArray())));
                 return ok();
             }
@@ -318,6 +323,24 @@ public class ReportControlServiceImpl implements ReportControlService {
         return error(En_ResultStatus.INTERNAL_ERROR);
     }
 
+    @Async(BACKGROUND_TASKS)
+    @Override
+    public Result<Void> processDutyLogReport(Person initiator, String title, DutyLogQuery query) {
+        try (ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
+            if (reportDutyLog.writeReport(buffer, query)) {
+                publisherService.publishEvent(new DutyLogReportEvent(
+                        this,
+                        initiator,
+                        title,
+                        new Date(),
+                        new ByteArrayInputStream(buffer.toByteArray())));
+                return ok();
+            }
+        } catch (Exception e) {
+            log.error("processDutyLogReport(): uncaught exception", e);
+        }
+        return error(En_ResultStatus.INTERNAL_ERROR);
+    }
 
     private CompletableFuture<MailReportEvent> createScheduledMailReportsTask(Report report) {
         return CompletableFuture.supplyAsync(() -> {

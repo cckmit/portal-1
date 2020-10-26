@@ -1002,6 +1002,11 @@ public class DebugIds {
             String TYPE_SELECTOR = "duty-log-type-selector";
         }
 
+        interface REPORT {
+            String NAME_LABEL = "duty-log-report-name-label";
+            String NAME_INPUT = "duty-log-report-name-input";
+        }
+
         interface FILTER {
             String DATE_RANGE = "duty-log-filter-date-range-input";
             String EMPLOYEE = "duty-log-filter-employee-selector";

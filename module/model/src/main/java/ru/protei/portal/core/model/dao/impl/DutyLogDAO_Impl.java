@@ -51,7 +51,7 @@ public class DutyLogDAO_Impl extends PortalBaseJdbcDAO<DutyLog> implements DutyL
                 }
             }
 
-            if (query.getPersonIds() != null){
+            if (CollectionUtils.isNotEmpty(query.getPersonIds())) {
                 condition.append(" and duty_log.person_id in ").append(HelperFunc.makeInArg(query.getPersonIds()));
             }
 

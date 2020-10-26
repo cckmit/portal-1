@@ -84,7 +84,7 @@ public class AbsenceControllerImpl implements AbsenceController {
 
     @Override
     public void createReport(String name, AbsenceQuery query) throws RequestFailedException {
-        log.info("createReport(): name={}, query={}", query);
+        log.info("createReport(): name={}, query={}", name, query);
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
         Result<Void> result = absenceService.createReport(token, name, query);
         log.info("createReport(): result={}", result.isOk() ? "ok" : result.getStatus());

@@ -5,13 +5,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.DutyLogDAO;
+import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DutyLog;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.DutyLogQuery;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
@@ -25,10 +28,16 @@ public class DutyLogServiceImpl implements DutyLogService {
 
     @Autowired
     DutyLogDAO dutyLogDAO;
+    @Autowired
+    PersonDAO personDAO;
+
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Autowired
     PolicyService policyService;
-
+    @Autowired
+    ReportControlService reportControlService;
     @Autowired
     AuthService authService;
 
@@ -72,5 +81,20 @@ public class DutyLogServiceImpl implements DutyLogService {
         }
 
         return ok(dutyLogDAO.persist(value));
+    }
+
+    @Override
+    public Result<Void> createReport(AuthToken token, String name, DutyLogQuery query) {
+
+        if (query == null || query.getDateRange() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        Person initiator = personDAO.get(token.getPersonId());
+        jdbcManyRelationsHelper.fill(initiator, Person.Fields.CONTACT_ITEMS);
+
+        reportControlService.processDutyLogReport(initiator, name, query);
+
+        return ok();
     }
 }

@@ -11,7 +11,6 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.ToggleButton;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_AbsenceReason;
 import ru.protei.portal.core.model.dict.En_DateIntervalType;
@@ -55,22 +54,6 @@ public class AbsenceFilterParamWidget extends Composite implements AbstractAbsen
     }
 
     @Override
-    public void setOnFilterChangeCallback(Runnable onFilterChangeCallback) {
-        this.onFilterChangeCallback = onFilterChangeCallback;
-    }
-
-    private boolean validate() {
-        boolean dataRangeTypeValid = isDataRangeTypeValid(dateRange);
-        boolean dataRangeValid = isDataRangeValid(dateRange.getValue());
-        dateRange.setValid(dataRangeTypeValid, dataRangeValid);
-        boolean isValid = dataRangeTypeValid && dataRangeValid;
-        if (validateCallback != null) {
-            validateCallback.accept(isValid);
-        }
-        return isValid;
-    }
-
-    @Override
     public void resetFilter() {
         employees.setValue(null);
         dateRange.setValue(new DateIntervalWithType(null, En_DateIntervalType.TODAY));
@@ -111,17 +94,9 @@ public class AbsenceFilterParamWidget extends Composite implements AbstractAbsen
         validateCallback = callback;
     }
 
-    private Set<PersonShortView> applyPersons(SelectorsParams filter, Set<Long> personIds) {
-        return emptyIfNull(filter.getPersonShortViews()).stream()
-                .filter(personShortView ->
-                        emptyIfNull(personIds).stream().anyMatch(ids -> ids.equals(personShortView.getId())))
-                .collect(Collectors.toSet());
-    }
-
-    private Set<En_AbsenceReason> applyReason(Set<Integer> reasonIds) {
-        return emptyIfNull(reasonIds).stream()
-                .map(id -> Arrays.stream(En_AbsenceReason.values()).filter(en_absenceReason -> en_absenceReason.getId() == id).findAny().orElse(null))
-                .collect(Collectors.toSet());
+    @Override
+    public void setOnFilterChangeCallback(Runnable onFilterChangeCallback) {
+        this.onFilterChangeCallback = onFilterChangeCallback;
     }
 
     @UiHandler("dateRange")
@@ -151,23 +126,31 @@ public class AbsenceFilterParamWidget extends Composite implements AbstractAbsen
         onFilterChanged();
     }
 
-    private void ensureDebugIds() {
-        if (!DebugInfo.isDebugIdEnabled()) {
-            return;
+    private boolean validate() {
+        boolean dataRangeTypeValid = isDataRangeTypeValid(dateRange);
+        boolean dataRangeValid = isDataRangeValid(dateRange.getValue());
+        dateRange.setValid(dataRangeTypeValid, dataRangeValid);
+        boolean isValid = dataRangeTypeValid && dataRangeValid;
+        if (validateCallback != null) {
+            validateCallback.accept(isValid);
         }
-        dateRange.setEnsureDebugId(DebugIds.ABSENCE_REPORT.DATE_RANGE_INPUT);
-        employees.setAddEnsureDebugId(DebugIds.ABSENCE_REPORT.EMPLOYEE_SELECTOR_ADD_BUTTON);
-        employees.setClearEnsureDebugId(DebugIds.ABSENCE_REPORT.EMPLOYEE_SELECTOR_CLEAR_BUTTON);
-        employees.setItemContainerEnsureDebugId(DebugIds.ABSENCE_REPORT.EMPLOYEE_SELECTOR_ITEM_CONTAINER);
-        employees.setLabelEnsureDebugId(DebugIds.ABSENCE_REPORT.EMPLOYEE_SELECTOR_LABEL);
-        reasons.setAddEnsureDebugId(DebugIds.ABSENCE_REPORT.REASON_SELECTOR_ADD_BUTTON);
-        reasons.setClearEnsureDebugId(DebugIds.ABSENCE_REPORT.REASON_SELECTOR_CLEAR_BUTTON);
-        reasons.setItemContainerEnsureDebugId(DebugIds.ABSENCE_REPORT.REASON_SELECTOR_ITEM_CONTAINER);
-        reasons.setLabelEnsureDebugId(DebugIds.ABSENCE_REPORT.REASON_SELECTOR_LABEL);
-        absenceReportSortByLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ABSENCE_REPORT.SORT_FIELD_LABEL);
-        sortField.setEnsureDebugId(DebugIds.ABSENCE_REPORT.SORT_FIELD_SELECTOR);
-        sortDir.ensureDebugId(DebugIds.ABSENCE_REPORT.SORT_DIR_BUTTON);
+        return isValid;
     }
+
+    private Set<PersonShortView> applyPersons(SelectorsParams filter, Set<Long> personIds) {
+        return emptyIfNull(filter.getPersonShortViews()).stream()
+                .filter(personShortView ->
+                        emptyIfNull(personIds).stream().anyMatch(ids -> ids.equals(personShortView.getId())))
+                .collect(Collectors.toSet());
+    }
+
+    private Set<En_AbsenceReason> applyReason(Set<Integer> reasonIds) {
+        return emptyIfNull(reasonIds).stream()
+                .map(id -> Arrays.stream(En_AbsenceReason.values()).filter(en_absenceReason -> en_absenceReason.getId() == id).findAny().orElse(null))
+                .collect(Collectors.toSet());
+    }
+
+
 
     private void fillDateRanges (TypedSelectorRangePicker rangePicker) {
         rangePicker.fillSelector(En_DateIntervalType.reportTypes());
@@ -192,6 +175,24 @@ public class AbsenceFilterParamWidget extends Composite implements AbstractAbsen
         if (onFilterChangeCallback != null) {
             onFilterChangeCallback.run();
         }
+    }
+
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+        dateRange.setEnsureDebugId(DebugIds.ABSENCE_REPORT.DATE_RANGE_INPUT);
+        employees.setAddEnsureDebugId(DebugIds.ABSENCE_REPORT.EMPLOYEE_SELECTOR_ADD_BUTTON);
+        employees.setClearEnsureDebugId(DebugIds.ABSENCE_REPORT.EMPLOYEE_SELECTOR_CLEAR_BUTTON);
+        employees.setItemContainerEnsureDebugId(DebugIds.ABSENCE_REPORT.EMPLOYEE_SELECTOR_ITEM_CONTAINER);
+        employees.setLabelEnsureDebugId(DebugIds.ABSENCE_REPORT.EMPLOYEE_SELECTOR_LABEL);
+        reasons.setAddEnsureDebugId(DebugIds.ABSENCE_REPORT.REASON_SELECTOR_ADD_BUTTON);
+        reasons.setClearEnsureDebugId(DebugIds.ABSENCE_REPORT.REASON_SELECTOR_CLEAR_BUTTON);
+        reasons.setItemContainerEnsureDebugId(DebugIds.ABSENCE_REPORT.REASON_SELECTOR_ITEM_CONTAINER);
+        reasons.setLabelEnsureDebugId(DebugIds.ABSENCE_REPORT.REASON_SELECTOR_LABEL);
+        absenceReportSortByLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ABSENCE_REPORT.SORT_FIELD_LABEL);
+        sortField.setEnsureDebugId(DebugIds.ABSENCE_REPORT.SORT_FIELD_SELECTOR);
+        sortDir.ensureDebugId(DebugIds.ABSENCE_REPORT.SORT_DIR_BUTTON);
     }
 
     @Inject

@@ -12,20 +12,24 @@ import ru.brainworm.factory.widget.table.client.helper.StaticTextColumn;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.DutyLog;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.columns.EditClickColumn;
+import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.DutyTypeLang;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.dutylog.client.activity.table.AbstractDutyLogTableActivity;
 import ru.protei.portal.ui.dutylog.client.activity.table.AbstractDutyLogTableView;
-import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.columns.*;
-import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.dutylog.client.widget.filter.DutyLogFilterWidget;
+import ru.protei.portal.ui.dutylog.client.widget.filter.DutyLogFilterWidgetModel;
 
 import java.util.List;
 
 public class DutyLogTableView extends Composite implements AbstractDutyLogTableView {
 
     @Inject
-    public void onInit(EditClickColumn<DutyLog> editClickColumn, RemoveClickColumn<DutyLog> removeClickColumn) {
+    public void onInit(EditClickColumn<DutyLog> editClickColumn,
+                       DutyLogFilterWidgetModel model) {
+        filterWidget.onInit(model);
         initWidget(ourUiBinder.createAndBindUi(this));
         this.editClickColumn = editClickColumn;
         initTable();
@@ -34,6 +38,8 @@ public class DutyLogTableView extends Composite implements AbstractDutyLogTableV
     @Override
     public void setActivity(AbstractDutyLogTableActivity activity) {
         this.activity = activity;
+
+        filterWidget.setOnFilterChangeCallback(activity::onFilterChange);
 
         editClickColumn.setHandler(activity);
         editClickColumn.setEditHandler(activity);
@@ -45,8 +51,8 @@ public class DutyLogTableView extends Composite implements AbstractDutyLogTableV
     }
 
     @Override
-    public HasWidgets getFilterContainer() {
-        return filterContainer;
+    public DutyLogFilterWidget getFilterWidget() {
+        return filterWidget;
     }
 
     @Override
@@ -91,8 +97,9 @@ public class DutyLogTableView extends Composite implements AbstractDutyLogTableV
 
     @UiField
     Lang lang;
-    @UiField
-    HasWidgets filterContainer;
+    @Inject
+    @UiField(provided = true)
+    DutyLogFilterWidget filterWidget;
     @UiField
     TableWidget<DutyLog> table;
     @UiField

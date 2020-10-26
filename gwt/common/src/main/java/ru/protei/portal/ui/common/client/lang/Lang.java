@@ -2960,9 +2960,11 @@ public interface Lang extends Messages, ContactItemLang {
 
     String absenceButtonSummaryTable();
 
-    String buttonSend();
+    String absenceReportDefaultNameTemplate(String date);
 
     String absenceReportValidationDateRange();
+
+    String buttonSend();
 
     String errNotCurrentAbsence();
 
@@ -3087,6 +3089,10 @@ public interface Lang extends Messages, ContactItemLang {
     String dutyLogCreated();
 
     String dutyLogUpdated();
+
+    String dutyLogReport();
+
+    String dutyLogReportDefaultNameTemplate(String date);
 
     String dutyTypeBG();
 
