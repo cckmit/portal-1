@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.DateRangeUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.*;
@@ -484,7 +485,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         EmployeeQuery query = new EmployeeQuery();
         query.setFired(false);
         query.setDeleted(false);
-        query.setBirthdayRange(new DateRange(En_DateIntervalType.FIXED, dateFrom, dateUntil));
+        query.setBirthdayInterval(new Interval(dateFrom, dateUntil));
         List<EmployeeShortView> employees = employeeShortViewDAO.getEmployees(query);
         EmployeesBirthdays birthdays = new EmployeesBirthdays();
         birthdays.setDateFrom(dateFrom);
@@ -519,7 +520,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         EmployeeQuery query = new EmployeeQuery();
         query.setFired(false);
         query.setDeleted(false);
-        query.setBirthdayRange(new DateRange(En_DateIntervalType.FIXED, from, to));
+        query.setBirthdayInterval(new Interval(from, to));
         query.setSortField(En_SortField.birthday);
         query.setSortDir(En_SortDir.ASC);
         List<EmployeeShortView> employees = employeeShortViewDAO.getEmployees(query);
@@ -759,8 +760,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeQuery.setFirstName(person.getFirstName());
         employeeQuery.setLastName(person.getLastName());
         employeeQuery.setSecondName(person.getSecondName());
-        employeeQuery.setBirthdayRange(person.getBirthday() == null ? null :
-                new DateRange(En_DateIntervalType.FIXED, person.getBirthday(), person.getBirthday()));
+        employeeQuery.setBirthdayInterval(person.getBirthday() == null ? null :
+                new Interval(person.getBirthday(), person.getBirthday()));
 
         List<EmployeeShortView> employee = employeeShortViewDAO.getEmployees(employeeQuery);
 

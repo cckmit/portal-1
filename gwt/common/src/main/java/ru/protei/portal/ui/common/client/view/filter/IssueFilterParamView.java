@@ -206,7 +206,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         importance.setValue(null);
         state.setValue(null);
         dateCreatedRange.setValue(null);
-        dateModifiedRange.setValue(null);
+        dateModifiedRange.setValue(DEFAULT_MODIFIED_RANGE);
         sortField.setValue(En_SortField.issue_number);
         sortDir.setValue(false);
         search.setValue("");
@@ -860,6 +860,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
     private Timer timer = null;
     private AbstractIssueFilterModel model;
+    private static final DateIntervalWithType DEFAULT_MODIFIED_RANGE = new DateIntervalWithType(null, En_DateIntervalType.PREVIOUS_AND_THIS_MONTH);
 
     interface IssueFilterUiBinder extends UiBinder<HTMLPanel, IssueFilterParamView> {}
     private static IssueFilterUiBinder ourUiBinder = GWT.create(IssueFilterUiBinder.class);

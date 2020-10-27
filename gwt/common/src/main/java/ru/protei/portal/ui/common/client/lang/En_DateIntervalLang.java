@@ -21,6 +21,7 @@ public class En_DateIntervalLang {
             case NEXT_WEEK: return lang.nextWeekInterval();
             case THIS_MONTH: return lang.thisMonthInterval();
             case LAST_MONTH: return lang.lastMonthInterval();
+            case PREVIOUS_AND_THIS_MONTH: return lang.lastPreviousAndThisMonthInterval();
             case NEXT_MONTH: return lang.nextMonthInterval();
             case THIS_YEAR: return lang.thisYearInterval();
             case LAST_YEAR: return lang.lastYearInterval();

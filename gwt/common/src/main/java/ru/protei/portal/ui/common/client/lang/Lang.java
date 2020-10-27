@@ -2858,6 +2858,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String nextMonthInterval();
 
+    String lastPreviousAndThisMonthInterval();
+
     String thisYearInterval();
 
     String lastYearInterval();

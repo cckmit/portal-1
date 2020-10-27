@@ -77,8 +77,8 @@ public class EmployeeSqlBuilder {
                 args.add(query.getLastName());
             }
 
-            if (query.getBirthdayRange() != null) {
-                Interval interval = DateRangeUtils.makeInterval(query.getBirthdayRange());
+            if (query.getBirthdayInterval() != null) {
+                Interval interval = query.getBirthdayInterval();
 
                 boolean isOneDay = Objects.equals(interval.from, interval.to);
                 boolean isSameYear = Objects.equals(interval.from.getYear(), interval.to.getYear());

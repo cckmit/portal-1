@@ -78,6 +78,14 @@ public class DateRangeUtils {
         return interval;
     }
 
+    public static Interval makePreviousAndThisMonth() {
+        Interval interval = new Interval();
+        LocalDate local = LocalDate.now().minusDays(LocalDate.now().getDayOfMonth()-1);
+        interval.from = Date.from(local.minusMonths(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
+        interval.to = Date.from(local.plusMonths(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
+        return interval;
+    }
+
     public static Interval makeNextMonth() {
         Interval interval = new Interval();
         LocalDate local = LocalDate.now().plusDays(LocalDate.now().lengthOfMonth()+1 - LocalDate.now().getDayOfMonth());
@@ -116,6 +124,7 @@ public class DateRangeUtils {
             case NEXT_WEEK  : return makeNextWeek();
             case THIS_MONTH : return makeThisMonth();
             case LAST_MONTH : return makeLastMonth();
+            case PREVIOUS_AND_THIS_MONTH: return makePreviousAndThisMonth();
             case NEXT_MONTH : return makeNextMonth();
             case THIS_YEAR  : return makeThisYear();
             case LAST_YEAR  : return makeLastYear();
