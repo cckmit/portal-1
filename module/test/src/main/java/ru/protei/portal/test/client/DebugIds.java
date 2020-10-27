@@ -921,6 +921,7 @@ public class DebugIds {
             String ATTACHMENTS = "site-folder-platform-attachment";
             String SERVERS = "site-folder-servers";
             String CONTACTS = "site-folder-contacts";
+            String TECHNICAL_SUPPORT_VALIDITY = "site-folder-technical-support-validity";
         }
         interface SERVER {
             String OPEN_BUTTON = "site-folder-server-open-button";
@@ -928,6 +929,7 @@ public class DebugIds {
             String ITEM = "site-folder-server-list-item";
             String NAME = "site-folder-server-name";
             String IP = "site-folder-server-ip";
+            String APPS = "site-folder-server-apps";
             String COMMENT = "site-folder-server-comment";
             String PARAMS = "site-folder-server-params";
             String EDIT_BUTTON = "site-folder-server-edit-button";
