@@ -26,6 +26,7 @@ import ru.protei.portal.ui.common.client.view.filter.IssueFilterParamView;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.AsyncPersonModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
+import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
@@ -48,8 +49,8 @@ public class IssueFilterWidget extends Composite {
         issueFilterParamView.timeElapsedVisibility().setVisible(false);
     }
 
-    public void resetFilter() {
-        issueFilterParamView.resetFilter();
+    public void resetFilter( DateIntervalWithType dateModified) {
+        issueFilterParamView.resetFilter( dateModified );
         userFilter.setValue(null);
         removeBtn.setVisible(false);
         saveBtn.setVisible(false);
@@ -144,7 +145,7 @@ public class IssueFilterWidget extends Composite {
         if (value == null || value.getId() == null) {
             return;
         }
-        model.onRemoveClicked(value.getId(), this::resetFilter);
+        model.onRemoveClicked(value.getId(), () -> resetFilter(null) );
     }
 
     @UiHandler( "filterName" )
@@ -160,7 +161,7 @@ public class IssueFilterWidget extends Composite {
 
     private void onUserFilterChanged(CaseFilterShortView filter) {
         if (filter == null){
-            resetFilter();
+            resetFilter(null);
             showUserFilterControls();
 
             return;
@@ -216,7 +217,7 @@ public class IssueFilterWidget extends Composite {
     public void updateFilterType(En_CaseFilterType filterType) {
         this.filterType = filterType;
         applyVisibilityByFilterType(filterType);
-        resetFilter();
+        resetFilter(null);
         userFilter.updateFilterType(filterType);
     }
 

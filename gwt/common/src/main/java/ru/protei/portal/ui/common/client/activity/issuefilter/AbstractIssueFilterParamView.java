@@ -18,6 +18,7 @@ import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterMode
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.person.AsyncPersonModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
+import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 
 import java.util.List;
 import java.util.Set;
@@ -63,7 +64,7 @@ public interface AbstractIssueFilterParamView extends IsWidget {
 
     HasVisibility planVisibility();
 
-    void resetFilter();
+    void resetFilter( DateIntervalWithType dateModified );
 
     void presetCompany(Company company);
 

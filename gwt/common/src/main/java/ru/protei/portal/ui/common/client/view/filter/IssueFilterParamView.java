@@ -194,7 +194,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public void resetFilter() {
+    public void resetFilter(DateIntervalWithType dateModified) {
         companies.setValue(null);
         products.setValue(null);
         managers.setValue(null);
@@ -206,7 +206,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         importance.setValue(null);
         state.setValue(null);
         dateCreatedRange.setValue(null);
-        dateModifiedRange.setValue(DEFAULT_MODIFIED_RANGE);
+        dateModifiedRange.setValue(dateModified);
         sortField.setValue(En_SortField.issue_number);
         sortDir.setValue(false);
         search.setValue("");
@@ -263,8 +263,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         searchFavorite.setValue(caseQuery.getPersonIdToIsFavorite() == null ? null : caseQuery.getPersonIdToIsFavorite().getB());
         sortDir.setValue(caseQuery.getSortDir() == null ? null : caseQuery.getSortDir().equals(En_SortDir.ASC));
         sortField.setValue(caseQuery.getSortField() == null ? En_SortField.creation_date : caseQuery.getSortField());
-        dateCreatedRange.setValue(fromDateRange(caseQuery.getCreatedRange(), false));
-        dateModifiedRange.setValue(fromDateRange(caseQuery.getModifiedRange(), false));
+        dateCreatedRange.setValue(fromDateRange(caseQuery.getCreatedRange()));
+        dateModifiedRange.setValue(fromDateRange(caseQuery.getModifiedRange()));
         importance.setValue(caseQuery.getImportances());
         state.setValue(toSet(caseQuery.getStateIds(), id -> new CaseState(id)));
 
@@ -299,7 +299,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         tags.setValue(setOf( filter.getCaseTags() ) );
         toggleMsgSearchThreshold();
 
-        onFilterChanged();
     }
 
     @Override
@@ -860,7 +859,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
     private Timer timer = null;
     private AbstractIssueFilterModel model;
-    private static final DateIntervalWithType DEFAULT_MODIFIED_RANGE = new DateIntervalWithType(null, En_DateIntervalType.PREVIOUS_AND_THIS_MONTH);
+
 
     interface IssueFilterUiBinder extends UiBinder<HTMLPanel, IssueFilterParamView> {}
     private static IssueFilterUiBinder ourUiBinder = GWT.create(IssueFilterUiBinder.class);
