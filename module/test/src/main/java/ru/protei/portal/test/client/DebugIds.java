@@ -496,16 +496,6 @@ public class DebugIds {
         String LOCK_ICON = "company-table-lock-icon";
     }
 
-    public interface COMPANY_PREVIEW {
-        String TAGS_CONTAINER = "company-preview-tags-container";
-        String SUBSCRIPTION = "company-preview-subscription-item";
-
-        interface LABEL {
-            String SUBSCRIPTION = "company-preview-label-subscription-label";
-            String CONTACT_INFO = "company-preview-contact-info-label";
-        }
-    }
-
     public interface PRODUCT_TABLE {
         String LOCK_ICON = "product-table-lock-icon";
         interface FILTER {
@@ -519,7 +509,9 @@ public class DebugIds {
         String NAME = "company-name";
         String VERIFIABLE_ICON = "company-verifiable-icon";
         String CATEGORY = "company-category";
+        String CATEGORY_IMAGE = "company-category-image";
         String PARENT = "company-parent";
+        String LINK_MESSAGE = "company-link-message";
         String COMMENT = "company-comment";
         String AUTO_OPEN_ISSUES = "company-auto-open-issues";
         String SUBSCRIPTIONS = "company-subscriptions";

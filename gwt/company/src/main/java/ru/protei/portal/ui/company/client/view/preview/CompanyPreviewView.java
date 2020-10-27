@@ -125,9 +125,18 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
-        subscriptionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY_PREVIEW.LABEL.SUBSCRIPTION);
-        subscription.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY_PREVIEW.SUBSCRIPTION);
-        contactsHeader.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY_PREVIEW.LABEL.CONTACT_INFO);
+        companyName.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY.NAME);
+        categoryImage.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY.CATEGORY_IMAGE);
+        site.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY.WEB_SITE);
+        info.ensureDebugId(DebugIds.COMPANY.COMMENT);
+        companyLinksMessage.ensureDebugId(DebugIds.COMPANY.LINK_MESSAGE);
+        subscription.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY.SUBSCRIPTIONS);
+        phone.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY.PHONES);
+        email.ensureDebugId(DebugIds.COMPANY.EMAILS);
+        addressFact.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY.ACTUAL_ADDRESS);
+        addressDejure.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY.LEGAL_ADDRESS);
+        contactsContainer.ensureDebugId(DebugIds.COMPANY.CONTACTS);
+        siteFolderContainer.ensureDebugId(DebugIds.COMPANY.SITE_FOLDERS);
     }
 
     @UiField
