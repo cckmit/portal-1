@@ -21,6 +21,8 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
+import static ru.protei.portal.core.model.ent.CaseObject.Columns.CASE_NAME;
+import static ru.protei.portal.core.model.ent.CaseObject.Columns.INFO;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
@@ -82,7 +84,7 @@ public class AssemblerServiceImpl implements AssemblerService {
 
         log.info("fillCaseNameAndDescription(): CaseObjectID={} Try to fill case's Name and Description.", e.getCaseObjectId());
 
-        CaseObject caseObject = caseObjectDAO.get(e.getCaseObjectId());
+        CaseObject caseObject = caseObjectDAO.partialGet(e.getCaseObjectId(), CASE_NAME, INFO);
 
         e.getName().setNewState(caseObject.getName());
         e.getInfo().setNewState(caseObject.getInfo());

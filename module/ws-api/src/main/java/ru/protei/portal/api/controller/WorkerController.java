@@ -19,6 +19,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
+import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.query.WorkerEntryQuery;
 import ru.protei.portal.core.model.struct.*;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -1736,7 +1737,9 @@ public class WorkerController {
             return false;
         }
 
-        List<Person> employeeByEmail = personDAO.findEmployeeByEmail(email);
+        PersonQuery personQuery = new PersonQuery();
+        personQuery.setEmail( email );
+        List<Person> employeeByEmail = personDAO.getPersons(personQuery);
 
         if (CollectionUtils.isNotEmpty(employeeByEmail)){
             if (personId == null) {

@@ -23,6 +23,8 @@ public class PersonQuery extends BaseQuery {
 
     private Boolean hasCaseFilter;
 
+    private String email;
+
     public PersonQuery() {
         super( null, En_SortField.person_full_name, En_SortDir.ASC );
     }
@@ -85,13 +87,12 @@ public class PersonQuery extends BaseQuery {
         this.hasCaseFilter = hasCaseFilter;
     }
 
-    private static Set<Long> toSet(Long companyId) {
-        if (companyId == null) {
-            return null;
-        }
-        Set<Long> companyIds = new HashSet<>();
-        companyIds.add(companyId);
-        return companyIds;
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail( String email ) {
+        this.email = email;
     }
 
     @Override
@@ -108,6 +109,7 @@ public class PersonQuery extends BaseQuery {
                 ", sortDir=" + sortDir +
                 ", companyIds=" + companyIds +
                 ", inIds=" + personIds +
+                ", email=" + email +
                 '}';
     }
 }

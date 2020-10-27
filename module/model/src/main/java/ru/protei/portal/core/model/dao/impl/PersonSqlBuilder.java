@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.dao.impl;
 
+import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
@@ -22,11 +23,6 @@ public class PersonSqlBuilder extends BaseSqlBuilder {
                 .build();
     }
 
-    public SqlCondition createPersonSqlCondition( PersonQuery personQuery ) {
-        Query query = makeQuery( personQuery );
-        return new SqlCondition( query.buildSql(), Arrays.asList( query.args() ) );
-    }
-
     private Query makeQuery( PersonQuery query){
         Condition cnd = condition()
                 .and( "person.id" ).in( query.getPersonIds() )
@@ -41,6 +37,18 @@ public class PersonSqlBuilder extends BaseSqlBuilder {
         if (query.getHasCaseFilter() != null) {
             cnd.and( "person.id" ).in( query()
                     .select( "distinct(person_id)" ).from( "person_to_case_filter" ) );
+        }
+
+        if (query.getEmail() != null) {
+            cnd.and( "person.id" ).in( query()
+                    .select( "cip.person_id" ).from( "contact_item_person AS cip" )
+                    .where( "cip.contact_item_id" ).in( query()
+                            .select( "ci.id" ).from( "contact_item AS ci" )
+                            .where( "ci.item_type" ).equal( En_ContactItemType.EMAIL.getId() )
+                            .and( "ci.value" ).like( query.getEmail() ).asQuery()
+                    ).asQuery()
+
+            );
         }
 
         return cnd.asQuery();

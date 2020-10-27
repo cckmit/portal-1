@@ -1,16 +1,12 @@
 package ru.protei.portal.core.model.dao;
 
-import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
-import ru.protei.portal.core.model.query.SqlCondition;
-import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.net.Inet4Address;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -18,28 +14,13 @@ import java.util.Map;
 public interface PersonDAO extends PortalBaseDAO<Person> {
 
 
-    List<Person> findEmployeeByEmail(String email);
-
-    Person getEmployee(long id);
-
-    Person getEmployeeByOldId(long id);
+    Person getEmployeeByOldId( long id);
 
     SearchResult<Person> getEmployeesSearchResult(EmployeeQuery query);
 
     List<Person> getEmployees(EmployeeQuery query);
 
-//    boolean isEmployee(Person p);
-
-
     SearchResult<Person> getContactsSearchResult(ContactQuery query);
-
-
-
-    Person getContact(long id);
-
-    Person findContactByEmail(long companyId, String email);
-
-    List<Person> findContactByEmail(String email);
 
     Person findContactByName(long companyId, String displayName);
 

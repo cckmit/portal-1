@@ -1,34 +1,21 @@
 package ru.protei.portal.core.model.dao.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.CompanyGroupHomeDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
-import ru.protei.portal.core.model.dict.En_ContactItemType;
-import ru.protei.portal.core.model.dict.En_Gender;
-import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.ent.CompanyHomeGroupItem;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
-import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.util.sqlcondition.Condition;
-import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.core.utils.EntityCache;
-import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
-import ru.protei.winter.jdbc.JdbcSort;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
-import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.condition;
-import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
+import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
 
 public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonDAO {
 
@@ -72,74 +59,9 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     }
 
     @Override
-    public Person findContactByEmail(long companyId, String email) {
-        SqlCondition sql = new SqlCondition().build((condition, args) -> {
-            condition.append("person.company_id = ?");
-            args.add(companyId);
-
-            condition.append(" AND person.id IN (");
-            condition.append(" SELECT cip.person_id FROM contact_item_person AS cip WHERE cip.contact_item_id IN (");
-            condition.append(" SELECT ci.id FROM contact_item AS ci WHERE 1=1");
-            condition.append(" AND (ci.item_type = ? and ci.value like ?)");
-            args.add(En_ContactItemType.EMAIL.getId());
-            args.add(HelperFunc.makeLikeArg(email, true));
-            condition.append(" ))");
-        });
-
-        return findFirst(sql);
-    }
-
-    @Override
-    public List<Person> findContactByEmail(String email) {
-        SqlCondition sql = new SqlCondition().build((condition, args) -> {
-            condition.append(" person.id IN (");
-            condition.append(" SELECT cip.person_id FROM contact_item_person AS cip WHERE cip.contact_item_id IN (");
-            condition.append(" SELECT ci.id FROM contact_item AS ci WHERE 1=1");
-            condition.append(" AND (ci.item_type = ? and ci.value like ?)");
-            args.add(En_ContactItemType.EMAIL.getId());
-            args.add(HelperFunc.makeLikeArg(email, true));
-            condition.append(" ))");
-        });
-
-        return getListByCondition(sql.condition, sql.args);
-    }
-
-    @Override
-    public List<Person> findEmployeeByEmail(String email) {
-        SqlCondition sql = new SqlCondition().build((condition, args) -> {
-            condition.append(" person.company_id = ?");
-            condition.append(" and person.id IN (");
-            condition.append(" SELECT cip.person_id FROM contact_item_person AS cip WHERE cip.contact_item_id IN (");
-            condition.append(" SELECT ci.id FROM contact_item AS ci WHERE 1=1");
-            condition.append(" AND (ci.item_type = ? and ci.value like ?)");
-            args.add(CrmConstants.Company.HOME_COMPANY_ID);
-            args.add(En_ContactItemType.EMAIL.getId());
-            args.add(HelperFunc.makeLikeArg(email, true));
-            condition.append(" ))");
-        });
-
-        return getListByCondition(sql.condition, sql.args);
-    }
-
-    @Override
-    public Person getEmployee(long id) {
-        final Person person = get(id);
-        return person;
-
-//        return person != null && ifPersonIsEmployee(person) ? person : null;
-    }
-
-    @Override
     public Person getEmployeeByOldId(long id) {
-        Person person = getByCondition("person.old_id=?", id);
-        return person;
-//        return person != null && ifPersonIsEmployee(person) ? person : null;
+        return getByCondition("person.old_id=?", id);
     }
-
-//    @Override
-//    public boolean isEmployee(Person p) {
-//        return ifPersonIsEmployee(p);
-//    }
 
     @Override
     public SearchResult<Person> getEmployeesSearchResult(EmployeeQuery query) {
@@ -155,27 +77,10 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
 
     @Override
     public SearchResult<Person> getContactsSearchResult(ContactQuery query) {
-//        if (query.getCompanyId() != null && homeGroupCache().exists(entity -> entity.getCompanyId().equals(query.getCompanyId())))
-//            return new SearchResult<>(Collections.emptyList());
-
         JdbcQueryParameters parameters = contactSqlBuilder.makeParameters( query );
         return getSearchResult(parameters);
     }
 
-//    @Override
-//    public List<Person> getContacts(ContactQuery query) {
-//        if (query.getCompanyId() != null && homeGroupCache().exists(entity -> entity.getCompanyId().equals(query.getCompanyId())))
-//            return Collections.emptyList();
-//
-//        return listByQuery(query);
-//    }
-
-    @Override
-    public Person getContact(long id) {
-        Person p = get(id);
-        return p;
-//        return ifPersonIsEmployee(p) ? null : p;
-    }
 
     @Override
     public SearchResult<Person> getPersonsSearchResult(PersonQuery query) {

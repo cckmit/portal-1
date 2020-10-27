@@ -13,10 +13,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.query.AbsenceQuery;
-import ru.protei.portal.core.model.query.CompanyQuery;
-import ru.protei.portal.core.model.query.EmployeeQuery;
-import ru.protei.portal.core.model.query.WorkerEntryQuery;
+import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.*;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EmployeeShortView;
@@ -385,7 +382,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             return error(En_ResultStatus.NOT_AVAILABLE);
         }
 
-        Person personFromDb = personDAO.getEmployee(person.getId());
+        Person personFromDb = personDAO.get(person.getId());
 
         if (personFromDb == null) {
             return error(En_ResultStatus.NOT_FOUND);
@@ -830,7 +827,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private boolean isEmailExists(Long personId, String email) {
 
-        List<Person> employeeByEmail = personDAO.findEmployeeByEmail(email);
+        PersonQuery query = new PersonQuery();
+        query.setCompanyIds( setOf(CrmConstants.Company.HOME_COMPANY_ID) );
+        query.setEmail( email );
+        List<Person> employeeByEmail = personDAO.getPersons(query);
 
         if (CollectionUtils.isNotEmpty(employeeByEmail)){
             if (personId == null) {

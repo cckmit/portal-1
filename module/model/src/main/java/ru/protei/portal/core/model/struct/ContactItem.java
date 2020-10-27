@@ -35,9 +35,6 @@ public class ContactItem implements Serializable {
     // not db column (legacy field from json)
     private String comment;
 
-    private Long personId;
-
-
     public ContactItem() {}
 
     public ContactItem (String value, En_ContactItemType type) {
@@ -69,14 +66,6 @@ public class ContactItem implements Serializable {
 
     public En_ContactDataAccess accessType () {
         return this.accessType;
-    }
-
-    public Long getPersonId() {
-        return personId;
-    }
-
-    public void setPersonId( Long personId ) {
-        this.personId = personId;
     }
 
     public ContactItem modify ( String value) {

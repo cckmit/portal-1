@@ -79,7 +79,7 @@ public class ContactServiceImpl implements ContactService {
     @Override
     public Result<Person> getContact( AuthToken token, long id ) {
 
-        Person person = personDAO.getContact(id);
+        Person person = personDAO.get(id);
         if(person == null) return error( En_ResultStatus.NOT_FOUND);
 
         if (personIsEmployee( person.getCompanyId() )) {
@@ -143,7 +143,7 @@ public class ContactServiceImpl implements ContactService {
     @Transactional
     public Result<Boolean> fireContact( AuthToken token, long id) {
 
-        Person person = personDAO.getContact(id);
+        Person person = personDAO.get(id);
 
         if (person == null) {
             return error(En_ResultStatus.NOT_FOUND);
@@ -170,7 +170,7 @@ public class ContactServiceImpl implements ContactService {
     @Transactional
     public Result<Boolean> removeContact( AuthToken token, long id) {
 
-        Person person = personDAO.getContact(id);
+        Person person = personDAO.get(id);
 
         if (person == null) {
             return error(En_ResultStatus.NOT_FOUND);
@@ -224,7 +224,7 @@ public class ContactServiceImpl implements ContactService {
         // prevent change of isfired and isdeleted attrs via ContactService.saveContact() method
         // to change that attrs, follow ContactService.fireContact() and ContactService.removeContact() methods
         if (person.getId() != null) {
-            Person personOld = personDAO.getContact(person.getId());
+            Person personOld = personDAO.get(person.getId());
             if (personOld.isFired() != person.isFired()) {
                 log.warn("prevented change of person.isFired attr, person with id = {}", person.getId());
                 return false;
