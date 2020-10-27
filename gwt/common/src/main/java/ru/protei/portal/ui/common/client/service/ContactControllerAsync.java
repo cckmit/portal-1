@@ -27,7 +27,7 @@ public interface ContactControllerAsync {
 
     void fireContact( long id, AsyncCallback< Boolean > async );
 
-    void removeContact( long id, AsyncCallback< Boolean > async );
+    void removeContact( long id, AsyncCallback< Long > async );
 
     /**
      * Получение списка сокращенного представления контакта
@@ -36,5 +36,5 @@ public interface ContactControllerAsync {
      */
     void getContactViewList( ContactQuery query, AsyncCallback< List< PersonShortView > > callback );
 
-    void saveAccount ( UserLogin userLogin, Boolean sendWelcomeEmail, AsyncCallback< Boolean > callback );
+    void saveAccount ( UserLogin userLogin, Boolean sendWelcomeEmail, AsyncCallback< Long > callback );
 }

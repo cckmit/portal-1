@@ -152,7 +152,7 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     @Transactional
-    public Result<Boolean> removeContact( AuthToken token, long id) {
+    public Result<Long> removeContact(AuthToken token, long id) {
 
         Person person = personDAO.getContact(id);
 
@@ -164,13 +164,15 @@ public class ContactServiceImpl implements ContactService {
 
         boolean result = personDAO.merge(person);
 
-        if (result) {
-            jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
-            removePersonEmailsFromCompany(person);
-            userLoginDAO.removeByPersonId(id);
+        if (!result) {
+            return error(En_ResultStatus.NOT_UPDATED);
         }
 
-        return ok(result);
+        jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
+        removePersonEmailsFromCompany(person);
+        userLoginDAO.removeByPersonId(id);
+
+        return ok(id);
     }
 
     private boolean validatePerson(Person person) {

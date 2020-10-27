@@ -38,12 +38,12 @@ public class AbsenceFilterServiceImpl implements AbsenceFilterService {
     public Result<List<FilterShortView>> getShortViewList(Long loginId) {
         log.debug( "getShortViewList(): loginId={}", loginId );
 
-        List<AbsenceFilter> list = absenceFilterDAO.getListByLoginId( loginId );
+        List<AbsenceFilter> absenceFilters = absenceFilterDAO.getListByLoginId( loginId );
 
-        if ( list == null )
+        if ( absenceFilters == null )
             return error(En_ResultStatus.GET_DATA_ERROR );
 
-        List<FilterShortView> result = list.stream().map( AbsenceFilter::toShortView ).collect( Collectors.toList() );
+        List<FilterShortView> result = absenceFilters.stream().map( AbsenceFilter::toShortView ).collect( Collectors.toList() );
 
         return ok(result );
     }

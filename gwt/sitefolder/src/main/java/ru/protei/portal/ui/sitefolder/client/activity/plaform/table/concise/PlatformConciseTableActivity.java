@@ -87,20 +87,16 @@ public abstract class PlatformConciseTableActivity implements AbstractPlatformCo
     }
 
     private Runnable removeAction(Long platformId) {
-        return () -> platformController.removePlatform(platformId, new RequestCallback<Boolean>() {
+        return () -> platformController.removePlatform(platformId, new RequestCallback<Long>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformNotRemoved(), NotifyEvents.NotifyType.ERROR));
             }
 
             @Override
-            public void onSuccess(Boolean result) {
-                if (result) {
-                    fireEvent(new CompanyEvents.Show());
-                    fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformRemoved(), NotifyEvents.NotifyType.SUCCESS));
-                } else {
-                    fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformNotRemoved(), NotifyEvents.NotifyType.ERROR));
-                }
+            public void onSuccess(Long result) {
+                fireEvent(new CompanyEvents.Show());
+                fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformRemoved(), NotifyEvents.NotifyType.SUCCESS));
             }
         });
     }

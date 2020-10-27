@@ -78,7 +78,7 @@ public abstract class AbsenceTableActivity implements AbstractAbsenceTableActivi
     }
 
     private Runnable removeAction(PersonAbsence value) {
-        return () -> absenceController.removeAbsence(value, new FluentCallback<Boolean>()
+        return () -> absenceController.removeAbsence(value, new FluentCallback<Long>()
                 .withSuccess(result -> {
                     fireEvent(new NotifyEvents.Show(lang.absenceRemovedSuccessfully(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new EmployeeEvents.Update(value.getPersonId()));

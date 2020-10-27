@@ -46,7 +46,7 @@ public abstract class FilterWidgetModel<F extends Filter<?, ?>>
     private Runnable removeAction(Long filterId, Runnable afterRemove) {
         return () -> removeFilter(filterId,
                 throwable -> defaultErrorHandler.accept(throwable),
-                aBoolean -> {
+                id -> {
                     fireEvent(new NotifyEvents.Show(lang.filterRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
                     afterRemove.run();
                 }

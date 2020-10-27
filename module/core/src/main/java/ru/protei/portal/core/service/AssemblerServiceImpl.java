@@ -26,6 +26,24 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 
 public class AssemblerServiceImpl implements AssemblerService {
+    private static final Logger log = LoggerFactory.getLogger( AssemblerServiceImpl.class );
+
+    @Autowired
+    EventPublisherService publisherService;
+    @Autowired
+    CaseCommentDAO caseCommentDAO;
+    @Autowired
+    CaseObjectDAO caseObjectDAO;
+    @Autowired
+    CaseObjectMetaDAO caseObjectMetaDAO;
+    @Autowired
+    CaseLinkDAO caseLinkDAO;
+    @Autowired
+    AttachmentDAO attachmentDAO;
+    @Autowired
+    PersonDAO personDAO;
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Async(BACKGROUND_TASKS)
     @Override
@@ -173,23 +191,4 @@ public class AssemblerServiceImpl implements AssemblerService {
         if (e.getManager() != null) jdbcManyRelationsHelper.fill( e.getManager(), Person.Fields.CONTACT_ITEMS);
         return e;
     }
-
-    @Autowired
-    EventPublisherService publisherService;
-    @Autowired
-    CaseCommentDAO caseCommentDAO;
-    @Autowired
-    CaseObjectDAO caseObjectDAO;
-    @Autowired
-    CaseObjectMetaDAO caseObjectMetaDAO;
-    @Autowired
-    CaseLinkDAO caseLinkDAO;
-    @Autowired
-    AttachmentDAO attachmentDAO;
-    @Autowired
-    PersonDAO personDAO;
-    @Autowired
-    JdbcManyRelationsHelper jdbcManyRelationsHelper;
-
-    private static final Logger log = LoggerFactory.getLogger( AssemblerServiceImpl.class );
 }

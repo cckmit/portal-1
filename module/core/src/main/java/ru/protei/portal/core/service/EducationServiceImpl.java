@@ -34,6 +34,22 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 
 public class EducationServiceImpl implements EducationService {
+    private static Logger log = LoggerFactory.getLogger(EducationServiceImpl.class);
+
+    @Autowired
+    EducationWalletDAO educationWalletDAO;
+    @Autowired
+    EducationEntryDAO educationEntryDAO;
+    @Autowired
+    EducationEntryAttendanceDAO educationEntryAttendanceDAO;
+    @Autowired
+    WorkerEntryDAO workerEntryDAO;
+    @Autowired
+    CompanyDepartmentDAO companyDepartmentDAO;
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
+    @Autowired
+    PolicyService policyService;
 
     @Override
     public Result<List<EducationWallet>> getAllWallets(AuthToken token) {
@@ -422,21 +438,4 @@ public class EducationServiceImpl implements EducationService {
         boolean isAdmin = policyService.hasScopeForPrivilege(roles, En_Privilege.EDUCATION_VIEW, En_Scope.SYSTEM);
         return isAdmin;
     }
-
-    @Autowired
-    EducationWalletDAO educationWalletDAO;
-    @Autowired
-    EducationEntryDAO educationEntryDAO;
-    @Autowired
-    EducationEntryAttendanceDAO educationEntryAttendanceDAO;
-    @Autowired
-    WorkerEntryDAO workerEntryDAO;
-    @Autowired
-    CompanyDepartmentDAO companyDepartmentDAO;
-    @Autowired
-    JdbcManyRelationsHelper jdbcManyRelationsHelper;
-    @Autowired
-    PolicyService policyService;
-
-    private static Logger log = LoggerFactory.getLogger(EducationServiceImpl.class);
 }

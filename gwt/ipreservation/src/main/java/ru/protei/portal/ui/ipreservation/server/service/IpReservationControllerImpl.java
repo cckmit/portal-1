@@ -169,10 +169,10 @@ public class IpReservationControllerImpl implements IpReservationController {
     public Long removeSubnet(Subnet subnet, boolean removeWithIps) throws RequestFailedException {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<Subnet> response = ipReservationService.removeSubnet(token, subnet, removeWithIps);
+        Result<Long> response = ipReservationService.removeSubnet(token, subnet, removeWithIps);
 
         if (response.isOk()) {
-            return response.getData().getId();
+            return response.getData();
         }
 
         throw new RequestFailedException(response.getStatus());
@@ -181,10 +181,10 @@ public class IpReservationControllerImpl implements IpReservationController {
     @Override
     public Long removeReservedIp(ReservedIp reservedIp) throws RequestFailedException {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        Result<ReservedIp> response = ipReservationService.removeReservedIp(token, reservedIp);
+        Result<Long> response = ipReservationService.removeReservedIp(token, reservedIp);
 
         if (response.isOk()) {
-            return response.getData().getId();
+            return response.getData();
         }
 
         throw new RequestFailedException(response.getStatus());

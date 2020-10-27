@@ -45,9 +45,9 @@ public interface SiteFolderController extends RemoteService {
     Application saveApplication(Application application) throws RequestFailedException;
 
 
-    boolean removePlatform(long id) throws RequestFailedException;
+    Long removePlatform(long id) throws RequestFailedException;
 
-    boolean removeServer(long id) throws RequestFailedException;
+    Long removeServer(long id) throws RequestFailedException;
 
-    boolean removeApplication(long id) throws RequestFailedException;
+    Long removeApplication(long id) throws RequestFailedException;
 }

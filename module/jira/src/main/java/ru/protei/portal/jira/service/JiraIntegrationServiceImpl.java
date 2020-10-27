@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
@@ -121,6 +122,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
     @Async(JIRA_INTEGRATION_SINGLE_TASK_QUEUE)
     @Override
+    @Transactional
     public CompletableFuture<AssembledCaseEvent> create( JiraEndpoint endpoint, JiraHookEventData event) {
         final Issue issue = event.getIssue();
         IssueField clmIdField = getClmId(issue);
@@ -136,6 +138,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
     @Async(JIRA_INTEGRATION_SINGLE_TASK_QUEUE)
     @Override
+    @Transactional
     public CompletableFuture<AssembledCaseEvent> updateOrCreate(JiraEndpoint endpoint, JiraHookEventData event) {
         final Issue issue = event.getIssue();
         final Person defaultPerson = personDAO.get(endpoint.getPersonId());

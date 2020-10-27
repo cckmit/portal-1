@@ -255,7 +255,7 @@ public abstract class IssueTableFilterActivity
         }
 
         if (value.isFavorite()) {
-            issueService.removeFavoriteState(policyService.getProfileId(), value.getId(), new FluentCallback<Boolean>()
+            issueService.removeFavoriteState(policyService.getProfileId(), value.getId(), new FluentCallback<Long>()
                     .withSuccess(result -> onSuccessChangeFavoriteState(value, view))
             );
         } else {

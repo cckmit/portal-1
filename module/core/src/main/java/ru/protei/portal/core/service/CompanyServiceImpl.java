@@ -3,8 +3,10 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
@@ -132,6 +134,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    @Transactional
     public Result<?> updateState( AuthToken makeAuthToken, Long companyId, boolean isDeprecated) {
         if (companyId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -224,6 +227,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    @Transactional
     public Result<Company> createCompany( AuthToken token, Company company ) {
 
         if (!isValidCompany(company)) {
@@ -257,6 +261,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    @Transactional
     public Result<Company> updateCompany( AuthToken token, Company company ) {
 
         if (!isValidCompany(company)) {
@@ -281,6 +286,8 @@ public class CompanyServiceImpl implements CompanyService {
         contactItemDAO.saveOrUpdateBatch(company.getContactItems());
         jdbcManyRelationsHelper.persist(company, Company.Fields.CONTACT_ITEMS);
 
+        updateCompanySubscription(company.getId(), company.getSubscriptions());
+
         if (YOUTRACK_INTEGRATION_ENABLED && StringUtils.isNotEmpty(company.getCname()) && !company.getCname().equals(oldName)) {
             youtrackService.getCompanyByName(oldName)
                     .flatMap(companyIdByName -> youtrackService.updateCompanyName(companyIdByName, company.getCname())
@@ -290,7 +297,6 @@ public class CompanyServiceImpl implements CompanyService {
                     );
         }
 
-        updateCompanySubscription(company.getId(), company.getSubscriptions());
         return ok(company);
     }
 

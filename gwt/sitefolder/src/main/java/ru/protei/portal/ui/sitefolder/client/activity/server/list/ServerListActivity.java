@@ -132,21 +132,17 @@ public abstract class ServerListActivity implements Activity, AbstractServerList
                 return;
             }
 
-            siteFolderController.removeServer(value.getId(), new RequestCallback<Boolean>() {
+            siteFolderController.removeServer(value.getId(), new RequestCallback<Long>() {
                 @Override
                 public void onError(Throwable throwable) {
                     fireEvent(new NotifyEvents.Show(lang.siteFolderServerNotRemoved(), NotifyEvents.NotifyType.ERROR));
                 }
 
                 @Override
-                public void onSuccess(Boolean result) {
-                    if (result) {
-                        fireEvent(new SiteFolderServerEvents.ChangeModel());
-                        fireEvent(new NotifyEvents.Show(lang.siteFolderServerRemoved(), NotifyEvents.NotifyType.SUCCESS));
-                        onRemoved(itemView);
-                    } else {
-                        fireEvent(new NotifyEvents.Show(lang.siteFolderServerNotRemoved(), NotifyEvents.NotifyType.ERROR));
-                    }
+                public void onSuccess(Long result) {
+                    fireEvent(new SiteFolderServerEvents.ChangeModel());
+                    fireEvent(new NotifyEvents.Show(lang.siteFolderServerRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                    onRemoved(itemView);
                 }
             });
         };

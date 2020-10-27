@@ -37,12 +37,6 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.*;
  * Реализация сервиса управления продуктами
  */
 public class ProductServiceImpl implements ProductService {
-
-    /**
-     *  @TODO
-     *  - вынести обработку ответов БД в отдельный Interceptor
-     */
-
     @Autowired
     DevUnitDAO devUnitDAO;
 
@@ -370,7 +364,7 @@ public class ProductServiceImpl implements ProductService {
         }
 
         if ( !CollectionUtils.isEmpty( oldSubscriptions ) ) {
-            log.info( "merge product subscriptions = {}cre", oldSubscriptions );
+            log.info( "merge product subscriptions = {}", oldSubscriptions );
             int countMerged = productSubscriptionDAO.mergeBatch( oldSubscriptions );
             if ( countMerged != oldSubscriptions.size() ) {
                 return false;

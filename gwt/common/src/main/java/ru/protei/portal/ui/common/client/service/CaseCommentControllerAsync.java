@@ -13,7 +13,7 @@ public interface CaseCommentControllerAsync {
 
     void saveCaseComment(En_CaseType caseType, CaseComment comment, AsyncCallback<CaseComment> async);
 
-    void removeCaseComment(En_CaseType caseType, CaseComment comment, AsyncCallback<Void> async);
+    void removeCaseComment(En_CaseType caseType, CaseComment comment, AsyncCallback<Long> async);
 
     void updateCaseTimeElapsedType(Long caseCommentId, En_TimeElapsedType type, AsyncCallback<Boolean> async);
 

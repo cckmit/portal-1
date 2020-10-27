@@ -49,12 +49,12 @@ public class PersonCaseFilterControllerImpl implements PersonCaseFilterControlle
     }
 
     @Override
-    public boolean removePersonToCaseFilter(Long personId, Long caseFilterId) throws RequestFailedException {
+    public Long removePersonToCaseFilter(Long personId, Long caseFilterId) throws RequestFailedException {
         log.info("removePersonToCaseFilter, personId: {}, caseFilterId: {}", personId, caseFilterId);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<Boolean> response = personCaseFilterService.removePersonToCaseFilter(token, personId, caseFilterId);
+        Result<Long> response = personCaseFilterService.removePersonToCaseFilter(token, personId, caseFilterId);
 
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());

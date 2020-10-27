@@ -1,6 +1,7 @@
 package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.HistoryDAO;
 import ru.protei.portal.core.model.dict.En_HistoryAction;
@@ -22,6 +23,7 @@ public class HistoryServiceImpl implements HistoryService {
     HistoryDAO historyDAO;
 
     @Override
+    @Transactional
     public Result<Long> createHistory(AuthToken token, Long caseObjectId, En_HistoryAction action,
                                       En_HistoryType type, Long oldId, String oldValue, Long newId, String newValue) {
 

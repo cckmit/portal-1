@@ -69,7 +69,6 @@ public abstract class CaseLinkListActivity
         }
 
         controller.getCaseLinks(caseId, new FluentCallback<List<CaseLink>>()
-                .withError(this::showErrorFromServer)
                 .withSuccess(this::fillView)
         );
     }
@@ -195,7 +194,6 @@ public abstract class CaseLinkListActivity
         }
 
         controller.createLinkWithPublish(value, caseType, new FluentCallback<CaseLink>()
-                .withError(this::showErrorFromServer)
                 .withSuccess(caseLink -> {
                     value.setId(caseLink.getId());
                     value.setCaseInfo(caseLink.getCaseInfo());
@@ -232,10 +230,6 @@ public abstract class CaseLinkListActivity
         view.getLinksContainer().add(itemWidget.asWidget());
     }
 
-    private void showErrorFromServer(Throwable throwable) {
-        defaultErrorHandler.accept(throwable);
-    }
-
     private void showError(String error) {
         fireEvent(new NotifyEvents.Show(error, NotifyEvents.NotifyType.ERROR));
     }
@@ -267,8 +261,6 @@ public abstract class CaseLinkListActivity
     @Inject
     private Lang lang;
     @Inject
-    private LocalStorageService storage;
-    @Inject
     private CaseLinkControllerAsync controller;
     @Inject
     private AbstractCaseLinkListView view;
@@ -276,8 +268,6 @@ public abstract class CaseLinkListActivity
     private Provider<AbstractCaseLinkItemView> itemViewProvider;
     @Inject
     private CaseLinkProvider caseLinkProvider;
-    @Inject
-    DefaultErrorHandler defaultErrorHandler;
 
     private En_CaseType caseType;
     private Set<CaseLink> linksSet = new HashSet<>();

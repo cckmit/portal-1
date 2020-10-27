@@ -28,9 +28,6 @@ public interface EquipmentService {
     @Privileged( En_Privilege.EQUIPMENT_VIEW )
     Result< Equipment > getEquipment( AuthToken token, long id );
 
-    @Privileged( En_Privilege.EQUIPMENT_VIEW )
-    Result< List<DecimalNumber> > getDecimalNumbersOfEquipment( AuthToken token, long id );
-
     @Privileged( requireAny = { En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT })
     @Auditable( En_AuditType.EQUIPMENT_MODIFY )
     Result< Equipment > saveEquipment( AuthToken token, Equipment equipment );
@@ -43,13 +40,11 @@ public interface EquipmentService {
 
     Result< Boolean > checkIfExistDecimalNumber( DecimalNumber number );
 
-    Result< DecimalNumber > findDecimalNumber( AuthToken token, DecimalNumber number);
-
     @Privileged( requireAny = { En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT })
     @Auditable( En_AuditType.EQUIPMENT_COPY )
     Result<Long> copyEquipment( AuthToken token, Long equipmentId, String newName, Long authorId );
 
     @Privileged( En_Privilege.EQUIPMENT_REMOVE )
     @Auditable( En_AuditType.EQUIPMENT_REMOVE )
-    Result<Boolean> removeEquipment( AuthToken token, Long equipmentId, String author );
+    Result<Long> removeEquipment( AuthToken token, Long equipmentId, String author );
 }

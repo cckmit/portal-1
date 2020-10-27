@@ -188,22 +188,12 @@ public abstract class ContactTableActivity
     };
 
     private Runnable removeAction(Long contactId) {
-        return () -> contactService.removeContact(contactId, new AsyncCallback<Boolean>() {
-            @Override
-            public void onFailure(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(Boolean result) {
-                if (result) {
+        return () -> contactService.removeContact(contactId, new FluentCallback<Long>()
+                .withSuccess(result -> {
                     fireEvent(new ContactEvents.Show(false));
                     fireEvent(new NotifyEvents.Show(lang.contactDeleted(), NotifyEvents.NotifyType.SUCCESS));
-                } else {
-                    fireEvent(new NotifyEvents.Show(lang.errInternalError(), NotifyEvents.NotifyType.ERROR));
-                }
-            }
-        });
+                })
+        );
     }
 
     private void loadTable() {

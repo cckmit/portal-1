@@ -226,21 +226,17 @@ public abstract class ApplicationTableActivity implements
     }
 
     private Runnable removeAction(Long applicationId) {
-        return () -> siteFolderController.removeApplication(applicationId, new RequestCallback<Boolean>() {
+        return () -> siteFolderController.removeApplication(applicationId, new RequestCallback<Long>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(lang.siteFolderAppNotRemoved(), NotifyEvents.NotifyType.ERROR));
             }
 
             @Override
-            public void onSuccess(Boolean result) {
-                if (result) {
-                    fireEvent(new SiteFolderAppEvents.ChangeModel());
-                    fireEvent(new SiteFolderAppEvents.Show(server, false));
-                    fireEvent(new NotifyEvents.Show(lang.siteFolderAppRemoved(), NotifyEvents.NotifyType.SUCCESS));
-                } else {
-                    fireEvent(new NotifyEvents.Show(lang.siteFolderAppNotRemoved(), NotifyEvents.NotifyType.ERROR));
-                }
+            public void onSuccess(Long result) {
+                fireEvent(new SiteFolderAppEvents.ChangeModel());
+                fireEvent(new SiteFolderAppEvents.Show(server, false));
+                fireEvent(new NotifyEvents.Show(lang.siteFolderAppRemoved(), NotifyEvents.NotifyType.SUCCESS));
             }
         });
     }
