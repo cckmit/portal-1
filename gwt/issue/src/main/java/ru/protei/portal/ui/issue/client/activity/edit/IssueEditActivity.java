@@ -11,10 +11,7 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.ent.Attachment;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.CaseObjectMeta;
-import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
@@ -215,6 +212,7 @@ public abstract class IssueEditActivity implements
                 fireEvent(new CaseCommentEvents.DisableNewComment());
             }
         }
+        view.createSubtaskButtonVisibility().setVisible(!isStateCreatingSubtaskNotAllowed(event.meta.getStateId()));
     }
 
     @Event
@@ -476,7 +474,7 @@ public abstract class IssueEditActivity implements
         view.nameAndDescriptionEditButtonVisibility().setVisible(!readOnly && selfIssue);
         view.setFavoriteButtonActive(issue.isFavorite());
 
-        view.createSubtaskButtonVisibility().setVisible(!isStateCreatingSubtaskNotAllowed(issue));
+        view.createSubtaskButtonVisibility().setVisible(!isStateCreatingSubtaskNotAllowed(issue.getStateId()));
     }
 
     private void viewModeIsPreview( boolean isPreviewMode){
@@ -554,9 +552,9 @@ public abstract class IssueEditActivity implements
         return name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
     }
 
-    private boolean isStateCreatingSubtaskNotAllowed(CaseObject caseObject) {
-        return isTerminalState(caseObject.getStateId()) ||
-                CrmConstants.State.CREATED == caseObject.getStateId();
+    private boolean isStateCreatingSubtaskNotAllowed(Long stateId) {
+        return isTerminalState(stateId) ||
+                CrmConstants.State.CREATED == stateId;
     }
 
     @Inject

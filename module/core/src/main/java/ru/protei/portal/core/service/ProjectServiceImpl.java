@@ -258,6 +258,9 @@ public class ProjectServiceImpl implements ProjectService {
         projectFormDB.setProjectSlas(project.getProjectSlas());
         jdbcManyRelationsHelper.persist(projectFormDB, "projectSlas");
 
+        projectFormDB.setSubcontractors(project.getSubcontractors());
+        jdbcManyRelationsHelper.persist(projectFormDB, Project.Fields.PROJECT_SUBCONTRACTORS);
+
         jdbcManyRelationsHelper.persist(project, Project.Fields.PROJECT_PLANS);
 
         try {

@@ -61,4 +61,5 @@
   <include file="2020-10-14-add-bundle_type-to-case_link-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-10-15-drop-uniq-instance_id-in-export_syb_entry-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-10-16-add-deadline-work_trigger-in-case-object-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-10-28-create-project-to-company-table.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

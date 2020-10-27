@@ -67,7 +67,7 @@ public abstract class SubtaskCreateActivity implements AbstractSubtaskCreateActi
                 .withSuccess(createIssueResult -> {
                     onCancelClicked();
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new IssueEvents.ChangeIssue(parentCaseObject.getId()));
+                    fireEvent(new IssueEvents.Show(false));
                 })
         );
     }

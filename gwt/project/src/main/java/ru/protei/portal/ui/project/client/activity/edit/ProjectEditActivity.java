@@ -191,7 +191,8 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
         fillCaseLinks(project);
 
-        view.subcontractors().setValue(project.getSubcontractors() == null ? null : project.getSubcontractors().stream().map(Company::toEntityOption).collect(Collectors.toSet()));
+        view.subcontractors().setValue(project.getSubcontractors() == null ? null :
+                project.getSubcontractors().stream().map(Company::toEntityOption).collect(Collectors.toSet()));
 
         En_Privilege actionPrivilege = isNew(project)
                 ? En_Privilege.PROJECT_CREATE
@@ -239,6 +240,9 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         project.setProjectSlas(view.slaInput().getValue());
         project.setProjectPlans(stream(view.plans().getValue())
                 .map(PlanOption::toPlan)
+                .collect(Collectors.toList()));
+        project.setSubcontractors(stream(view.subcontractors().getValue())
+                .map(Company::fromEntityOption)
                 .collect(Collectors.toList()));
         return project;
     }

@@ -122,6 +122,8 @@ public class CompanyServiceImpl implements CompanyService {
         if (list == null)
             return error(En_ResultStatus.GET_DATA_ERROR);
 
+        jdbcManyRelationsHelper.fill(list, "subcontractors");
+
         List<Company> companies = list.stream()
                 .map(Project::getSubcontractors)
                 .filter(Objects::nonNull)

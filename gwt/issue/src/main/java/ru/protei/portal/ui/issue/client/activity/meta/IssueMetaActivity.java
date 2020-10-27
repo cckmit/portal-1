@@ -138,7 +138,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     @Override
     public void onManagerChanged() {
         meta.setManager(metaView.getManager());
-        onCaseMetaChanged( meta, () -> {
+        onCaseMetaChanged(meta, () -> {
             fireEvent(new IssueEvents.IssueManagerChanged(meta.getId()));
             fireEvent(new IssueEvents.IssueMetaChanged(meta));
         } );

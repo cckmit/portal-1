@@ -149,7 +149,8 @@ public class Project extends AuditableObject {
     }, mappedColumn = "name")
     private String regionName;
 
-    private Set<Company> subcontractors;
+    @JdbcManyToMany(linkTable = "project_to_company", localLinkColumn = "project_id", remoteLinkColumn = "company_id")
+    private List<Company> subcontractors;
     /**
      * Команда проекта
      */
@@ -420,11 +421,11 @@ public class Project extends AuditableObject {
         this.projectPlans = projectPlans;
     }
 
-    public Set<Company> getSubcontractors() {
+    public List<Company> getSubcontractors() {
         return subcontractors;
     }
 
-    public void setSubcontractors(Set<Company> subcontractors) {
+    public void setSubcontractors(List<Company> subcontractors) {
         this.subcontractors = subcontractors;
     }
 
@@ -515,5 +516,6 @@ public class Project extends AuditableObject {
     }
     public interface Fields {
         String PROJECT_PLANS = "projectPlans";
+        String PROJECT_SUBCONTRACTORS = "subcontractors";
     }
 }

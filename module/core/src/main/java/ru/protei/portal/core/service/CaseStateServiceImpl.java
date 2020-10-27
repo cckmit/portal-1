@@ -53,7 +53,7 @@ public class CaseStateServiceImpl implements CaseStateService {
         CaseState state = caseStateDAO.get(id);
 
         if (state == null)
-            return error(En_ResultStatus.GET_DATA_ERROR);
+            return error(En_ResultStatus.NOT_FOUND);
 
         if (SELECTED.equals(state.getUsageInCompanies())) {
             jdbcManyRelationsHelper.fill(state, "companies");
@@ -67,7 +67,7 @@ public class CaseStateServiceImpl implements CaseStateService {
         CaseState state = caseStateDAO.get(id);
 
         if (state == null)
-            return error(En_ResultStatus.GET_DATA_ERROR);
+            return error(En_ResultStatus.NOT_FOUND);
 
         return ok(state);
     }
