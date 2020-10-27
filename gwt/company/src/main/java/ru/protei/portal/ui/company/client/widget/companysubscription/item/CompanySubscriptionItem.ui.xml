@@ -2,7 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:lang="urn:import:ru.protei.portal.ui.common.client.widget.subscription.locale"
              xmlns:validatefield="urn:import:ru.protei.portal.ui.common.client.widget.validatefield">
-    <g:HTMLPanel styleName="row form-group">
+    <g:HTMLPanel ui:field="root" styleName="row form-group">
         <lang:LocaleButtonSelector ui:field="locale" addStyleNames="col-md-2"/>
 
         <div class="col-md-10">

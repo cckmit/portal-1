@@ -1,10 +1,10 @@
 package ru.protei.portal.ui.company.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -14,6 +14,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
@@ -40,6 +41,8 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         parentCompany.setDefaultValue(lang.selectIssueCompany());
         companyModel.showOnlyParentCompanies(true);
         parentCompany.setAsyncModel(companyModel);
+
+        ensureDebugIds();
     }
 
     @Override
@@ -171,6 +174,27 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         verifiableIcon.setClassName(NameStatus.UNDEFINED.getStyle());
         timer.cancel();
         timer.schedule( 300 );
+    }
+
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+
+        companyName.ensureDebugId(DebugIds.COMPANY.NAME);
+        verifiableIcon.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY.VERIFIABLE_ICON);
+        companyCategory.setEnsureDebugId(DebugIds.COMPANY.CATEGORY);
+        parentCompany.setEnsureDebugId(DebugIds.COMPANY.PARENT);
+        comment.ensureDebugId(DebugIds.COMPANY.COMMENT);
+        autoOpenIssues.ensureDebugId(DebugIds.COMPANY.AUTO_OPEN_ISSUES);
+        subscriptions.ensureDebugId(DebugIds.COMPANY.SUBSCRIPTIONS);
+        webSite.ensureDebugId(DebugIds.COMPANY.WEB_SITE);
+        phonesContainer.ensureDebugId(DebugIds.COMPANY.PHONES);
+        emailsContainer.ensureDebugId(DebugIds.COMPANY.EMAILS);
+        actualAddress.ensureDebugId(DebugIds.COMPANY.ACTUAL_ADDRESS);
+        legalAddress.ensureDebugId(DebugIds.COMPANY.LEGAL_ADDRESS);
+        contactsContainer.ensureDebugId(DebugIds.COMPANY.CONTACTS);
+        siteFolderContainer.ensureDebugId(DebugIds.COMPANY.SITE_FOLDERS);
     }
 
     @UiField

@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.company.client.widget.companysubscription.item;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
@@ -24,6 +25,8 @@ import ru.protei.portal.ui.common.client.events.HasAddHandlers;
 import ru.protei.portal.ui.common.client.widget.subscription.locale.LocaleButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 
+import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
+
 
 /**
  * Один элемент списка
@@ -38,6 +41,7 @@ public class CompanySubscriptionItem
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         email.setRegexp( CrmConstants.Masks.EMAIL );
+        setTestAttributes();
     }
 
     @Override
@@ -106,6 +110,18 @@ public class CompanySubscriptionItem
         return ( value.getEmail() == null || value.getEmail().trim().isEmpty() )
                 && email.getValue().length() > 0;
     }
+
+    private void setTestAttributes() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+        root.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.COMPANY.GROUP.ITEM.ROOT);
+        locale.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.COMPANY.GROUP.ITEM.LOCALE);
+        email.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.COMPANY.GROUP.ITEM.EMAIL);
+    }
+
+    @UiField
+    HTMLPanel root;
 
     @UiField
     ValidableTextBox email;

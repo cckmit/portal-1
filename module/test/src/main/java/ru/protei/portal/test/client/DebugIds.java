@@ -516,7 +516,50 @@ public class DebugIds {
     }
 
     public interface COMPANY {
+        String NAME = "company-name";
+        String VERIFIABLE_ICON = "company-verifiable-icon";
+        String CATEGORY = "company-category";
+        String PARENT = "company-parent";
+        String COMMENT = "company-comment";
+        String AUTO_OPEN_ISSUES = "company-auto-open-issues";
         String SUBSCRIPTIONS = "company-subscriptions";
+        interface GROUP {
+            String ADD_BUTTON = "company-subscriptions-add-button";
+
+            String ROOT = "company-subscriptions-group-root";
+            String PLATFORM = "company-subscriptions-group-platform";
+            String PRODUCT = "company-subscriptions-group-product";
+            String COLLAPSE_BUTTON = "company-subscriptions-group-collapse-button";
+            String REMOVE_BUTTON = "company-subscriptions-group-remove-button";
+            String QUANTITY = "company-subscriptions-group-quantity";
+            String ITEMS = "company-subscriptions-group-items";
+            interface ITEM {
+                String ROOT = "company-subscriptions-group-item-root";
+                String LOCALE = "company-subscriptions-group-item-locale";
+                String EMAIL = "company-subscriptions-group-item-email";
+            }
+        }
+        String WEB_SITE = "company-web-site";
+        String PHONES = "company-phones";
+        String EMAILS = "company-emails";
+        String ACTUAL_ADDRESS = "company-actual-address";
+        String LEGAL_ADDRESS = "company-legal-address";
+        String CONTACTS = "company-contacts";
+        String SITE_FOLDERS = "company-site-folders";
+    }
+
+    public interface CONTACT_INFO {
+        String ROOT = "contact-info-root";
+        interface ITEM {
+            String ROOT = "contact-info-item-root";
+            String TYPE = "contact-info-item-type";
+            String VALUE = "contact-info-item-value";
+        }
+    }
+
+    public interface CONCISE_TABLE {
+        String CONTACT = "contact-concise-table";
+        String PLATFORM = "platform-concise-table";
     }
 
     public interface PRODUCT {
