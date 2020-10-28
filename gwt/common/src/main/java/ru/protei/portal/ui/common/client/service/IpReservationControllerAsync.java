@@ -46,4 +46,6 @@ public interface IpReservationControllerAsync {
     void isReservedIpAddressExists(String address, Date reserveDate, Date releaseDate, En_DateIntervalType dateIntervalType, AsyncCallback<Boolean> async);
 
     void isReservedIpAddressExists(String address, Date reserveDate, Date releaseDate, En_DateIntervalType dateIntervalType, Long excludeId, AsyncCallback<Boolean> async);
+
+    void refreshAvailabilityIp(ReservedIp reservedIp, AsyncCallback<ReservedIp> async);
 }

@@ -53,10 +53,10 @@ public class ReservedIp extends AuditableObject {
     @JdbcColumn(name="comment")
     private String comment;
 
-    @JdbcColumn(name = "last_check_date")
-    private Date lastCheckDate;
+    @JdbcColumn(name = Columns.LAST_CHECK_DATE)
+    private Date lastActiveDate;
 
-    @JdbcColumn(name = "last_check_info")
+    @JdbcColumn(name = Columns.LAST_CHECK_INFO)
     private String lastCheckInfo;
 
     public ReservedIp() {}
@@ -114,9 +114,9 @@ public class ReservedIp extends AuditableObject {
 
     public void setComment(String comment) { this.comment = comment; }
 
-    public Date getLastCheckDate() { return lastCheckDate; }
+    public Date getLastActiveDate() { return lastActiveDate; }
 
-    public void setLastCheckDate(Date lastCheckDate) { this.lastCheckDate = lastCheckDate; }
+    public void setLastActiveDate(Date lastActiveDate) { this.lastActiveDate = lastActiveDate; }
 
     public String getLastCheckInfo() { return lastCheckInfo; }
 
@@ -140,6 +140,11 @@ public class ReservedIp extends AuditableObject {
         return reservedIp;
     }
 
+    public interface Columns {
+        String LAST_CHECK_DATE = "last_active_date";
+        String LAST_CHECK_INFO = "last_check_info";
+    }
+
     @Override
     public String getAuditType() {
         return AUDIT_TYPE;
@@ -161,7 +166,7 @@ public class ReservedIp extends AuditableObject {
                 ", reserveDate=" + reserveDate +
                 ", releaseDate=" + releaseDate +
                 ", comment='" + comment + '\'' +
-                ", lastCheckDate=" + lastCheckDate +
+                ", lastActiveDate=" + lastActiveDate +
                 ", lastCheckInfo='" + lastCheckInfo + '\'' +
                 '}';
     }

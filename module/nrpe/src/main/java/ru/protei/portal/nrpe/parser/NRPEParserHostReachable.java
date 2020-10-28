@@ -39,6 +39,7 @@ public class NRPEParserHostReachable extends NRPEParserHost {
             }
 
             return new NRPEHostReachable(
+                    new ArrayList<>(content),
                     matcherWelcome.group("ipTarget"),
                     matcherWelcome.group("ipSource"),
                     probes,

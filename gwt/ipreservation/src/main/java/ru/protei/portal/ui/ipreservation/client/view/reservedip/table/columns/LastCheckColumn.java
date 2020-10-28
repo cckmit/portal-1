@@ -30,9 +30,9 @@ public class LastCheckColumn extends ClickColumn<ReservedIp> {
 
         com.google.gwt.dom.client.Element divElement = DOM.createDiv();
 
-        if (value.getLastCheckDate() != null) {
+        if (value.getLastActiveDate() != null) {
             com.google.gwt.dom.client.Element checkDateElement = DOM.createElement("p");
-            checkDateElement.setInnerText(DateFormatter.formatDateTime(value.getLastCheckDate()));
+            checkDateElement.setInnerText(DateFormatter.formatDateTime(value.getLastActiveDate()));
             divElement.appendChild(checkDateElement);
         }
         if (value.getLastCheckInfo() != null) {
