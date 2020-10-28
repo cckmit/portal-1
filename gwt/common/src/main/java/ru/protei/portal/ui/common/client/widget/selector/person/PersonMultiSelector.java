@@ -31,6 +31,7 @@ public class PersonMultiSelector extends InputPopupMultiSelector<PersonShortView
         setAddName( lang.buttonAdd() );
         setClearName( lang.buttonClear() );
         setItemRenderer(this::makeName);
+        selectCompanyMessage = lang.initiatorSelectACompany();
     }
 
     private String makeName(PersonShortView personShortView) {
@@ -49,12 +50,11 @@ public class PersonMultiSelector extends InputPopupMultiSelector<PersonShortView
             return;
         }
 
-        Collection companies = companiesSupplier.get();
-        if (!CollectionUtils.isEmpty( companies )) {
+        if (personModel.isCompaniesPresent()) {
             super.onShowPopupClicked(event);
         } else {
             SelectorItem item = new SelectorItem();
-            item.setName(StringUtils.isEmpty(selectCompanyMessage) ? lang.initiatorSelectACompany() : selectCompanyMessage);
+            item.setName( selectCompanyMessage );
             item.getElement().addClassName(UiConstants.Styles.TEXT_CENTER);
             getPopup().getChildContainer().clear();
             getPopup().getChildContainer().add(item);
@@ -84,36 +84,9 @@ public class PersonMultiSelector extends InputPopupMultiSelector<PersonShortView
         return item;
     }
 
-    public void updateCompanies() {
-        if ((asyncPersonModel == null && personModel == null) || companiesSupplier == null) {
-            return;
-        }
-
-        Set<Long> companyIds = null;
-        Set<EntityOption> companies = companiesSupplier.get();
-        if (CollectionUtils.isEmpty( companies )) {
-            setValue(null);
-        } else {
-            companyIds = companies.stream().map(EntityOption::getId).collect(Collectors.toSet());
-        }
-
-        if (personModel != null) {
-            personModel.updateCompanies(this, null, companyIds, null);
-            return;
-        }
-
-        if (asyncPersonModel != null) {
-            asyncPersonModel.updateCompanies(companyIds);
-        }
-    }
-
-    public void setCompaniesSupplier(Supplier<Set<EntityOption>> companiesSupplier) {
-        this.companiesSupplier = companiesSupplier;
-    }
-
     public void setPersonModel(PersonModel model) {
         this.personModel = model;
-        setModel( model );
+        setAsyncModel( model );
     }
 
     public void setAsyncPersonModel(AsyncPersonModel model) {
@@ -138,5 +111,5 @@ public class PersonMultiSelector extends InputPopupMultiSelector<PersonShortView
     private AsyncPersonModel asyncPersonModel;
     private String selectCompanyMessage;
 
-    private Supplier<Set<EntityOption>> companiesSupplier = () -> Collections.EMPTY_SET;
+    private Supplier<Set<EntityOption>> companiesSupplier1 = () -> Collections.EMPTY_SET;
 }

@@ -38,6 +38,6 @@ public interface AbstractProjectCreateView extends IsWidget {
 
     void setManagersModel(AsyncPersonModel model);
 
-    void setCompaniesSupplier(Supplier<Set<EntityOption>> companiesSupplier);
+//    void setCompaniesSupplier(Supplier<Set<EntityOption>> companiesSupplier);
 //    void refreshProducts();
 }

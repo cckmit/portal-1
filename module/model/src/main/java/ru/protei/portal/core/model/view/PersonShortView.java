@@ -17,7 +17,8 @@ public class PersonShortView implements Serializable, HasLongId {
     @JdbcId(name = "id")
     private Long id;
 
-    private String name;
+    @JdbcColumn(name="company_id")
+    private Long companyId;
 
     @JdbcColumn(name= Person.Columns.DISPLAY_NAME)
     private String displayName;
@@ -27,6 +28,8 @@ public class PersonShortView implements Serializable, HasLongId {
 
     @JdbcColumn(name = Person.Columns.IS_FIRED)
     private boolean isFired;
+
+    private String name;
 
     public PersonShortView() {}
 
@@ -86,6 +89,14 @@ public class PersonShortView implements Serializable, HasLongId {
 
     public void setDisplayShortName( String displayShortName ) {
         this.displayShortName = displayShortName;
+    }
+
+    public Long getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId( Long companyId ) {
+        this.companyId = companyId;
     }
 
     @Override

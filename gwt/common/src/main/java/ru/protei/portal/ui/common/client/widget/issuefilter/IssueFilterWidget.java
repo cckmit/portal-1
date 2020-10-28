@@ -42,12 +42,18 @@ public class IssueFilterWidget extends Composite {
         initWidget(ourUiBinder.createAndBindUi(this));
         this.model = model;
         ensureDebugIds();
-        issueFilterParamView.setInitiatorsModel(personModelProvider.get());
-        issueFilterParamView.setManagersModel(personModelProvider.get());
+//        issueFilterParamView.setInitiatorsModel(initiatorsModel);
+//        issueFilterParamView.setManagersModel(managersModel);
         issueFilterParamView.setCreatorModel(asyncPersonModel);
         issueFilterParamView.commentAuthorsVisibility().setVisible(false);
         issueFilterParamView.timeElapsedVisibility().setVisible(false);
     }
+
+//
+//    @Inject
+//    PersonModel initiatorsModel;
+//    @Inject
+//    PersonModel managersModel;
 
     public void resetFilter( DateIntervalWithType dateModified) {
         issueFilterParamView.resetFilter( dateModified );
@@ -297,8 +303,8 @@ public class IssueFilterWidget extends Composite {
 
     @Inject
     AsyncPersonModel asyncPersonModel;
-    @Inject
-    Provider<PersonModel> personModelProvider;
+//    @Inject
+//    Provider<PersonModel> personModelProvider;
 
     AbstractIssueFilterWidgetModel model;
 

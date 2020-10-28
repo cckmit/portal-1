@@ -41,7 +41,7 @@ public interface AbstractIssueMetaView extends IsWidget {
     void setStateWorkflow(En_CaseStateWorkflow workflow);
     void setSubscriptionEmails(String value);
     void initiatorSelectorAllowAddNew(boolean isVisible);
-    void initiatorUpdateCompany(Company company);
+    void setInitiatorFilter( Long companyId);
     void updateManagersCompanyFilter(Long managerCompanyId);
     void setStateFilter(Selector.SelectorFilter<CaseState> filter);
     void setPlatformFilter(Selector.SelectorFilter<PlatformOption> filter);

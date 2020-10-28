@@ -250,7 +250,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         meta.setInitiatorCompany(company);
 
-        metaView.initiatorUpdateCompany(company);
+        metaView.setInitiatorFilter(company.getId());
         meta.setInitiator(null);
 
         Long selectedCompanyId = company.getId();
@@ -508,7 +508,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         setCurrentCompany(meta.getInitiatorCompany());
 
         metaView.setCompany(meta.getInitiatorCompany());
-        metaView.initiatorUpdateCompany(meta.getInitiatorCompany());
+        metaView.setInitiatorFilter(meta.getInitiatorCompany()==null?null:meta.getInitiatorCompany().getId());
         metaView.setInitiator(meta.getInitiator());
 
         metaView.setPlatformFilter(platformOption -> meta.getInitiatorCompanyId().equals(platformOption.getCompanyId()));

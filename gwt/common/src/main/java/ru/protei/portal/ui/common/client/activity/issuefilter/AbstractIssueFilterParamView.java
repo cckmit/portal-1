@@ -26,9 +26,9 @@ import java.util.Set;
 public interface AbstractIssueFilterParamView extends IsWidget {
     void setModel(AbstractIssueFilterModel model);
 
-    void setInitiatorsModel(PersonModel personModel);
-
-    void setManagersModel(PersonModel personModel);
+//    void setInitiatorsModel(PersonModel personModel);
+//
+//    void setManagersModel(PersonModel personModel);
 
     void setCreatorModel(AsyncPersonModel asyncPersonModel);
 

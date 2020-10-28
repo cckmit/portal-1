@@ -19,6 +19,7 @@ import ru.protei.portal.core.model.dict.En_WorkTrigger;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.TransliterationUtils;
@@ -50,7 +51,10 @@ import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaActivity;
 import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaView;
 
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
 
 public class IssueMetaView extends Composite implements AbstractIssueMetaView {
 
@@ -58,6 +62,8 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         company.setAsyncModel( companyModel );
+        initiator.setAsyncModel( initiatorModel );
+        manager.setAsyncModel( managerModel );
         initView();
 
         ensureDebugIds();
@@ -166,15 +172,31 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         initiator.setAddButtonVisible(isVisible);
     }
 
+    private static final Logger log = Logger.getLogger( IssueMetaView.class.getName() );
     @Override
-    public void initiatorUpdateCompany(Company company) {
-        initiator.updateCompanies(PersonModel.makeCompanyIds(company));
+    public void setInitiatorFilter(Long companyId) {
+//        initiator.updateCompanies(PersonModel.makeCompanyIds(company));
+        initiatorModel.updateCompanies( null,  null, setOf(companyId), null  );
+//        initiator.setFilter( new Selector.SelectorFilter<PersonShortView>() {
+//            @Override
+//            public boolean isDisplayed( PersonShortView person ) {
+//                log.info( "setInitiatorFilter(): " + person.getCompanyId() + " " + companyId + " " +person );
+//                return person == null || Objects.equals( person.getCompanyId(), companyId );
+//            }
+//        } );
     }
 
     @Override
     public void updateManagersCompanyFilter(Long managerCompanyId) {
-        manager.updateCompanies(new HashSet<>(Collections.singletonList(managerCompanyId)));
+//        manager.updateCompanies(new HashSet<>(Collections.singletonList(managerCompanyId)));
+        managerModel.updateCompanies( null,  null, setOf(managerCompanyId), null  );
+//        manager.setFilter( person -> person == null || Objects.equals( person.getCompanyId(), managerCompanyId ) );
     }
+
+    @Inject
+    PersonModel managerModel;
+    @Inject
+    PersonModel initiatorModel;
 
     @Override
     public void setStateFilter(Selector.SelectorFilter<CaseState> filter) {

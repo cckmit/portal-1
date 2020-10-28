@@ -479,7 +479,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     private void fillInitiatorValue(final AbstractIssueMetaView issueMetaView, Company initiatorCompany) {
-        issueMetaView.initiatorUpdateCompany(initiatorCompany);
+        issueMetaView.setInitiatorFilter(initiatorCompany.getId());
         initiatorSelectorAllowAddNew(initiatorCompany.getId());
         updateInitiatorInfo(policyService.getProfile(), initiatorCompany.getId());
     }

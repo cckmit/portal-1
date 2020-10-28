@@ -13,12 +13,12 @@ import java.util.logging.Logger;
 /**
  * Селектор person
  */
-public class PersonFormSelector extends FormPopupSingleSelector<PersonShortView> implements Refreshable
+public class PersonFormSelector extends FormPopupSingleSelector<PersonShortView>
 {
 
     @Inject
     public void init( PersonModel model ) {
-        this.model = model;
+//        this.model = model;
         setModel( model );
         setItemRenderer( value -> value == null ? defaultValue : value.getName() );
     }
@@ -36,23 +36,19 @@ public class PersonFormSelector extends FormPopupSingleSelector<PersonShortView>
         return item;
     }
 
-    public void setFired ( boolean fired ) {
-        this.fired = fired;
-    }
-
+//    public void setFired ( boolean fired ) {
+//        this.fired = fired;
+//    }
+//
     private static final Logger log = Logger.getLogger( PersonFormSelector.class.getName() );
 
-    @Override
-    public void refresh() {
-    }
+//    public void updateCompanies(Set<Long> companyIds) {
+//        if (model != null) {
+//            model.updateCompanies(companyIds);
+//        }
+//    }
+//
+//    private PersonModel model;
 
-    public void updateCompanies(Set<Long> companyIds) {
-        if (model != null) {
-            model.updateCompanies(this, null, companyIds, fired);
-        }
-    }
-
-    private PersonModel model;
-
-    private boolean fired = false;
+//    private boolean fired = false;
 }
