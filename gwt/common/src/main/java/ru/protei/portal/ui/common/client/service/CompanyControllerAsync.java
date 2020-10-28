@@ -73,6 +73,12 @@ public interface CompanyControllerAsync {
     void getSubcontractorOptionList(Long companyId, AsyncCallback<List<EntityOption>> callback);
 
     /**
+     * Получение списка сокращенного представления компании-инициатора через проекты (name,id)
+     * @param callback
+     */
+    void getInitiatorOptionList(Long subcontractorId, AsyncCallback<List<EntityOption>> callback);
+
+    /**
      * Получение списка сокращенного представления компании (name,id) игнорируя область видимости и привилегии
      * @param callback
      */

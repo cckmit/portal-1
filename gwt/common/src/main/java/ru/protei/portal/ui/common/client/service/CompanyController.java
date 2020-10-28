@@ -86,6 +86,12 @@ public interface CompanyController extends RemoteService {
     List<EntityOption> getSubcontractorOptionList(Long companyId) throws RequestFailedException;
 
     /**
+     * Получение списка сокращенного представления компании-инициатора через проекты (name,id)
+     * @return
+     */
+    List<EntityOption> getInitiatorOptionList(Long subcontractorId) throws RequestFailedException;
+
+    /**
      * Получение списка сокращенного представления компании (name,id) игнорируя область видимости и привилегии
      * @return
      */

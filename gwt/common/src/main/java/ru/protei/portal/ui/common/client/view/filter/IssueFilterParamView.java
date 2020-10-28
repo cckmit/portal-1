@@ -28,6 +28,7 @@ import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterMode
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
 import ru.protei.portal.ui.common.client.view.selector.ElapsedTimeTypeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.issueimportance.ImportanceBtnGroupMulti;
@@ -81,6 +82,16 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @Override
     public void setModel(AbstractIssueFilterModel model) {
         this.model = model;
+    }
+
+    @Override
+    public void setInitiatorCompaniesModel(AsyncSelectorModel companyModel) {
+        companies.setAsyncModel(companyModel);
+    }
+
+    @Override
+    public void setManagerCompaniesModel(AsyncSelectorModel companyModel) {
+        managerCompanies.setAsyncModel(companyModel);
     }
 
     @Override
@@ -841,7 +852,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     IssueStatesOptionList state;
     @Inject
     @UiField(provided = true)
-    WorkTriggerButtonMultiSelector workTriggers ;
+    WorkTriggerButtonMultiSelector workTriggers;
     @UiField
     HTMLPanel overdueDeadlinesContainer;
     @UiField

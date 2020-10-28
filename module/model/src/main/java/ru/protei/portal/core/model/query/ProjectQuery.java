@@ -12,6 +12,7 @@ import java.util.*;
  * Запрос по проектам
  */
 public class ProjectQuery extends BaseQuery {
+
     private En_CaseType type = En_CaseType.PROJECT;
 
     private List<Long> caseIds;
@@ -45,6 +46,8 @@ public class ProjectQuery extends BaseQuery {
     private Long pauseDateGreaterThan;
 
     private Integer deleted;
+
+    private Set<Long> subcontractorIds;
 
     public ProjectQuery() {
         sortField = En_SortField.case_name;
@@ -208,6 +211,14 @@ public class ProjectQuery extends BaseQuery {
         this.deleted = deleted;
     }
 
+    public Set<Long> getSubcontractorIds() {
+        return subcontractorIds;
+    }
+
+    public void setSubcontractorIds(Set<Long> subcontractorIds) {
+        this.subcontractorIds = subcontractorIds;
+    }
+
     @Override
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
@@ -219,6 +230,7 @@ public class ProjectQuery extends BaseQuery {
                 CollectionUtils.isNotEmpty(directions) ||
                 CollectionUtils.isNotEmpty(productIds) ||
                 CollectionUtils.isNotEmpty(initiatorCompanyIds) ||
+                CollectionUtils.isNotEmpty(subcontractorIds) ||
                 customerType != null ||
                 createdFrom != null ||
                 createdTo != null ||
@@ -247,6 +259,7 @@ public class ProjectQuery extends BaseQuery {
                 ", initiatorCompanyIds=" + initiatorCompanyIds +
                 ", pauseDateGreaterThan=" + pauseDateGreaterThan +
                 ", deleted=" + deleted +
+                ", subcontractorIds=" + subcontractorIds +
                 '}';
     }
 
@@ -270,13 +283,14 @@ public class ProjectQuery extends BaseQuery {
                 Objects.equals(platformIndependentProject, that.platformIndependentProject) &&
                 Objects.equals(initiatorCompanyIds, that.initiatorCompanyIds) &&
                 Objects.equals(pauseDateGreaterThan, that.pauseDateGreaterThan) &&
-                Objects.equals(deleted, that.deleted);
+                Objects.equals(deleted, that.deleted) &&
+                Objects.equals(subcontractorIds, that.subcontractorIds);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(caseIds, states, regions, headManagers, caseMembers, directions,
                 districtIds, memberId, productIds, customerType, createdFrom, createdTo,
-                platformIndependentProject, initiatorCompanyIds, pauseDateGreaterThan, deleted);
+                platformIndependentProject, initiatorCompanyIds, pauseDateGreaterThan, deleted, subcontractorIds);
     }
 }

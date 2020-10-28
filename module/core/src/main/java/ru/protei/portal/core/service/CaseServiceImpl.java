@@ -21,10 +21,7 @@ import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.struct.JiraExtAppData;
 import ru.protei.portal.core.model.util.*;
-import ru.protei.portal.core.model.view.CaseShortView;
-import ru.protei.portal.core.model.view.PlanOption;
-import ru.protei.portal.core.model.view.PlatformOption;
-import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.core.model.view.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
 import ru.protei.portal.core.service.policy.PolicyService;
@@ -749,14 +746,20 @@ public class CaseServiceImpl implements CaseService {
         return caseCommentDAO.persist(managerChangeMessage);
     }
 
-    private void applyFilterByScope( AuthToken token, CaseQuery query ) {
-        Set< UserRole > roles = token.getRoles();
-        if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_VIEW ) ) {
-            query.setCompanyIds( acceptAllowedCompanies( query.getCompanyIds(), token.getCompanyAndChildIds() ) );
-            query.setManagerCompanyIds(acceptAllowedCompanies(query.getManagerCompanyIds(), token.getCompanyAndChildIds()));
-            query.setManagerOrInitiatorCondition(true);
-            query.setAllowViewPrivate( false );
-            query.setCustomerSearch( true );
+    private void applyFilterByScope(AuthToken token, CaseQuery query) {
+        Set<UserRole> roles = token.getRoles();
+        if (!policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
+            Company company = companyService.getCompanyUnsafe(token, token.getCompanyId()).getData();
+            query.setCompanyIds(
+                    acceptAllowedCompanies(
+                            query.getCompanyIds(),
+                            getInitiatorIds(company.getCategory(), token.getCompanyAndChildIds())));
+            query.setManagerCompanyIds(
+                    acceptAllowedCompanies(
+                            query.getManagerCompanyIds(),
+                            getSubcontractorIds(company.getCategory(), token.getCompanyAndChildIds())));
+            query.setAllowViewPrivate(false);
+            query.setCustomerSearch(true);
         }
     }
 
@@ -1095,6 +1098,30 @@ public class CaseServiceImpl implements CaseService {
         caseLink.setRemoteId(parent.getId().toString());
         caseLink.setWithCrosslink(true);
         createRequest.addLink(caseLink);
+    }
+
+    private Collection<Long> getSubcontractorIds(En_CompanyCategory category, Collection<Long> companyIds) {
+        if (category == En_CompanyCategory.SUBCONTRACTOR) {
+            return companyIds;
+        }
+
+        Result<List<EntityOption>> result = companyService.subcontractorOptionListByCompanyIds(companyIds);
+        if (result.isError()) {
+            throw new ResultStatusException(result.getStatus());
+        }
+        return result.getData().stream().map(EntityOption::getId).collect(Collectors.toList());
+    }
+
+    private Collection<Long> getInitiatorIds(En_CompanyCategory category, Collection<Long> subcontractorIds) {
+        if (category != En_CompanyCategory.SUBCONTRACTOR) {
+            return subcontractorIds;
+        }
+
+        Result<List<EntityOption>> result = companyService.companyOptionListBySubcontractorIds(subcontractorIds);
+        if (result.isError()) {
+            throw new ResultStatusException(result.getStatus());
+        }
+        return result.getData().stream().map(EntityOption::getId).collect(Collectors.toList());
     }
 
     @Autowired

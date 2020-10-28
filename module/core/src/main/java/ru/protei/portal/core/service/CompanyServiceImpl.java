@@ -91,7 +91,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<List<EntityOption>> companyOptionListIgnorePrivileges( AuthToken token, CompanyQuery query) {
+    public Result<List<EntityOption>> companyOptionListIgnorePrivileges(CompanyQuery query) {
         List<Company> list = companyDAO.listByQuery(query);
 
         if (list == null) {
@@ -114,10 +114,10 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<List<EntityOption>> subcontractorOptionListByCompanyId(AuthToken token, Long companyId) {
+    public Result<List<EntityOption>> subcontractorOptionListByCompanyIds(Collection<Long> companyIds) {
 
         ProjectQuery query = new ProjectQuery();
-        query.setInitiatorCompanyIds(setOf(companyId));
+        query.setInitiatorCompanyIds(setOf(companyIds));
         Collection<Project> list = projectDAO.getProjects(query);
         if (list == null)
             return error(En_ResultStatus.GET_DATA_ERROR);
@@ -128,6 +128,31 @@ public class CompanyServiceImpl implements CompanyService {
                 .map(Project::getSubcontractors)
                 .filter(Objects::nonNull)
                 .flatMap(Collection::stream)
+                .distinct()
+                .collect(Collectors.toList());
+
+        Company homeCompany = companyDAO.get(CrmConstants.Company.HOME_COMPANY_ID);
+        if (homeCompany == null)
+            return error(En_ResultStatus.GET_DATA_ERROR);
+
+        companies.add(0, homeCompany);
+
+        return ok(companies.stream()
+                .map(Company::toEntityOption)
+                .collect(Collectors.toList()));
+    }
+
+    @Override
+    public Result<List<EntityOption>> companyOptionListBySubcontractorIds(Collection<Long> subcontractorIds) {
+
+        ProjectQuery query = new ProjectQuery();
+        query.setSubcontractorIds(setOf(subcontractorIds));
+        Collection<Project> list = projectDAO.getProjects(query);
+        if (list == null)
+            return error(En_ResultStatus.GET_DATA_ERROR);
+
+        List<Company> companies = list.stream()
+                .map(Project::getCustomer)
                 .distinct()
                 .collect(Collectors.toList());
 

@@ -466,7 +466,6 @@ public class ReportServiceImpl implements ReportService {
                     report.setReportType( En_ReportType.CASE_OBJECTS);
                     CaseQuery caseQuery = (CaseQuery) query;
                     caseQuery.setCompanyIds(acceptAllowedCompanies(caseQuery.getCompanyIds(), token.getCompanyAndChildIds()));
-                    caseQuery.setManagerOrInitiatorCondition(true);
                     caseQuery.setAllowViewPrivate(false);
                     return caseQuery;
                 }

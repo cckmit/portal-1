@@ -21,6 +21,7 @@ import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterWidg
 import ru.protei.portal.ui.common.client.activity.filter.IssueFilterWidgetModel;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
 import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.common.client.view.filter.IssueFilterParamView;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
@@ -46,6 +47,14 @@ public class IssueFilterWidget extends Composite {
         issueFilterParamView.setCreatorModel(asyncPersonModel);
         issueFilterParamView.commentAuthorsVisibility().setVisible(false);
         issueFilterParamView.timeElapsedVisibility().setVisible(false);
+    }
+
+    public void setInitiatorCompaniesModel(AsyncSelectorModel companyModel) {
+        issueFilterParamView.setInitiatorCompaniesModel(companyModel);
+    }
+
+    public void setManagerCompaniesModel(AsyncSelectorModel companyModel) {
+        issueFilterParamView.setManagerCompaniesModel(companyModel);
     }
 
     public void resetFilter() {

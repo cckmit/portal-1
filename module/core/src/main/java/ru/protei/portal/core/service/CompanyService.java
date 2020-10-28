@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -21,25 +22,27 @@ import java.util.Set;
 public interface CompanyService {
 
     @Privileged({ En_Privilege.COMPANY_VIEW })
-    Result<SearchResult<Company>> getCompanies( AuthToken token, CompanyQuery query);
+    Result<SearchResult<Company>> getCompanies(AuthToken token, CompanyQuery query);
 
-    Result<List<EntityOption>> companyOptionList( AuthToken token, CompanyQuery query);
+    Result<List<EntityOption>> companyOptionList(AuthToken token, CompanyQuery query);
 
-    Result<List<EntityOption>> companyOptionListIgnorePrivileges( AuthToken token, CompanyQuery query);
+    Result<List<EntityOption>> companyOptionListIgnorePrivileges(CompanyQuery query);
 
-    Result<List<EntityOption>> companyOptionListByIds( List<Long> ids);
+    Result<List<EntityOption>> companyOptionListByIds(List<Long> ids);
 
-    Result<List<EntityOption>> subcontractorOptionListByCompanyId(AuthToken token, Long companyId);
+    Result<List<EntityOption>> subcontractorOptionListByCompanyIds(Collection<Long> companyIds);
+
+    Result<List<EntityOption>> companyOptionListBySubcontractorIds(Collection<Long> subcontractorIds);
 
     @Privileged( En_Privilege.COMPANY_EDIT )
     @Auditable( En_AuditType.COMPANY_MODIFY )
-    Result<?> updateState( AuthToken makeAuthToken, Long companyId, boolean isDeprecated);
+    Result<?> updateState(AuthToken makeAuthToken, Long companyId, boolean isDeprecated);
 
     Result<List<EntityOption>> groupOptionList();
 
-    Result<List<CompanyGroup>> groupList( CompanyGroupQuery query);
+    Result<List<CompanyGroup>> groupList(CompanyGroupQuery query);
 
-    Result<List<En_CompanyCategory>> categoryOptionList( boolean hasOfficial);
+    Result<List<En_CompanyCategory>> categoryOptionList(boolean hasOfficial);
 
     @Privileged( En_Privilege.COMPANY_VIEW )
     Result<Company> getCompany( AuthToken token, Long id );

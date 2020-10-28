@@ -102,8 +102,6 @@ public class CaseQuery extends BaseQuery {
 
     private Boolean isCheckImportanceHistory;
 
-    private Boolean managerOrInitiatorCondition;
-
     private Long planId;
 
     private List<Integer> timeElapsedTypeIds;
@@ -163,7 +161,6 @@ public class CaseQuery extends BaseQuery {
         setRegionIds(query.getRegionIds());
         setHeadManagerIds(query.getHeadManagerIds());
         setCaseMemberIds(query.getCaseMemberIds());
-        setManagerOrInitiatorCondition(query.getManagerOrInitiatorCondition());
         setPlanId(query.getPlanId());
         setPersonIdToIsFavorite(query.getPersonIdToIsFavorite());
         setTimeElapsedTypeIds(query.getTimeElapsedTypeIds());
@@ -412,14 +409,6 @@ public class CaseQuery extends BaseQuery {
         this.managerCompanyIds = managerCompanyIds;
     }
 
-    public Boolean getManagerOrInitiatorCondition() {
-        return managerOrInitiatorCondition;
-    }
-
-    public void setManagerOrInitiatorCondition(Boolean managerOrInitiatorCondition) {
-        this.managerOrInitiatorCondition = managerOrInitiatorCondition;
-    }
-
     public Long getPlanId() {
         return planId;
     }
@@ -486,7 +475,6 @@ public class CaseQuery extends BaseQuery {
                 CollectionUtils.isNotEmpty(caseTagsIds) ||
                 local != null ||
                 isCheckImportanceHistory != null ||
-                managerOrInitiatorCondition != null ||
                 planId != null ||
                 personIdToIsFavorite != null ||
                 CollectionUtils.isNotEmpty(timeElapsedTypeIds) ||
@@ -531,7 +519,6 @@ public class CaseQuery extends BaseQuery {
                 ", local=" + local +
                 ", creatorIds=" + creatorIds +
                 ", isCheckImportanceHistory=" + isCheckImportanceHistory +
-                ", managerOrInitiatorCondition=" + managerOrInitiatorCondition +
                 ", planId=" + planId +
                 ", timeElapsedTypeIds=" + timeElapsedTypeIds +
                 ", workTriggersIds=" + workTriggersIds +
@@ -573,7 +560,6 @@ public class CaseQuery extends BaseQuery {
                 Objects.equals(local, caseQuery.local) &&
                 Objects.equals(productDirectionIds, caseQuery.productDirectionIds) &&
                 Objects.equals(creatorIds, caseQuery.creatorIds) &&
-                Objects.equals(managerOrInitiatorCondition, caseQuery.managerOrInitiatorCondition) &&
                 Objects.equals(planId, caseQuery.planId) &&
                 Objects.equals(personIdToIsFavorite, caseQuery.personIdToIsFavorite) &&
                 Objects.equals(timeElapsedTypeIds, caseQuery.timeElapsedTypeIds) &&
@@ -587,7 +573,7 @@ public class CaseQuery extends BaseQuery {
                 type, stateIds, importanceIds, allowViewPrivate, viewPrivate, createdRange, modifiedRange,
                 searchStringAtComments, searchCasenoString, commentAuthorIds, caseTagsIds,
                 customerSearch, findRecordByCaseComments, local, productDirectionIds,
-                creatorIds, regionIds, headManagerIds, caseMemberIds, managerOrInitiatorCondition, planId, personIdToIsFavorite,
+                creatorIds, regionIds, headManagerIds, caseMemberIds, planId, personIdToIsFavorite,
                 timeElapsedTypeIds, workTriggersIds, overdueDeadlines);
     }
 }

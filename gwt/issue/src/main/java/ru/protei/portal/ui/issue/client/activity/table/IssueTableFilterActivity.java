@@ -11,6 +11,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseFilter;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -31,6 +32,9 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.widget.attachment.popup.AttachPopup;
 import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidget;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
+import ru.protei.portal.ui.common.client.widget.selector.company.InitiatorCompanyModel;
+import ru.protei.portal.ui.common.client.widget.selector.company.SubcontractorCompanyModel;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
@@ -67,7 +71,7 @@ public abstract class IssueTableFilterActivity
 
     @Event
     public void onAuthSuccess (AuthEvents.Success event) {
-        if (!policyService.hasPrivilegeFor( En_Privilege.ISSUE_VIEW )) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.ISSUE_VIEW)) {
             return;
         }
 
@@ -75,6 +79,7 @@ public abstract class IssueTableFilterActivity
         filterView.presetFilterType();
         updateCaseStatesFilter();
         updateImportanceLevelButtons();
+        updateCompanyModels(event.profile.getCompany());
     }
 
     @Event(Type.FILL_CONTENT)
@@ -92,9 +97,12 @@ public abstract class IssueTableFilterActivity
                 new ActionBarEvents.Clear()
         );
 
-        if(!policyService.hasSystemScopeForPrivilege( En_Privilege.COMPANY_VIEW ) ){
-            filterView.getIssueFilterParams().presetCompany(policyService.getProfile().getCompany());
-            filterView.getIssueFilterParams().presetManagerCompany(policyService.getProfile().getCompany());
+        if(!policyService.hasSystemScopeForPrivilege(En_Privilege.COMPANY_VIEW)){
+            if (policyService.getProfile().getCompany().getCategory() == En_CompanyCategory.SUBCONTRACTOR) {
+                filterView.getIssueFilterParams().presetManagerCompany(policyService.getProfile().getCompany());
+            } else {
+                filterView.getIssueFilterParams().presetCompany(policyService.getProfile().getCompany());
+            }
         } else {
             homeCompanyService.getHomeCompany(CrmConstants.Company.HOME_COMPANY_ID, company -> {
                 Set<EntityOption> value = new HashSet<>();
@@ -378,6 +386,24 @@ public abstract class IssueTableFilterActivity
         }
     }
 
+    private void updateCompanyModels(final Company currentCompany) {
+        subcontractorCompanyModel.setCompanyId(currentCompany.getId());
+        initiatorCompanyModel.setSubcontractorId(currentCompany.getId());
+
+        if (!policyService.hasSystemScopeForPrivilege(En_Privilege.COMPANY_VIEW)) {
+            if (currentCompany.getCategory() == En_CompanyCategory.SUBCONTRACTOR) {
+                filterView.setInitiatorCompaniesModel(initiatorCompanyModel);
+                filterView.setManagerCompaniesModel(companyModel);
+            } else {
+                filterView.setInitiatorCompaniesModel(companyModel);
+                filterView.setManagerCompaniesModel(subcontractorCompanyModel);
+            }
+        } else {
+            filterView.setInitiatorCompaniesModel(companyModel);
+            filterView.setManagerCompaniesModel(companyModel);
+        }
+    }
+
     @Inject
     Lang lang;
 
@@ -422,6 +448,15 @@ public abstract class IssueTableFilterActivity
 
     @Inject
     HomeCompanyService homeCompanyService;
+
+    @Inject
+    CompanyModel companyModel;
+
+    @Inject
+    InitiatorCompanyModel initiatorCompanyModel;
+
+    @Inject
+    SubcontractorCompanyModel subcontractorCompanyModel;
 
     private CaseQuery query = null;
 
