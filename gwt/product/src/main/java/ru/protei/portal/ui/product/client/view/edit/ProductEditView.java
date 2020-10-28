@@ -199,7 +199,6 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
     @Override
     public void setCommonManagerCompanyId(Long id) {
-//        commonManager.updateCompanies(new HashSet<>(Collections.singleton(id)));
         commonManagerModel.updateCompanies( commonManager, null, setOf(id), null );
     }
 

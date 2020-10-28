@@ -74,32 +74,15 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         dateModifiedRange.setHeader(lang.updated());
         initiators.setPersonModel( initiatorsModel );
         managers.setPersonModel( managersModel );
-//        initiators.setCompaniesSupplier(() -> new HashSet<>( companies.getValue()) );
-//        managers.setCompaniesSupplier(() -> new HashSet<>(managerCompanies.getValue()));
         managers.setNullItem(() -> new PersonShortView(lang.employeeWithoutManager(), CrmConstants.Employee.UNDEFINED));
         searchByCommentsWarning.setText(
                 lang.searchByCommentsUnavailable(CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS));
     }
 
-    @Inject
-    PersonModel initiatorsModel;
-    @Inject
-    PersonModel managersModel;
-
     @Override
     public void setModel(AbstractIssueFilterModel model) {
         this.model = model;
     }
-
-//    @Override
-//    public void setInitiatorsModel(PersonModel personModel) {
-//        initiators.setPersonModel(personModel);
-//    }
-//
-//    @Override
-//    public void setManagersModel(PersonModel personModel) {
-//        managers.setPersonModel(personModel);
-//    }
 
     @Override
     public void setCreatorModel(AsyncPersonModel asyncPersonModel) {
@@ -417,22 +400,13 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @UiHandler("companies")
     public void onCompaniesSelected(ValueChangeEvent<Set<EntityOption>> event) {
         updateInitiators( companies.getValue() );
-//        initiators.updateCompanies();
         onFilterChanged();
-//        if (model != null) {
-//            model.onCompaniesChanged();
-//        }
     }
 
     @UiHandler("managerCompanies")
     public void onManagerCompaniesSelected(ValueChangeEvent<Set<EntityOption>> event) {
-
-         updateManagers(managerCompanies.getValue());
-//        managers.updateCompanies();
+        updateManagers( managerCompanies.getValue() );
         onFilterChanged();
-//        if (model != null) {
-//            model.onManagerCompaniesChanged();
-//        }
     }
 
     @UiHandler("initiators")
@@ -736,7 +710,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         if (isEmpty( companyIds )) {
             initiators.setValue( null );
         }
-//        initiators.updateCompanies();
     }
 
     private void updateManagers(Set<EntityOption> managersCompanies) {
@@ -745,7 +718,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         if (isEmpty( companyIds )) {
             managers.setValue( null );
         }
-//        managers.updateCompanies();
     }
 
     private static Set< Long > getProductsIdList(Set<ProductShortView> productSet) {
@@ -885,6 +857,12 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
     @Inject
     PolicyService policyService;
+
+    @Inject
+    PersonModel initiatorsModel;
+    @Inject
+    PersonModel managersModel;
+
 
     private Timer timer = null;
     private AbstractIssueFilterModel model;

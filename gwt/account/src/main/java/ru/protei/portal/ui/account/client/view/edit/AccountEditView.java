@@ -122,7 +122,6 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
     @Override
     public void setCompaniesForInitiator(Set<Long> companyIds) {
         personModel.updateCompanies( person, null, companyIds, null );
-//        person.updateCompanies(companyIds);
     }
 
     @UiHandler( "company" )

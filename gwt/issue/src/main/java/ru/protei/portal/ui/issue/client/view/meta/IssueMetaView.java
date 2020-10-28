@@ -175,28 +175,13 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     private static final Logger log = Logger.getLogger( IssueMetaView.class.getName() );
     @Override
     public void setInitiatorFilter(Long companyId) {
-//        initiator.updateCompanies(PersonModel.makeCompanyIds(company));
         initiatorModel.updateCompanies( null,  null, setOf(companyId), null  );
-//        initiator.setFilter( new Selector.SelectorFilter<PersonShortView>() {
-//            @Override
-//            public boolean isDisplayed( PersonShortView person ) {
-//                log.info( "setInitiatorFilter(): " + person.getCompanyId() + " " + companyId + " " +person );
-//                return person == null || Objects.equals( person.getCompanyId(), companyId );
-//            }
-//        } );
     }
 
     @Override
     public void updateManagersCompanyFilter(Long managerCompanyId) {
-//        manager.updateCompanies(new HashSet<>(Collections.singletonList(managerCompanyId)));
         managerModel.updateCompanies( null,  null, setOf(managerCompanyId), null  );
-//        manager.setFilter( person -> person == null || Objects.equals( person.getCompanyId(), managerCompanyId ) );
     }
-
-    @Inject
-    PersonModel managerModel;
-    @Inject
-    PersonModel initiatorModel;
 
     @Override
     public void setStateFilter(Selector.SelectorFilter<CaseState> filter) {
@@ -753,6 +738,10 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
 
     @Inject
     CompanyModel companyModel;
+    @Inject
+    PersonModel managerModel;
+    @Inject
+    PersonModel initiatorModel;
 
     private AbstractIssueMetaActivity activity;
 

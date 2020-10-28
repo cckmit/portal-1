@@ -73,7 +73,7 @@ public enum En_DateIntervalType {
 
     public static List<En_DateIntervalType> reservedIpTypes() { return reservedIpRangeTypes; }
 
-    public static List<En_DateIntervalType> issueTypes() { return Collections.unmodifiableList(issueRangeTypes); }
+    public static List<En_DateIntervalType> issueTypes() { return issueRangeTypes; }
 
     public static List<En_DateIntervalType> reportTypes() { return reportRangeTypes; }
 

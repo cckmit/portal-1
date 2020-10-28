@@ -17,9 +17,7 @@ public class PersonFormSelector extends FormPopupSingleSelector<PersonShortView>
 {
 
     @Inject
-    public void init( PersonModel model ) {
-//        this.model = model;
-        setModel( model );
+    public void init(  ) {
         setItemRenderer( value -> value == null ? defaultValue : value.getName() );
     }
 
@@ -36,19 +34,5 @@ public class PersonFormSelector extends FormPopupSingleSelector<PersonShortView>
         return item;
     }
 
-//    public void setFired ( boolean fired ) {
-//        this.fired = fired;
-//    }
-//
     private static final Logger log = Logger.getLogger( PersonFormSelector.class.getName() );
-
-//    public void updateCompanies(Set<Long> companyIds) {
-//        if (model != null) {
-//            model.updateCompanies(companyIds);
-//        }
-//    }
-//
-//    private PersonModel model;
-
-//    private boolean fired = false;
 }

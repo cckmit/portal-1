@@ -96,7 +96,6 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
         view.product().setValue(project.getSingleProduct());
         view.updateProductDirection(project.getProductDirectionEntityOption() == null ? null : project.getProductDirectionEntityOption().getId());
         view.headManagers().setValue(new HashSet<>(emptyIfNull(project.getTeam())));
-//        homeCompanyService.getAllHomeCompanies(homeCompanies -> view.setCompaniesSupplier(() -> new HashSet<>(homeCompanies)));
         homeCompanyService.getAllHomeCompanies(homeCompanies -> {
             asyncPersonModel.updateCompanies( CollectionUtils.toSet(homeCompanies, EntityOption::getId) );
             if (isEmpty( homeCompanies )) {
