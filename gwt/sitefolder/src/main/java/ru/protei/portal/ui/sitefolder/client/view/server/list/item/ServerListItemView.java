@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.sitefolder.client.view.server.list.item;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -10,14 +11,18 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.sitefolder.client.activity.server.list.item.AbstractServerListItemActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.server.list.item.AbstractServerListItemView;
+
+import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
 public class ServerListItemView extends Composite implements AbstractServerListItemView {
 
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        setTestAttributes();
     }
 
     @Override
@@ -84,6 +89,22 @@ public class ServerListItemView extends Composite implements AbstractServerListI
         }
     }
 
+    private void setTestAttributes() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+        root.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.SITE_FOLDER.SERVER.ITEM);
+        name.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.SITE_FOLDER.SERVER.NAME);
+        ip.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.SITE_FOLDER.SERVER.IP);
+        comment.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.SITE_FOLDER.SERVER.COMMENT);
+        params.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.SITE_FOLDER.SERVER.PARAMS);
+        edit.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.SITE_FOLDER.SERVER.EDIT_BUTTON);
+        copy.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.SITE_FOLDER.SERVER.COPY_BUTTON);
+        remove.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.SITE_FOLDER.SERVER.REMOVE_BUTTON);
+    }
+
+    @UiField
+    HTMLPanel root;
     @UiField
     SpanElement name;
     @UiField

@@ -945,7 +945,32 @@ public class DebugIds {
     }
 
     public interface SITE_FOLDER {
-
+        interface PLATFORM {
+            String PROJECT = "site-folder-platform-project";
+            String COMPANY = "site-folder-platform-company";
+            String NAME = "site-folder-platform-name";
+            String MANAGER = "site-folder-platform-manager";
+            String PARAMETERS = "site-folder-platform-parameters";
+            String COMMENT = "site-folder-platform-comment";
+            String UPLOADER = "site-folder-platform-uploader";
+            String ATTACHMENTS = "site-folder-platform-attachment";
+            String SERVERS = "site-folder-servers";
+            String CONTACTS = "site-folder-contacts";
+            String TECHNICAL_SUPPORT_VALIDITY = "site-folder-technical-support-validity";
+        }
+        interface SERVER {
+            String OPEN_BUTTON = "site-folder-server-open-button";
+            String CREATE_BUTTON = "site-folder-server-create-button";
+            String ITEM = "site-folder-server-list-item";
+            String NAME = "site-folder-server-name";
+            String IP = "site-folder-server-ip";
+            String APPS = "site-folder-server-apps";
+            String COMMENT = "site-folder-server-comment";
+            String PARAMS = "site-folder-server-params";
+            String EDIT_BUTTON = "site-folder-server-edit-button";
+            String COPY_BUTTON = "site-folder-server-copy-button";
+            String REMOVE_BUTTON = "site-folder-server-remove-button";
+        }
         interface LINK {
             String PLATFORM = "sitefolder-link-platform";
         }
