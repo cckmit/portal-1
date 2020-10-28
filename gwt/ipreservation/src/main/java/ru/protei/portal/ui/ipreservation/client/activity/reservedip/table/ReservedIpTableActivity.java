@@ -21,6 +21,7 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IpReservationControllerAsync;
+import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.ipreservation.client.activity.reservedip.filter.AbstractReservedIpFilterActivity;
@@ -210,8 +211,7 @@ public abstract class ReservedIpTableActivity
         query.setReservedTo(filterView.reserveRange().getValue().to);
         query.setReleasedFrom(filterView.releaseRange().getValue().from);
         query.setReleasedTo(filterView.releaseRange().getValue().to);
-        query.setLastActiveFrom(filterView.lastActiveRange().getValue().from);
-        query.setLastActiveTo(filterView.lastActiveRange().getValue().to);
+        query.setNonActiveRange(DateIntervalWithType.toDateRange(filterView.nonActiveRange().getValue()));
         query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
         query.setSortField(filterView.sortField().getValue());
         return query;

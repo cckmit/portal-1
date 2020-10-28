@@ -11,6 +11,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
+import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.SubnetOption;
@@ -18,10 +19,13 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
+import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
+import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedSelectorRangePicker;
 import ru.protei.portal.ui.ipreservation.client.activity.reservedip.filter.AbstractReservedIpFilterActivity;
 import ru.protei.portal.ui.ipreservation.client.activity.reservedip.filter.AbstractReservedIpFilterView;
 import ru.protei.portal.ui.ipreservation.client.view.widget.selector.SubnetMultiSelector;
 
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -33,7 +37,7 @@ public class ReservedIpFilterView extends Composite implements AbstractReservedI
         initWidget( ourUiBinder.createAndBindUi( this ) );
         reservedRange.setPlaceholder(lang.selectDate());
         releasedRange.setPlaceholder(lang.selectDate());
-        lastActiveRange.setPlaceholder(lang.selectDate());
+        nonActiveRange.fillSelector(En_DateIntervalType.reservedIpNonActiveTypes());
         resetFilter();
     }
 
@@ -66,7 +70,7 @@ public class ReservedIpFilterView extends Composite implements AbstractReservedI
     public HasValue<DateInterval> releaseRange() { return releasedRange; }
 
     @Override
-    public HasValue<DateInterval> lastActiveRange() { return lastActiveRange; }
+    public HasValue<DateIntervalWithType> nonActiveRange() { return nonActiveRange; }
 
     @Override
     public void resetFilter() {
@@ -77,7 +81,7 @@ public class ReservedIpFilterView extends Composite implements AbstractReservedI
         subnets.setValue(null);
         reservedRange.setValue(null);
         releasedRange.setValue(null);
-        lastActiveRange.setValue(null);
+        nonActiveRange.setValue(null);
     }
 
     @UiHandler( "resetBtn" )
@@ -113,9 +117,16 @@ public class ReservedIpFilterView extends Composite implements AbstractReservedI
         fireChangeTimer();
     }
 
-    @UiHandler({"reservedRange", "releasedRange", "lastActiveRange"})
+    @UiHandler({"reservedRange", "releasedRange"})
     public void onReserveDateChanged(ValueChangeEvent<DateInterval> event) {
         fireChangeTimer();
+    }
+
+    @UiHandler("nonActiveRange")
+    public void onNonActiveDateChanged(ValueChangeEvent<DateIntervalWithType> event){
+        if (validate()) {
+            fireChangeTimer();
+        }
     }
 
     private void fireChangeTimer() {
@@ -131,6 +142,28 @@ public class ReservedIpFilterView extends Composite implements AbstractReservedI
             }
         }
     };
+
+    private boolean validate() {
+        boolean dataRangeTypeValid = isDataRangeTypeValid(nonActiveRange);
+        boolean dataRangeValid = isDataRangeValid(nonActiveRange.getValue());
+        nonActiveRange.setValid(dataRangeTypeValid, dataRangeValid);
+        return dataRangeTypeValid && dataRangeValid;
+    }
+
+    private boolean isDataRangeTypeValid(TypedSelectorRangePicker rangePicker) {
+        return !rangePicker.isTypeMandatory()
+                || (rangePicker.getValue() != null
+                && rangePicker.getValue().getIntervalType() != null);
+    }
+
+    private boolean isDataRangeValid(DateIntervalWithType dateRange) {
+        if (dateRange == null || dateRange.getIntervalType() == null) {
+            return true;
+        }
+
+        return !Objects.equals(dateRange.getIntervalType(), En_DateIntervalType.FIXED)
+                || dateRange.getInterval().isValid();
+    }
 
     @UiField
     CleanableSearchBox search;
@@ -153,7 +186,7 @@ public class ReservedIpFilterView extends Composite implements AbstractReservedI
 
     @Inject
     @UiField(provided = true)
-    RangePicker lastActiveRange;
+    TypedSelectorRangePicker nonActiveRange;
 
     @Inject
     @UiField( provided = true )

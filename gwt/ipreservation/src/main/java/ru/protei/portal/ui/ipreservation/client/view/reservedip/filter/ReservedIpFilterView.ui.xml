@@ -3,6 +3,7 @@
              xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
              xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
+             xmlns:typerange="urn:import:ru.protei.portal.ui.common.client.widget.typedrangepicker"
              xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
              xmlns:subnet='urn:import:ru.protei.portal.ui.ipreservation.client.view.widget.selector'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
@@ -36,9 +37,8 @@
                 </div>
 
                 <div class="form-group col-md-12">
-                    <label><ui:text from="{lang.reservedIpOnlineStatusDate}"/></label>
-                    <range:RangePicker ui:field="lastActiveRange" type="DATE" formatValue="dd.MM.yyyy"
-                                       hasUnlimitedDateTo="true" styleName=""/>
+                    <label><ui:text from="{lang.reservedIpOnlineStatusNonActiveRange}"/></label>
+                    <typerange:TypedSelectorRangePicker ui:field="nonActiveRange" formatValue="dd.MM.yyyy HH:mm"/>
                 </div>
 
                 <div class="form-group col-md-12">

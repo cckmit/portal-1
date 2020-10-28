@@ -57,7 +57,7 @@ public class En_SortFieldLang {
             case ip_address:
                 return lang.reservedIpIpAddress();
             case check_date:
-                return lang.reservedIpOnlineStatusDate();
+                return lang.reservedIpOnlineStatusNonActiveRange();
             case start_date:
                 return lang.planStartDate();
             case finish_date:

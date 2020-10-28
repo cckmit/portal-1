@@ -2552,7 +2552,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reservedIpOnlineStatus();
 
-    String reservedIpOnlineStatusDate();
+    String reservedIpOnlineStatusNonActiveRange();
 
     String reservedIpOnlineStatusInfo();
 
@@ -2848,8 +2848,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String thisWeekInterval();
 
-    String thisWeekAndBeyondInterval();
-
     String lastWeekInterval();
 
     String nextWeekInterval();
@@ -2863,6 +2861,16 @@ public interface Lang extends Messages, ContactItemLang {
     String thisYearInterval();
 
     String lastYearInterval();
+
+    String thisWeekAndBeyondInterval();
+
+    String relativeLastMonthInterval();
+
+    String relativeLastThreeMonthsInterval();
+
+    String relativeLastHalfYearInterval();
+
+    String relativeLastYearInterval();
 
     String reservedIpSubnetAllowReserve();
 
