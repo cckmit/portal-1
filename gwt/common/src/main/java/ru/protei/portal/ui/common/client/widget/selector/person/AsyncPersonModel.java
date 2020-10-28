@@ -1,11 +1,8 @@
 package ru.protei.portal.ui.common.client.widget.selector.person;
 
 import com.google.inject.Inject;
-import org.slf4j.Logger;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.protei.portal.core.model.dao.impl.PortalBaseJdbcDAO;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -22,8 +19,6 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-
-import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Асинхронная модель Person
@@ -56,7 +51,6 @@ public abstract class AsyncPersonModel implements AsyncSearchSelectorModel<Perso
         return (offset, limit, handler) -> {
             query.setOffset(offset);
             query.setLimit(limit);
-            log.info( "makeLoadHandler(): AsyncPersonModel.java" );
             personService.getPersonViewList(query, new FluentCallback<List<PersonShortView>>()
                     .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR)))
                     .withSuccess(handler::onSuccess)
@@ -103,6 +97,5 @@ public abstract class AsyncPersonModel implements AsyncSearchSelectorModel<Perso
     private String searchString;
     private SelectorDataCache<PersonShortView> cache = new SelectorDataCache<>();
 
-    private static final Logger log = getLogger( PortalBaseJdbcDAO.class );
 }
 
