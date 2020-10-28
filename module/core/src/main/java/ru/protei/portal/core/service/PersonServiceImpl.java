@@ -42,7 +42,7 @@ public class PersonServiceImpl implements PersonService {
         person.resetPrivacyInfo();
         return ok(person);
     }
-    SimpleProfiler sp = new SimpleProfiler( true, ( message, currentTime ) -> log.info( "sp {} {}", message,currentTime  ) );
+
     @Override
     public Result<PersonShortView> getPersonShortView(AuthToken token, Long personId) {
 
@@ -58,11 +58,8 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public Result< List< PersonShortView > > shortViewList( AuthToken authToken, PersonQuery query) {
-        sp.start( "shortViewList start limit=" + query.limit );
         query = processQueryByPolicyScope(authToken, query);
-        sp.check( "processQueryByPolicyScope" );
         List<PersonShortView> personList = personShortViewDAO.getPersonsShortView(query);
-        sp.stop( "shortViewList end " );
         return ok(personList);
     }
 

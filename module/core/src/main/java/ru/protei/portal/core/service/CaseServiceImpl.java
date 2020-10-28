@@ -54,37 +54,22 @@ import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED
  * Реализация сервиса управления обращениями
  */
 public class CaseServiceImpl implements CaseService {
-    SimpleProfiler sp = new SimpleProfiler( true, ( message, currentTime ) -> log.info( "sp {} {}", message,currentTime  ) );
+
     @Override
     public Result<SearchResult<CaseShortView>> getCaseObjects( AuthToken token, CaseQuery query) {
         applyFilterByScope(token, query);
-        sp.start( "getCaseObjects start" );
-        sp.push();
 
         SearchResult<CaseShortView> sr = caseShortViewDAO.getSearchResult(query);
-        sp.check( "caseShortViewDAO" );
 
         List<Long> personFavoriteIssueIds = getPersonFavoriteIssueIds(token.getPersonId());
-
-        sp.check( "getPersonFavoriteIssueIds" );
 
         List<Long> caseIds = toList( sr.getResults(), CaseShortView::getId );
         List<Long> hasPublicAttachments = attachmentDAO.findCasesIdsWithPublicAttachments(caseIds);
 
-        sp.check( "hasPublicAttachmentsForIssues" );
-
-//        sp.push();
         sr.getResults().forEach(caseShortView -> {
             caseShortView.setFavorite(personFavoriteIssueIds.contains(caseShortView.getId()));
-//            sp.check( "setFavorite" );
             caseShortView.setPublicAttachmentsExist(hasPublicAttachments.contains(caseShortView.getId()));
-//            sp.check( "setPublicAttachmentsExist" );
         });
-//        sp.pop();
-        sp.check( "Favor and Attachm" );
-
-        sp.pop();
-        sp.stop( "getCaseObjects end " );
 
         return ok(sr);
     }

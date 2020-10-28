@@ -318,11 +318,6 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
         return new PersonShortView(this.displayShortName, this.getId(), this.isFired);
     }
 
-//    @Override
-//    public PersonShortView toFullNameShortView() {
-//        return new PersonShortView(this.displayName, this.getId(), this.isFired);
-//    }
-
     @Override
     public int hashCode() {
         return Objects.hash( id );

@@ -125,24 +125,17 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
         return getSearchResult(parameters);
     }
 
-    private static final Logger log = getLogger( PortalBaseJdbcDAO.class );
-    SimpleProfiler sp = new SimpleProfiler( true, ( message, currentTime ) -> log.info( "sp {} {}", message,currentTime  ) );
-        @Override
-        public SearchResult<T> getSearchResult( JdbcQueryParameters parameters ) {
-            sp.start( "getSearchResult" );
-            SearchResult<T> searchResult = new SearchResult<>( getList( parameters ) );
-            sp.check( "getList" );
-            if( searchResult.getTotalCount() < parameters.getLimit() ){
-                sp.check( "lower than limit" );
-                return searchResult;
-            }
-            if (parameters.getOffset() <= 0 && parameters.getLimit() > 0) {
-                searchResult.setTotalCount( getObjectsCount( parameters.getSqlCondition(), parameters.getParamValues() ) );
-                sp.check( "setTotalCount" );
-            }
-            sp.stop( "getSearchResult" );
+    @Override
+    public SearchResult<T> getSearchResult( JdbcQueryParameters parameters ) {
+        SearchResult<T> searchResult = new SearchResult<>( getList( parameters ) );
+        if( searchResult.getTotalCount() < parameters.getLimit() ){
             return searchResult;
         }
+        if (parameters.getOffset() <= 0 && parameters.getLimit() > 0) {
+            searchResult.setTotalCount( getObjectsCount( parameters.getSqlCondition(), parameters.getParamValues() ) );
+        }
+        return searchResult;
+    }
 
     private JdbcQueryParameters buildJdbcQueryParameters(DataQuery query) {
 
@@ -340,4 +333,7 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
 
         return ids;
     }
+
+
+    private static final Logger log = getLogger( PortalBaseJdbcDAO.class );
 }

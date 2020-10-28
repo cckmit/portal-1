@@ -146,8 +146,6 @@ public class DocumentServiceImpl implements DocumentService {
 
         SearchResult<Document> sr = documentDAO.getSearchResult(query);
 
-//        sr.getResults().forEach(this::resetDocumentPrivacyInfo);
-
         return ok(sr);
     }
 
@@ -167,8 +165,6 @@ public class DocumentServiceImpl implements DocumentService {
             return error(En_ResultStatus.GET_DATA_ERROR);
         }
 
-//        list.forEach(this::resetDocumentPrivacyInfo);
-
         return ok(list);
     }
 
@@ -182,8 +178,6 @@ public class DocumentServiceImpl implements DocumentService {
         }
 
         jdbcManyRelationsHelper.fill(document, "members");
-
-//        resetDocumentPrivacyInfo(document);
 
         return ok(document);
     }
@@ -548,24 +542,16 @@ public class DocumentServiceImpl implements DocumentService {
     private List<Person> getDocumentDocFileUpdatedByMember( Document document ) {
         ArrayList<Long> peronsIds = new ArrayList<>();
         if (document.getContractor() != null) {
-//            jdbcManyRelationsHelper.fill(document.getContractor(), Person.Fields.CONTACT_ITEMS);
-//            personList.add(document.getContractor());
             peronsIds.add( document.getContractor().getId() );
         }
         if (document.getRegistrar() != null) {
-//            jdbcManyRelationsHelper.fill(document.getRegistrar(), Person.Fields.CONTACT_ITEMS);
-//            personList.add(document.getRegistrar());
             peronsIds.add( document.getRegistrar().getId() );
         }
         Result<PersonProjectMemberView> result = projectService.getProject(null, document.getProjectId())
                 .map(Project::getLeader);
         if (result.isOk() && result.getData() != null) {
-//            Person leader = personDAO.get(result.getData().getId());
-//            jdbcManyRelationsHelper.fill(leader, Person.Fields.CONTACT_ITEMS);
-//            personList.add(leader);
             peronsIds.add( document.getRegistrar().getId() );
         }
-//        personList.addAll(document.getMembers());
         List<Person> personList = getPersonsWithContact( peronsIds );
         return personList;
     }
@@ -576,21 +562,11 @@ public class DocumentServiceImpl implements DocumentService {
         }
     }
 
-//    private void resetDocumentPrivacyInfo(Document document) {
-//        // RESET PRIVACY INFO
-//        if (document.getContractor() != null) {
-//            document.getContractor().resetPrivacyInfo();
-//        }
-//        if (document.getRegistrar() != null) {
-//            document.getRegistrar().resetPrivacyInfo();
-//        }
-//    }
     public List<Person> getPersonsWithContact( ArrayList<Long> peronsIds ) {
         List<Person> personList = personDAO.getListByKeys( peronsIds );
         jdbcManyRelationsHelper.fill(personList, Person.Fields.CONTACT_ITEMS);
-//        List<ContactItem> contactItems = contactItemDAO.getForPersonsIds( peronsIds );
 
-        return null;
+        return personList;
     }
 
     private En_ResultStatus checkDocumentDesignationValid(Document oldDocument, Document document) {

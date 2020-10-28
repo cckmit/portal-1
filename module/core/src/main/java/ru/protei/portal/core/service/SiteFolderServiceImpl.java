@@ -43,10 +43,6 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         sr.getResults().forEach(platform -> {
             Long count = map.getOrDefault(platform.getId(), 0L);
             platform.setServersCount(count);
-//            // RESET PRIVACY INFO
-//            if (platform.getManager() != null) {
-//                platform.getManager().resetPrivacyInfo();
-//            }
         });
 
         return ok(sr);
