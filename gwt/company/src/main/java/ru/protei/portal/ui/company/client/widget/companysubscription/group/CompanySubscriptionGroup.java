@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.company.client.widget.companysubscription.group;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.*;
@@ -17,6 +18,7 @@ import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ProductControllerAsync;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
@@ -29,6 +31,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import java.util.*;
 
 import static java.util.stream.Collectors.toMap;
+import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
 public class CompanySubscriptionGroup  extends Composite
         implements HasValue<List<CompanySubscription>>, HasValidable, HasEnabled, HasCloseHandlers<CompanySubscriptionGroup> {
@@ -39,6 +42,7 @@ public class CompanySubscriptionGroup  extends Composite
         productSelector.setTypes(En_DevUnitType.PRODUCT);
         removeButton.setVisible(true);
         setCollapseGroup(true);
+        setTestAttributes();
     }
 
     @Override
@@ -229,6 +233,21 @@ public class CompanySubscriptionGroup  extends Composite
         quantity.setInnerText(" " + lang.companySubscriptionGroupQuantity() + ": " + size);
     }
 
+    private void setTestAttributes() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+        root.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.COMPANY.GROUP.ROOT);
+        platformSelector.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.COMPANY.GROUP.PLATFORM);
+        productSelector.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.COMPANY.GROUP.PRODUCT);
+        collapseButton.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.COMPANY.GROUP.COLLAPSE_BUTTON);
+        removeButton.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.COMPANY.GROUP.REMOVE_BUTTON);
+        quantity.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.COMPANY.GROUP.QUANTITY);
+        itemContainer.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.COMPANY.GROUP.ITEMS);
+    }
+
+    @UiField
+    HTMLPanel root;
     @UiField
     HTMLPanel itemContainer;
     @Inject
