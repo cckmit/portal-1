@@ -123,5 +123,5 @@ public interface IpReservationService {
     Result<Void> notifyAdminsAboutExpiredReleaseDates();
 
     @Privileged(En_Privilege.RESERVED_IP_VIEW)
-    Result<ReservedIp> refreshAvailabilityIp(AuthToken token, ReservedIp reservedIp);
+    Result<Boolean> isIpOnline(AuthToken token, ReservedIp reservedIp);
 }

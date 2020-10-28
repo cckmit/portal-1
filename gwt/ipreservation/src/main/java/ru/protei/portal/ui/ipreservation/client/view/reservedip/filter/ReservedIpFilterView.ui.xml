@@ -36,7 +36,7 @@
                 </div>
 
                 <div class="form-group col-md-12">
-                    <label><ui:text from="{lang.reservedIpCheckDate}"/></label>
+                    <label><ui:text from="{lang.reservedIpOnlineStatusDate}"/></label>
                     <range:RangePicker ui:field="lastActiveRange" type="DATE" formatValue="dd.MM.yyyy"
                                        hasUnlimitedDateTo="true" styleName=""/>
                 </div>

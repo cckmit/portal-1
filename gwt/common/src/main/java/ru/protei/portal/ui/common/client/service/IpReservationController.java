@@ -50,5 +50,5 @@ public interface IpReservationController extends RemoteService {
 
     Boolean isReservedIpAddressExists(String address, Date reserveDate, Date releaseDate, En_DateIntervalType dateIntervalType) throws RequestFailedException;
 
-    ReservedIp refreshAvailabilityIp(ReservedIp reservedIp) throws RequestFailedException;
+    Boolean isIpOnline(ReservedIp reservedIp) throws RequestFailedException;
 }

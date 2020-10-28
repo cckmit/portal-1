@@ -239,7 +239,7 @@ public class IpReservationControllerImpl implements IpReservationController {
     }
 
     @Override
-    public ReservedIp refreshAvailabilityIp(ReservedIp reservedIp) throws RequestFailedException {
+    public Boolean isIpOnline(ReservedIp reservedIp) throws RequestFailedException {
         log.info( "refreshIp(): reservedIp={}", reservedIp );
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
@@ -247,7 +247,7 @@ public class IpReservationControllerImpl implements IpReservationController {
         if ( reservedIp == null )
             throw new RequestFailedException (En_ResultStatus.INCORRECT_PARAMS);
 
-        Result<ReservedIp> response = ipReservationService.refreshAvailabilityIp( token, reservedIp );
+        Result<Boolean> response = ipReservationService.isIpOnline( token, reservedIp );
 
         log.info( "refreshIp(): response={}", response );
 

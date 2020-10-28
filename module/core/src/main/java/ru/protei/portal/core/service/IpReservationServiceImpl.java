@@ -544,7 +544,7 @@ public class IpReservationServiceImpl implements IpReservationService {
 
     @Override
     @Transactional
-    public Result<ReservedIp> refreshAvailabilityIp(AuthToken token, ReservedIp reservedIp) {
+    public Result<Boolean> isIpOnline(AuthToken token, ReservedIp reservedIp) {
         if (reservedIp == null) {
             return error(INCORRECT_PARAMS);
         }
@@ -564,24 +564,22 @@ public class IpReservationServiceImpl implements IpReservationService {
                 reservedIp.setLastActiveDate(now);
                 reservedIp.setLastCheckInfo(makeCheckInfo((NRPERaw) nrpeResponse, now));
                 reservedIpDAO.partialMerge(reservedIp, ReservedIp.Columns.LAST_CHECK_DATE, ReservedIp.Columns.LAST_CHECK_INFO);
-                break;
+                return ok(true);
             case HOST_UNREACHABLE:
                 reservedIp.setLastCheckInfo(makeCheckInfo((NRPERaw) nrpeResponse, new Date()));
                 reservedIpDAO.partialMerge(reservedIp, ReservedIp.Columns.LAST_CHECK_INFO);
-                break;
+                return ok(false);
             case SERVER_UNAVAILABLE:
             case INCORRECT_PARAMS:
                 return error(NRPE_ERROR);
             default:
                 return error(INTERNAL_ERROR);
         }
-
-        return ok(reservedIpDAO.get(reservedIp.getId()));
     }
 
     private String makeCheckInfo(NRPERaw response, Date now) {
         final List<String> rawResponse = response.getRawResponse();
-        return now + "\n" + rawResponse;
+        return now + "\n" + String.join("\n", rawResponse);
     }
 
     private void fillDatesInterval(Date reserveDate, Date releaseDate, ReservedIp templateIp, En_DateIntervalType intervalType) {

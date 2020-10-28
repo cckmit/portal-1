@@ -84,6 +84,13 @@ public abstract class ReservedIpTableActivity
     }
 
     @Event
+    public void onUpdate(IpReservationEvents.Update event) {
+        if (view.asWidget().isAttached()) {
+            loadTable();
+        }
+    }
+
+    @Event
     public void onCloseEdit(IpReservationEvents.CloseEdit event) {
         animation.closeDetails();
     }
@@ -136,12 +143,12 @@ public abstract class ReservedIpTableActivity
     @Override
     public void onRefreshClicked(ReservedIp value) {
         if (value != null && policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_VIEW)) {
-            refreshAction(value);
+            refreshIpOnlineStatus(value);
         }
     }
 
     private Runnable onConfirmRemoveClicked(ReservedIp value) {
-        return () -> ipReservationService.removeReservedIp(value, new FluentCallback<Long>()
+        return () -> ipReservationController.removeReservedIp(value, new FluentCallback<Long>()
                 .withError(throwable -> showError(lang.reservedIpUnableToRemove()))
                 .withSuccess(result -> {
                     fireEvent(new NotifyEvents.Show(lang.reservedIpIpReleased(), NotifyEvents.NotifyType.SUCCESS));
@@ -157,7 +164,7 @@ public abstract class ReservedIpTableActivity
         query.setOffset(offset);
         query.setLimit(limit);
 
-        ipReservationService.getReservedIpList(query, new FluentCallback<SearchResult<ReservedIp>>()
+        ipReservationController.getReservedIpList(query, new FluentCallback<SearchResult<ReservedIp>>()
                 .withError(throwable -> {
                     showError(lang.errGetList());
                     asyncCallback.onFailure(throwable);
@@ -210,13 +217,17 @@ public abstract class ReservedIpTableActivity
         return query;
     }
 
-    private void refreshAction(ReservedIp reservedIp) {
-/*        return () -> ipReservationService.refreshReservedIp(reservedIp, new FluentCallback<Long>()
-                .withSuccess(id -> {
-                    fireEvent(new IpReservationEvents.Show());
-                }));*/
-        //fireEvent(new NotifyEvents.Show(lang.refresh(), NotifyEvents.NotifyType.SUCCESS));
-        Window.alert("Refresh IP " + reservedIp.getIpAddress() + " under construction :(");
+    private void refreshIpOnlineStatus(ReservedIp reservedIp) {
+        fireEvent(new NotifyEvents.Show(lang.reservedIpOnlineTestStart(), NotifyEvents.NotifyType.INFO));
+        ipReservationController.isIpOnline(reservedIp, new FluentCallback<Boolean>()
+                .withSuccess(online -> {
+                    if (online) {
+                        fireEvent(new NotifyEvents.Show(lang.reservedIpOnlineStatusOnline(), NotifyEvents.NotifyType.SUCCESS));
+                        fireEvent(new IpReservationEvents.Update());
+                    } else {
+                        fireEvent(new NotifyEvents.Show(lang.reservedIpOnlineStatusOffline(), NotifyEvents.NotifyType.INFO));
+                    }
+                }));
     }
 
     private void persistScrollTopPosition() {
@@ -274,7 +285,7 @@ public abstract class ReservedIpTableActivity
     @Inject
     AbstractReservedIpFilterView filterView;
     @Inject
-    IpReservationControllerAsync ipReservationService;
+    IpReservationControllerAsync ipReservationController;
     @Inject
     TableAnimation animation;
     @Inject

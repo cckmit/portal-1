@@ -52,6 +52,16 @@ public class ReservedIpEditView extends Composite implements AbstractReservedIpE
     public HasText comment() { return comment; }
 
     @Override
+    public HasText lastActiveDate() {
+        return lastActiveDate;
+    }
+
+    @Override
+    public HasText lastCheckInfo() {
+        return lastCheckInfo;
+    }
+
+    @Override
     public HasValue<PersonShortView> owner() { return ipOwner; }
 
     @Override
@@ -95,6 +105,8 @@ public class ReservedIpEditView extends Composite implements AbstractReservedIpE
         useRange.ensureDebugId(DebugIds.RESERVED_IP.USE_RANGE_INPUT);
         useRange.getRelative().ensureDebugId(DebugIds.RESERVED_IP.USE_RANGE_BUTTON);
         comment.ensureDebugId(DebugIds.RESERVED_IP.COMMENT_INPUT);
+        lastActiveDate.ensureDebugId(DebugIds.RESERVED_IP.LAST_ACTIVE_DATE_INPUT);
+        lastCheckInfo.ensureDebugId(DebugIds.RESERVED_IP.LAST_CHECK_INFO_INPUT);
         ipOwner.ensureDebugId(DebugIds.RESERVED_IP.OWNER_SELECTOR);
         saveButton.ensureDebugId(DebugIds.PROJECT.SAVE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.PROJECT.CANCEL_BUTTON);
@@ -106,6 +118,11 @@ public class ReservedIpEditView extends Composite implements AbstractReservedIpE
     ValidableTextBox macAddress;
     @UiField
     TextArea comment;
+
+    @UiField
+    TextBox lastActiveDate;
+    @UiField
+    TextArea lastCheckInfo;
 
     @Inject
     @UiField(provided = true)
