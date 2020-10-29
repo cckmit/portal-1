@@ -121,4 +121,7 @@ public interface IpReservationService {
     Result<Void> notifyOwnersAboutReleaseIp();
 
     Result<Void> notifyAdminsAboutExpiredReleaseDates();
+
+    @Privileged(En_Privilege.RESERVED_IP_VIEW)
+    Result<Boolean> isIpOnline(AuthToken token, ReservedIp reservedIp);
 }

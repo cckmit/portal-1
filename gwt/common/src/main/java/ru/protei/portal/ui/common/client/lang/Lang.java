@@ -728,6 +728,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errRemoveIssueCommentByTime();
 
+    String errNRPEIpNotConfigured();
+
     String errNRPEIpNonAvailable();
 
     String errNRPEError();
@@ -2548,11 +2550,11 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reservedIpForever();
 
-    String reservedIpCheck();
+    String reservedIpStatus();
 
-    String reservedIpCheckDate();
+    String reservedIpNonActiveRange();
 
-    String reservedIpCheckInfo();
+    String reservedIpStatusCheckInfo();
 
     String reservedIpUsePeriod();
 
@@ -2846,8 +2848,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String thisWeekInterval();
 
-    String thisWeekAndBeyondInterval();
-
     String lastWeekInterval();
 
     String nextWeekInterval();
@@ -2861,6 +2861,16 @@ public interface Lang extends Messages, ContactItemLang {
     String thisYearInterval();
 
     String lastYearInterval();
+
+    String thisWeekAndBeyondInterval();
+
+    String relativeLastMonthInterval();
+
+    String relativeLastThreeMonthsInterval();
+
+    String relativeLastHalfYearInterval();
+
+    String relativeLastYearInterval();
 
     String reservedIpSubnetAllowReserve();
 
@@ -3155,6 +3165,12 @@ public interface Lang extends Messages, ContactItemLang {
     String dutyTypeCOV();
 
     String reservedIpReservationStart();
+
+    String reservedIpOnlineTestStart();
+
+    String reservedIpOnlineStatusOnline();
+
+    String reservedIpOnlineStatusOffline();
 
     String errUserNotFound();
 

@@ -148,7 +148,7 @@ public class IpReservationControllerImpl implements IpReservationController {
     @Override
     public ReservedIp updateReservedIp( ReservedIp reservedIp ) throws RequestFailedException {
 
-        log.info( "updateReservedIp(): subnet={}", reservedIp );
+        log.info( "updateReservedIp(): reservedIp={}", reservedIp );
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
@@ -236,6 +236,22 @@ public class IpReservationControllerImpl implements IpReservationController {
         if ( response.isError() ) throw new RequestFailedException(response.getStatus());
 
         return response.getData();
+    }
+
+    @Override
+    public Boolean isIpOnline(ReservedIp reservedIp) throws RequestFailedException {
+        log.info( "refreshIp(): reservedIp={}", reservedIp );
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        if ( reservedIp == null )
+            throw new RequestFailedException (En_ResultStatus.INCORRECT_PARAMS);
+
+        Result<Boolean> response = ipReservationService.isIpOnline( token, reservedIp );
+
+        log.info( "refreshIp(): response={}", response );
+
+        return ServiceUtils.checkResultAndGetData(response);
     }
 
     @Autowired

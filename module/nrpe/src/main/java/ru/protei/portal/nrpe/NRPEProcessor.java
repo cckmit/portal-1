@@ -29,7 +29,7 @@ public class NRPEProcessor {
         String request = String.format(template, ip);
         log.info("request: {}", request);
         if (!validateRequest(request)) {
-            log.info("validate: false");
+            log.info("validate: fail");
             return null;
         }
 

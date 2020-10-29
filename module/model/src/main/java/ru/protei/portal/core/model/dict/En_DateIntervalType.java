@@ -17,13 +17,20 @@ public enum En_DateIntervalType {
     LAST_MONTH,
     NEXT_MONTH,
     THIS_YEAR,
-    LAST_YEAR;
+    LAST_YEAR,
 
-    private static List<En_DateIntervalType> defaultTypes;
-    private static List<En_DateIntervalType> dutyTypes;
-    private static List<En_DateIntervalType> reservedIpRangeTypes;
-    private static List<En_DateIntervalType> issueRangeTypes;
-    private static List<En_DateIntervalType> reportRangeTypes;
+    RELATIVE_LAST_MONTH,
+    RELATIVE_LAST_THREE_MONTHS,
+    RELATIVE_LAST_HALF_YEAR,
+    RELATIVE_LAST_YEAR
+    ;
+
+    private static final List<En_DateIntervalType> defaultTypes;
+    private static final List<En_DateIntervalType> dutyTypes;
+    private static final List<En_DateIntervalType> reservedIpRangeTypes;
+    private static final List<En_DateIntervalType> issueRangeTypes;
+    private static final List<En_DateIntervalType> reportRangeTypes;
+    private static final List<En_DateIntervalType> reservedIpNonActiveTypes;
 
     static {
         defaultTypes = new ArrayList<>(9);
@@ -58,6 +65,12 @@ public enum En_DateIntervalType {
         dutyTypes.add(NEXT_MONTH);
         dutyTypes.add(THIS_YEAR);
         dutyTypes.add(LAST_YEAR);
+
+        reservedIpNonActiveTypes = new ArrayList<>(4);
+        reservedIpNonActiveTypes.add(RELATIVE_LAST_MONTH);
+        reservedIpNonActiveTypes.add(RELATIVE_LAST_THREE_MONTHS);
+        reservedIpNonActiveTypes.add(RELATIVE_LAST_HALF_YEAR);
+        reservedIpNonActiveTypes.add(RELATIVE_LAST_YEAR);
     }
 
     public static List<En_DateIntervalType> defaultTypes() { return defaultTypes; }
@@ -69,4 +82,6 @@ public enum En_DateIntervalType {
     public static List<En_DateIntervalType> reportTypes() { return reportRangeTypes; }
 
     public static List<En_DateIntervalType> dutyTypes() { return dutyTypes; }
+
+    public static List<En_DateIntervalType> reservedIpNonActiveTypes() { return reservedIpNonActiveTypes; }
 }

@@ -1,18 +1,12 @@
 package ru.protei.portal.ui.common.client.events;
 
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
-import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.ent.ReservedIp;
 import ru.protei.portal.core.model.ent.Subnet;
-import ru.protei.portal.core.model.query.EmployeeQuery;
-import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * События по резервированию IP
@@ -53,6 +47,8 @@ public class IpReservationEvents {
         public ReservedIp reservedIp;
         public HasWidgets parent;
     }
+
+    public static class Update {}
 
     public static class ChangedReservedIp {
         public ChangedReservedIp(ReservedIp reservedIp, boolean needRefreshList) {

@@ -16,6 +16,8 @@ public interface AbstractReservedIpEditView extends IsWidget {
     HasValue<String> macAddress();
     HasValue<DateInterval> useRange();
     HasText comment();
+    HasText lastActiveDate();
+    HasText lastCheckInfo();
     HasValue<PersonShortView> owner();
 
     HasValidable macAddressValidator();

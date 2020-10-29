@@ -3,8 +3,8 @@ package ru.protei.portal.ui.common.client.service;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.dict.En_DateIntervalType;
-import ru.protei.portal.core.model.ent.ReservedIpRequest;
 import ru.protei.portal.core.model.ent.ReservedIp;
+import ru.protei.portal.core.model.ent.ReservedIpRequest;
 import ru.protei.portal.core.model.ent.Subnet;
 import ru.protei.portal.core.model.query.ReservedIpQuery;
 import ru.protei.portal.core.model.view.SubnetOption;
@@ -13,7 +13,6 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Сервис управления резервированием IP-адресов
@@ -50,4 +49,6 @@ public interface IpReservationController extends RemoteService {
     Long removeReservedIp(ReservedIp reservedIp) throws RequestFailedException;
 
     Boolean isReservedIpAddressExists(String address, Date reserveDate, Date releaseDate, En_DateIntervalType dateIntervalType) throws RequestFailedException;
+
+    Boolean isIpOnline(ReservedIp reservedIp) throws RequestFailedException;
 }

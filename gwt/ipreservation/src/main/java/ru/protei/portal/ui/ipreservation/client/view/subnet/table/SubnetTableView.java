@@ -29,11 +29,9 @@ public class SubnetTableView extends Composite implements AbstractSubnetTableVie
 
     @Inject
     public void onInit(EditClickColumn<Subnet> editClickColumn,
-                       RefreshClickColumn<Subnet> refreshClickColumn,
                        RemoveClickColumn<Subnet> removeClickColumn) {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         this.editClickColumn = editClickColumn;
-        this.refreshClickColumn = refreshClickColumn;
         this.removeClickColumn = removeClickColumn;
         initTable();
     }
@@ -44,7 +42,6 @@ public class SubnetTableView extends Composite implements AbstractSubnetTableVie
 
         editClickColumn.setEditHandler( activity );
         removeClickColumn.setRemoveHandler( activity );
-        refreshClickColumn.setRefreshHandler( activity );
 
         columns.forEach(clickColumn -> {
             clickColumn.setHandler( activity );
@@ -87,7 +84,6 @@ public class SubnetTableView extends Composite implements AbstractSubnetTableVie
 
     private void initTable () {
         editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.SUBNET_EDIT) );
-        refreshClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.SUBNET_VIEW) );
         removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.SUBNET_REMOVE) );
 
         ClickColumn<Subnet> allowForReserve = new ClickColumn<Subnet>() {
@@ -161,7 +157,6 @@ public class SubnetTableView extends Composite implements AbstractSubnetTableVie
         columns.add(comment);
         columns.add(state);
         columns.add(editClickColumn);
-        columns.add(refreshClickColumn);
         columns.add(removeClickColumn);
 
         columns.forEach(clickColumn -> {
@@ -185,8 +180,6 @@ public class SubnetTableView extends Composite implements AbstractSubnetTableVie
 
     @Inject
     EditClickColumn<Subnet> editClickColumn;
-    @Inject
-    RefreshClickColumn<Subnet> refreshClickColumn;
     @Inject
     RemoveClickColumn<Subnet> removeClickColumn;
 

@@ -102,6 +102,38 @@ public class DateRangeUtils {
         return interval;
     }
 
+    public static Interval makeRelativeLastMonth() {
+        Interval interval = new Interval();
+        LocalDate local = LocalDate.now();
+        interval.from = Date.from(local.minusMonths(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
+        interval.to = null;
+        return interval;
+    }
+
+    public static Interval makeRelativeLastThreeMonths() {
+        Interval interval = new Interval();
+        LocalDate local = LocalDate.now();
+        interval.from = Date.from(local.minusMonths(3).atStartOfDay(ZoneId.systemDefault()).toInstant());
+        interval.to = null;
+        return interval;
+    }
+
+    public static Interval makeRelativeLastHalfYear() {
+        Interval interval = new Interval();
+        LocalDate local = LocalDate.now();
+        interval.from = Date.from(local.minusMonths(6).atStartOfDay(ZoneId.systemDefault()).toInstant());
+        interval.to = null;
+        return interval;
+    }
+
+    public static Interval makeRelativeLastYear() {
+        Interval interval = new Interval();
+        LocalDate local = LocalDate.now();
+        interval.from = Date.from(local.minusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
+        interval.to = null;
+        return interval;
+    }
+
     public static Interval makeInterval(DateRange dateRange ) {
         if ( dateRange == null )
             return null;
@@ -111,7 +143,6 @@ public class DateRangeUtils {
             case TODAY      : return makeToday();
             case YESTERDAY  : return makeYesterday();
             case THIS_WEEK  : return makeThisWeek();
-            case THIS_WEEK_AND_BEYOND : return makeThisWeekAndBeyond();
             case LAST_WEEK  : return makeLastWeek();
             case NEXT_WEEK  : return makeNextWeek();
             case THIS_MONTH : return makeThisMonth();
@@ -119,6 +150,11 @@ public class DateRangeUtils {
             case NEXT_MONTH : return makeNextMonth();
             case THIS_YEAR  : return makeThisYear();
             case LAST_YEAR  : return makeLastYear();
+            case THIS_WEEK_AND_BEYOND       : return makeThisWeekAndBeyond();
+            case RELATIVE_LAST_MONTH        : return makeRelativeLastMonth();
+            case RELATIVE_LAST_THREE_MONTHS : return makeRelativeLastThreeMonths();
+            case RELATIVE_LAST_HALF_YEAR    : return makeRelativeLastHalfYear();
+            case RELATIVE_LAST_YEAR         : return makeRelativeLastYear();
         }
 
         return null;
