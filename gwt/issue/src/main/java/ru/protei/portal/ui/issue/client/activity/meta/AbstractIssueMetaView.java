@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
@@ -146,4 +147,6 @@ public interface AbstractIssueMetaView extends IsWidget {
 
     HasVisibility workTriggerVisibility();
     HasValue<En_WorkTrigger> workTrigger();
+
+    void setCompanyModel(AsyncSelectorModel companyModel);
 }

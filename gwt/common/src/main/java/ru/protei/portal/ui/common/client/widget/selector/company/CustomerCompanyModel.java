@@ -20,7 +20,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.List;
 
-public abstract class InitiatorCompanyModel implements Activity, AsyncSelectorModel<EntityOption>, SelectorItemRenderer<EntityOption> {
+public abstract class CustomerCompanyModel implements Activity, AsyncSelectorModel<EntityOption>, SelectorItemRenderer<EntityOption> {
 
     @Event
     public void onInit(AuthEvents.Success event) {
@@ -32,7 +32,7 @@ public abstract class InitiatorCompanyModel implements Activity, AsyncSelectorMo
         cache.clearCache();
     }
 
-    public InitiatorCompanyModel() {
+    public CustomerCompanyModel() {
         cache.setLoadHandler(makeLoadHandler());
     }
 

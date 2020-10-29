@@ -15,7 +15,6 @@ import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueCollapseFilterActivity;
@@ -33,7 +32,7 @@ import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.widget.attachment.popup.AttachPopup;
 import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidget;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
-import ru.protei.portal.ui.common.client.widget.selector.company.InitiatorCompanyModel;
+import ru.protei.portal.ui.common.client.widget.selector.company.CustomerCompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.SubcontractorCompanyModel;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -97,8 +96,8 @@ public abstract class IssueTableFilterActivity
                 new ActionBarEvents.Clear()
         );
 
-        if(!policyService.hasSystemScopeForPrivilege(En_Privilege.COMPANY_VIEW)){
-            if (policyService.getProfile().getCompany().getCategory() == En_CompanyCategory.SUBCONTRACTOR) {
+        if(!policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW)){
+            if (policyService.isSubcontractorCompany()) {
                 filterView.getIssueFilterParams().presetManagerCompany(policyService.getProfile().getCompany());
             } else {
                 filterView.getIssueFilterParams().presetCompany(policyService.getProfile().getCompany());
@@ -386,22 +385,20 @@ public abstract class IssueTableFilterActivity
         }
     }
 
-    private void updateCompanyModels(final Company currentCompany) {
-        subcontractorCompanyModel.setCompanyId(currentCompany.getId());
-        initiatorCompanyModel.setSubcontractorId(currentCompany.getId());
+    private void updateCompanyModels(Company userCompany) {
+        subcontractorCompanyModel.setCompanyId(userCompany.getId());
+        customerCompanyModel.setSubcontractorId(userCompany.getId());
 
-        if (!policyService.hasSystemScopeForPrivilege(En_Privilege.COMPANY_VIEW)) {
-            if (currentCompany.getCategory() == En_CompanyCategory.SUBCONTRACTOR) {
-                filterView.setInitiatorCompaniesModel(initiatorCompanyModel);
-                filterView.setManagerCompaniesModel(companyModel);
-            } else {
-                filterView.setInitiatorCompaniesModel(companyModel);
-                filterView.setManagerCompaniesModel(subcontractorCompanyModel);
-            }
-        } else {
-            filterView.setInitiatorCompaniesModel(companyModel);
-            filterView.setManagerCompaniesModel(companyModel);
-        }
+        filterView.setInitiatorCompaniesModel(isSubcontractorCompany(userCompany) ? customerCompanyModel : companyModel);
+        filterView.setManagerCompaniesModel(isCustomerCompany(userCompany) ? subcontractorCompanyModel : companyModel);
+    }
+
+    private boolean isSubcontractorCompany(Company userCompany) {
+        return userCompany.getCategory() == En_CompanyCategory.SUBCONTRACTOR;
+    }
+
+    private boolean isCustomerCompany(Company userCompany) {
+        return userCompany.getCategory() == En_CompanyCategory.CUSTOMER;
     }
 
     @Inject
@@ -453,7 +450,7 @@ public abstract class IssueTableFilterActivity
     CompanyModel companyModel;
 
     @Inject
-    InitiatorCompanyModel initiatorCompanyModel;
+    CustomerCompanyModel customerCompanyModel;
 
     @Inject
     SubcontractorCompanyModel subcontractorCompanyModel;
