@@ -19,7 +19,7 @@ public class LastCheckColumn extends ClickColumn<ReservedIp> {
     @Override
     protected void fillColumnHeader(Element columnHeader) {
         columnHeader.addClassName("ip-last-check");
-        columnHeader.setInnerText(lang.reservedIpOnlineStatus());
+        columnHeader.setInnerText(lang.reservedIpStatus());
     }
 
     @Override

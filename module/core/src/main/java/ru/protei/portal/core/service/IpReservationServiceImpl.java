@@ -545,7 +545,7 @@ public class IpReservationServiceImpl implements IpReservationService {
     @Override
     @Transactional
     public Result<Boolean> isIpOnline(AuthToken token, ReservedIp reservedIp) {
-        if (reservedIp == null) {
+        if (reservedIp == null || reservedIp.getIpAddress() == null) {
             return error(INCORRECT_PARAMS);
         }
 
@@ -563,7 +563,7 @@ public class IpReservationServiceImpl implements IpReservationService {
                 final Date now = new Date();
                 reservedIp.setLastActiveDate(now);
                 reservedIp.setLastCheckInfo(makeCheckInfo((NRPERaw) nrpeResponse, now));
-                reservedIpDAO.partialMerge(reservedIp, ReservedIp.Columns.LAST_CHECK_DATE, ReservedIp.Columns.LAST_CHECK_INFO);
+                reservedIpDAO.partialMerge(reservedIp, ReservedIp.Columns.LAST_ACTIVE_DATE, ReservedIp.Columns.LAST_CHECK_INFO);
                 return ok(true);
             case HOST_UNREACHABLE:
                 reservedIp.setLastCheckInfo(makeCheckInfo((NRPERaw) nrpeResponse, new Date()));

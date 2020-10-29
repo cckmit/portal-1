@@ -25,7 +25,6 @@ import ru.protei.portal.ui.ipreservation.client.activity.reservedip.filter.Abstr
 import ru.protei.portal.ui.ipreservation.client.activity.reservedip.filter.AbstractReservedIpFilterView;
 import ru.protei.portal.ui.ipreservation.client.view.widget.selector.SubnetMultiSelector;
 
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -124,7 +123,7 @@ public class ReservedIpFilterView extends Composite implements AbstractReservedI
 
     @UiHandler("nonActiveRange")
     public void onNonActiveDateChanged(ValueChangeEvent<DateIntervalWithType> event){
-        if (validate()) {
+        if (activity != null && activity.validateTypedSelectorRangePicker(nonActiveRange)) {
             fireChangeTimer();
         }
     }
@@ -142,28 +141,6 @@ public class ReservedIpFilterView extends Composite implements AbstractReservedI
             }
         }
     };
-
-    private boolean validate() {
-        boolean dataRangeTypeValid = isDataRangeTypeValid(nonActiveRange);
-        boolean dataRangeValid = isDataRangeValid(nonActiveRange.getValue());
-        nonActiveRange.setValid(dataRangeTypeValid, dataRangeValid);
-        return dataRangeTypeValid && dataRangeValid;
-    }
-
-    private boolean isDataRangeTypeValid(TypedSelectorRangePicker rangePicker) {
-        return !rangePicker.isTypeMandatory()
-                || (rangePicker.getValue() != null
-                && rangePicker.getValue().getIntervalType() != null);
-    }
-
-    private boolean isDataRangeValid(DateIntervalWithType dateRange) {
-        if (dateRange == null || dateRange.getIntervalType() == null) {
-            return true;
-        }
-
-        return !Objects.equals(dateRange.getIntervalType(), En_DateIntervalType.FIXED)
-                || dateRange.getInterval().isValid();
-    }
 
     @UiField
     CleanableSearchBox search;

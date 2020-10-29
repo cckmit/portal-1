@@ -37,7 +37,7 @@
                 </div>
 
                 <div class="form-group col-md-12">
-                    <label><ui:text from="{lang.reservedIpOnlineStatusNonActiveRange}"/></label>
+                    <label><ui:text from="{lang.reservedIpNonActiveRange}"/></label>
                     <typerange:TypedSelectorRangePicker ui:field="nonActiveRange" formatValue="dd.MM.yyyy HH:mm"/>
                 </div>
 

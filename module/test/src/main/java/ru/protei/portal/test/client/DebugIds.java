@@ -939,8 +939,8 @@ public class DebugIds {
         String USE_RANGE_INPUT = "reservedip-use-range-input";
         String USE_RANGE_BUTTON = "reservedip-use-range-button";
         String COMMENT_INPUT = "reservedip-comment-input";
-        String LAST_ACTIVE_DATE_INPUT = "reservedip-last-active-date-input";
-        String LAST_CHECK_INFO_INPUT = "reservedip-last-сheck-info-input";
+        String LAST_ACTIVE_DATE = "reservedip-last-active-date";
+        String LAST_CHECK_INFO = "reservedip-last-сheck-info";
         String SAVE_BUTTON = "reservedip-save-button";
         String CANCEL_BUTTON = "reservedip-cancel-button";
     }

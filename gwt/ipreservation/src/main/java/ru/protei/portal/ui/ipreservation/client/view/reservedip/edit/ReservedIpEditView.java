@@ -105,8 +105,8 @@ public class ReservedIpEditView extends Composite implements AbstractReservedIpE
         useRange.ensureDebugId(DebugIds.RESERVED_IP.USE_RANGE_INPUT);
         useRange.getRelative().ensureDebugId(DebugIds.RESERVED_IP.USE_RANGE_BUTTON);
         comment.ensureDebugId(DebugIds.RESERVED_IP.COMMENT_INPUT);
-        lastActiveDate.ensureDebugId(DebugIds.RESERVED_IP.LAST_ACTIVE_DATE_INPUT);
-        lastCheckInfo.ensureDebugId(DebugIds.RESERVED_IP.LAST_CHECK_INFO_INPUT);
+        lastActiveDate.ensureDebugId(DebugIds.RESERVED_IP.LAST_ACTIVE_DATE);
+        lastCheckInfo.ensureDebugId(DebugIds.RESERVED_IP.LAST_CHECK_INFO);
         ipOwner.ensureDebugId(DebugIds.RESERVED_IP.OWNER_SELECTOR);
         saveButton.ensureDebugId(DebugIds.PROJECT.SAVE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.PROJECT.CANCEL_BUTTON);

@@ -53,7 +53,7 @@ public class ReservedIp extends AuditableObject {
     @JdbcColumn(name="comment")
     private String comment;
 
-    @JdbcColumn(name = Columns.LAST_CHECK_DATE)
+    @JdbcColumn(name = Columns.LAST_ACTIVE_DATE)
     private Date lastActiveDate;
 
     @JdbcColumn(name = Columns.LAST_CHECK_INFO)
@@ -141,7 +141,7 @@ public class ReservedIp extends AuditableObject {
     }
 
     public interface Columns {
-        String LAST_CHECK_DATE = "last_active_date";
+        String LAST_ACTIVE_DATE = "last_active_date";
         String LAST_CHECK_INFO = "last_check_info";
     }
 

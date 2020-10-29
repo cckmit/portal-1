@@ -7,6 +7,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.*;
@@ -22,6 +23,7 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IpReservationControllerAsync;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
+import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedSelectorRangePicker;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.ipreservation.client.activity.reservedip.filter.AbstractReservedIpFilterActivity;
@@ -272,6 +274,29 @@ public abstract class ReservedIpTableActivity
     @Override
     public boolean hasRefreshPrivileges() {
         return policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_VIEW);
+    }
+
+    @Override
+    public boolean validateTypedSelectorRangePicker(TypedSelectorRangePicker picker) {
+        boolean dataRangeTypeValid = isDataRangeTypeValid(picker);
+        boolean dataRangeValid = isDataRangeValid(picker.getValue());
+        picker.setValid(dataRangeTypeValid, dataRangeValid);
+        return dataRangeTypeValid && dataRangeValid;
+    }
+
+    private boolean isDataRangeTypeValid(TypedSelectorRangePicker rangePicker) {
+        return !rangePicker.isTypeMandatory()
+                || (rangePicker.getValue() != null
+                && rangePicker.getValue().getIntervalType() != null);
+    }
+
+    private boolean isDataRangeValid(DateIntervalWithType dateRange) {
+        if (dateRange == null || dateRange.getIntervalType() == null) {
+            return true;
+        }
+
+        return !Objects.equals(dateRange.getIntervalType(), En_DateIntervalType.FIXED)
+                || dateRange.getInterval().isValid();
     }
 
     private void showError(String error) {

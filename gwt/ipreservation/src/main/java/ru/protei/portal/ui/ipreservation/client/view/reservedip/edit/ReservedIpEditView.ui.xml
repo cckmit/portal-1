@@ -42,12 +42,12 @@
                 </div>
                 <div class="form-group col-md-6">
                     <label>
-                        <ui:text from="{lang.reservedIpOnlineStatus}"/>
+                        <ui:text from="{lang.reservedIpStatus}"/>
                     </label>
                     <g:TextBox ui:field="lastActiveDate" styleName="form-control" enabled="false"/>
                 </div>
                 <div class="form-group col-md-12">
-                    <label><ui:text from="{lang.reservedIpOnlineStatusInfo}"/></label>
+                    <label><ui:text from="{lang.reservedIpStatusCheckInfo}"/></label>
                     <autoresizetextarea:AutoResizeTextArea ui:field="lastCheckInfo"
                                                            styleName="form-control" minRows="2" maxRows="10"
                                                            enabled="false"/>

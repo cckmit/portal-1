@@ -2550,11 +2550,11 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reservedIpForever();
 
-    String reservedIpOnlineStatus();
+    String reservedIpStatus();
 
-    String reservedIpOnlineStatusNonActiveRange();
+    String reservedIpNonActiveRange();
 
-    String reservedIpOnlineStatusInfo();
+    String reservedIpStatusCheckInfo();
 
     String reservedIpUsePeriod();
 
