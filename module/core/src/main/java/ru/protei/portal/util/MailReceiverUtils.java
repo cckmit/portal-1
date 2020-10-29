@@ -160,18 +160,20 @@ public class MailReceiverUtils {
     static private void removeByMark(Document document, String beginMark) {
         Elements beginMarkElements = document.getElementsContainingText(beginMark);
         if (beginMarkElements != null) {
+            Elements nextAll = beginMarkElements.nextAll();
+            if (nextAll != null) {
+                nextAll.remove();
+            }
+
             Element last = beginMarkElements.last();
             if (last != null) {
-                Elements element = last.siblingElements();
-                if (element != null) {
-                    element.remove();
-                }
                 last.remove();
             }
         }
     }
 
     static private String plainClean(String content) {
+        content = cleanNewLineDuplicate(content);
         for (Pattern pattern : crmContentPatterns) {
             Matcher matcher = pattern.matcher(content);
             if (matcher.find()) {
@@ -202,6 +204,7 @@ public class MailReceiverUtils {
     static private final String EMAIL = "[-a-zA-Z0-9_\\.]+@[-a-zA-Z0-9_\\.]+\\.\\w{2,4}";
     static private final String THUNDERBIRD_REPLAY = DATE + "\\s+" + TIME + ",\\s+" + EMAIL;
     static private final String MOBILEGMAIL_REPLAY = GMAIL_DATE + "\\s+" + TIME + ANY_SYMBOL + EMAIL;
+    static private final String MS_REPLAY = "From:( |\\S)+Sent:( |\\S)+To:( |\\S)+Subject:( |\\S)+";
     static private final String CONTENT_BEGIN_CRM_BODY_FTL = "===ContentBegin_crm\\.body\\.ftl===";
     static private final String CONTENT_BEGIN_MARK_CRM_BODY_FTL = "===ContentBegin_crm.body.ftl===";
 
@@ -209,12 +212,14 @@ public class MailReceiverUtils {
 
     static private final String THUNDERBIRD_PATTERN_CONTENT_CRM_BODY_FTL = THUNDERBIRD_REPLAY + ".{0,10}\\s*$";
     static private final String MOBILEGMAIL_PATTERN_CONTENT_CRM_BODY_FTL = MOBILEGMAIL_REPLAY + ".{0,10}\\s*$";
+    static private final String MS_PATTERN_CONTENT_CRM_BODY_FTL = MS_REPLAY + "\\s.{0,10}\\s*$";
     static private final String ONLY_BEGIN_PATTERN_CONTENT_CRM_BODY_FTL = CONTENT_BEGIN_CRM_BODY_FTL + ANY_SYMBOL + "$";
 
     static private final List<Pattern> crmContentPatterns = Arrays.asList(
             Pattern.compile(THUNDERBIRD_PATTERN_CONTENT_CRM_BODY_FTL),
             Pattern.compile(MOBILEGMAIL_PATTERN_CONTENT_CRM_BODY_FTL),
-            Pattern.compile(ONLY_BEGIN_PATTERN_CONTENT_CRM_BODY_FTL)
+            Pattern.compile(ONLY_BEGIN_PATTERN_CONTENT_CRM_BODY_FTL),
+            Pattern.compile(MS_PATTERN_CONTENT_CRM_BODY_FTL)
     );
     static private final Pattern newLineDuplicatePattern = Pattern.compile(CONTENT_NEW_LINE_DUPLICATE);
 

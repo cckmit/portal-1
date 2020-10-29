@@ -16,18 +16,21 @@ public class MailReceiverUtilsTest {
     private final String FILE_PATH_MAIL_REMOVED_TXT = "mail.removed.html";
     private final String FILE_PATH_MAIL_NOT_REMOVED_THUNDERBIRD_HTML = "mail.not.removed.thunderbird.html";
     private final String FILE_PATH_MAIL_NOT_REMOVED_MOBILEGMAIL_HTML = "mail.not.removed.mobilegmail.html";
+    private final String FILE_PATH_MAIL_NOT_REMOVED_MS_HTML = "mail.not.removed.ms.html";
     private final String FILE_PATH_MAIL_NOT_REMOVED_TXT_HTML = "mail.not.removed.txt.html";
 
     private String mailRemovedTxt;
     private String mailNotRemovedThunderbirdHtml;
     private String mailNotRemovedMobileGmailHtml;
+    private String mailNotRemovedMsHtml;
     private String mailNotRemovedTxt;
 
     @Before
-    public void readFiles() throws IOException {
+    public void readFiles() {
         mailRemovedTxt = getFileContent(FILE_PATH_MAIL_REMOVED_TXT);
         mailNotRemovedThunderbirdHtml = getFileContent(FILE_PATH_MAIL_NOT_REMOVED_THUNDERBIRD_HTML);
         mailNotRemovedMobileGmailHtml = getFileContent(FILE_PATH_MAIL_NOT_REMOVED_MOBILEGMAIL_HTML);
+        mailNotRemovedMsHtml = getFileContent(FILE_PATH_MAIL_NOT_REMOVED_MS_HTML);
         mailNotRemovedTxt = getFileContent(FILE_PATH_MAIL_NOT_REMOVED_TXT_HTML);
     }
 
@@ -41,7 +44,7 @@ public class MailReceiverUtilsTest {
     }
 
     @Test
-    public void mailNotRemovedMobileGmailHtml() {
+    public void mailNotRemovedThunderbirdHtml() {
         String cleanedContent = MailReceiverUtils.getCleanedContent(MIME_TEXT_HTML, mailNotRemovedThunderbirdHtml);
         Assert.assertEquals("Ответ без удаления \n" +
                         "на несколько строк",
@@ -49,12 +52,21 @@ public class MailReceiverUtilsTest {
     }
 
     @Test
-    public void mailNotRemovedThunderbirdHtml() {
+    public void mailNotRemovedMobileGmailHtml() {
         String cleanedContent = MailReceiverUtils.getCleanedContent(MIME_TEXT_HTML, mailNotRemovedMobileGmailHtml);
         Assert.assertEquals("Гмайл\n" +
                         "Без разделителя\n" +
                         "3\n" +
                         "4",
+                cleanedContent);
+    }
+
+    @Test
+    public void mailNotRemovedMsHtml() {
+        String cleanedContent = MailReceiverUtils.getCleanedContent(MIME_TEXT_HTML, mailNotRemovedMsHtml);
+        Assert.assertEquals("Текст ms\n" +
+                        "2\n" +
+                        "3",
                 cleanedContent);
     }
 
