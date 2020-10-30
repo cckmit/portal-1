@@ -16,12 +16,14 @@ public class MailReceiverUtilsTest {
     private final String FILE_PATH_MAIL_REMOVED_TXT = "mail.removed.html";
     private final String FILE_PATH_MAIL_NOT_REMOVED_THUNDERBIRD_HTML = "mail.not.removed.thunderbird.html";
     private final String FILE_PATH_MAIL_NOT_REMOVED_MOBILEGMAIL_HTML = "mail.not.removed.mobilegmail.html";
+    private final String FILE_PATH_MAIL_NOT_REMOVED_TABLETGMAIL_HTML = "mail.not.removed.tabletgmail.html";
     private final String FILE_PATH_MAIL_NOT_REMOVED_MS_HTML = "mail.not.removed.ms.html";
     private final String FILE_PATH_MAIL_NOT_REMOVED_TXT_HTML = "mail.not.removed.txt.html";
 
     private String mailRemovedTxt;
     private String mailNotRemovedThunderbirdHtml;
     private String mailNotRemovedMobileGmailHtml;
+    private String mailNotRemovedTabletGmailHtml;
     private String mailNotRemovedMsHtml;
     private String mailNotRemovedTxt;
 
@@ -30,6 +32,7 @@ public class MailReceiverUtilsTest {
         mailRemovedTxt = getFileContent(FILE_PATH_MAIL_REMOVED_TXT);
         mailNotRemovedThunderbirdHtml = getFileContent(FILE_PATH_MAIL_NOT_REMOVED_THUNDERBIRD_HTML);
         mailNotRemovedMobileGmailHtml = getFileContent(FILE_PATH_MAIL_NOT_REMOVED_MOBILEGMAIL_HTML);
+        mailNotRemovedTabletGmailHtml = getFileContent(FILE_PATH_MAIL_NOT_REMOVED_TABLETGMAIL_HTML);
         mailNotRemovedMsHtml = getFileContent(FILE_PATH_MAIL_NOT_REMOVED_MS_HTML);
         mailNotRemovedTxt = getFileContent(FILE_PATH_MAIL_NOT_REMOVED_TXT_HTML);
     }
@@ -58,6 +61,13 @@ public class MailReceiverUtilsTest {
                         "Без разделителя\n" +
                         "3\n" +
                         "4",
+                cleanedContent);
+    }
+
+    @Test
+    public void mailNotRemovedTabletGmailHtml() {
+        String cleanedContent = MailReceiverUtils.getCleanedContent(MIME_TEXT_HTML, mailNotRemovedTabletGmailHtml);
+        Assert.assertEquals("Вот ответ на style display nonoe",
                 cleanedContent);
     }
 

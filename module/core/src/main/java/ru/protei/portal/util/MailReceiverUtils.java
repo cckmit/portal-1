@@ -201,9 +201,10 @@ public class MailReceiverUtils {
     static private final String DATE = "\\d{1,2}(\\.|\\\\|-)\\d{1,2}(\\.|\\\\|-)\\d{4}";
     static private final String GMAIL_DATE = "\\d{1,2} \\S{2,7}\\. \\d{4} г\\.";
     static private final String TIME = "([0-1][0-9]|[2][0-3]):([0-5][0-9])";
+    static private final String TIME_AMPM = "\\b((1[0-2]|0?[1-9]):([0-5][0-9]) ([AaPp][Mm]))";
     static private final String EMAIL = "[-a-zA-Z0-9_\\.]+@[-a-zA-Z0-9_\\.]+\\.\\w{2,4}";
     static private final String THUNDERBIRD_REPLAY = DATE + "\\s+" + TIME + ",\\s+" + EMAIL;
-    static private final String MOBILEGMAIL_REPLAY = GMAIL_DATE + "\\s+" + TIME + ANY_SYMBOL + EMAIL;
+    static private final String GMAIL_REPLAY = GMAIL_DATE + "\\s+" + "(" + TIME + "|" + TIME_AMPM + ")" + ANY_SYMBOL + EMAIL;
     static private final String MS_REPLAY = "From:( |\\S)+Sent:( |\\S)+To:( |\\S)+Subject:( |\\S)+";
     static private final String CONTENT_BEGIN_CRM_BODY_FTL = "===ContentBegin_crm\\.body\\.ftl===";
     static private final String CONTENT_BEGIN_MARK_CRM_BODY_FTL = "===ContentBegin_crm.body.ftl===";
@@ -211,13 +212,13 @@ public class MailReceiverUtils {
     static private final String CONTENT_NEW_LINE_DUPLICATE = "(\n+) *";
 
     static private final String THUNDERBIRD_PATTERN_CONTENT_CRM_BODY_FTL = THUNDERBIRD_REPLAY + ".{0,10}\\s*$";
-    static private final String MOBILEGMAIL_PATTERN_CONTENT_CRM_BODY_FTL = MOBILEGMAIL_REPLAY + ".{0,10}\\s*$";
+    static private final String GMAIL_PATTERN_CONTENT_CRM_BODY_FTL = GMAIL_REPLAY + ".{0,10}\\s*$";
     static private final String MS_PATTERN_CONTENT_CRM_BODY_FTL = MS_REPLAY + "\\s.{0,10}\\s*$";
     static private final String ONLY_BEGIN_PATTERN_CONTENT_CRM_BODY_FTL = CONTENT_BEGIN_CRM_BODY_FTL + ANY_SYMBOL + "$";
 
     static private final List<Pattern> crmContentPatterns = Arrays.asList(
             Pattern.compile(THUNDERBIRD_PATTERN_CONTENT_CRM_BODY_FTL),
-            Pattern.compile(MOBILEGMAIL_PATTERN_CONTENT_CRM_BODY_FTL),
+            Pattern.compile(GMAIL_PATTERN_CONTENT_CRM_BODY_FTL),
             Pattern.compile(ONLY_BEGIN_PATTERN_CONTENT_CRM_BODY_FTL),
             Pattern.compile(MS_PATTERN_CONTENT_CRM_BODY_FTL)
     );
