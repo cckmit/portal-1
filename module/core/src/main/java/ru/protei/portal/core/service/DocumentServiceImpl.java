@@ -14,6 +14,7 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.DocumentDocFileUpdatedByMemberEvent;
 import ru.protei.portal.core.event.DocumentMemberAddedEvent;
 import ru.protei.portal.core.index.document.DocumentStorageIndex;
+import ru.protei.portal.core.model.dao.ContactItemDAO;
 import ru.protei.portal.core.model.dao.DocumentDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.ProjectDAO;
@@ -26,7 +27,9 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.DocumentQuery;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.dto.ProjectInfo;
+import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.svn.document.DocumentSvnApi;
@@ -45,6 +48,7 @@ import static com.mysql.jdbc.StringUtils.isEmptyOrWhitespaceOnly;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
+import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
 
 public class DocumentServiceImpl implements DocumentService {
 
@@ -60,6 +64,8 @@ public class DocumentServiceImpl implements DocumentService {
     ProjectDAO projectDAO;
     @Autowired
     PersonDAO personDAO;
+    @Autowired
+    ContactItemDAO contactItemDAO;
     @Autowired
     DocumentStorageIndex documentStorageIndex;
     @Autowired
@@ -140,8 +146,6 @@ public class DocumentServiceImpl implements DocumentService {
 
         SearchResult<Document> sr = documentDAO.getSearchResult(query);
 
-        sr.getResults().forEach(this::resetDocumentPrivacyInfo);
-
         return ok(sr);
     }
 
@@ -161,8 +165,6 @@ public class DocumentServiceImpl implements DocumentService {
             return error(En_ResultStatus.GET_DATA_ERROR);
         }
 
-        list.forEach(this::resetDocumentPrivacyInfo);
-
         return ok(list);
     }
 
@@ -176,8 +178,6 @@ public class DocumentServiceImpl implements DocumentService {
         }
 
         jdbcManyRelationsHelper.fill(document, "members");
-
-        resetDocumentPrivacyInfo(document);
 
         return ok(document);
     }
@@ -254,7 +254,7 @@ public class DocumentServiceImpl implements DocumentService {
                 return error(En_ResultStatus.NOT_CREATED);
             }
 
-            List<Long> newMembers = CollectionUtils.stream(document.getMembers()).map(Person::getId).collect(Collectors.toList());
+            List<Long> newMembers = toList(document.getMembers(), PersonShortView::getId);
             List<Person> personList = getDocumentMemberAddedEvent( document, newMembers );
 
             return ok(document)
@@ -525,8 +525,8 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     private List<Long> fetchNewMemberIds(Document oldDocument, Document newDocument) {
-        List<Long> oldMembers = CollectionUtils.stream(oldDocument.getMembers()).map(Person::getId).collect(Collectors.toList());
-        List<Long> newMembers = CollectionUtils.stream(newDocument.getMembers()).map(Person::getId).collect(Collectors.toList());
+        List<Long> oldMembers = toList( oldDocument.getMembers(), PersonShortView::getId );
+        List<Long> newMembers = toList( newDocument.getMembers(), PersonShortView::getId );
         return CollectionUtils.diffCollection(oldMembers, newMembers).getAddedEntries();
     }
 
@@ -540,23 +540,19 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     private List<Person> getDocumentDocFileUpdatedByMember( Document document ) {
-        List<Person> personList = new ArrayList<>();
+        ArrayList<Long> peronsIds = new ArrayList<>();
         if (document.getContractor() != null) {
-            jdbcManyRelationsHelper.fill(document.getContractor(), Person.Fields.CONTACT_ITEMS);
-            personList.add(document.getContractor());
+            peronsIds.add( document.getContractor().getId() );
         }
         if (document.getRegistrar() != null) {
-            jdbcManyRelationsHelper.fill(document.getRegistrar(), Person.Fields.CONTACT_ITEMS);
-            personList.add(document.getRegistrar());
+            peronsIds.add( document.getRegistrar().getId() );
         }
         Result<PersonProjectMemberView> result = projectService.getProject(null, document.getProjectId())
                 .map(Project::getLeader);
         if (result.isOk() && result.getData() != null) {
-            Person leader = personDAO.get(result.getData().getId());
-            jdbcManyRelationsHelper.fill(leader, Person.Fields.CONTACT_ITEMS);
-            personList.add(leader);
+            peronsIds.add( document.getRegistrar().getId() );
         }
-        personList.addAll(document.getMembers());
+        List<Person> personList = getPersonsWithContact( peronsIds );
         return personList;
     }
 
@@ -566,14 +562,11 @@ public class DocumentServiceImpl implements DocumentService {
         }
     }
 
-    private void resetDocumentPrivacyInfo(Document document) {
-        // RESET PRIVACY INFO
-        if (document.getContractor() != null) {
-            document.getContractor().resetPrivacyInfo();
-        }
-        if (document.getRegistrar() != null) {
-            document.getRegistrar().resetPrivacyInfo();
-        }
+    public List<Person> getPersonsWithContact( ArrayList<Long> peronsIds ) {
+        List<Person> personList = personDAO.getListByKeys( peronsIds );
+        jdbcManyRelationsHelper.fill(personList, Person.Fields.CONTACT_ITEMS);
+
+        return personList;
     }
 
     private En_ResultStatus checkDocumentDesignationValid(Document oldDocument, Document document) {
@@ -638,7 +631,7 @@ public class DocumentServiceImpl implements DocumentService {
         Document document = documentDAO.partialGet(documentId, "id");
         jdbcManyRelationsHelper.fill(document, "members");
         return CollectionUtils.stream(document.getMembers())
-                .map(Person::getId)
+                .map( PersonShortView::getId)
                 .collect(Collectors.toList())
                 .contains(token.getPersonId());
     }

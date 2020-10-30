@@ -22,7 +22,7 @@ public class DeskPersonMultiPopup extends PopupMultiSelector<PersonShortView> {
         this.model = model;
         setAsyncModel(model);
         setFilter(personView -> !personView.isFired());
-        setItemRenderer(PersonShortView::getName);
+        setItemRenderer(PersonShortView::getDisplayName);
         setPageSize(CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE);
         setEmptyListText(lang.emptySelectorList());
         setEmptySearchText(lang.searchNoMatchesFound());

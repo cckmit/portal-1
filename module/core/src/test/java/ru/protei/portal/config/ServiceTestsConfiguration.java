@@ -63,9 +63,7 @@ import ru.protei.portal.core.svn.document.DocumentSvnApi;
 import ru.protei.portal.core.svn.document.DocumentSvnApiImpl;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
-import ru.protei.portal.mock.AuthServiceMock;
-import ru.protei.portal.mock.PortalScheduleTasksStub;
-import ru.protei.portal.mock.ReportControlServiceMock;
+import ru.protei.portal.mock.*;
 import ru.protei.portal.nrpe.NRPEExecutorTest;
 import ru.protei.portal.nrpe.NRPEProcessor;
 import ru.protei.portal.schedule.PortalScheduleTasks;
@@ -236,12 +234,12 @@ public class ServiceTestsConfiguration {
 
     @Bean
     public AssemblerService getAssemblerService() {
-        return new AssemblerServiceImpl();
+        return new AssemblerServiceStub();
     }
 
     @Bean
     public AssemblerProjectService getAssemblerProjectService() {
-        return new AssemblerProjectServiceImpl();
+        return new AssemblerProjectServiceStub();
     }
 
     @Bean

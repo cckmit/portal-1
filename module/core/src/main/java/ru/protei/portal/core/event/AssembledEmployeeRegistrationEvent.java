@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
+import ru.protei.portal.core.model.view.PersonShortView;
 
 import java.util.Objects;
 
@@ -30,8 +31,8 @@ public class AssembledEmployeeRegistrationEvent extends ApplicationEvent {
         return isEditEvent() && !CollectionUtils.equals(oldState.getCuratorsIds(), newState.getCuratorsIds());
     }
 
-    public DiffCollectionResult<Person> getCuratorsDiff() {
-        DiffCollectionResult<Person> curatorsDiffs = new DiffCollectionResult<>();
+    public DiffCollectionResult<PersonShortView> getCuratorsDiff() {
+        DiffCollectionResult<PersonShortView> curatorsDiffs = new DiffCollectionResult<>();
 
         if (!isEditEvent()) {
             curatorsDiffs.putSameEntries(newState.getCurators());

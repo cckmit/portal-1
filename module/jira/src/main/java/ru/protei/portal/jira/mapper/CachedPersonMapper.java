@@ -6,13 +6,18 @@ import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.JiraEndpoint;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.getFirst;
+import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
 
 public class CachedPersonMapper implements PersonMapper {
 
@@ -75,7 +80,12 @@ public class CachedPersonMapper implements PersonMapper {
         Person person = null;
 
         if (HelperFunc.isNotEmpty(jiraUser.getEmailAddress())) {
-            person = personDAO.findContactByEmail(endpoint.getCompanyId(), jiraUser.getEmailAddress());
+            // email не уникальное поле. Может быть несколько записей контактов с одним email.
+            PersonQuery personQuery = new PersonQuery();
+            personQuery.setCompanyIds( setOf( endpoint.getCompanyId() ) );
+            personQuery.setEmail( jiraUser.getEmailAddress() );
+            personQuery.setLimit( 1 );
+            person = getFirst( personDAO.getPersons( personQuery ) );
         }
 
         if (person == null) {

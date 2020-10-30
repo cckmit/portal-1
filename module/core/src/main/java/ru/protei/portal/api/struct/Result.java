@@ -166,7 +166,7 @@ public class Result<T> {
     }
 
     /**
-     *  Поведение подобно Optional от CoreResponse<T> на основании En_ResultStatus вместо проверки на null
+     *  Поведение подобно Optional от Result<T> на основании En_ResultStatus вместо проверки на null
      *      При получении ошибки, дальнейшие действия игнорируются
      *      ошибка продвигается к конечному результату
      *
@@ -206,17 +206,31 @@ public class Result<T> {
 
     /**
      * Если результрат не успешен
-     * получить тот же результат выполнив другое действие
+     * получить тот же результат выполнив другое действие (новая Result цепочка)
+     * Обработка всех информационных потоков (данные, события, ошибки и прочее содержимое Result)
+     * должно осуществляться в перекладывающей функции (Function<Result<T>, Result<T>> mapper ),
+     * так как зависит от бизнеслогики.
      */
     @JsonIgnore
     public Result<T> orElseGet( Function<Result<T>, Result<T>> mapper ) {
         if (mapper == null) {
-            return error( status, message );
+            return this;
         }
-        if (!isOk()) {
-            return mapper.apply(this);
+        if (isOk()) {
+            return this;
         }
-        return this;
+        return mapper.apply(this);
+    }
+
+    /**
+     * Подменить результат в случае !isOK()
+     */
+    @JsonIgnore
+    public T orElse( T alternativeData ) {
+        if (isOk()) {
+            return getData();
+        }
+        return alternativeData;
     }
 
     @JsonIgnore

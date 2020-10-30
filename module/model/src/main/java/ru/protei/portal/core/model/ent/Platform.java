@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -27,7 +28,7 @@ public class Platform extends AuditableObject {
     private String comment;
 
     @JdbcJoinedObject(localColumn = "manager_id", remoteColumn = "id", updateLocalColumn = true)
-    private Person manager;
+    private PersonShortView manager;
 
     @JdbcJoinedColumn(joinPath = {
             @JdbcJoinPath(localColumn = "project_id", remoteColumn = "id", table = "case_object"),
@@ -105,7 +106,7 @@ public class Platform extends AuditableObject {
         this.serversCount = serversCount;
     }
 
-    public Person getManager() {
+    public PersonShortView getManager() {
         return manager;
     }
 
@@ -121,7 +122,7 @@ public class Platform extends AuditableObject {
         this.projectId = projectId;
     }
 
-    public void setManager(Person manager) {
+    public void setManager(PersonShortView manager) {
         this.manager = manager;
     }
 

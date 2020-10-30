@@ -22,6 +22,7 @@ import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.YoutrackService;
 import ru.protei.portal.core.svn.document.DocumentSvnApi;
 import ru.protei.portal.tools.migrate.struct.ExternalPersonAbsence;
@@ -372,7 +373,7 @@ public class BootstrapServiceImpl implements BootstrapService {
         try {
             EmployeeQuery query = new EmployeeQuery();
             query.setLastName(fio.substring(0, fio.indexOf(" ")));
-            List<Person> employees = personDAO.getEmployees(query);
+            List<PersonShortView> employees = personShortViewDAO.getEmployees(query);
             if (CollectionUtils.isNotEmpty(employees)) {
                 return employees.get(0).getId();
             }
@@ -858,6 +859,8 @@ public class BootstrapServiceImpl implements BootstrapService {
     CaseFilterDAO caseFilterDAO;
     @Autowired
     PersonDAO personDAO;
+    @Autowired
+    PersonShortViewDAO personShortViewDAO;
     @Autowired
     DevUnitDAO devUnitDAO;
     @Autowired

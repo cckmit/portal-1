@@ -3,7 +3,6 @@ package ru.protei.portal.ui.common.client.widget.selector.person;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -38,11 +37,7 @@ public abstract class AsyncPersonModel implements AsyncSearchSelectorModel<Perso
             return cache.get(elementIndex, handler);
         }
         if (elementIndex == 0) return currentPerson;
-        PersonShortView personShortView = cache.get(--elementIndex, handler);
-        if (Objects.equals(personShortView, currentPerson)) {
-            return cache.get(++elementIndex, handler);
-        }
-        return personShortView;
+        return cache.get(--elementIndex, handler);
     }
 
     @Override
@@ -101,5 +96,6 @@ public abstract class AsyncPersonModel implements AsyncSearchSelectorModel<Perso
     private PersonShortView currentPerson;
     private String searchString;
     private SelectorDataCache<PersonShortView> cache = new SelectorDataCache<>();
+
 }
 

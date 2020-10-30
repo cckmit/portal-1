@@ -92,7 +92,7 @@
                                                header="{lang.issueManager}"
                                                hasNullValue="true"
                                                mandatory="false"
-                                               fired="false"/>
+                                               />
                 </div>
             </div>
         </div>
@@ -118,7 +118,7 @@
                                                header="{lang.issueInitiator}"
                                                mandatory="false"
                                                hasNullValue="true"
-                                               fired="false"/>
+                                               />
                 </div>
             </g:HTMLPanel>
             <div class="row">

@@ -32,6 +32,7 @@ public class DutyLogEditView extends Composite implements AbstractDutyLogEditVie
             return list[elementIndex];
         });
         type.setItemRenderer(value -> typeLang.getName(value));
+        employee.setItemRenderer( empl -> empl == null ? lang.selectAbsenceEmployee() : empl.getDisplayName() );
         ensureDebugIds();
     }
 

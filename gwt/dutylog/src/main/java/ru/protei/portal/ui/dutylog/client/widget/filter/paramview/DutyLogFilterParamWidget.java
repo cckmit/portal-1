@@ -83,7 +83,7 @@ public class DutyLogFilterParamWidget extends Composite implements AbstractDutyL
 
     @Override
     public void fillFilterFields(DutyLogQuery query, SelectorsParams selectorsParams) {
-        date.setValue(DateIntervalWithType.fromDateRange(query.getDateRange(), false));
+        date.setValue(DateIntervalWithType.fromDateRange(query.getDateRange()));
         employee.setValue(applyPersons(selectorsParams, query.getPersonIds()));
         type.setValue(query.getTypes());
         sortField.setValue(query.getSortField());

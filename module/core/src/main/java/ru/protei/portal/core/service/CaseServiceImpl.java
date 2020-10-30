@@ -31,6 +31,7 @@ import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.utils.JiraUtils;
+import ru.protei.portal.core.utils.SimpleProfiler;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.LockStrategy;
@@ -160,9 +161,12 @@ public class CaseServiceImpl implements CaseService {
 
         List<Long> personFavoriteIssueIds = getPersonFavoriteIssueIds(token.getPersonId());
 
+        List<Long> caseIds = toList( sr.getResults(), CaseShortView::getId );
+        List<Long> hasPublicAttachments = attachmentDAO.findCasesIdsWithPublicAttachments(caseIds);
+
         sr.getResults().forEach(caseShortView -> {
             caseShortView.setFavorite(personFavoriteIssueIds.contains(caseShortView.getId()));
-            caseShortView.setPublicAttachmentsExist(attachmentDAO.hasPublicAttachments(caseShortView.getId()));
+            caseShortView.setPublicAttachmentsExist(hasPublicAttachments.contains(caseShortView.getId()));
         });
 
         return ok(sr);
@@ -1169,9 +1173,6 @@ public class CaseServiceImpl implements CaseService {
         }
         if ( caseObject.getCreator() != null ) {
             caseObject.getCreator().resetPrivacyInfo();
-        }
-        if ( caseObject.getManager() != null ) {
-            caseObject.getManager().resetPrivacyInfo();
         }
         if ( isNotEmpty(caseObject.getNotifiers())) {
             caseObject.getNotifiers().forEach( Person::resetPrivacyInfo);

@@ -217,6 +217,11 @@ public class CollectionUtils {
         return list;
     }
 
+    public static <T> List<T> unmodifiableListOf(T... elements){
+        if(elements == null) return Collections.unmodifiableList(Collections.EMPTY_LIST);
+        return Collections.unmodifiableList( Arrays.asList( elements ));
+    }
+
     public static <T> List<T> listOf(T... elements){
         if(elements == null) return new ArrayList<>();
         return new ArrayList<>( Arrays.asList( elements ));

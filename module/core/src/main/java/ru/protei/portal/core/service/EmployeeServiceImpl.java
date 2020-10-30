@@ -12,11 +12,9 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.DateRangeUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.query.AbsenceQuery;
-import ru.protei.portal.core.model.query.CompanyQuery;
-import ru.protei.portal.core.model.query.EmployeeQuery;
-import ru.protei.portal.core.model.query.WorkerEntryQuery;
+import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.*;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EmployeeShortView;
@@ -54,6 +52,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     PersonDAO personDAO;
+
+    @Autowired
+    PersonShortViewDAO personShortViewDAO;
 
     @Autowired
     CompanyDAO companyDAO;
@@ -102,19 +103,20 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     EventPublisherService publisherService;
+    @Autowired
+    CompanyService companyService;
 
     @Override
     public Result<List<PersonShortView>> shortViewList( EmployeeQuery query) {
-        List<Person> list = personDAO.getEmployees(query);
+        List<PersonShortView> list = personShortViewDAO.getEmployees(query);
 
         if (list == null) {
             return Result.error( En_ResultStatus.GET_DATA_ERROR);
         }
 
-        List<PersonShortView> result = list.stream().map( Person::toFullNameShortView ).collect(Collectors.toList());
-
-        return ok(result);
+        return ok(list);
     }
+
 
     @Override
     public Result<SearchResult<EmployeeShortView>> employeeList(AuthToken token, EmployeeQuery query) {
@@ -227,10 +229,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         CompanyDepartment department = companyDepartmentDAO.get(departmentId);
-
-        return ok(department == null ? null : (department.getHead() == null ?
-                        (department.getParentHead() == null ? null : department.getParentHead().toFullNameShortView()) :
-                department.getHead().toFullNameShortView()));
+        if (department == null) return ok( null );
+        if (department.getHead() != null) return ok( department.getHead() );
+        if (department.getParentHead() != null) return ok( department.getParentHead() );
+        return ok( null );
     }
 
     @Transactional
@@ -379,8 +381,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional
     public Result<Boolean> fireEmployee(AuthToken token, Person person) {
+        if(!groupHomeDAO.isHomeCompany( person.getCompanyId() )){
+            return error(En_ResultStatus.NOT_AVAILABLE);
+        }
 
-        Person personFromDb = personDAO.getEmployee(person.getId());
+        Person personFromDb = personDAO.get(person.getId());
 
         if (personFromDb == null) {
             return error(En_ResultStatus.NOT_FOUND);
@@ -482,7 +487,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         EmployeeQuery query = new EmployeeQuery();
         query.setFired(false);
         query.setDeleted(false);
-        query.setBirthdayRange(new DateRange(En_DateIntervalType.FIXED, dateFrom, dateUntil));
+        query.setBirthdayInterval(new Interval(dateFrom, dateUntil));
         List<EmployeeShortView> employees = employeeShortViewDAO.getEmployees(query);
         EmployeesBirthdays birthdays = new EmployeesBirthdays();
         birthdays.setDateFrom(dateFrom);
@@ -517,7 +522,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         EmployeeQuery query = new EmployeeQuery();
         query.setFired(false);
         query.setDeleted(false);
-        query.setBirthdayRange(new DateRange(En_DateIntervalType.FIXED, from, to));
+        query.setBirthdayInterval(new Interval(from, to));
         query.setSortField(En_SortField.birthday);
         query.setSortDir(En_SortDir.ASC);
         List<EmployeeShortView> employees = employeeShortViewDAO.getEmployees(query);
@@ -757,8 +762,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeQuery.setFirstName(person.getFirstName());
         employeeQuery.setLastName(person.getLastName());
         employeeQuery.setSecondName(person.getSecondName());
-        employeeQuery.setBirthdayRange(person.getBirthday() == null ? null :
-                new DateRange(En_DateIntervalType.FIXED, person.getBirthday(), person.getBirthday()));
+        employeeQuery.setBirthdayInterval(person.getBirthday() == null ? null :
+                new Interval(person.getBirthday(), person.getBirthday()));
 
         List<EmployeeShortView> employee = employeeShortViewDAO.getEmployees(employeeQuery);
 
@@ -825,7 +830,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private boolean isEmailExists(Long personId, String email) {
 
-        List<Person> employeeByEmail = personDAO.findEmployeeByEmail(email);
+        PersonQuery query = new PersonQuery();
+        query.setCompanyIds( setOf(CrmConstants.Company.HOME_COMPANY_ID) );
+        query.setEmail( email );
+        List<Person> employeeByEmail = personDAO.getPersons(query);
 
         if (CollectionUtils.isNotEmpty(employeeByEmail)){
             if (personId == null) {

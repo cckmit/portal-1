@@ -1,7 +1,11 @@
 package ru.protei.portal.core.model.dict;
 
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public enum En_DateIntervalType {
     MONTH,
@@ -15,6 +19,7 @@ public enum En_DateIntervalType {
     NEXT_WEEK,
     THIS_MONTH,
     LAST_MONTH,
+    PREVIOUS_AND_THIS_MONTH,
     NEXT_MONTH,
     THIS_YEAR,
     LAST_YEAR,
@@ -33,44 +38,46 @@ public enum En_DateIntervalType {
     private static final List<En_DateIntervalType> reservedIpNonActiveTypes;
 
     static {
-        defaultTypes = new ArrayList<>(9);
-        defaultTypes.add(FIXED);
-        defaultTypes.add(TODAY);
-        defaultTypes.add(YESTERDAY);
-        defaultTypes.add(THIS_WEEK);
-        defaultTypes.add(LAST_WEEK);
-        defaultTypes.add(THIS_MONTH);
-        defaultTypes.add(LAST_MONTH);
-        defaultTypes.add(THIS_YEAR);
-        defaultTypes.add(LAST_YEAR);
+        defaultTypes = unmodifiableListOf(
+                FIXED,
+                TODAY,
+                YESTERDAY,
+                THIS_WEEK,
+                LAST_WEEK,
+                THIS_MONTH,
+                LAST_MONTH,
+                THIS_YEAR,
+                LAST_YEAR
+        );
 
-        reservedIpRangeTypes = new ArrayList<>(3);
-        reservedIpRangeTypes.add(MONTH);
-        reservedIpRangeTypes.add(FIXED);
-        reservedIpRangeTypes.add(UNLIMITED);
+        reservedIpRangeTypes = unmodifiableListOf( MONTH, FIXED, UNLIMITED );
 
-        issueRangeTypes = new ArrayList<>(defaultTypes);
+        ArrayList<En_DateIntervalType> tmpIssueRangeTypes = new ArrayList<>(defaultTypes);
+        tmpIssueRangeTypes.add( PREVIOUS_AND_THIS_MONTH );
+        issueRangeTypes = Collections.unmodifiableList(tmpIssueRangeTypes);
 
-        reportRangeTypes = new ArrayList<>(issueRangeTypes);
+        reportRangeTypes = Collections.unmodifiableList(defaultTypes);
 
-        dutyTypes = new ArrayList<>(11);
-        dutyTypes.add(FIXED);
-        dutyTypes.add(TODAY);
-        dutyTypes.add(THIS_WEEK);
-        dutyTypes.add(THIS_WEEK_AND_BEYOND);
-        dutyTypes.add(NEXT_WEEK);
-        dutyTypes.add(LAST_WEEK);
-        dutyTypes.add(THIS_MONTH);
-        dutyTypes.add(LAST_MONTH);
-        dutyTypes.add(NEXT_MONTH);
-        dutyTypes.add(THIS_YEAR);
-        dutyTypes.add(LAST_YEAR);
+        dutyTypes = unmodifiableListOf(
+                FIXED,
+                TODAY,
+                THIS_WEEK,
+                THIS_WEEK_AND_BEYOND,
+                NEXT_WEEK,
+                LAST_WEEK,
+                THIS_MONTH,
+                LAST_MONTH,
+                NEXT_MONTH,
+                THIS_YEAR,
+                LAST_YEAR
+        );
 
-        reservedIpNonActiveTypes = new ArrayList<>(4);
-        reservedIpNonActiveTypes.add(RELATIVE_LAST_MONTH);
-        reservedIpNonActiveTypes.add(RELATIVE_LAST_THREE_MONTHS);
-        reservedIpNonActiveTypes.add(RELATIVE_LAST_HALF_YEAR);
-        reservedIpNonActiveTypes.add(RELATIVE_LAST_YEAR);
+        reservedIpNonActiveTypes = unmodifiableListOf (
+                RELATIVE_LAST_MONTH,
+                RELATIVE_LAST_THREE_MONTHS,
+                RELATIVE_LAST_HALF_YEAR,
+                RELATIVE_LAST_YEAR
+        );
     }
 
     public static List<En_DateIntervalType> defaultTypes() { return defaultTypes; }

@@ -236,7 +236,7 @@ public abstract class PlatformEditActivity implements AbstractPlatformEditActivi
             view.project().setValue(null);
             clearProjectSpecificFields();
             view.company().setValue(EntityOption.fromCompany(platform.getCompany()));
-            view.manager().setValue(platform.getManager() == null ? null : platform.getManager().toShortNameShortView());
+            view.manager().setValue(platform.getManager() == null ? null : platform.getManager());
             fireShowCompanyContacts(platform.getCompanyId());
         }
         view.name().setValue(platform.getName());
@@ -274,7 +274,7 @@ public abstract class PlatformEditActivity implements AbstractPlatformEditActivi
         if (view.project().getValue() == null){
             platform.setProjectId(null);
             platform.setCompanyId(view.company().getValue().getId());
-            platform.setManager(Person.fromPersonShortView(view.manager().getValue()));
+            platform.setManager(view.manager().getValue());
         }
         else {
             platform.setProjectId(view.project().getValue().getId());

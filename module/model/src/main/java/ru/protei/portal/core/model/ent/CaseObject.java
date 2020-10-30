@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.dict.En_WorkTrigger;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Collections;
@@ -87,7 +88,7 @@ public class CaseObject extends AuditableObject {
     private Long managerId;
 
     @JdbcJoinedObject( localColumn = MANAGER, remoteColumn = "id", updateLocalColumn = false )
-    private Person manager;
+    private PersonShortView manager;
 
     @JdbcColumn(name = "KEYWORDS")
     private String keywords;
@@ -363,7 +364,7 @@ public class CaseObject extends AuditableObject {
         this.initiatorCompanyId = company == null ? null : company.getId();
     }
 
-    public void setManager(Person person) {
+    public void setManager(PersonShortView person) {
         this.manager = person;
         this.managerId = person == null ? null : person.getId();
     }
@@ -402,7 +403,7 @@ public class CaseObject extends AuditableObject {
         return initiator;
     }
 
-    public Person getManager() {
+    public PersonShortView getManager() {
         return manager;
     }
 

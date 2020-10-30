@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
@@ -30,6 +31,7 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        manager.setItemRenderer( value -> value == null ? lang.selectManager() : value.getDisplayShortName() );
         ensureDebugIds();
     }
 
@@ -193,7 +195,7 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
             return;
         }
 
-        project.setEnsureDebugId(DebugIds.SITE_FOLDER.PLATFORM.PROJECT);
+        project.setEnsureDebugId( DebugIds.SITE_FOLDER.PLATFORM.PROJECT);
         company.setEnsureDebugId(DebugIds.SITE_FOLDER.PLATFORM.COMPANY);
         name.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.NAME);
         manager.setEnsureDebugId(DebugIds.SITE_FOLDER.PLATFORM.MANAGER);
@@ -243,7 +245,8 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
     @Inject
     @UiField(provided = true)
     ProjectButtonSelector project;
-
+    @UiField
+    Lang lang;
     private AbstractPlatformEditActivity activity;
 
     interface SiteFolderEditViewUiBinder extends UiBinder<HTMLPanel, PlatformEditView> {}

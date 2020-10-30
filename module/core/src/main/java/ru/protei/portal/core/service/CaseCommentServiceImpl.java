@@ -20,6 +20,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
+import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.query.UserLoginShortViewQuery;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
 import ru.protei.portal.core.model.struct.ReplaceLoginWithUsernameInfo;
@@ -583,7 +584,9 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        List<Person> persons = personDAO.findContactByEmail(receivedMail.getSenderEmail());
+        PersonQuery personQuery = new PersonQuery();
+        personQuery.setEmail( receivedMail.getSenderEmail());
+        List<Person> persons = personDAO.getPersons(personQuery);
         if (persons.isEmpty()) {
             log.warn("addCommentsReceivedByMail(): no found person person by mail ={}", receivedMail.getSenderEmail());
             return error(En_ResultStatus.USER_NOT_FOUND);

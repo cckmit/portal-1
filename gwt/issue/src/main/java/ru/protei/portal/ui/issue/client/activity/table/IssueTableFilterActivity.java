@@ -31,6 +31,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.widget.attachment.popup.AttachPopup;
 import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidget;
+import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
@@ -71,7 +72,7 @@ public abstract class IssueTableFilterActivity
             return;
         }
 
-        filterView.resetFilter();
+        filterView.resetFilter(DEFAULT_MODIFIED_RANGE);
         filterView.presetFilterType();
         updateCaseStatesFilter();
         updateImportanceLevelButtons();
@@ -311,7 +312,7 @@ public abstract class IssueTableFilterActivity
     }
 
     private void fillFilterFieldsByCaseQuery(CaseFilter filter) {
-        filterView.resetFilter();
+        filterView.resetFilter(DEFAULT_MODIFIED_RANGE);
         filterView.userFilter().setValue(filter.toShortView());
 
         final CaseQuery caseQuery = filter.getParams();
@@ -325,6 +326,7 @@ public abstract class IssueTableFilterActivity
             @Override
             public void onSuccess(SelectorsParams selectorsParams) {
                 filterView.getIssueFilterParams().fillFilterFields(caseQuery, selectorsParams);
+                onUserFilterChanged();
             }
         });
     }
@@ -429,4 +431,5 @@ public abstract class IssueTableFilterActivity
     private AppEvents.InitDetails initDetails;
     private Integer scrollTo = 0;
     private Boolean preScroll = false;
+    private static final DateIntervalWithType DEFAULT_MODIFIED_RANGE = new DateIntervalWithType(null, En_DateIntervalType.PREVIOUS_AND_THIS_MONTH);
 }

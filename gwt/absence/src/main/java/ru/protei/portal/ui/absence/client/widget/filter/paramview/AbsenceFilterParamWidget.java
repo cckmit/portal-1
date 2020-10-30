@@ -79,7 +79,7 @@ public class AbsenceFilterParamWidget extends Composite implements AbstractAbsen
 
     @Override
     public void fillFilterFields(AbsenceQuery query, SelectorsParams selectorsParams) {
-        dateRange.setValue(DateIntervalWithType.fromDateRange(query.getDateRange(), false));
+        dateRange.setValue(DateIntervalWithType.fromDateRange(query.getDateRange()));
         employees.setValue(applyPersons(selectorsParams, query.getEmployeeIds()));
         reasons.setValue(applyReason(query.getReasonIds()));
         sortField.setValue(query.getSortField());

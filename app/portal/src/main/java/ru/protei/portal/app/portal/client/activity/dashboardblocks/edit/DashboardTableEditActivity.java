@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.ent.UserDashboard;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;

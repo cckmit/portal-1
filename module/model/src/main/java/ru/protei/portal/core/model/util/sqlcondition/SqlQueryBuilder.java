@@ -114,7 +114,7 @@ public class SqlQueryBuilder implements Operator, Condition, Query {
 
         if (selectExpression != null) result.append( "SELECT " ).append( selectExpression );
         if (fromExpression != null) result.append( " FROM " ).append( fromExpression );
-        if (fromExpression != null && !isEmpty( where )) result.append( " WHERE " );
+        if ((selectExpression != null || fromExpression != null) && !isEmpty( where )) result.append( " WHERE " );
         if (!isEmpty( where )) result.append( getSqlCondition() );
         result.append( makeGroupByString( groupBy ) );
         result.append( makeSortString( sortFields ) );
