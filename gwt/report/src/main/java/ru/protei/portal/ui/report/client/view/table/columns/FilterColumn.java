@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ReportDto;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.ContractQuery;
+import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.ui.common.client.columns.StaticColumn;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -61,11 +62,13 @@ public class FilterColumn extends StaticColumn<ReportDto> {
                 case CASE_OBJECTS:
                 case CASE_TIME_ELAPSED:
                 case CASE_RESOLUTION_TIME:
-                case PROJECT:
                     appendCaseQueryInfo(divElement, (CaseQuery) value.getQuery(), reportType);
                     break;
                 case CONTRACT:
                     appendContractQueryInfo(divElement, (ContractQuery) value.getQuery(), reportType);
+                    break;
+                case PROJECT:
+                    appendProjectQueryInfo(divElement, (ProjectQuery) value.getQuery(), reportType);
                     break;
             }
         }
@@ -205,6 +208,30 @@ public class FilterColumn extends StaticColumn<ReportDto> {
         if (isNotEmpty(caseQuery.getCaseMemberIds())) {
             element.appendChild(makeArraySelectedElement(lang.projectTeam(), caseQuery.getCaseMemberIds()));
         }
+    }
+
+    private void appendProjectQueryInfo(Element element, ProjectQuery projectQuery, En_ReportType reportType){
+
+        // search string
+        if (isNotBlank(projectQuery.getSearchString())) {
+            Element managerElement = DOM.createElement("p");
+            managerElement.setInnerText(lang.search() + ": " + projectQuery.getSearchString());
+            element.appendChild(managerElement);
+        }
+
+        // sorting
+        if (projectQuery.getSortField() != null) {
+            Element managerElement = DOM.createElement("p");
+            StringBuilder sb = new StringBuilder();
+            sb.append(lang.sortBy()).append(": ").append(sortFieldLang.getName(projectQuery.getSortField()).toLowerCase());
+            if (projectQuery.getSortDir() != null) {
+                sb.append(" ").append(sortDirLang.getName(projectQuery.getSortDir()).toLowerCase());
+            }
+            managerElement.setInnerText(sb.toString());
+            element.appendChild(managerElement);
+        }
+
+        //TODO требуется доработка.
     }
 
     private void appendContractQueryInfo(Element element, ContractQuery contractQuery, En_ReportType reportType) {

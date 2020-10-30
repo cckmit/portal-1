@@ -15,15 +15,13 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ReportCaseQuery;
 import ru.protei.portal.core.model.dto.ReportContractQuery;
 import ru.protei.portal.core.model.dto.ReportDto;
+import ru.protei.portal.core.model.dto.ReportProjectQuery;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.query.BaseQuery;
-import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.query.ContractQuery;
-import ru.protei.portal.core.model.query.ReportQuery;
+import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.Pair;
 import ru.protei.portal.core.model.struct.ReportContent;
 import ru.protei.portal.core.service.auth.AuthService;
@@ -385,14 +383,17 @@ public class ReportServiceImpl implements ReportService {
             switch (report.getReportType()) {
                 case CASE_OBJECTS:
                 case CASE_TIME_ELAPSED:
-                case CASE_RESOLUTION_TIME:
-                case PROJECT: return ok(new ReportCaseQuery(
+                case CASE_RESOLUTION_TIME: return ok(new ReportCaseQuery(
                         report,
                         objectMapper.readValue(report.getQuery(), CaseQuery.class)
                 ));
                 case CONTRACT: return ok(new ReportContractQuery(
                         report,
                         objectMapper.readValue(report.getQuery(), ContractQuery.class)
+                ));
+                case PROJECT: return ok(new ReportProjectQuery(
+                        report,
+                        objectMapper.readValue(report.getQuery(), ProjectQuery.class)
                 ));
             }
             throw new IllegalStateException("No switch branch matched for En_ReportType");
@@ -440,17 +441,9 @@ public class ReportServiceImpl implements ReportService {
         return localizedLang.get(langKey) + " " + dateFormat.format(new Date());
     }
 
-    @SuppressWarnings("RedundantCast")
     private String serializeQuery(BaseQuery query, En_ReportType reportType) {
         try {
-            switch (reportType) {
-                case CASE_OBJECTS:
-                case CASE_TIME_ELAPSED:
-                case CASE_RESOLUTION_TIME:
-                case PROJECT: return objectMapper.writeValueAsString((CaseQuery) query);
-                case CONTRACT: return objectMapper.writeValueAsString((ContractQuery) query);
-            }
-            throw new IllegalStateException("No switch branch matched for En_ReportType");
+            return objectMapper.writeValueAsString(query);
         } catch (JsonProcessingException e) {
             throw new ResultStatusException(En_ResultStatus.INTERNAL_ERROR, e);
         }
