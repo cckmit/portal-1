@@ -21,5 +21,5 @@ public interface IssueFilterControllerAsync {
 
     void saveIssueFilter( CaseFilter filter, AsyncCallback< CaseFilter > async );
 
-    void removeIssueFilter( Long id, AsyncCallback< Boolean > async );
+    void removeIssueFilter( Long id, AsyncCallback< Long > async );
 }

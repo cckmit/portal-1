@@ -37,8 +37,9 @@ public interface AbsenceController extends RemoteService {
 
     /**
      * Удаление записи об отсутствии
+     * @return Идентификатор удаленного отсутствия
      */
-    Boolean removeAbsence(PersonAbsence absence) throws RequestFailedException;
+    Long removeAbsence(PersonAbsence absence) throws RequestFailedException;
 
     /**
      * Завершение отсутствия

@@ -272,7 +272,7 @@ public class PortalConfigData {
         private final String defaultCharset;
         private final int port;
         private final String fromAddress;
-        private final String fromAddressAbsence;
+        private final String fromAddressReport;
         private final String fromAddressAlias;
         private final boolean blockExternalRecipients;
         private final String messageIdPattern;
@@ -281,7 +281,7 @@ public class PortalConfigData {
             host = properties.getProperty("smtp.host", "smtp.protei.ru");
             port = properties.getProperty("smtp.port", Integer.class, 2525);
             fromAddress = properties.getProperty("smtp.from", "PORTAL");
-            fromAddressAbsence = properties.getProperty("smtp.from.absence", "PORTAL");
+            fromAddressReport = properties.getProperty("smtp.from.report", "PORTAL");
             fromAddressAlias = properties.getProperty("smtp.from.alias", "DO_NOT_REPLY");
             defaultCharset = properties.getProperty("smtp.charset", "utf-8");
             blockExternalRecipients = properties.getProperty("smtp.block_external_recipients", Boolean.class, false);
@@ -308,8 +308,8 @@ public class PortalConfigData {
             return fromAddress;
         }
 
-        public String getFromAddressAbsence() {
-            return fromAddressAbsence;
+        public String getFromAddressReport() {
+            return fromAddressReport;
         }
 
         public String getMessageIdPattern() {

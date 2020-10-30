@@ -110,6 +110,11 @@ public class Result<T> {
     }
 
     @JsonIgnore
+    public static <T> Result<T> ok( T data, String message ) {
+        return new Result<T>( En_ResultStatus.OK, data, message, null);
+    }
+
+    @JsonIgnore
     public static <T> Result<T> ok( T data, List<ApplicationEvent> events ) {
         return new Result<T>( En_ResultStatus.OK, data, null, events);
     }

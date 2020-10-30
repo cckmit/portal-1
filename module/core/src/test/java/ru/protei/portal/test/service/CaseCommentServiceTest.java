@@ -146,7 +146,7 @@ public class CaseCommentServiceTest extends BaseServiceTest {
         log.info("Size after update = " + resultList.getData().size());
 
         // delete
-        Result<Boolean> result2 = caseCommentService.removeCaseComment(getAuthToken(), caseType, comment);
+        Result<Long> result2 = caseCommentService.removeCaseComment(getAuthToken(), caseType, comment);
         Assert.assertNotNull(result2);
         Assert.assertTrue(result2.isOk());
         log.info("{}", result2.getData());

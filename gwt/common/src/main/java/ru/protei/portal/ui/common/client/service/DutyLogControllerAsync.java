@@ -16,4 +16,6 @@ public interface DutyLogControllerAsync {
     void getDutyLog(Long id, AsyncCallback<DutyLog> async);
 
     void saveDutyLog(DutyLog value, AsyncCallback<Long> async);
+
+    void createReport(String name, DutyLogQuery query, AsyncCallback<Void> callback);
 }

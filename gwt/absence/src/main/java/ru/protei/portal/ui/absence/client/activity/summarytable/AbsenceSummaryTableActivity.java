@@ -167,7 +167,7 @@ public abstract class AbsenceSummaryTableActivity implements AbstractAbsenceSumm
     }
 
     private Runnable removeAction(PersonAbsence value) {
-        return () -> absenceController.removeAbsence(value, new FluentCallback<Boolean>()
+        return () -> absenceController.removeAbsence(value, new FluentCallback<Long>()
                 .withSuccess(result -> fireSuccessNotify(lang.absenceRemovedSuccessfully(), value.getPersonId())));
     }
 

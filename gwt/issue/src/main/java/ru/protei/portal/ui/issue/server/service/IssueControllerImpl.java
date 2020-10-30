@@ -24,7 +24,6 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
 
-import java.util.List;
 import java.util.Set;
 
 import static ru.protei.portal.ui.common.server.ServiceUtils.*;
@@ -168,7 +167,7 @@ public class IssueControllerImpl implements IssueController {
     }
 
     @Override
-    public Boolean removeFavoriteState(Long personId, Long issueId) throws RequestFailedException {
+    public Long removeFavoriteState(Long personId, Long issueId) throws RequestFailedException {
         log.info("removeFavoriteState(): personId={}, issueId={}", personId, issueId);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);

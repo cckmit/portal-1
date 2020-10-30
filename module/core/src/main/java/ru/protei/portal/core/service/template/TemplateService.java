@@ -94,6 +94,9 @@ public interface TemplateService {
 
     PreparedTemplate getAbsenceReportSubject(String title);
 
+    PreparedTemplate getDutyLogReportSubject(String title);
+    PreparedTemplate getReportBody(String title, Date creationDate, String creator, List<String> recipients);
+
     String getProjectPauseTimeNotificationSubject( Long projectNumber, String projectName ) throws IOException, TemplateException;
     String getProjectPauseTimeNotificationBody( String subscriberName, Long aLong, String displayNam, String projectUrl, Date pauseTimeDate ) throws IOException, TemplateException;
 

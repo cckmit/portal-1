@@ -728,6 +728,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errRemoveIssueCommentByTime();
 
+    String errNRPEIpNotConfigured();
+
     String errNRPEIpNonAvailable();
 
     String errNRPEError();
@@ -2548,11 +2550,11 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reservedIpForever();
 
-    String reservedIpCheck();
+    String reservedIpStatus();
 
-    String reservedIpCheckDate();
+    String reservedIpNonActiveRange();
 
-    String reservedIpCheckInfo();
+    String reservedIpStatusCheckInfo();
 
     String reservedIpUsePeriod();
 
@@ -2846,8 +2848,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String thisWeekInterval();
 
-    String thisWeekAndBeyondInterval();
-
     String lastWeekInterval();
 
     String nextWeekInterval();
@@ -2863,6 +2863,16 @@ public interface Lang extends Messages, ContactItemLang {
     String thisYearInterval();
 
     String lastYearInterval();
+
+    String thisWeekAndBeyondInterval();
+
+    String relativeLastMonthInterval();
+
+    String relativeLastThreeMonthsInterval();
+
+    String relativeLastHalfYearInterval();
+
+    String relativeLastYearInterval();
 
     String reservedIpSubnetAllowReserve();
 
@@ -2962,9 +2972,11 @@ public interface Lang extends Messages, ContactItemLang {
 
     String absenceButtonSummaryTable();
 
-    String buttonSend();
+    String absenceReportDefaultNameTemplate(String date);
 
     String absenceReportValidationDateRange();
+
+    String buttonSend();
 
     String errNotCurrentAbsence();
 
@@ -3090,6 +3102,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String dutyLogUpdated();
 
+    String dutyLogReport();
+
+    String dutyLogReportDefaultNameTemplate(String date);
+
     String dutyTypeBG();
 
     String dutyTypeIP();
@@ -3152,6 +3168,12 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reservedIpReservationStart();
 
+    String reservedIpOnlineTestStart();
+
+    String reservedIpOnlineStatusOnline();
+
+    String reservedIpOnlineStatusOffline();
+
     String errUserNotFound();
 
     String errDeadlineError();
@@ -3171,4 +3193,6 @@ public interface Lang extends Messages, ContactItemLang {
     String workTriggerOther();
 
     String overdueDeadlines();
+
+    String fileNotFoundError();
 }

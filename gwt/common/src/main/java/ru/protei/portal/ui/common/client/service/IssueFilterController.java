@@ -28,5 +28,5 @@ public interface IssueFilterController extends RemoteService {
 
     CaseFilter saveIssueFilter( CaseFilter filter ) throws RequestFailedException;
 
-    boolean removeIssueFilter( Long id ) throws RequestFailedException;
+    Long removeIssueFilter(Long id ) throws RequestFailedException;
 }

@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.sitefolder.client.view.platform.table.concise;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Element;
@@ -11,6 +12,7 @@ import ru.brainworm.factory.widget.table.client.AbstractColumn;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Platform;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
@@ -23,6 +25,8 @@ import ru.protei.portal.ui.sitefolder.client.activity.plaform.table.concise.Abst
 import java.util.ArrayList;
 import java.util.List;
 
+import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
+
 public class PlatformConciseTableView extends Composite implements AbstractPlatformConciseTableView {
 
     @Inject
@@ -31,6 +35,7 @@ public class PlatformConciseTableView extends Composite implements AbstractPlatf
         this.editClickColumn = editClickColumn;
         this.removeClickColumn = removeClickColumn;
         initTable();
+        setTestAttributes();
     }
 
     @Override
@@ -76,6 +81,13 @@ public class PlatformConciseTableView extends Composite implements AbstractPlatf
         table.addColumn(servers.header, servers.values);
         editColumn = table.addColumn(editClickColumn.header, editClickColumn.values);
         removeColumn = table.addColumn(removeClickColumn.header, removeClickColumn.values);
+    }
+
+    private void setTestAttributes() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+        getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONCISE_TABLE.PLATFORM);
     }
 
     @UiField

@@ -84,14 +84,16 @@ public class PersonCaseFilterServiceImpl implements PersonCaseFilterService {
 
     @Override
     @Transactional
-    public Result<Boolean> removePersonToCaseFilter(AuthToken authToken, Long personId, Long caseFilterId) {
+    public Result<Long> removePersonToCaseFilter(AuthToken authToken, Long personId, Long caseFilterId) {
         if (personId == null || caseFilterId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        personCaseFilterDAO.removeByPersonIdAndCaseFilterId(personId, caseFilterId);
+        if (!personCaseFilterDAO.removeByPersonIdAndCaseFilterId(personId, caseFilterId)) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
 
-        return ok(true);
+        return ok(caseFilterId);
     }
 
     @Override

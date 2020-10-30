@@ -145,10 +145,12 @@ public abstract class RoleTableActivity
     }
 
     private Runnable removeAction(Long roleId) {
-        return () -> roleService.removeRole(roleId, new FluentCallback<Boolean>().withSuccess(result -> {
-            fireEvent(new RoleEvents.Show());
-            fireEvent(new NotifyEvents.Show(lang.roleRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
-        }));
+        return () -> roleService.removeRole(roleId, new FluentCallback<Long>()
+                .withSuccess(result -> {
+                    fireEvent(new RoleEvents.Show());
+                    fireEvent(new NotifyEvents.Show(lang.roleRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
+                })
+        );
     }
 
     @Inject

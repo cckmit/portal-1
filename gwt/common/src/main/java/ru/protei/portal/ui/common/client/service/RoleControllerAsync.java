@@ -15,11 +15,9 @@ public interface RoleControllerAsync {
 
     void getRoles( UserRoleQuery query, AsyncCallback< List< UserRole > > async );
 
-    void getRolesOptionList( UserRoleQuery query, AsyncCallback< List< EntityOption > > async );
-
     void getRole( Long id, AsyncCallback< UserRole > async );
 
     void saveRole( UserRole role, AsyncCallback< UserRole > async );
 
-    void removeRole( Long id, AsyncCallback<Boolean> async );
+    void removeRole( Long id, AsyncCallback<Long> async );
 }

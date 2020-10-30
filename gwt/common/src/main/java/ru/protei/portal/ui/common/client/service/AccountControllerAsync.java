@@ -24,7 +24,7 @@ public interface AccountControllerAsync {
 
     void isLoginUnique( String login, Long exceptId, AsyncCallback< Boolean > async );
 
-    void removeAccount( Long accountId, AsyncCallback< Boolean > async );
+    void removeAccount( Long accountId, AsyncCallback< Long > async );
 
     void updateAccountPassword(Long loginId, String currentPassword, String newPassword, AsyncCallback<Void> async);
 

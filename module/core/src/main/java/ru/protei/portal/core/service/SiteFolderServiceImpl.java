@@ -27,6 +27,21 @@ import static ru.protei.portal.api.struct.Result.ok;
 
 public class SiteFolderServiceImpl implements SiteFolderService {
 
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
+    @Autowired
+    PlatformDAO platformDAO;
+    @Autowired
+    ServerDAO serverDAO;
+    @Autowired
+    ApplicationDAO applicationDAO;
+    @Autowired
+    ServerApplicationDAO serverApplicationDAO;
+    @Autowired
+    CaseObjectDAO caseObjectDAO;
+    @Autowired
+    CaseAttachmentDAO caseAttachmentDAO;
+
     @Override
     public Result<SearchResult<Platform>> getPlatforms( AuthToken token, PlatformQuery query) {
 
@@ -212,6 +227,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
+    @Transactional
     public Result<Server> createServer( AuthToken token, Server server) {
 
         Long id = serverDAO.persist(server);
@@ -220,16 +236,11 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             return error(En_ResultStatus.NOT_CREATED);
         }
 
-        Server result = serverDAO.get(id);
-
-        if (result == null) {
-            return error(En_ResultStatus.INTERNAL_ERROR);
-        }
-
-        return ok(result);
+        return ok(serverDAO.get(id));
     }
 
     @Override
+    @Transactional
     public Result<Server> createServerAndCloneApps( AuthToken token, Server server, Long serverIdOfAppsToBeCloned) {
 
         Result<Server> response = createServer(token, server);
@@ -242,6 +253,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
+    @Transactional
     public Result<Application> createApplication( AuthToken token, Application application) {
 
         Long id = applicationDAO.persist(application);
@@ -250,13 +262,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             return error(En_ResultStatus.NOT_CREATED);
         }
 
-        Application result = applicationDAO.get(id);
-
-        if (result == null) {
-            return error(En_ResultStatus.INTERNAL_ERROR);
-        }
-
-        return ok(result);
+        return ok(applicationDAO.get(id));
     }
 
     @Override
@@ -294,19 +300,14 @@ public class SiteFolderServiceImpl implements SiteFolderService {
 
         boolean caseStatus = caseObjectDAO.partialMerge(caseObject, "CASE_NAME");
         if (!caseStatus) {
-            return error(En_ResultStatus.NOT_UPDATED);
+            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
         }
 
-        Platform result = platformDAO.get(platform.getId());
-
-        if (result == null) {
-            return error(En_ResultStatus.INTERNAL_ERROR);
-        }
-
-        return ok(result);
+        return ok(platformDAO.get(platform.getId()));
     }
 
     @Override
+    @Transactional
     public Result<Server> updateServer( AuthToken token, Server server) {
 
         boolean status = serverDAO.merge(server);
@@ -315,16 +316,11 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             return error(En_ResultStatus.NOT_UPDATED);
         }
 
-        Server result = serverDAO.get(server.getId());
-
-        if (result == null) {
-            return error(En_ResultStatus.INTERNAL_ERROR);
-        }
-
-        return ok(result);
+        return ok(serverDAO.get(server.getId()));
     }
 
     @Override
+    @Transactional
     public Result<Application> updateApplication( AuthToken token, Application application) {
 
         boolean status = applicationDAO.merge(application);
@@ -333,18 +329,13 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             return error(En_ResultStatus.NOT_UPDATED);
         }
 
-        Application result = applicationDAO.get(application.getId());
-
-        if (result == null) {
-            return error(En_ResultStatus.INTERNAL_ERROR);
-        }
-
-        return ok(result);
+        return ok(applicationDAO.get(application.getId()));
     }
 
 
     @Override
-    public Result<Boolean> removePlatform( AuthToken token, long id) {
+    @Transactional
+    public Result<Long> removePlatform(AuthToken token, long id) {
 
         Platform platform = platformDAO.get(id);
 
@@ -356,27 +347,39 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         caseObject.setId(platform.getCaseId());
         caseObject.setDeleted(true);
 
-        boolean resultCase = caseObjectDAO.partialMerge(caseObject, "deleted");
-        boolean result = platformDAO.removeByKey(id);
+        boolean caseObjectMergeResult = caseObjectDAO.partialMerge(caseObject, "deleted");
+        boolean removePlatformResult = platformDAO.removeByKey(id);
 
-        if (result && resultCase) return ok (result);
-        else return error(En_ResultStatus.NOT_REMOVED);
+        if (!removePlatformResult) {
+            throw new ResultStatusException(En_ResultStatus.NOT_REMOVED,
+                    "Platform was not removed. It could be removed earlier");
+        }
+
+        if (!caseObjectMergeResult) {
+            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+        }
+
+        return ok(id);
     }
 
     @Override
-    public Result<Boolean> removeServer( AuthToken token, long id) {
+    @Transactional
+    public Result<Long> removeServer(AuthToken token, long id) {
+        if (!serverDAO.removeByKey(id)) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
 
-        boolean result = serverDAO.removeByKey(id);
-
-        return ok(result);
+        return ok(id);
     }
 
     @Override
-    public Result<Boolean> removeApplication( AuthToken token, long id) {
+    @Transactional
+    public Result<Long> removeApplication(AuthToken token, long id) {
+        if (!applicationDAO.removeByKey(id)) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
 
-        boolean result = applicationDAO.removeByKey(id);
-
-        return ok(result);
+        return ok(id);
     }
 
     private void cloneApplicationsForServer(Long serverId, Long serverIdOfAppsToBeCloned) {
@@ -407,19 +410,4 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         caseObject.setStateId(CrmConstants.State.CREATED);
         return caseObject;
     }
-
-    @Autowired
-    JdbcManyRelationsHelper jdbcManyRelationsHelper;
-    @Autowired
-    PlatformDAO platformDAO;
-    @Autowired
-    ServerDAO serverDAO;
-    @Autowired
-    ApplicationDAO applicationDAO;
-    @Autowired
-    ServerApplicationDAO serverApplicationDAO;
-    @Autowired
-    CaseObjectDAO caseObjectDAO;
-    @Autowired
-    CaseAttachmentDAO caseAttachmentDAO;
 }

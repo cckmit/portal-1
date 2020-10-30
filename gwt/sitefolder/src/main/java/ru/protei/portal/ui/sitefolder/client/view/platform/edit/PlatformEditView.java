@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.sitefolder.client.view.platform.edit;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -11,6 +12,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
@@ -28,9 +30,9 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
 
     @Inject
     public void onInit() {
-
         initWidget(ourUiBinder.createAndBindUi(this));
         manager.setItemRenderer( value -> value == null ? lang.selectManager() : value.getDisplayShortName() );
+        ensureDebugIds();
     }
 
     @Override
@@ -188,6 +190,27 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
         }
     }
 
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+
+        project.setEnsureDebugId( DebugIds.SITE_FOLDER.PLATFORM.PROJECT);
+        company.setEnsureDebugId(DebugIds.SITE_FOLDER.PLATFORM.COMPANY);
+        name.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.NAME);
+        manager.setEnsureDebugId(DebugIds.SITE_FOLDER.PLATFORM.MANAGER);
+        parameters.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.PARAMETERS);
+        comment.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.COMMENT);
+        fileUploader.setEnsureDebugId(DebugIds.SITE_FOLDER.PLATFORM.UPLOADER);
+        attachmentContainer.setEnsureDebugId(DebugIds.SITE_FOLDER.PLATFORM.ATTACHMENTS);
+
+        listContainer.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.SERVERS);
+        openButton.ensureDebugId(DebugIds.SITE_FOLDER.SERVER.OPEN_BUTTON);
+        createButton.ensureDebugId(DebugIds.SITE_FOLDER.SERVER.CREATE_BUTTON);
+
+        contactsContainer.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.CONTACTS);
+    }
+
     @UiField
     ValidableTextBox name;
     @Inject
@@ -222,7 +245,7 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
     @Inject
     @UiField(provided = true)
     ProjectButtonSelector project;
-    @Inject
+    @UiField
     Lang lang;
     private AbstractPlatformEditActivity activity;
 

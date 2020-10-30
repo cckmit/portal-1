@@ -21,7 +21,7 @@ public interface RoomReservationController extends RemoteService {
 
     RoomReservation updateReservation(RoomReservation reservation) throws RequestFailedException;
 
-    RoomReservation removeReservation(Long reservationId) throws RequestFailedException;
+    Long removeReservation(Long reservationId) throws RequestFailedException;
 
     List<RoomReservable> getRooms() throws RequestFailedException;
 }

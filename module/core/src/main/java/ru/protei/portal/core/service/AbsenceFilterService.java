@@ -5,13 +5,13 @@ import ru.protei.portal.core.model.ent.AbsenceFilter;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.AbsenceQuery;
-import ru.protei.portal.core.model.view.AbsenceFilterShortView;
+import ru.protei.portal.core.model.view.FilterShortView;
 
 import java.util.List;
 
 public interface AbsenceFilterService {
 
-    Result<List<AbsenceFilterShortView>> getShortViewList(Long loginId);
+    Result<List<FilterShortView>> getShortViewList(Long loginId);
 
     Result<AbsenceFilter> getFilter(AuthToken token, Long id );
 
@@ -19,5 +19,5 @@ public interface AbsenceFilterService {
 
     Result<AbsenceFilter> saveFilter(AuthToken token, AbsenceFilter filter);
 
-    Result<Boolean> removeFilter(Long id);
+    Result<Long> removeFilter(Long id);
 }

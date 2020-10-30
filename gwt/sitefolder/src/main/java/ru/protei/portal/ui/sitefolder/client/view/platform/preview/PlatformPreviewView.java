@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.sitefolder.client.view.platform.preview;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -8,6 +9,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.preview.AbstractPlatformPreviewActivity;
@@ -19,6 +21,7 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
         attachmentContainer.setHiddenControls(true);
+        ensureDebugIds();
     }
 
     @Override
@@ -109,6 +112,23 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
         if ( activity != null ) {
             activity.onGoToIssuesClicked();
         }
+    }
+
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+        name.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.NAME);
+        openServersButton.ensureDebugId(DebugIds.SITE_FOLDER.SERVER.OPEN_BUTTON);
+        comment.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.COMMENT);
+        company.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.SITE_FOLDER.PLATFORM.COMPANY);
+        manager.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.SITE_FOLDER.PLATFORM.MANAGER);
+        parameters.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.SITE_FOLDER.PLATFORM.PARAMETERS);
+        project.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.PROJECT);
+        technicalSupportValidity.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.SITE_FOLDER.PLATFORM.TECHNICAL_SUPPORT_VALIDITY);
+        attachmentContainer.setEnsureDebugId(DebugIds.SITE_FOLDER.PLATFORM.ATTACHMENTS);
+        serversContainer.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.SERVERS);
+        contactsContainer.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.CONTACTS);
     }
 
     @UiField

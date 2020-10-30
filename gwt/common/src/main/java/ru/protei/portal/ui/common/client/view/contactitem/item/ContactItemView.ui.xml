@@ -3,7 +3,7 @@
              xmlns:contactType='urn:import:ru.protei.portal.ui.common.client.widget.selector.contacttype'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="autoadd-vc-item">
+    <g:HTMLPanel ui:field="root" styleName="autoadd-vc-item">
         <contactType:ContactTypeButtonSelector ui:field="type"/>
         <g:TextBox ui:field="value" styleName="form-control autoadd-vc-item-v"/>
     </g:HTMLPanel>

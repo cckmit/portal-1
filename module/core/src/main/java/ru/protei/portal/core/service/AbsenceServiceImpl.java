@@ -12,11 +12,13 @@ import ru.protei.portal.core.model.dao.PersonAbsenceDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.PersonNotifierDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.PersonAbsence;
+import ru.protei.portal.core.model.ent.PersonNotifier;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.utils.DateUtils;
-import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AbsenceQuery;
+import ru.protei.portal.core.utils.DateUtils;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -180,7 +182,7 @@ public class AbsenceServiceImpl implements AbsenceService {
 
     @Override
     @Transactional
-    public Result<Boolean> removeAbsence(AuthToken token, PersonAbsence absence) {
+    public Result<Long> removeAbsence(AuthToken token, PersonAbsence absence) {
 
         if (absence == null || absence.getId() == null) {
             return error( En_ResultStatus.INCORRECT_PARAMS);
@@ -192,13 +194,13 @@ public class AbsenceServiceImpl implements AbsenceService {
         }
 
         if (!personAbsenceDAO.removeByKey(storedAbsence.getId())) {
-            error(En_ResultStatus.NOT_REMOVED);
+            return error(En_ResultStatus.NOT_FOUND);
         }
 
         Person initiator = personDAO.get(token.getPersonId());
         jdbcManyRelationsHelper.fill(initiator, Person.Fields.CONTACT_ITEMS);
 
-        return ok(true).publishEvent(new AbsenceNotificationEvent(
+        return ok(absence.getId()).publishEvent(new AbsenceNotificationEvent(
                 this,
                 EventAction.REMOVED,
                 initiator,
@@ -229,7 +231,7 @@ public class AbsenceServiceImpl implements AbsenceService {
         newState.setTillTime(DateUtils.resetSeconds(new Date()));
 
         if (!personAbsenceDAO.partialMerge(newState, "till_time")) {
-            error(En_ResultStatus.NOT_UPDATED);
+            return error(En_ResultStatus.NOT_UPDATED);
         }
 
         Person initiator = personDAO.get(token.getPersonId());
@@ -247,18 +249,16 @@ public class AbsenceServiceImpl implements AbsenceService {
     }
 
     @Override
-    @Transactional
-    public Result createReport(AuthToken token, String name, AbsenceQuery query) {
+    public Result<Void> createReport(AuthToken token, String name, AbsenceQuery query) {
 
         if (query == null || query.getDateRange() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        String title = HelperFunc.isEmpty(name) ? ("Отсутствия от " + dateFormat.format(new Date())) : name.trim();
         Person initiator = personDAO.get(token.getPersonId());
         jdbcManyRelationsHelper.fill(initiator, Person.Fields.CONTACT_ITEMS);
 
-        reportControlService.processAbsenceReport(initiator, title, query);
+        reportControlService.processAbsenceReport(initiator, name, query);
 
         return ok();
     }

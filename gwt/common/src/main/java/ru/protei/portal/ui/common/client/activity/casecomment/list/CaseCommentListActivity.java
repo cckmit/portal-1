@@ -210,11 +210,8 @@ public abstract class CaseCommentListActivity
             return;
         }
 
-        caseCommentController.removeCaseComment(caseType, caseComment, new FluentCallback<Void>()
-                .withError(throwable -> {
-                    defaultErrorHandler.accept(throwable);
-                })
-                .withSuccess(v -> {
+        caseCommentController.removeCaseComment(caseType, caseComment, new FluentCallback<Long>()
+                .withSuccess(result -> {
                     Collection<Attachment> commentAttachments = itemView.attachmentContainer().getAll();
                     if (CollectionUtils.isNotEmpty(commentAttachments)) {
                         fireEvent(new AttachmentEvents.Remove(caseId, commentAttachments));
@@ -372,21 +369,22 @@ public abstract class CaseCommentListActivity
     }
 
     private void removeAttachment(Long id, Runnable successAction){
-        attachmentService.removeAttachmentEverywhere(caseType, id, new RequestCallback<Boolean>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR));
-            }
+        attachmentService.removeAttachmentEverywhere(caseType, id, new FluentCallback<Long>()
+                .withError((throwable, defaultErrorHandler, status) -> {
+                    if (En_ResultStatus.NOT_FOUND.equals(status)) {
+                        fireEvent(new NotifyEvents.Show(lang.fileNotFoundError(), NotifyEvents.NotifyType.ERROR));
+                        return;
+                    }
 
-            @Override
-            public void onSuccess(Boolean result) {
-                if(!result) {
-                    onError(null);
-                    return;
-                }
-                successAction.run();
-            }
-        });
+                    if (En_ResultStatus.NOT_REMOVED.equals(status)) {
+                        fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR));
+                        return;
+                    }
+
+                    defaultErrorHandler.accept(throwable);
+                })
+                .withSuccess(result -> successAction.run())
+        );
     }
 
     private void addImageToMessage(Integer strPosition, Attachment attach) {

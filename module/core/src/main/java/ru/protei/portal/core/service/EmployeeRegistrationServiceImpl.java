@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledEmployeeRegistrationEvent;
+import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
@@ -88,9 +89,6 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         // Заполнить связанные поля
         employeeRegistration = employeeRegistrationDAO.get( employeeRegistrationId );
 
-        if(employeeRegistration == null)
-            return error(En_ResultStatus.INTERNAL_ERROR);
-
         employeeRegistration.setCurators(personShortDAO.getListByKeys(employeeRegistration.getCuratorsIds()));
 
         final boolean YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEnabled();
@@ -122,8 +120,11 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         newEmployeeRegistration.setCuratorsIds(employeeRegistrationShortView.getCuratorIds());
         newEmployeeRegistration.setEmploymentDate(employeeRegistrationShortView.getEmploymentDate());
 
-        employeeRegistrationDAO.partialMerge(newEmployeeRegistration, "employment_date", "curators");
-        newEmployeeRegistration.setCurators(personShortDAO.getListByKeys(newEmployeeRegistration.getCuratorsIds()));
+        if (!employeeRegistrationDAO.partialMerge(newEmployeeRegistration, "employment_date", "curators")) {
+            return error(En_ResultStatus.NOT_UPDATED);
+        }
+
+        newEmployeeRegistration.setCurators(personShortDAO.partialGetListByKeys(newEmployeeRegistration.getCuratorsIds(), "id", "displayname"));
 
         boolean isEmploymentDateChanged = !Objects.equals(oldEmployeeRegistration.getEmploymentDate(), newEmployeeRegistration.getEmploymentDate());
 

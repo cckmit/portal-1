@@ -1,6 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.DutyType;
+import ru.protei.portal.core.model.dict.En_DutyType;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -29,7 +29,7 @@ public class DutyLog extends AuditableObject {
 
     @JdbcColumn
     @JdbcEnumerated(EnumType.ID)
-    private DutyType type;
+    private En_DutyType type;
 
     @JdbcColumn(name = "person_id")
     private Long personId;
@@ -66,11 +66,11 @@ public class DutyLog extends AuditableObject {
         this.to = to;
     }
 
-    public DutyType getType() {
+    public En_DutyType getType() {
         return type;
     }
 
-    public void setType(DutyType type) {
+    public void setType(En_DutyType type) {
         this.type = type;
     }
 

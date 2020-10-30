@@ -1,18 +1,18 @@
 package ru.protei.portal.core.model.view;
 
-import ru.protei.portal.core.model.view.filterwidget.FilterShortView;
+import ru.protei.portal.core.model.view.filterwidget.AbstractFilterShortView;
 
 import java.io.Serializable;
 
-public class AbsenceFilterShortView implements FilterShortView, Serializable {
+public class FilterShortView implements AbstractFilterShortView, Serializable {
 
     private Long id;
     private String name;
 
-    public AbsenceFilterShortView() {
+    public FilterShortView() {
     }
 
-    public AbsenceFilterShortView( Long id, String name ) {
+    public FilterShortView(Long id, String name ) {
         this.id = id;
         this.name = name;
     }
@@ -35,8 +35,8 @@ public class AbsenceFilterShortView implements FilterShortView, Serializable {
 
     @Override
     public boolean equals( Object obj ) {
-        if (obj instanceof AbsenceFilterShortView ) {
-            Long oid = ((AbsenceFilterShortView)obj).getId();
+        if (obj instanceof FilterShortView) {
+            Long oid = ((FilterShortView)obj).getId();
             return this.id == null ? oid == null : oid != null && this.id.equals(oid);
         }
 
@@ -50,7 +50,7 @@ public class AbsenceFilterShortView implements FilterShortView, Serializable {
 
     @Override
     public String toString() {
-        return "AbsenceFilterShortView{" +
+        return "FilterShortView{" +
                 "id=" + id +
                 ", name=" + name +
                 '}';

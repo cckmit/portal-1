@@ -6,12 +6,15 @@ import ru.protei.portal.core.model.ent.ReservedIp;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ReservedIpQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcHelper;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
 
 public class ReservedIpDAO_Impl extends PortalBaseJdbcDAO<ReservedIp> implements ReservedIpDAO {
 
@@ -79,20 +82,16 @@ public class ReservedIpDAO_Impl extends PortalBaseJdbcDAO<ReservedIp> implements
                 args.add(query.getReleasedTo());
             }
 
-            if (query.getLastActiveFrom() != null) {
-                condition.append(" and last_check_date >= ?");
-                args.add(query.getLastActiveFrom());
-                /*
-                   @todo условие успешной проверки по полю lastCheckInfo
-                 */
-            }
-
-            if (query.getLastActiveTo() != null) {
-                condition.append(" and last_check_date <= ?");
-                args.add(query.getLastActiveTo());
-                /*
-                   @todo условие успешной проверки по полю lastCheckInfo
-                 */
+            Interval nonActiveRange = makeInterval(query.getNonActiveRange());
+            if ( nonActiveRange != null ) {
+                if (nonActiveRange.from != null) {
+                    condition.append(" and last_active_date <= ?");
+                    args.add(nonActiveRange.from);
+                }
+                if (nonActiveRange.to != null) {
+                    condition.append(" and last_active_date >= ?");
+                    args.add(nonActiveRange.to);
+                }
             }
 
             if (CollectionUtils.isNotEmpty(query.getOwnerIds())) {

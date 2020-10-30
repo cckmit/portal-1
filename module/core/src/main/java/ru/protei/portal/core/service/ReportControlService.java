@@ -5,6 +5,7 @@ import ru.protei.portal.core.event.ProcessNewReportsEvent;
 import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.AbsenceQuery;
+import ru.protei.portal.core.model.query.DutyLogQuery;
 
 public interface ReportControlService {
 
@@ -20,4 +21,9 @@ public interface ReportControlService {
      * Запустить формирование отчета по отсутствиям
      */
     Result<Void> processAbsenceReport(Person initiator, String title, AbsenceQuery query);
+
+    /**
+     * Запустить формирование отчета по дежурствам
+     */
+    Result<Void> processDutyLogReport(Person initiator, String title, DutyLogQuery query);
 }

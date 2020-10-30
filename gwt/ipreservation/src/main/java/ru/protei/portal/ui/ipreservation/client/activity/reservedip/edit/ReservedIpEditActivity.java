@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.ent.ReservedIp;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IpReservationControllerAsync;
@@ -104,6 +105,8 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
         view.macAddress().setValue(reservedIp.getMacAddress());
         view.useRange().setValue(new DateInterval(reservedIp.getReserveDate(), reservedIp.getReleaseDate()));
         view.comment().setText(reservedIp.getComment());
+        view.lastActiveDate().setText(DateFormatter.formatDateTime(reservedIp.getLastActiveDate()));
+        view.lastCheckInfo().setText(reservedIp.getLastCheckInfo());
         PersonShortView ipOwner = new PersonShortView(
                 reservedIp.getOwnerName(),
                 reservedIp.getOwnerId());

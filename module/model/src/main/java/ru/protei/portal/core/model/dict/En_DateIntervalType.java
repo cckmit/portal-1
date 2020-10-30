@@ -1,14 +1,11 @@
 package ru.protei.portal.core.model.dict;
 
-import org.apache.commons.collections4.collection.UnmodifiableCollection;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
-import static ru.protei.portal.core.model.helper.CollectionUtils.unmodifiableListOf;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public enum En_DateIntervalType {
     MONTH,
@@ -25,13 +22,20 @@ public enum En_DateIntervalType {
     PREVIOUS_AND_THIS_MONTH,
     NEXT_MONTH,
     THIS_YEAR,
-    LAST_YEAR;
+    LAST_YEAR,
 
-    private static List<En_DateIntervalType> defaultTypes;
-    private static List<En_DateIntervalType> dutyTypes;
-    private static List<En_DateIntervalType> reservedIpRangeTypes;
-    private static List<En_DateIntervalType> issueRangeTypes;
-    private static List<En_DateIntervalType> reportRangeTypes;
+    RELATIVE_LAST_MONTH,
+    RELATIVE_LAST_THREE_MONTHS,
+    RELATIVE_LAST_HALF_YEAR,
+    RELATIVE_LAST_YEAR
+    ;
+
+    private static final List<En_DateIntervalType> defaultTypes;
+    private static final List<En_DateIntervalType> dutyTypes;
+    private static final List<En_DateIntervalType> reservedIpRangeTypes;
+    private static final List<En_DateIntervalType> issueRangeTypes;
+    private static final List<En_DateIntervalType> reportRangeTypes;
+    private static final List<En_DateIntervalType> reservedIpNonActiveTypes;
 
     static {
         defaultTypes = unmodifiableListOf(
@@ -48,9 +52,9 @@ public enum En_DateIntervalType {
 
         reservedIpRangeTypes = unmodifiableListOf( MONTH, FIXED, UNLIMITED );
 
-        issueRangeTypes = new ArrayList<>(defaultTypes);
-        issueRangeTypes.add(PREVIOUS_AND_THIS_MONTH);
-        issueRangeTypes = Collections.unmodifiableList(issueRangeTypes);
+        ArrayList<En_DateIntervalType> tmpIssueRangeTypes = new ArrayList<>(defaultTypes);
+        tmpIssueRangeTypes.add( PREVIOUS_AND_THIS_MONTH );
+        issueRangeTypes = Collections.unmodifiableList(tmpIssueRangeTypes);
 
         reportRangeTypes = Collections.unmodifiableList(defaultTypes);
 
@@ -67,6 +71,13 @@ public enum En_DateIntervalType {
                 THIS_YEAR,
                 LAST_YEAR
         );
+
+        reservedIpNonActiveTypes = unmodifiableListOf (
+                RELATIVE_LAST_MONTH,
+                RELATIVE_LAST_THREE_MONTHS,
+                RELATIVE_LAST_HALF_YEAR,
+                RELATIVE_LAST_YEAR
+        );
     }
 
     public static List<En_DateIntervalType> defaultTypes() { return defaultTypes; }
@@ -78,4 +89,6 @@ public enum En_DateIntervalType {
     public static List<En_DateIntervalType> reportTypes() { return reportRangeTypes; }
 
     public static List<En_DateIntervalType> dutyTypes() { return dutyTypes; }
+
+    public static List<En_DateIntervalType> reservedIpNonActiveTypes() { return reservedIpNonActiveTypes; }
 }

@@ -128,8 +128,9 @@ public abstract class RoomReservationTableActivity implements AbstractRoomReserv
     }
 
     private Runnable removeAction(RoomReservation value) {
-        return () -> controller.removeReservation(value.getId(), new FluentCallback<RoomReservation>()
-                .withSuccess(result -> fireSuccessNotify(lang.roomReservationRemoved())));
+        return () -> controller.removeReservation(value.getId(), new FluentCallback<Long>()
+                .withSuccess(result -> fireSuccessNotify(lang.roomReservationRemoved()))
+        );
     }
 
     private RoomReservationQuery getQuery() {

@@ -8,10 +8,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DutyLog;
 import ru.protei.portal.core.model.query.DutyLogQuery;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
-
-import java.util.List;
 
 /**
  * Сервис управления журналом дежурств
@@ -31,4 +28,7 @@ public interface DutyLogService {
     @Privileged( En_Privilege.DUTY_LOG_EDIT )
     @Auditable( En_AuditType.DUTY_LOG_MODIFY )
     Result<Long> updateDutyLog(AuthToken authToken, DutyLog value );
+
+    @Privileged(En_Privilege.DUTY_LOG_REPORT)
+    Result<Void> createReport(AuthToken token, String name, DutyLogQuery query);
 }

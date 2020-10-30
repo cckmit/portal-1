@@ -8,7 +8,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
-import ru.protei.portal.core.model.dict.DutyType;
+import ru.protei.portal.core.model.dict.En_DutyType;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.DutyTypeLang;
@@ -18,7 +18,6 @@ import ru.protei.portal.ui.dutylog.client.activity.edit.AbstractDutyLogEditActiv
 import ru.protei.portal.ui.dutylog.client.activity.edit.AbstractDutyLogEditView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.loading.IndeterminateCircleLoading;
-import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 
@@ -28,7 +27,7 @@ public class DutyLogEditView extends Composite implements AbstractDutyLogEditVie
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         type.setModel(elementIndex -> {
-            DutyType[] list = DutyType.values();
+            En_DutyType[] list = En_DutyType.values();
             if (list.length <= elementIndex) return null;
             return list[elementIndex];
         });
@@ -53,7 +52,7 @@ public class DutyLogEditView extends Composite implements AbstractDutyLogEditVie
     }
 
     @Override
-    public HasValue<DutyType> type() {
+    public HasValue<En_DutyType> type() {
         return type;
     }
 
@@ -89,7 +88,7 @@ public class DutyLogEditView extends Composite implements AbstractDutyLogEditVie
     RangePicker dateRange;
     @Inject
     @UiField(provided = true)
-    FormPopupSingleSelector<DutyType> type;
+    FormPopupSingleSelector<En_DutyType> type;
     @UiField
     HTMLPanel content;
     @UiField
