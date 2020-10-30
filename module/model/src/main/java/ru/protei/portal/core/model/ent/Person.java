@@ -6,7 +6,6 @@ import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.core.model.view.PersonShortViewSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.ArrayList;
@@ -15,7 +14,7 @@ import java.util.List;
 import java.util.Objects;
 
 @JdbcEntity(table = "person")
-public class Person extends AuditableObject implements PersonShortViewSupport {
+public class Person extends AuditableObject {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -311,11 +310,6 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
     @Override
     public String getAuditType() {
         return "Person";
-    }
-
-    @Override
-    public PersonShortView toShortNameShortView() {
-        return new PersonShortView(this.displayShortName, this.getId(), this.isFired);
     }
 
     @Override

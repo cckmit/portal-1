@@ -87,8 +87,8 @@ public interface AbstractIssueMetaView extends IsWidget {
 
     HasValue<ProductShortView> product();
 
-    void setManager(Person manager);
-    Person getManager();
+    void setManager(PersonShortView manager);
+    PersonShortView getManager();
 
     void setCompany(Company company);
     Company getCompany();

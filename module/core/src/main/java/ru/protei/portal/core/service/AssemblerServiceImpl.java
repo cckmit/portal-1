@@ -39,6 +39,7 @@ public class AssemblerServiceImpl implements AssemblerService {
                 this::fillCaseObject).flatMap(
                 this::fillCaseNameAndDescription).flatMap(
                 this::fillCaseMeta).flatMap(
+                this::fillManager).flatMap(
                 this::fillComments).flatMap(
                 this::fillAttachments).flatMap(
                 this::fillLinks).map(
@@ -58,6 +59,24 @@ public class AssemblerServiceImpl implements AssemblerService {
         e.setInitiator(initiator);
         log.info("fillInitiator(): CaseObjectID={} initiator is successfully filled.", e.getCaseObjectId());
 
+        return ok(e);
+    }
+
+    private Result<AssembledCaseEvent> fillManager( AssembledCaseEvent e ) {
+        if (e.getManager() != null) {
+            log.info("fillManager(): CaseObjectID={} manager is already filled.", e.getCaseObjectId());
+            return ok(e);
+        }
+        if (e.getCaseMeta().getManager() == null) {
+            log.info("fillManager(): CaseObjectID={} No manager is set, ignore filling manager.", e.getCaseObjectId());
+            return ok(e);
+        }
+
+        log.info("fillManager(): CaseObjectID={} Try to fill manager.", e.getCaseObjectId());
+        Person manager = personDAO.get(e.getCaseMeta().getManager().getId());
+        jdbcManyRelationsHelper.fill(manager, Person.Fields.CONTACT_ITEMS);
+        e.setManager(manager);
+        log.info("fillManager(): CaseObjectID={} manager is successfully filled.", e.getCaseObjectId());
         return ok(e);
     }
 
@@ -172,7 +191,6 @@ public class AssemblerServiceImpl implements AssemblerService {
     private AssembledCaseEvent fillEmails( AssembledCaseEvent e ) {
         if (e.getCreator() != null) jdbcManyRelationsHelper.fill( e.getCreator(), Person.Fields.CONTACT_ITEMS);
         if (e.getInitiator() != null) jdbcManyRelationsHelper.fill( e.getInitiator(), Person.Fields.CONTACT_ITEMS);
-        if (e.getManager() != null) jdbcManyRelationsHelper.fill( e.getManager(), Person.Fields.CONTACT_ITEMS);
         return e;
     }
 

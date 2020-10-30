@@ -95,15 +95,14 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
-    public void setManager( Person manager ) {
-        PersonShortView managerValue = toFullNameShortView(manager);
-        if (managerValue != null) managerValue.setName(transliteration(managerValue.getName()));
-        this.manager.setValue(managerValue);
+    public void setManager( PersonShortView manager ) {
+        if (manager != null) manager.setName(transliteration(manager.getName()));
+        this.manager.setValue(manager);
     }
 
     @Override
-    public Person getManager() {
-        return Person.fromPersonFullNameShortView( manager.getValue() );
+    public PersonShortView getManager() {
+        return manager.getValue();
     }
 
     @Override

@@ -16,4 +16,6 @@ public interface PersonShortViewDAO extends PortalBaseDAO<PersonShortView> {
     List<PersonShortView> getEmployees( EmployeeQuery query );
 
     List<PersonShortView> getContacts( ContactQuery query);
+
+    PersonShortView getCommonManagerByProductId( Long productId );
 }

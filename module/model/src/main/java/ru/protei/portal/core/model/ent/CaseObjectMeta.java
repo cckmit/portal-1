@@ -4,6 +4,7 @@ import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_WorkTrigger;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -55,7 +56,7 @@ public class CaseObjectMeta extends AuditableObject {
     private Long managerId;
 
     @JdbcJoinedObject( localColumn = "MANAGER", remoteColumn = "id", updateLocalColumn = false )
-    private Person manager;
+    private PersonShortView manager;
 
     @JdbcColumn(name = "platform_id")
     private Long platformId;
@@ -261,11 +262,11 @@ public class CaseObjectMeta extends AuditableObject {
         this.managerId = managerId;
     }
 
-    public Person getManager() {
+    public PersonShortView getManager() {
         return manager;
     }
 
-    public void setManager(Person manager) {
+    public void setManager(PersonShortView manager) {
         this.manager = manager;
         this.managerId = manager == null ? null : manager.getId();
     }

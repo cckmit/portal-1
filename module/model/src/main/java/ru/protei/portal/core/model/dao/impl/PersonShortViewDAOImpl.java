@@ -35,5 +35,9 @@ public class PersonShortViewDAOImpl extends PortalBaseJdbcDAO<PersonShortView> i
         return getList( contactSqlBuilder.makeParameters( query ) );
     }
 
+    @Override
+    public PersonShortView getCommonManagerByProductId( Long productId ) {
+        return getByCondition( "person.id = (SELECT dev_unit.common_manager_id FROM dev_unit WHERE dev_unit.ID = ?)", productId );
+    }
 
 }
