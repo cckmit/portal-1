@@ -212,7 +212,7 @@ public abstract class IssueEditActivity implements
                 fireEvent(new CaseCommentEvents.DisableNewComment());
             }
         }
-        view.createSubtaskButtonVisibility().setVisible(!isStateCreatingSubtaskNotAllowed(event.meta.getStateId()));
+        view.createSubtaskButtonVisibility().setVisible(!isCreatingSubtaskNotAllowed(event.meta.getStateId()));
     }
 
     @Event
@@ -474,7 +474,7 @@ public abstract class IssueEditActivity implements
         view.nameAndDescriptionEditButtonVisibility().setVisible(!readOnly && selfIssue);
         view.setFavoriteButtonActive(issue.isFavorite());
 
-        view.createSubtaskButtonVisibility().setVisible(!isStateCreatingSubtaskNotAllowed(issue.getStateId()));
+        view.createSubtaskButtonVisibility().setVisible(!isCreatingSubtaskNotAllowed(issue.getStateId()));
     }
 
     private void viewModeIsPreview( boolean isPreviewMode){
@@ -552,9 +552,9 @@ public abstract class IssueEditActivity implements
         return name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
     }
 
-    private boolean isStateCreatingSubtaskNotAllowed(Long stateId) {
-        return isTerminalState(stateId) ||
-                CrmConstants.State.CREATED == stateId;
+    private boolean isCreatingSubtaskNotAllowed(Long stateId) {
+        return !policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT) ||
+                isTerminalState(stateId) || CrmConstants.State.CREATED == stateId;
     }
 
     @Inject

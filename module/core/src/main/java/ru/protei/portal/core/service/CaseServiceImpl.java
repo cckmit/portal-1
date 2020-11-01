@@ -753,11 +753,11 @@ public class CaseServiceImpl implements CaseService {
             query.setCompanyIds(
                     acceptAllowedCompanies(
                             query.getCompanyIds(),
-                            getInitiatorIds(company.getCategory(), token.getCompanyAndChildIds())));
+                            getCompanyIds(company.getCategory(), token.getCompanyAndChildIds())));
             query.setManagerCompanyIds(
                     acceptAllowedCompanies(
                             query.getManagerCompanyIds(),
-                            getSubcontractorIds(company.getCategory(), token.getCompanyAndChildIds())));
+                            getManagerCompanyIds(company.getCategory(), token.getCompanyAndChildIds())));
             query.setAllowViewPrivate(false);
             query.setCustomerSearch(true);
         }
@@ -1100,7 +1100,7 @@ public class CaseServiceImpl implements CaseService {
         createRequest.addLink(caseLink);
     }
 
-    private Collection<Long> getSubcontractorIds(En_CompanyCategory category, Collection<Long> companyIds) {
+    private Collection<Long> getManagerCompanyIds(En_CompanyCategory category, Collection<Long> companyIds) {
         if (category == En_CompanyCategory.SUBCONTRACTOR) {
             return companyIds;
         }
@@ -1112,7 +1112,7 @@ public class CaseServiceImpl implements CaseService {
         return result.getData().stream().map(EntityOption::getId).collect(Collectors.toList());
     }
 
-    private Collection<Long> getInitiatorIds(En_CompanyCategory category, Collection<Long> subcontractorIds) {
+    private Collection<Long> getCompanyIds(En_CompanyCategory category, Collection<Long> subcontractorIds) {
         if (category != En_CompanyCategory.SUBCONTRACTOR) {
             return subcontractorIds;
         }

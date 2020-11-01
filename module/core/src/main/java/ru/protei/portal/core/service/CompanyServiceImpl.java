@@ -116,11 +116,16 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public Result<List<EntityOption>> subcontractorOptionListByCompanyIds(Collection<Long> companyIds) {
 
+        if (CollectionUtils.isEmpty(companyIds)) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         ProjectQuery query = new ProjectQuery();
         query.setInitiatorCompanyIds(setOf(companyIds));
         Collection<Project> list = projectDAO.getProjects(query);
-        if (list == null)
+        if (list == null) {
             return error(En_ResultStatus.GET_DATA_ERROR);
+        }
 
         jdbcManyRelationsHelper.fill(list, "subcontractors");
 
@@ -132,8 +137,9 @@ public class CompanyServiceImpl implements CompanyService {
                 .collect(Collectors.toList());
 
         Company homeCompany = companyDAO.get(CrmConstants.Company.HOME_COMPANY_ID);
-        if (homeCompany == null)
+        if (homeCompany == null) {
             return error(En_ResultStatus.GET_DATA_ERROR);
+        }
 
         companies.add(0, homeCompany);
 
@@ -145,11 +151,16 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public Result<List<EntityOption>> companyOptionListBySubcontractorIds(Collection<Long> subcontractorIds) {
 
+        if (CollectionUtils.isEmpty(subcontractorIds)) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         ProjectQuery query = new ProjectQuery();
         query.setSubcontractorIds(setOf(subcontractorIds));
         Collection<Project> list = projectDAO.getProjects(query);
-        if (list == null)
+        if (list == null) {
             return error(En_ResultStatus.GET_DATA_ERROR);
+        }
 
         List<Company> companies = list.stream()
                 .map(Project::getCustomer)
@@ -157,8 +168,9 @@ public class CompanyServiceImpl implements CompanyService {
                 .collect(Collectors.toList());
 
         Company homeCompany = companyDAO.get(CrmConstants.Company.HOME_COMPANY_ID);
-        if (homeCompany == null)
+        if (homeCompany == null) {
             return error(En_ResultStatus.GET_DATA_ERROR);
+        }
 
         companies.add(0, homeCompany);
 

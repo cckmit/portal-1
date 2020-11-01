@@ -119,6 +119,11 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
+    public void setManagerCompanyModel(AsyncSelectorModel companyModel) {
+        managerCompany.setAsyncModel(companyModel);
+    }
+
+    @Override
     public void setManagerCompany(EntityOption managerCompany) {
         if (managerCompany != null) {
             managerCompany.setDisplayText(transliteration(managerCompany.getDisplayText()));

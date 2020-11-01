@@ -100,4 +100,8 @@ public interface AbstractIssueFilterParamView extends IsWidget {
     void setCreatedRangeValid(boolean isTypeValid, boolean isRangeValid);
 
     void setModifiedRangeValid(boolean isTypeValid, boolean isRangeValid);
+
+    HasVisibility initiatorsVisibility();
+
+    HasVisibility managersVisibility();
 }

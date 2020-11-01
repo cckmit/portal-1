@@ -22,6 +22,7 @@ import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CustomerCompanyModel;
+import ru.protei.portal.ui.common.client.widget.selector.company.SubcontractorCompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductWithChildrenModel;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -58,8 +59,11 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
-        customerCompanyModel.setSubcontractorId(event.profile.getCompany().getId());
-        metaView.setCompanyModel(isSubcontractorCompany(event.profile.getCompany()) ? customerCompanyModel : companyModel);
+        Company userCompany = event.profile.getCompany();
+        customerCompanyModel.setSubcontractorId(userCompany.getId());
+        subcontractorCompanyModel.setCompanyId(userCompany.getId());
+        metaView.setCompanyModel(isSubcontractorCompany(userCompany) ? customerCompanyModel : companyModel);
+        metaView.setManagerCompanyModel(event.profile.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT) ? subcontractorCompanyModel : companyModel);
     }
 
     @Event
@@ -106,7 +110,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         meta.setStateId(metaView.state().getValue().getId());
         meta.setPauseDate((CrmConstants.State.PAUSED != meta.getStateId() || metaView.pauseDate().getValue() == null) ? null : metaView.pauseDate().getValue().getTime());
 
-        setManagerCompanyEnabled(metaView, metaView.state().getValue().getId());
         metaView.pauseDateContainerVisibility().setVisible(CrmConstants.State.PAUSED == meta.getStateId());
         metaView.pauseDate().setValue(CrmConstants.State.PAUSED != meta.getStateId() ? null : metaView.pauseDate().getValue());
 
@@ -297,6 +300,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
                     fillPlatformValueAndUpdateProductsFilter(resultCompany);
                 })
         );
+
+        subcontractorCompanyModel.setCompanyId(company.getId());
 
         fireEvent(new IssueEvents.IssueMetaChanged(meta));
     }
@@ -491,8 +496,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     private void fillView(CaseObjectMeta meta) {
         metaView.stateEnabled().setEnabled(!readOnly);
         metaView.importanceEnabled().setEnabled(!readOnly);
-        metaView.productEnabled().setEnabled(isProductEnabled(readOnly, meta.getInitiatorCompany()) );
-        metaView.companyEnabled().setEnabled(!readOnly && isCompanyChangeAllowed(meta.isPrivateCase()) );
+        metaView.productEnabled().setEnabled(isProductEnabled(readOnly, meta.getInitiatorCompany()));
+        metaView.companyEnabled().setEnabled(!readOnly && isCompanyChangeAllowed(meta.isPrivateCase()));
         metaView.initiatorEnabled().setEnabled(!readOnly && isInitiatorChangeAllowed(meta.getInitiatorCompanyId()));
         metaView.platformEnabled().setEnabled(!readOnly);
 
@@ -516,6 +521,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.setTimeElapsed(meta.getTimeElapsed());
 
         setCurrentCompany(meta.getInitiatorCompany());
+        subcontractorCompanyModel.setCompanyId(meta.getInitiatorCompanyId());
 
         metaView.setCompany(meta.getInitiatorCompany());
         metaView.initiatorUpdateCompany(meta.getInitiatorCompany());
@@ -575,8 +581,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         issueMetaView.setManager(caseObjectMeta.getManager());
 
-        setManagerCompanyEnabled(issueMetaView, caseObjectMeta.getStateId());
-        issueMetaView.managerEnabled().setEnabled(!isReadOnly && (policyService.hasPrivilegeFor(En_Privilege.ISSUE_MANAGER_EDIT) ||
+        metaView.managerCompanyEnabled().setEnabled(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT));
+        issueMetaView.managerEnabled().setEnabled(!isReadOnly && (policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT) ||
                 Objects.equals(issueMetaView.getManagerCompany().getId(), policyService.getProfile().getCompany().getId())));
     }
 
@@ -716,7 +722,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     private void setSubscriptionEmails(String value) {
         metaView.setSubscriptionEmails(value);
-        metaView.companyEnabled().setEnabled(!readOnly && isCompanyChangeAllowed( meta.isPrivateCase()));
+        metaView.companyEnabled().setEnabled(!readOnly && isCompanyChangeAllowed(meta.isPrivateCase()));
     }
 
     private boolean isStateWithRestrictions(long caseStateId) {
@@ -776,10 +782,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     private void setCustomerVisibility(AbstractIssueMetaView issueMetaView, boolean isVisible) {
         issueMetaView.deadlineContainerVisibility().setVisible(isVisible);
         issueMetaView.workTriggerVisibility().setVisible(isVisible);
-    }
-
-    private void setManagerCompanyEnabled(AbstractIssueMetaView issueMetaView, Long stateId) {
-        issueMetaView.managerCompanyEnabled().setEnabled(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT) && stateId == CrmConstants.State.REQUEST_TO_PARTNER);
     }
 
     private void fillPlatformValueAndUpdateProductsFilter(final Company company) {
@@ -905,6 +907,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     @Inject
     CompanyModel companyModel;
+    @Inject
+    SubcontractorCompanyModel subcontractorCompanyModel;
     @Inject
     CustomerCompanyModel customerCompanyModel;
 

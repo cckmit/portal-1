@@ -26,6 +26,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CustomerCompanyModel;
+import ru.protei.portal.ui.common.client.widget.selector.company.SubcontractorCompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductWithChildrenModel;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
@@ -87,8 +88,11 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
-        customerCompanyModel.setSubcontractorId(event.profile.getCompany().getId());
-        issueMetaView.setCompanyModel(isSubcontractorCompany(event.profile.getCompany()) ? customerCompanyModel : companyModel);
+        Company userCompany = event.profile.getCompany();
+        customerCompanyModel.setSubcontractorId(userCompany.getId());
+        subcontractorCompanyModel.setCompanyId(userCompany.getId());
+        issueMetaView.setCompanyModel(isSubcontractorCompany(userCompany) ? customerCompanyModel : companyModel);
+        issueMetaView.setManagerCompanyModel(event.profile.hasSystemScopeForPrivilege(En_Privilege.ISSUE_CREATE) ? subcontractorCompanyModel : companyModel);
     }
 
     @Event
@@ -237,6 +241,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.setPlatformFilter(platformOption -> companyOption.getId().equals(platformOption.getCompanyId()));
 
         updateCompanyCaseStates(companyOption.getId());
+
+        subcontractorCompanyModel.setCompanyId(companyOption.getId());
     }
 
     @Override
@@ -285,8 +291,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     public void onStateChange() {
         issueMetaView.pauseDate().setValue(null);
         issueMetaView.pauseDateContainerVisibility().setVisible(CrmConstants.State.PAUSED == issueMetaView.state().getValue().getId());
-        setManagerCompanyEnabled(issueMetaView, issueMetaView.state().getValue().getId());
-
         boolean stateValid = isPauseDateValid(issueMetaView.state().getValue().getId(), issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime());
         issueMetaView.setPauseDateValid(stateValid);
 
@@ -591,8 +595,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
 
     private void fillManagerInfoContainer(final AbstractIssueMetaView issueMetaView, CaseObjectMeta caseObjectMeta) {
-        issueMetaView.managerEnabled().setEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_MANAGER_EDIT) || policyService.isSubcontractorCompany());
-        setManagerCompanyEnabled(issueMetaView, caseObjectMeta.getStateId());
+        issueMetaView.managerCompanyEnabled().setEnabled(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_CREATE));
+        issueMetaView.managerEnabled().setEnabled(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_CREATE) || policyService.isSubcontractorCompany());
 
         if (caseObjectMeta.getManagerCompanyId() != null) {
             issueMetaView.setManagerCompany(new EntityOption(caseObjectMeta.getManagerCompanyName(), caseObjectMeta.getManagerCompanyId()));
@@ -883,10 +887,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.workTriggerVisibility().setVisible(isVisible);
     }
 
-    private void setManagerCompanyEnabled(AbstractIssueMetaView issueMetaView, Long stateId) {
-        issueMetaView.managerCompanyEnabled().setEnabled(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT) && stateId == CrmConstants.State.REQUEST_TO_PARTNER);
-    }
-
     private void updateProductsFilter(final AbstractIssueMetaView issueMetaView, Long companyId, Long platformId) {
         if (platformId != null) {
             issueMetaView.updateProductsByPlatformIds(new HashSet<>(Collections.singleton(platformId)));
@@ -985,6 +985,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Inject
     CompanyModel companyModel;
+    @Inject
+    SubcontractorCompanyModel subcontractorCompanyModel;
     @Inject
     CustomerCompanyModel customerCompanyModel;
 

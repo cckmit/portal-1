@@ -35,6 +35,7 @@ import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CustomerCompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.SubcontractorCompanyModel;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
+import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -78,7 +79,7 @@ public abstract class IssueTableFilterActivity
         filterView.presetFilterType();
         updateCaseStatesFilter();
         updateImportanceLevelButtons();
-        updateCompanyModels(event.profile.getCompany());
+        updateCompanyModels(event.profile);
     }
 
     @Event(Type.FILL_CONTENT)
@@ -354,7 +355,9 @@ public abstract class IssueTableFilterActivity
         filterView.getIssueFilterParams().productsVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_PRODUCT_VIEW ) );
         filterView.getIssueFilterParams().searchPrivateVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) );
         filterView.getIssueFilterParams().planVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PLAN_VIEW));
-        filterView.getIssueFilterParams().creatorsVisibility().setVisible( policyService.personBelongsToHomeCompany());
+        filterView.getIssueFilterParams().creatorsVisibility().setVisible(policyService.personBelongsToHomeCompany());
+        filterView.getIssueFilterParams().initiatorsVisibility().setVisible(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW) || !policyService.isSubcontractorCompany());
+        filterView.getIssueFilterParams().managersVisibility().setVisible(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW) || policyService.isSubcontractorCompany());
     }
 
     private void updateCaseStatesFilter() {
@@ -385,12 +388,13 @@ public abstract class IssueTableFilterActivity
         }
     }
 
-    private void updateCompanyModels(Company userCompany) {
+    private void updateCompanyModels(Profile profile) {
+        Company userCompany = profile.getCompany();
         subcontractorCompanyModel.setCompanyId(userCompany.getId());
         customerCompanyModel.setSubcontractorId(userCompany.getId());
 
         filterView.setInitiatorCompaniesModel(isSubcontractorCompany(userCompany) ? customerCompanyModel : companyModel);
-        filterView.setManagerCompaniesModel(isCustomerCompany(userCompany) ? subcontractorCompanyModel : companyModel);
+        filterView.setManagerCompaniesModel(profile.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW) || isSubcontractorCompany(userCompany) ? companyModel : subcontractorCompanyModel);
     }
 
     private boolean isSubcontractorCompany(Company userCompany) {

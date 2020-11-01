@@ -106,11 +106,9 @@ public class PersonServiceImpl implements PersonService {
         }
 
         Company company = companyService.getCompanyUnsafe(token, token.getCompanyId()).getData();
-
         Result<List<EntityOption>> result = company.getCategory() == En_CompanyCategory.SUBCONTRACTOR ?
                 companyService.companyOptionListBySubcontractorIds(token.getCompanyAndChildIds()) :
                 companyService.subcontractorOptionListByCompanyIds(token.getCompanyAndChildIds());
-
         if (result.isError()) {
             throw new ResultStatusException(result.getStatus());
         }

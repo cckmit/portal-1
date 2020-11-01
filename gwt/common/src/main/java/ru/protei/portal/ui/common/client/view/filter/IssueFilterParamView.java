@@ -205,6 +205,16 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
+    public HasVisibility initiatorsVisibility() {
+        return initiators;
+    }
+
+    @Override
+    public HasVisibility managersVisibility() {
+        return managers;
+    }
+
+    @Override
     public void resetFilter() {
         companies.setValue(null);
         products.setValue(null);

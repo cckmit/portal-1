@@ -149,4 +149,5 @@ public interface AbstractIssueMetaView extends IsWidget {
     HasValue<En_WorkTrigger> workTrigger();
 
     void setCompanyModel(AsyncSelectorModel companyModel);
+    void setManagerCompanyModel(AsyncSelectorModel companyModel);
 }

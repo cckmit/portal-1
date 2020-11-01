@@ -65,7 +65,6 @@ public class IssueFilterWidget extends Composite {
         createBtn.setVisible(true);
         filterName.removeStyleName(REQUIRED);
         filterName.setValue("");
-//        setCheckImportanceHistoryVisibility(false);
 
         setUserFilterNameVisibility(false);
         if (filterType != null && filterType.equals(En_CaseFilterType.CASE_RESOLUTION_TIME)) {
