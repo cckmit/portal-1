@@ -91,6 +91,7 @@ public class En_ResultStatusLang {
             case USER_NOT_FOUND: return lang.errUserNotFound();
             case NOT_FOUND_PARENT: return lang.errNotFoundParent();
             case NOT_ALLOWED_CREATE_SUBTASK: return lang.errNotAllowedCreateSubtask();
+            case INVALID_CASE_UPDATE_SUBTASK_NOT_CLOSED: return lang.errInvalidCaseUpdateSubtaskNotClosed();
             default: return lang.errUnknownResult();
         }
     }

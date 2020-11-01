@@ -326,6 +326,12 @@ public enum En_ResultStatus {
     /**
      * Запрещено создание подзадачи
      */
-    NOT_ALLOWED_CREATE_SUBTASK
+    NOT_ALLOWED_CREATE_SUBTASK,
+
+    /**
+     * запрещено менять статус обращения на verified, когда не все подзадачи в verified
+     */
+    INVALID_CASE_UPDATE_SUBTASK_NOT_CLOSED,
+
     ;
 }

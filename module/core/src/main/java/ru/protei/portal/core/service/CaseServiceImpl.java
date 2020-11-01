@@ -287,7 +287,7 @@ public class CaseServiceImpl implements CaseService {
         }
 
         En_CaseStateWorkflow workflow = CaseStateWorkflowUtil.recognizeWorkflow(oldState.getExtAppType());
-        boolean isStateTransitionValidByWorkflow = isCaseStateTransitionValid(workflow, oldCaseMeta.getStateId(), caseMeta.getStateId());
+        boolean isStateTransitionValidByWorkflow = isStateTransitionValid(workflow, oldCaseMeta.getStateId(), caseMeta.getStateId());
         if (!isStateTransitionValidByWorkflow) {
             log.info("Wrong state transition for the issue {}: {} -> {}, workflow={}",
                     caseMeta.getId(), oldCaseMeta.getStateId(), caseMeta.getStateId(), workflow);
@@ -299,6 +299,13 @@ public class CaseServiceImpl implements CaseService {
             log.info("Wrong state transition for the issue {}: {} -> {}",
                     caseMeta.getId(), oldCaseMeta.getStateId(), caseMeta.getStateId());
             throw new ResultStatusException(En_ResultStatus.INVALID_CASE_UPDATE_CASE_IS_CLOSED);
+        }
+
+        boolean isStateTerminalValid = !isTerminalState(caseMeta.getStateId()) || isStateTerminalValid(token, caseMeta.getId());
+        if (!isStateTerminalValid) {
+            log.info("Impossible to terminal the issue {}: {} -> {}",
+                    caseMeta.getId(), oldCaseMeta.getStateId(), caseMeta.getStateId());
+            throw new ResultStatusException(En_ResultStatus.INVALID_CASE_UPDATE_SUBTASK_NOT_CLOSED);
         }
 
         caseMeta.setModified(new Date());
@@ -869,7 +876,7 @@ public class CaseServiceImpl implements CaseService {
         }
     }
 
-    private boolean isCaseStateTransitionValid(En_CaseStateWorkflow workflow, long caseStateFromId, long caseStateToId) {
+    private boolean isStateTransitionValid(En_CaseStateWorkflow workflow, long caseStateFromId, long caseStateToId) {
         if (caseStateFromId == caseStateToId) {
             return true;
         }
@@ -879,6 +886,17 @@ public class CaseServiceImpl implements CaseService {
             return false;
         }
         return CaseStateWorkflowUtil.isCaseStateTransitionValid(response.getData(), caseStateFromId, caseStateToId);
+    }
+
+    private boolean isStateTerminalValid(AuthToken token, long caseObjectId) {
+        Result<List<CaseLink>> response = caseLinkService.getLinks(token, caseObjectId);
+        if (response.isError()) {
+            log.error("Failed to get case state links, status={}", response.getStatus());
+            return false;
+        }
+        return response.getData().stream()
+                .filter(caseLink -> caseLink.getBundleType().equals(En_BundleType.PARENT_FOR))
+                .allMatch(caseLink -> isTerminalState(caseLink.getCaseInfo().getStateId()));
     }
 
     private boolean validateFieldsOfNew(AuthToken token, CaseObject caseObject) {
