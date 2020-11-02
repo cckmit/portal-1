@@ -13,7 +13,6 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
-import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
@@ -21,7 +20,6 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterWidgetModel;
 import ru.protei.portal.ui.common.client.activity.filter.IssueFilterWidgetModel;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
-import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.common.client.view.filter.IssueFilterParamView;
@@ -64,7 +62,7 @@ public class IssueFilterWidget extends Composite {
         if (filterType != null && filterType.equals(En_CaseFilterType.CASE_RESOLUTION_TIME)) {
             issueFilterParamView.states().setValue(CaseStateUtils.getFilterCaseResolutionTimeActiveStates());
         }
-        applyVisibilityByFilterAndPersonType();
+        applyVisibility(filterType);
     }
 
     public HasEnabled createEnabled() {
@@ -218,21 +216,13 @@ public class IssueFilterWidget extends Composite {
 
     public void updateFilterType(En_CaseFilterType filterType) {
         this.filterType = filterType;
-        applyVisibility(filterType, isCustomer());
+        applyVisibility(filterType);
         resetFilter();
         userFilter.updateFilterType(filterType);
     }
 
-    public void applyVisibilityByFilterAndPersonType() {
-        applyVisibility(filterType, isCustomer());
-    }
-
-    private boolean isCustomer() {
-        return !policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
-    }
-
-    private void applyVisibility(En_CaseFilterType filterType, boolean isCustomer) {
-        issueFilterParamView.applyVisibility(filterType, isCustomer);
+    private void applyVisibility(En_CaseFilterType filterType) {
+        issueFilterParamView.applyVisibility(filterType);
     }
 
     private HasVisibility removeFilterBtnVisibility(){
@@ -309,8 +299,6 @@ public class IssueFilterWidget extends Composite {
     AsyncPersonModel asyncPersonModel;
     @Inject
     Provider<PersonModel> personModelProvider;
-    @Inject
-    PolicyService policyService;
 
     AbstractIssueFilterWidgetModel model;
 

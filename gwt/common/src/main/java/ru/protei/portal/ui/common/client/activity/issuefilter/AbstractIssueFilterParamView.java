@@ -85,7 +85,7 @@ public interface AbstractIssueFilterParamView extends IsWidget {
 
     boolean isModifiedRangeValid();
 
-    void applyVisibility(En_CaseFilterType filterType, boolean isCustomer);
+    void applyVisibility(En_CaseFilterType filterType);
 
     void setCreatedRangeMandatory(boolean isMandatory);
 

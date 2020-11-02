@@ -477,10 +477,12 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         onFilterChanged();
     }
 
-    public void applyVisibility(En_CaseFilterType filterType, boolean isCustomer) {
+    public void applyVisibility(En_CaseFilterType filterType) {
         if (filterType == null) {
             return;
         }
+
+        final boolean isCustomer = isCustomer();
 
         search.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         searchFavoriteContainer.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
@@ -512,6 +514,10 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
             importanceContainer.removeClassName(HIDE);
             stateContainer.removeClassName(HIDE);
         }
+    }
+
+    private boolean isCustomer() {
+        return !policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
     }
 
     public String validateMultiSelectorsTotalCount() {
