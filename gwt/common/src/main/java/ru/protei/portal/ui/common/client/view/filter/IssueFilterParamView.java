@@ -16,7 +16,6 @@ import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.SelectorsParams;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.Pair;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -469,10 +468,12 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         onFilterChanged();
     }
 
-    public void applyVisibilityByFilterType(En_CaseFilterType filterType) {
+    public void applyVisibility(En_CaseFilterType filterType) {
         if (filterType == null) {
             return;
         }
+
+        final boolean isCustomer = isCustomer();
 
         search.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         searchFavoriteContainer.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
@@ -495,8 +496,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         tags.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS) || filterType.equals(En_CaseFilterType.CASE_RESOLUTION_TIME));
         searchPrivateContainer.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         plan.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS) && policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PLAN_VIEW));
-        workTriggers.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
-        overdueDeadlinesContainer.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        workTriggers.setVisible(!isCustomer && filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        overdueDeadlinesContainer.setVisible(!isCustomer && filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         if (filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED)) {
             importanceContainer.addClassName(HIDE);
             stateContainer.addClassName(HIDE);
@@ -504,6 +505,10 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
             importanceContainer.removeClassName(HIDE);
             stateContainer.removeClassName(HIDE);
         }
+    }
+
+    private boolean isCustomer() {
+        return !policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
     }
 
     public String validateMultiSelectorsTotalCount() {

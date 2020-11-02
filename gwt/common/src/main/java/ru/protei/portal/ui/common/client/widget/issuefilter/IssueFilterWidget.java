@@ -11,7 +11,6 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -25,7 +24,6 @@ import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.common.client.view.filter.IssueFilterParamView;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.AsyncPersonModel;
-import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
@@ -60,6 +58,7 @@ public class IssueFilterWidget extends Composite {
         if (filterType != null && filterType.equals(En_CaseFilterType.CASE_RESOLUTION_TIME)) {
             issueFilterParamView.states().setValue(CaseStateUtils.getFilterCaseResolutionTimeActiveStates());
         }
+        applyVisibility(filterType);
     }
 
     public HasEnabled createEnabled() {
@@ -213,13 +212,13 @@ public class IssueFilterWidget extends Composite {
 
     public void updateFilterType(En_CaseFilterType filterType) {
         this.filterType = filterType;
-        applyVisibilityByFilterType(filterType);
+        applyVisibility(filterType);
         resetFilter(null);
         userFilter.updateFilterType(filterType);
     }
 
-    private void applyVisibilityByFilterType(En_CaseFilterType filterType) {
-        issueFilterParamView.applyVisibilityByFilterType(filterType);
+    private void applyVisibility(En_CaseFilterType filterType) {
+        issueFilterParamView.applyVisibility(filterType);
     }
 
     private HasVisibility removeFilterBtnVisibility(){
