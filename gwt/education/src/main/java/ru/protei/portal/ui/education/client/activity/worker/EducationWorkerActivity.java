@@ -81,6 +81,7 @@ public abstract class EducationWorkerActivity implements Activity, AbstractEduca
     private AbstractEducationWalletView makeWalletView(EducationWallet wallet) {
         AbstractEducationWalletView view = walletViewProvider.get();
         view.setActivity(new AbstractEducationWalletActivity() {});
+        view.setCompanyName(wallet.getCompanyName());
         view.setDepartmentName(wallet.getDepartmentName());
         view.setCoins(wallet.getCoins());
         view.setCountConference(stream(wallet.getEducationEntryList())

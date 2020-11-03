@@ -6,6 +6,8 @@ public interface AbstractEducationWalletView extends IsWidget {
 
     void setActivity(AbstractEducationWalletActivity activity);
 
+    void setCompanyName(String companyName);
+
     void setDepartmentName(String departmentName);
 
     void setCoins(Integer coins);

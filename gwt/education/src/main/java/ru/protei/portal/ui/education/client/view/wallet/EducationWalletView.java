@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.education.client.view.wallet;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -24,6 +25,10 @@ public class EducationWalletView extends Composite implements AbstractEducationW
     }
 
     @Override
+    public void setCompanyName(String companyName) {
+        this.companyName.setInnerText(companyName);
+    }
+
     public void setDepartmentName(String departmentName) {
         this.departmentName.setInnerText(departmentName);
     }
@@ -58,7 +63,9 @@ public class EducationWalletView extends Composite implements AbstractEducationW
     }
 
     @UiField
-    SpanElement departmentName;
+    DivElement companyName;
+    @UiField
+    DivElement departmentName;
     @UiField
     HeadingElement coins;
     @UiField
