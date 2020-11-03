@@ -56,6 +56,7 @@ public abstract class DutyLogReportCreateActivity implements AbstractDutyLogRepo
                 lang.dutyLogReportDefaultNameTemplate(DateFormatter.formatDateTime(new Date())) :
                 view.name().getValue();
 
+        fireEvent(new NotifyEvents.Show(lang.dutyLogReportRequestNotification(), NotifyEvents.NotifyType.INFO));
         dutyLogController.createReport(name, view.getFilterWidget().getFilterParamView().getQuery(),
                 new FluentCallback<Void>()
                         .withSuccess(result -> dialogView.hidePopup()));
@@ -67,6 +68,7 @@ public abstract class DutyLogReportCreateActivity implements AbstractDutyLogRepo
     }
 
     private void resetView() {
+        view.name().setValue(null);
         view.getFilterWidget().resetFilter();
     }
 

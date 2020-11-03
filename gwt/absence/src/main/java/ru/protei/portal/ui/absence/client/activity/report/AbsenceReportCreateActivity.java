@@ -57,6 +57,7 @@ public abstract class AbsenceReportCreateActivity implements AbstractAbsenceRepo
                 lang.absenceReportDefaultNameTemplate(DateFormatter.formatDateTime(new Date())) :
                 view.name().getValue();
 
+        fireEvent(new NotifyEvents.Show(lang.absenceReportRequestNotification(), NotifyEvents.NotifyType.INFO));
         absenceController.createReport(name, view.getFilterParams().getQuery(),
                 new FluentCallback<Void>()
                 .withSuccess(result -> dialogView.hidePopup()));
