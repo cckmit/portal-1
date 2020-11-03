@@ -15,7 +15,7 @@ public interface CaseLinkControllerAsync {
 
     void getYtLinkInfo( String ytId, AsyncCallback<YouTrackIssueInfo> async );
 
-    void getCaseLinks( Long caseId, AsyncCallback<List<CaseLink>> async );
+    void getCaseLinks(Long caseId, AsyncCallback<List<CaseLink>> async);
 
     void createLink(CaseLink value, En_CaseType caseType, AsyncCallback<CaseLink> async);
 

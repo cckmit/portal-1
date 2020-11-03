@@ -64,8 +64,8 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     }
 
     @Override
-    public Result<List<CaseLink>> getLinks( AuthToken token, Long caseId) {
-        if ( caseId == null ) {
+    public Result<List<CaseLink>> getLinks(AuthToken token, Long caseId) {
+        if (caseId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -74,12 +74,12 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     }
 
     @Override
-    public Result<YouTrackIssueInfo> getYoutrackIssueInfo(AuthToken authToken, String ytId ) {
+    public Result<YouTrackIssueInfo> getYoutrackIssueInfo(AuthToken authToken, String ytId) {
         boolean isShowOnlyPublic = isShowOnlyPublicLinks(authToken);
         if (isShowOnlyPublic && En_CaseLink.YT.isForcePrivacy()) {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
-        return youtrackService.getIssueInfo( ytId );
+        return youtrackService.getIssueInfo(ytId);
     }
 
     @Override

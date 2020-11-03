@@ -19,9 +19,9 @@ public interface CaseLinkService {
 
     // TODO: линки используются на уровне Анкет и обращений. Для проверки привилегий нужна более гибкая проверка
     @Privileged(requireAny = { En_Privilege.ISSUE_VIEW, En_Privilege.PROJECT_VIEW, En_Privilege.EMPLOYEE_REGISTRATION_VIEW })
-    Result<List<CaseLink>> getLinks( AuthToken token, Long caseId);
+    Result<List<CaseLink>> getLinks(AuthToken token, Long caseId);
 
-    Result<YouTrackIssueInfo> getYoutrackIssueInfo(AuthToken authToken, String ytId );
+    Result<YouTrackIssueInfo> getYoutrackIssueInfo(AuthToken authToken, String ytId);
 
     @Privileged(requireAny = { En_Privilege.ISSUE_EDIT, En_Privilege.PROJECT_EDIT })
     @Auditable(En_AuditType.LINK_CREATE)

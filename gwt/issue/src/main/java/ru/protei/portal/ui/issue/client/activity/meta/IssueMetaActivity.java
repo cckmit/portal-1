@@ -123,6 +123,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         onCaseMetaChanged(meta, () -> {
             fireEvent(new IssueEvents.IssueStateChanged(meta.getId(), meta.getStateId()));
             fireEvent(new IssueEvents.IssueMetaChanged(meta));
+            onParentIssueChanged(meta.getId());
         });
     }
 
@@ -389,10 +390,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
                             );
                         })
         );
-    }
-
-    private void onCaseMetaChanged(CaseObjectMeta caseMeta) {
-        onCaseMetaChanged(caseMeta, null);
     }
 
     private void onCaseMetaChanged(CaseObjectMeta caseMeta, Runnable runAfterUpdate) {
@@ -877,6 +874,16 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         return userCompany.getCategory() == En_CompanyCategory.SUBCONTRACTOR;
     }
 
+    private void onParentIssueChanged(Long caseId) {
+        caseLinkController.getCaseLinks(caseId, new FluentCallback<List<CaseLink>>()
+                .withSuccess(links ->
+                        links.stream()
+                                .filter(caseLink -> Objects.equals(caseLink.getBundleType(), En_BundleType.SUBTASK))
+                                .forEach(
+                                        caseLink -> fireEvent(new IssueEvents.ChangeIssue(caseLink.getCaseInfo().getId()))
+                                )));
+    }
+
     @Inject
     AbstractIssueMetaView metaView;
 
@@ -899,6 +906,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     SLAControllerAsync slaController;
     @Inject
     SiteFolderControllerAsync siteFolderController;
+    @Inject
+    CaseLinkControllerAsync caseLinkController;
 
     @Inject
     ProductModel productModel;
@@ -925,6 +934,5 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     private List<ProjectSla> slaList;
     private Company currentCompany;
 
-    private static final Logger log = Logger.getLogger( IssueMetaActivity.class.getName());
-
+    private static final Logger log = Logger.getLogger(IssueMetaActivity.class.getName());
 }

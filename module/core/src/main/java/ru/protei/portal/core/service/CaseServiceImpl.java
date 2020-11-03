@@ -1,5 +1,6 @@
 package ru.protei.portal.core.service;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -301,9 +302,9 @@ public class CaseServiceImpl implements CaseService {
             throw new ResultStatusException(En_ResultStatus.INVALID_CASE_UPDATE_CASE_IS_CLOSED);
         }
 
-        boolean isStateTerminalValid = !isTerminalState(caseMeta.getStateId()) || isStateTerminalValid(token, caseMeta.getId());
+        boolean isStateTerminalValid = !isTerminalState(caseMeta.getStateId()) || isStateTerminalValid(caseMeta.getId());
         if (!isStateTerminalValid) {
-            log.info("Impossible to terminal the issue {}: {} -> {}",
+            log.info("Impossible to terminate the issue {}: {} -> {}",
                     caseMeta.getId(), oldCaseMeta.getStateId(), caseMeta.getStateId());
             throw new ResultStatusException(En_ResultStatus.INVALID_CASE_UPDATE_SUBTASK_NOT_CLOSED);
         }
@@ -336,6 +337,10 @@ public class CaseServiceImpl implements CaseService {
             if (messageId == null) {
                 log.error("Manager message for the issue {} isn't saved!", caseMeta.getId());
             }
+        }
+
+        if (oldCaseMeta.getStateId() != caseMeta.getStateId() && isTerminalState(caseMeta.getStateId())) {
+            openParentIssuesIfNeed(token, caseMeta.getId());
         }
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
@@ -578,7 +583,7 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     public Result<List<CaseLink>> getCaseLinks( AuthToken token, Long caseId ) {
-        return caseLinkService.getLinks( token, caseId)
+        return caseLinkService.getLinks( token, caseId )
                 .map( this::fillYouTrackInfo );
     }
 
@@ -888,15 +893,37 @@ public class CaseServiceImpl implements CaseService {
         return CaseStateWorkflowUtil.isCaseStateTransitionValid(response.getData(), caseStateFromId, caseStateToId);
     }
 
-    private boolean isStateTerminalValid(AuthToken token, long caseObjectId) {
-        Result<List<CaseLink>> response = caseLinkService.getLinks(token, caseObjectId);
-        if (response.isError()) {
-            log.error("Failed to get case state links, status={}", response.getStatus());
-            return false;
-        }
-        return response.getData().stream()
-                .filter(caseLink -> caseLink.getBundleType().equals(En_BundleType.PARENT_FOR))
+    private boolean isStateTerminalValid(long caseObjectId) {
+        List<CaseLink> caseLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(caseObjectId, En_BundleType.PARENT_FOR));
+
+        return caseLinks.stream()
                 .allMatch(caseLink -> isTerminalState(caseLink.getCaseInfo().getStateId()));
+    }
+
+    private void openParentIssuesIfNeed(AuthToken token, long caseObjectId) {
+        List<CaseLink> caseLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(caseObjectId, En_BundleType.SUBTASK));
+
+        caseLinks.stream().forEach(caseLink ->
+                openIssueIfNeed(token, NumberUtils.toLong(caseLink.getRemoteId()))
+        );
+    }
+
+    private void openIssueIfNeed(AuthToken token, Long caseObjectId) {
+        List<CaseLink> caseLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(caseObjectId, En_BundleType.PARENT_FOR));
+
+        if (caseLinks.stream()
+                .anyMatch(caseLink -> !isTerminalState(caseLink.getCaseInfo().getState().getId()))) {
+            log.info("Case with id {} not opened, not all subtasks is terminal", caseObjectId);
+            return;
+        }
+
+        CaseObjectMeta caseObjectMeta = caseObjectMetaDAO.get(caseObjectId);
+        caseObjectMeta.setStateId(CrmConstants.State.OPENED);
+
+        Result<CaseObjectMeta> result = updateCaseObjectMeta(token, caseObjectMeta);
+        if (result.isError()) {
+            log.error("Failed to open case with id {}, status={}", caseObjectId, result.getStatus());
+        }
     }
 
     private boolean validateFieldsOfNew(AuthToken token, CaseObject caseObject) {
@@ -1240,6 +1267,9 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     PersonFavoriteIssuesDAO personFavoriteIssuesDAO;
+
+    @Autowired
+    private CaseLinkDAO caseLinkDAO;
 
     private static Logger log = LoggerFactory.getLogger(CaseServiceImpl.class);
 }
