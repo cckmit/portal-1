@@ -694,6 +694,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errLoginOrPwd();
 
+    String errServerUnavailable();
+
     String errInternalError();
 
     String errIncorrectParams();

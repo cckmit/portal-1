@@ -3,6 +3,7 @@ package ru.protei.portal.app.portal.client.activity.auth;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.rpc.IncompatibleRemoteServiceException;
+import com.google.gwt.user.client.rpc.StatusCodeException;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -66,6 +67,11 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
         authService.authenticate(login, pwd, new FluentCallback<Profile>()
                 .withError(throwable -> {
                     log.warning( "onLoginClicked(): e: " + throwable );
+                    if ( throwable instanceof StatusCodeException ) {
+                        view.showError(lang.errServerUnavailable());
+                        return;
+                    }
+
                     if ( throwable instanceof IncompatibleRemoteServiceException) {
                         defaultErrorHandler.accept( throwable );
                         return;
@@ -77,12 +83,13 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
                     view.hideError();
                     fireAuthSuccess(profile);
                     fireEvent(new NotifyEvents.Show(lang.msgHello(), NotifyEvents.NotifyType.SUCCESS));
-                    if (view.rememberMe().getValue()) {
+                    final Boolean rememberMeCheck = view.rememberMe().getValue();
+                    storage.set(REMEMBER_ME_PREFIX + "check", String.valueOf(rememberMeCheck));
+                    if (rememberMeCheck) {
                         String pwdCrypt = encrypt(pwd);
                         storage.set(REMEMBER_ME_PREFIX + "login", login);
                         storage.set(REMEMBER_ME_PREFIX + "pwd", pwdCrypt);
-                    }
-                    else {
+                    } else {
                         String loginFromStorage = storage.getOrDefault(REMEMBER_ME_PREFIX + "login", null);
                         String pwdFromStorage = storage.getOrDefault(REMEMBER_ME_PREFIX + "pwd", null);
 
@@ -91,6 +98,14 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
                         }
                     }
                 }));
+    }
+
+    @Override
+    public void onWindowsFocus() {
+        final boolean rememberMe = Boolean.parseBoolean(storage.get(REMEMBER_ME_PREFIX + "check"));
+        if (rememberMe) {
+            tryAutoLogin();
+        }
     }
 
     private void tryAutoLogin() {
@@ -105,6 +120,10 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
         }
         authService.authenticate(login, pwd, new FluentCallback<Profile>()
                 .withError(throwable -> {
+                    if ( throwable instanceof StatusCodeException ) {
+                        view.showError(lang.errServerUnavailable());
+                    }
+
                     if(throwable instanceof RequestFailedException) {
                         resetRememberMe();
                     }
@@ -143,6 +162,7 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
     private void resetRememberMe() {
         storage.remove(REMEMBER_ME_PREFIX + "login");
         storage.remove(REMEMBER_ME_PREFIX + "pwd");
+        storage.remove(REMEMBER_ME_PREFIX + "check");
     }
 
     private String encrypt(String pwd) {
