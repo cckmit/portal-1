@@ -7,7 +7,7 @@
         <div class="card card-default m-b-0">
             <div class="card-header">
                 <div class="card-title text-black hint-text">
-                    <div class="font-montserrat fs-11 all-caps semi-bol" ui:field="companyName"/>
+                    <div class="font-montserrat fs-13 all-caps bold m-b-5" ui:field="companyName"/>
                     <div class="font-montserrat fs-11 all-caps" ui:field="departmentName"/>
                 </div>
             </div>
