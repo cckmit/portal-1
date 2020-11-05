@@ -99,7 +99,6 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
             String youTrackIssueId = createAdminYoutrackIssueIfNeeded( employeeRegistration );
             createPhoneYoutrackIssueIfNeeded(employeeRegistration, youTrackIssueId);
             createEquipmentYoutrackIssueIfNeeded(employeeRegistration);
-            createHozvoprosYoutrackIssueIfNeeded(employeeRegistration);
         }
 
         return ok(id).publishEvent(new AssembledEmployeeRegistrationEvent(this, null, employeeRegistration));
@@ -190,17 +189,21 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
             return null;
         }
         boolean needPC = contains(employeeRegistration.getEquipmentList(), En_EmployeeEquipment.COMPUTER);
+        boolean needMonitor = contains(employeeRegistration.getEquipmentList(), En_EmployeeEquipment.MONITOR);
 
         String summary = "Регистрация нового сотрудника " + employeeRegistration.getEmployeeFullName();
 
         String description = join( makeCommonDescriptionString( employeeRegistration ),
-                needPC ? "\n Требуется установить новый ПК." : "",
-                "\n", "Предоставить доступ к ресурсам: ", join( resourceList, r -> getResourceName( r ), ", " ),
-                (isBlank( employeeRegistration.getResourceComment() ) ? "" : "\n   Дополнительно: " + employeeRegistration.getResourceComment()),
+                needPC ? "\n Требуется установить новый ПК." : null,
+                needMonitor ? "\n Требуется установить новый Монитор." : null,
+                "\n Предоставить доступ к ресурсам: ", join( resourceList, r -> getResourceName( r ), ", " ),
+                isBlank( employeeRegistration.getResourceComment() ) ? null :
+                        "\n Дополнительно: " + employeeRegistration.getResourceComment(),
                 makeWorkplaceConfigurationString( employeeRegistration.getOperatingSystem(), employeeRegistration.getAdditionalSoft() ),
-                "\n", employeeRegistration.getEmploymentDate() == null ? "" :
-                        "Дата приёма на работу: " +  new SimpleDateFormat("dd.MM.yyyy").format(employeeRegistration.getEmploymentDate()),
-                "\n", "Дополнительный комментарий: " + employeeRegistration.getComment()
+                employeeRegistration.getEmploymentDate() == null ? null :
+                        "\n Дата приёма на работу: " +  new SimpleDateFormat("dd.MM.yyyy").format(employeeRegistration.getEmploymentDate()),
+                isBlank( employeeRegistration.getComment() ) ? null :
+                        "\n Дополнительный комментарий: " + employeeRegistration.getComment()
         ).toString();
 
         final String ADMIN_PROJECT_NAME = portalConfig.data().youtrack().getAdminProject();
@@ -268,7 +271,9 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
             return;
         }
 
-        List<En_EmployeeEquipment> equipmentsListFurniture = filterToList( employeeRegistration.getEquipmentList(), eq -> En_EmployeeEquipment.MONITOR == eq );
+        List<En_EmployeeEquipment> equipmentsListFurniture = filterToList( employeeRegistration.getEquipmentList(),
+                eq -> En_EmployeeEquipment.CHAIR == eq || En_EmployeeEquipment.TABLE == eq );
+
         if (isEmpty(equipmentsListFurniture)) {
             return;
         }
@@ -287,35 +292,9 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         );
     }
 
-    private void createHozvoprosYoutrackIssueIfNeeded(EmployeeRegistration employeeRegistration) {
-        if (isEmpty(employeeRegistration.getEquipmentList())) {
-            return;
-        }
-
-        List<En_EmployeeEquipment> equipmentsListFurniture = filterToList( employeeRegistration.getEquipmentList(),
-                eq -> En_EmployeeEquipment.CHAIR == eq || En_EmployeeEquipment.TABLE == eq );
-
-        if (isEmpty(equipmentsListFurniture)) {
-            return;
-        }
-        String summary = "Оборудование для нового сотрудника " + employeeRegistration.getEmployeeFullName();
-
-        String description = join( makeCommonDescriptionString( employeeRegistration ),
-                "\n", employeeRegistration.getEmploymentDate() == null ? "" :
-                        "Дата приёма на работу: " +  new SimpleDateFormat("dd.MM.yyyy").format(employeeRegistration.getEmploymentDate()),
-                "\n", "Необходимо: ", join( equipmentsListFurniture, e -> getEquipmentName( e ), ", " )
-        ).toString();
-
-        final String HOZVOPROS_PROJECT_NAME = portalConfig.data().youtrack().getHozvoprosProject();
-
-        youtrackService.createIssue( HOZVOPROS_PROJECT_NAME, summary, description ).ifOk( issueId ->
-                saveCaseLink( employeeRegistration.getId(), issueId )
-        );
-    }
-
     private CharSequence makeCommonDescriptionString( EmployeeRegistration er ) {
         return join( "Анкета: ", makeYtLinkToCrmRegistration( er.getId(), er.getEmployeeFullName() ),
-                "\n", "Отдел: ", StringUtils.emptyIfNull(er.getDepartment()),
+                "\n", "Отдел: ", er.getDepartment(),
                 "\n", "Руководитель: ", er.getHeadOfDepartmentShortName(),
                 "\n", "Расположение рабочего места: ", er.getWorkplace()
         );
