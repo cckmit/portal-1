@@ -937,7 +937,7 @@ public class MailNotificationProcessor {
         try {
             String subject = subjectTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), true);
             String body = bodyTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), true);
-            sendMailWithAttachment(notificationEntry.getAddress(), subject, body, getFromPortalAddress(), title + ".xlsx", event.getContent());
+            sendMailWithAttachment(notificationEntry.getAddress(), subject, body, getFromAbsenceAddress(), title + ".xlsx", event.getContent());
         } catch (Exception e) {
             log.error("Failed to make MimeMessage", e);
         }
@@ -1110,6 +1110,10 @@ public class MailNotificationProcessor {
 
     private String getFromPortalAddress() {
         return config.data().smtp().getFromAddressPortalAlias() + " <" + config.data().smtp().getFromAddressPortal() + ">";
+    }
+
+    private String getFromAbsenceAddress() {
+        return config.data().smtp().getFromAddressAbsenceAlias() + " <" + config.data().smtp().getFromAddressAbsence() + ">";
     }
 
     private List<String> getNotifiersAddresses(Collection<NotificationEntry> notifiers) {

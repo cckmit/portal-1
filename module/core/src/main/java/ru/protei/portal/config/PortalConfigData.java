@@ -273,8 +273,10 @@ public class PortalConfigData {
         private final int port;
         private final String fromAddressCrm;
         private final String fromAddressPortal;
+        private final String fromAddressAbsence;
         private final String fromAddressCrmAlias;
         private final String fromAddressPortalAlias;
+        private final String fromAddressAbsenceAlias;
         private final boolean blockExternalRecipients;
         private final String messageIdPattern;
 
@@ -283,8 +285,10 @@ public class PortalConfigData {
             port = properties.getProperty("smtp.port", Integer.class, 2525);
             fromAddressCrm = properties.getProperty("smtp.from.crm", "CRM");
             fromAddressPortal = properties.getProperty("smtp.from.portal", "PORTAL");
+            fromAddressAbsence = properties.getProperty("smtp.from.absence", "ABSENCE");
             fromAddressCrmAlias = properties.getProperty("smtp.from.crm.alias", "CRM");
             fromAddressPortalAlias = properties.getProperty("smtp.from.portal.alias", "DO_NOT_REPLY");
+            fromAddressAbsenceAlias = properties.getProperty("smtp.from.absence.alias", "DO_NOT_REPLY");
             defaultCharset = properties.getProperty("smtp.charset", "utf-8");
             blockExternalRecipients = properties.getProperty("smtp.block_external_recipients", Boolean.class, false);
             messageIdPattern = properties.getProperty("smtp.message_id_pattern", "%id%@smtp.protei.ru");
@@ -314,6 +318,10 @@ public class PortalConfigData {
             return fromAddressPortal;
         }
 
+        public String getFromAddressAbsence() {
+            return fromAddressAbsence;
+        }
+
         public String getMessageIdPattern() {
             return messageIdPattern;
         }
@@ -324,6 +332,10 @@ public class PortalConfigData {
 
         public String getFromAddressPortalAlias() {
             return fromAddressPortalAlias;
+        }
+
+        public String getFromAddressAbsenceAlias() {
+            return fromAddressAbsenceAlias;
         }
     }
 
