@@ -193,6 +193,7 @@ public class DebugIds {
         String CREATOR_ADD_BUTTON = "filter-creator-add-button";
         String CREATOR_CLEAR_BUTTON = "filter-creator-clear-button";
         String CREATOR_ITEM_CONTAINER = "filter-creator-item-container";
+        String COMPANY_DEPRECATED = "filter-company-deprecated";
 
         String CREATE_BUTTON = "filter-create-button";
         String SAVE_BUTTON = "filter-save-button";
@@ -536,8 +537,13 @@ public class DebugIds {
         String EMAILS = "company-emails";
         String ACTUAL_ADDRESS = "company-actual-address";
         String LEGAL_ADDRESS = "company-legal-address";
+        String TABS = "company-tabs";
+        String TAB_CONTACTS = "company-tab-contacts";
+        String TAB_SITE_FOLDERS = "company-tab-site-folders";
         String CONTACTS = "company-contacts";
         String SITE_FOLDERS = "company-site-folders";
+        String SAVE_BUTTON = "company-save-button";
+        String CANCEL_BUTTON = "company-cancel-button";
     }
 
     public interface CONTACT_INFO {
