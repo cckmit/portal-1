@@ -960,9 +960,15 @@ public class DebugIds {
             String COMMENT = "site-folder-platform-comment";
             String UPLOADER = "site-folder-platform-uploader";
             String ATTACHMENTS = "site-folder-platform-attachment";
+            String TABS = "site-folder-platform-tabs";
+            String TAB_SERVERS = "site-folder-platform-tab-servers";
+            String TAB_COMPANY_CONTACTS = "site-folder-platform-tab-company-contacts";
             String SERVERS = "site-folder-servers";
             String CONTACTS = "site-folder-contacts";
             String TECHNICAL_SUPPORT_VALIDITY = "site-folder-technical-support-validity";
+
+            String SAVE_BUTTON = "site-folder-save-button";
+            String CANCEL_BUTTON = "site-folder-cancel-button";
         }
         interface SERVER {
             String OPEN_BUTTON = "site-folder-server-open-button";
