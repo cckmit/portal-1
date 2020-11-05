@@ -21,6 +21,7 @@ import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTex
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
+import ru.protei.portal.ui.common.client.widget.tab.TabWidget;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditActivity;
@@ -193,8 +194,15 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         emailsContainer.ensureDebugId(DebugIds.COMPANY.EMAILS);
         actualAddress.ensureDebugId(DebugIds.COMPANY.ACTUAL_ADDRESS);
         legalAddress.ensureDebugId(DebugIds.COMPANY.LEGAL_ADDRESS);
+        tabWidget.ensureDebugId(DebugIds.COMPANY.TABS);
+        tabWidget.setTabNameDebugId(lang.contacts(), DebugIds.COMPANY.TAB_CONTACTS);
+        tabWidget.setTabNameDebugId(lang.siteFolder(), DebugIds.COMPANY.TAB_CONTACTS);
+        tabWidget.ensureDebugId(DebugIds.COMPANY.TABS);
         contactsContainer.ensureDebugId(DebugIds.COMPANY.CONTACTS);
         siteFolderContainer.ensureDebugId(DebugIds.COMPANY.SITE_FOLDERS);
+
+        saveButton.ensureDebugId(DebugIds.COMPANY.SAVE_BUTTON);
+        cancelButton.ensureDebugId(DebugIds.COMPANY.CANCEL_BUTTON);
     }
 
     @UiField
@@ -240,6 +248,9 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     @Inject
     @UiField ( provided = true )
     CategoryButtonSelector companyCategory;
+
+    @UiField
+    TabWidget tabWidget;
 
     @UiField
     HTMLPanel contactsContainer;

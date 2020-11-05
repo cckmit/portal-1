@@ -133,7 +133,7 @@
             </div>
 
             <g:HTMLPanel  styleName="container-fluid padding-15 bg-white">
-                <tab:TabWidget styleName="">
+                <tab:TabWidget styleName="" ui:field="tabWidget">
                     <tab:pane.TabWidgetPane tabName="{lang.contacts}">
                         <g:HTMLPanel ui:field="contactsContainer"/>
                     </tab:pane.TabWidgetPane>

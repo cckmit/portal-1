@@ -111,6 +111,7 @@ public class CompanyFilterView extends Composite implements AbstractCompanyFilte
     }
 
     private void ensureDebugIds() {
+        showDeprecated.ensureDebugId(DebugIds.FILTER.COMPANY_DEPRECATED);
         search.setDebugIdTextBox(DebugIds.FILTER.SEARCH_INPUT);
         search.setDebugIdAction(DebugIds.FILTER.SEARCH_CLEAR_BUTTON);
         sortField.setEnsureDebugId(DebugIds.FILTER.SORT_FIELD_SELECTOR);
