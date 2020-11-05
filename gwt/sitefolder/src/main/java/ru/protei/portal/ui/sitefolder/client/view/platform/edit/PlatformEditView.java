@@ -13,12 +13,14 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.project.ProjectButtonSelector;
+import ru.protei.portal.ui.common.client.widget.tab.TabWidget;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
@@ -201,12 +203,17 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
         comment.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.COMMENT);
         fileUploader.setEnsureDebugId(DebugIds.SITE_FOLDER.PLATFORM.UPLOADER);
         attachmentContainer.setEnsureDebugId(DebugIds.SITE_FOLDER.PLATFORM.ATTACHMENTS);
-
+        tabWidget.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.TABS);
+        tabWidget.setTabNameDebugId(lang.siteFolderServers(), DebugIds.SITE_FOLDER.PLATFORM.TAB_SERVERS);
+        tabWidget.setTabNameDebugId(lang.siteFolderCompanyContacts(), DebugIds.SITE_FOLDER.PLATFORM.TAB_COMPANY_CONTACTS);
         listContainer.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.SERVERS);
         openButton.ensureDebugId(DebugIds.SITE_FOLDER.SERVER.OPEN_BUTTON);
         createButton.ensureDebugId(DebugIds.SITE_FOLDER.SERVER.CREATE_BUTTON);
 
         contactsContainer.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.CONTACTS);
+
+        saveButton.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.SAVE_BUTTON);
+        cancelButton.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.CANCEL_BUTTON);
     }
 
     @UiField
@@ -223,6 +230,8 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
     TextArea comment;
     @UiField
     HTMLPanel listContainerHeader;
+    @UiField
+    TabWidget tabWidget;
     @UiField
     HTMLPanel listContainer;
     @UiField
@@ -243,6 +252,9 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
     @Inject
     @UiField(provided = true)
     ProjectButtonSelector project;
+
+    @UiField
+    Lang lang;
 
     private AbstractPlatformEditActivity activity;
 
