@@ -204,7 +204,7 @@ public class CaseServiceImpl implements CaseService {
         newState.setNotifiers(caseObject.getNotifiers());
         CaseObjectCreateEvent caseObjectCreateEvent = new CaseObjectCreateEvent(this, ServiceModule.GENERAL, token.getPersonId(), newState);
 
-        return new Result<>(En_ResultStatus.OK, newState, (addLinksResult.isOk() ? null : SOME_LINKS_NOT_SAVED), Collections.singletonList(caseObjectCreateEvent));
+        return new Result<>(En_ResultStatus.OK, newState, (addLinksResult.isOk() ? null : SOME_LINKS_NOT_SAVED), listOf(caseObjectCreateEvent));
     }
 
     @Override
@@ -339,22 +339,23 @@ public class CaseServiceImpl implements CaseService {
             }
         }
 
+        Result<Long> openingParentsResult = ok(caseMeta.getId());
         if (oldCaseMeta.getStateId() != caseMeta.getStateId() && isTerminalState(caseMeta.getStateId())) {
-            openParentIssuesIfNeed(token, caseMeta.getId());
+            openingParentsResult = openParentIssuesIfNeed(token, caseMeta.getId());
         }
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
         CaseObjectMeta newCaseMeta = caseObjectMetaDAO.get(caseMeta.getId());
 
         return ok(newCaseMeta)
-                .publishEvent( new CaseObjectMetaEvent(
+                .publishEvent(new CaseObjectMetaEvent(
                 this,
                 ServiceModule.GENERAL,
                 token.getPersonId(),
                 En_ExtAppType.forCode(oldState.getExtAppType()),
                 oldCaseMeta,
-                newCaseMeta
-        ) );
+                newCaseMeta))
+                .publishEvents(openingParentsResult.getEvents());
     }
 
     @Override
@@ -713,10 +714,10 @@ public class CaseServiceImpl implements CaseService {
         Result<CaseObjectMeta> parentUpdate = updateCaseObjectMeta(token, new CaseObjectMeta(parentCaseObject));
         if (parentUpdate.isError()) {
             log.error("createSubtask(): parent-id = {} | failed to save parent issue to db with result = {}", parentCaseObjectId, result);
-            throw new ResultStatusException(result.getStatus());
+            throw new ResultStatusException(parentUpdate.getStatus());
         }
 
-        return result;
+        return result.publishEvents(parentUpdate.getEvents());
     }
 
     private Long createAndPersistTimeElapsedMessage(Long authorId, Long caseId, Long timeElapsed, En_TimeElapsedType timeElapsedType) {
@@ -900,21 +901,26 @@ public class CaseServiceImpl implements CaseService {
                 .allMatch(caseLink -> isTerminalState(caseLink.getCaseInfo().getStateId()));
     }
 
-    private void openParentIssuesIfNeed(AuthToken token, long caseObjectId) {
+    private Result<Long> openParentIssuesIfNeed(AuthToken token, long caseObjectId) {
         List<CaseLink> caseLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(caseObjectId, En_BundleType.SUBTASK));
 
-        caseLinks.stream().forEach(caseLink ->
-                openIssueIfNeed(token, NumberUtils.toLong(caseLink.getRemoteId()))
-        );
+        Result<Long> result = ok(caseObjectId);
+
+        for(CaseLink caseLink : caseLinks) {
+            Result<Long> opened = openIssueIfNeed(token, NumberUtils.toLong(caseLink.getRemoteId()));
+            result.publishEvents(opened.getEvents());
+        }
+
+        return result;
     }
 
-    private void openIssueIfNeed(AuthToken token, Long caseObjectId) {
+    private Result<Long> openIssueIfNeed(AuthToken token, Long caseObjectId) {
         List<CaseLink> caseLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(caseObjectId, En_BundleType.PARENT_FOR));
 
         if (caseLinks.stream()
                 .anyMatch(caseLink -> !isTerminalState(caseLink.getCaseInfo().getState().getId()))) {
             log.info("Case with id {} not opened, not all subtasks is terminal", caseObjectId);
-            return;
+            return ok(caseObjectId);
         }
 
         CaseObjectMeta caseObjectMeta = caseObjectMetaDAO.get(caseObjectId);
@@ -923,7 +929,10 @@ public class CaseServiceImpl implements CaseService {
         Result<CaseObjectMeta> result = updateCaseObjectMeta(token, caseObjectMeta);
         if (result.isError()) {
             log.error("Failed to open case with id {}, status={}", caseObjectId, result.getStatus());
+            throw new ResultStatusException(result.getStatus());
         }
+
+        return ok(caseObjectId).publishEvents(result.getEvents());
     }
 
     private boolean validateFieldsOfNew(AuthToken token, CaseObject caseObject) {
