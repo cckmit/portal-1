@@ -65,14 +65,21 @@ public class StringUtils {
         return join(null, str);
     }
 
+    /**
+     * null - не выводится
+     */
     public static StringBuilder join(StringBuilder sb, CharSequence... str) {
         if (sb == null) sb = new StringBuilder();
         for (CharSequence chars : str) {
+            if (chars == null) continue;
             sb.append(chars);
         }
         return sb;
     }
 
+    /**
+     * null - не выводится
+     */
     public static <T> String join( Iterable<T> iterable, Function<T, String> mapper, CharSequence delimiter) {
         if (iterable == null) {
             return null;
