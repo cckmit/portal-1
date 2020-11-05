@@ -5,13 +5,11 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledEmployeeRegistrationEvent;
-import ru.protei.portal.core.exception.ResultStatusException;
+
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -19,11 +17,8 @@ import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import javax.annotation.PostConstruct;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
@@ -198,7 +193,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
                 needMonitor ? "\n Требуется установить новый Монитор." : null,
                 "\n Предоставить доступ к ресурсам: ", join( resourceList, r -> getResourceName( r ), ", " ),
                 isBlank( employeeRegistration.getResourceComment() ) ? null :
-                        "\n Дополнительно: " + employeeRegistration.getResourceComment(),
+                        "\n   Дополнительно: " + employeeRegistration.getResourceComment(),
                 makeWorkplaceConfigurationString( employeeRegistration.getOperatingSystem(), employeeRegistration.getAdditionalSoft() ),
                 employeeRegistration.getEmploymentDate() == null ? null :
                         "\n Дата приёма на работу: " +  new SimpleDateFormat("dd.MM.yyyy").format(employeeRegistration.getEmploymentDate()),
