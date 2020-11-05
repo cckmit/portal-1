@@ -623,6 +623,7 @@ public class PortalConfigData {
         private final String employeeRegistrationSyncSchedule;
         private final String equipmentProject;
         private final String adminProject;
+        private final String hozvoprosProject;
         private final String phoneProject;
         private final Long youtrackUserId;
         private final String youtrackCustomFieldCompanyId;
@@ -634,6 +635,7 @@ public class PortalConfigData {
             employeeRegistrationSyncSchedule = properties.getProperty("youtrack.employee_registration.sync_schedule", "0 */15 * * * *");
             equipmentProject = properties.getProperty("youtrack.employee_registration.equipment_project");
             adminProject = properties.getProperty("youtrack.employee_registration.admin_project");
+            hozvoprosProject = properties.getProperty("youtrack.employee_registration.hozvopros_project");
             phoneProject = properties.getProperty("youtrack.employee_registration.phone_project");
             youtrackUserId = properties.getProperty("youtrack.user_id_for_synchronization", Long.class);
             youtrackCustomFieldCompanyId = properties.getProperty("youtrack.custom_field_company_id");
@@ -661,6 +663,10 @@ public class PortalConfigData {
 
         public String getAdminProject() {
             return adminProject;
+        }
+
+        public String getHozvoprosProject() {
+            return hozvoprosProject;
         }
 
         public String getPhoneProject() {

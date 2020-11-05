@@ -22,6 +22,8 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import javax.annotation.PostConstruct;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
@@ -97,6 +99,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
             String youTrackIssueId = createAdminYoutrackIssueIfNeeded( employeeRegistration );
             createPhoneYoutrackIssueIfNeeded(employeeRegistration, youTrackIssueId);
             createEquipmentYoutrackIssueIfNeeded(employeeRegistration);
+            createHozvoprosYoutrackIssueIfNeeded(employeeRegistration);
         }
 
         return ok(id).publishEvent(new AssembledEmployeeRegistrationEvent(this, null, employeeRegistration));
@@ -264,7 +267,8 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         if (isEmpty(employeeRegistration.getEquipmentList())) {
             return;
         }
-        Set<En_EmployeeEquipment> equipmentsListFurniture = getEquipmentsListFurniture(employeeRegistration.getEquipmentList());
+
+        List<En_EmployeeEquipment> equipmentsListFurniture = filterToList( employeeRegistration.getEquipmentList(), eq -> En_EmployeeEquipment.MONITOR == eq );
         if (isEmpty(equipmentsListFurniture)) {
             return;
         }
@@ -283,11 +287,30 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         );
     }
 
-    private Set<En_EmployeeEquipment> getEquipmentsListFurniture(Set<En_EmployeeEquipment> employeeRegistration) {
-        Set<En_EmployeeEquipment> equipmentsListFurniture = new HashSet<>(employeeRegistration);
-        equipmentsListFurniture.remove(En_EmployeeEquipment.TELEPHONE);
-        equipmentsListFurniture.remove(En_EmployeeEquipment.COMPUTER);
-        return equipmentsListFurniture;
+    private void createHozvoprosYoutrackIssueIfNeeded(EmployeeRegistration employeeRegistration) {
+        if (isEmpty(employeeRegistration.getEquipmentList())) {
+            return;
+        }
+
+        List<En_EmployeeEquipment> equipmentsListFurniture = filterToList( employeeRegistration.getEquipmentList(),
+                eq -> En_EmployeeEquipment.CHAIR == eq || En_EmployeeEquipment.TABLE == eq );
+
+        if (isEmpty(equipmentsListFurniture)) {
+            return;
+        }
+        String summary = "Оборудование для нового сотрудника " + employeeRegistration.getEmployeeFullName();
+
+        String description = join( makeCommonDescriptionString( employeeRegistration ),
+                "\n", employeeRegistration.getEmploymentDate() == null ? "" :
+                        "Дата приёма на работу: " +  new SimpleDateFormat("dd.MM.yyyy").format(employeeRegistration.getEmploymentDate()),
+                "\n", "Необходимо: ", join( equipmentsListFurniture, e -> getEquipmentName( e ), ", " )
+        ).toString();
+
+        final String HOZVOPROS_PROJECT_NAME = portalConfig.data().youtrack().getHozvoprosProject();
+
+        youtrackService.createIssue( HOZVOPROS_PROJECT_NAME, summary, description ).ifOk( issueId ->
+                saveCaseLink( employeeRegistration.getId(), issueId )
+        );
     }
 
     private CharSequence makeCommonDescriptionString( EmployeeRegistration er ) {
