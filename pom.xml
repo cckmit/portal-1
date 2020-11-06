@@ -91,6 +91,7 @@
                 <module>module/ws-api</module>
                 <module>module/jira</module>
                 <module>module/redmine</module>
+                <module>module/nrpe</module>
             </modules>
         </profile>
 
@@ -101,6 +102,7 @@
                 <module>module/embeddeddb</module>
                 <module>module/core</module>
                 <module>module/ws-api</module>
+                <module>module/nrpe</module>
             </modules>
         </profile>
 
