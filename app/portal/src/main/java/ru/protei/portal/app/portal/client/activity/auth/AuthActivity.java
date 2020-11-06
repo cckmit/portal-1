@@ -83,9 +83,7 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
                     view.hideError();
                     fireAuthSuccess(profile);
                     fireEvent(new NotifyEvents.Show(lang.msgHello(), NotifyEvents.NotifyType.SUCCESS));
-                    final Boolean rememberMeCheck = view.rememberMe().getValue();
-                    storage.set(REMEMBER_ME_PREFIX + "check", String.valueOf(rememberMeCheck));
-                    if (rememberMeCheck) {
+                    if ( view.rememberMe().getValue() ) {
                         String pwdCrypt = encrypt(pwd);
                         storage.set(REMEMBER_ME_PREFIX + "login", login);
                         storage.set(REMEMBER_ME_PREFIX + "pwd", pwdCrypt);
@@ -102,10 +100,14 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
 
     @Override
     public void onWindowsFocus() {
-        final boolean rememberMe = Boolean.parseBoolean(storage.get(REMEMBER_ME_PREFIX + "check"));
-        if (rememberMe) {
-            tryAutoLogin();
+        String loginFromStorage = storage.get(REMEMBER_ME_PREFIX + "login");
+        String pwdFromStorage = storage.get(REMEMBER_ME_PREFIX + "pwd");
+
+        if (loginFromStorage == null || pwdFromStorage == null) {
+            return;
         }
+
+        tryAutoLogin();
     }
 
     private void tryAutoLogin() {
@@ -162,7 +164,6 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
     private void resetRememberMe() {
         storage.remove(REMEMBER_ME_PREFIX + "login");
         storage.remove(REMEMBER_ME_PREFIX + "pwd");
-        storage.remove(REMEMBER_ME_PREFIX + "check");
     }
 
     private String encrypt(String pwd) {
