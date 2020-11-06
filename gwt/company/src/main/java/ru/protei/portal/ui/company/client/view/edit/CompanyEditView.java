@@ -196,7 +196,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         legalAddress.ensureDebugId(DebugIds.COMPANY.LEGAL_ADDRESS);
         tabWidget.ensureDebugId(DebugIds.COMPANY.TABS);
         tabWidget.setTabNameDebugId(lang.contacts(), DebugIds.COMPANY.TAB_CONTACTS);
-        tabWidget.setTabNameDebugId(lang.siteFolder(), DebugIds.COMPANY.TAB_CONTACTS);
+        tabWidget.setTabNameDebugId(lang.siteFolder(), DebugIds.COMPANY.TAB_SITE_FOLDERS);
         contactsContainer.ensureDebugId(DebugIds.COMPANY.CONTACTS);
         siteFolderContainer.ensureDebugId(DebugIds.COMPANY.SITE_FOLDERS);
 
