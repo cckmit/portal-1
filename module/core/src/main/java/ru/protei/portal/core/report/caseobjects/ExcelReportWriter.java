@@ -25,6 +25,7 @@ import java.io.OutputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.Optional.ofNullable;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
 import static ru.protei.portal.core.model.util.TransliterationUtils.transliterate;
@@ -270,13 +271,9 @@ public class ExcelReportWriter implements
 
     private String getCaseNumbersAsString(Collection<CaseLink> caseLinks, final Lang.LocalizedLang lang) {
         return stream(caseLinks)
-                .map(caseLink -> {
-                    if (caseLink.getCaseInfo() == null) {
-                        return caseLink.getRemoteId();
-                    }
-
-                    return lang.get("crmPrefix") + caseLink.getCaseInfo().getCaseNumber();
-                })
+                .map(caseLink -> ofNullable(caseLink.getCaseInfo())
+                        .map(info -> lang.get("crmPrefix") + caseLink.getCaseInfo().getCaseNumber())
+                        .orElse(caseLink.getRemoteId()))
                 .collect(Collectors.joining(","));
     }
 
