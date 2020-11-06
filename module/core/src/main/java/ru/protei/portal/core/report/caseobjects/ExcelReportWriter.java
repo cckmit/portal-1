@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -21,10 +22,8 @@ import ru.protei.portal.core.utils.JXLSHelper;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
@@ -186,7 +185,7 @@ public class ExcelReportWriter implements
         values.add(issue.getImportanceLevel() != null ? issue.getImportanceLevel().getCode() : "");
         values.add(HelperFunc.isNotEmpty(issue.getStateName()) ? issue.getStateName() : "");
         if (withTags) values.add(String.join(",", toList(emptyIfNull(object.getCaseTags()), CaseTag::getName)));
-        if (withLinkedIssues) values.add(String.join(",", toList(emptyIfNull(object.getCaseLinks()), caseLink -> String.valueOf(caseLink.getCaseInfo().getCaseNumber()))));
+        if (withLinkedIssues) values.add(getCaseNumbersAsString(object.getCaseLinks(), lang));
         values.add(created != null ? created : "");
         values.add(opened != null ? opened : "");
         values.add(workaround != null ? workaround : "");
@@ -267,6 +266,18 @@ public class ExcelReportWriter implements
             return minutes > 0 ? minutes : null;
         }
         return null;
+    }
+
+    private String getCaseNumbersAsString(Collection<CaseLink> caseLinks, final Lang.LocalizedLang lang) {
+        return stream(caseLinks)
+                .map(caseLink -> {
+                    if (caseLink.getCaseInfo() == null) {
+                        return caseLink.getRemoteId();
+                    }
+
+                    return lang.get("crmPrefix") + caseLink.getCaseInfo().getCaseNumber();
+                })
+                .collect(Collectors.joining(","));
     }
 
     private String[] getFormats(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues, boolean isHumanReadable, boolean withImportanceHistory) {
