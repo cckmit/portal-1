@@ -3,6 +3,7 @@ package ru.protei.portal.app.portal.client.activity.auth;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.rpc.IncompatibleRemoteServiceException;
+import com.google.gwt.user.client.rpc.StatusCodeException;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -66,6 +67,11 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
         authService.authenticate(login, pwd, new FluentCallback<Profile>()
                 .withError(throwable -> {
                     log.warning( "onLoginClicked(): e: " + throwable );
+                    if ( throwable instanceof StatusCodeException ) {
+                        view.showError(lang.errServerUnavailable());
+                        return;
+                    }
+
                     if ( throwable instanceof IncompatibleRemoteServiceException) {
                         defaultErrorHandler.accept( throwable );
                         return;
@@ -93,6 +99,18 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
                 }));
     }
 
+    @Override
+    public void onWindowsFocus() {
+        String loginFromStorage = storage.get(REMEMBER_ME_PREFIX + "login");
+        String pwdFromStorage = storage.get(REMEMBER_ME_PREFIX + "pwd");
+
+        if (loginFromStorage == null || pwdFromStorage == null) {
+            return;
+        }
+
+        tryAutoLogin();
+    }
+
     private void tryAutoLogin() {
         String login = storage.getOrDefault(REMEMBER_ME_PREFIX + "login", null);
         String pwd = storage.getOrDefault(REMEMBER_ME_PREFIX + "pwd", null);
@@ -105,6 +123,10 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
         }
         authService.authenticate(login, pwd, new FluentCallback<Profile>()
                 .withError(throwable -> {
+                    if ( throwable instanceof StatusCodeException ) {
+                        view.showError(lang.errServerUnavailable());
+                    }
+
                     if(throwable instanceof RequestFailedException) {
                         resetRememberMe();
                     }
