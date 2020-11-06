@@ -10,8 +10,10 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
+import ru.protei.portal.ui.common.client.widget.tab.TabWidget;
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.preview.AbstractPlatformPreviewActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.preview.AbstractPlatformPreviewView;
 
@@ -127,6 +129,9 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
         project.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.PROJECT);
         technicalSupportValidity.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.SITE_FOLDER.PLATFORM.TECHNICAL_SUPPORT_VALIDITY);
         attachmentContainer.setEnsureDebugId(DebugIds.SITE_FOLDER.PLATFORM.ATTACHMENTS);
+        tabWidget.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.TABS);
+        tabWidget.setTabNameDebugId(lang.siteFolderServers(), DebugIds.SITE_FOLDER.PLATFORM.TAB_SERVERS);
+        tabWidget.setTabNameDebugId(lang.siteFolderCompanyContacts(), DebugIds.SITE_FOLDER.PLATFORM.TAB_COMPANY_CONTACTS);
         serversContainer.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.SERVERS);
         contactsContainer.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.CONTACTS);
     }
@@ -148,6 +153,8 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     @UiField
     Label comment;
     @UiField
+    TabWidget tabWidget;
+    @UiField
     HTMLPanel contactsContainer;
     @UiField
     HTMLPanel serversContainer;
@@ -162,6 +169,8 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     HTMLPanel footerContainer;
     @UiField
     HTMLPanel previewWrapperContainer;
+    @UiField
+    Lang lang;
 
     private AbstractPlatformPreviewActivity activity;
 
