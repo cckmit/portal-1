@@ -37,6 +37,8 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
          */
         if (isPortalStarted.getAndSet( true )) return;
 
+        scheduler.scheduleAtFixedRate(this::notifyExpiringTechnicalSupportValidity, TimeUnit.MINUTES.toMillis(1));
+
         /**
          * Bootstrap data of application
          * First of ALL
@@ -156,6 +158,11 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         employeeService.notifyAboutBirthdays();
     }
 
+    private void notifyExpiringTechnicalSupportValidity() {
+        log.info( "notifyExpiringTechnicalSupportValidity" );
+        projectService.notifyExpiringTechnicalSupportValidity();
+    }
+
     private boolean isNotConfiguredSystemId() {
         if (HelperFunc.isEmpty(config.data().getCommonConfig().getSystemId())) {
             log.warn("reports is not started because system.id not set in configuration");
@@ -192,6 +199,8 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
     AutoOpenCaseService autoOpenCaseService;
     @Autowired
     DocumentService documentService;
+    @Autowired
+    ProjectService projectService;
     @Autowired
     EmployeeRegistrationYoutrackSynchronizer employeeRegistrationYoutrackSynchronizer;
     private static AtomicBoolean isPortalStarted = new AtomicBoolean(false);

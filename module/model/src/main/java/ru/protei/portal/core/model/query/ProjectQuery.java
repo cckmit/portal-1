@@ -46,6 +46,10 @@ public class ProjectQuery extends BaseQuery {
 
     private Integer deleted;
 
+    private Date expiringTechnicalSupportValidityFrom;
+
+    private Date expiringTechnicalSupportValidityTo;
+
     public ProjectQuery() {
         sortField = En_SortField.case_name;
         sortDir = En_SortDir.ASC;
@@ -208,6 +212,22 @@ public class ProjectQuery extends BaseQuery {
         this.deleted = deleted;
     }
 
+    public Date getExpiringTechnicalSupportValidityFrom() {
+        return expiringTechnicalSupportValidityFrom;
+    }
+
+    public void setExpiringTechnicalSupportValidityFrom(Date expiringTechnicalSupportValidityFrom) {
+        this.expiringTechnicalSupportValidityFrom = expiringTechnicalSupportValidityFrom;
+    }
+
+    public Date getExpiringTechnicalSupportValidityTo() {
+        return expiringTechnicalSupportValidityTo;
+    }
+
+    public void setExpiringTechnicalSupportValidityTo(Date expiringTechnicalSupportValidityTo) {
+        this.expiringTechnicalSupportValidityTo = expiringTechnicalSupportValidityTo;
+    }
+
     @Override
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
@@ -224,7 +244,9 @@ public class ProjectQuery extends BaseQuery {
                 createdTo != null ||
                 platformIndependentProject != null ||
                 pauseDateGreaterThan != null ||
-                deleted != null;
+                deleted != null ||
+                expiringTechnicalSupportValidityFrom != null ||
+                expiringTechnicalSupportValidityTo != null;
     }
 
     @Override
@@ -247,6 +269,8 @@ public class ProjectQuery extends BaseQuery {
                 ", initiatorCompanyIds=" + initiatorCompanyIds +
                 ", pauseDateGreaterThan=" + pauseDateGreaterThan +
                 ", deleted=" + deleted +
+                ", expiringTechnicalSupportValidityFrom=" + expiringTechnicalSupportValidityFrom +
+                ", expiringTechnicalSupportValidityTo=" + expiringTechnicalSupportValidityTo +
                 '}';
     }
 
@@ -270,13 +294,16 @@ public class ProjectQuery extends BaseQuery {
                 Objects.equals(platformIndependentProject, that.platformIndependentProject) &&
                 Objects.equals(initiatorCompanyIds, that.initiatorCompanyIds) &&
                 Objects.equals(pauseDateGreaterThan, that.pauseDateGreaterThan) &&
-                Objects.equals(deleted, that.deleted);
+                Objects.equals(deleted, that.deleted) &&
+                Objects.equals(expiringTechnicalSupportValidityFrom, that.expiringTechnicalSupportValidityFrom) &&
+                Objects.equals(expiringTechnicalSupportValidityTo, that.expiringTechnicalSupportValidityTo);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(caseIds, states, regions, headManagers, caseMembers, directions,
                 districtIds, memberId, productIds, customerType, createdFrom, createdTo,
-                platformIndependentProject, initiatorCompanyIds, pauseDateGreaterThan, deleted);
+                platformIndependentProject, initiatorCompanyIds, pauseDateGreaterThan, deleted,
+                expiringTechnicalSupportValidityFrom, expiringTechnicalSupportValidityTo);
     }
 }

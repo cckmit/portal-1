@@ -589,6 +589,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public ProjectTechnicalSupportValidityReportInfoDAO getProjectTechnicalSupportValidityReportInfoDAO() {
+        return new ProjectTechnicalSupportValidityReportInfoDAO_Impl();
+    }
+
+    @Bean
     public ContractDateDAO getContractDateDAO() {
         return new ContractDateDAO_Impl();
     }

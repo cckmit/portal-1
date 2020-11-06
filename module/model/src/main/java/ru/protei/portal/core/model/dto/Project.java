@@ -26,6 +26,7 @@ public class Project extends AuditableObject {
 
     public static final int NOT_DELETED = CaseObject.NOT_DELETED;
     public static final String CASE_OBJECT_ALIAS = "CO";
+    public static final String CASE_MEMBER_ALIAS = "CM";
 
     /**
      * Идентификатор записи о проекте

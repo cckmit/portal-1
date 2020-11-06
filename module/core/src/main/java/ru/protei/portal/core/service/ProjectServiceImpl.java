@@ -13,12 +13,14 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.dto.ProjectInfo;
+import ru.protei.portal.core.model.dto.ProjectTechnicalSupportValidityReportInfo;
 import ru.protei.portal.core.model.dto.RegionInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.LocationQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -40,6 +42,7 @@ import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
 import static ru.protei.portal.core.access.ProjectAccessUtil.canAccessProject;
 import static ru.protei.portal.core.access.ProjectAccessUtil.getProjectAccessType;
+import static ru.protei.portal.core.model.dict.En_SortField.project_head_manager;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.view.PersonProjectMemberView.fromFullNamePerson;
 
@@ -78,6 +81,8 @@ public class ProjectServiceImpl implements ProjectService {
     CaseLinkService caseLinkService;
     @Autowired
     ProjectDAO projectDAO;
+    @Autowired
+    ProjectTechnicalSupportValidityReportInfoDAO projectTechnicalSupportValidityReportInfoDAO;
     @Autowired
     PortalScheduleTasks scheduledTasksService;
     @Autowired
@@ -435,6 +440,32 @@ public class ProjectServiceImpl implements ProjectService {
                 .map(leader -> PersonShortView.fromFullNamePerson(leader.getMember()))
                 .map(Result::ok)
                 .orElse(ok(null));
+    }
+
+    @Override
+    public Result<Void> notifyExpiringTechnicalSupportValidity() {
+        log.info("notifyExpiringTechnicalSupportValidity(): start");
+
+        ProjectQuery query = getExpiringTechnicalSupportValidityProjectQuery(new Date(1604678855053L));        // todo to now()
+
+        int limit = 5;
+        SearchResult<ProjectTechnicalSupportValidityReportInfo> searchResult;
+        do {
+            searchResult = projectTechnicalSupportValidityReportInfoDAO.getSearchResultByQuery(query);
+            query.setOffset(query.getOffset() + limit);
+        } while (searchResult.getResults().size() == limit);
+
+        log.info("notifyExpiringTechnicalSupportValidity(): done");
+        return ok();
+    }
+
+    private ProjectQuery getExpiringTechnicalSupportValidityProjectQuery(Date now) {
+        ProjectQuery query = new ProjectQuery();
+        query.setSortField(project_head_manager);
+        query.setExpiringTechnicalSupportValidityFrom(now);
+        query.setExpiringTechnicalSupportValidityTo(new Date(now.getTime() + 30 * CrmConstants.Time.DAY));
+        query.setOffset(0);
+        return query;
     }
 
     private boolean validateFields(Project project) {

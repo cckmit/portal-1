@@ -2,7 +2,8 @@ package ru.protei.portal.core.model.dao.impl;
 
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.ProjectDAO;
-import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dict.En_DateIntervalType;
+import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -230,6 +231,16 @@ public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements Proje
 
             if (query.getDeleted() != null) {
                 condition.append(" and CO.deleted = ").append(query.getDeleted());
+            }
+
+            if (query.getExpiringTechnicalSupportValidityFrom() != null) {
+                condition.append( " and project.technical_support_validity >= ?" );
+                args.add( query.getExpiringTechnicalSupportValidityFrom() );
+            }
+
+            if (query.getExpiringTechnicalSupportValidityTo() != null) {
+                condition.append( " and project.technical_support_validity <= ?" );
+                args.add( query.getExpiringTechnicalSupportValidityTo() );
             }
         }));
     }
