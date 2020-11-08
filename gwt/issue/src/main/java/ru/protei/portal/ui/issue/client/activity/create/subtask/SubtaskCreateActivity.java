@@ -115,6 +115,7 @@ public abstract class SubtaskCreateActivity implements AbstractSubtaskCreateActi
         subcontractorCompanyModel.setCompanyId(caseObject.getInitiatorCompanyId());
         view.managerCompany().setValue(null);
         view.manager().setValue(null);
+        view.setFocusName();
     }
 
     private boolean validate() {

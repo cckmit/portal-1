@@ -18,4 +18,5 @@ public interface AbstractSubtaskCreateView extends IsWidget {
     HasValue<PersonShortView> manager();
     void setManagerCompanyModel(SubcontractorCompanyModel subcontractorCompanyModel);
     void updateManagersCompanyFilter(Long managerCompanyId);
+    void setFocusName();
 }

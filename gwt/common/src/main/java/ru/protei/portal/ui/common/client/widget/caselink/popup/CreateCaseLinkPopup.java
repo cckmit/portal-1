@@ -58,6 +58,7 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
 
         fillOptionsToTypeSelector();
         setValueToTypeSelector(En_CaseLink.CRM);
+        updateBundleTypeSelector();
     }
 
     @Override
@@ -97,10 +98,15 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
             return;
         }
 
+        En_BundleType bundleType = bundleTypeSelector.getValue();
+        if (bundleType == null) {
+            return;
+        }
+
         CaseLink caseLink = new CaseLink();
         caseLink.setRemoteId(remoteId);
         caseLink.setType(type);
-        caseLink.setBundleType(En_BundleType.LINKED_WITH);
+        caseLink.setBundleType(bundleType);
         ValueChangeEvent.fire(this, caseLink);
 
         hide();
@@ -122,6 +128,12 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
 
     @UiHandler("typeSelector")
     public void typeSelectorChanged(ValueChangeEvent<En_CaseLink> event) {
+        remoteIdInput.setFocus(true);
+        updateBundleTypeSelector();
+    }
+
+    @UiHandler("bundleTypeSelector")
+    public void bundleTypeSelectorChanged(ValueChangeEvent<En_BundleType> event) {
         remoteIdInput.setFocus(true);
     }
 
@@ -152,11 +164,19 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
         }
     }
 
+    private void updateBundleTypeSelector() {
+        bundleTypeSelector.updateElements(En_BundleType.getMapTypes().get(typeSelector.getValue()));
+        bundleTypeSelector.setValue(En_BundleType.LINKED_WITH);
+    }
+
     @UiField
     HTMLPanel root;
     @Inject
     @UiField(provided = true)
     CaseLinkTypeSelector typeSelector;
+    @Inject
+    @UiField(provided = true)
+    CaseLinkBundleTypeSelector bundleTypeSelector;
     @UiField
     EnterableTextBox remoteIdInput;
     @Inject

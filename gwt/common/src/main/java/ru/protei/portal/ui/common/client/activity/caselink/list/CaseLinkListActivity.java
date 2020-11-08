@@ -264,6 +264,9 @@ public abstract class CaseLinkListActivity
     }
 
     private void addLinkToParentAndModifyLinksCount(CaseLink value) {
+        if (bundleTypeToCaseLink.get(value.getBundleType()) == null) {
+            bundleTypeToCaseLink.put(value.getBundleType(), new ArrayList<>());
+        }
         bundleTypeToCaseLink.get(value.getBundleType()).add(value);
         makeCaseLinkViewAndAddToParent(value, bundleTypeToPanel.get(value.getBundleType()));
         resetLinksContainerStateByLinksCount();

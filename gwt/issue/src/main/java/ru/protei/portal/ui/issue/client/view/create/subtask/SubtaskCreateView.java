@@ -92,6 +92,11 @@ public class SubtaskCreateView extends Composite implements AbstractSubtaskCreat
         activity.onManagerCompanyChanged();
     }
 
+    @Override
+    public void setFocusName() {
+        name.setFocus(true);
+    }
+
     private HasValidable nameValidator = new HasValidable() {
         @Override
         public void setValid(boolean isValid) {
