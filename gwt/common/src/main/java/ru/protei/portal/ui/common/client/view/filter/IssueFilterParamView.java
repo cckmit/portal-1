@@ -711,7 +711,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
     private void updateInitiators( Set<EntityOption> initiatorsCompanies ) {
         Set<Long> companyIds = toSet( initiatorsCompanies, entityOption -> entityOption.getId() );
-        initiatorsModel.updateCompanies(initiators, null, companyIds, null);
+        initiatorsModel.updateCompanies(initiators, companyIds );
         if (isEmpty( companyIds )) {
             initiators.setValue( null );
         }
@@ -719,7 +719,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
     private void updateManagers(Set<EntityOption> managersCompanies) {
         Set<Long> companyIds = toSet( managersCompanies, entityOption -> entityOption.getId() );
-        managersModel.updateCompanies( managers, null, companyIds, null );
+        managersModel.updateCompanies( managers, companyIds );
         if (isEmpty( companyIds )) {
             managers.setValue( null );
         }

@@ -24,10 +24,13 @@ public class PersonButtonSelector extends ButtonPopupSingleSelector< PersonShort
 {
 
     @Inject
-    public void init(PersonModel model) {
-        this.model = model;
-        setModel(model);
+    public void init() {
         setItemRenderer( value -> value == null ? defaultValue : value.getName() );
+    }
+
+    public void setAsyncPersonModel( PersonModel model){
+        this.model = model;
+        setAsyncModel( model );
     }
 
     @Override
@@ -40,12 +43,12 @@ public class PersonButtonSelector extends ButtonPopupSingleSelector< PersonShort
         }
         return item;
     }
-
-    public void setFired ( boolean value ) { this.fired = value; }
-
-    public void setPeople(boolean isPeople) {
-        this.isPeople = isPeople;
-    }
+//
+//    public void setFired ( boolean value ) { this.fired = value; }
+//
+//    public void setPeople(boolean isPeople) {
+//        this.isPeople = isPeople;
+//    }
 
     @Override
     public void refresh() {
@@ -59,7 +62,7 @@ public class PersonButtonSelector extends ButtonPopupSingleSelector< PersonShort
     @Override
     public void onShowPopupClicked( ClickEvent event) {
 
-        if (CollectionUtils.isNotEmpty( companyIds )) {
+        if (model.isCompaniesPresent()) {
             super.onShowPopupClicked(event);
             checkNoElements();
         } else {
@@ -71,12 +74,12 @@ public class PersonButtonSelector extends ButtonPopupSingleSelector< PersonShort
         }
     }
 
-    public void updateCompanies(Set<Long> companyIds) {
-        this.companyIds = companyIds;
-        if (model != null) {
-            model.updateCompanies(this, isPeople, companyIds, fired);
-        }
-    }
+//    public void updateCompanies(Set<Long> companyIds) {
+//        this.companyIds = companyIds;
+//        if (model != null) {
+//            model.updateCompanies(this, isPeople, companyIds, fired);
+//        }
+//    }
 
     @Inject
     Lang lang;

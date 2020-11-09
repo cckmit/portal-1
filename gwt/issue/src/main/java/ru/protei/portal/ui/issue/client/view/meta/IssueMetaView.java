@@ -19,7 +19,6 @@ import ru.protei.portal.core.model.dict.En_WorkTrigger;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.TransliterationUtils;
@@ -64,6 +63,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         company.setAsyncModel( companyModel );
         initiator.setAsyncModel( initiatorModel );
         manager.setAsyncModel( managerModel );
+        notifiers.setItemRenderer( PersonShortView::getName );
         initView();
 
         ensureDebugIds();
@@ -174,12 +174,12 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     private static final Logger log = Logger.getLogger( IssueMetaView.class.getName() );
     @Override
     public void setInitiatorFilter(Long companyId) {
-        initiatorModel.updateCompanies( null,  null, setOf(companyId), null  );
+        initiatorModel.updateCompanies( null, setOf(companyId) );
     }
 
     @Override
     public void updateManagersCompanyFilter(Long managerCompanyId) {
-        managerModel.updateCompanies( null,  null, setOf(managerCompanyId), null  );
+        managerModel.updateCompanies( null, setOf(managerCompanyId) );
     }
 
     @Override

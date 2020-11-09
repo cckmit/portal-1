@@ -11,9 +11,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.UserRole;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.account.client.activity.edit.AbstractAccountEditActivity;
@@ -26,7 +24,6 @@ import ru.protei.portal.ui.common.client.widget.selector.person.PersonButtonSele
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
@@ -40,7 +37,7 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        person.setAsyncModel( personModel );
+        person.setAsyncPersonModel( personModel );
     }
 
     @Override
@@ -121,7 +118,7 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
 
     @Override
     public void setCompaniesForInitiator(Set<Long> companyIds) {
-        personModel.updateCompanies( person, null, companyIds, null );
+        personModel.updateCompanies( person, companyIds );
     }
 
     @UiHandler( "company" )

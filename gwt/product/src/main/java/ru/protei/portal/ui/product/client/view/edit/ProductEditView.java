@@ -61,7 +61,8 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
         configuration.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged( CONFIGURATION, isDisplay ));
         cdrDescription.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged( CDR_DESCRIPTION, isDisplay ));
         info.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged(INFO, isDisplay));
-        commonManager.setAsyncModel( commonManagerModel );
+        commonManagerModel.setIsPeople(false);
+        commonManager.setAsyncPersonModel( commonManagerModel );
 
         ensureDebugIds();
     }
@@ -199,7 +200,7 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
     @Override
     public void setCommonManagerCompanyId(Long id) {
-        commonManagerModel.updateCompanies( commonManager, null, setOf(id), null );
+        commonManagerModel.updateCompanies( commonManager, setOf(id) );
     }
 
     @Override
