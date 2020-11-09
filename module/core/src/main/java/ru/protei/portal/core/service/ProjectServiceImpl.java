@@ -447,22 +447,31 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Result<Void> notifyExpiringTechnicalSupportValidity() {
+    public Result<Boolean> notifyExpiringTechnicalSupportValidity() {
         log.info("notifyExpiringTechnicalSupportValidity(): start");
 
         Date now = new Date(1604678855053L); // todo to now
         final Stream<List<ProjectTechnicalSupportValidityReportInfo>> stream = StreamSupport.stream(((Iterable<List<ProjectTechnicalSupportValidityReportInfo>>)
                 () -> createListProjectTechnicalSupportValidityReportInfoIterator(now)).spliterator(), false);
 
-        stream.map(list -> list.stream().collect(Collectors.groupingBy(
-                    info -> groupingByExpiringTechnicalSupportValidityPeriod(info, now),
-                    toList())))
-                .forEach(map -> {
-                    map.entrySet();
-                });
-
+        final List<ExpiringTechnicalSupportValidityNotificationEvent> events = stream.map(list -> {
+            final Person headManager = makeNotificationPerson(list.get(0).getHeadManagerId());
+            final Map<En_ExpiringTechnicalSupportValidityPeriod, List<ProjectTechnicalSupportValidityReportInfo>> infos =
+                    list.stream().collect(Collectors.groupingBy(
+                            info -> groupingByExpiringTechnicalSupportValidityPeriod(info, now),
+                            toList()));
+            return new ExpiringTechnicalSupportValidityNotificationEvent(this, headManager, infos);
+        })
+                .collect(toList());
         log.info("notifyExpiringTechnicalSupportValidity(): done");
-        return ok();
+        return ok(true).publishEvents(events);
+    }
+
+    private Person makeNotificationPerson(long id) {
+        Person person = new Person();
+        person.setId(id);
+        jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
+        return person;
     }
 
     private En_ExpiringTechnicalSupportValidityPeriod groupingByExpiringTechnicalSupportValidityPeriod

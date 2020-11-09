@@ -97,5 +97,5 @@ public interface ProjectService {
 
     Result<PersonShortView> getProjectLeader(AuthToken authToken, Long projectId);
 
-    Result<Void> notifyExpiringTechnicalSupportValidity();
+    Result<Boolean> notifyExpiringTechnicalSupportValidity();
 }

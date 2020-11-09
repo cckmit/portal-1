@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.util.HtmlUtils;
 import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.dao.CaseStateDAO;
+import ru.protei.portal.core.model.dict.En_ExpiringTechnicalSupportValidityPeriod;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.dto.Project;
@@ -883,6 +884,31 @@ public class TemplateServiceImpl implements TemplateService {
         model.put("recipients", recipients);
 
         PreparedTemplate template = new PreparedTemplate("notification/email/nrpe.ips.body.%s.ftl");
+        template.setModel(model);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getExpiringTechnicalSupportValidityNotificationSubject() {
+        Map<String, Object> model = new HashMap<>();
+        PreparedTemplate template = new PreparedTemplate("notification/email/expiring.technical.support.validity.subject.%s.ftl");
+        template.setModel(model);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getExpiringTechnicalSupportValidityNotificationBody(ExpiringTechnicalSupportValidityNotificationEvent event,
+                Collection<String> recipients, String urlTemplate) {
+        Map<String, Object> model = new HashMap<>();
+        model.put("linkToProject", urlTemplate);
+        model.put("expiringIn7Days", event.getInfos().get(En_ExpiringTechnicalSupportValidityPeriod.DAYS_7));
+        model.put("expiringIn14Days", event.getInfos().get(En_ExpiringTechnicalSupportValidityPeriod.DAYS_14));
+        model.put("expiringIn30Days", event.getInfos().get(En_ExpiringTechnicalSupportValidityPeriod.DAYS_30));
+        model.put("recipients", recipients);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/expiring.technical.support.validity.body.%s.ftl");
         template.setModel(model);
         template.setTemplateConfiguration(templateConfiguration);
         return template;
