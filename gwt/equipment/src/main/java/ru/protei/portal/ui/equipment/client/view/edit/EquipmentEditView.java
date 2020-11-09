@@ -40,6 +40,7 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         nameErrorLabel().setText(lang.promptFieldLengthExceed(lang.equipmentNameBySpecification(), CrmConstants.EquipmentConstants.NAME_SIZE));
+        manager.setItemRenderer( value -> value == null ? lang.equipmentManagerNotDefined() : value.getDisplayShortName() );
     }
 
     @Override
