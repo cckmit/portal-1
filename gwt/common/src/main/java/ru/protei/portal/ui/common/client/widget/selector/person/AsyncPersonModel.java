@@ -37,7 +37,11 @@ public abstract class AsyncPersonModel implements AsyncSearchSelectorModel<Perso
             return cache.get(elementIndex, handler);
         }
         if (elementIndex == 0) return currentPerson;
-        return cache.get(--elementIndex, handler);
+        PersonShortView personShortView = cache.get( --elementIndex, handler );
+        if (Objects.equals( personShortView, currentPerson )) {
+            return cache.get( ++elementIndex, handler );
+        }
+        return personShortView;
     }
 
     @Override

@@ -32,7 +32,6 @@ public abstract class PersonModel extends BaseSelectorModel<PersonShortView> imp
     @Event
     public void onInit(AuthEvents.Success event) {
         myId = event.profile.getId();
-        log.info( "onInit(): " + query );
     }
 
     public boolean isCompaniesPresent() {
@@ -74,7 +73,6 @@ public abstract class PersonModel extends BaseSelectorModel<PersonShortView> imp
     public void updateCompanies( Refreshable selector, Set<Long> companyIds ) {
         this.refreshable = selector;
         query.setCompanyIds( nullIfEmpty( companyIds ) );
-        log.info( "updateCompanies(): "  + query );
         clean();
     }
 

@@ -27,7 +27,6 @@ public class PersonQuery extends BaseQuery {
 
     public PersonQuery() {
         super( null, En_SortField.person_full_name, En_SortDir.ASC );
-        index++;
     }
 
     public PersonQuery(Set<Long> companyIds, Boolean people, Boolean fired, Boolean deleted, String searchString, En_SortField sortField, En_SortDir sortDir, Boolean hasCaseFilter) {
@@ -38,7 +37,6 @@ public class PersonQuery extends BaseQuery {
         this.fired = fired;
         this.deleted = deleted;
         this.hasCaseFilter = hasCaseFilter;
-        index++;
     }
 
     public Set<Long> getCompanyIds() {
@@ -96,10 +94,10 @@ public class PersonQuery extends BaseQuery {
     public void setEmail( String email ) {
         this.email = email;
     }
-public static int index = 0;
+
     @Override
     public String toString() {
-        return "PersonQuery{" + (index) +
+        return "PersonQuery{" +
                 ", limit=" + limit +
                 ", offset=" + offset +
                 ", people=" + people +
