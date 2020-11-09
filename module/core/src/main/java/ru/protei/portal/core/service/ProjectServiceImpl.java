@@ -28,6 +28,7 @@ import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.schedule.PortalScheduleTasks;
+import ru.protei.portal.tools.ListSeparatorByFeatureIterator;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -35,6 +36,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static ru.protei.portal.api.struct.Result.error;
@@ -42,6 +45,7 @@ import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
 import static ru.protei.portal.core.access.ProjectAccessUtil.canAccessProject;
 import static ru.protei.portal.core.access.ProjectAccessUtil.getProjectAccessType;
+import static ru.protei.portal.core.model.dict.En_ExpiringTechnicalSupportValidityPeriod.*;
 import static ru.protei.portal.core.model.dict.En_SortField.project_head_manager;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.view.PersonProjectMemberView.fromFullNamePerson;
@@ -446,25 +450,55 @@ public class ProjectServiceImpl implements ProjectService {
     public Result<Void> notifyExpiringTechnicalSupportValidity() {
         log.info("notifyExpiringTechnicalSupportValidity(): start");
 
-        ProjectQuery query = getExpiringTechnicalSupportValidityProjectQuery(new Date(1604678855053L));        // todo to now()
+        Date now = new Date(1604678855053L); // todo to now
+        final Stream<List<ProjectTechnicalSupportValidityReportInfo>> stream = StreamSupport.stream(((Iterable<List<ProjectTechnicalSupportValidityReportInfo>>)
+                () -> createListProjectTechnicalSupportValidityReportInfoIterator(now)).spliterator(), false);
 
-        int limit = 5;
-        SearchResult<ProjectTechnicalSupportValidityReportInfo> searchResult;
-        do {
-            searchResult = projectTechnicalSupportValidityReportInfoDAO.getSearchResultByQuery(query);
-            query.setOffset(query.getOffset() + limit);
-        } while (searchResult.getResults().size() == limit);
+        stream.map(list -> list.stream().collect(Collectors.groupingBy(
+                    info -> groupingByExpiringTechnicalSupportValidityPeriod(info, now),
+                    toList())))
+                .forEach(map -> {
+                    map.entrySet();
+                });
 
         log.info("notifyExpiringTechnicalSupportValidity(): done");
         return ok();
     }
 
-    private ProjectQuery getExpiringTechnicalSupportValidityProjectQuery(Date now) {
+    private En_ExpiringTechnicalSupportValidityPeriod groupingByExpiringTechnicalSupportValidityPeriod
+            (ProjectTechnicalSupportValidityReportInfo info, Date now) {
+        final long diff = info.getTechnicalSupportValidity().getTime() - now.getTime();
+        if (diff < DAYS_7.getTime()) {
+            return DAYS_7;
+        } else if (diff < DAYS_14.getTime()) {
+            return DAYS_14;
+        } else {
+            return DAYS_30;
+        }
+    }
+
+    private ListSeparatorByFeatureIterator<ProjectTechnicalSupportValidityReportInfo, Long>
+                createListProjectTechnicalSupportValidityReportInfoIterator(Date now) {
+        int limit = 5; // todo limit
+        ProjectQuery query = getExpiringTechnicalSupportValidityProjectQuery(now, limit);
+        return new ListSeparatorByFeatureIterator<>(
+                () -> {
+                    SearchResult<ProjectTechnicalSupportValidityReportInfo> searchResult =
+                            projectTechnicalSupportValidityReportInfoDAO.getSearchResultByQuery(query);
+                    query.setOffset(query.getOffset() + limit);
+                    return searchResult.getResults();
+                },
+                ProjectTechnicalSupportValidityReportInfo::getHeadManagerId
+        );
+    }
+
+    private ProjectQuery getExpiringTechnicalSupportValidityProjectQuery(Date now, int limit) {
         ProjectQuery query = new ProjectQuery();
         query.setSortField(project_head_manager);
         query.setExpiringTechnicalSupportValidityFrom(now);
         query.setExpiringTechnicalSupportValidityTo(new Date(now.getTime() + 30 * CrmConstants.Time.DAY));
         query.setOffset(0);
+        query.setLimit(limit);
         return query;
     }
 

@@ -77,11 +77,11 @@ public class ProjectTechnicalSupportValidityReportInfo {
         this.customerName = customerName;
     }
 
-    public Long getHeadManager() {
+    public Long getHeadManagerId() {
         return headManagerId;
     }
 
-    public void setHeadManager(Long headManager) {
+    public void setHeadManagerId(Long headManager) {
         this.headManagerId = headManager;
     }
 
