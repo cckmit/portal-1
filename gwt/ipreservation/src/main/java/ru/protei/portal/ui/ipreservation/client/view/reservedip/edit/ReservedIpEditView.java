@@ -31,7 +31,7 @@ public class ReservedIpEditView extends Composite implements AbstractReservedIpE
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         macAddress.setRegexp( CrmConstants.IpReservation.MAC_ADDRESS );
-        ipOwner.setItemRenderer( PersonShortView::getName );
+        ipOwner.setItemRenderer( value -> value == null ? lang.selectReservedIpOwner() : value.getName() );
         ensureDebugIds();
     }
 
