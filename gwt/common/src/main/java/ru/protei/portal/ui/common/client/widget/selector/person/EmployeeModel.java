@@ -43,7 +43,11 @@ public abstract class EmployeeModel implements Activity,
             return cache.get( elementIndex, loadingHandler );
         }
         if (elementIndex == 0) return currentPerson;
-        return cache.get( --elementIndex, loadingHandler );
+        PersonShortView personShortView = cache.get( --elementIndex, loadingHandler );
+        if (Objects.equals(personShortView, currentPerson)) {
+            return cache.get( ++elementIndex, loadingHandler );
+        }
+        return personShortView;
     }
 
     public void clear() {

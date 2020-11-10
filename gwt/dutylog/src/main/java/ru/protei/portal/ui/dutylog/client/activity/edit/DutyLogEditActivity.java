@@ -101,7 +101,9 @@ public abstract class DutyLogEditActivity implements AbstractDutyLogEditActivity
     private void fillView(DutyLog value) {
         this.dutyLog = value;
 
-        view.employee().setValue(new PersonShortView(value.getPersonDisplayName(), value.getPersonId()));
+        PersonShortView personShortView = new PersonShortView( value.getPersonId() );
+        personShortView.setDisplayName( value.getPersonDisplayName() );
+        view.employee().setValue(personShortView);
         view.dateRange().setValue(new DateInterval(value.getFrom(), value.getTo()));
         view.type().setValue(value.getType());
         dialogView.saveButtonVisibility().setVisible(hasAccessEdit());
