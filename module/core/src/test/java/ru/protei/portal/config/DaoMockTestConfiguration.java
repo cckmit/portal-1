@@ -433,4 +433,9 @@ public class DaoMockTestConfiguration {
     public DutyLogDAO getDutyLogDAO() {
         return mock( DutyLogDAO.class );
     }
+
+    @Bean
+    public ProjectTechnicalSupportValidityReportInfoDAO getProjectTechnicalSupportValidityReportInfoDAO() {
+        return mock( ProjectTechnicalSupportValidityReportInfoDAO.class );
+    }
 }

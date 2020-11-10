@@ -160,7 +160,7 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
 
     private void notifyExpiringTechnicalSupportValidity() {
         log.info( "notifyExpiringTechnicalSupportValidity" );
-        projectService.notifyExpiringProjectTechnicalSupportValidity();
+        projectService.notifyExpiringProjectTechnicalSupportValidity(new Date());
     }
 
     private boolean isNotConfiguredSystemId() {

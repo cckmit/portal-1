@@ -449,9 +449,8 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Result<Boolean> notifyExpiringProjectTechnicalSupportValidity() {
+    public Result<Boolean> notifyExpiringProjectTechnicalSupportValidity(Date now) {
         log.info("notifyExpiringProjectTechnicalSupportValidity(): start");
-        Date now = new Date();
         final Stream<List<ProjectTSVReportInfo>> stream = StreamSupport.stream(((Iterable<List<ProjectTSVReportInfo>>)
                 () -> createProjectTSVReportInfoListsSeparateByHeadManagerIterator
                         (now)).spliterator(), false);

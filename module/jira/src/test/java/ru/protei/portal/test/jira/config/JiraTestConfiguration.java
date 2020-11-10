@@ -25,8 +25,6 @@ import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.auth.AuthServiceImpl;
 import ru.protei.portal.core.service.auth.LDAPAuthProvider;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
-import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceImpl;
-import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceTaskHandlerImpl;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseTaskHandler;
 import ru.protei.portal.core.service.events.*;
 import ru.protei.portal.core.service.nrpe.NRPEService;
@@ -553,6 +551,10 @@ public class JiraTestConfiguration {
         return new ContractDAO_Impl();
     }
 
+    @Bean
+    public ProjectTechnicalSupportValidityReportInfoDAO getProjectTechnicalSupportValidityReportInfoDAO() {
+        return new ProjectTechnicalSupportValidityReportInfoDAO_Impl();
+    }
 
     /* DAO converters */
 

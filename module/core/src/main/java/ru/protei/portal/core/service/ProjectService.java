@@ -19,6 +19,7 @@ import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -97,5 +98,5 @@ public interface ProjectService {
 
     Result<PersonShortView> getProjectLeader(AuthToken authToken, Long projectId);
 
-    Result<Boolean> notifyExpiringProjectTechnicalSupportValidity();
+    Result<Boolean> notifyExpiringProjectTechnicalSupportValidity(Date now);
 }
