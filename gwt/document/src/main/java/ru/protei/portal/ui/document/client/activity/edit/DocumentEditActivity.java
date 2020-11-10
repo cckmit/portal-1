@@ -540,7 +540,8 @@ public abstract class DocumentEditActivity
 
         if (isNew) {
             Profile profile = policyService.getProfile();
-            PersonShortView currentPerson = new PersonShortView(profile.getShortName(), profile.getId(), profile.isFired());
+            PersonShortView currentPerson = new PersonShortView(null, profile.getId(), profile.isFired());
+            currentPerson.setDisplayShortName( profile.getShortName() );
             view.registrar().setValue(currentPerson);
             view.contractor().setValue(currentPerson);
             view.inventoryNumberEnabled(true);
