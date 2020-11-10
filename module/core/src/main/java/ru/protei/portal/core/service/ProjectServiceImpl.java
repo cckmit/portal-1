@@ -7,20 +7,20 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.dto.ProjectInfo;
-import ru.protei.portal.core.model.dto.ProjectTechnicalSupportValidityReportInfo;
+import ru.protei.portal.core.model.dto.ProjectTSVReportInfo;
 import ru.protei.portal.core.model.dto.RegionInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.LocationQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
-import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -28,7 +28,7 @@ import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.schedule.PortalScheduleTasks;
-import ru.protei.portal.tools.ListSeparatorByFeatureIterator;
+import ru.protei.portal.tools.ListByFeatureIterator;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -45,7 +45,7 @@ import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
 import static ru.protei.portal.core.access.ProjectAccessUtil.canAccessProject;
 import static ru.protei.portal.core.access.ProjectAccessUtil.getProjectAccessType;
-import static ru.protei.portal.core.model.dict.En_ExpiringTechnicalSupportValidityPeriod.*;
+import static ru.protei.portal.core.model.dict.En_ExpiringProjectTSVPeriod.*;
 import static ru.protei.portal.core.model.dict.En_SortField.project_head_manager;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.view.PersonProjectMemberView.fromFullNamePerson;
@@ -86,11 +86,13 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     ProjectDAO projectDAO;
     @Autowired
-    ProjectTechnicalSupportValidityReportInfoDAO projectTechnicalSupportValidityReportInfoDAO;
+    ProjectTechnicalSupportValidityReportInfoDAO projectTSVReportInfoDAO;
     @Autowired
     PortalScheduleTasks scheduledTasksService;
     @Autowired
     EventPublisherService publisherService;
+    @Autowired
+    PortalConfig config;
 
     @EventListener
     @Async(BACKGROUND_TASKS)
@@ -447,24 +449,22 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Result<Boolean> notifyExpiringTechnicalSupportValidity() {
-        log.info("notifyExpiringTechnicalSupportValidity(): start");
+    public Result<Boolean> notifyExpiringProjectTechnicalSupportValidity() {
+        log.info("notifyExpiringProjectTechnicalSupportValidity(): start");
+        Date now = new Date();
+        final Stream<List<ProjectTSVReportInfo>> stream = StreamSupport.stream(((Iterable<List<ProjectTSVReportInfo>>)
+                () -> createProjectTSVReportInfoListsSeparateByHeadManagerIterator
+                        (now)).spliterator(), false);
 
-        Date now = new Date(1604678855053L); // todo to now
-        final Stream<List<ProjectTechnicalSupportValidityReportInfo>> stream = StreamSupport.stream(((Iterable<List<ProjectTechnicalSupportValidityReportInfo>>)
-                () -> createListProjectTechnicalSupportValidityReportInfoIterator(now)).spliterator(), false);
-
-        final List<ExpiringTechnicalSupportValidityNotificationEvent> events = stream.map(list -> {
-            final Person headManager = makeNotificationPerson(list.get(0).getHeadManagerId());
-            final Map<En_ExpiringTechnicalSupportValidityPeriod, List<ProjectTechnicalSupportValidityReportInfo>> infos =
-                    list.stream().collect(Collectors.groupingBy(
-                            info -> groupingByExpiringTechnicalSupportValidityPeriod(info, now),
-                            toList()));
-            return new ExpiringTechnicalSupportValidityNotificationEvent(this, headManager, infos);
-        })
-                .collect(toList());
-        log.info("notifyExpiringTechnicalSupportValidity(): done");
-        return ok(true).publishEvents(events);
+        stream.map(list -> {
+                    final Person headManager = makeNotificationPerson(list.get(0).getHeadManagerId());
+                    final Map<En_ExpiringProjectTSVPeriod, List<ProjectTSVReportInfo>> infos = list.stream()
+                                    .collect(Collectors.groupingBy(info -> groupingByExpiringTSVPeriod(info, now)));
+                    return new ExpiringProjectTSVNotificationEvent(this, headManager, infos);
+                })
+                .forEach(publisherService::publishEvent);
+        log.info("notifyExpiringProjectTechnicalSupportValidity(): done");
+        return ok(true);
     }
 
     private Person makeNotificationPerson(long id) {
@@ -474,8 +474,7 @@ public class ProjectServiceImpl implements ProjectService {
         return person;
     }
 
-    private En_ExpiringTechnicalSupportValidityPeriod groupingByExpiringTechnicalSupportValidityPeriod
-            (ProjectTechnicalSupportValidityReportInfo info, Date now) {
+    private En_ExpiringProjectTSVPeriod groupingByExpiringTSVPeriod (ProjectTSVReportInfo info, Date now) {
         final long diff = info.getTechnicalSupportValidity().getTime() - now.getTime();
         if (diff < DAYS_7.getTime()) {
             return DAYS_7;
@@ -486,26 +485,25 @@ public class ProjectServiceImpl implements ProjectService {
         }
     }
 
-    private ListSeparatorByFeatureIterator<ProjectTechnicalSupportValidityReportInfo, Long>
-                createListProjectTechnicalSupportValidityReportInfoIterator(Date now) {
-        int limit = 5; // todo limit
-        ProjectQuery query = getExpiringTechnicalSupportValidityProjectQuery(now, limit);
-        return new ListSeparatorByFeatureIterator<>(
+    private ListByFeatureIterator<ProjectTSVReportInfo, Long> createProjectTSVReportInfoListsSeparateByHeadManagerIterator(Date now) {
+        int limit = config.data().reportConfig().getChunkSize();
+        ProjectQuery query = getExpiringProjectTSVQuery(now, limit);
+        return new ListByFeatureIterator<>(
                 () -> {
-                    SearchResult<ProjectTechnicalSupportValidityReportInfo> searchResult =
-                            projectTechnicalSupportValidityReportInfoDAO.getSearchResultByQuery(query);
+                    SearchResult<ProjectTSVReportInfo> searchResult =
+                            projectTSVReportInfoDAO.getSearchResultByQuery(query);
                     query.setOffset(query.getOffset() + limit);
                     return searchResult.getResults();
                 },
-                ProjectTechnicalSupportValidityReportInfo::getHeadManagerId
+                ProjectTSVReportInfo::getHeadManagerId
         );
     }
 
-    private ProjectQuery getExpiringTechnicalSupportValidityProjectQuery(Date now, int limit) {
+    private ProjectQuery getExpiringProjectTSVQuery(Date now, int limit) {
         ProjectQuery query = new ProjectQuery();
         query.setSortField(project_head_manager);
         query.setExpiringTechnicalSupportValidityFrom(now);
-        query.setExpiringTechnicalSupportValidityTo(new Date(now.getTime() + 30 * CrmConstants.Time.DAY));
+        query.setExpiringTechnicalSupportValidityTo(new Date(now.getTime() + DAYS_30.getTime()));
         query.setOffset(0);
         query.setLimit(limit);
         return query;

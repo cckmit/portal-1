@@ -37,8 +37,6 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
          */
         if (isPortalStarted.getAndSet( true )) return;
 
-        scheduler.scheduleAtFixedRate(this::notifyExpiringTechnicalSupportValidity, TimeUnit.MINUTES.toMillis(1));
-
         /**
          * Bootstrap data of application
          * First of ALL
@@ -70,6 +68,8 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         scheduler.schedule(this::notifyAboutContractDates, new CronTrigger("0 14 11 * * ?"));
         // at 10:00:00 am every day
         scheduler.schedule(this::processPersonCaseFilterMailNotification, new CronTrigger( "0 0 10 * * ?"));
+        // at 08:00:00 am every day
+        scheduler.schedule(this::notifyExpiringTechnicalSupportValidity, new CronTrigger( "0 0 8 * * ?"));
         // at 09:00:00 am every MONDAY
         scheduler.schedule(this::notifyAboutBirthdays, new CronTrigger( "0 0 9 * * MON"));
         // every 5 minutes
@@ -160,7 +160,7 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
 
     private void notifyExpiringTechnicalSupportValidity() {
         log.info( "notifyExpiringTechnicalSupportValidity" );
-        projectService.notifyExpiringTechnicalSupportValidity();
+        projectService.notifyExpiringProjectTechnicalSupportValidity();
     }
 
     private boolean isNotConfiguredSystemId() {

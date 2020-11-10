@@ -1043,7 +1043,7 @@ public class MailNotificationProcessor {
     }
 
     @EventListener
-    public void onExpiringTechnicalSupportValidityNotificationEvent(ExpiringTechnicalSupportValidityNotificationEvent event) {
+    public void onExpiringTechnicalSupportValidityNotificationEvent(ExpiringProjectTSVNotificationEvent event) {
         log.info("onExpiringTechnicalSupportValidityNotificationEvent(): {}", event);
 
         PreparedTemplate subjectTemplate = templateService.getExpiringTechnicalSupportValidityNotificationSubject();

@@ -2,12 +2,12 @@ package ru.protei.portal.core.model.dao.impl;
 
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.ProjectTechnicalSupportValidityReportInfoDAO;
-import ru.protei.portal.core.model.dto.ProjectTechnicalSupportValidityReportInfo;
+import ru.protei.portal.core.model.dto.ProjectTSVReportInfo;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 
 public class ProjectTechnicalSupportValidityReportInfoDAO_Impl
-        extends PortalBaseJdbcDAO<ProjectTechnicalSupportValidityReportInfo>
+        extends PortalBaseJdbcDAO<ProjectTSVReportInfo>
         implements ProjectTechnicalSupportValidityReportInfoDAO {
 
     @SqlConditionBuilder

@@ -36,24 +36,24 @@
             <div class="caption">${_expiringTechnicalSupportValidityLess7Day}:</div>
             <#list expiringIn7Days as info>
                 <#assign id=info.getId()?c href=linkToProject?replace("%d", id)/>
-                <div class="field"><a href=${href}>${(info.getTechnicalSupportValidity())?date!'?'}</a>
-                    - ${(info.getCustomerName())!'?'}, ${(info.getName())!'?'}</div>
+                <div class="field">${(info.getTechnicalSupportValidity())?date!'?'} - <a href=${href}>№${info.getId()?c!'?'}</a>
+                    ${(info.getCustomerName())!'?'}, ${(info.getName())!'?'}</div>
             </#list>
         </#if>
         <#if expiringIn14Days??>
             <div class="caption">${_expiringTechnicalSupportValidityLess14Day}:</div>
             <#list expiringIn14Days as info>
                 <#assign id=info.getId()?c href=linkToProject?replace("%d", id)/>
-                <div class="field"><a href=${href}>${(info.getTechnicalSupportValidity())?date!'?'}</a>
-                    - ${(info.getCustomerName())!'?'}, ${(info.getName())!'?'}</div>
+                <div class="field">${(info.getTechnicalSupportValidity())?date!'?'} - <a href=${href}>№${info.getId()?c!'?'}</a>
+                    ${(info.getCustomerName())!'?'}, ${(info.getName())!'?'}</div>
             </#list>
         </#if>
         <#if expiringIn30Days??>
             <div class="caption">${_expiringTechnicalSupportValidityLess30Day}:</div>
             <#list expiringIn30Days as info>
                 <#assign id=info.getId()?c href=linkToProject?replace("%d", id)/>
-                <div class="field"><a href=${href}>${(info.getTechnicalSupportValidity())?date!'?'}</a>
-                    - ${(info.getCustomerName())!'?'}, ${(info.getName())!'?'}</div>
+                <div class="field">${(info.getTechnicalSupportValidity())?date!'?'} - <a href=${href}>№${info.getId()?c!'?'}</a>
+                    ${(info.getCustomerName())!'?'}, ${(info.getName())!'?'}</div>
             </#list>
         </#if>
         <div style="padding: 4px 0 8px;">

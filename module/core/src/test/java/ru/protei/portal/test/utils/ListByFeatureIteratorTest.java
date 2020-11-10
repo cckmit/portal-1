@@ -2,14 +2,14 @@ package ru.protei.portal.test.utils;
 
 import org.junit.Assert;
 import org.junit.Test;
-import ru.protei.portal.tools.ListSeparatorByFeatureIterator;
+import ru.protei.portal.tools.ListByFeatureIterator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-public class ListSeparatorByFeatureIteratorTest {
+public class ListByFeatureIteratorTest {
     static class Info {
         String info;
         int feature;
@@ -22,7 +22,7 @@ public class ListSeparatorByFeatureIteratorTest {
 
     @Test
     public void testEmpty() {
-        Iterator<List<Info>> iteratorEmpty = new ListSeparatorByFeatureIterator<>(
+        Iterator<List<Info>> iteratorEmpty = new ListByFeatureIterator<>(
                 () -> new ArrayList<>(),
                 info -> info.feature);
 
@@ -45,7 +45,7 @@ public class ListSeparatorByFeatureIteratorTest {
         List<Integer> count = new ArrayList<>();
         int limit = 5;
 
-        Iterator<List<Info>> iterator2chunks = new ListSeparatorByFeatureIterator<>(
+        Iterator<List<Info>> iterator2chunks = new ListByFeatureIterator<>(
                 () -> {
                     final int fromIndex = count.size() * limit;
                     final int toIndex = Math.min(infos.size(), (count.size() + 1) * limit);

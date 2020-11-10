@@ -107,6 +107,6 @@ public interface TemplateService {
     PreparedTemplate getNRPENonAvailableIpsNotificationBody(List<String> nonAvailableIps, Collection<String> recipients);
 
     PreparedTemplate getExpiringTechnicalSupportValidityNotificationSubject();
-    PreparedTemplate getExpiringTechnicalSupportValidityNotificationBody(ExpiringTechnicalSupportValidityNotificationEvent event,
-                         Collection<String> recipients, String urlTemplate);
+    PreparedTemplate getExpiringTechnicalSupportValidityNotificationBody(ExpiringProjectTSVNotificationEvent event,
+                                     Collection<String> recipients, String urlTemplate);
 }

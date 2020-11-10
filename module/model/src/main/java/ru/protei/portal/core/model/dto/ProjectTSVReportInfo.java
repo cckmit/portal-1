@@ -8,7 +8,7 @@ import java.util.Objects;
 import static ru.protei.portal.core.model.dto.Project.*;
 
 @JdbcEntity(table = "project")
-public class ProjectTechnicalSupportValidityReportInfo {
+public class ProjectTSVReportInfo {
     /**
      * Идентификатор записи о проекте
      */
@@ -88,8 +88,8 @@ public class ProjectTechnicalSupportValidityReportInfo {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ProjectTechnicalSupportValidityReportInfo)) return false;
-        ProjectTechnicalSupportValidityReportInfo that = (ProjectTechnicalSupportValidityReportInfo) o;
+        if (!(o instanceof ProjectTSVReportInfo)) return false;
+        ProjectTSVReportInfo that = (ProjectTSVReportInfo) o;
         return Objects.equals(id, that.id) &&
                 Objects.equals(name, that.name) &&
                 Objects.equals(technicalSupportValidity, that.technicalSupportValidity) &&
