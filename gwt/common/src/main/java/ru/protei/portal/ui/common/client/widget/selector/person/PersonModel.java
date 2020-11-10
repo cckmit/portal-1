@@ -38,6 +38,14 @@ public abstract class PersonModel extends BaseSelectorModel<PersonShortView> imp
         return !isEmpty( query.getCompanyIds() );
     }
 
+    public void setIsPeople( Boolean isPeople ) {
+        query.setPeople( isPeople );
+    }
+
+    public void setIsFired( Boolean isFired ) {
+        query.setFired( isFired );
+    }
+
     @Override
     protected void requestData( LoadingHandler selector, String searchText) {
         personService.getPersonViewList(query, new RequestCallback<List<PersonShortView>>() {
@@ -62,11 +70,9 @@ public abstract class PersonModel extends BaseSelectorModel<PersonShortView> imp
         });
     }
 
-    public void updateCompanies(Refreshable selector, Boolean people, Set<Long> companyIds, Boolean fired) {
+    public void updateCompanies( Refreshable selector, Set<Long> companyIds ) {
         this.refreshable = selector;
         query.setCompanyIds( nullIfEmpty( companyIds ) );
-        query.setPeople( people );
-        query.setFired( fired );
         clean();
     }
 
@@ -84,7 +90,7 @@ public abstract class PersonModel extends BaseSelectorModel<PersonShortView> imp
     @Inject
     Lang lang;
 
-    private PersonQuery query = new PersonQuery(null, null, null, false, null, En_SortField.person_full_name, En_SortDir.ASC, null);
+    private PersonQuery query = new PersonQuery(null, null, false, false, null, En_SortField.person_full_name, En_SortDir.ASC, null);
     private Refreshable refreshable;
 
     private Long myId;
