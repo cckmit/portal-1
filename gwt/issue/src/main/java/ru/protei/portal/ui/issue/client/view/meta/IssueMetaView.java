@@ -535,8 +535,11 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
                 notifiers
                         .stream()
                         .map(notifier -> {
-                            PersonShortView personShortView = PersonShortView.fromShortNamePerson(notifier);
-                            personShortView.setName(transliteration(personShortView.getName()));
+                            PersonShortView personShortView = new PersonShortView(notifier.getId());
+                            personShortView.setDisplayName( notifier.getDisplayName() );
+                            personShortView.setDisplayShortName( notifier.getDisplayShortName() );
+                            personShortView.setFired( notifier.isFired() );
+                            personShortView.setName(transliteration(personShortView.getDisplayShortName()));
                             return personShortView;
                         })
                         .collect(Collectors.toSet());
