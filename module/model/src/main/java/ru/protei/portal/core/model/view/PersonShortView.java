@@ -115,20 +115,6 @@ public class PersonShortView implements Serializable, HasLongId {
         return id != null ? id.hashCode() : 0;
     }
 
-    public static PersonShortView fromShortNamePerson(Person person){
-        if(person == null)
-            return null;
-        return new PersonShortView( person.getDisplayShortName(), person.getId(), person.isFired() );
-    }
-
-    public static PersonShortView fromFullNamePerson(Person person) {
-        if (person == null) {
-            return null;
-        }
-
-        return new PersonShortView(person.getDisplayName(), person.getId(), person.isFired());
-    }
-
     @Override
     public String toString() {
         return "PersonShortView{" +

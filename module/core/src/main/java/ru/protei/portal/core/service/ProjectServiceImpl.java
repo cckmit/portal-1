@@ -432,7 +432,13 @@ public class ProjectServiceImpl implements ProjectService {
         return caseMemberDAO.getLeaders(projectId)
                 .stream()
                 .findFirst()
-                .map(leader -> PersonShortView.fromFullNamePerson(leader.getMember()))
+                .map(leader -> {
+                    PersonShortView personShortView = new PersonShortView(leader.getId());
+                    personShortView.setDisplayName( leader.getMember().getDisplayName() );
+                    personShortView.setDisplayShortName( leader.getMember().getDisplayShortName() );
+                    personShortView.setFired( leader.getMember().isFired() );
+                    return personShortView;
+                } )
                 .map(Result::ok)
                 .orElse(ok(null));
     }
