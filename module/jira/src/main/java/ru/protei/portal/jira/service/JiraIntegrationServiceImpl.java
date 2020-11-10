@@ -194,10 +194,14 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         JiraExtAppData jiraExtAppData = JiraExtAppData.fromJSON(appData.getExtAppData());
 
         List<ru.protei.portal.core.model.ent.Attachment> processedAttachments = processAttachments(endpoint, issue.getAttachments(), caseObj.getId(), jiraExtAppData, personMapper);
+        logger.debug("1540 caseObj = {}", caseObj);
         List<ru.protei.portal.core.model.ent.Attachment> caseAttachments = attachmentDAO.getAttachmentsByCaseId(caseObj.getId());
+        logger.debug("1540 issue = {}", issue);
+        logger.debug("1540 caseAttachments = {}", caseAttachments);
         caseObj.setInfo(convertDescription(issue.getDescription(), caseAttachments));
 
         CaseObject oldCase = caseObjectDAO.get(caseObj.getId());
+        logger.debug("1540 oldCase = {}", oldCase);
         logger.debug("get case external data, ext-id = {}, case-id = {}, sync-state = {}", appData.getExtAppCaseId(), appData.getId(), appData.getExtAppData());
 
         caseObjectDAO.merge(caseObj);
@@ -487,6 +491,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     }
 
     private String convertDescription(String originalDescription, List<ru.protei.portal.core.model.ent.Attachment> attachments) {
+        logger.debug("1540 convertDescription = {}", originalDescription);
         String description = originalDescription;
         if (!attachments.isEmpty()) {
             description = getDescriptionWithReplacedImagesFromJira(originalDescription, attachments);
