@@ -433,7 +433,7 @@ public class ProjectServiceImpl implements ProjectService {
                 .stream()
                 .findFirst()
                 .map(leader -> {
-                    PersonShortView personShortView = new PersonShortView(leader.getId());
+                    PersonShortView personShortView = new PersonShortView(leader.getMember().getId());
                     personShortView.setDisplayName( leader.getMember().getDisplayName() );
                     personShortView.setDisplayShortName( leader.getMember().getDisplayShortName() );
                     personShortView.setFired( leader.getMember().isFired() );
