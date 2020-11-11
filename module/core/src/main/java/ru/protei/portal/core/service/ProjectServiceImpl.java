@@ -41,7 +41,7 @@ import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
 import static ru.protei.portal.core.access.ProjectAccessUtil.canAccessProject;
 import static ru.protei.portal.core.access.ProjectAccessUtil.getProjectAccessType;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
-import static ru.protei.portal.core.model.view.PersonProjectMemberView.fromFullNamePerson;
+
 
 /**
  * Реализация сервиса управления проектами
@@ -432,13 +432,7 @@ public class ProjectServiceImpl implements ProjectService {
         return caseMemberDAO.getLeaders(projectId)
                 .stream()
                 .findFirst()
-                .map(leader -> {
-                    PersonShortView personShortView = new PersonShortView(leader.getId());
-                    personShortView.setDisplayName( leader.getMember().getDisplayName() );
-                    personShortView.setDisplayShortName( leader.getMember().getDisplayShortName() );
-                    personShortView.setFired( leader.getMember().isFired() );
-                    return personShortView;
-                } )
+                .map(leader -> new PersonShortView(leader.getMember()) )
                 .map(Result::ok)
                 .orElse(ok(null));
     }
@@ -496,7 +490,7 @@ public class ProjectServiceImpl implements ProjectService {
                 if (!projectRoles.contains(member.getRole())) {
                     continue;
                 }
-                int nPos = toAdd.indexOf(fromFullNamePerson(member.getMember(), member.getRole()));
+                int nPos = toAdd.indexOf(new PersonProjectMemberView(member.getMember(), member.getRole()));
                 if (nPos == -1) {
                     toRemove.add(member.getId());
                 } else {

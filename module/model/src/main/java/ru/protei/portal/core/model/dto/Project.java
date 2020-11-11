@@ -289,7 +289,7 @@ public class Project extends AuditableObject {
         if (team == null && !isEmpty( members )) {
             team = CollectionUtils.stream( members )
                     .filter( member -> En_DevUnitPersonRoleType.isProjectRole( member.getRole() ) )
-                    .map( member -> PersonProjectMemberView.fromFullNamePerson( member.getMember(), member.getRole() ) )
+                    .map( member -> new PersonProjectMemberView( member.getMember(), member.getRole() ) )
                     .collect( Collectors.toList() );
         }
         return team;

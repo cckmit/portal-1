@@ -30,6 +30,9 @@ public class PersonShortView implements Serializable, HasLongId {
     @JdbcColumn(name = Person.Columns.IS_FIRED)
     private boolean isFired;
 
+    /**
+     * Произвольное имя
+     */
     private String name;
 
     public PersonShortView() {}
@@ -50,6 +53,23 @@ public class PersonShortView implements Serializable, HasLongId {
 
     public PersonShortView(EntityOption entityOption) {
         this(entityOption.getDisplayText(), entityOption.getId());
+    }
+
+    public PersonShortView( Person person ) {
+        this.id = person.getId();
+        this.displayName = person.getDisplayName();
+        this.displayShortName = person.getDisplayShortName();
+        this.companyId = person.getCompanyId();
+        this.isFired = person.isFired();
+    }
+
+    public PersonShortView( PersonShortView personShortView ) {
+        this.id = personShortView.getId();
+        this.name = personShortView.name; // прямой доступ к полю
+        this.displayName = personShortView.getDisplayName();
+        this.displayShortName = personShortView.getDisplayShortName();
+        this.companyId = personShortView.getCompanyId();
+        this.isFired = personShortView.isFired();
     }
 
     public String getName() {
