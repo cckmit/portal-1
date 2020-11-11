@@ -26,6 +26,7 @@ public class TeamSelectorItem extends Composite implements AbstractTeamSelectorI
     @Inject
     public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        members.setItemRenderer(PersonShortView::getName);
     }
 
     @Override
