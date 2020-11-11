@@ -66,7 +66,7 @@ public class JiraImageReplacement {
         a.setFileName("min_creepy_duck.jpeg");
         a.setExtLink("20200416/11777");
 
-        setTextWithReplacedImagesFromJira(caseComment, Arrays.asList(a));
+        setTextWithReplacedImagesFromJira(caseComment, Arrays.asList(a), new ArrayList<>());
 
         Assert.assertEquals(
                 "! отсудой коммент !\n" +
@@ -88,7 +88,7 @@ public class JiraImageReplacement {
         a.setFileName("кинг      3.jpeg");
         a.setExtLink("20200416/11777");
 
-        setTextWithReplacedImagesFromJira(caseComment, Arrays.asList(a));
+        setTextWithReplacedImagesFromJira(caseComment, Arrays.asList(a), new ArrayList<>());
 
         Assert.assertEquals(
                 "!20200416/11777|alt=кинг      3.jpeg!!20200416/11777|alt=кинг      3.jpeg!!20200416/11777|alt=кинг      3.jpeg!",
@@ -230,7 +230,7 @@ public class JiraImageReplacement {
         CaseComment caseComment = new CaseComment();
         caseComment.setText(str);
 
-        setTextWithReplacedImagesFromJira(caseComment, list);
+        setTextWithReplacedImagesFromJira(caseComment, list, new ArrayList<>());
 
         Assert.assertEquals(
                 "_commented by Pisarets, Anton - 20/May/20 3:50 AM_\n" +

@@ -196,6 +196,8 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         List<ru.protei.portal.core.model.ent.Attachment> processedAttachments = processAttachments(endpoint, issue.getAttachments(), caseObj.getId(), jiraExtAppData, personMapper);
         List<ru.protei.portal.core.model.ent.Attachment> caseAttachments = attachmentDAO.getAttachmentsByCaseId(caseObj.getId());
+        List<CaseAttachment> caseLinkAttachments = caseAttachmentDAO.getListByCaseId(caseObj.getId());
+        logger.debug("1540, caseLinkAttachments = {}", caseLinkAttachments);
         caseObj.setInfo(convertDescription(issue.getDescription(), caseAttachments));
 
         CaseObject oldCase = caseObjectDAO.get(caseObj.getId());
@@ -215,7 +217,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         caseEvent.putAddedAttachments(processedAttachments);
 
         caseEvent.putAddedComments(processComments(endpoint.getServerLogin(),
-                issue.getComments(), caseObj.getId(), personMapper, jiraExtAppData, caseAttachments));
+                issue.getComments(), caseObj, personMapper, jiraExtAppData, caseAttachments, caseLinkAttachments));
 
         jiraExtAppData = addIssueTypeAndSeverity(jiraExtAppData, issue.getIssueType().getName(), getIssueSeverity(issue));
 
@@ -257,13 +259,14 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         JiraExtAppData jiraExtAppData = new JiraExtAppData();
         List<ru.protei.portal.core.model.ent.Attachment> addedAttachments = processAttachments( endpoint, issue.getAttachments(), caseObj.getId(), jiraExtAppData, personMapper );
+        List<CaseAttachment> caseLinkAttachments = caseAttachmentDAO.getListByCaseId(caseObj.getId());
         caseObj.setInfo(convertDescription(issue.getDescription(), addedAttachments));
         caseObjectDAO.merge(caseObj);
 
         persistStateComment(authorId, caseObj.getId(), caseObj.getStateId());
         persistImportanceComment(authorId, caseObj.getId(), caseObj.getImpLevel());
 
-        List<CaseComment> caseComments = processComments( endpoint.getServerLogin(), issue.getComments(), caseObj.getId(), personMapper, jiraExtAppData, addedAttachments );
+        List<CaseComment> caseComments = processComments( endpoint.getServerLogin(), issue.getComments(), caseObj, personMapper, jiraExtAppData, addedAttachments, caseLinkAttachments );
 
         jiraExtAppData = addIssueTypeAndSeverity(jiraExtAppData, issue.getIssueType().getName(), getIssueSeverity(issue));
         if (clmId != null) {
@@ -301,12 +304,12 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         return caseObj;
     }
 
-    private List<CaseComment> processComments(String serverLogin, Iterable<Comment> comments, Long caseObjectId, PersonMapper personMapper, JiraExtAppData state,
-                                              List<ru.protei.portal.core.model.ent.Attachment> attachments) {
-        logger.debug("process comments on caseObjectId={}", caseObjectId);
+    private List<CaseComment> processComments(String serverLogin, Iterable<Comment> comments, CaseObject caseObject, PersonMapper personMapper, JiraExtAppData state,
+                                              List<ru.protei.portal.core.model.ent.Attachment> attachments, List<CaseAttachment> caseLinkAttachment) {
+        logger.debug("process comments on caseObject.id={}", caseObject.getId());
 
         if (comments == null) {
-            logger.debug("no comments in caseObjectId={}", caseObjectId);
+            logger.debug("no comments in caseObject.id={}", caseObject.getId());
             return Collections.emptyList();
         }
 
@@ -323,7 +326,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
                 continue;
             }
 
-            CaseComment caseComment = convertComment(caseObjectId, personMapper, comment, attachments);
+            CaseComment caseComment = convertComment(caseObject, personMapper, comment, attachments, caseLinkAttachment);
 
             logger.debug("add new comment, id = {}", comment.getId());
             state.appendComment(comment.getId());
@@ -470,10 +473,10 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         }
     }
 
-    private CaseComment convertComment(Long caseObjectId, PersonMapper personMapper, Comment comment,
-                                       List<ru.protei.portal.core.model.ent.Attachment> attachments) {
+    private CaseComment convertComment(CaseObject caseObject, PersonMapper personMapper, Comment comment,
+                                       List<ru.protei.portal.core.model.ent.Attachment> attachments, List<CaseAttachment> caseLinkAttachment) {
         CaseComment our = new CaseComment();
-        our.setCaseId(caseObjectId);
+        our.setCaseId(caseObject.getId());
         our.setAuthor(personMapper.toProteiPerson(fromBasicUserInfo(comment.getAuthor())));
         our.setCreated(comment.getCreationDate().toDate());
         our.setOriginalAuthorFullName(comment.getAuthor().getDisplayName());
@@ -481,7 +484,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         our.setText(comment.getBody());
 
         if (attachments != null) {
-            replaceImageLink(our, attachments);
+            replaceImageLink(our, attachments, caseLinkAttachment);
         }
 
         return our;
@@ -496,8 +499,8 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         return description;
     }
 
-    private void replaceImageLink(CaseComment caseComment, List<ru.protei.portal.core.model.ent.Attachment> attachments) {
-        setTextWithReplacedImagesFromJira(caseComment, attachments);
+    private void replaceImageLink(CaseComment caseComment, List<ru.protei.portal.core.model.ent.Attachment> attachments, Collection<CaseAttachment> caseAttachments) {
+        setTextWithReplacedImagesFromJira(caseComment, attachments, caseAttachments);
     }
 
     private JiraStatusMapEntry getNewCaseState(Long statusMapId, String issueStatusName) {
