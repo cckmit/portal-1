@@ -291,6 +291,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         tags.setValue(setOf( filter.getCaseTags() ) );
         toggleMsgSearchThreshold();
 
+        onFilterChanged();
     }
 
     @Override

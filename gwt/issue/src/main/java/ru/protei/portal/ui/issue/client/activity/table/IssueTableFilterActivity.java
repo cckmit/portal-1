@@ -14,7 +14,6 @@ import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueCollapseFilterActivity;
@@ -37,7 +36,10 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Активность таблицы обращений
@@ -326,7 +328,6 @@ public abstract class IssueTableFilterActivity
             @Override
             public void onSuccess(SelectorsParams selectorsParams) {
                 filterView.getIssueFilterParams().fillFilterFields(caseQuery, selectorsParams);
-                onUserFilterChanged();
             }
         });
     }
