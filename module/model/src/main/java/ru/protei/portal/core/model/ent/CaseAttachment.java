@@ -105,4 +105,16 @@ public class CaseAttachment implements Serializable{
         return Objects.equals(id, ca.getId())
                 || (Objects.equals(caseId, ca.getCaseId()) && Objects.equals(attachmentId, ca.getAttachmentId()));
     }
+
+    @Override
+    public String toString() {
+        return "CaseAttachment{" +
+                "id=" + id +
+                ", caseId=" + caseId +
+                ", attachmentId=" + attachmentId +
+                ", commentId=" + commentId +
+                ", remoteId='" + remoteId + '\'' +
+                ", isPrivate=" + isPrivate +
+                '}';
+    }
 }
