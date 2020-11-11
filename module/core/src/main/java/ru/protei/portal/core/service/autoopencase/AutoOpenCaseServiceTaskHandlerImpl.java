@@ -7,12 +7,14 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.core.model.dao.CaseObjectMetaDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dao.PersonShortViewDAO;
 import ru.protei.portal.core.model.dao.UserRoleDAO;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseObjectMeta;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.CaseService;
 
 import java.net.Inet4Address;
@@ -53,7 +55,7 @@ public class AutoOpenCaseServiceTaskHandlerImpl implements AutoOpenCaseTaskHandl
             return;
         }
 
-        Person commonManager = personDAO.getCommonManagerByProductId(caseMeta.getProductId());
+        PersonShortView commonManager = personShortViewDAO.getCommonManagerByProductId(caseMeta.getProductId());
         if (commonManager == null) {
             log.error("No set common manager, case id = {}", caseId);
             return;
@@ -67,7 +69,7 @@ public class AutoOpenCaseServiceTaskHandlerImpl implements AutoOpenCaseTaskHandl
         log.info("End process case id = {}, manager id = {}", caseId, commonManager.getId());
     }
 
-    private AuthToken createFakeToken( Person commonManager) {
+    private AuthToken createFakeToken( PersonShortView commonManager) {
         AuthToken token = new AuthToken("0");
         try {
             token.setIp( Inet4Address.getLocalHost().getHostAddress());
@@ -89,6 +91,8 @@ public class AutoOpenCaseServiceTaskHandlerImpl implements AutoOpenCaseTaskHandl
     CaseObjectMetaDAO caseObjectMetaDAO;
     @Autowired
     PersonDAO personDAO;
+    @Autowired
+    PersonShortViewDAO personShortViewDAO;
     @Autowired
     CaseService caseService;
 

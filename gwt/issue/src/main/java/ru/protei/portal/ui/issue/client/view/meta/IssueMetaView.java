@@ -50,7 +50,10 @@ import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaActivity;
 import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaView;
 
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
 
 public class IssueMetaView extends Composite implements AbstractIssueMetaView {
 
@@ -58,6 +61,9 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         company.setAsyncModel( companyModel );
+        initiator.setAsyncModel( initiatorModel );
+        manager.setAsyncModel( managerModel );
+        notifiers.setItemRenderer( PersonShortView::getName );
         initView();
 
         ensureDebugIds();
@@ -89,15 +95,14 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
-    public void setManager( Person manager ) {
-        PersonShortView managerValue = manager == null ? null : manager.toFullNameShortView();
-        if (managerValue != null) managerValue.setName(transliteration(managerValue.getName()));
-        this.manager.setValue(managerValue);
+    public void setManager( PersonShortView manager ) {
+        if (manager != null) manager.setName(transliteration(manager.getName()));
+        this.manager.setValue(manager);
     }
 
     @Override
-    public Person getManager() {
-        return Person.fromPersonFullNameShortView( manager.getValue() );
+    public PersonShortView getManager() {
+        return manager.getValue();
     }
 
     @Override
@@ -166,14 +171,15 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         initiator.setAddButtonVisible(isVisible);
     }
 
+    private static final Logger log = Logger.getLogger( IssueMetaView.class.getName() );
     @Override
-    public void initiatorUpdateCompany(Company company) {
-        initiator.updateCompanies(PersonModel.makeCompanyIds(company));
+    public void setInitiatorFilter(Long companyId) {
+        initiatorModel.updateCompanies( null, setOf(companyId) );
     }
 
     @Override
     public void updateManagersCompanyFilter(Long managerCompanyId) {
-        manager.updateCompanies(new HashSet<>(Collections.singletonList(managerCompanyId)));
+        managerModel.updateCompanies( null, setOf(managerCompanyId) );
     }
 
     @Override
@@ -204,7 +210,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
 
     @Override
     public void setInitiator(Person initiator) {
-        PersonShortView initiatorValue = initiator == null ? null : initiator.toFullNameShortView();
+        PersonShortView initiatorValue = toFullNameShortView(initiator);
         if (initiatorValue != null) initiatorValue.setName( transliteration( initiatorValue.getName() ) );
         this.initiator.setValue(initiatorValue);
     }
@@ -529,8 +535,11 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
                 notifiers
                         .stream()
                         .map(notifier -> {
-                            PersonShortView personShortView = PersonShortView.fromShortNamePerson(notifier);
-                            personShortView.setName(transliteration(personShortView.getName()));
+                            PersonShortView personShortView = new PersonShortView(notifier.getId());
+                            personShortView.setDisplayName( notifier.getDisplayName() );
+                            personShortView.setDisplayShortName( notifier.getDisplayShortName() );
+                            personShortView.setFired( notifier.isFired() );
+                            personShortView.setName(transliteration(personShortView.getDisplayShortName()));
                             return personShortView;
                         })
                         .collect(Collectors.toSet());
@@ -723,8 +732,18 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @UiField(provided = true)
     WorkTriggerFormSelector workTrigger;
 
+
+    private PersonShortView toFullNameShortView(Person person){
+        if(person==null) return null;
+        return new PersonShortView( person.getDisplayName(), person.getId(), person.isFired() );
+    }
+
     @Inject
     CompanyModel companyModel;
+    @Inject
+    PersonModel managerModel;
+    @Inject
+    PersonModel initiatorModel;
 
     private AbstractIssueMetaActivity activity;
 

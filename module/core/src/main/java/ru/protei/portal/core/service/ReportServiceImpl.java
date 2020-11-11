@@ -171,9 +171,9 @@ public class ReportServiceImpl implements ReportService {
         report.setModified(new Date());
         report.setRestricted(!hasGrantAccess);
 
-        reportDAO.merge(report);
-
-        publisherService.publishEvent(new ProcessNewReportsEvent(this));
+        if (reportDAO.merge(report)) {
+            publisherService.publishEvent(new ProcessNewReportsEvent(this));
+        }
 
         return ok(id);
     }

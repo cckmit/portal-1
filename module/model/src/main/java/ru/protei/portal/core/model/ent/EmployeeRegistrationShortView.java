@@ -65,19 +65,7 @@ public class EmployeeRegistrationShortView extends AuditableObject {
         this.headOfDepartmentId = headOfDepartmentId;
     }
 
-    public static EmployeeRegistrationShortView fromEmployeeRegistration(EmployeeRegistration employeeRegistration) {
-        if (employeeRegistration == null) {
-            return null;
-        }
 
-        EmployeeRegistrationShortView employeeRegistrationShortView = new EmployeeRegistrationShortView();
-        employeeRegistrationShortView.setId(employeeRegistration.getId());
-        employeeRegistrationShortView.setCurators(CollectionUtils.emptyIfNull(employeeRegistration.getCurators()).stream().map(Person::toFullNameShortView).collect(Collectors.toSet()));
-        employeeRegistrationShortView.setEmploymentDate(employeeRegistration.getEmploymentDate());
-        employeeRegistrationShortView.setHeadOfDepartmentId(employeeRegistration.getHeadOfDepartmentId());
-
-        return employeeRegistrationShortView;
-    }
 
     @Override
     public String getAuditType() {

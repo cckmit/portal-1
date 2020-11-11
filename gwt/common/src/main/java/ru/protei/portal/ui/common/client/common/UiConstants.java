@@ -119,6 +119,7 @@ public class UiConstants {
         String ROOM_RESERVATION_TABLE = "room_reservation_table";
         String ROOM_RESERVATION_CREATE = "room_reservation_create";
         String DUTY_LOG = "duty_log";
+        String DUTY_LOG_CREATE_REPORT = "duty_log_create_report";
     }
 
     public interface Styles {

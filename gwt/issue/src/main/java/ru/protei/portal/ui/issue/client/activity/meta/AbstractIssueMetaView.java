@@ -12,10 +12,7 @@ import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
-import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.PlanOption;
-import ru.protei.portal.core.model.view.PlatformOption;
-import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.core.model.view.*;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
@@ -44,7 +41,7 @@ public interface AbstractIssueMetaView extends IsWidget {
     void setStateWorkflow(En_CaseStateWorkflow workflow);
     void setSubscriptionEmails(String value);
     void initiatorSelectorAllowAddNew(boolean isVisible);
-    void initiatorUpdateCompany(Company company);
+    void setInitiatorFilter( Long companyId);
     void updateManagersCompanyFilter(Long managerCompanyId);
     void setStateFilter(Selector.SelectorFilter<CaseState> filter);
     void setPlatformFilter(Selector.SelectorFilter<PlatformOption> filter);
@@ -90,8 +87,8 @@ public interface AbstractIssueMetaView extends IsWidget {
 
     HasValue<ProductShortView> product();
 
-    void setManager(Person manager);
-    Person getManager();
+    void setManager(PersonShortView manager);
+    PersonShortView getManager();
 
     void setCompany(Company company);
     Company getCompany();

@@ -36,5 +36,5 @@ public interface ContactService {
 
     @Privileged( En_Privilege.CONTACT_REMOVE )
     @Auditable(En_AuditType.CONTACT_DELETE)
-    Result<Boolean> removeContact( AuthToken token, long id );
+    Result<Long> removeContact( AuthToken token, long id );
 }

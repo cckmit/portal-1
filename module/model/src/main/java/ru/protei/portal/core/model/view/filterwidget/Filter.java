@@ -2,7 +2,7 @@ package ru.protei.portal.core.model.view.filterwidget;
 
 import ru.protei.portal.core.model.ent.SelectorsParams;
 
-public interface Filter<FSV extends FilterShortView, Q extends FilterQuery> {
+public interface Filter<FSV extends AbstractFilterShortView, Q extends FilterQuery> {
     Long getId();
 
     void setId(Long id);

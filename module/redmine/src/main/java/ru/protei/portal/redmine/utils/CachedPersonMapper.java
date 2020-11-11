@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -15,6 +16,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.getFirst;
+import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
 
 public class CachedPersonMapper {
 
@@ -79,7 +83,12 @@ public class CachedPersonMapper {
         Person person = null;
 
         if (HelperFunc.isNotEmpty(user.getMail())) {
-            person = personDAO.findContactByEmail(companyId, user.getMail());
+            // email не уникальное поле. Может быть несколько записей контактов с одним email.
+            PersonQuery personQuery = new PersonQuery();
+            personQuery.setCompanyIds( setOf( companyId ) );
+            personQuery.setEmail( user.getMail() );
+            personQuery.setLimit( 1 );
+            person = getFirst( personDAO.getPersons( personQuery ) );
         }
 
         if (person == null) {
@@ -99,7 +108,12 @@ public class CachedPersonMapper {
 
         if (HelperFunc.isNotEmpty(user.getMail())) {
             // try find by e-mail
-            person = personDAO.findContactByEmail(companyId, user.getMail());
+            // email не уникальное поле. Может быть несколько записей контактов с одним email.
+            PersonQuery personQuery = new PersonQuery();
+            personQuery.setCompanyIds( setOf( companyId ) );
+            personQuery.setEmail( user.getMail() );
+            personQuery.setLimit( 1 );
+            person = getFirst( personDAO.getPersons( personQuery ) );
         }
 
         if (person == null && HelperFunc.isNotEmpty(user.getFullName())) {

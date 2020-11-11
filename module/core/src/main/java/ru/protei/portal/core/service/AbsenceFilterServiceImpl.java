@@ -3,6 +3,7 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.AbsenceFilterDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -12,7 +13,7 @@ import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
-import ru.protei.portal.core.model.view.AbsenceFilterShortView;
+import ru.protei.portal.core.model.view.FilterShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 
 import java.util.ArrayList;
@@ -34,15 +35,15 @@ public class AbsenceFilterServiceImpl implements AbsenceFilterService {
     EmployeeService employeeService;
 
     @Override
-    public Result<List<AbsenceFilterShortView>> getShortViewList(Long loginId) {
+    public Result<List<FilterShortView>> getShortViewList(Long loginId) {
         log.debug( "getShortViewList(): loginId={}", loginId );
 
-        List<AbsenceFilter> list = absenceFilterDAO.getListByLoginId( loginId );
+        List<AbsenceFilter> absenceFilters = absenceFilterDAO.getListByLoginId( loginId );
 
-        if ( list == null )
+        if ( absenceFilters == null )
             return error(En_ResultStatus.GET_DATA_ERROR );
 
-        List<AbsenceFilterShortView> result = list.stream().map( AbsenceFilter::toShortView ).collect( Collectors.toList() );
+        List<FilterShortView> result = absenceFilters.stream().map( AbsenceFilter::toShortView ).collect( Collectors.toList() );
 
         return ok(result );
     }
@@ -90,6 +91,7 @@ public class AbsenceFilterServiceImpl implements AbsenceFilterService {
     }
 
     @Override
+    @Transactional
     public Result<AbsenceFilter> saveFilter(AuthToken token, AbsenceFilter filter) {
 
         log.debug("saveFilter(): filter={} ", filter);
@@ -116,15 +118,16 @@ public class AbsenceFilterServiceImpl implements AbsenceFilterService {
     }
 
     @Override
-    public Result<Boolean> removeFilter(Long id) {
+    @Transactional
+    public Result<Long> removeFilter(Long id) {
 
         log.debug( "removeFilter(): id={} ", id );
 
         if ( absenceFilterDAO.removeByKey( id ) ) {
-            return ok(true);
+            return ok(id);
+        } else {
+            return error(En_ResultStatus.NOT_FOUND);
         }
-
-        return error(En_ResultStatus.INTERNAL_ERROR );
     }
 
     private List<Long> collectEmployeeIds(AbsenceQuery query){

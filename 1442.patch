@@ -1,0 +1,425 @@
+Index: gwt/common/src/main/java/ru/protei/portal/ui/common/client/widget/selector/person/PersonButtonSelector.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- gwt/common/src/main/java/ru/protei/portal/ui/common/client/widget/selector/person/PersonButtonSelector.java	(revision 9291:7916bcb7f6223b82e5a3422966c32c1e4cae9888)
++++ gwt/common/src/main/java/ru/protei/portal/ui/common/client/widget/selector/person/PersonButtonSelector.java	(revision 9293:17244f933609dabeb17b45e3eeb5b62e342ab8ea)
+@@ -24,12 +24,15 @@
+ {
+ 
+     @Inject
+-    public void init(PersonModel model) {
+-        this.model = model;
+-        setModel(model);
++    public void init() {
+         setItemRenderer( value -> value == null ? defaultValue : value.getName() );
+     }
+ 
++    public void setAsyncPersonModel( PersonModel model){
++        this.model = model;
++        setAsyncModel( model );
++    }
++
+     @Override
+     protected SelectorItem makeSelectorItem( PersonShortView value, String elementHtml ) {
+         PopupSelectorItem item = new PopupSelectorItem();
+@@ -41,12 +44,6 @@
+         return item;
+     }
+ 
+-    public void setFired ( boolean value ) { this.fired = value; }
+-
+-    public void setPeople(boolean isPeople) {
+-        this.isPeople = isPeople;
+-    }
+-
+     @Override
+     public void refresh() {
+         PersonShortView value = getValue();
+@@ -59,7 +56,7 @@
+     @Override
+     public void onShowPopupClicked( ClickEvent event) {
+ 
+-        if (CollectionUtils.isNotEmpty( companyIds )) {
++        if (model.isCompaniesPresent()) {
+             super.onShowPopupClicked(event);
+             checkNoElements();
+         } else {
+@@ -71,21 +68,10 @@
+         }
+     }
+ 
+-    public void updateCompanies(Set<Long> companyIds) {
+-        this.companyIds = companyIds;
+-        if (model != null) {
+-            model.updateCompanies(this, isPeople, companyIds, fired);
+-        }
+-    }
+-
+     @Inject
+     Lang lang;
+ 
+     private PersonModel model;
+ 
+-    private boolean fired = false;
+-    private Boolean isPeople = null;
+-    private Set<Long> companyIds;
+-
+     private static final Logger log = Logger.getLogger( PersonButtonSelector.class.getName() );
+ }
+Index: gwt/issue/src/main/java/ru/protei/portal/ui/issue/client/view/meta/IssueMetaView.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- gwt/issue/src/main/java/ru/protei/portal/ui/issue/client/view/meta/IssueMetaView.java	(revision 9291:7916bcb7f6223b82e5a3422966c32c1e4cae9888)
++++ gwt/issue/src/main/java/ru/protei/portal/ui/issue/client/view/meta/IssueMetaView.java	(revision 9292:20c7edb82179814b61af16d0e16e69a2849f10e6)
+@@ -19,7 +19,6 @@
+ import ru.protei.portal.core.model.ent.CaseState;
+ import ru.protei.portal.core.model.ent.Company;
+ import ru.protei.portal.core.model.ent.Person;
+-import ru.protei.portal.core.model.helper.CollectionUtils;
+ import ru.protei.portal.core.model.helper.HelperFunc;
+ import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
+ import ru.protei.portal.core.model.util.TransliterationUtils;
+@@ -64,6 +63,7 @@
+         company.setAsyncModel( companyModel );
+         initiator.setAsyncModel( initiatorModel );
+         manager.setAsyncModel( managerModel );
++        notifiers.setItemRenderer( PersonShortView::getName );
+         initView();
+ 
+         ensureDebugIds();
+@@ -174,12 +174,12 @@
+     private static final Logger log = Logger.getLogger( IssueMetaView.class.getName() );
+     @Override
+     public void setInitiatorFilter(Long companyId) {
+-        initiatorModel.updateCompanies( null,  null, setOf(companyId), null  );
++        initiatorModel.updateCompanies( null, setOf(companyId) );
+     }
+ 
+     @Override
+     public void updateManagersCompanyFilter(Long managerCompanyId) {
+-        managerModel.updateCompanies( null,  null, setOf(managerCompanyId), null  );
++        managerModel.updateCompanies( null, setOf(managerCompanyId) );
+     }
+ 
+     @Override
+Index: gwt/account/src/main/java/ru/protei/portal/ui/account/client/view/edit/AccountEditView.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- gwt/account/src/main/java/ru/protei/portal/ui/account/client/view/edit/AccountEditView.java	(revision 9291:7916bcb7f6223b82e5a3422966c32c1e4cae9888)
++++ gwt/account/src/main/java/ru/protei/portal/ui/account/client/view/edit/AccountEditView.java	(revision 9292:20c7edb82179814b61af16d0e16e69a2849f10e6)
+@@ -11,9 +11,7 @@
+ import com.google.gwt.user.client.Timer;
+ import com.google.gwt.user.client.ui.*;
+ import com.google.inject.Inject;
+-import ru.protei.portal.core.model.ent.Company;
+ import ru.protei.portal.core.model.ent.UserRole;
+-import ru.protei.portal.core.model.helper.CollectionUtils;
+ import ru.protei.portal.core.model.view.EntityOption;
+ import ru.protei.portal.core.model.view.PersonShortView;
+ import ru.protei.portal.ui.account.client.activity.edit.AbstractAccountEditActivity;
+@@ -26,7 +24,6 @@
+ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
+ import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
+ 
+-import java.util.HashSet;
+ import java.util.Set;
+ 
+ import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+@@ -40,7 +37,7 @@
+     @Inject
+     public void onInit() {
+         initWidget( ourUiBinder.createAndBindUi( this ) );
+-        person.setAsyncModel( personModel );
++        person.setAsyncPersonModel( personModel );
+     }
+ 
+     @Override
+@@ -121,7 +118,7 @@
+ 
+     @Override
+     public void setCompaniesForInitiator(Set<Long> companyIds) {
+-        personModel.updateCompanies( person, null, companyIds, null );
++        personModel.updateCompanies( person, companyIds );
+     }
+ 
+     @UiHandler( "company" )
+Index: gwt/common/src/main/java/ru/protei/portal/ui/common/client/view/filter/IssueFilterParamView.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- gwt/common/src/main/java/ru/protei/portal/ui/common/client/view/filter/IssueFilterParamView.java	(revision 9291:7916bcb7f6223b82e5a3422966c32c1e4cae9888)
++++ gwt/common/src/main/java/ru/protei/portal/ui/common/client/view/filter/IssueFilterParamView.java	(revision 9292:20c7edb82179814b61af16d0e16e69a2849f10e6)
+@@ -711,7 +711,7 @@
+ 
+     private void updateInitiators( Set<EntityOption> initiatorsCompanies ) {
+         Set<Long> companyIds = toSet( initiatorsCompanies, entityOption -> entityOption.getId() );
+-        initiatorsModel.updateCompanies(initiators, null, companyIds, null);
++        initiatorsModel.updateCompanies(initiators, companyIds );
+         if (isEmpty( companyIds )) {
+             initiators.setValue( null );
+         }
+@@ -719,7 +719,7 @@
+ 
+     private void updateManagers(Set<EntityOption> managersCompanies) {
+         Set<Long> companyIds = toSet( managersCompanies, entityOption -> entityOption.getId() );
+-        managersModel.updateCompanies( managers, null, companyIds, null );
++        managersModel.updateCompanies( managers, companyIds );
+         if (isEmpty( companyIds )) {
+             managers.setValue( null );
+         }
+Index: gwt/common/src/main/java/ru/protei/portal/ui/common/client/widget/selector/person/EmployeeMultiSelector.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- gwt/common/src/main/java/ru/protei/portal/ui/common/client/widget/selector/person/EmployeeMultiSelector.java	(revision 9291:7916bcb7f6223b82e5a3422966c32c1e4cae9888)
++++ gwt/common/src/main/java/ru/protei/portal/ui/common/client/widget/selector/person/EmployeeMultiSelector.java	(revision 9292:20c7edb82179814b61af16d0e16e69a2849f10e6)
+@@ -22,7 +22,7 @@
+         setAddName(lang.buttonAdd());
+         setClearName(lang.buttonClear());
+         setFilter(personView -> !personView.isFired());
+-        setItemRenderer(PersonShortView::getName);
++        setItemRenderer(PersonShortView::getDisplayName);
+         setNullItem(() -> new PersonShortView(lang.employeeWithoutManager(), CrmConstants.Employee.UNDEFINED));
+     }
+ 
+Index: gwt/product/src/main/java/ru/protei/portal/ui/product/client/view/edit/ProductEditView.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- gwt/product/src/main/java/ru/protei/portal/ui/product/client/view/edit/ProductEditView.java	(revision 9291:7916bcb7f6223b82e5a3422966c32c1e4cae9888)
++++ gwt/product/src/main/java/ru/protei/portal/ui/product/client/view/edit/ProductEditView.java	(revision 9292:20c7edb82179814b61af16d0e16e69a2849f10e6)
+@@ -61,7 +61,8 @@
+         configuration.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged( CONFIGURATION, isDisplay ));
+         cdrDescription.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged( CDR_DESCRIPTION, isDisplay ));
+         info.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged(INFO, isDisplay));
+-        commonManager.setAsyncModel( commonManagerModel );
++        commonManagerModel.setIsPeople(false);
++        commonManager.setAsyncPersonModel( commonManagerModel );
+ 
+         ensureDebugIds();
+     }
+@@ -199,7 +200,7 @@
+ 
+     @Override
+     public void setCommonManagerCompanyId(Long id) {
+-        commonManagerModel.updateCompanies( commonManager, null, setOf(id), null );
++        commonManagerModel.updateCompanies( commonManager, setOf(id) );
+     }
+ 
+     @Override
+Index: gwt/common/src/main/java/ru/protei/portal/ui/common/client/widget/selector/person/PersonModel.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- gwt/common/src/main/java/ru/protei/portal/ui/common/client/widget/selector/person/PersonModel.java	(revision 9291:7916bcb7f6223b82e5a3422966c32c1e4cae9888)
++++ gwt/common/src/main/java/ru/protei/portal/ui/common/client/widget/selector/person/PersonModel.java	(revision 9296:671a022c56e9b9fbaa04f0731311cbf487bb6a24)
+@@ -38,6 +38,14 @@
+         return !isEmpty( query.getCompanyIds() );
+     }
+ 
++    public void setIsPeople( Boolean isPeople ) {
++        query.setPeople( isPeople );
++    }
++
++    public void setIsFired( Boolean isFired ) {
++        query.setFired( isFired );
++    }
++
+     @Override
+     protected void requestData( LoadingHandler selector, String searchText) {
+         personService.getPersonViewList(query, new RequestCallback<List<PersonShortView>>() {
+@@ -62,11 +70,9 @@
+         });
+     }
+ 
+-    public void updateCompanies(Refreshable selector, Boolean people, Set<Long> companyIds, Boolean fired) {
++    public void updateCompanies( Refreshable selector, Set<Long> companyIds ) {
+         this.refreshable = selector;
+         query.setCompanyIds( nullIfEmpty( companyIds ) );
+-        query.setPeople( people );
+-        query.setFired( fired );
+         clean();
+     }
+ 
+@@ -84,7 +90,7 @@
+     @Inject
+     Lang lang;
+ 
+-    private PersonQuery query = new PersonQuery(null, null, null, false, null, En_SortField.person_full_name, En_SortDir.ASC, null);
++    private PersonQuery query = new PersonQuery(null, null, false, false, null, En_SortField.person_full_name, En_SortDir.ASC, null);
+     private Refreshable refreshable;
+ 
+     private Long myId;
+Index: gwt/product/src/main/java/ru/protei/portal/ui/product/client/view/edit/ProductEditView.ui.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- gwt/product/src/main/java/ru/protei/portal/ui/product/client/view/edit/ProductEditView.ui.xml	(revision 9291:7916bcb7f6223b82e5a3422966c32c1e4cae9888)
++++ gwt/product/src/main/java/ru/protei/portal/ui/product/client/view/edit/ProductEditView.ui.xml	(revision 9292:20c7edb82179814b61af16d0e16e69a2849f10e6)
+@@ -62,7 +62,7 @@
+ 
+                             <g:HTMLPanel ui:field="commonManagerContainer" styleName="form-group col-md-6">
+                                 <label><ui:text from="{lang.productCommonManager}"/></label>
+-                                <manager:PersonButtonSelector ui:field="commonManager" defaultValue="{lang.productSelectCommonManager}" hasNullValue="true" people="false"/>
++                                <manager:PersonButtonSelector ui:field="commonManager" defaultValue="{lang.productSelectCommonManager}" hasNullValue="true"/>
+                             </g:HTMLPanel>
+                         </div>
+ 
+Index: gwt/ipreservation/src/main/java/ru/protei/portal/ui/ipreservation/client/view/reservedip/edit/ReservedIpEditView.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- gwt/ipreservation/src/main/java/ru/protei/portal/ui/ipreservation/client/view/reservedip/edit/ReservedIpEditView.java	(revision 9292:20c7edb82179814b61af16d0e16e69a2849f10e6)
++++ gwt/ipreservation/src/main/java/ru/protei/portal/ui/ipreservation/client/view/reservedip/edit/ReservedIpEditView.java	(revision 9297:13419c379cb51e4670b8f9b44deb06592606e5d2)
+@@ -31,6 +31,7 @@
+     public void onInit() {
+         initWidget(ourUiBinder.createAndBindUi(this));
+         macAddress.setRegexp( CrmConstants.IpReservation.MAC_ADDRESS );
++        ipOwner.setItemRenderer( value -> value == null ? lang.selectReservedIpOwner() : value.getName() );
+         ensureDebugIds();
+     }
+ 
+Index: gwt/ipreservation/src/main/java/ru/protei/portal/ui/ipreservation/client/activity/reservedip/edit/ReservedIpEditActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- gwt/ipreservation/src/main/java/ru/protei/portal/ui/ipreservation/client/activity/reservedip/edit/ReservedIpEditActivity.java	(revision 9292:20c7edb82179814b61af16d0e16e69a2849f10e6)
++++ gwt/ipreservation/src/main/java/ru/protei/portal/ui/ipreservation/client/activity/reservedip/edit/ReservedIpEditActivity.java	(revision 9293:17244f933609dabeb17b45e3eeb5b62e342ab8ea)
+@@ -47,7 +47,7 @@
+ 
+         this.reservedIp = event.reservedIp;
+ 
+-        fillView();
++        fillView(reservedIp);
+     }
+ 
+     @Override
+@@ -56,7 +56,7 @@
+             return;
+         }
+ 
+-        fillReservedIp();
++        fillReservedIp(reservedIp);
+ 
+         view.saveEnabled().setEnabled(false);
+ 
+@@ -100,7 +100,7 @@
+         );
+     }
+ 
+-    private void fillView() {
++    private void fillView(ReservedIp reservedIp) {
+         view.setAddress(reservedIp.getIpAddress());
+         view.macAddress().setValue(reservedIp.getMacAddress());
+         view.useRange().setValue(new DateInterval(reservedIp.getReserveDate(), reservedIp.getReleaseDate()));
+@@ -115,7 +115,7 @@
+         view.saveVisibility().setVisible(hasAccess(reservedIp));
+     }
+ 
+-    private ReservedIp fillReservedIp() {
++    private ReservedIp fillReservedIp(ReservedIp reservedIp) {
+         String macAddress = view.macAddress().getValue() == null || view.macAddress().getValue().trim().isEmpty() ?
+                 null : view.macAddress().getValue().trim();
+         reservedIp.setMacAddress(macAddress);
+Index: gwt/dutylog/src/main/java/ru/protei/portal/ui/dutylog/client/activity/edit/DutyLogEditActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- gwt/dutylog/src/main/java/ru/protei/portal/ui/dutylog/client/activity/edit/DutyLogEditActivity.java	(revision 9293:17244f933609dabeb17b45e3eeb5b62e342ab8ea)
++++ gwt/dutylog/src/main/java/ru/protei/portal/ui/dutylog/client/activity/edit/DutyLogEditActivity.java	(revision 9294:1b92738f77bd4e5bfe50a23b4ad7d081042eed00)
+@@ -101,7 +101,9 @@
+     private void fillView(DutyLog value) {
+         this.dutyLog = value;
+ 
+-        view.employee().setValue(new PersonShortView(value.getPersonDisplayName(), value.getPersonId()));
++        PersonShortView personShortView = new PersonShortView( value.getPersonId() );
++        personShortView.setDisplayName( value.getPersonDisplayName() );
++        view.employee().setValue(personShortView);
+         view.dateRange().setValue(new DateInterval(value.getFrom(), value.getTo()));
+         view.type().setValue(value.getType());
+         dialogView.saveButtonVisibility().setVisible(hasAccessEdit());
+Index: gwt/equipment/src/main/java/ru/protei/portal/ui/equipment/client/activity/edit/EquipmentEditActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- gwt/equipment/src/main/java/ru/protei/portal/ui/equipment/client/activity/edit/EquipmentEditActivity.java	(revision 9294:1b92738f77bd4e5bfe50a23b4ad7d081042eed00)
++++ gwt/equipment/src/main/java/ru/protei/portal/ui/equipment/client/activity/edit/EquipmentEditActivity.java	(revision 9295:e7fe2c8b370dd4289a25b69fb4d761a52cd650ac)
+@@ -209,7 +209,7 @@
+         if ( equipment.getManagerId() != null ) {
+             manager = new PersonShortView();
+             manager.setId( equipment.getManagerId() );
+-            manager.setName( equipment.getManagerShortName() );
++            manager.setDisplayShortName( equipment.getManagerShortName() );
+         }
+         view.manager().setValue( manager );
+ 
+Index: gwt/equipment/src/main/java/ru/protei/portal/ui/equipment/client/view/edit/EquipmentEditView.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- gwt/equipment/src/main/java/ru/protei/portal/ui/equipment/client/view/edit/EquipmentEditView.java	(revision 9294:1b92738f77bd4e5bfe50a23b4ad7d081042eed00)
++++ gwt/equipment/src/main/java/ru/protei/portal/ui/equipment/client/view/edit/EquipmentEditView.java	(revision 9295:e7fe2c8b370dd4289a25b69fb4d761a52cd650ac)
+@@ -40,6 +40,7 @@
+     public void onInit() {
+         initWidget( ourUiBinder.createAndBindUi( this ) );
+         nameErrorLabel().setText(lang.promptFieldLengthExceed(lang.equipmentNameBySpecification(), CrmConstants.EquipmentConstants.NAME_SIZE));
++        manager.setItemRenderer( value -> value == null ? lang.equipmentManagerNotDefined() : value.getDisplayShortName() );
+     }
+ 
+     @Override
+Index: gwt/common/src/main/java/ru/protei/portal/ui/common/client/widget/selector/person/AsyncPersonModel.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- gwt/common/src/main/java/ru/protei/portal/ui/common/client/widget/selector/person/AsyncPersonModel.java	(revision 9295:e7fe2c8b370dd4289a25b69fb4d761a52cd650ac)
++++ gwt/common/src/main/java/ru/protei/portal/ui/common/client/widget/selector/person/AsyncPersonModel.java	(revision 9296:671a022c56e9b9fbaa04f0731311cbf487bb6a24)
+@@ -37,7 +37,11 @@
+             return cache.get(elementIndex, handler);
+         }
+         if (elementIndex == 0) return currentPerson;
+-        return cache.get(--elementIndex, handler);
++        PersonShortView personShortView = cache.get( --elementIndex, handler );
++        if (Objects.equals( personShortView, currentPerson )) {
++            return cache.get( ++elementIndex, handler );
++        }
++        return personShortView;
+     }
+ 
+     @Override
+Index: gwt/common/src/main/java/ru/protei/portal/ui/common/client/widget/selector/person/EmployeeModel.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- gwt/common/src/main/java/ru/protei/portal/ui/common/client/widget/selector/person/EmployeeModel.java	(revision 9295:e7fe2c8b370dd4289a25b69fb4d761a52cd650ac)
++++ gwt/common/src/main/java/ru/protei/portal/ui/common/client/widget/selector/person/EmployeeModel.java	(revision 9296:671a022c56e9b9fbaa04f0731311cbf487bb6a24)
+@@ -43,7 +43,11 @@
+             return cache.get( elementIndex, loadingHandler );
+         }
+         if (elementIndex == 0) return currentPerson;
+-        return cache.get( --elementIndex, loadingHandler );
++        PersonShortView personShortView = cache.get( --elementIndex, loadingHandler );
++        if (Objects.equals(personShortView, currentPerson)) {
++            return cache.get( ++elementIndex, loadingHandler );
++        }
++        return personShortView;
+     }
+ 
+     public void clear() {

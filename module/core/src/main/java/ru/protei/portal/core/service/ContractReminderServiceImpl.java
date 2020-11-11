@@ -30,6 +30,18 @@ import java.util.Set;
 import static ru.protei.portal.api.struct.Result.ok;
 
 public class ContractReminderServiceImpl implements ContractReminderService {
+    private static final Logger log = LoggerFactory.getLogger(ContractReminderServiceImpl.class);
+
+    @Autowired
+    ContractDAO contractDAO;
+    @Autowired
+    ContractDateDAO contractDateDAO;
+    @Autowired
+    PersonDAO personDAO;
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
+    @Autowired
+    EventPublisherService publisherService;
 
     @Override
     public Result<Integer> notifyAboutDates() {
@@ -116,17 +128,4 @@ public class ContractReminderServiceImpl implements ContractReminderService {
         }
         return personIdList;
     }
-
-    @Autowired
-    ContractDAO contractDAO;
-    @Autowired
-    ContractDateDAO contractDateDAO;
-    @Autowired
-    PersonDAO personDAO;
-    @Autowired
-    JdbcManyRelationsHelper jdbcManyRelationsHelper;
-    @Autowired
-    EventPublisherService publisherService;
-
-    private static final Logger log = LoggerFactory.getLogger(ContractReminderServiceImpl.class);
 }

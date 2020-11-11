@@ -164,7 +164,7 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
     @JdbcColumnCollection(name = "curators", separator = ",")
     private Set<Long> curatorsIds;
 
-    private Collection<Person> curators;
+    private Collection<PersonShortView> curators;
 
     @JdbcJoinedObject( localColumn = "person", remoteColumn = "id", updateLocalColumn = true, sqlTableAlias = "personemployee" )
     private Person person;
@@ -183,11 +183,11 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
         this.person = person;
     }
 
-    public Collection<Person> getCurators() {
+    public Collection<PersonShortView> getCurators() {
         return curators;
     }
 
-    public void setCurators( Collection<Person> curators ) {
+    public void setCurators( Collection<PersonShortView> curators ) {
         this.curators = curators;
     }
 

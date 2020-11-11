@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.view.contactitem.item;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -9,12 +10,15 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactItemActivity;
 import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactItemView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.contacttype.ContactTypeButtonSelector;
 
 import java.util.List;
+
+import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
 /**
  * Представление элемента
@@ -24,6 +28,7 @@ public class ContactItemView extends Composite implements AbstractContactItemVie
     @Inject
     public void onInit(){
         initWidget(ourUiBinder.createAndBindUi(this));
+        setTestAttributes();
     }
 
     @Override
@@ -67,6 +72,17 @@ public class ContactItemView extends Composite implements AbstractContactItemVie
         activity.onChangeType(this);
     }
 
+    private void setTestAttributes() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+        root.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTACT_INFO.ITEM.ROOT);
+        type.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTACT_INFO.ITEM.TYPE);
+        value.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTACT_INFO.ITEM.VALUE);
+    }
+
+    @UiField
+    HTMLPanel root;
 
     @UiField
     TextBox value;

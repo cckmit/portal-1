@@ -32,6 +32,7 @@ public class AssembledCaseEvent extends ApplicationEvent implements HasCaseComme
 
     private Long initiatorId;
     private Person initiator;
+    private Person manager;
     private ServiceModule serviceModule;
     private List<CaseComment> existingComments;
     private boolean isEagerEvent;
@@ -372,7 +373,11 @@ public class AssembledCaseEvent extends ApplicationEvent implements HasCaseComme
     }
 
     public Person getManager() {
-        return getCaseMeta().getManager();
+        return manager;
+    }
+
+    public void setManager( Person manager ) {
+        this.manager = manager;
     }
 
     public Long getCaseObjectId() {

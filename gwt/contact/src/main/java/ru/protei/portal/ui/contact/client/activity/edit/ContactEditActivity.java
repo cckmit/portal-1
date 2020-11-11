@@ -104,7 +104,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
                         userLogin.setInfo(person.getDisplayName());
                     }
 
-                    contactService.saveAccount(userLogin, sendWelcomeEmailVisibility && sendWelcomeEmail, new RequestCallback<Boolean>() {
+                    contactService.saveAccount(userLogin, sendWelcomeEmailVisibility && sendWelcomeEmail, new RequestCallback<Long>() {
                         @Override
                         public void onError(Throwable throwable) {
                             fireErrorMessage(lang.errEditContactLogin());
@@ -112,7 +112,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
                         }
 
                         @Override
-                        public void onSuccess(Boolean result) {
+                        public void onSuccess(Long result) {
                             fireEvent(new NotifyEvents.Show(lang.contactSaved(), NotifyEvents.NotifyType.SUCCESS));
                             fireEvent(new PersonEvents.PersonCreated(person, origin));
                             fireBackEvent.run();
@@ -123,7 +123,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     }
 
     @Override
-    public void onChangeContactLogin() {
+    public void onChangeContactLoginInfo() {
         view.sendWelcomeEmailVisibility().setVisible(isVisibleSendEmail());
         view.sendEmailWarningVisibility().setVisible(isVisibleSendEmailWarning());
 
@@ -204,6 +204,9 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         String password = GenerationPasswordUtils.generate();
         view.password().setValue(password);
         view.confirmPassword().setValue(password);
+
+        view.sendWelcomeEmailVisibility().setVisible(isVisibleSendEmail());
+        view.sendEmailWarningVisibility().setVisible(isVisibleSendEmailWarning());
     }
 
     private boolean validateSaveButton() {
@@ -228,10 +231,6 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         }
 
         return true;
-    }
-
-    private boolean isNew(Person person) {
-        return person.getId() == null;
     }
 
     private void resetValidationStatus(){
@@ -391,7 +390,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         return HelperFunc.isEmpty(view.login().getText()) ||
                 HelperFunc.isEmpty(view.password().getValue()) ||
                 (!HelperFunc.isEmpty(view.confirmPassword().getValue()) &&
-                        view.password().getValue().equals(view.confirmPassword().getValue()));
+                        view.confirmPassword().getValue().equals(view.password().getValue()));
     }
 
     private boolean isVisibleSendEmail() {

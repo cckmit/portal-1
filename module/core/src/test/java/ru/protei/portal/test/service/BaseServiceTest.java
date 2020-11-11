@@ -7,7 +7,6 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -162,6 +161,17 @@ public class BaseServiceTest {
         return absence;
     }
 
+    protected DutyLog createDutyLog(Long personId) {
+        DutyLog dutyLog = new DutyLog();
+        dutyLog.setCreated(new Date());
+        dutyLog.setCreatorId(personId);
+        dutyLog.setPersonId(personId);
+        dutyLog.setFrom(new Date());
+        dutyLog.setTo(new Date());
+        dutyLog.setType(En_DutyType.BG);
+        return dutyLog;
+    }
+
     public static void checkResult( Result result ) {
         assertNotNull( "Expected result", result );
         assertTrue( "Expected ok result", result.isOk() );
@@ -289,6 +299,12 @@ public class BaseServiceTest {
         return absence;
     }
 
+    protected DutyLog makeDutyLog(Long personId) {
+        DutyLog dutyLog = createDutyLog(personId);
+        dutyLog.setId(dutyLogDAO.persist(dutyLog));
+        return dutyLog;
+    }
+
     protected String serializeAsJson(Object object) {
         try {
             return objectMapper.writeValueAsString(object);
@@ -372,6 +388,8 @@ public class BaseServiceTest {
     protected ProjectService projectService;
     @Autowired
     protected PersonAbsenceDAO personAbsenceDAO;
+    @Autowired
+    protected DutyLogDAO dutyLogDAO;
     @Autowired
     protected PortalConfig config;
     @Autowired

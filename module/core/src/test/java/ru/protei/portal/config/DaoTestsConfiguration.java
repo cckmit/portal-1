@@ -32,6 +32,16 @@ public class DaoTestsConfiguration {
         return new EmployeeSqlBuilder();
     }
 
+    @Bean
+    public PersonSqlBuilder getPersonSqlBuilder() {
+        return new PersonSqlBuilder();
+    }
+
+    @Bean
+    public ContactSqlBuilder getContactSqlBuilder() {
+        return new ContactSqlBuilder();
+    }
+
     /* DAO converters */
 
     @Bean
@@ -64,6 +74,11 @@ public class DaoTestsConfiguration {
     @Bean
     public PersonDAO getPersonDAO() {
         return new PersonDAO_Impl();
+    }
+
+    @Bean
+    public PersonShortViewDAO getPersonShortViewDAO() {
+        return new PersonShortViewDAOImpl();
     }
 
     @Bean
@@ -440,4 +455,8 @@ public class DaoTestsConfiguration {
         return new BootstrapAppDAO_Impl();
     }
 
+    @Bean
+    public DutyLogDAO getDutyLogDAO() {
+        return new DutyLogDAO_Impl();
+    }
 }

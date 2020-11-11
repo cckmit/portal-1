@@ -57,7 +57,7 @@ public class En_SortFieldLang {
             case ip_address:
                 return lang.reservedIpIpAddress();
             case check_date:
-                return lang.reservedIpCheckDate();
+                return lang.reservedIpNonActiveRange();
             case start_date:
                 return lang.planStartDate();
             case finish_date:
@@ -75,8 +75,11 @@ public class En_SortFieldLang {
             case contract_signing_date:
                 return lang.signingDate();
             case duty_log_date_from:
-                return lang.dutyLogDateFrom();
-
+                return lang.dutyLogSortDateFrom();
+            case duty_log_employee:
+                return lang.dutyLogEmployee();
+            case duty_log_type:
+                return lang.dutyLogType();
             default:
                 return lang.unknownField();
         }

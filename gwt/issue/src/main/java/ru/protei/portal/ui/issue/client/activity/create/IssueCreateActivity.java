@@ -183,8 +183,20 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Override
     public void removeAttachment(Attachment attachment) {
-        attachmentService.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, attachment.getId(), new FluentCallback<Boolean>()
-                .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR)))
+        attachmentService.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, attachment.getId(), new FluentCallback<Long>()
+                .withError((throwable, defaultErrorHandler, status) -> {
+                    if (En_ResultStatus.NOT_FOUND.equals(status)) {
+                        fireEvent(new NotifyEvents.Show(lang.fileNotFoundError(), NotifyEvents.NotifyType.ERROR));
+                        return;
+                    }
+
+                    if (En_ResultStatus.NOT_REMOVED.equals(status)) {
+                        fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR));
+                        return;
+                    }
+
+                    defaultErrorHandler.accept(throwable);
+                })
                 .withSuccess(result -> {
                     view.attachmentsListContainer().remove(attachment);
                     view.setCountOfAttachments(size(view.attachmentsListContainer().getAll()));
@@ -479,7 +491,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     private void fillInitiatorValue(final AbstractIssueMetaView issueMetaView, Company initiatorCompany) {
-        issueMetaView.initiatorUpdateCompany(initiatorCompany);
+        issueMetaView.setInitiatorFilter(initiatorCompany.getId());
         initiatorSelectorAllowAddNew(initiatorCompany.getId());
         updateInitiatorInfo(policyService.getProfile(), initiatorCompany.getId());
     }

@@ -61,8 +61,7 @@
 
             <div class="row">
 
-                <tab:TabWidget>
-
+                <tab:TabWidget ui:field="tabWidget">
                     <tab:pane.TabWidgetPane tabName="{lang.siteFolderServers}">
                         <g:HTMLPanel styleName="form-group col-md-12 p-0" ui:field="listContainerHeader">
                             <g:Button ui:field="openButton" styleName="btn btn-default m-r-10"

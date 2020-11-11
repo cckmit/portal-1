@@ -31,7 +31,7 @@ public interface RoomReservationService {
 
     @Privileged({ En_Privilege.ROOM_RESERVATION_REMOVE })
     @Auditable( En_AuditType.ROOM_RESERVATION_REMOVE )
-    Result<RoomReservation> removeReservation(AuthToken token, Long reservationId);
+    Result<Long> removeReservation(AuthToken token, Long reservationId);
 
     Result<List<RoomReservable>> getRooms(AuthToken token);
 }

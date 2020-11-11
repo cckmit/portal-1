@@ -1,9 +1,9 @@
 package ru.protei.portal.ui.ipreservation.client.view.reservedip.table.columns;
 
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.ReservedIp;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -19,7 +19,7 @@ public class LastCheckColumn extends ClickColumn<ReservedIp> {
     @Override
     protected void fillColumnHeader(Element columnHeader) {
         columnHeader.addClassName("ip-last-check");
-        columnHeader.setInnerText(lang.reservedIpCheck());
+        columnHeader.setInnerText(lang.reservedIpStatus());
     }
 
     @Override
@@ -28,20 +28,8 @@ public class LastCheckColumn extends ClickColumn<ReservedIp> {
 
         if ( value == null ) { return; }
 
-        com.google.gwt.dom.client.Element divElement = DOM.createDiv();
-
-        if (value.getLastCheckDate() != null) {
-            com.google.gwt.dom.client.Element checkDateElement = DOM.createElement("p");
-            checkDateElement.setInnerText(DateFormatter.formatDateTime(value.getLastCheckDate()));
-            divElement.appendChild(checkDateElement);
-        }
-        if (value.getLastCheckInfo() != null) {
-            com.google.gwt.dom.client.Element checkInfoElement = DOM.createElement("p");
-            checkInfoElement.setInnerText( value.getLastCheckInfo() );
-            divElement.appendChild(checkInfoElement);
-        }
-
-        cell.appendChild( divElement );
+        final String date = DateFormatter.formatDateTime(value.getLastActiveDate());
+        cell.setInnerText( StringUtils.isBlank(date) ? "" : date );
     }
 
     private Lang lang;

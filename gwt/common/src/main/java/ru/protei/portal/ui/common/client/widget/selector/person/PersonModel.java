@@ -6,33 +6,48 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.selector.LoadingHandler;
+import ru.protei.portal.ui.common.client.selector.model.BaseSelectorModel;
 import ru.protei.portal.ui.common.client.service.PersonControllerAsync;
-import ru.protei.portal.ui.common.client.selector.pageable.SelectorModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Logger;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.nullIfEmpty;
 /**
  * Синхронная модель Person
  */
-public abstract class PersonModel implements Activity, SelectorModel<PersonShortView> {
+public abstract class PersonModel extends BaseSelectorModel<PersonShortView> implements Activity {
 
     @Event
     public void onInit(AuthEvents.Success event) {
         myId = event.profile.getId();
     }
 
-    void updateCompanies(Refreshable selector, Boolean people, Set<Long> companyIds, Boolean fired) {
-        PersonQuery query = new PersonQuery(nullIfEmpty( companyIds ), people, fired, false, null, En_SortField.person_full_name, En_SortDir.ASC, null);
+    public boolean isCompaniesPresent() {
+        return !isEmpty( query.getCompanyIds() );
+    }
+
+    public void setIsPeople( Boolean isPeople ) {
+        query.setPeople( isPeople );
+    }
+
+    public void setIsFired( Boolean isFired ) {
+        query.setFired( isFired );
+    }
+
+    @Override
+    protected void requestData( LoadingHandler selector, String searchText) {
         personService.getPersonViewList(query, new RequestCallback<List<PersonShortView>>() {
 
             @Override
@@ -42,37 +57,27 @@ public abstract class PersonModel implements Activity, SelectorModel<PersonShort
 
             @Override
             public void onSuccess(List<PersonShortView> options) {
-                PersonModel.this.options = options;
                 int value = options.indexOf(new PersonShortView("", myId, false));
                 if (value > 0) {
                     options.add(0, options.remove(value));
                 }
                 options = transliteration(options);
-                if(selector!=null){
-                    selector.refresh();
+                updateElements(options, selector);
+                if(refreshable!=null){
+                    refreshable.refresh();
                 }
             }
         });
     }
 
+    public void updateCompanies( Refreshable selector, Set<Long> companyIds ) {
+        this.refreshable = selector;
+        query.setCompanyIds( nullIfEmpty( companyIds ) );
+        clean();
+    }
+
     public Collection<PersonShortView> getValues() {
-        return options;
-    }
-
-    public static Set<Long> makeCompanyIds(Company company) {
-        if (company == null) {
-            return null;
-        }
-        return makeCompanyIds(company.getId());
-    }
-
-    public static Set<Long> makeCompanyIds(Long companyId) {
-        if (companyId == null) {
-            return null;
-        }
-        Set<Long> companyIds = new HashSet<>();
-        companyIds.add(companyId);
-        return companyIds;
+        return elements;
     }
 
     private List<PersonShortView> transliteration( List<PersonShortView> options) {
@@ -80,15 +85,15 @@ public abstract class PersonModel implements Activity, SelectorModel<PersonShort
         return options;
     }
 
-    @Override
-    public PersonShortView get( int elementIndex ) {
-        return CollectionUtils.get( options, elementIndex );
-    }
-
     @Inject
     PersonControllerAsync personService;
     @Inject
     Lang lang;
-    private List<PersonShortView> options;
+
+    private PersonQuery query = new PersonQuery(null, null, false, false, null, En_SortField.person_full_name, En_SortDir.ASC, null);
+    private Refreshable refreshable;
+
     private Long myId;
+
+    private static final Logger log = Logger.getLogger( PersonModel.class.getName() );
 }

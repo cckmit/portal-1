@@ -201,6 +201,7 @@ public class MailReceiverServiceImpl implements MailReceiverService {
     private Optional<ReceivedMail> parseMessage(Message message, Pattern blackListPattern) {
         try {
             if (isInBlackList(message, blackListPattern)) {
+                log.info("parseMessage(): isInBlackList, subject= {}", message.getSubject());
                 return Optional.empty();
             }
             Long caseNo = parseCaseNo(message);

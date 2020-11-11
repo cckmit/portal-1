@@ -20,6 +20,14 @@ import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.dict.En_ResultStatus.NOT_FOUND;
 
 public class SLAServiceImpl implements SLAService {
+    @Autowired
+    ProjectSlaDAO projectSlaDAO;
+
+    @Autowired
+    JiraSLAMapEntryDAO jiraSLAMapEntryDAO;
+
+    @Autowired
+    PlatformDAO platformDAO;
 
     @Override
     public Result<List<JiraSLAMapEntry>> getJiraSLAEntries(AuthToken token, long mapId) {
@@ -57,13 +65,4 @@ public class SLAServiceImpl implements SLAService {
 
         return ok(slaList);
     }
-
-    @Autowired
-    ProjectSlaDAO projectSlaDAO;
-
-    @Autowired
-    JiraSLAMapEntryDAO jiraSLAMapEntryDAO;
-
-    @Autowired
-    PlatformDAO platformDAO;
 }

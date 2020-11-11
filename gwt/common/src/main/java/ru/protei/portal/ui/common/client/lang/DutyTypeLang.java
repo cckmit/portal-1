@@ -1,11 +1,11 @@
 package ru.protei.portal.ui.common.client.lang;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.DutyType;
+import ru.protei.portal.core.model.dict.En_DutyType;
 
 public class DutyTypeLang {
 
-    public String getName( DutyType value ) {
+    public String getName( En_DutyType value ) {
         if (value == null)
             return lang.unknownField();
         switch (value) {

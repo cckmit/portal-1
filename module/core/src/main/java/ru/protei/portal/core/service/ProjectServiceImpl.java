@@ -41,7 +41,6 @@ import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
 import static ru.protei.portal.core.access.ProjectAccessUtil.canAccessProject;
 import static ru.protei.portal.core.access.ProjectAccessUtil.getProjectAccessType;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
-import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 import static ru.protei.portal.core.model.view.PersonProjectMemberView.fromFullNamePerson;
 
 /**
@@ -334,22 +333,21 @@ public class ProjectServiceImpl implements ProjectService {
             throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
         }
 
-        Result addLinksResult = ok();
+        List<CaseLink> links = emptyIfNull(project.getLinks());
 
-        for (CaseLink caseLink : CollectionUtils.emptyIfNull(project.getLinks())) {
-            caseLink.setCaseId(caseObject.getId());
-            Result currentResult = caseLinkService.createLink(token, caseLink, caseObject.getType());
-            if (currentResult.isError()) addLinksResult = currentResult;
-        }
+        links.forEach(link -> link.setCaseId(projectId));
+
+        Result<List<CaseLink>> createdLinksResult
+                = caseLinkService.createLinks(token, links, En_CaseType.PROJECT);
 
         ProjectCreateEvent projectCreateEvent = new ProjectCreateEvent(this, token.getPersonId(), project.getId());
 
-        return new Result<>(En_ResultStatus.OK, project, (addLinksResult.isOk() ? null : SOME_LINKS_NOT_SAVED), Collections.singletonList(projectCreateEvent));
+        return new Result<>(En_ResultStatus.OK, project, createdLinksResult.getMessage(), Collections.singletonList(projectCreateEvent));
     }
 
     @Override
     @Transactional
-    public Result<Boolean> removeProject( AuthToken token, Long projectId) {
+    public Result<Long> removeProject(AuthToken token, Long projectId) {
 
         Project project = projectDAO.get(projectId);
         CaseObject caseObject = caseObjectDAO.get(projectId);
@@ -367,11 +365,9 @@ public class ProjectServiceImpl implements ProjectService {
 
         if (result) {
             caseLinkService.getLinks(token, caseObject.getId())
-                .ifOk(links -> links.forEach(caseLink -> {
-                    caseLinkService.deleteLink(token, caseLink.getId());
-                }));
+                .ifOk(links -> caseLinkService.deleteLinks(token, links));
         }
-        return ok(result);
+        return ok(projectId);
     }
 
     @Override
@@ -436,7 +432,13 @@ public class ProjectServiceImpl implements ProjectService {
         return caseMemberDAO.getLeaders(projectId)
                 .stream()
                 .findFirst()
-                .map(leader -> PersonShortView.fromFullNamePerson(leader.getMember()))
+                .map(leader -> {
+                    PersonShortView personShortView = new PersonShortView(leader.getId());
+                    personShortView.setDisplayName( leader.getMember().getDisplayName() );
+                    personShortView.setDisplayShortName( leader.getMember().getDisplayShortName() );
+                    personShortView.setFired( leader.getMember().isFired() );
+                    return personShortView;
+                } )
                 .map(Result::ok)
                 .orElse(ok(null));
     }

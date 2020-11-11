@@ -49,16 +49,18 @@ import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsed;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsedImpl;
 import ru.protei.portal.core.report.contract.ReportContract;
 import ru.protei.portal.core.report.contract.ReportContractImpl;
+import ru.protei.portal.core.report.dutylog.ReportDutyLog;
+import ru.protei.portal.core.report.dutylog.ReportDutyLogImpl;
 import ru.protei.portal.core.report.projects.ReportProject;
 import ru.protei.portal.core.report.projects.ReportProjectImpl;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.auth.AuthServiceImpl;
 import ru.protei.portal.core.service.auth.LDAPAuthProvider;
-import ru.protei.portal.core.service.autoopencase.AutoOpenCaseTaskHandler;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
-import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceTaskHandlerImpl;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceImpl;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceTaskHandlerImpl;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseTaskHandler;
 import ru.protei.portal.core.service.bootstrap.BootstrapService;
 import ru.protei.portal.core.service.bootstrap.BootstrapServiceImpl;
 import ru.protei.portal.core.service.events.*;
@@ -212,6 +214,16 @@ public class MainConfiguration {
         return new EmployeeSqlBuilder();
     }
 
+    @Bean
+    public PersonSqlBuilder getPersonSqlBuilder() {
+        return new PersonSqlBuilder();
+    }
+
+    @Bean
+    public ContactSqlBuilder getContactSqlBuilder() {
+        return new ContactSqlBuilder();
+    }
+
     /* DAO converters */
 
     @Bean
@@ -244,6 +256,11 @@ public class MainConfiguration {
     @Bean
     public PersonDAO getPersonDAO() {
         return new PersonDAO_Impl();
+    }
+
+    @Bean
+    public PersonShortViewDAO gePersonShortViewDAO() {
+        return new PersonShortViewDAOImpl();
     }
 
     @Bean
@@ -697,6 +714,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public DutyLogFilterDAO getDutyLogFilterDAO() {
+        return new DutyLogFilterDAO_Impl();
+    }
+
+    @Bean
     public PersonFavoriteIssuesDAO getPersonFavoritesIssuesDAO() {
         return new PersonFavoriteIssuesDAO_Impl();
     }
@@ -1024,6 +1046,12 @@ public class MainConfiguration {
     }
 
     @Bean
+    public DutyLogFilterService getDutyLogFilterService() {
+        return new DutyLogFilterServiceImpl();
+    }
+
+
+    @Bean
     public PersonSubscriptionService getPersonSubscriptionService() {
         return new PersonSubscriptionServiceImpl();
     }
@@ -1056,6 +1084,11 @@ public class MainConfiguration {
     @Bean
     public ReportAbsence getReportAbsence() {
         return new ReportAbsenceImpl();
+    }
+
+    @Bean
+    public ReportDutyLog getReportDutyLog() {
+        return new ReportDutyLogImpl();
     }
 
     @Bean

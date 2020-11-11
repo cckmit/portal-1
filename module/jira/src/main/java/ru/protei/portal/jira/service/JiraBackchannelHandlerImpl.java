@@ -29,10 +29,27 @@ import static ru.protei.portal.core.utils.JiraUtils.getTextWithReplacedImagesToJ
 
 public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
 
+    private static final Logger logger = LoggerFactory.getLogger(JiraBackchannelHandlerImpl.class);
+
     @Autowired
     JiraClientFactory clientFactory;
     @Autowired
     FileStorage fileStorage;
+
+    @Autowired
+    private JiraEndpointDAO endpointDAO;
+
+    @Autowired
+    private JiraPriorityMapEntryDAO priorityMapEntryDAO;
+
+    @Autowired
+    private JiraStatusMapEntryDAO statusMapEntryDAO;
+
+    @Autowired
+    private ExternalCaseAppDAO externalCaseAppDAO;
+
+    @Autowired
+    private PortalConfig portalConfig;
 
     @Override
     public void handle(AssembledCaseEvent event) {
@@ -170,22 +187,4 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
     private boolean isRequireGenericDataUpdate (AssembledCaseEvent event) {
         return event.isCaseStateChanged() || event.isCaseImportanceChanged();
     }
-
-
-    @Autowired
-    private JiraEndpointDAO endpointDAO;
-
-    @Autowired
-    private JiraPriorityMapEntryDAO priorityMapEntryDAO;
-
-    @Autowired
-    private JiraStatusMapEntryDAO statusMapEntryDAO;
-
-    @Autowired
-    private ExternalCaseAppDAO externalCaseAppDAO;
-
-    @Autowired
-    private PortalConfig portalConfig;
-
-    private static final Logger logger = LoggerFactory.getLogger(JiraBackchannelHandlerImpl.class);
 }

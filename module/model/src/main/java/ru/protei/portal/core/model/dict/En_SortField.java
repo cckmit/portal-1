@@ -212,6 +212,16 @@ public enum En_SortField {
     duty_log_date_from("duty_log.date_from"),
 
     /**
+     * Журнал дежурств employee
+     */
+    duty_log_employee("duty_log.person_id"),
+
+    /**
+     * Журнал дежурств type
+     */
+    duty_log_type("duty_log.type"),
+
+    /**
      * Просто значение
      */
     value("value"),

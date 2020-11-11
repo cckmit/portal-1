@@ -39,7 +39,8 @@ public class NRPEHostReachable extends NRPEHost {
     private final List<ProbeInfo> probeInfos;
     private final boolean isIpConflict;
 
-    public NRPEHostReachable(String ipTarget, String ipSource, int probes, int broadcast, int response, List<ProbeInfo> probeInfos, boolean isIpConflict) {
+    public NRPEHostReachable(List<String> rawResponse, String ipTarget, String ipSource, int probes, int broadcast, int response, List<ProbeInfo> probeInfos, boolean isIpConflict) {
+        this.rawResponse = rawResponse;
         this.ipTarget = ipTarget;
         this.ipSource = ipSource;
         this.probes = probes;

@@ -24,8 +24,9 @@ public interface AttachmentController extends RemoteService {
      * {@link Attachment},
      * {@link ru.protei.portal.core.model.ent.CaseAttachment}
      * и из облака
+     * @return Идентификатор удаленного вложения
      */
-    boolean removeAttachmentEverywhere(En_CaseType caseType, Long attachmentId) throws RequestFailedException;
+    Long removeAttachmentEverywhere(En_CaseType caseType, Long attachmentId) throws RequestFailedException;
 
     /**
      * Очистка кэша загрузки

@@ -71,8 +71,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         fillDateRanges(dateModifiedRange);
         dateCreatedRange.setHeader(lang.created());
         dateModifiedRange.setHeader(lang.updated());
-        initiators.setCompaniesSupplier(() -> new HashSet<>( companies.getValue()) );
-        managers.setCompaniesSupplier(() -> new HashSet<>(managerCompanies.getValue()));
+        initiators.setPersonModel( initiatorsModel );
+        managers.setPersonModel( managersModel );
         managers.setNullItem(() -> new PersonShortView(lang.employeeWithoutManager(), CrmConstants.Employee.UNDEFINED));
         searchByCommentsWarning.setText(
                 lang.searchByCommentsUnavailable(CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS));
@@ -81,16 +81,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @Override
     public void setModel(AbstractIssueFilterModel model) {
         this.model = model;
-    }
-
-    @Override
-    public void setInitiatorsModel(PersonModel personModel) {
-        initiators.setPersonModel(personModel);
-    }
-
-    @Override
-    public void setManagersModel(PersonModel personModel) {
-        managers.setPersonModel(personModel);
     }
 
     @Override
@@ -194,7 +184,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public void resetFilter() {
+    public void resetFilter(DateIntervalWithType dateModified) {
         companies.setValue(null);
         products.setValue(null);
         managers.setValue(null);
@@ -206,7 +196,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         importance.setValue(null);
         state.setValue(null);
         dateCreatedRange.setValue(null);
-        dateModifiedRange.setValue(null);
+        dateModifiedRange.setValue(dateModified);
         sortField.setValue(En_SortField.issue_number);
         sortDir.setValue(false);
         search.setValue("");
@@ -230,7 +220,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         HashSet<EntityOption> companyIds = new HashSet<>();
         companyIds.add(toEntityOption(company));
         companies.setValue(companyIds);
-        updateInitiators();
+        updateInitiators( companyIds );
     }
 
     @Override
@@ -238,7 +228,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         HashSet<EntityOption> managerCompanies = new HashSet<>();
         managerCompanies.add(toEntityOption(company));
         this.managerCompanies.setValue(managerCompanies);
-        updateManagers();
+        updateManagers(managerCompanies);
     }
 
     private void toggleMsgSearchThreshold() {
@@ -263,21 +253,23 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         searchFavorite.setValue(caseQuery.getPersonIdToIsFavorite() == null ? null : caseQuery.getPersonIdToIsFavorite().getB());
         sortDir.setValue(caseQuery.getSortDir() == null ? null : caseQuery.getSortDir().equals(En_SortDir.ASC));
         sortField.setValue(caseQuery.getSortField() == null ? En_SortField.creation_date : caseQuery.getSortField());
-        dateCreatedRange.setValue(fromDateRange(caseQuery.getCreatedRange(), false));
-        dateModifiedRange.setValue(fromDateRange(caseQuery.getModifiedRange(), false));
+        dateCreatedRange.setValue(fromDateRange(caseQuery.getCreatedRange()));
+        dateModifiedRange.setValue(fromDateRange(caseQuery.getModifiedRange()));
         importance.setValue(caseQuery.getImportances());
         state.setValue(toSet(caseQuery.getStateIds(), id -> new CaseState(id)));
 
-        companies.setValue(applyCompanies(filter, caseQuery.getCompanyIds()));
-        managerCompanies.setValue(applyCompanies(filter, caseQuery.getManagerCompanyIds()));
+        Set<EntityOption> initiatorsCompanies = applyCompanies( filter.getCompanyEntityOptions(), caseQuery.getCompanyIds() );
+        companies.setValue(initiatorsCompanies);
+        Set<EntityOption> managersCompanies = applyCompanies( filter.getCompanyEntityOptions(), caseQuery.getManagerCompanyIds() );
+        managerCompanies.setValue(managersCompanies);
 
-        updateManagers();
-        updateInitiators();
+        updateManagers(managersCompanies);
+        updateInitiators(initiatorsCompanies);
 
-        initiators.setValue(applyPersons(filter, caseQuery.getInitiatorIds()));
-        commentAuthors.setValue(applyPersons(filter, caseQuery.getCommentAuthorIds()));
+        initiators.setValue(applyPersons(filter.getPersonShortViews(), caseQuery.getInitiatorIds()));
+        commentAuthors.setValue(applyPersons(filter.getPersonShortViews(), caseQuery.getCommentAuthorIds()));
         timeElapsedTypes.setValue(toSet(caseQuery.getTimeElapsedTypeIds(), En_TimeElapsedType::findById));
-        creators.setValue(applyPersons(filter, caseQuery.getCreatorIds()));
+        creators.setValue(applyPersons(filter.getPersonShortViews(), caseQuery.getCreatorIds()));
         plan.setValue(filter.getPlanOption());
         workTriggers.setValue(toSet(caseQuery.getWorkTriggersIds(), En_WorkTrigger::findById));
         overdueDeadlines.setValue(caseQuery.getOverdueDeadlines());
@@ -286,7 +278,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         if (emptyIfNull(caseQuery.getManagerIds()).contains(CrmConstants.Employee.UNDEFINED)) {
             personShortViews.add(new PersonShortView(lang.employeeWithoutManager(), CrmConstants.Employee.UNDEFINED));
         }
-        personShortViews.addAll(applyPersons(filter, caseQuery.getManagerIds()));
+        personShortViews.addAll(applyPersons(filter.getPersonShortViews(), caseQuery.getManagerIds()));
         managers.setValue(personShortViews);
 
         Set<ProductShortView> productsShortView = new LinkedHashSet<>();
@@ -299,7 +291,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         tags.setValue(setOf( filter.getCaseTags() ) );
         toggleMsgSearchThreshold();
 
-        onFilterChanged();
     }
 
     @Override
@@ -407,13 +398,13 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
     @UiHandler("companies")
     public void onCompaniesSelected(ValueChangeEvent<Set<EntityOption>> event) {
-        initiators.updateCompanies();
+        updateInitiators( companies.getValue() );
         onFilterChanged();
     }
 
     @UiHandler("managerCompanies")
     public void onManagerCompaniesSelected(ValueChangeEvent<Set<EntityOption>> event) {
-        managers.updateCompanies();
+        updateManagers( managerCompanies.getValue() );
         onFilterChanged();
     }
 
@@ -477,10 +468,12 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         onFilterChanged();
     }
 
-    public void applyVisibilityByFilterType(En_CaseFilterType filterType) {
+    public void applyVisibility(En_CaseFilterType filterType) {
         if (filterType == null) {
             return;
         }
+
+        final boolean isCustomer = isCustomer();
 
         search.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         searchFavoriteContainer.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
@@ -503,8 +496,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         tags.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS) || filterType.equals(En_CaseFilterType.CASE_RESOLUTION_TIME));
         searchPrivateContainer.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         plan.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS) && policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PLAN_VIEW));
-        workTriggers.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
-        overdueDeadlinesContainer.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        workTriggers.setVisible(!isCustomer && filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        overdueDeadlinesContainer.setVisible(!isCustomer && filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         if (filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED)) {
             importanceContainer.addClassName(HIDE);
             stateContainer.addClassName(HIDE);
@@ -512,6 +505,10 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
             importanceContainer.removeClassName(HIDE);
             stateContainer.removeClassName(HIDE);
         }
+    }
+
+    private boolean isCustomer() {
+        return !policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
     }
 
     public String validateMultiSelectorsTotalCount() {
@@ -574,17 +571,17 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
 
-    private Set<PersonShortView> applyPersons(SelectorsParams filter, List<Long> personIds) {
-        return emptyIfNull(filter.getPersonShortViews()).stream()
+    private Set<PersonShortView> applyPersons(List<PersonShortView> personShortViews, List<Long> personIds) {
+        return stream(personShortViews)
                 .filter(personShortView ->
-                        emptyIfNull(personIds).stream().anyMatch(ids -> ids.equals(personShortView.getId())))
+                        stream(personIds).anyMatch(ids -> ids.equals(personShortView.getId())))
                 .collect(Collectors.toSet());
     }
 
-    private Set<EntityOption> applyCompanies(SelectorsParams filter, List<Long> companyIds) {
-        return emptyIfNull(filter.getCompanyEntityOptions()).stream()
+    private Set<EntityOption> applyCompanies(List<EntityOption> companies, List<Long> companyIds) {
+        return stream(companies)
                 .filter(company ->
-                        emptyIfNull(companyIds).stream().anyMatch(ids -> ids.equals(company.getId())))
+                        stream(companyIds).anyMatch(ids -> ids.equals(company.getId())))
                 .collect(Collectors.toSet());
     }
 
@@ -712,12 +709,20 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         }
     }
 
-    private void updateInitiators() {
-        initiators.updateCompanies();
+    private void updateInitiators( Set<EntityOption> initiatorsCompanies ) {
+        Set<Long> companyIds = toSet( initiatorsCompanies, entityOption -> entityOption.getId() );
+        initiatorsModel.updateCompanies(initiators, companyIds );
+        if (isEmpty( companyIds )) {
+            initiators.setValue( null );
+        }
     }
 
-    private void updateManagers() {
-        managers.updateCompanies();
+    private void updateManagers(Set<EntityOption> managersCompanies) {
+        Set<Long> companyIds = toSet( managersCompanies, entityOption -> entityOption.getId() );
+        managersModel.updateCompanies( managers, companyIds );
+        if (isEmpty( companyIds )) {
+            managers.setValue( null );
+        }
     }
 
     private static Set< Long > getProductsIdList(Set<ProductShortView> productSet) {
@@ -858,8 +863,15 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @Inject
     PolicyService policyService;
 
+    @Inject
+    PersonModel initiatorsModel;
+    @Inject
+    PersonModel managersModel;
+
+
     private Timer timer = null;
     private AbstractIssueFilterModel model;
+
 
     interface IssueFilterUiBinder extends UiBinder<HTMLPanel, IssueFilterParamView> {}
     private static IssueFilterUiBinder ourUiBinder = GWT.create(IssueFilterUiBinder.class);

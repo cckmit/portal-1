@@ -3,10 +3,11 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.CaseFilterDAO;
-import ru.protei.portal.core.model.dao.PlanDAO;
 import ru.protei.portal.core.model.dao.PersonCaseFilterDAO;
+import ru.protei.portal.core.model.dao.PlanDAO;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -144,6 +145,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     }
 
     @Override
+    @Transactional
     public Result<CaseFilter> saveIssueFilter(AuthToken token, CaseFilter filter) {
 
         log.debug("saveIssueFilter(): filter={} ", filter);
@@ -171,19 +173,19 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     }
 
     @Override
-    public Result< Boolean > removeIssueFilter( Long id ) {
-
+    @Transactional
+    public Result<Long> removeIssueFilter(Long id ) {
         log.debug( "removeIssueFilter(): id={} ", id );
 
         if (personCaseFilterDAO.isUsed(id)) {
             return error(En_ResultStatus.ISSUE_FILTER_IS_USED);
         }
 
-        if ( caseFilterDAO.removeByKey( id ) ) {
-            return ok(true);
+        if (!caseFilterDAO.removeByKey(id)) {
+            return error(En_ResultStatus.NOT_FOUND);
         }
 
-        return error(En_ResultStatus.INTERNAL_ERROR );
+        return ok(id);
     }
 
     private boolean isNotValid( CaseFilter filter ) {

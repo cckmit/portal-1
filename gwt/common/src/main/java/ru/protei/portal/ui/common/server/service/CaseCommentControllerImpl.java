@@ -63,14 +63,16 @@ public class CaseCommentControllerImpl implements CaseCommentController {
     }
 
     @Override
-    public void removeCaseComment(En_CaseType caseType, CaseComment comment) throws RequestFailedException {
+    public Long removeCaseComment(En_CaseType caseType, CaseComment comment) throws RequestFailedException {
         log.info("removeCaseComment(): caseType={}, comment={}", caseType, comment);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        Result<Boolean> response = caseCommentService.removeCaseComment(token, caseType, comment);
+        Result<Long> response = caseCommentService.removeCaseComment(token, caseType, comment);
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
         }
+
+        return response.getData();
     }
 
     @Override

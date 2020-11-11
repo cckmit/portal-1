@@ -24,6 +24,9 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import java.util.Collections;
 import java.util.function.Consumer;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
+import static ru.protei.portal.core.model.helper.CollectionUtils.toSet;
+
 /**
  * Активность создания и редактирования учетной записи
  */
@@ -166,7 +169,7 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
             view.company().setValue( new EntityOption(userLogin.getCompanyName(), userLogin.getCompanyId()) );
             view.person().setValue( new PersonShortView(userLogin.getDisplayName(), userLogin.getPersonId()), userLogin.isFired() );
         }
-        view.setCompaniesForInitiator(userLogin.getCompanyId() == null ? Collections.emptySet() : PersonModel.makeCompanyIds(userLogin.getCompanyId()));
+        view.setCompaniesForInitiator(userLogin.getCompanyId() == null ? Collections.emptySet() : setOf(userLogin.getCompanyId()));
         view.password().setText( "" );
         view.confirmPassword().setText( "" );
         view.roles().setValue( userLogin.getRoles() );

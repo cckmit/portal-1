@@ -4,12 +4,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.DutyLogDAO;
+import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.DutyLog;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.query.DataQuery;
 import ru.protei.portal.core.model.query.DutyLogQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.struct.Interval;
+import ru.protei.portal.core.utils.TypeConverters;
+import ru.protei.winter.core.utils.beans.SearchResult;
+import ru.protei.winter.jdbc.JdbcQueryParameters;
+import ru.protei.winter.jdbc.JdbcSort;
 import ru.protei.winter.jdbc.annotations.EnumType;
 
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
@@ -18,6 +25,11 @@ import static ru.protei.winter.jdbc.JdbcHelper.makeSqlStringCollection;
 public class DutyLogDAO_Impl extends PortalBaseJdbcDAO<DutyLog> implements DutyLogDAO {
 
     private static final Logger log = LoggerFactory.getLogger( DutyLogDAO_Impl.class );
+
+    public SearchResult<DutyLog> getSearchResultByQuery(DataQuery query) {
+        JdbcQueryParameters parameters = buildJdbcQueryParameters(query);
+        return getSearchResult(parameters);
+    }
 
     @SqlConditionBuilder
     public SqlCondition createSqlCondition(DutyLogQuery query) {
@@ -39,7 +51,7 @@ public class DutyLogDAO_Impl extends PortalBaseJdbcDAO<DutyLog> implements DutyL
                 }
             }
 
-            if (query.getPersonIds() != null){
+            if (CollectionUtils.isNotEmpty(query.getPersonIds())) {
                 condition.append(" and duty_log.person_id in ").append(HelperFunc.makeInArg(query.getPersonIds()));
             }
 
@@ -53,5 +65,28 @@ public class DutyLogDAO_Impl extends PortalBaseJdbcDAO<DutyLog> implements DutyL
     public boolean checkExists(DutyLog value) {
         return checkExistsByCondition("duty_log.date_from = ? and duty_log.date_to = ? and duty_log.person_id = ?" +
                 " and duty_log.type = ?", value.getFrom(), value.getTo(), value.getPersonId(), value.getType().getId());
+    }
+
+    private JdbcQueryParameters buildJdbcQueryParameters(DataQuery query) {
+
+        SqlCondition where = createSqlCondition(query);
+
+        JdbcQueryParameters parameters = new JdbcQueryParameters();
+        if (where.isConditionDefined())
+            parameters.withCondition(where.condition, where.args);
+
+        parameters.withOffset(query.getOffset());
+        parameters.withLimit(query.getLimit());
+        final JdbcSort sort;
+        if (query.getSortField() == En_SortField.duty_log_date_from) {
+            sort = TypeConverters.createSort(query);
+        } else {
+            sort = new JdbcSort(
+                    new JdbcSort.DescriptionParam(query.getSortField().getFieldName(), TypeConverters.toWinter(query.getSortDir()), null),
+                    new JdbcSort.DescriptionParam(En_SortField.duty_log_date_from.getFieldName(), TypeConverters.toWinter(En_SortDir.ASC), null));
+        }
+        parameters.withSort(sort);
+
+        return parameters;
     }
 }

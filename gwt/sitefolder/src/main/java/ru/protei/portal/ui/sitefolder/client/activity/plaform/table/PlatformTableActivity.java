@@ -228,20 +228,16 @@ public abstract class PlatformTableActivity implements
     }
 
     private Runnable removeAction(Long platformId) {
-        return () -> siteFolderController.removePlatform(platformId, new RequestCallback<Boolean>() {
+        return () -> siteFolderController.removePlatform(platformId, new RequestCallback<Long>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformNotRemoved(), NotifyEvents.NotifyType.ERROR));
             }
 
             @Override
-            public void onSuccess(Boolean result) {
-                if (result) {
-                    fireEvent(new SiteFolderPlatformEvents.Show(false));
-                    fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformRemoved(), NotifyEvents.NotifyType.SUCCESS));
-                } else {
-                    fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformNotRemoved(), NotifyEvents.NotifyType.ERROR));
-                }
+            public void onSuccess(Long result) {
+                fireEvent(new SiteFolderPlatformEvents.Show(false));
+                fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformRemoved(), NotifyEvents.NotifyType.SUCCESS));
             }
         });
     }

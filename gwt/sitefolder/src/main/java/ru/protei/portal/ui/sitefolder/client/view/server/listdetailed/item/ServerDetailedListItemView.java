@@ -1,7 +1,7 @@
 package ru.protei.portal.ui.sitefolder.client.view.server.listdetailed.item;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -12,9 +12,11 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.sitefolder.client.activity.server.listdetailed.item.AbstractServerDetailedListItemActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.server.listdetailed.item.AbstractServerDetailedListItemView;
 
+import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 
 public class ServerDetailedListItemView extends Composite implements AbstractServerDetailedListItemView {
@@ -22,6 +24,7 @@ public class ServerDetailedListItemView extends Composite implements AbstractSer
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        setTestAttributes();
     }
 
     @Override
@@ -78,6 +81,18 @@ public class ServerDetailedListItemView extends Composite implements AbstractSer
         if (activity != null) {
             activity.onEditClicked(this);
         }
+    }
+
+    private void setTestAttributes() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+        root.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.SITE_FOLDER.SERVER.ITEM);
+        name.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.SITE_FOLDER.SERVER.NAME);
+        apps.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.SITE_FOLDER.SERVER.APPS);
+        comment.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.SITE_FOLDER.SERVER.COMMENT);
+        param.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.SITE_FOLDER.SERVER.PARAMS);
+        edit.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.SITE_FOLDER.SERVER.EDIT_BUTTON);
     }
 
     @UiField

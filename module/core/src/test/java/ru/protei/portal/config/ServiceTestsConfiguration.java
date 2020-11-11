@@ -38,6 +38,8 @@ import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsed;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsedImpl;
 import ru.protei.portal.core.report.contract.ReportContract;
 import ru.protei.portal.core.report.contract.ReportContractImpl;
+import ru.protei.portal.core.report.dutylog.ReportDutyLog;
+import ru.protei.portal.core.report.dutylog.ReportDutyLogImpl;
 import ru.protei.portal.core.report.projects.ReportProject;
 import ru.protei.portal.core.report.projects.ReportProjectImpl;
 import ru.protei.portal.core.service.*;
@@ -61,9 +63,7 @@ import ru.protei.portal.core.svn.document.DocumentSvnApi;
 import ru.protei.portal.core.svn.document.DocumentSvnApiImpl;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
-import ru.protei.portal.mock.AuthServiceMock;
-import ru.protei.portal.mock.PortalScheduleTasksStub;
-import ru.protei.portal.mock.ReportControlServiceMock;
+import ru.protei.portal.mock.*;
 import ru.protei.portal.nrpe.NRPEExecutorTest;
 import ru.protei.portal.nrpe.NRPEProcessor;
 import ru.protei.portal.schedule.PortalScheduleTasks;
@@ -234,12 +234,12 @@ public class ServiceTestsConfiguration {
 
     @Bean
     public AssemblerService getAssemblerService() {
-        return new AssemblerServiceImpl();
+        return new AssemblerServiceStub();
     }
 
     @Bean
     public AssemblerProjectService getAssemblerProjectService() {
-        return new AssemblerProjectServiceImpl();
+        return new AssemblerProjectServiceStub();
     }
 
     @Bean
@@ -421,6 +421,11 @@ public class ServiceTestsConfiguration {
     @Bean
     public ReportAbsence getReportAbsence() {
         return new ReportAbsenceImpl();
+    }
+
+    @Bean
+    public ReportDutyLog getReportDutyLog() {
+        return new ReportDutyLogImpl();
     }
 
     @Bean

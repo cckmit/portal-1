@@ -41,7 +41,7 @@ public interface RegionController extends RemoteService {
 
     List<ProjectInfo> getProjectInfoList(ProjectQuery query) throws RequestFailedException;
 
-    Boolean removeProject(Long projectId) throws RequestFailedException;
+    Long removeProject(Long projectId) throws RequestFailedException;
 
     ProjectInfo getProjectInfo(Long id) throws RequestFailedException;
 

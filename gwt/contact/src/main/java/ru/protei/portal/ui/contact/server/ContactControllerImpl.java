@@ -91,16 +91,19 @@ public class ContactControllerImpl implements ContactController {
     }
 
     @Override
-    public boolean removeContact(long id) throws RequestFailedException {
+    public Long removeContact(long id) throws RequestFailedException {
         log.info("remove contact, id: {}", id);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<Boolean> response = contactService.removeContact(token, id);
+        Result<Long> response = contactService.removeContact(token, id);
 
-        log.info("remove contact, id: {} -> {} ", id, response.isError() ? response.getStatus() : (response.getData() ? "" : "not ") + "removed");
+        if ( response.isError() ) {
+            log.info("contact was not removed, status={} ", response.getStatus());
+            throw new RequestFailedException( response.getStatus() );
+        }
 
-        return response.isOk() ? response.getData() : false;
+        return response.getData();
     }
 
     public List<PersonShortView> getContactViewList( ContactQuery query ) throws RequestFailedException {
@@ -120,7 +123,7 @@ public class ContactControllerImpl implements ContactController {
     }
 
     @Override
-    public boolean saveAccount( UserLogin userLogin, Boolean sendWelcomeEmail ) throws RequestFailedException {
+    public Long saveAccount( UserLogin userLogin, Boolean sendWelcomeEmail ) throws RequestFailedException {
         if ( userLogin == null ) {
             log.warn( "null account in request" );
             throw new RequestFailedException( En_ResultStatus.INTERNAL_ERROR );
@@ -130,12 +133,12 @@ public class ContactControllerImpl implements ContactController {
 
         if ( HelperFunc.isEmpty( userLogin.getUlogin() ) ) {
             if ( userLogin.getId() == null ) {
-                return true;
+                return userLogin.getId();
             }
 
             log.info( "remove account, id: {} ", userLogin.getId() );
 
-            Result< Boolean > response = accountService.removeAccount( token, userLogin.getId() );
+            Result< Long > response = accountService.removeAccount( token, userLogin.getId() );
 
             log.info( "remove account, result: {}", response.isOk() ? "ok" : response.getStatus() );
 
@@ -156,8 +159,10 @@ public class ContactControllerImpl implements ContactController {
             log.info( "store account, result: {}", response.isOk() ? "ok" : response.getStatus() );
 
             if ( response.isOk() ) {
-                log.info( "store account, applied id: {}", response.getData().getId() );
-                return true;
+                UserLogin responseUserLogin = response.getData();
+
+                log.info( "store account, applied id: {}", responseUserLogin.getId() );
+                return responseUserLogin.getId();
             }
 
             throw new RequestFailedException( response.getStatus() );

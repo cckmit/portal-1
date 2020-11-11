@@ -1,6 +1,7 @@
 package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.PersonNotifierDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -30,10 +31,11 @@ public class PersonSubscriptionServiceImpl implements PersonSubscriptionService 
         if (result == null)
             return error(En_ResultStatus.GET_DATA_ERROR);
 
-        return ok(result.stream().map(PersonNotifier::getPerson).map(Person::toFullNameShortView).collect(Collectors.toSet()));
+        return ok(result.stream().map(PersonNotifier::getPerson).map(this::toFullNameShortView).collect(Collectors.toSet()));
     }
 
     @Override
+    @Transactional
     public Result<Set<PersonShortView>> updatePersonSubscriptions(AuthToken token, PersonSubscriptionChangeRequest changeRequest) {
 
         if (changeRequest == null || changeRequest.getId() == null || changeRequest.getPersons() == null)
@@ -49,9 +51,11 @@ public class PersonSubscriptionServiceImpl implements PersonSubscriptionService 
                 .collect(Collectors.toList()));
 
         List<PersonNotifier> result = personNotifierDAO.getByNotifierId(token.getPersonId());
-        if (result == null)
-            return error(En_ResultStatus.GET_DATA_ERROR);
 
-        return ok(result.stream().map(PersonNotifier::getPerson).map(Person::toFullNameShortView).collect(Collectors.toSet()));
+        return ok(result.stream().map(PersonNotifier::getPerson).map(this::toFullNameShortView).collect(Collectors.toSet()));
+    }
+
+    public PersonShortView toFullNameShortView(Person person) {
+        return new PersonShortView( person.getDisplayName(), person.getId(), person.isFired() );
     }
 }

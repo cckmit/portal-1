@@ -11,6 +11,8 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.tab.TabWidget;
 import ru.protei.portal.ui.company.client.activity.preview.AbstractCompanyPreviewActivity;
 import ru.protei.portal.ui.company.client.activity.preview.AbstractCompanyPreviewView;
 
@@ -125,9 +127,21 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
-        subscriptionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY_PREVIEW.LABEL.SUBSCRIPTION);
-        subscription.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY_PREVIEW.SUBSCRIPTION);
-        contactsHeader.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY_PREVIEW.LABEL.CONTACT_INFO);
+        companyName.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY.NAME);
+        categoryImage.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY.CATEGORY_IMAGE);
+        site.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY.WEB_SITE);
+        info.ensureDebugId(DebugIds.COMPANY.COMMENT);
+        companyLinksMessage.ensureDebugId(DebugIds.COMPANY.LINK_MESSAGE);
+        subscription.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY.SUBSCRIPTIONS);
+        phone.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY.PHONES);
+        email.ensureDebugId(DebugIds.COMPANY.EMAILS);
+        addressFact.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY.ACTUAL_ADDRESS);
+        addressDejure.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY.LEGAL_ADDRESS);
+        tabWidget.ensureDebugId(DebugIds.COMPANY.TABS);
+        tabWidget.setTabNameDebugId(lang.contacts(), DebugIds.COMPANY.TAB_CONTACTS);
+        tabWidget.setTabNameDebugId(lang.siteFolder(), DebugIds.COMPANY.TAB_SITE_FOLDERS);
+        contactsContainer.ensureDebugId(DebugIds.COMPANY.CONTACTS);
+        siteFolderContainer.ensureDebugId(DebugIds.COMPANY.SITE_FOLDERS);
     }
 
     @UiField
@@ -155,11 +169,15 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     @UiField
     ImageElement categoryImage;
     @UiField
+    TabWidget tabWidget;
+    @UiField
     HTMLPanel siteFolderContainer;
     @UiField
     SpanElement subscriptionLabel;
     @UiField
     HeadingElement contactsHeader;
+    @UiField
+    Lang lang;
 
     AbstractCompanyPreviewActivity activity;
 

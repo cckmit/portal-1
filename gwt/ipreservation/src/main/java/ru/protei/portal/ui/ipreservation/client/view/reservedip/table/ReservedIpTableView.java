@@ -180,18 +180,18 @@ public class ReservedIpTableView extends Composite implements AbstractReservedIp
         columns.add(usePeriod);
         columns.add(ipOwner);
         columns.add(comment);
+        columns.add(refreshClickColumn);
         columns.add(lastCheck);
         columns.add(editClickColumn);
-        columns.add(refreshClickColumn);
         columns.add(removeClickColumn);
 
         table.addColumn(address.header, address.values);
         table.addColumn(usePeriod.header, usePeriod.values);
         table.addColumn(ipOwner.header, ipOwner.values);
         hideComment = table.addColumn( comment.header, comment.values );
+        table.addColumn(refreshClickColumn.header, refreshClickColumn.values);
         hideLastCheck = table.addColumn( lastCheck.header, lastCheck.values );
         table.addColumn(editClickColumn.header, editClickColumn.values);
-        table.addColumn(refreshClickColumn.header, refreshClickColumn.values);
         table.addColumn(removeClickColumn.header, removeClickColumn.values);
     }
 

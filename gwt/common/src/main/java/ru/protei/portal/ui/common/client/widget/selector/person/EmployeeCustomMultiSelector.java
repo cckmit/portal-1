@@ -24,7 +24,7 @@ public class EmployeeCustomMultiSelector
         setAddName(lang.buttonAdd());
         setClearName(lang.buttonClear());
         setFilter(personView -> !personView.isFired());
-        setItemRenderer(PersonShortView::getName);
+        setItemRenderer(PersonShortView::getDisplayName);
     }
 
     @Override

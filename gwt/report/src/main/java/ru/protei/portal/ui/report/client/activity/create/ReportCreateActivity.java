@@ -60,7 +60,7 @@ public abstract class ReportCreateActivity implements Activity,
 
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
-        issueFilterWidget.resetFilter();
+        issueFilterWidget.resetFilter(null);
         projectFilterView.resetFilter();
         contractFilterView.resetFilter();
     }

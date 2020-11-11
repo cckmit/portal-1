@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.ent.ReservedIp;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IpReservationControllerAsync;
@@ -46,7 +47,7 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
 
         this.reservedIp = event.reservedIp;
 
-        fillView();
+        fillView(reservedIp);
     }
 
     @Override
@@ -55,7 +56,7 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
             return;
         }
 
-        fillReservedIp();
+        fillReservedIp(reservedIp);
 
         view.saveEnabled().setEnabled(false);
 
@@ -99,11 +100,13 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
         );
     }
 
-    private void fillView() {
+    private void fillView(ReservedIp reservedIp) {
         view.setAddress(reservedIp.getIpAddress());
         view.macAddress().setValue(reservedIp.getMacAddress());
         view.useRange().setValue(new DateInterval(reservedIp.getReserveDate(), reservedIp.getReleaseDate()));
         view.comment().setText(reservedIp.getComment());
+        view.lastActiveDate().setText(DateFormatter.formatDateTime(reservedIp.getLastActiveDate()));
+        view.lastCheckInfo().setText(reservedIp.getLastCheckInfo());
         PersonShortView ipOwner = new PersonShortView(
                 reservedIp.getOwnerName(),
                 reservedIp.getOwnerId());
@@ -112,7 +115,7 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
         view.saveVisibility().setVisible(hasAccess(reservedIp));
     }
 
-    private ReservedIp fillReservedIp() {
+    private ReservedIp fillReservedIp(ReservedIp reservedIp) {
         String macAddress = view.macAddress().getValue() == null || view.macAddress().getValue().trim().isEmpty() ?
                 null : view.macAddress().getValue().trim();
         reservedIp.setMacAddress(macAddress);

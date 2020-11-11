@@ -27,8 +27,9 @@ public interface CaseCommentController extends RemoteService {
     /**
      * Удаление комментария
      * Удаляет все вложения из БД и Cloud которые привязаны к комментарию
+     * @return Идентификатор удаленного комментария
      */
-    void removeCaseComment(En_CaseType caseType, CaseComment comment) throws RequestFailedException;
+    Long removeCaseComment(En_CaseType caseType, CaseComment comment) throws RequestFailedException;
 
     /**
      * Изменение типа работ

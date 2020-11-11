@@ -25,6 +25,7 @@ public interface AttachmentService {
      * {@link Attachment},
      * {@link ru.protei.portal.core.model.ent.CaseAttachment}
      * и из облака
+     * @return Идентификатор удаленного вложения
      */
     @Privileged(forCases = {
             @CasePrivileged(caseType = En_CaseType.CRM_SUPPORT, requireAll = {En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT}),
@@ -35,7 +36,7 @@ public interface AttachmentService {
             @CasePrivileged(caseType = En_CaseType.CONTRACT, requireAny = {En_Privilege.CONTRACT_VIEW, En_Privilege.CONTRACT_EDIT})
     })
     @Auditable( En_AuditType.ATTACHMENT_REMOVE )
-    Result<Boolean> removeAttachmentEverywhere( AuthToken token, En_CaseType caseType, Long attachmentId);
+    Result<Long> removeAttachmentEverywhere( AuthToken token, En_CaseType caseType, Long attachmentId);
 
     @Privileged(forCases = {
             @CasePrivileged(caseType = En_CaseType.CRM_SUPPORT, requireAll = {En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT}),
@@ -46,7 +47,7 @@ public interface AttachmentService {
             @CasePrivileged(caseType = En_CaseType.CONTRACT, requireAny = {En_Privilege.CONTRACT_VIEW, En_Privilege.CONTRACT_EDIT})
     })
     @Auditable( En_AuditType.ATTACHMENT_REMOVE )
-    Result<Boolean> removeAttachment( AuthToken token, En_CaseType caseType, Long id);
+    Result<Long> removeAttachment( AuthToken token, En_CaseType caseType, Long id);
 
     @Privileged(forCases = {
             @CasePrivileged(caseType = En_CaseType.CRM_SUPPORT, requireAny = {En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT}),

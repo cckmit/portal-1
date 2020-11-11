@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.query;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.struct.DateRange;
+import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.view.EntityOption;
 
 import java.util.List;
@@ -39,7 +40,7 @@ public class EmployeeQuery extends BaseQuery {
 
     private String secondName;
 
-    private DateRange birthdayRange;
+    private Interval birthdayInterval;
 
     private Boolean absent;
 
@@ -197,12 +198,12 @@ public class EmployeeQuery extends BaseQuery {
         this.departmentIds = departmentIds;
     }
 
-    public DateRange getBirthdayRange() {
-        return birthdayRange;
+    public Interval getBirthdayInterval() {
+        return birthdayInterval;
     }
 
-    public void setBirthdayRange(DateRange birthdayRange) {
-        this.birthdayRange = birthdayRange;
+    public void setBirthdayInterval( Interval birthdayInterval ) {
+        this.birthdayInterval = birthdayInterval;
     }
 
     @Override
@@ -221,7 +222,7 @@ public class EmployeeQuery extends BaseQuery {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", secondName='" + secondName + '\'' +
-                ", birthdayRange=" + birthdayRange +
+                ", birthdayInterval=" + birthdayInterval +
                 ", absent=" + absent +
                 ", departmentIds=" + departmentIds +
                 ", absent=" + absent +
