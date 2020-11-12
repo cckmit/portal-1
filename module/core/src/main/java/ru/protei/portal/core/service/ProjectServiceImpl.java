@@ -7,18 +7,22 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.dto.ProjectInfo;
+import ru.protei.portal.core.model.dto.ProjectTSVReportInfo;
 import ru.protei.portal.core.model.dto.RegionInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.DateRangeUtils;
 import ru.protei.portal.core.model.query.LocationQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
+import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -26,13 +30,17 @@ import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.schedule.PortalScheduleTasks;
+import ru.protei.portal.tools.ListByFeatureIterator;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 import static ru.protei.portal.api.struct.Result.error;
@@ -40,6 +48,8 @@ import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
 import static ru.protei.portal.core.access.ProjectAccessUtil.canAccessProject;
 import static ru.protei.portal.core.access.ProjectAccessUtil.getProjectAccessType;
+import static ru.protei.portal.core.model.dict.En_ExpiringProjectTSVPeriod.*;
+import static ru.protei.portal.core.model.dict.En_SortField.project_head_manager;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 
@@ -79,9 +89,13 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     ProjectDAO projectDAO;
     @Autowired
+    ProjectTechnicalSupportValidityReportInfoDAO projectTSVReportInfoDAO;
+    @Autowired
     PortalScheduleTasks scheduledTasksService;
     @Autowired
     EventPublisherService publisherService;
+    @Autowired
+    PortalConfig config;
 
     @EventListener
     @Async(BACKGROUND_TASKS)
@@ -435,6 +449,80 @@ public class ProjectServiceImpl implements ProjectService {
                 .map(leader -> new PersonShortView(leader.getMember()) )
                 .map(Result::ok)
                 .orElse(ok(null));
+    }
+
+    @Override
+    public Result<Boolean> notifyExpiringProjectTechnicalSupportValidity(LocalDate now) {
+        log.info("notifyExpiringProjectTechnicalSupportValidity(): start");
+
+        Map<En_ExpiringProjectTSVPeriod, Interval> expiringPeriodToIntervals = makeProjectTSVIntervals(now);
+        CollectionUtils.stream(createProjectTSVReportInfoListsSeparateByHeadManagerIterator(expiringPeriodToIntervals))
+                .map(list -> createExpiringProjectTSVNotificationEvent(list, expiringPeriodToIntervals))
+                .forEach(publisherService::publishEvent);
+
+        log.info("notifyExpiringProjectTechnicalSupportValidity(): done");
+        return ok(true);
+    }
+
+    private Map<En_ExpiringProjectTSVPeriod, Interval> makeProjectTSVIntervals(LocalDate now) {
+        return Stream.of(DAYS_7, DAYS_14, DAYS_30)
+                .collect(Collectors.toMap(
+                        Function.identity(),
+                        period -> DateRangeUtils.makeIntervalWithOffset(now, period.getDays())));
+    }
+
+    private ListByFeatureIterator<ProjectTSVReportInfo, Long> createProjectTSVReportInfoListsSeparateByHeadManagerIterator(
+                        Map<En_ExpiringProjectTSVPeriod, Interval> intervalsMap) {
+        int limit = config.data().reportConfig().getChunkSize();
+        ProjectQuery query = getExpiringProjectTSVQuery(intervalsMap, limit);
+        return new ListByFeatureIterator<>(
+                () -> {
+                    SearchResult<ProjectTSVReportInfo> searchResult =
+                            projectTSVReportInfoDAO.getSearchResultByQuery(query);
+                    query.setOffset(query.getOffset() + limit);
+                    return searchResult.getResults();
+                },
+                ProjectTSVReportInfo::getHeadManagerId
+        );
+    }
+
+    private ProjectQuery getExpiringProjectTSVQuery(Map<En_ExpiringProjectTSVPeriod, Interval> intervalsMap, int limit) {
+        ProjectQuery query = new ProjectQuery();
+        query.setSortField(project_head_manager);
+        query.setTechnicalSupportExpiresInDays(new ArrayList<>(intervalsMap.values()));
+        query.setOffset(0);
+        query.setLimit(limit);
+        return query;
+    }
+
+    private ExpiringProjectTSVNotificationEvent createExpiringProjectTSVNotificationEvent(List<ProjectTSVReportInfo> list,
+                                                      Map<En_ExpiringProjectTSVPeriod, Interval> expiringPeriodToIntervals) {
+        Person headManager = makeNotificationPerson(list.get(0).getHeadManagerId());
+        Map<En_ExpiringProjectTSVPeriod, List<ProjectTSVReportInfo>> infos = list.stream()
+                .collect(Collectors.groupingBy(info -> groupingByExpiringTSVPeriod(info, expiringPeriodToIntervals)));
+        return new ExpiringProjectTSVNotificationEvent(this, headManager, infos);
+    }
+
+    private Person makeNotificationPerson(long id) {
+        Person person = new Person();
+        person.setId(id);
+        jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
+        return person;
+    }
+
+    private En_ExpiringProjectTSVPeriod groupingByExpiringTSVPeriod (ProjectTSVReportInfo info, Map<En_ExpiringProjectTSVPeriod, Interval> intervals) {
+        if (isInInterval(intervals.get(DAYS_7), info.getTechnicalSupportValidity())) {
+            return DAYS_7;
+        } else if (isInInterval(intervals.get(DAYS_14), info.getTechnicalSupportValidity())) {
+            return DAYS_14;
+        } else {
+            return DAYS_30;
+        }
+    }
+
+    private boolean isInInterval(Interval interval, Date date) {
+        return interval.from.equals(date) ||
+                (interval.from.before(date) && date.before(interval.to));
     }
 
     private boolean validateFields(Project project) {

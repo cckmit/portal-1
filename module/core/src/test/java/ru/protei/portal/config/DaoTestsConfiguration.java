@@ -459,4 +459,9 @@ public class DaoTestsConfiguration {
     public DutyLogDAO getDutyLogDAO() {
         return new DutyLogDAO_Impl();
     }
+
+    @Bean
+    public ProjectTechnicalSupportValidityReportInfoDAO getProjectTechnicalSupportValidityReportInfoDAO() {
+        return new ProjectTechnicalSupportValidityReportInfoDAO_Impl();
+    }
 }

@@ -195,6 +195,11 @@ public class MailNotificationProcessor {
         return baseUrl + config.data().getMailNotificationConfig().getCrmCaseUrl();
     }
 
+    private String getCrmProjectUrl() {
+        String baseUrl = config.data().getMailNotificationConfig().getCrmUrlExternal();
+        return baseUrl + config.data().getMailNotificationConfig().getCrmProjectUrl();
+    }
+
     private boolean isPrivateNotification(AssembledCaseEvent event) {
         return event.getCaseObject().isPrivateCase()
                 || isPrivateSend(event)
@@ -1035,7 +1040,36 @@ public class MailNotificationProcessor {
                 log.error("Failed to make MimeMessage mail={}, e={}", adminEmail, e);
             }
         });
+    }
 
+    @EventListener
+    public void onExpiringTechnicalSupportValidityNotificationEvent(ExpiringProjectTSVNotificationEvent event) {
+        log.info("onExpiringTechnicalSupportValidityNotificationEvent(): {}", event);
+
+        PreparedTemplate subjectTemplate = templateService.getExpiringTechnicalSupportValidityNotificationSubject();
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for ExpiringTechnicalSupportValidityNotificationEvent notification");
+            return;
+        }
+
+        final NotificationEntry notificationEntry = fetchNotificationEntryFromPerson(event.getHeadManager());
+
+        PreparedTemplate bodyTemplate = templateService.getExpiringTechnicalSupportValidityNotificationBody( event,
+                Collections.singletonList(notificationEntry.getAddress()), getCrmProjectUrl());
+
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for release ExpiringTechnicalSupportValidityNotificationEvent notification");
+            return;
+        }
+
+        try {
+            String body = bodyTemplate.getText(notificationEntry.getAddress(), null, false);
+            String subject = subjectTemplate.getText(notificationEntry.getAddress(), null, false);
+
+            sendMail(notificationEntry.getAddress(), subject, body, getFromPortalAddress());
+        } catch (Exception e) {
+            log.error("Failed to make MimeMessage mail={}, e={}", notificationEntry.getAddress(), e);
+        }
     }
 
     // -----

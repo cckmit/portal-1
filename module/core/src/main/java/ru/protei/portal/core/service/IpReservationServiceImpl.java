@@ -37,7 +37,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
@@ -350,7 +349,7 @@ public class IpReservationServiceImpl implements IpReservationService {
                     subnetDAO::get,
                     this::getReservedIpNumInSubnet
             );
-            Stream<IpInfo> freeIpInfoStream = StreamSupport.stream(((Iterable<IpInfo>)() -> ipInfoIterator).spliterator(), false);
+            Stream<IpInfo> freeIpInfoStream = CollectionUtils.stream(ipInfoIterator);
 
             if (config.data().getNrpeConfig().getEnable()) {
                 freeIpInfoStream = freeIpInfoStream.filter(makeNRPETest(nrpeNonAvailableIps, ipInfoIterator));

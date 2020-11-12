@@ -2,7 +2,8 @@ package ru.protei.portal.core.model.dao.impl;
 
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.ProjectDAO;
-import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dict.En_DateIntervalType;
+import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -20,8 +21,10 @@ import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
 import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
@@ -230,6 +233,15 @@ public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements Proje
 
             if (query.getDeleted() != null) {
                 condition.append(" and CO.deleted = ").append(query.getDeleted());
+            }
+
+            if (!isEmpty(query.getTechnicalSupportExpiresInDays())) {
+                condition.append(
+                        query.getTechnicalSupportExpiresInDays().stream().map(interval -> {
+                            args.add(interval.getFrom());
+                            args.add(interval.getTo());
+                            return "(project.technical_support_validity >= ? and project.technical_support_validity < ?)";
+                        }).collect(Collectors.joining(" or ", " and( ", " ) ")));
             }
         }));
     }

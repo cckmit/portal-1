@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.query;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 
@@ -45,6 +46,8 @@ public class ProjectQuery extends BaseQuery {
     private Long pauseDateGreaterThan;
 
     private Integer deleted;
+
+    private List<Interval> technicalSupportExpiresInDays;
 
     public ProjectQuery() {
         sortField = En_SortField.case_name;
@@ -208,6 +211,14 @@ public class ProjectQuery extends BaseQuery {
         this.deleted = deleted;
     }
 
+    public List<Interval> getTechnicalSupportExpiresInDays() {
+        return technicalSupportExpiresInDays;
+    }
+
+    public void setTechnicalSupportExpiresInDays(List<Interval> technicalSupportExpiresInDays) {
+        this.technicalSupportExpiresInDays = technicalSupportExpiresInDays;
+    }
+
     @Override
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
@@ -224,7 +235,8 @@ public class ProjectQuery extends BaseQuery {
                 createdTo != null ||
                 platformIndependentProject != null ||
                 pauseDateGreaterThan != null ||
-                deleted != null;
+                deleted != null ||
+                CollectionUtils.isNotEmpty(technicalSupportExpiresInDays);
     }
 
     @Override
@@ -247,6 +259,7 @@ public class ProjectQuery extends BaseQuery {
                 ", initiatorCompanyIds=" + initiatorCompanyIds +
                 ", pauseDateGreaterThan=" + pauseDateGreaterThan +
                 ", deleted=" + deleted +
+                ", technicalSupportExpiresInDays=" + technicalSupportExpiresInDays +
                 '}';
     }
 
@@ -270,13 +283,15 @@ public class ProjectQuery extends BaseQuery {
                 Objects.equals(platformIndependentProject, that.platformIndependentProject) &&
                 Objects.equals(initiatorCompanyIds, that.initiatorCompanyIds) &&
                 Objects.equals(pauseDateGreaterThan, that.pauseDateGreaterThan) &&
-                Objects.equals(deleted, that.deleted);
+                Objects.equals(deleted, that.deleted) &&
+                Objects.equals(technicalSupportExpiresInDays, that.technicalSupportExpiresInDays);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(caseIds, states, regions, headManagers, caseMembers, directions,
                 districtIds, memberId, productIds, customerType, createdFrom, createdTo,
-                platformIndependentProject, initiatorCompanyIds, pauseDateGreaterThan, deleted);
+                platformIndependentProject, initiatorCompanyIds, pauseDateGreaterThan, deleted,
+                technicalSupportExpiresInDays);
     }
 }
