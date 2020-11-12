@@ -1,8 +1,6 @@
 package ru.protei.portal.core.utils;
 
 import com.atlassian.renderer.embedded.EmbeddedResourceParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseAttachment;
 import ru.protei.portal.core.model.ent.CaseComment;
@@ -18,7 +16,6 @@ import static ru.protei.portal.core.model.helper.CaseCommentUtils.makeJiraImageS
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 
 public class JiraUtils {
-    private static Logger logger = LoggerFactory.getLogger(JiraUtils.class);
     private static Pattern pattern = Pattern.compile("((?<![\\p{L}\\p{Nd}\\\\])|(?<=inltokxyzkdtnhgnsbdfinltok))\\!([^\\s\\!]((?!\\!)[\\p{L}\\p{Nd}\\p{Z}\\p{S}\\p{M}\\p{P}]*?[^\\s\\!])?)(?<!\\\\)\\!((?![\\p{L}\\p{Nd}])|(?=inltokxyzkdtnhgnsbdfinltok))");;
 
     public static JiraIssueData convert(ExternalCaseAppData appData) {
@@ -113,27 +110,26 @@ public class JiraUtils {
                     String imageString = makeJiraImageString(attachment.getExtLink(),
                             attachment.getFileName() + (node.alt != null ? ", " + node.alt : ""));
 
-                    List<CaseAttachment> caseAttachments = (caseComment.getCaseAttachments() != null ?
+                    List<CaseAttachment> commentAttachments = (caseComment.getCaseAttachments() != null ?
                             caseComment.getCaseAttachments() : new ArrayList<>());
 
                     final Optional<CaseAttachment> caseAttachment = emptyIfNull(caseLinkAttachments).stream()
-                            .filter(caseLinkAttachment -> caseLinkAttachment.getAttachmentId().equals(attachment.getId()))
-                            .max(Comparator.comparing(CaseAttachment::getId));
-                    logger.debug("1540 optional caseAttachment = {}", caseAttachment );
+                            .filter(caseLinkAttachment -> attachment.getId().equals(caseLinkAttachment.getAttachmentId()))
+                            .max(Comparator.nullsLast(Comparator.comparing(CaseAttachment::getId)));
 
                     if (caseAttachment.isPresent()) {
                         final CaseAttachment caseAttachment1 = caseAttachment.get();
                         if (caseAttachment1.getCommentId() == null) {
                             caseAttachment1.setCommentId(caseComment.getId());
-                            caseAttachments.add(caseAttachment1);
+                            commentAttachments.add(caseAttachment1);
                         } else {
-                            caseAttachments.add(new CaseAttachment(caseComment.getCaseId(), attachment.getId()));
+                            commentAttachments.add(new CaseAttachment(caseComment.getCaseId(), attachment.getId()));
                         }
                     } else {
-                        caseAttachments.add(new CaseAttachment(caseComment.getCaseId(), attachment.getId()));
+                        commentAttachments.add(new CaseAttachment(caseComment.getCaseId(), attachment.getId()));
                     }
 
-                    caseComment.setCaseAttachments(caseAttachments);
+                    caseComment.setCaseAttachments(commentAttachments);
 
                     return imageString;
                 }
