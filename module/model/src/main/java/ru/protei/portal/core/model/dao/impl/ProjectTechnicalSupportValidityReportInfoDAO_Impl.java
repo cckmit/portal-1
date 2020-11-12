@@ -23,7 +23,7 @@ public class ProjectTechnicalSupportValidityReportInfoDAO_Impl
                         query.getTechnicalSupportExpiresInDays().stream().map(interval -> {
                             args.add(interval.getFrom());
                             args.add(interval.getTo());
-                            return "(project.technical_support_validity >= ? and project.technical_support_validity <= ?)";
+                            return "(project.technical_support_validity >= ? and project.technical_support_validity < ?)";
                         }).collect(Collectors.joining(" or ", " and( ", " ) ")));
             }
         }));

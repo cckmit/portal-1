@@ -245,13 +245,13 @@ public class ProjectTechnicalSupportValidityReportTest extends BaseServiceTest {
     EventPublisherService publisherService;
 
     private LocalDate dateNow = LocalDate.of(2020, Month.NOVEMBER, 10);            // 11/10/2020 @ 12:00am (UTC)
-    private Date dateLess7 = new Date(1605225600000L);          // 11/13/2020 @ 12:00am (UTC)
+    private Date dateLess7 = new Date(1605484800000L);          // 11/16/2020 @ 12:00am (UTC)
     private Date date7 = new Date(1605571200000L);              // 11/17/2020 @ 12:00am (UTC)
     private Date dateBetween7And14 = new Date(1605830400000L);  // 11/20/2020 @ 12:00am (UTC)
     private Date date14 = new Date(1606176000000L);             // 11/24/2020 @ 12:00am (UTC)
     private Date dateBetween14And30 = new Date(1606780800000L); // 12/01/2020 @ 12:00am (UTC)
     private Date date30 = new Date(1607558400000L);             // 12/10/2020 @ 12:00am (UTC)
-    private Date dateMore30 = new Date(1608768000000L);         // 12/24/2020 @ 12:00am (UTC)
+    private Date dateMore30 = new Date(1607644800000L);         // 12/11/2020 @ 12:00am (UTC)
 
     static private final String TEST_ID = "ProjectTechnicalSupportValidityReportTest";
 }
