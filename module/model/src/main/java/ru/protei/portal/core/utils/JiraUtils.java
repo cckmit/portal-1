@@ -113,15 +113,11 @@ public class JiraUtils {
                     List<CaseAttachment> commentAttachments = (caseComment.getCaseAttachments() != null ?
                             caseComment.getCaseAttachments() : new ArrayList<>());
 
-                    final Optional<CaseAttachment> caseAttachment = emptyIfNull(caseLinkAttachments).stream()
-                            .filter(caseLinkAttachment -> attachment.getId().equals(caseLinkAttachment.getAttachmentId()))
-                            .max(Comparator.nullsLast(Comparator.comparing(CaseAttachment::getId)));
+                    Optional<CaseAttachment> caseAttachment = findCaseAttachmentByAttachmentId(caseLinkAttachments, attachment.getId());
 
                     if (caseAttachment.isPresent()) {
-                        final CaseAttachment caseAttachment1 = caseAttachment.get();
-                        if (caseAttachment1.getCommentId() == null) {
-                            caseAttachment1.setCommentId(caseComment.getId());
-                            commentAttachments.add(caseAttachment1);
+                        if (caseAttachment.get().getCommentId() == null) {
+                            commentAttachments.add(caseAttachment.get());
                         } else {
                             commentAttachments.add(new CaseAttachment(caseComment.getCaseId(), attachment.getId()));
                         }
@@ -135,6 +131,12 @@ public class JiraUtils {
                 }
         );
         caseComment.setText(textWithReplacedImages);
+    }
+
+    static private Optional<CaseAttachment> findCaseAttachmentByAttachmentId(Collection<CaseAttachment>caseLinkAttachments, Long id) {
+        return emptyIfNull(caseLinkAttachments).stream()
+                .filter(caseLinkAttachment -> id.equals(caseLinkAttachment.getAttachmentId()))
+                .max(Comparator.nullsLast(Comparator.comparing(CaseAttachment::getId)));
     }
 
     static public String getDescriptionWithReplacedImagesFromJira(String text, Collection<Attachment> attachments) {
