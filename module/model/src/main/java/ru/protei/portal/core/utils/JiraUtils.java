@@ -115,14 +115,10 @@ public class JiraUtils {
 
                     Optional<CaseAttachment> caseAttachment = findCaseAttachmentByAttachmentId(caseLinkAttachments, attachment.getId());
 
-                    if (caseAttachment.isPresent()) {
-                        if (caseAttachment.get().getCommentId() == null) {
-                            commentAttachments.add(caseAttachment.get());
-                        } else {
-                            commentAttachments.add(new CaseAttachment(caseComment.getCaseId(), attachment.getId()));
-                        }
-                    } else {
+                    if (!caseAttachment.isPresent() || caseAttachment.get().getCommentId() != null) {
                         commentAttachments.add(new CaseAttachment(caseComment.getCaseId(), attachment.getId()));
+                    } else {
+                        commentAttachments.add(caseAttachment.get());
                     }
 
                     caseComment.setCaseAttachments(commentAttachments);

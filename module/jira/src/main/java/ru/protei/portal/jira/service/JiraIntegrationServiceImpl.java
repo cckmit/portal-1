@@ -342,11 +342,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
                 if (!isEmpty(caseComment.getCaseAttachments())) {
                     caseComment.getCaseAttachments().forEach(caseAttachment -> {
                         caseAttachment.setCommentId(caseComment.getId());
-                        if (caseAttachment.getId() != null) {
-                            caseAttachmentDAO.partialMerge(caseAttachment, "ccomment_id");
-                        } else {
-                            caseAttachmentDAO.persist(caseAttachment);
-                        }
+                        caseAttachmentDAO.saveOrUpdate(caseAttachment);
                     });
                 }
             });
