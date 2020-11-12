@@ -21,8 +21,10 @@ import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
 import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
@@ -233,14 +235,13 @@ public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements Proje
                 condition.append(" and CO.deleted = ").append(query.getDeleted());
             }
 
-            if (query.getExpiringTechnicalSupportValidityFrom() != null) {
-                condition.append( " and project.technical_support_validity >= ?" );
-                args.add( query.getExpiringTechnicalSupportValidityFrom() );
-            }
-
-            if (query.getExpiringTechnicalSupportValidityTo() != null) {
-                condition.append( " and project.technical_support_validity <= ?" );
-                args.add( query.getExpiringTechnicalSupportValidityTo() );
+            if (!isEmpty(query.getTechnicalSupportExpiresInDays())) {
+                condition.append(
+                        query.getTechnicalSupportExpiresInDays().stream().map(interval -> {
+                            args.add(interval.getFrom());
+                            args.add(interval.getTo());
+                            return "(project.technical_support_validity >= ? and project.technical_support_validity <= ?)";
+                        }).collect(Collectors.joining(" or ", " and( ", " ) ")));
             }
         }));
     }

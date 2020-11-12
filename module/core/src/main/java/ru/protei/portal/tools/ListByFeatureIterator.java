@@ -13,8 +13,8 @@ public class ListByFeatureIterator<T, FV> implements Iterator<List<T>> {
     private List<T> chunk;
     private Integer pointer;
     private FV currentFeatureValue;
-    private List<T> nextInfos;
-    private List<T> tempNextInfos;
+    private List<T> next;
+    private List<T> tempNext;
 
     public ListByFeatureIterator(Supplier<List<T>> getNextChunk, Function<T, FV> getFeatureValue) {
         this.getNextChunk = getNextChunk;
@@ -28,12 +28,12 @@ public class ListByFeatureIterator<T, FV> implements Iterator<List<T>> {
 
     private void refreshData(T t, FV fv) {
         currentFeatureValue = fv;
-        tempNextInfos = new ArrayList<>();
-        tempNextInfos.add(t);
+        tempNext = new ArrayList<>();
+        tempNext.add(t);
     }
 
     private void cutList() {
-        nextInfos = tempNextInfos;
+        next = tempNext;
     }
 
     private boolean isLastHasNextFalse() {
@@ -74,18 +74,18 @@ public class ListByFeatureIterator<T, FV> implements Iterator<List<T>> {
         while (true) {
             t = getT();
             if (t == null) {
-                if (tempNextInfos.isEmpty()) {
+                if (tempNext.isEmpty()) {
                     return false;
                 } else {
                     cutList();
-                    tempNextInfos = new ArrayList<>();
+                    tempNext = new ArrayList<>();
                     return true;
                 }
             }
 
             final FV featureValue = getFeatureValue.apply(t);
             if (featureValue.equals(currentFeatureValue)) {
-                tempNextInfos.add(t);
+                tempNext.add(t);
             } else {
                 cutList();
                 refreshData(t, featureValue);
@@ -96,11 +96,11 @@ public class ListByFeatureIterator<T, FV> implements Iterator<List<T>> {
 
     @Override
     public List<T> next() {
-        if (nextInfos == null || nextInfos.isEmpty()) {
+        if (next == null || next.isEmpty()) {
             throw new NoSuchElementException();
         }
-        List<T> next = new ArrayList<>(nextInfos);
-        nextInfos = null;
+        List<T> next = new ArrayList<>(this.next);
+        this.next = null;
         return next;
     }
 }

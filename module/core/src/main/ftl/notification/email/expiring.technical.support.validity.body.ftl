@@ -5,9 +5,9 @@
 <@set name="_you" value="${you}"/>
 <@set name="_notification_footer" value="${notification_footer}"/>
 <@set name="_expiringTechnicalSupportValidityBodyMessage" value="${expiringTechnicalSupportValidityBodyMessage}"/>
-<@set name="_expiringTechnicalSupportValidityLess7Day" value="${expiringTechnicalSupportValidityLess7Day}"/>
-<@set name="_expiringTechnicalSupportValidityLess14Day" value="${expiringTechnicalSupportValidityLess14Day}"/>
-<@set name="_expiringTechnicalSupportValidityLess30Day" value="${expiringTechnicalSupportValidityLess30Day}"/>
+<@set name="_expiringTechnicalSupportValidity7Day" value="${expiringTechnicalSupportValidity7Day}"/>
+<@set name="_expiringTechnicalSupportValidity14Day" value="${expiringTechnicalSupportValidity14Day}"/>
+<@set name="_expiringTechnicalSupportValidity30Day" value="${expiringTechnicalSupportValidity30Day}"/>
 <#noparse>
 <html>
     <head>
@@ -33,7 +33,7 @@
     <body bgcolor="#FFFFFF" text="#000000">
         <div class="field">${_expiringTechnicalSupportValidityBodyMessage}</div>
         <#if expiringIn7Days??>
-            <div class="caption">${_expiringTechnicalSupportValidityLess7Day}:</div>
+            <div class="caption">${_expiringTechnicalSupportValidity7Day}:</div>
             <#list expiringIn7Days as info>
                 <#assign id=info.getId()?c href=linkToProject?replace("%d", id)/>
                 <div class="field">${(info.getTechnicalSupportValidity())?date!'?'} - <a href=${href}>№${info.getId()?c!'?'}</a>
@@ -41,7 +41,7 @@
             </#list>
         </#if>
         <#if expiringIn14Days??>
-            <div class="caption">${_expiringTechnicalSupportValidityLess14Day}:</div>
+            <div class="caption">${_expiringTechnicalSupportValidity14Day}:</div>
             <#list expiringIn14Days as info>
                 <#assign id=info.getId()?c href=linkToProject?replace("%d", id)/>
                 <div class="field">${(info.getTechnicalSupportValidity())?date!'?'} - <a href=${href}>№${info.getId()?c!'?'}</a>
@@ -49,7 +49,7 @@
             </#list>
         </#if>
         <#if expiringIn30Days??>
-            <div class="caption">${_expiringTechnicalSupportValidityLess30Day}:</div>
+            <div class="caption">${_expiringTechnicalSupportValidity30Day}:</div>
             <#list expiringIn30Days as info>
                 <#assign id=info.getId()?c href=linkToProject?replace("%d", id)/>
                 <div class="field">${(info.getTechnicalSupportValidity())?date!'?'} - <a href=${href}>№${info.getId()?c!'?'}</a>

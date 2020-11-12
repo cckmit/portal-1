@@ -3,23 +3,23 @@ package ru.protei.portal.core.service;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.event.SchedulePauseTimeOnStartupEvent;
 import ru.protei.portal.core.event.ProjectPauseTimeHasComeEvent;
+import ru.protei.portal.core.event.SchedulePauseTimeOnStartupEvent;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.dto.RegionInfo;
+import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -98,5 +98,5 @@ public interface ProjectService {
 
     Result<PersonShortView> getProjectLeader(AuthToken authToken, Long projectId);
 
-    Result<Boolean> notifyExpiringProjectTechnicalSupportValidity(Date now);
+    Result<Boolean> notifyExpiringProjectTechnicalSupportValidity(LocalDate now);
 }

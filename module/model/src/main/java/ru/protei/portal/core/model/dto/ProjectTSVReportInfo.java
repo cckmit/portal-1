@@ -8,6 +8,7 @@ import java.util.Objects;
 import static ru.protei.portal.core.model.dto.Project.*;
 
 @JdbcEntity(table = "project")
+// Project.technicalSupportValidity
 public class ProjectTSVReportInfo {
     /**
      * Идентификатор записи о проекте

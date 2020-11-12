@@ -19,6 +19,7 @@ import ru.protei.portal.core.service.bootstrap.BootstrapService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.syncronization.EmployeeRegistrationYoutrackSynchronizer;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -160,7 +161,7 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
 
     private void notifyExpiringTechnicalSupportValidity() {
         log.info( "notifyExpiringTechnicalSupportValidity" );
-        projectService.notifyExpiringProjectTechnicalSupportValidity(new Date());
+        projectService.notifyExpiringProjectTechnicalSupportValidity(LocalDate.now());
     }
 
     private boolean isNotConfiguredSystemId() {

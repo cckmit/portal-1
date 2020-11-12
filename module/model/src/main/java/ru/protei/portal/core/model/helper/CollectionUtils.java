@@ -10,6 +10,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class CollectionUtils {
 
@@ -58,6 +59,11 @@ public class CollectionUtils {
 
     public static <T> Stream<T> stream(Collection<T> collection) {
         return null == collection ? Stream.empty() : collection.stream();
+    }
+
+    public static <T> Stream<T> stream(Iterator<T> iterator) {
+        return null == iterator ? Stream.empty() :
+                StreamSupport.stream(((Iterable<T>)() -> iterator).spliterator(), false);
     }
 
     public static <T> Stream<T> stream(T[] array) {
