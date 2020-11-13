@@ -132,7 +132,7 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
             return searchResult;
         }
         if (parameters.getOffset() <= 0 && parameters.getLimit() > 0) {
-            searchResult.setTotalCount( getObjectsCount( parameters.getSqlCondition(), parameters.getParamValues() ) );
+            searchResult.setTotalCount( getObjectsCount( parameters.getSqlCondition(), parameters.getParamValues(), parameters.getJoins(), parameters.isDistinct() ) );
         }
         return searchResult;
     }
