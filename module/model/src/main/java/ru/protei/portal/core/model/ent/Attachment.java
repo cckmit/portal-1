@@ -38,7 +38,7 @@ public class Attachment extends AuditableObject {
     private String fileName;
 
     @JdbcColumn(name = "private_flag")
-    private Boolean isPrivate;
+    private boolean isPrivate;
 
     public Attachment (Long attachmentId) {
         id = attachmentId;
@@ -112,10 +112,10 @@ public class Attachment extends AuditableObject {
     }
 
     public boolean isPrivate() {
-        return Boolean.TRUE.equals(isPrivate);
+        return isPrivate;
     }
 
-    public void setPrivate(Boolean isPrivate) {
+    public void setPrivate(boolean isPrivate) {
         this.isPrivate = isPrivate;
     }
 

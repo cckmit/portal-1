@@ -194,7 +194,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         ExternalCaseAppData appData = externalCaseAppDAO.get(caseObj.getId());
         JiraExtAppData jiraExtAppData = JiraExtAppData.fromJSON(appData.getExtAppData());
 
-        List<ru.protei.portal.core.model.ent.Attachment> processedAttachments = processAttachments(endpoint, issue.getAttachments(), caseObj.getId(), jiraExtAppData, personMapper);
+        List<ru.protei.portal.core.model.ent.Attachment> processedAttachments = processAttachments(endpoint, issue.getAttachments(), caseObj, jiraExtAppData, personMapper);
         List<ru.protei.portal.core.model.ent.Attachment> caseAttachments = attachmentDAO.getAttachmentsByCaseId(caseObj.getId());
         List<CaseAttachment> caseToAttachments = caseAttachmentDAO.getListByCaseId(caseObj.getId());
         caseObj.setInfo(convertDescription(issue.getDescription(), caseAttachments));
@@ -258,7 +258,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         JiraExtAppData jiraExtAppData = new JiraExtAppData();
         List<ru.protei.portal.core.model.ent.Attachment> addedAttachments =
-                processAttachments( endpoint, issue.getAttachments(), caseObj.getId(), jiraExtAppData, personMapper );
+                processAttachments( endpoint, issue.getAttachments(), caseObj, jiraExtAppData, personMapper );
         List<CaseAttachment> caseToAttachments = caseAttachmentDAO.getListByCaseId(caseObj.getId());
         caseObj.setInfo(convertDescription(issue.getDescription(), addedAttachments));
         caseObjectDAO.merge(caseObj);
@@ -353,11 +353,11 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
     private List<ru.protei.portal.core.model.ent.Attachment> processAttachments (JiraEndpoint endpoint,
                                                     Iterable<Attachment> attachments,
-                                                    Long caseObjectId,
+                                                    CaseObject caseObject,
                                                     JiraExtAppData state,
                                                     PersonMapper personMapper) {
         if (attachments == null) {
-            logger.debug("issue caseObjectId={} has no attachments", caseObjectId);
+            logger.debug("issue caseObjectId={} has no attachments", caseObject.getId());
             return Collections.emptyList();
         }
 
@@ -384,15 +384,15 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         List<ru.protei.portal.core.model.ent.Attachment> addedAttachments = new ArrayList<>();
 
-        logger.debug("load attachments for caseObjectId {}, size={}", caseObjectId, jiraAttachments.size());
+        logger.debug("load attachments for caseObjectId {}, size={}", caseObject.getId(), jiraAttachments.size());
 
         clientFactory.forEach(endpoint, jiraAttachments, (client, jiraAttachment) -> {
             try {
-                logger.debug("load attachment caseObjectId={}, uri={}", caseObjectId, jiraAttachment.getContentUri());
+                logger.debug("load attachment caseObjectId={}, uri={}", caseObject.getId(), jiraAttachment.getContentUri());
 
                 ru.protei.portal.core.model.ent.Attachment a = convertAttachment(personMapper, jiraAttachment);
 
-                storeAttachment(a, new JiraAttachmentSource(client, jiraAttachment), caseObjectId);
+                storeAttachment(a, new JiraAttachmentSource(client, jiraAttachment), caseObject);
 
                 addedAttachments.add(a);
             }
@@ -411,7 +411,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         return id + filename.substring(i);
     }
 
-    private void storeAttachment (ru.protei.portal.core.model.ent.Attachment attachment, InputStreamSource content, long caseId) throws Exception {
+    private void storeAttachment (ru.protei.portal.core.model.ent.Attachment attachment, InputStreamSource content, CaseObject caseObject) throws Exception {
 
         if(attachmentService.saveAttachment(attachment).isError()) {
             throw new SQLException("attachment not saved");
@@ -431,7 +431,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
             throw new SQLException("unable to save link to file");
         }
 
-        Result<Long> caseAttachId = caseService.attachToCaseId(attachment, caseId);
+        Result<Long> caseAttachId = caseService.attachToCaseId(attachment, caseObject.getId(), caseObject.isPrivateCase());
         if(caseAttachId.isError())
             throw new SQLException("unable to bind attachment to case");
 

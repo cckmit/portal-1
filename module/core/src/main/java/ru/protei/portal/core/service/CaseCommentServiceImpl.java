@@ -85,6 +85,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     UserLoginDAO userLoginDAO;
     @Autowired
     CompanyDAO companyDAO;
+    @Autowired
+    AttachmentDAO attachmentDAO;
 
 /*
     @Autowired
@@ -188,6 +190,15 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             caseService.updateExistsAttachmentsFlag(comment.getCaseId(), true);
             comment.getCaseAttachments().forEach(ca -> ca.setCommentId(commentId));
             caseAttachmentDAO.persistBatch(comment.getCaseAttachments());
+
+            if (comment.isPrivateComment()) {
+                Attachment attachment = new Attachment();
+                attachment.setPrivate(true);
+                comment.getCaseAttachments().forEach(a -> {
+                    attachment.setId(a.getAttachmentId());
+                    attachmentDAO.partialMerge(attachment, "private_flag");
+                });
+            }
         }
 
         boolean isCaseChanged = caseService.updateCaseModified(token, comment.getCaseId(), comment.getCreated()).getData();

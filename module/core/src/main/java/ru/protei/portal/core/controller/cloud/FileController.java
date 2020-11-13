@@ -29,6 +29,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_FileUploadStatus;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.Base64Facade;
 import ru.protei.portal.core.model.struct.FileStream;
@@ -252,8 +253,8 @@ public class FileController {
         IOUtils.copy(file.getData(), response.getOutputStream());
     }
 
-    public Long saveAttachment(Attachment attachment, InputStreamSource content, long fileSize, String contentType, Long caseId) throws IOException, SQLException {
-        if (caseId == null)
+    public Long saveAttachment(Attachment attachment, InputStreamSource content, long fileSize, String contentType, CaseObject caseObject) throws IOException, SQLException {
+        if (caseObject == null || caseObject.getId() == null)
             throw new RuntimeException("Case-ID is required");
 
         if (attachmentService.saveAttachment(attachment).isError()) {
@@ -278,7 +279,7 @@ public class FileController {
             throw new SQLException("unable to save link to file");
         }
 
-        Result<Long> caseAttachId = caseService.attachToCaseId(attachment, caseId);
+        Result<Long> caseAttachId = caseService.attachToCaseId(attachment, caseObject.getId(), caseObject.isPrivateCase());
         if (caseAttachId.isError())
             throw new SQLException("unable to bind attachment to case");
 
