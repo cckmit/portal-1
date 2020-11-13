@@ -21,11 +21,9 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 public class AssemblerProjectServiceImpl implements AssemblerProjectService {
     private static final Logger log = LoggerFactory.getLogger(AssemblerProjectServiceImpl.class);
@@ -152,7 +150,7 @@ public class AssemblerProjectServiceImpl implements AssemblerProjectService {
             return ok(event);
         }
         log.info("fillAttachments(): CaseObjectID={} Try to fill attachments.", event.getProjectId());
-        event.setExistingAttachments(stream(attachmentDAO.getAttachmentsByCaseId(event.getProjectId())).distinct().collect(Collectors.toList()));
+        event.setExistingAttachments(attachmentDAO.getAttachmentsByCaseId(event.getProjectId()));
         log.info("fillAttachments(): CaseObjectID={} Attachments are successfully filled.", event.getProjectId());
 
         return ok(event);

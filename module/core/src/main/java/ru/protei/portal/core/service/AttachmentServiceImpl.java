@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.getFirst;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 /**
@@ -148,10 +147,10 @@ public class AttachmentServiceImpl implements AttachmentService {
     @Override
     public Result<List<Attachment>> getAttachmentsByCaseId( AuthToken token, En_CaseType caseType, Long caseId) {
         if (hasAccessForPrivateAttachments(token, caseType)) {
-            return ok(attachmentDAO.getAttachmentsByCaseId(caseId).stream().distinct().collect(Collectors.toList()));
+            return ok(attachmentDAO.getAttachmentsByCaseId(caseId));
         }
 
-        return ok(attachmentDAO.getPublicAttachmentsByCaseId(caseId).stream().distinct().collect(Collectors.toList()));
+        return ok(attachmentDAO.getPublicAttachmentsByCaseId(caseId));
     }
 
     @Override
@@ -161,10 +160,10 @@ public class AttachmentServiceImpl implements AttachmentService {
         }
 
         if (hasAccessForPrivateAttachments(token, caseType)) {
-            return ok(attachmentDAO.getListByKeys(ids).stream().distinct().collect(Collectors.toList()));
+            return ok(attachmentDAO.getListByKeys(ids));
         }
 
-        return ok(attachmentDAO.getPublicAttachmentsByIds(ids).stream().distinct().collect(Collectors.toList()));
+        return ok(attachmentDAO.getPublicAttachmentsByIds(ids));
     }
 
     @Override
@@ -202,11 +201,11 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     @Override
     public Result<Attachment> getAttachmentByExtLink( String extLink ) {
-        List<Attachment> attachments = attachmentDAO.getListByCondition("ext_link = ?", Collections.singletonList(extLink));
-        if (isEmpty(attachments)) {
+        Attachment attachment = attachmentDAO.getByCondition("ext_link = ?", Collections.singletonList(extLink));
+        if (attachment == null) {
             return error( En_ResultStatus.NOT_FOUND);
         }
-        return ok( getFirst(attachments) );
+        return ok( attachment );
     }
 
     private boolean hasAccessForPrivateAttachments(AuthToken token, En_CaseType caseType) {
