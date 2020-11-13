@@ -37,10 +37,7 @@ public class Attachment extends AuditableObject {
     @JdbcColumn(name = "file_name")
     private String fileName;
 
-    @JdbcJoinedColumn(mappedColumn = "private_flag", joinPath = {
-            @JdbcJoinPath(localColumn = "id", remoteColumn = "att_id", table = "case_attachment"),
-            @JdbcJoinPath(localColumn = "ccomment_id", remoteColumn = "id", table = "case_comment")
-    })
+    @JdbcColumn(name = "private_flag")
     private Boolean isPrivate;
 
     public Attachment (Long attachmentId) {
