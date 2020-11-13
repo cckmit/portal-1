@@ -75,18 +75,18 @@ public final class CommonServiceImpl implements CommonService {
     PlatformDAO platformDAO;
 
     @Override
-    public Result<Long> saveAttachment( Attachment attachment, Person author, HttpInputSource httpInputSource, Long fileSize, String contentType, Long caseObjId ) {
+    public Result<Long> saveAttachment( Attachment attachment, Person author, HttpInputSource httpInputSource, Long fileSize, String contentType, CaseObject caseObject ) {
         Long id;
         logger.info( "Invoke file controller to store attachment {} (size={})", attachment.getFileName(), fileSize );
         try {
-            id = fileController.saveAttachment( attachment, httpInputSource, fileSize, contentType, caseObjId );
+            id = fileController.saveAttachment( attachment, httpInputSource, fileSize, contentType, caseObject);
         } catch (Exception e) {
             logger.warn( "Unable to process attachment " + attachment.getFileName(), e );
             return error( En_ResultStatus.INTERNAL_ERROR, "Unable to process attachment " + attachment.getFileName() );
         }
 
         return ok( id ).publishEvent(
-                new CaseAttachmentEvent( this, ServiceModule.REDMINE, author.getId(), caseObjId,
+                new CaseAttachmentEvent( this, ServiceModule.REDMINE, author.getId(), caseObject.getId(),
                         Collections.singletonList( attachment ), null )
                 );
     }

@@ -37,7 +37,7 @@ public interface CommonService {
 
     Result<Set<Integer>> getExistingAttachmentsHashCodes( long caseObjId );
 
-    Result<Long> saveAttachment( Attachment a, Person author, HttpInputSource httpInputSource, Long fileSize, String contentType, Long caseObjId );
+    Result<Long> saveAttachment( Attachment a, Person author, HttpInputSource httpInputSource, Long fileSize, String contentType, CaseObject caseObject );
 
     Result<CaseObject> getByExternalAppCaseId( String externalAppCaseId );
 

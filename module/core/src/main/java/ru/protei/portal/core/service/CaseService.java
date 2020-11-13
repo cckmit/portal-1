@@ -66,7 +66,7 @@ public interface CaseService {
     })
     Result<Long> bindAttachmentToCaseNumber( AuthToken token, En_CaseType caseType, Attachment attachment, long caseNumber);
 
-    Result<Long> attachToCaseId( Attachment attachment, long caseId);
+    Result<Long> attachToCaseId( Attachment attachment, long caseId, boolean isPrivateCase);
 
     Result<Boolean> isExistsAttachments(Long caseId);
     Result<Boolean> updateExistsAttachmentsFlag( Long caseId, boolean flag);
