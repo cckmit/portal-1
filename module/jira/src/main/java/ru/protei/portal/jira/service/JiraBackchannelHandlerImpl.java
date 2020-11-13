@@ -112,7 +112,7 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
             if (event.getAddedAttachments() != null) {
                 final List<Attachment> publicAttachments = event.getAddedAttachments().stream().filter(a -> !a.isPrivate()).collect(Collectors.toList());
                 if (!publicAttachments.isEmpty()) {
-                    issueClient.addAttachments(issue.getAttachmentsUri(), buildAttachmentsArray(event.getAddedAttachments())).claim();
+                    issueClient.addAttachments(issue.getAttachmentsUri(), buildAttachmentsArray(publicAttachments)).claim();
                 }
             }
 
