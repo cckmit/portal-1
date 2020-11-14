@@ -48,7 +48,7 @@ public class IssueControllerImpl implements IssueController {
 
     @Override
     public CaseObject getIssue( long number ) throws RequestFailedException {
-        log.info("getIssue(): number: {}", number);
+        log.info("getIssue(): number={}", number);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
@@ -60,6 +60,14 @@ public class IssueControllerImpl implements IssueController {
         }
 
         return response.getData();
+    }
+
+    @Override
+    public CaseObjectMetaNotifiers getIssueMetaNotifiers(long id) throws RequestFailedException {
+        log.info("getIssueMetaNotifiers(): id={}", id);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        Result<CaseObjectMetaNotifiers> response = caseService.getCaseObjectMetaNotifiers(token, id);
+        return checkResultAndGetData(response);
     }
 
     @Override

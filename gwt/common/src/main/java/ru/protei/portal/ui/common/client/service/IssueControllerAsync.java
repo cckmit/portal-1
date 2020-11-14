@@ -20,7 +20,9 @@ public interface IssueControllerAsync {
 
     void getIssues(CaseQuery query, AsyncCallback<SearchResult<CaseShortView>> async);
 
-    void getIssue(long id, AsyncCallback< CaseObject > callback);
+    void getIssue(long id, AsyncCallback<CaseObject> callback);
+
+    void getIssueMetaNotifiers(long id, AsyncCallback<CaseObjectMetaNotifiers> callback);
 
     void createIssue(CaseObjectCreateRequest createRequest, AsyncCallback<UiResult<Long>> callback);
 

@@ -366,6 +366,13 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
+    public Result<CaseObjectMetaNotifiers> getCaseObjectMetaNotifiers(AuthToken token, Long issueId) {
+        CaseObjectMetaNotifiers caseObjectMetaNotifiers = caseObjectMetaNotifiersDAO.get(issueId);
+        jdbcManyRelationsHelper.fill(caseObjectMetaNotifiers, "notifiers");
+        return ok(caseObjectMetaNotifiers);
+    }
+
+    @Override
     @Transactional
     public Result<CaseObjectMetaNotifiers> updateCaseObjectMetaNotifiers(AuthToken token, CaseObjectMetaNotifiers caseMetaNotifiers) {
 

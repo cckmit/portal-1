@@ -188,10 +188,10 @@ public class Result<T> {
     }
 
     /**
-     * Когда вызваемая функция возвращает Result
+     * Когда вызываемая функция возвращает Result
      */
     @JsonIgnore
-    public <U> Result<U> flatMap( Function<? super T, Result<U>> mapper) {
+    public <U> Result<U> flatMap(Function<? super T, Result<U>> mapper) {
         if (mapper == null || !isOk())
             return error( status, message, events );
         else {

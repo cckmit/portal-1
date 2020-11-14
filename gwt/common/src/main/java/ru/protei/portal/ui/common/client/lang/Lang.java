@@ -3187,4 +3187,6 @@ public interface Lang extends Messages, ContactItemLang {
     String subtask();
 
     String errInvalidCaseUpdateSubtaskNotClosed();
+
+    String errNotAllowedCreateLink();
 }

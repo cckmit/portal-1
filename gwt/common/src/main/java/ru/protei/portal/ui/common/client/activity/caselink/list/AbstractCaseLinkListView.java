@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.activity.caselink.list;
 
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.ui.common.client.widget.tab.pane.TabWidgetPane;
 
 /**
@@ -11,7 +12,7 @@ public interface AbstractCaseLinkListView extends IsWidget {
 
     void setActivity(AbstractCaseLinkListActivity activity);
 
-    void showSelector(IsWidget target);
+    void showSelector(En_CaseType caseType, IsWidget target);
 
     HasVisibility getContainerVisibility();
 

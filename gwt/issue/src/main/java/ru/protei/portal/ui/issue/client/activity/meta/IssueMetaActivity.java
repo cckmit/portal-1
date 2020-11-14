@@ -31,6 +31,7 @@ import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 
 import java.util.*;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -97,6 +98,28 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         if (CrmConstants.Issue.CREATE_CONTACT_IDENTITY.equals(event.origin) && event.person != null) {
             metaView.setInitiator(event.person);
         }
+    }
+
+    @Event
+    public void onUpdateIssueState(IssueEvents.IssueStateUpdated event) {
+        caseStateController.getCaseStateByCaseId(event.issueId, new FluentCallback<CaseState>()
+                .withSuccess(caseState -> {
+                    if (!Objects.equals(caseState, metaView.state().getValue())) {
+                        metaView.state().setValue(caseState);
+                        meta.setStateId(caseState.getId());
+                        meta.setStateName(caseState.getState());
+                        fireEvent(new IssueEvents.IssueStateChanged(event.issueId, caseState.getId()));
+                    }}));
+    }
+
+    @Event
+    public void onUpdateIssueNotifiers(IssueEvents.IssueNotifiersUpdated event) {
+        issueController.getIssueMetaNotifiers(event.issueId, new FluentCallback<CaseObjectMetaNotifiers>()
+                .withSuccess(caseObjectMetaNotifiers -> {
+                    metaView.setCaseMetaNotifiers(caseObjectMetaNotifiers.getNotifiers());
+                    metaNotifiers.setNotifiers(caseObjectMetaNotifiers.getNotifiers());
+                }));
+
     }
 
     @Override
@@ -908,6 +931,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     SiteFolderControllerAsync siteFolderController;
     @Inject
     CaseLinkControllerAsync caseLinkController;
+    @Inject
+    CaseStateControllerAsync caseStateController;
 
     @Inject
     ProductModel productModel;

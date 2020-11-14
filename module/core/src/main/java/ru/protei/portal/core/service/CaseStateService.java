@@ -29,4 +29,6 @@ public interface CaseStateService {
     Result<CaseState> updateCaseState(AuthToken authToken, CaseState state);
 
     Result<List<CaseState>> getCaseStatesForCompanyOmitPrivileges(Long companyId);
+
+    Result<CaseState> getCaseStateByCaseIdOmitPrivileges(long caseId);
 }

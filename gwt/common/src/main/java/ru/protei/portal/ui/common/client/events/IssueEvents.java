@@ -195,6 +195,20 @@ public class IssueEvents {
         public Long issueId;
     }
 
+    public static class IssueStateUpdated {
+        public IssueStateUpdated(Long issueId) {
+            this.issueId = issueId;
+        }
+        public Long issueId;
+    }
+
+    public static class IssueNotifiersUpdated {
+        public IssueNotifiersUpdated(Long issueId) {
+            this.issueId = issueId;
+        }
+        public Long issueId;
+    }
+
     public static class CreateSubtask {
 
         public CreateSubtask(Long caseNumber) {

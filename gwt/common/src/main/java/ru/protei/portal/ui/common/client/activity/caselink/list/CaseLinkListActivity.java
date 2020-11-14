@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.activity.caselink.list;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.inject.Inject;
@@ -17,6 +18,7 @@ import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
 import ru.protei.portal.ui.common.client.activity.caselink.item.AbstractCaseLinkItemActivity;
 import ru.protei.portal.ui.common.client.activity.caselink.item.AbstractCaseLinkItemView;
 import ru.protei.portal.ui.common.client.events.CaseLinkEvents;
+import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.En_BundleTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -84,7 +86,7 @@ public abstract class CaseLinkListActivity
 
         this.caseType = event.caseType;
 
-        view.showSelector(event.target);
+        view.showSelector(event.caseType, event.target);
     }
 
     @Override
@@ -197,7 +199,7 @@ public abstract class CaseLinkListActivity
 
     private void createLinkAndAddToParent(CaseLink value) {
         //@ToDo check this
-        if (bundleTypeToCaseLink.values().contains(value)) {
+        if (bundleTypeToCaseLink.containsValue(value)) {
             fireEvent(new NotifyEvents.Show(lang.errCaseLinkAlreadyAdded(), NotifyEvents.NotifyType.ERROR));
             return;
         }
@@ -216,8 +218,20 @@ public abstract class CaseLinkListActivity
                     addLinkToParentAndModifyLinksCount(value);
                     hideOrShowIfNoLinks();
                     fireEvent(new NotifyEvents.Show(lang.caseLinkSuccessfulCreated(), NotifyEvents.NotifyType.SUCCESS));
+                    if (En_CaseType.CRM_SUPPORT.equals(caseType)) fireIssueEvents(caseLink);
                 })
         );
+    }
+
+    private void fireIssueEvents(CaseLink caseLink) {
+        if (En_BundleType.PARENT_FOR.equals(caseLink.getBundleType())) {
+            fireEvent(new IssueEvents.IssueStateUpdated(caseLink.getCaseId()));
+        }
+        if (En_BundleType.SUBTASK.equals(caseLink.getBundleType())) {
+            Window.alert("caseLink.getCaseId() = " + caseLink.getCaseId());
+            fireEvent(new IssueEvents.IssueNotifiersUpdated(caseLink.getCaseId()));
+            fireEvent(new IssueEvents.ChangeIssue(NumberUtils.parseLong(caseLink.getRemoteId())));
+        }
     }
 
     private void makeCaseLinkViewAndAddToParent(CaseLink value, HTMLPanel panel) {
@@ -264,18 +278,14 @@ public abstract class CaseLinkListActivity
     }
 
     private void addLinkToParentAndModifyLinksCount(CaseLink value) {
-        if (bundleTypeToCaseLink.get(value.getBundleType()) == null) {
-            bundleTypeToCaseLink.put(value.getBundleType(), new ArrayList<>());
-        }
-        bundleTypeToCaseLink.get(value.getBundleType()).add(value);
+        bundleTypeToCaseLink.computeIfAbsent(value.getBundleType(), bundleType -> new ArrayList<>()).add(value);
         makeCaseLinkViewAndAddToParent(value, bundleTypeToPanel.get(value.getBundleType()));
         resetLinksContainerStateByLinksCount();
     }
 
     private void resetLinksContainerStateByLinksCount() {
-        bundleTypeToCaseLink.forEach((bundleType, links) -> {
-            view.setCountOfLinks(bundleTypeLang.getName(bundleType), String.valueOf(links.size()));
-        });
+        bundleTypeToCaseLink.forEach((bundleType, links) ->
+            view.setCountOfLinks(bundleTypeLang.getName(bundleType), String.valueOf(links.size())));
     }
 
     private boolean isCaseCreationMode() {
@@ -283,7 +293,7 @@ public abstract class CaseLinkListActivity
     }
 
     private void hideOrShowIfNoLinks() {
-        boolean isPresent = bundleTypeToPanel.values().stream().filter(panel -> panel.iterator().hasNext()).findAny().isPresent();
+        boolean isPresent = bundleTypeToPanel.values().stream().anyMatch(panel -> panel.iterator().hasNext());
         view.getContainerVisibility().setVisible(isPresent);
         bundleTypeToPanel.forEach((bundleType, panel) -> {
             view.tabVisibility(bundleTypeLang.getName(bundleType), panel.iterator().hasNext());

@@ -21,12 +21,15 @@ import com.google.gwt.user.client.ui.UIObject;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_BundleType;
 import ru.protei.portal.core.model.dict.En_CaseLink;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.enterabletextbox.EnterableTextBox;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
 
 public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHandlers<CaseLink> {
 
@@ -71,8 +74,9 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
         }
     }
 
-    public void resetValueAndShow(UIObject target) {
+    public void resetValueAndShow(En_CaseType caseType, UIObject target) {
         this.relative = target;
+        this.caseType = caseType;
 
         showRelativeTo(target);
 
@@ -165,7 +169,10 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
     }
 
     private void updateBundleTypeSelector() {
-        bundleTypeSelector.updateElements(En_BundleType.getMapTypes().get(typeSelector.getValue()));
+        bundleTypeSelector.updateElements(
+                En_CaseType.CRM_SUPPORT.equals(caseType) && En_CaseLink.CRM.equals(typeSelector.getValue()) ?
+                        listOf(En_BundleType.values()) :
+                        listOf(En_BundleType.LINKED_WITH));
         bundleTypeSelector.setValue(En_BundleType.LINKED_WITH);
     }
 
@@ -186,6 +193,7 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
     PolicyService policyService;
 
     private UIObject relative;
+    private En_CaseType caseType;
     private ResizeHandler resizeHandler;
     private Window.ScrollHandler windowScrollHandler;
     private HandlerRegistration resizeHandlerReg;

@@ -333,5 +333,9 @@ public enum En_ResultStatus {
      */
     INVALID_CASE_UPDATE_SUBTASK_NOT_CLOSED,
 
+    /**
+     * запрещено создавать связку "Родитель для" для родителя в created или verified
+     */
+    NOT_ALLOWED_LINK_ISSUE_STATE
     ;
 }

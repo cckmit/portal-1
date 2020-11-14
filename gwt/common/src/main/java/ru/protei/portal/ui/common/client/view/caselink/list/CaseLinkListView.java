@@ -1,13 +1,11 @@
 package ru.protei.portal.ui.common.client.view.caselink.list;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.LabelElement;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.caselink.list.AbstractCaseLinkListActivity;
 import ru.protei.portal.ui.common.client.activity.caselink.list.AbstractCaseLinkListView;
@@ -37,8 +35,8 @@ public class CaseLinkListView
     }
 
     @Override
-    public void showSelector(IsWidget target) {
-        createCaseLinkPopup.resetValueAndShow(target.asWidget());
+    public void showSelector(En_CaseType caseType, IsWidget target) {
+        createCaseLinkPopup.resetValueAndShow(caseType, target.asWidget());
     }
 
     @Override

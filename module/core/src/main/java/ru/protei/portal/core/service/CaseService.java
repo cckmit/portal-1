@@ -47,6 +47,9 @@ public interface CaseService {
     @Privileged({ En_Privilege.ISSUE_VIEW })
     Result<CaseObjectMeta> getIssueMeta( AuthToken token, Long issueId );
 
+    @Privileged({ En_Privilege.ISSUE_VIEW })
+    Result<CaseObjectMetaNotifiers> getCaseObjectMetaNotifiers( AuthToken token, Long issueId );
+
     @Privileged({ En_Privilege.ISSUE_EDIT })
     @Auditable( En_AuditType.ISSUE_MODIFY )
     Result<CaseObjectMetaNotifiers> updateCaseObjectMetaNotifiers( AuthToken token, CaseObjectMetaNotifiers caseMetaNotifiers );

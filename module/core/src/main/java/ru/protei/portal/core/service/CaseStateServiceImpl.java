@@ -122,4 +122,14 @@ public class CaseStateServiceImpl implements CaseStateService {
 
         return ok(list);
     }
+
+    @Override
+    public Result<CaseState> getCaseStateByCaseIdOmitPrivileges(long caseId) {
+        CaseState caseState = caseStateDAO.getCaseStateByCaseId(caseId);
+
+        if (caseState == null)
+            return error(En_ResultStatus.NOT_FOUND);
+
+        return ok(caseState);
+    }
 }
