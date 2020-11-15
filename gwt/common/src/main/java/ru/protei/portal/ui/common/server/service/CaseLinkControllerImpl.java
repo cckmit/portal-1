@@ -71,9 +71,9 @@ public class CaseLinkControllerImpl implements CaseLinkController {
     }
 
     @Override
-    public void deleteLinkWithPublish(Long id, En_CaseType caseType) throws RequestFailedException {
+    public CaseLink deleteLinkWithPublish(Long id, En_CaseType caseType) throws RequestFailedException {
         AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
-        checkResult( linkService.deleteLinkWithPublish( authToken, id, caseType) );
+        return checkResultAndGetData( linkService.deleteLinkWithPublish( authToken, id, caseType) );
     }
 
     @Autowired

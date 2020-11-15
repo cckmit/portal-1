@@ -99,4 +99,7 @@ public interface CaseService {
     @Privileged({ En_Privilege.ISSUE_CREATE })
     @Auditable( En_AuditType.ISSUE_CREATE )
     Result<CaseObject> createSubtask(AuthToken token, CaseObjectCreateRequest caseObjectCreateRequest, Long parentCaseObjectId);
+
+    @Privileged(En_Privilege.ISSUE_EDIT)
+    Result<Long> openIssueIfNeed(AuthToken token, Long caseObjectId);
 }

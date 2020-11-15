@@ -131,25 +131,25 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         if (validationResult.isError())
             return error(validationResult.getStatus());
 
-        return removeLink(validationResult.getData());
+        return removeLink(authToken, validationResult.getData());
     }
 
     @Override
     @Transactional
-    public Result deleteLinkWithPublish (AuthToken authToken, Long id, En_CaseType caseType) {
+    public Result<CaseLink> deleteLinkWithPublish (AuthToken authToken, Long id, En_CaseType caseType) {
         Result<CaseLink> validationResult = validateLinkBeforeRemove(id);
         if (validationResult.isError())
             return error(validationResult.getStatus());
 
         CaseLink existedLink = validationResult.getData();
 
-        Result result = removeLink(existedLink);
+        Result<Long> result = removeLink(authToken, existedLink);
 
         if (result.isError()) {
             return error(result.getStatus());
         }
 
-        return sendNotificationLinkRemoved(authToken, existedLink.getCaseId(), existedLink, caseType);
+        return sendNotificationLinkRemoved(authToken, existedLink.getCaseId(), existedLink, caseType, result.getEvents());
     }
 
 
@@ -317,12 +317,13 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                 .ifOk(caseLink -> log.debug("getYtLink(): OK. caseLink={}", caseLink));
     }
 
-    private Result removeLink (CaseLink link){
+    private Result<Long> removeLink (AuthToken authToken, CaseLink link) {
+        Result<Long> result = ok(link.getId());
         Set<Long> toRemoveIds = new HashSet<>();
         toRemoveIds.add(link.getId());
 
+        // Удаляем зеркальные CRM-линки
         if (En_CaseLink.CRM.equals(link.getType())){
-            // удаляем зеркальные CRM-линки
             CaseLink crmCrosslink = caseLinkDAO.getCrmLink(En_CaseLink.CRM, NumberUtils.toLong(link.getRemoteId()), link.getCaseId().toString());
             if (crmCrosslink != null) {
                 toRemoveIds.add(crmCrosslink.getId());
@@ -331,13 +332,25 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         int removedCount = caseLinkDAO.removeByKeys(toRemoveIds);
 
+        // Открываем родительскую задачу, если все подзадачи закрыты
+        if (En_CaseLink.CRM.equals(link.getType())){
+            if (En_BundleType.PARENT_FOR.equals(link.getBundleType())) {
+                Result<Long> openedResult = caseService.openIssueIfNeed(authToken, link.getCaseId());
+                result.publishEvents(openedResult.getEvents());
+            }
+            if (En_BundleType.SUBTASK.equals(link.getBundleType())) {
+                Result<Long> openedResult = caseService.openIssueIfNeed(authToken, NumberUtils.createLong(link.getRemoteId()));
+                result.publishEvents(openedResult.getEvents());
+            }
+        }
+
         //Обновляем список ссылок на Youtrack
         if (En_CaseLink.YT.equals(link.getType())) {
             youtrackService.setIssueCrmNumbers(link.getRemoteId(), getCaseNumbersCrosslinkedWithYoutrack(link.getRemoteId(), En_CaseType.CRM_SUPPORT));
             youtrackService.setIssueProjectNumbers(link.getRemoteId(), getCaseIdsCrosslinkedWithYoutrack(link.getRemoteId(), En_CaseType.PROJECT));
         }
 
-        return removedCount == toRemoveIds.size() ? ok() : error(En_ResultStatus.INTERNAL_ERROR);
+        return removedCount == toRemoveIds.size() ? result : error(En_ResultStatus.INTERNAL_ERROR);
     }
 
     private Result<CaseLink> validateLinkBeforeRemove(Long id){
@@ -549,7 +562,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         return getYoutrackLinks(caseId)
                 .flatMap( caseLinks -> findCaseLinkByRemoteId( caseLinks, youtrackId ) )
                 .flatMap(caseLink -> removeYoutrackCaseLink( caseLink )
-                        .flatMap( removedLink -> sendNotificationLinkRemoved( authToken, caseId, removedLink, caseType ))
+                        .flatMap( removedLink -> sendNotificationLinkRemoved( authToken, caseId, removedLink, caseType, null ))
         );
     }
 
@@ -690,14 +703,16 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         }
     }
 
-    private Result<CaseLink> sendNotificationLinkRemoved(AuthToken token, Long caseId, CaseLink removed, En_CaseType caseType ) {
+    private Result<CaseLink> sendNotificationLinkRemoved(AuthToken token, Long caseId, CaseLink removed, En_CaseType caseType, List<ApplicationEvent> events) {
         switch (caseType) {
             case PROJECT:
                 return ok(removed)
-                        .publishEvent(new ProjectLinkEvent(this, removed.getCaseId(), token.getPersonId(), null, removed));
+                        .publishEvent(new ProjectLinkEvent(this, removed.getCaseId(), token.getPersonId(), null, removed))
+                        .publishEvents(events);
             case CRM_SUPPORT:
                 return ok(removed)
-                        .publishEvent( new CaseLinkEvent(this, ServiceModule.GENERAL, token.getPersonId(), caseId, null, removed ) );
+                        .publishEvent( new CaseLinkEvent(this, ServiceModule.GENERAL, token.getPersonId(), caseId, null, removed ) )
+                        .publishEvents(events);
             default:
                 log.error( "sendNotificationLinkRemoved(): Notification was not sent, caseType={}", caseType );
                 return ok(removed);

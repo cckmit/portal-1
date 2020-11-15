@@ -339,6 +339,7 @@ public class CaseServiceImpl implements CaseService {
             }
         }
 
+        // Открываем родительскую задачу, если все подзадачи закрыты
         Result<Long> openingParentsResult = ok(caseMeta.getId());
         if (oldCaseMeta.getStateId() != caseMeta.getStateId() && isTerminalState(caseMeta.getStateId())) {
             openingParentsResult = openParentIssuesIfNeed(token, caseMeta.getId());
@@ -727,6 +728,42 @@ public class CaseServiceImpl implements CaseService {
         return result.publishEvents(parentUpdate.getEvents());
     }
 
+    @Override
+    @Transactional
+    public Result<Long> openIssueIfNeed(AuthToken token, Long caseObjectId) {
+        List<CaseLink> caseLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(caseObjectId, En_BundleType.PARENT_FOR));
+
+        if (caseLinks.stream()
+                .anyMatch(caseLink -> !isTerminalState(caseLink.getCaseInfo().getState().getId()))) {
+            log.info("Case with id {} not opened, not all subtasks is terminal", caseObjectId);
+            return ok(caseObjectId);
+        }
+
+        CaseObjectMeta caseObjectMeta = caseObjectMetaDAO.get(caseObjectId);
+        caseObjectMeta.setStateId(CrmConstants.State.OPENED);
+
+        Result<CaseObjectMeta> result = updateCaseObjectMeta(token, caseObjectMeta);
+        if (result.isError()) {
+            log.error("Failed to open case with id {}, status={}", caseObjectId, result.getStatus());
+            throw new ResultStatusException(result.getStatus());
+        }
+
+        return ok(caseObjectId).publishEvents(result.getEvents());
+    }
+
+    private Result<Long> openParentIssuesIfNeed(AuthToken token, long caseObjectId) {
+        List<CaseLink> caseLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(caseObjectId, En_BundleType.SUBTASK));
+
+        Result<Long> result = ok(caseObjectId);
+
+        for(CaseLink caseLink : caseLinks) {
+            Result<Long> opened = openIssueIfNeed(token, NumberUtils.toLong(caseLink.getRemoteId()));
+            result.publishEvents(opened.getEvents());
+        }
+
+        return result;
+    }
+
     private Long createAndPersistTimeElapsedMessage(Long authorId, Long caseId, Long timeElapsed, En_TimeElapsedType timeElapsedType) {
         CaseComment stateChangeMessage = new CaseComment();
         stateChangeMessage.setAuthorId(authorId);
@@ -906,40 +943,6 @@ public class CaseServiceImpl implements CaseService {
 
         return caseLinks.stream()
                 .allMatch(caseLink -> isTerminalState(caseLink.getCaseInfo().getStateId()));
-    }
-
-    private Result<Long> openParentIssuesIfNeed(AuthToken token, long caseObjectId) {
-        List<CaseLink> caseLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(caseObjectId, En_BundleType.SUBTASK));
-
-        Result<Long> result = ok(caseObjectId);
-
-        for(CaseLink caseLink : caseLinks) {
-            Result<Long> opened = openIssueIfNeed(token, NumberUtils.toLong(caseLink.getRemoteId()));
-            result.publishEvents(opened.getEvents());
-        }
-
-        return result;
-    }
-
-    private Result<Long> openIssueIfNeed(AuthToken token, Long caseObjectId) {
-        List<CaseLink> caseLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(caseObjectId, En_BundleType.PARENT_FOR));
-
-        if (caseLinks.stream()
-                .anyMatch(caseLink -> !isTerminalState(caseLink.getCaseInfo().getState().getId()))) {
-            log.info("Case with id {} not opened, not all subtasks is terminal", caseObjectId);
-            return ok(caseObjectId);
-        }
-
-        CaseObjectMeta caseObjectMeta = caseObjectMetaDAO.get(caseObjectId);
-        caseObjectMeta.setStateId(CrmConstants.State.OPENED);
-
-        Result<CaseObjectMeta> result = updateCaseObjectMeta(token, caseObjectMeta);
-        if (result.isError()) {
-            log.error("Failed to open case with id {}, status={}", caseObjectId, result.getStatus());
-            throw new ResultStatusException(result.getStatus());
-        }
-
-        return ok(caseObjectId).publishEvents(result.getEvents());
     }
 
     private boolean validateFieldsOfNew(AuthToken token, CaseObject caseObject) {

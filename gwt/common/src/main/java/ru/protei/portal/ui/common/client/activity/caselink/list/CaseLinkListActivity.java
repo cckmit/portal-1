@@ -102,11 +102,12 @@ public abstract class CaseLinkListActivity
             return;
         }
 
-        controller.deleteLinkWithPublish(itemView.getModel().getId(), caseType, new FluentCallback<Void>()
-                .withSuccess(res -> {
+        controller.deleteLinkWithPublish(itemView.getModel().getId(), caseType, new FluentCallback<CaseLink>()
+                .withSuccess(caseLink -> {
                     removeLinkViewFromParentAndModifyLinksCount(itemView);
                     hideOrShowIfNoLinks();
                     fireEvent(new NotifyEvents.Show(lang.caseLinkSuccessfulRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                    if (En_CaseType.CRM_SUPPORT.equals(caseType)) fireIssueEvents(caseLink);
                 })
         );
     }
@@ -228,7 +229,6 @@ public abstract class CaseLinkListActivity
             fireEvent(new IssueEvents.IssueStateUpdated(caseLink.getCaseId()));
         }
         if (En_BundleType.SUBTASK.equals(caseLink.getBundleType())) {
-            Window.alert("caseLink.getCaseId() = " + caseLink.getCaseId());
             fireEvent(new IssueEvents.IssueNotifiersUpdated(caseLink.getCaseId()));
             fireEvent(new IssueEvents.ChangeIssue(NumberUtils.parseLong(caseLink.getRemoteId())));
         }

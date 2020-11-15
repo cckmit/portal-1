@@ -23,5 +23,5 @@ public interface CaseLinkControllerAsync {
 
     void deleteLink(Long id, AsyncCallback<Void> async);
 
-    void deleteLinkWithPublish(Long id, En_CaseType caseType, AsyncCallback<Void> async);
+    void deleteLinkWithPublish(Long id, En_CaseType caseType, AsyncCallback<CaseLink> async);
 }

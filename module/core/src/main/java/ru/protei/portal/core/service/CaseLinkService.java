@@ -37,7 +37,7 @@ public interface CaseLinkService {
 
     @Privileged(requireAny = { En_Privilege.ISSUE_EDIT, En_Privilege.PROJECT_EDIT })
     @Auditable(En_AuditType.LINK_REMOVE)
-    Result deleteLinkWithPublish(AuthToken authToken, Long id, En_CaseType caseType);
+    Result<CaseLink> deleteLinkWithPublish(AuthToken authToken, Long id, En_CaseType caseType);
 
     Result<String> setYoutrackIdToCaseNumbers(AuthToken token, String youtrackId, List<Long> caseNumberList);
 
