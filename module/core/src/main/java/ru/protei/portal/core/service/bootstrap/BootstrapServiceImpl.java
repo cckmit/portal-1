@@ -17,11 +17,13 @@ import ru.protei.portal.core.model.dao.impl.PortalBaseJdbcDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.util.sqlcondition.Condition;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.YoutrackService;
 import ru.protei.portal.core.svn.document.DocumentSvnApi;
@@ -49,6 +51,7 @@ import java.util.stream.Stream;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
 
 /**
  * Сервис выполняющий первичную инициализацию, работу с исправлением данных
@@ -69,7 +72,6 @@ public class BootstrapServiceImpl implements BootstrapService {
     @Override
     public void bootstrapApplication() {
         log.info( "bootstrapApplication(): BootstrapService begin."  );
-
         /**
          *  begin Спринт 58 */
 
@@ -109,6 +111,10 @@ public class BootstrapServiceImpl implements BootstrapService {
             ContactInfoCompanyMigration.migrate( applicationContext );
             bootstrapAppDAO.createAction("ContactInfoCompanyMigration");
         }
+        if(!bootstrapAppDAO.isActionExists("normalizeEmails")) {
+            normalizeEmails();
+            bootstrapAppDAO.createAction("normalizeEmails");
+        }
 
         /**
          *  end Спринт 58 */
@@ -116,6 +122,52 @@ public class BootstrapServiceImpl implements BootstrapService {
         log.info( "bootstrapApplication(): BootstrapService complete."  );
     }
 
+    private void normalizeEmails() {
+
+        log.debug("normalizeEmails(): start");
+
+        Condition cnd = query().where("person.id").in(query()
+                .select("cip.person_id").from("contact_item_person AS cip")
+                .where("cip.contact_item_id").in(query()
+                        .select("ci.id").from("contact_item AS ci")
+                        .where("ci.item_type").equal(En_ContactItemType.EMAIL.getId())
+                        .and("ci.value").like("%,%").asQuery()
+                ).asQuery()
+        );
+
+        List<Person> personList = personDAO.getListByCondition(cnd.getSqlCondition(), cnd.getSqlParameters());
+        jdbcManyRelationsHelper.fill(personList, "contactItems");
+
+        personList.forEach(person ->  {
+
+            List<ContactItem> emails = person.getContactItems().stream()
+                    .filter(contactItem -> En_ContactItemType.EMAIL.equals(contactItem.type()))
+                    .filter(contactItem -> contactItem.value().contains(","))
+                    .map(contactItem ->
+                        Arrays.stream(contactItem.value().split(","))
+                                .filter(HelperFunc::isNotEmpty)
+                                .map(s -> new ContactItem(En_ContactItemType.EMAIL, contactItem.accessType()).modify(s))
+                                .collect(Collectors.toList())
+                    )
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toList());
+
+            person.getContactItems().addAll(emails);
+
+            contactItemDAO.saveOrUpdateBatch(person.getContactItems());
+            jdbcManyRelationsHelper.persist(person, Person.Fields.CONTACT_ITEMS);
+        });
+
+        contactItemDAO.removeByKeys(personList.stream()
+                .map(Person::getContactItems)
+                .flatMap(Collection::stream)
+                .filter(contactItem -> En_ContactItemType.EMAIL.equals(contactItem.type()))
+                .filter(contactItem -> contactItem.value().contains(","))
+                .map(ContactItem::id)
+                .collect(Collectors.toList()));
+
+        log.debug("normalizeEmails(): stop");
+    }
 
     private void updateUserDashboardOrders() {
         List<UserDashboard> dashboards = userDashboardDAO.getAll();
@@ -914,6 +966,8 @@ public class BootstrapServiceImpl implements BootstrapService {
     ObjectMapper objectMapper;
     @Autowired
     ApplicationContext applicationContext;
+    @Autowired
+    ContactItemDAO contactItemDAO;
 
     SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
