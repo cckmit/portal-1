@@ -22,6 +22,8 @@ public class CaseApiQuery extends BaseQuery {
 
     private Set<Long> productIds;
 
+    private List<String> caseTagsNames;
+
     @JsonIgnore
     private En_CaseType type;
     /**
@@ -82,6 +84,13 @@ public class CaseApiQuery extends BaseQuery {
         this.productIds = productIds;
     }
 
+    public List<String> getCaseTagsNames() {
+        return caseTagsNames;
+    }
+    public void setCaseTagsNames(List<String> caseTagsNames) {
+        this.caseTagsNames = caseTagsNames;
+    }
+
     @Override
     public String toString() {
         return "CaseApiQuery{" +
@@ -95,6 +104,7 @@ public class CaseApiQuery extends BaseQuery {
                 ", companyIds=" + companyIds +
                 ", managerCompanyIds=" + managerCompanyIds +
                 ", productIds=" + productIds +
+                ", caseTagNames=" + caseTagsNames +
                 '}';
     }
 }

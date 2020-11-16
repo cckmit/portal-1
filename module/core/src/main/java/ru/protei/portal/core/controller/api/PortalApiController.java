@@ -507,6 +507,7 @@ public class PortalApiController {
                              );
         query.setManagerCompanyIds(apiQuery.getManagerCompanyIds());
         query.setProductIds(apiQuery.getProductIds());
+        query.setCaseTagsNames(apiQuery.getCaseTagsNames());
         return query;
     }
 

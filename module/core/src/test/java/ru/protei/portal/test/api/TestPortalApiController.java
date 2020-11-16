@@ -386,12 +386,14 @@ public class TestPortalApiController extends BaseServiceTest {
     @Test
     @Transactional
     public void getCaseListByProductId() throws Exception {
-        final DevUnit devUnit = makeProduct();
+        final DevUnit devUnit1 = makeProduct();
+        final DevUnit devUnit2 = makeProduct();
         final Company company = makeCompany(En_CompanyCategory.CUSTOMER);
-        makeCaseObject(makePerson(company), devUnit.getId(), new Date(), company.getId());
+        makeCaseObject(makePerson(company), devUnit1.getId(), new Date(), company.getId());
+        makeCaseObject(makePerson(company), devUnit2.getId(), new Date(), company.getId());
 
         CaseApiQuery caseApiQuery = new CaseApiQuery();
-        caseApiQuery.setProductIds(Collections.singleton(devUnit.getId()));
+        caseApiQuery.setProductIds(Collections.singleton(devUnit1.getId()));
 
         ResultActions accept = createPostResultAction("/api/cases", caseApiQuery);
 
@@ -399,15 +401,17 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
                 .andExpect(jsonPath("$.data[*]", hasSize(is(1))))
-                .andExpect(jsonPath("$.data[*].productId", everyItem(is(devUnit.getId().intValue()))));
+                .andExpect(jsonPath("$.data[*].productId", everyItem(is(devUnit1.getId().intValue()))));
     }
 
     @Test
     @Transactional
     public void getCaseListByProductIdEmptyResult() throws Exception {
-        final DevUnit devUnit = makeProduct();
+        final DevUnit devUnit1 = makeProduct();
+        final DevUnit devUnit2 = makeProduct();
         final Company company = makeCompany(En_CompanyCategory.CUSTOMER);
-        makeCaseObject(makePerson(company), devUnit.getId(), new Date(), company.getId());
+        makeCaseObject(makePerson(company), devUnit1.getId(), new Date(), company.getId());
+        makeCaseObject(makePerson(company), devUnit2.getId(), new Date(), company.getId());
 
         CaseApiQuery caseApiQuery = new CaseApiQuery();
         caseApiQuery.setProductIds(Collections.singleton(devUnitDAO.getMaxId()  + 1));
@@ -420,6 +424,46 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect(jsonPath("$.data", empty()));
     }
 
+    @Test
+    @Transactional
+    public void getCaseListByTag() throws Exception {
+        final Company company = makeCompany(En_CompanyCategory.CUSTOMER);
+        final CaseObject caseObject1 = makeCaseObject(En_CaseType.CRM_SUPPORT, makePerson(company));
+        final CaseObject caseObject2 = makeCaseObject(En_CaseType.CRM_SUPPORT, makePerson(company));
+        final String testTagName = "test_tag";
+        final CaseTag caseTag = makeCaseTag(testTagName, En_CaseType.CRM_SUPPORT, company.getId());
+        caseObjectTagDAO.persist(new CaseObjectTag(caseObject1.getId(), caseTag.getId()));
+
+        CaseApiQuery caseApiQuery = new CaseApiQuery();
+        caseApiQuery.setCaseTagsNames(Collections.singletonList(testTagName));
+
+        ResultActions accept = createPostResultAction("/api/cases", caseApiQuery);
+
+        accept
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data[*]", hasSize(is(1))))
+                .andExpect(jsonPath("$.data[*].id", everyItem(is(caseObject1.getId().intValue()))));
+    }
+
+    @Test
+    @Transactional
+    public void getCaseListByTagEmptyResult() throws Exception {
+        final Company company = makeCompany(En_CompanyCategory.CUSTOMER);
+        final CaseObject caseObject = makeCaseObject(En_CaseType.CRM_SUPPORT, makePerson(company));
+        final String testTagName = "test_tag";
+        final CaseTag caseTag = makeCaseTag(testTagName, En_CaseType.CRM_SUPPORT, company.getId());
+        caseObjectTagDAO.persist(new CaseObjectTag(caseObject.getId(), caseTag.getId()));
+
+        CaseApiQuery caseApiQuery = new CaseApiQuery();
+        caseApiQuery.setCaseTagsNames(Collections.singletonList("no_" + testTagName));
+
+        ResultActions accept = createPostResultAction("/api/cases", caseApiQuery);
+        accept
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data", empty()));
+    }
     @Test
     @Transactional
     public void getCaseCommentsListByCaseNumber() throws Exception {

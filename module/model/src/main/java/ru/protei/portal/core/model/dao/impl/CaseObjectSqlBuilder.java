@@ -51,6 +51,11 @@ public class CaseObjectSqlBuilder {
                 }
             }
 
+            if (isNotEmpty(query.getCaseTagsNames())) {
+                condition.append(" and case_object.id in")
+                        .append(" (select case_id from case_object_tag where tag_id in (select id from case_tag where name in " + makeInArg(query.getCaseTagsNames(), true) + "))");
+            }
+
             if ( !query.isAllowViewPrivate() ) {
                 condition.append( " and case_object.private_flag=?" );
                 args.add( 0 );
