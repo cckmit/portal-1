@@ -3,19 +3,20 @@ package ru.protei.portal.core.model.dao.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.dao.CompanyGroupHomeDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.portal.core.model.util.sqlcondition.Condition;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.util.*;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
+import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
 
 public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonDAO {
 
@@ -81,7 +82,6 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
         return getSearchResult(parameters);
     }
 
-
     @Override
     public SearchResult<Person> getPersonsSearchResult(PersonQuery query) {
         return getSearchResult( personSqlBuilder.makeParameters( query ) );
@@ -90,6 +90,20 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     @Override
     public List<Person> getPersons(PersonQuery query) {
         return getList( personSqlBuilder.makeParameters( query ) );
+    }
+
+    @Override
+    public List<Person> getPersonsByEmail(String email) {
+        Condition cnd = query().where("person.id").in(query()
+                .select("cip.person_id").from("contact_item_person AS cip")
+                .where("cip.contact_item_id").in(query()
+                        .select("ci.id").from("contact_item AS ci")
+                        .where("ci.item_type").equal(En_ContactItemType.EMAIL.getId())
+                        .and("ci.value").equal(email).asQuery()
+                ).asQuery()
+        );
+
+        return getListByCondition(cnd.getSqlCondition(), cnd.getSqlParameters());
     }
 
     @Override
@@ -111,5 +125,4 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
 
         return rlist != null && !rlist.isEmpty() ? rlist.get(0) : null;
     }
-
 }

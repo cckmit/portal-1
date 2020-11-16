@@ -47,18 +47,6 @@ public class EmployeeShortViewDAO_Impl extends PortalBaseJdbcDAO<EmployeeShortVi
         return getSearchResult(parameters);
     }
 
-    @Override
-    public EmployeeShortView getEmployeeByEmail(String email) {
-        EmployeeQuery query = new EmployeeQuery();
-        query.setEmail(email);
-        List<EmployeeShortView> employeeShortViews = employeeListByQuery(query);
-        if (employeeShortViews.isEmpty()) {
-            return null;
-        } else {
-            return employeeShortViews.get(0);
-        }
-    }
-
     private int count(EmployeeQuery query) {
         StringBuilder sql = new StringBuilder("select count(*) from ( select distinct ").append(getSelectSQL());
         SqlCondition whereCondition = createEmployeeSqlCondition(query);

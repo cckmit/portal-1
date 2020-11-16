@@ -28,6 +28,8 @@ public interface PersonDAO extends PortalBaseDAO<Person> {
 
     List<Person> getPersons(PersonQuery query);
 
+    List<Person> getPersonsByEmail(String email);
+
     Person getCommonManagerByProductId(Long productId);
 
     default Person createNewPerson(Long companyId) throws Exception {

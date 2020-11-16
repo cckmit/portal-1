@@ -584,9 +584,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        PersonQuery personQuery = new PersonQuery();
-        personQuery.setEmail( receivedMail.getSenderEmail());
-        List<Person> persons = personDAO.getPersons(personQuery);
+        List<Person> persons = personDAO.getPersonsByEmail(receivedMail.getSenderEmail());
         if (persons.isEmpty()) {
             log.warn("addCommentsReceivedByMail(): no found person person by mail ={}", receivedMail.getSenderEmail());
             return error(En_ResultStatus.USER_NOT_FOUND);
