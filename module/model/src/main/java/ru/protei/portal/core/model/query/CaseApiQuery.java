@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import ru.protei.portal.core.model.dict.En_CaseType;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Параметры фильтрации case, полученные через API
@@ -18,6 +19,8 @@ public class CaseApiQuery extends BaseQuery {
     private List<Long> managerCompanyIds;
 
     private List<Long> stateIds;
+
+    private Set<Long> productIds;
 
     @JsonIgnore
     private En_CaseType type;
@@ -68,9 +71,15 @@ public class CaseApiQuery extends BaseQuery {
     public List<Long> getManagerCompanyIds() {
         return managerCompanyIds;
     }
-
     public void setManagerCompanyIds(List<Long> managerCompanyIds) {
         this.managerCompanyIds = managerCompanyIds;
+    }
+
+    public Set<Long> getProductIds() {
+        return productIds;
+    }
+    public void setProductIds(Set<Long> productIds) {
+        this.productIds = productIds;
     }
 
     @Override
@@ -85,6 +94,7 @@ public class CaseApiQuery extends BaseQuery {
                 ", createdTo='" + createdTo + '\'' +
                 ", companyIds=" + companyIds +
                 ", managerCompanyIds=" + managerCompanyIds +
+                ", productIds=" + productIds +
                 '}';
     }
 }

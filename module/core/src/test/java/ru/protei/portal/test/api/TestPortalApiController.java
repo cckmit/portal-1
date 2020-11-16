@@ -17,18 +17,17 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
-import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoObjectMapperProvider;
 import ru.protei.portal.core.controller.api.PortalApiController;
 import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dto.CaseTagInfo;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
@@ -375,6 +374,43 @@ public class TestPortalApiController extends BaseServiceTest {
     public void getCaseListByCompanyIdEmptyResult() throws Exception {
         CaseApiQuery caseApiQuery = new CaseApiQuery();
         caseApiQuery.setCompanyIds(Collections.singletonList(companyDAO.getMaxId() + 1));
+
+        ResultActions accept = createPostResultAction("/api/cases", caseApiQuery);
+
+        accept
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data", empty()));
+    }
+
+    @Test
+    @Transactional
+    public void getCaseListByProductId() throws Exception {
+        final DevUnit devUnit = makeProduct();
+        final Company company = makeCompany(En_CompanyCategory.CUSTOMER);
+        makeCaseObject(makePerson(company), devUnit.getId(), new Date(), company.getId());
+
+        CaseApiQuery caseApiQuery = new CaseApiQuery();
+        caseApiQuery.setProductIds(Collections.singleton(devUnit.getId()));
+
+        ResultActions accept = createPostResultAction("/api/cases", caseApiQuery);
+
+        accept
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data[*]", hasSize(is(1))))
+                .andExpect(jsonPath("$.data[*].productId", everyItem(is(devUnit.getId().intValue()))));
+    }
+
+    @Test
+    @Transactional
+    public void getCaseListByProductIdEmptyResult() throws Exception {
+        final DevUnit devUnit = makeProduct();
+        final Company company = makeCompany(En_CompanyCategory.CUSTOMER);
+        makeCaseObject(makePerson(company), devUnit.getId(), new Date(), company.getId());
+
+        CaseApiQuery caseApiQuery = new CaseApiQuery();
+        caseApiQuery.setProductIds(Collections.singleton(devUnitDAO.getMaxId()  + 1));
 
         ResultActions accept = createPostResultAction("/api/cases", caseApiQuery);
 
