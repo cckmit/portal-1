@@ -12,7 +12,6 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.helper.DateRangeUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.*;
@@ -831,8 +830,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     private boolean isEmailExists(Long personId, String email) {
 
         PersonQuery query = new PersonQuery();
-        query.setCompanyIds( setOf(CrmConstants.Company.HOME_COMPANY_ID) );
-        query.setEmail( email );
+        query.setCompanyIds(setOf(CrmConstants.Company.HOME_COMPANY_ID));
+        query.setEmail(email);
         List<Person> employeeByEmail = personDAO.getPersons(query);
 
         if (CollectionUtils.isNotEmpty(employeeByEmail)){

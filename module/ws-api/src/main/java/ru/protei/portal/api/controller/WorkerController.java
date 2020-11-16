@@ -1738,7 +1738,9 @@ public class WorkerController {
             return false;
         }
 
-        List<Person> employeeByEmail = personDAO.getPersonsByEmail(email);
+        PersonQuery personQuery = new PersonQuery();
+        personQuery.setEmail(email);
+        List<Person> employeeByEmail = personDAO.getPersons(personQuery);
 
         if (CollectionUtils.isNotEmpty(employeeByEmail)){
             if (personId == null) {

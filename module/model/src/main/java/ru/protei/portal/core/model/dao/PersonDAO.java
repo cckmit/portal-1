@@ -13,7 +13,6 @@ import java.util.Map;
 
 public interface PersonDAO extends PortalBaseDAO<Person> {
 
-
     Person getEmployeeByOldId( long id);
 
     SearchResult<Person> getEmployeesSearchResult(EmployeeQuery query);
@@ -27,8 +26,6 @@ public interface PersonDAO extends PortalBaseDAO<Person> {
     SearchResult<Person> getPersonsSearchResult(PersonQuery query);
 
     List<Person> getPersons(PersonQuery query);
-
-    List<Person> getPersonsByEmail(String email);
 
     Person getCommonManagerByProductId(Long productId);
 
