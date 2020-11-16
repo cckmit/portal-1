@@ -69,7 +69,7 @@ public interface CaseService {
     })
     Result<Long> bindAttachmentToCaseNumber( AuthToken token, En_CaseType caseType, Attachment attachment, long caseNumber);
 
-    Result<Long> attachToCaseId( Attachment attachment, long caseId);
+    Result<Long> attachToCaseId( Attachment attachment, long caseId, boolean isPrivateCase);
 
     Result<Boolean> isExistsAttachments(Long caseId);
     Result<Boolean> updateExistsAttachmentsFlag( Long caseId, boolean flag);
@@ -91,7 +91,7 @@ public interface CaseService {
     Result<Set<PlanOption>> updateCasePlans(AuthToken token, Set<PlanOption> plans, Long caseId);
 
     @Privileged({En_Privilege.ISSUE_VIEW})
-    Result<Boolean> removeFavoriteState(AuthToken token, Long personId, Long issueId);
+    Result<Long> removeFavoriteState(AuthToken token, Long personId, Long issueId);
 
     @Privileged({En_Privilege.ISSUE_VIEW})
     Result<Long> addFavoriteState(AuthToken token, Long personId, Long issueId);

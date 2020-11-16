@@ -118,7 +118,7 @@ public abstract class RoomReservationEditActivity implements Activity, AbstractR
         if (id == null) {
             return;
         }
-        roomReservationController.removeReservation(id, new FluentCallback<RoomReservation>()
+        roomReservationController.removeReservation(id, new FluentCallback<Long>()
             .withSuccess(result -> {
                 onCancelClicked();
                 fireEvent(new NotifyEvents.Show(lang.roomReservationRemoved(), NotifyEvents.NotifyType.SUCCESS));

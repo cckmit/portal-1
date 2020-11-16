@@ -62,7 +62,7 @@ public class CaseStateControllerImpl implements CaseStateController {
     public CaseState saveCaseState(CaseState state) throws RequestFailedException {
         AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
         if (state.getId() == null) {
-            state = checkResultAndGetData(caseStateService.saveCaseState(authToken, state));
+            state = checkResultAndGetData(caseStateService.createCaseState(authToken, state));
         } else {
             state = checkResultAndGetData(caseStateService.updateCaseState(authToken, state));
         }

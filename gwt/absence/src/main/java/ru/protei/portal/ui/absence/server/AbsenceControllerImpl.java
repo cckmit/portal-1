@@ -65,10 +65,10 @@ public class AbsenceControllerImpl implements AbsenceController {
     }
 
     @Override
-    public Boolean removeAbsence(PersonAbsence absence) throws RequestFailedException {
+    public Long removeAbsence(PersonAbsence absence) throws RequestFailedException {
         log.info("removeAbsence(): absence={}", absence);
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
-        Result<Boolean> result = absenceService.removeAbsence(token, absence);
+        Result<Long> result = absenceService.removeAbsence(token, absence);
         log.info("removeAbsence(): result={}", result.isOk() ? "ok" : result.getStatus());
         return checkResultAndGetData(result);
     }
@@ -84,7 +84,7 @@ public class AbsenceControllerImpl implements AbsenceController {
 
     @Override
     public void createReport(String name, AbsenceQuery query) throws RequestFailedException {
-        log.info("createReport(): name={}, query={}", query);
+        log.info("createReport(): name={}, query={}", name, query);
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
         Result<Void> result = absenceService.createReport(token, name, query);
         log.info("createReport(): result={}", result.isOk() ? "ok" : result.getStatus());

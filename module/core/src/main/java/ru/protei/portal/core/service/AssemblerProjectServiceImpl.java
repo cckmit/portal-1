@@ -10,7 +10,6 @@ import ru.protei.portal.core.event.ProjectPauseTimeHasComeEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
@@ -22,13 +21,33 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 public class AssemblerProjectServiceImpl implements AssemblerProjectService {
+    private static final Logger log = LoggerFactory.getLogger(AssemblerProjectServiceImpl.class);
+
+    @Autowired
+    PersonDAO personDAO;
+    @Autowired
+    CaseObjectDAO caseObjectDAO;
+    @Autowired
+    CaseCommentDAO caseCommentDAO;
+    @Autowired
+    CaseLinkDAO caseLinkDAO;
+    @Autowired
+    ProjectDAO projectDAO;
+    @Autowired
+    AttachmentDAO attachmentDAO;
+    @Autowired
+    PortalScheduleTasks scheduledTasksService;
+
+    @Autowired
+    EventPublisherService publisherService;
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
+
     @Async(BACKGROUND_TASKS)
     @Override
     public void proceed(final AssembledProjectEvent sourceEvent) {
@@ -131,7 +150,7 @@ public class AssemblerProjectServiceImpl implements AssemblerProjectService {
             return ok(event);
         }
         log.info("fillAttachments(): CaseObjectID={} Try to fill attachments.", event.getProjectId());
-        event.setExistingAttachments(stream(attachmentDAO.getAttachmentsByCaseId(event.getProjectId())).distinct().collect(Collectors.toList()));
+        event.setExistingAttachments(attachmentDAO.getAttachmentsByCaseId(event.getProjectId()));
         log.info("fillAttachments(): CaseObjectID={} Attachments are successfully filled.", event.getProjectId());
 
         return ok(event);
@@ -143,23 +162,4 @@ public class AssemblerProjectServiceImpl implements AssemblerProjectService {
         calendar.add(Calendar.SECOND, sec);
         return calendar.getTime();
     }
-
-    @Autowired
-    PersonDAO personDAO;
-    @Autowired
-    ProjectDAO projectDAO;
-    @Autowired
-    CaseCommentDAO caseCommentDAO;
-    @Autowired
-    CaseLinkDAO caseLinkDAO;
-    @Autowired
-    AttachmentDAO attachmentDAO;
-    @Autowired
-    PortalScheduleTasks scheduledTasksService;
-    @Autowired
-    EventPublisherService publisherService;
-    @Autowired
-    JdbcManyRelationsHelper jdbcManyRelationsHelper;
-
-    private static final Logger log = LoggerFactory.getLogger(AssemblerProjectServiceImpl.class);
 }

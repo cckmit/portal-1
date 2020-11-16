@@ -17,6 +17,12 @@ public class EducationWallet implements Serializable {
     @JdbcColumn(name="coins")
     private Integer coins;
 
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "dep_id", remoteColumn = "id", table = "company_dep"),
+            @JdbcJoinPath(localColumn = "company_id", remoteColumn = "id", table = "company"),
+    }, mappedColumn = "cname")
+    private String companyName;
+
     @JdbcJoinedColumn(localColumn = "dep_id", table = "company_dep", remoteColumn = "id", mappedColumn = "dep_name")
     private String departmentName;
 
@@ -49,6 +55,10 @@ public class EducationWallet implements Serializable {
         this.coins = coins;
     }
 
+    public String getCompanyName() {
+        return companyName;
+    }
+
     public String getDepartmentName() {
         return departmentName;
     }
@@ -67,6 +77,7 @@ public class EducationWallet implements Serializable {
                 "id=" + id +
                 ", departmentId=" + departmentId +
                 ", coins=" + coins +
+                ", companyName='" + companyName + '\'' +
                 ", departmentName='" + departmentName + '\'' +
                 ", educationEntryList=" + educationEntryList +
                 '}';

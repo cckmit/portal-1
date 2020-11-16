@@ -11,7 +11,6 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -27,6 +26,9 @@ import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 
 import java.util.Set;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
+
 /**
  * Представление создания и редактирования учетной записи
  */
@@ -35,6 +37,7 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        person.setAsyncPersonModel( personModel );
     }
 
     @Override
@@ -115,15 +118,15 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
 
     @Override
     public void setCompaniesForInitiator(Set<Long> companyIds) {
-        person.updateCompanies(companyIds);
+        personModel.updateCompanies( person, companyIds );
     }
 
     @UiHandler( "company" )
     public void onChangeCompany( ValueChangeEvent< EntityOption > event ) {
-        Company company = Company.fromEntityOption( event.getValue() );
+        Long companyId = event.getValue() == null ? null : event.getValue().getId();
 
-        person.setEnabled( company != null );
-        setCompaniesForInitiator(PersonModel.makeCompanyIds(company));
+        person.setEnabled( companyId != null );
+        setCompaniesForInitiator( companyId == null ? null : setOf( companyId ) );
         person.setValue( null );
     }
 
@@ -182,6 +185,8 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
     Button cancelButton;
     @UiField
     CheckBox sendWelcomeEmail;
+    @Inject
+    PersonModel personModel;
 
     Timer timer = new Timer() {
         @Override

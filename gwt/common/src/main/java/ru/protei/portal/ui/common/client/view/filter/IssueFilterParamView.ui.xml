@@ -48,7 +48,7 @@
         <div class="row">
             <person:PersonMultiSelector ui:field="creators"
                                         header="{lang.issueCreator}"
-                                        addStyleNames="form-group col-md-4 resize-md-12"/>
+                                        addStyleNames="form-group col-md-4 resize-md-12 3"/>
 
             <productselector:devunit.DevUnitMultiSelector ui:field="products"
                                                           header="{lang.issueProduct}"
@@ -62,7 +62,7 @@
             <person:PersonMultiSelector ui:field="initiators"
                                         header="{lang.issueInitiator}"
                                         selectCompanyMessage="{lang.initiatorSelectACompany}"
-                                        addStyleNames="form-group col-md-4 resize-md-12"/>
+                                        addStyleNames="form-group col-md-4 resize-md-12 1"/>
 
             <companyselector:CompanyMultiSelector ui:field="managerCompanies"
                                                   header="{lang.issueManagerCompany}"
@@ -71,7 +71,7 @@
             <person:PersonMultiSelector ui:field="managers"
                                         header="{lang.issueManager}"
                                         selectCompanyMessage="{lang.managerSelectACompany}"
-                                        addStyleNames="form-group col-md-4 resize-md-12"
+                                        addStyleNames="form-group col-md-4 resize-md-12 2"
                                         hasNullValue="true"/>
 
             <person:EmployeeMultiSelector ui:field="commentAuthors"

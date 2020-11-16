@@ -195,6 +195,11 @@ public class MailNotificationProcessor {
         return baseUrl + config.data().getMailNotificationConfig().getCrmCaseUrl();
     }
 
+    private String getCrmProjectUrl() {
+        String baseUrl = config.data().getMailNotificationConfig().getCrmUrlExternal();
+        return baseUrl + config.data().getMailNotificationConfig().getCrmProjectUrl();
+    }
+
     private boolean isPrivateNotification(AssembledCaseEvent event) {
         return event.getCaseObject().isPrivateCase()
                 || isPrivateSend(event)
@@ -259,7 +264,7 @@ public class MailNotificationProcessor {
                 MimeMessage mimeMessage = messageFactory.createMailMessage(headers.getMessageId(), headers.getInReplyTo(), headers.getReferences());
                 MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, config.data().smtp().getDefaultCharset());
                 helper.setSubject(subject);
-                helper.setFrom(getFromAddress());
+                helper.setFrom(getFromCrmAddress());
                 helper.setText(HelperFunc.nvlt(body, ""), true);
                 helper.setTo(entry.getAddress());
                 log.info("Send message to {} with headers {}", entry.getAddress(), headers );
@@ -350,7 +355,7 @@ public class MailNotificationProcessor {
 
             String subject = subjectTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), false);
 
-            sendMail(notificationEntry.getAddress(), subject, body);
+            sendMail(notificationEntry.getAddress(), subject, body, getFromCrmAddress());
         } catch (Exception e) {
             log.error("Failed to make MimeMessage", e);
         }
@@ -389,7 +394,7 @@ public class MailNotificationProcessor {
             return;
         }
 
-        sendMailToRecipients(notifiers, bodyTemplate, subjectTemplate, true);
+        sendMailToRecipients(notifiers, bodyTemplate, subjectTemplate, true, getFromPortalAddress());
     }
 
     @EventListener
@@ -403,7 +408,7 @@ public class MailNotificationProcessor {
                     event.getPerson().getDisplayName()
             );
 
-            sendMail( new PlainContactInfoFacade( event.getPerson().getContactInfo() ).getEmail(), subject, body );
+            sendMail( new PlainContactInfoFacade( event.getPerson().getContactInfo() ).getEmail(), subject, body, getFromPortalAddress() );
         } catch (Exception e) {
             log.warn( "Failed to sent employee feedback notification: {}", event.getPerson().getDisplayName(), e );
         }
@@ -420,7 +425,7 @@ public class MailNotificationProcessor {
                     event.getPerson().getDisplayName()
             );
 
-            sendMail( new PlainContactInfoFacade( event.getPerson().getContactInfo() ).getEmail(), subject, body );
+            sendMail( new PlainContactInfoFacade( event.getPerson().getContactInfo() ).getEmail(), subject, body, getFromPortalAddress() );
         } catch (Exception e) {
             log.warn( "Failed to sent development agenda notification: {}", event.getPerson().getDisplayName(), e );
         }
@@ -442,7 +447,7 @@ public class MailNotificationProcessor {
             String subject = templateService.getEmployeeRegistrationProbationHeadOfDepartmentEmailNotificationSubject(
                     employeeFullName );
 
-            sendMail( new PlainContactInfoFacade( headOfDepartment.getContactInfo() ).getEmail(), subject, body );
+            sendMail( new PlainContactInfoFacade( headOfDepartment.getContactInfo() ).getEmail(), subject, body, getFromPortalAddress() );
 
         } catch (Exception e) {
             log.warn( "Failed to sent employee probation notification: employeeId={}", employeeId, e );
@@ -465,7 +470,7 @@ public class MailNotificationProcessor {
             String subject = templateService.getEmployeeRegistrationProbationCuratorsEmailNotificationSubject(
                     employeeFullName );
 
-            sendMail( new PlainContactInfoFacade( curator.getContactInfo() ).getEmail(), subject, body );
+            sendMail( new PlainContactInfoFacade( curator.getContactInfo() ).getEmail(), subject, body, getFromPortalAddress() );
 
         } catch (Exception e) {
             log.warn( "Failed to sent employee probation (for curator) notification: employeeId={}", employeeId, e );
@@ -489,7 +494,7 @@ public class MailNotificationProcessor {
                     event.getPauseDate()
             );
 
-            sendMail( new PlainContactInfoFacade( event.getSubscriber().getContactInfo() ).getEmail(), subject, body );
+            sendMail( new PlainContactInfoFacade( event.getSubscriber().getContactInfo() ).getEmail(), subject, body, getFromPortalAddress() );
         } catch (Exception e) {
             log.warn( "Failed to sent PauseTime notification: {}", event, e );
         }
@@ -559,7 +564,7 @@ public class MailNotificationProcessor {
             return;
         }
 
-        sendMailToRecipients(notifiers, bodyTemplate, subjectTemplate, true);
+        sendMailToRecipients(notifiers, bodyTemplate, subjectTemplate, true, getFromPortalAddress());
     }
 
     // -----------------------
@@ -601,7 +606,7 @@ public class MailNotificationProcessor {
             return;
         }
 
-        sendMailToRecipients(recipients, bodyTemplate, subjectTemplate, true);
+        sendMailToRecipients(recipients, bodyTemplate, subjectTemplate, true, getFromPortalAddress());
     }
 
     @EventListener
@@ -635,7 +640,7 @@ public class MailNotificationProcessor {
             return;
         }
 
-        sendMailToRecipients(recipients, bodyTemplate, subjectTemplate, true);
+        sendMailToRecipients(recipients, bodyTemplate, subjectTemplate, true, getFromPortalAddress());
     }
 
     @EventListener
@@ -669,12 +674,13 @@ public class MailNotificationProcessor {
                     bodyTemplate, subjectTemplate,
                     true,
                     event.getContent(),
-                    filename
+                    filename,
+                    getFromPortalAddress()
             );
         } else {
             sendMailToRecipients(Collections.singletonList(fetchNotificationEntryFromPerson(report.getCreator())),
                     bodyTemplate, subjectTemplate,
-                    true);
+                    true, getFromPortalAddress());
         }
     }
 
@@ -722,7 +728,7 @@ public class MailNotificationProcessor {
             return;
         }
 
-        sendMailToRecipients(recipients, bodyTemplate, subjectTemplate, true);
+        sendMailToRecipients(recipients, bodyTemplate, subjectTemplate, true, getFromPortalAddress());
     }
 
     // -----------------------
@@ -756,7 +762,7 @@ public class MailNotificationProcessor {
             return;
         }
 
-        sendMailToRecipients(notificationEntries, bodyTemplate, subjectTemplate, true);
+        sendMailToRecipients(notificationEntries, bodyTemplate, subjectTemplate, true, getFromPortalAddress());
     }
 
     // -----------------------------
@@ -790,7 +796,7 @@ public class MailNotificationProcessor {
             return;
         }
 
-        sendMailToRecipients(notifiers, bodyTemplate, subjectTemplate, true);
+        sendMailToRecipients(notifiers, bodyTemplate, subjectTemplate, true, getFromPortalAddress());
     }
 
     @EventListener
@@ -818,7 +824,7 @@ public class MailNotificationProcessor {
             return;
         }
 
-        sendMailToRecipients(notifiers, bodyTemplate, subjectTemplate, true);
+        sendMailToRecipients(notifiers, bodyTemplate, subjectTemplate, true, getFromPortalAddress());
     }
 
     @EventListener
@@ -848,7 +854,7 @@ public class MailNotificationProcessor {
             return;
         }
 
-        sendMailToRecipients(notifiers, bodyTemplate, subjectTemplate, true);
+        sendMailToRecipients(notifiers, bodyTemplate, subjectTemplate, true, getFromPortalAddress());
     }
 
     @EventListener
@@ -867,7 +873,7 @@ public class MailNotificationProcessor {
             return;
         }
 
-        sendMailToRecipients(Collections.singletonList(notifier), bodyTemplate, subjectTemplate, true);
+        sendMailToRecipients(Collections.singletonList(notifier), bodyTemplate, subjectTemplate, true, getFromCrmAddress());
     }
 
 
@@ -905,7 +911,7 @@ public class MailNotificationProcessor {
             try {
                 String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), true);
                 String subject = subjectTemplate.getText(entry.getAddress(), entry.getLangCode(), true);
-                sendMail(entry.getAddress(), subject, body, getFromAddressAbsence());
+                sendMail(entry.getAddress(), subject, body, getFromPortalAddress());
             } catch (Exception e) {
                 log.error("Failed to make MimeMessage", e);
             }
@@ -925,9 +931,48 @@ public class MailNotificationProcessor {
 
         NotificationEntry notificationEntry = fetchNotificationEntryFromPerson(initiator);
 
+        PreparedTemplate bodyTemplate = templateService.getReportBody(title, event.getCreationDate(),
+                initiator.getDisplayShortName(), Arrays.asList(notificationEntry.getAddress()));
+
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for absence report notification");
+            return;
+        }
+
         try {
             String subject = subjectTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), true);
-            sendMailWithAttachment(notificationEntry.getAddress(), subject, null, getFromAddressAbsence(), title + ".xlsx", event.getContent());
+            String body = bodyTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), true);
+            sendMailWithAttachment(notificationEntry.getAddress(), subject, body, getFromAbsenceAddress(), title + ".xlsx", event.getContent());
+        } catch (Exception e) {
+            log.error("Failed to make MimeMessage", e);
+        }
+    }
+
+    @EventListener
+    public void onDutyLogReportEvent(DutyLogReportEvent event) {
+        Person initiator = event.getInitiator();
+        String title = event.getTitle();
+
+        PreparedTemplate subjectTemplate = templateService.getDutyLogReportSubject(event.getTitle());
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for duty log report initiator={}", initiator);
+            return;
+        }
+
+        NotificationEntry notificationEntry = fetchNotificationEntryFromPerson(initiator);
+
+        PreparedTemplate bodyTemplate = templateService.getReportBody(title, event.getCreationDate(),
+                initiator.getDisplayShortName(), Arrays.asList(notificationEntry.getAddress()));
+
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for duty log report notification");
+            return;
+        }
+
+        try {
+            String subject = subjectTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), true);
+            String body = bodyTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), true);
+            sendMailWithAttachment(notificationEntry.getAddress(), subject, body, getFromPortalAddress(), title + ".xlsx", event.getContent());
         } catch (Exception e) {
             log.error("Failed to make MimeMessage", e);
         }
@@ -960,7 +1005,7 @@ public class MailNotificationProcessor {
             return;
         }
 
-        sendMailToRecipients(event.getNotifiers(), bodyTemplate, subjectTemplate, true);
+        sendMailToRecipients(event.getNotifiers(), bodyTemplate, subjectTemplate, true, getFromPortalAddress());
     }
 
     @EventListener
@@ -990,12 +1035,41 @@ public class MailNotificationProcessor {
                 String body = bodyTemplate.getText(adminEmail, null, false);
                 String subject = subjectTemplate.getText(adminEmail, null, false);
 
-                sendMail(adminEmail, subject, body);
+                sendMail(adminEmail, subject, body, getFromPortalAddress());
             } catch (Exception e) {
                 log.error("Failed to make MimeMessage mail={}, e={}", adminEmail, e);
             }
         });
+    }
 
+    @EventListener
+    public void onExpiringTechnicalSupportValidityNotificationEvent(ExpiringProjectTSVNotificationEvent event) {
+        log.info("onExpiringTechnicalSupportValidityNotificationEvent(): {}", event);
+
+        PreparedTemplate subjectTemplate = templateService.getExpiringTechnicalSupportValidityNotificationSubject();
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for ExpiringTechnicalSupportValidityNotificationEvent notification");
+            return;
+        }
+
+        final NotificationEntry notificationEntry = fetchNotificationEntryFromPerson(event.getHeadManager());
+
+        PreparedTemplate bodyTemplate = templateService.getExpiringTechnicalSupportValidityNotificationBody( event,
+                Collections.singletonList(notificationEntry.getAddress()), getCrmProjectUrl());
+
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for release ExpiringTechnicalSupportValidityNotificationEvent notification");
+            return;
+        }
+
+        try {
+            String body = bodyTemplate.getText(notificationEntry.getAddress(), null, false);
+            String subject = subjectTemplate.getText(notificationEntry.getAddress(), null, false);
+
+            sendMail(notificationEntry.getAddress(), subject, body, getFromPortalAddress());
+        } catch (Exception e) {
+            log.error("Failed to make MimeMessage mail={}, e={}", notificationEntry.getAddress(), e);
+        }
     }
 
     // -----
@@ -1012,12 +1086,13 @@ public class MailNotificationProcessor {
                 .collect(Collectors.toList());
     }
 
-    private void sendMailToRecipients(Collection<NotificationEntry> recipients, PreparedTemplate bodyTemplate, PreparedTemplate subjectTemplate, boolean isShowPrivacy) {
+    private void sendMailToRecipients(Collection<NotificationEntry> recipients, PreparedTemplate bodyTemplate,
+                                      PreparedTemplate subjectTemplate, boolean isShowPrivacy, String from) {
         recipients.forEach(entry -> {
             try {
                 String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), isShowPrivacy);
                 String subject = subjectTemplate.getText(entry.getAddress(), entry.getLangCode(), isShowPrivacy);
-                sendMail(entry.getAddress(), subject, body);
+                sendMail(entry.getAddress(), subject, body, from);
             } catch (Exception e) {
                 log.error("Failed to make MimeMessage", e);
             }
@@ -1026,18 +1101,14 @@ public class MailNotificationProcessor {
 
     private void sendMailToRecipientWithAttachment(NotificationEntry recipients, PreparedTemplate bodyTemplate,
                                                    PreparedTemplate subjectTemplate, boolean isShowPrivacy,
-                                                   InputStream content, String filename) {
+                                                   InputStream content, String filename, String from) {
             try {
                 String body = bodyTemplate.getText(recipients.getAddress(), recipients.getLangCode(), isShowPrivacy);
                 String subject = subjectTemplate.getText(recipients.getAddress(), recipients.getLangCode(), isShowPrivacy);
-                sendMailWithAttachment(recipients.getAddress(), subject, body, getFromAddress(), filename, content);
+                sendMailWithAttachment(recipients.getAddress(), subject, body, from, filename, content);
             } catch (Exception e) {
                 log.error("Failed to make MimeMessage", e);
             }
-    }
-
-    private void sendMail(String address, String subject, String body) throws MessagingException {
-        sendMail(address, subject, body, getFromAddress());
     }
 
     private void sendMail(String address, String subject, String body, String from) throws MessagingException {
@@ -1067,12 +1138,16 @@ public class MailNotificationProcessor {
         return !isProteiRecipient(entry);
     }
 
-    private String getFromAddress() {
-        return config.data().smtp().getFromAddressAlias() + " <" + config.data().smtp().getFromAddress() + ">";
+    private String getFromCrmAddress() {
+        return config.data().smtp().getFromAddressCrmAlias() + " <" + config.data().smtp().getFromAddressCrm() + ">";
     }
 
-    private String getFromAddressAbsence() {
-        return config.data().smtp().getFromAddressAlias() + " <" + config.data().smtp().getFromAddressAbsence() + ">";
+    private String getFromPortalAddress() {
+        return config.data().smtp().getFromAddressPortalAlias() + " <" + config.data().smtp().getFromAddressPortal() + ">";
+    }
+
+    private String getFromAbsenceAddress() {
+        return config.data().smtp().getFromAddressAbsenceAlias() + " <" + config.data().smtp().getFromAddressAbsence() + ">";
     }
 
     private List<String> getNotifiersAddresses(Collection<NotificationEntry> notifiers) {

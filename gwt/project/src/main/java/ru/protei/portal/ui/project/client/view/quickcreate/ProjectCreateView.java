@@ -127,17 +127,6 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
         headManagers.setAsyncPersonModel(model);
     }
 
-    @Override
-    public void setCompaniesSupplier(Supplier<Set<EntityOption>> companiesSupplier) {
-        headManagers.setCompaniesSupplier(companiesSupplier);
-        headManagers.updateCompanies();
-    }
-
-//    @Override
-//    public void refreshProducts() {
-//        product.refreshOptions();
-//    }
-
     @UiHandler("saveBtn")
     public void onSaveClicked(ClickEvent event)
     {

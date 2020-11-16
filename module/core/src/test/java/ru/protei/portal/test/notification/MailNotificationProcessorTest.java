@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.config.*;
@@ -15,9 +16,7 @@ import ru.protei.portal.core.mail.VirtualMailSendChannel;
 import ru.protei.portal.core.model.dao.CompanySubscriptionDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.service.CaseCommentService;
-import ru.protei.portal.core.service.CaseService;
-import ru.protei.portal.core.service.CompanyService;
+import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.events.CaseSubscriptionService;
 import ru.protei.portal.core.service.events.EventAssemblerService;
 import ru.protei.portal.test.service.BaseServiceTest;
@@ -27,6 +26,8 @@ import javax.mail.internet.MimeMessage;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static ru.protei.portal.core.model.ent.CaseObject.Columns.CASE_NAME;
+import static ru.protei.portal.core.model.ent.CaseObject.Columns.INFO;
 import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
 import static ru.protei.portal.core.model.util.CrmConstants.Time.SEC;
 
@@ -40,8 +41,18 @@ import static ru.protei.portal.core.model.util.CrmConstants.Time.SEC;
         ServiceTestsConfiguration.class,
         TestEventConfiguration.class,
         NotificationConfiguration.class, TestNotificationConfiguration.class
+        , MailNotificationProcessorTest.LocalConfiguration.class
+
 })
 public class MailNotificationProcessorTest extends BaseServiceTest {
+
+    public static class LocalConfiguration {
+        @Bean
+        public AssemblerService getAssemblerService() {
+            return new AssemblerServiceImpl();
+        }
+
+    }
 
     @Autowired
     CaseService caseService;
@@ -113,6 +124,7 @@ public class MailNotificationProcessorTest extends BaseServiceTest {
 
         when( caseObjectDAO.insertCase( object ) ).thenReturn( CASE_ID );
         when( caseObjectDAO.get( CASE_ID ) ).thenReturn( object );
+        when( caseObjectDAO.partialGet( CASE_ID, CASE_NAME, INFO ) ).thenReturn( object );
         when( caseObjectMetaDAO.get( CASE_ID ) ).thenReturn( meta );
         when( caseObjectMetaNotifiersDAO.get( CASE_ID ) ).thenReturn( metaNotifiers );
         when( personDAO.getPersons( any() ) ).thenReturn( listOf( initiator ) );

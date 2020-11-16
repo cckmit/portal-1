@@ -2,7 +2,9 @@ package ru.protei.portal.ui.common.shared.model;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -17,6 +19,7 @@ public class FluentCallback<T> implements MessageOnError<T>, HandleOnError<T>
     private String errorMessage = null;
     private NotifyEvents.NotifyType notifyType = NotifyEvents.NotifyType.ERROR;
     private Consumer<Throwable> errorHandler = null;
+    private CustomConsumer customErrorHandler = null;
     private Consumer<T> successHandler = null;
     private long marker;
     private BiConsumer<Long, T> markedSuccessHandler = null;
@@ -47,6 +50,12 @@ public class FluentCallback<T> implements MessageOnError<T>, HandleOnError<T>
     }
 
     @Override
+    public HandleOnError<T> withError(CustomConsumer errorHandler) {
+        this.customErrorHandler = errorHandler;
+        return this;
+    }
+
+    @Override
     public AsyncCallback<T> withSuccess(Consumer<T> successHandler) {
         this.successHandler = successHandler;
         return this;
@@ -57,6 +66,11 @@ public class FluentCallback<T> implements MessageOnError<T>, HandleOnError<T>
 
         if (errorHandler != null) {
             errorHandler.accept(throwable);
+            return;
+        }
+
+        if (customErrorHandler != null) {
+            customErrorHandler.accept(throwable, defaultErrorHandler, getStatus(throwable));
             return;
         }
 
@@ -79,6 +93,14 @@ public class FluentCallback<T> implements MessageOnError<T>, HandleOnError<T>
         if (successHandler != null) {
             successHandler.accept(result);
         }
+    }
+
+    private En_ResultStatus getStatus(Throwable throwable) {
+        if (!(throwable instanceof RequestFailedException)) {
+            return null;
+        }
+
+        return ((RequestFailedException) throwable).status;
     }
 
     @Inject

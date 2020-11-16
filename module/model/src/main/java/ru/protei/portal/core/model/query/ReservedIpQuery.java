@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.query;
 
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.struct.DateRange;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,9 +25,7 @@ public class ReservedIpQuery extends BaseQuery {
 
     private Date releasedTo;
 
-    private Date lastActiveFrom;
-
-    private Date lastActiveTo;
+    private DateRange nonActiveRange;
 
     private Boolean allowForReserve;
 
@@ -42,7 +41,7 @@ public class ReservedIpQuery extends BaseQuery {
 
     public ReservedIpQuery(Date reservedFrom, Date reservedTo,
                            Date releasedFrom, Date releasedTo,
-                           Date activeFrom, Date activeTo,
+                           DateRange nonActiveRange,
                            List<Long> ownerIds, List<Long> subnetIds,
                            String searchString,
                            En_SortField sortField, En_SortDir sortDir) {
@@ -51,8 +50,7 @@ public class ReservedIpQuery extends BaseQuery {
         this.reservedTo = reservedTo;
         this.releasedFrom = releasedFrom;
         this.releasedTo = releasedTo;
-        this.lastActiveFrom = activeFrom;
-        this.lastActiveTo = activeTo;
+        this.nonActiveRange = nonActiveRange;
         this.ownerIds = ownerIds;
         this.subnetIds = subnetIds;
     }
@@ -89,18 +87,12 @@ public class ReservedIpQuery extends BaseQuery {
         this.releasedTo = releasedTo;
     }
 
-    public Date getLastActiveFrom() {
-        return lastActiveFrom;
+    public DateRange getNonActiveRange() {
+        return nonActiveRange;
     }
 
-    public void setLastActiveFrom(Date lastActiveFrom) {
-        this.lastActiveFrom = lastActiveFrom;
-    }
-
-    public Date getLastActiveTo() { return lastActiveTo; }
-
-    public void setLastActiveTo(Date lastActiveTo) {
-        this.lastActiveTo = lastActiveTo;
+    public void setNonActiveRange(DateRange nonActiveRange) {
+        this.nonActiveRange = nonActiveRange;
     }
 
     public List<Long> getOwnerIds() { return ownerIds; }
@@ -151,8 +143,7 @@ public class ReservedIpQuery extends BaseQuery {
                 ", reservedTo=" + reservedTo +
                 ", releasedFrom=" + releasedFrom +
                 ", releasedTo=" + releasedTo +
-                ", lastActiveFrom=" + lastActiveFrom +
-                ", lastActiveTo=" + lastActiveTo +
+                ", nonActiveRange=" + nonActiveRange +
                 ", allowForReserve=" + allowForReserve +
                 '}';
     }

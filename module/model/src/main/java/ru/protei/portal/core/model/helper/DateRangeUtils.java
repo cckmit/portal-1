@@ -14,6 +14,14 @@ public class DateRangeUtils {
         return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
 
+    public static Interval makeIntervalWithOffset(LocalDate now, int dayOffset) {
+        Interval interval = new Interval();
+        LocalDate local = now.plusDays(dayOffset);
+        interval.from = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        interval.to = Date.from(local.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
+        return interval;
+    }
+
     public static Interval makeToday() {
         Interval interval = new Interval();
         LocalDate local = LocalDate.now();
@@ -78,6 +86,14 @@ public class DateRangeUtils {
         return interval;
     }
 
+    public static Interval makePreviousAndThisMonth() {
+        Interval interval = new Interval();
+        LocalDate local = LocalDate.now().minusDays(LocalDate.now().getDayOfMonth()-1);
+        interval.from = Date.from(local.minusMonths(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
+        interval.to = Date.from(local.plusMonths(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
+        return interval;
+    }
+
     public static Interval makeNextMonth() {
         Interval interval = new Interval();
         LocalDate local = LocalDate.now().plusDays(LocalDate.now().lengthOfMonth()+1 - LocalDate.now().getDayOfMonth());
@@ -102,6 +118,38 @@ public class DateRangeUtils {
         return interval;
     }
 
+    public static Interval makeRelativeLastMonth() {
+        Interval interval = new Interval();
+        LocalDate local = LocalDate.now();
+        interval.from = Date.from(local.minusMonths(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
+        interval.to = null;
+        return interval;
+    }
+
+    public static Interval makeRelativeLastThreeMonths() {
+        Interval interval = new Interval();
+        LocalDate local = LocalDate.now();
+        interval.from = Date.from(local.minusMonths(3).atStartOfDay(ZoneId.systemDefault()).toInstant());
+        interval.to = null;
+        return interval;
+    }
+
+    public static Interval makeRelativeLastHalfYear() {
+        Interval interval = new Interval();
+        LocalDate local = LocalDate.now();
+        interval.from = Date.from(local.minusMonths(6).atStartOfDay(ZoneId.systemDefault()).toInstant());
+        interval.to = null;
+        return interval;
+    }
+
+    public static Interval makeRelativeLastYear() {
+        Interval interval = new Interval();
+        LocalDate local = LocalDate.now();
+        interval.from = Date.from(local.minusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
+        interval.to = null;
+        return interval;
+    }
+
     public static Interval makeInterval(DateRange dateRange ) {
         if ( dateRange == null )
             return null;
@@ -111,14 +159,19 @@ public class DateRangeUtils {
             case TODAY      : return makeToday();
             case YESTERDAY  : return makeYesterday();
             case THIS_WEEK  : return makeThisWeek();
-            case THIS_WEEK_AND_BEYOND : return makeThisWeekAndBeyond();
             case LAST_WEEK  : return makeLastWeek();
             case NEXT_WEEK  : return makeNextWeek();
             case THIS_MONTH : return makeThisMonth();
             case LAST_MONTH : return makeLastMonth();
+            case PREVIOUS_AND_THIS_MONTH: return makePreviousAndThisMonth();
             case NEXT_MONTH : return makeNextMonth();
             case THIS_YEAR  : return makeThisYear();
             case LAST_YEAR  : return makeLastYear();
+            case THIS_WEEK_AND_BEYOND       : return makeThisWeekAndBeyond();
+            case RELATIVE_LAST_MONTH        : return makeRelativeLastMonth();
+            case RELATIVE_LAST_THREE_MONTHS : return makeRelativeLastThreeMonths();
+            case RELATIVE_LAST_HALF_YEAR    : return makeRelativeLastHalfYear();
+            case RELATIVE_LAST_YEAR         : return makeRelativeLastYear();
         }
 
         return null;

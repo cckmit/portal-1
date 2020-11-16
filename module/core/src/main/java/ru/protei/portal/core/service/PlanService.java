@@ -43,7 +43,7 @@ public interface PlanService {
 
     @Privileged(En_Privilege.PLAN_EDIT)
     @Auditable(En_AuditType.PLAN_MODIFY)
-    Result<Boolean> removeIssueFromPlan(AuthToken token, Long planId, Long issueId);
+    Result<Long> removeIssueFromPlan(AuthToken token, Long planId, Long issueId);
 
     @Privileged(En_Privilege.PLAN_EDIT)
     @Auditable(En_AuditType.PLAN_MODIFY)
@@ -55,6 +55,6 @@ public interface PlanService {
 
     @Privileged(En_Privilege.PLAN_REMOVE)
     @Auditable(En_AuditType.PLAN_REMOVE)
-    Result<Boolean> removePlan(AuthToken token, Long planId);
+    Result<Long> removePlan(AuthToken token, Long planId);
 
 }

@@ -309,9 +309,14 @@ public enum En_ResultStatus {
     NRPE_ERROR,
 
     /**
-     *  Недостаточно свободных IP адресов
+     *  NRPE. Недостаточно свободных IP адресов
      */
     NRPE_NO_FREE_IPS,
+
+    /**
+     *  NRPE. Сервис не настроен
+     */
+    NRPE_NOT_CONFIGURED,
 
     /**
      * Пользователь не найдем

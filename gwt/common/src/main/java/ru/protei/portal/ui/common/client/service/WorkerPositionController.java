@@ -14,7 +14,7 @@ import java.util.List;
 public interface WorkerPositionController extends RemoteService {
 
     List<WorkerPosition> getWorkerPositions(Long companyId) throws RequestFailedException;
-    
+
     Long removeWorkerPosition(WorkerPosition workerPosition) throws RequestFailedException;
 
     Long createWorkerPosition (WorkerPosition workerPosition) throws RequestFailedException;

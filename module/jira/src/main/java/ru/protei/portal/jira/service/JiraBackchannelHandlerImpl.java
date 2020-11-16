@@ -24,15 +24,33 @@ import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.jira.utils.CustomJiraIssueParser;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.utils.JiraUtils.getTextWithReplacedImagesToJira;
 
 public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
 
+    private static final Logger logger = LoggerFactory.getLogger(JiraBackchannelHandlerImpl.class);
+
     @Autowired
     JiraClientFactory clientFactory;
     @Autowired
     FileStorage fileStorage;
+
+    @Autowired
+    private JiraEndpointDAO endpointDAO;
+
+    @Autowired
+    private JiraPriorityMapEntryDAO priorityMapEntryDAO;
+
+    @Autowired
+    private JiraStatusMapEntryDAO statusMapEntryDAO;
+
+    @Autowired
+    private ExternalCaseAppDAO externalCaseAppDAO;
+
+    @Autowired
+    private PortalConfig portalConfig;
 
     @Override
     public void handle(AssembledCaseEvent event) {
@@ -54,8 +72,8 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
             return;
         }
 
-        if (object.isPrivateCase()) {
-            logger.debug("case object {} is private, skip", object.defGUID());
+        if (isPrivate(event)) {
+            logger.debug("case object {} is private change, skip", object.defGUID());
             return;
         }
 
@@ -92,7 +110,10 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
             }
 
             if (event.getAddedAttachments() != null) {
-                issueClient.addAttachments(issue.getAttachmentsUri(), buildAttachmentsArray(event.getAddedAttachments())).claim();
+                final List<Attachment> publicAttachments = event.getAddedAttachments().stream().filter(a -> !a.isPrivate()).collect(Collectors.toList());
+                if (!publicAttachments.isEmpty()) {
+                    issueClient.addAttachments(issue.getAttachmentsUri(), buildAttachmentsArray(publicAttachments)).claim();
+                }
             }
 
             if (event.isCommentAttached()) {
@@ -171,21 +192,36 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
         return event.isCaseStateChanged() || event.isCaseImportanceChanged();
     }
 
+    private boolean isPrivate(AssembledCaseEvent event) {
+        return event.getCaseObject().isPrivateCase()
+                || isPrivateSend(event);
+    }
 
-    @Autowired
-    private JiraEndpointDAO endpointDAO;
+    private boolean isPrivateSend(AssembledCaseEvent assembledCaseEvent) {
+        if (assembledCaseEvent.isCreateEvent()) {
+            return false;
+        }
 
-    @Autowired
-    private JiraPriorityMapEntryDAO priorityMapEntryDAO;
+        if (isPublicChangesExist(assembledCaseEvent)) {
+            return false;
+        }
 
-    @Autowired
-    private JiraStatusMapEntryDAO statusMapEntryDAO;
+        return true;
+    }
 
-    @Autowired
-    private ExternalCaseAppDAO externalCaseAppDAO;
-
-    @Autowired
-    private PortalConfig portalConfig;
-
-    private static final Logger logger = LoggerFactory.getLogger(JiraBackchannelHandlerImpl.class);
+    private boolean isPublicChangesExist(AssembledCaseEvent assembledCaseEvent) {
+        return  assembledCaseEvent.isPublicCommentsChanged()
+                || assembledCaseEvent.isPublicAttachmentsChanged()
+                || assembledCaseEvent.isCaseImportanceChanged()
+                || assembledCaseEvent.isCaseStateChanged()
+                || assembledCaseEvent.isPauseDateChanged()
+                || assembledCaseEvent.isInitiatorChanged()
+                || assembledCaseEvent.isInitiatorCompanyChanged()
+                || assembledCaseEvent.isManagerCompanyChanged()
+                || assembledCaseEvent.isManagerChanged()
+                || assembledCaseEvent.getName().hasDifferences()
+                || assembledCaseEvent.getInfo().hasDifferences()
+                || assembledCaseEvent.isProductChanged()
+                || assembledCaseEvent.isPublicLinksChanged();
+    }
 }

@@ -7,6 +7,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.*;
@@ -21,6 +22,8 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IpReservationControllerAsync;
+import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
+import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedSelectorRangePicker;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.ipreservation.client.activity.reservedip.filter.AbstractReservedIpFilterActivity;
@@ -84,6 +87,13 @@ public abstract class ReservedIpTableActivity
     }
 
     @Event
+    public void onUpdate(IpReservationEvents.Update event) {
+        if (view.asWidget().isAttached()) {
+            loadTable();
+        }
+    }
+
+    @Event
     public void onCloseEdit(IpReservationEvents.CloseEdit event) {
         animation.closeDetails();
     }
@@ -136,12 +146,12 @@ public abstract class ReservedIpTableActivity
     @Override
     public void onRefreshClicked(ReservedIp value) {
         if (value != null && policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_VIEW)) {
-            refreshAction(value);
+            refreshIpOnlineStatus(value);
         }
     }
 
     private Runnable onConfirmRemoveClicked(ReservedIp value) {
-        return () -> ipReservationService.removeReservedIp(value, new FluentCallback<Long>()
+        return () -> ipReservationController.removeReservedIp(value, new FluentCallback<Long>()
                 .withError(throwable -> showError(lang.reservedIpUnableToRemove()))
                 .withSuccess(result -> {
                     fireEvent(new NotifyEvents.Show(lang.reservedIpIpReleased(), NotifyEvents.NotifyType.SUCCESS));
@@ -157,7 +167,7 @@ public abstract class ReservedIpTableActivity
         query.setOffset(offset);
         query.setLimit(limit);
 
-        ipReservationService.getReservedIpList(query, new FluentCallback<SearchResult<ReservedIp>>()
+        ipReservationController.getReservedIpList(query, new FluentCallback<SearchResult<ReservedIp>>()
                 .withError(throwable -> {
                     showError(lang.errGetList());
                     asyncCallback.onFailure(throwable);
@@ -203,20 +213,23 @@ public abstract class ReservedIpTableActivity
         query.setReservedTo(filterView.reserveRange().getValue().to);
         query.setReleasedFrom(filterView.releaseRange().getValue().from);
         query.setReleasedTo(filterView.releaseRange().getValue().to);
-        query.setLastActiveFrom(filterView.lastActiveRange().getValue().from);
-        query.setLastActiveTo(filterView.lastActiveRange().getValue().to);
+        query.setNonActiveRange(DateIntervalWithType.toDateRange(filterView.nonActiveRange().getValue()));
         query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
         query.setSortField(filterView.sortField().getValue());
         return query;
     }
 
-    private void refreshAction(ReservedIp reservedIp) {
-/*        return () -> ipReservationService.refreshReservedIp(reservedIp, new FluentCallback<Long>()
-                .withSuccess(id -> {
-                    fireEvent(new IpReservationEvents.Show());
-                }));*/
-        //fireEvent(new NotifyEvents.Show(lang.refresh(), NotifyEvents.NotifyType.SUCCESS));
-        Window.alert("Refresh IP " + reservedIp.getIpAddress() + " under construction :(");
+    private void refreshIpOnlineStatus(ReservedIp reservedIp) {
+        fireEvent(new NotifyEvents.Show(lang.reservedIpOnlineTestStart(), NotifyEvents.NotifyType.INFO));
+        ipReservationController.isIpOnline(reservedIp, new FluentCallback<Boolean>()
+                .withSuccess(online -> {
+                    if (online) {
+                        fireEvent(new NotifyEvents.Show(lang.reservedIpOnlineStatusOnline(), NotifyEvents.NotifyType.SUCCESS));
+                        fireEvent(new IpReservationEvents.Update());
+                    } else {
+                        fireEvent(new NotifyEvents.Show(lang.reservedIpOnlineStatusOffline(), NotifyEvents.NotifyType.INFO));
+                    }
+                }));
     }
 
     private void persistScrollTopPosition() {
@@ -263,6 +276,29 @@ public abstract class ReservedIpTableActivity
         return policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_VIEW);
     }
 
+    @Override
+    public boolean validateTypedSelectorRangePicker(TypedSelectorRangePicker picker) {
+        boolean dataRangeTypeValid = isDataRangeTypeValid(picker);
+        boolean dataRangeValid = isDataRangeValid(picker.getValue());
+        picker.setValid(dataRangeTypeValid, dataRangeValid);
+        return dataRangeTypeValid && dataRangeValid;
+    }
+
+    private boolean isDataRangeTypeValid(TypedSelectorRangePicker rangePicker) {
+        return !rangePicker.isTypeMandatory()
+                || (rangePicker.getValue() != null
+                && rangePicker.getValue().getIntervalType() != null);
+    }
+
+    private boolean isDataRangeValid(DateIntervalWithType dateRange) {
+        if (dateRange == null || dateRange.getIntervalType() == null) {
+            return true;
+        }
+
+        return !Objects.equals(dateRange.getIntervalType(), En_DateIntervalType.FIXED)
+                || dateRange.getInterval().isValid();
+    }
+
     private void showError(String error) {
         fireEvent(new NotifyEvents.Show(error, NotifyEvents.NotifyType.ERROR));
     }
@@ -274,7 +310,7 @@ public abstract class ReservedIpTableActivity
     @Inject
     AbstractReservedIpFilterView filterView;
     @Inject
-    IpReservationControllerAsync ipReservationService;
+    IpReservationControllerAsync ipReservationController;
     @Inject
     TableAnimation animation;
     @Inject

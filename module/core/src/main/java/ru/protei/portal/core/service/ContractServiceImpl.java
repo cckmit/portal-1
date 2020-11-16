@@ -414,6 +414,7 @@ public class ContractServiceImpl implements ContractService {
     }
 
     @Override
+    @Transactional
     public Result<Contractor> createContractor(AuthToken token, Contractor contractor) {
         if (contractor == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -455,19 +456,19 @@ public class ContractServiceImpl implements ContractService {
             }
         }
 
-        contractor1C.setDeletionMark(true);
-        Result<Contractor1C> result = api1CService.saveContractor(contractor1C, organization);
-        if (result.isError()) {
-            log.warn("removeContractor(): failed to save contractor to 1c with refKey = {} | result = {}", refKey, result);
-            return error(result.getStatus());
-        }
-
         if (savedToDb) {
             boolean removed = contractorDAO.removeByKey(contractorId);
             if (!removed) {
                 log.error("removeContractor(): failed to remove contractor from db, but it was removed from 1c integration | refKey = {}", refKey);
-                return error(En_ResultStatus.NOT_REMOVED);
+                return error(En_ResultStatus.NOT_FOUND);
             }
+        }
+
+        contractor1C.setDeletionMark(true);
+        Result<Contractor1C> result = api1CService.saveContractor(contractor1C, organization);
+        if (result.isError()) {
+            log.warn("removeContractor(): failed to save contractor to 1c with refKey = {} | result = {}", refKey, result);
+            throw new ResultStatusException(En_ResultStatus.NOT_REMOVED);
         }
 
         return ok(contractorId);
@@ -536,7 +537,10 @@ public class ContractServiceImpl implements ContractService {
             contractorDAO.persist(contractor);
         } else {
             contractor.setId(contractorByRefKey.getId());
-            contractorDAO.merge(contractor);
+
+            if (!contractorDAO.merge(contractor)) {
+                return error(En_ResultStatus.NOT_UPDATED, "Contractor was not merged");
+            }
         }
 
         return ok(contractor.getId());

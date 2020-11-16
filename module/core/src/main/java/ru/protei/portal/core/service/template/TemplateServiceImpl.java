@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.util.HtmlUtils;
 import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.dao.CaseStateDAO;
+import ru.protei.portal.core.model.dict.En_ExpiringProjectTSVPeriod;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.dto.Project;
@@ -677,6 +678,31 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
+    public PreparedTemplate getDutyLogReportSubject(String title) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("reportTitle", title);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/report.duty.log.subject.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getReportBody(String name, Date createdDate, String creator, List<String> recipients) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("name", name);
+        templateModel.put("created", createdDate);
+        templateModel.put("creator", creator);
+        templateModel.put("recipients", recipients);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/report.duty.log.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
     public PreparedTemplate getSubnetNotificationSubject(Subnet subnet, Person initiator, SubnetNotificationEvent.Action action) {
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("is_created", action == SubnetNotificationEvent.Action.CREATED);
@@ -858,6 +884,31 @@ public class TemplateServiceImpl implements TemplateService {
         model.put("recipients", recipients);
 
         PreparedTemplate template = new PreparedTemplate("notification/email/nrpe.ips.body.%s.ftl");
+        template.setModel(model);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getExpiringTechnicalSupportValidityNotificationSubject() {
+        Map<String, Object> model = new HashMap<>();
+        PreparedTemplate template = new PreparedTemplate("notification/email/expiring.technical.support.validity.subject.%s.ftl");
+        template.setModel(model);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getExpiringTechnicalSupportValidityNotificationBody(ExpiringProjectTSVNotificationEvent event,
+                                                Collection<String> recipients, String urlTemplate) {
+        Map<String, Object> model = new HashMap<>();
+        model.put("linkToProject", urlTemplate);
+        model.put("expiringIn7Days", event.getInfos().get(En_ExpiringProjectTSVPeriod.DAYS_7));
+        model.put("expiringIn14Days", event.getInfos().get(En_ExpiringProjectTSVPeriod.DAYS_14));
+        model.put("expiringIn30Days", event.getInfos().get(En_ExpiringProjectTSVPeriod.DAYS_30));
+        model.put("recipients", recipients);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/expiring.technical.support.validity.body.%s.ftl");
         template.setModel(model);
         template.setTemplateConfiguration(templateConfiguration);
         return template;

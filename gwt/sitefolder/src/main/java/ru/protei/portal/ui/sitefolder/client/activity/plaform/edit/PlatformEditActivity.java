@@ -9,6 +9,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_FileUploadStatus;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Platform;
@@ -157,16 +158,25 @@ public abstract class PlatformEditActivity implements AbstractPlatformEditActivi
 
     @Override
     public void onRemoveAttachment(Attachment attachment) {
-        attachmentService.removeAttachmentEverywhere(En_CaseType.SF_PLATFORM, attachment.getId(), new FluentCallback<Boolean>()
-                .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR)))
-                .withSuccess(result -> {
-                    if (!result) {
+        attachmentService.removeAttachmentEverywhere(En_CaseType.SF_PLATFORM, attachment.getId(), new FluentCallback<Long>()
+                .withError((throwable, defaultErrorHandler, status) -> {
+                    if (En_ResultStatus.NOT_FOUND.equals(status)) {
+                        fireEvent(new NotifyEvents.Show(lang.fileNotFoundError(), NotifyEvents.NotifyType.ERROR));
+                        return;
+                    }
+
+                    if (En_ResultStatus.NOT_REMOVED.equals(status)) {
                         fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR));
                         return;
                     }
+
+                    defaultErrorHandler.accept(throwable);
+                })
+                .withSuccess(result -> {
                     view.attachmentsContainer().remove(attachment);
                     platform.getAttachments().remove(attachment);
-                }));
+                })
+        );
     }
 
     @Override
@@ -226,7 +236,7 @@ public abstract class PlatformEditActivity implements AbstractPlatformEditActivi
             view.project().setValue(null);
             clearProjectSpecificFields();
             view.company().setValue(EntityOption.fromCompany(platform.getCompany()));
-            view.manager().setValue(platform.getManager() == null ? null : platform.getManager().toShortNameShortView());
+            view.manager().setValue(platform.getManager() == null ? null : platform.getManager());
             fireShowCompanyContacts(platform.getCompanyId());
         }
         view.name().setValue(platform.getName());
@@ -264,7 +274,7 @@ public abstract class PlatformEditActivity implements AbstractPlatformEditActivi
         if (view.project().getValue() == null){
             platform.setProjectId(null);
             platform.setCompanyId(view.company().getValue().getId());
-            platform.setManager(Person.fromPersonShortView(view.manager().getValue()));
+            platform.setManager(view.manager().getValue());
         }
         else {
             platform.setProjectId(view.project().getValue().getId());

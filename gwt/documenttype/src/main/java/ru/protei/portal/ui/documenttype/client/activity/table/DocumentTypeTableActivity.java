@@ -129,12 +129,13 @@ public abstract class DocumentTypeTableActivity
 
     private Runnable onConfirmRemoveClicked(DocumentType value) {
         return () -> documentTypeService.removeDocumentType(value, new FluentCallback<Long>()
-                .withError(throwable -> {
-                    if ((throwable instanceof RequestFailedException) && En_ResultStatus.UPDATE_OR_REMOVE_LINKED_OBJECT_ERROR.equals(((RequestFailedException) throwable).status)) {
+                .withError((throwable, defaultErrorHandler, status) -> {
+                    if (En_ResultStatus.UPDATE_OR_REMOVE_LINKED_OBJECT_ERROR.equals(status)) {
                         fireEvent(new NotifyEvents.Show(lang.documentTypeUnableToRemoveUsedDocumentType(), NotifyEvents.NotifyType.ERROR));
-                    } else {
-                        errorHandler.accept(throwable);
+                        return;
                     }
+
+                    defaultErrorHandler.accept(throwable);
                 })
                 .withSuccess(result -> {
                     fireEvent(new NotifyEvents.Show(lang.documentTypeRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
@@ -183,8 +184,6 @@ public abstract class DocumentTypeTableActivity
     AbstractDocumentTypeTableView view;
     @Inject
     AbstractDocumentTypeFilterView filterView;
-    @Inject
-    DefaultErrorHandler errorHandler;
 
     private static String CREATE_ACTION;
     private AppEvents.InitDetails initDetails;

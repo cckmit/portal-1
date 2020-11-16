@@ -24,11 +24,11 @@ public interface PlanControllerAsync {
 
     void moveIssueToAnotherPlan(Long currentPlanId, Long issueId, Long newPlanId, AsyncCallback<Boolean> async);
 
-    void removeIssueFromPlan(Long planId, Long issueId, AsyncCallback<Boolean> async);
+    void removeIssueFromPlan(Long planId, Long issueId, AsyncCallback<Long> async);
 
     void changeIssuesOrder(Plan plan, AsyncCallback<Boolean> async);
 
     void editPlanParams(Plan plan, AsyncCallback<Boolean> async);
 
-    void removePlan(Long planId, AsyncCallback<Boolean> async);
+    void removePlan(Long planId, AsyncCallback<Long> async);
 }

@@ -236,7 +236,7 @@ public abstract class ProjectTableActivity
     }
 
     private Runnable removeAction(Long projectId) {
-        return () -> regionService.removeProject(projectId, new FluentCallback<Boolean>()
+        return () -> regionService.removeProject(projectId, new FluentCallback<Long>()
                 .withSuccess(result -> {
                     fireEvent(new NotifyEvents.Show(lang.projectRemoveSucceeded(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new ProjectEvents.ChangeModel());

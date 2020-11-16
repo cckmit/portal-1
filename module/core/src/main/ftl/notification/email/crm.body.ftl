@@ -65,7 +65,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
     </style>
 </head>
 <body bgcolor="#FFFFFF" text="#000000">
-<div hidden>===ContentBegin_crm.body.ftl===</div>
+<div hidden style="display: none">===ContentBegin_crm.body.ftl===</div>
 <div>
     <div style="padding: 5px;font-size: 14px;<#if isCreated>background:#dff7e2;color:#11731d;<#else>background:#f0f0f0;color:#666666;</#if>">
         ${_createdBy}

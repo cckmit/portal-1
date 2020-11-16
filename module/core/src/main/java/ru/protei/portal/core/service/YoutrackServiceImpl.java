@@ -32,6 +32,14 @@ import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 
 public class YoutrackServiceImpl implements YoutrackService {
+    private final static Logger log = LoggerFactory.getLogger( YoutrackServiceImpl.class );
+
+    @Autowired
+    YoutrackApi api;
+    @Autowired
+    PortalConfig config;
+    @Autowired
+    CaseStateDAO caseStateDAO;
 
     @Override
     public Result<List<YouTrackIssueStateChange>> getIssueStateChanges(String issueId) {
@@ -404,13 +412,4 @@ public class YoutrackServiceImpl implements YoutrackService {
 
         return null;
     }
-
-    @Autowired
-    YoutrackApi api;
-    @Autowired
-    PortalConfig config;
-    @Autowired
-    CaseStateDAO caseStateDAO;
-
-    private final static Logger log = LoggerFactory.getLogger( YoutrackServiceImpl.class );
 }

@@ -8,7 +8,6 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.query.UserRoleQuery;
-import ru.protei.portal.core.model.view.EntityOption;
 
 import java.util.List;
 
@@ -25,9 +24,7 @@ public interface UserRoleService {
     @Auditable( En_AuditType.ROLE_MODIFY )
     Result<UserRole> saveUserRole( AuthToken authToken, UserRole userRole );
 
-    Result<List<EntityOption>> userRoleOptionList( AuthToken token, UserRoleQuery query );
-
     @Privileged( En_Privilege.ROLE_REMOVE )
     @Auditable( En_AuditType.ROLE_REMOVE )
-    Result<Boolean> removeRole( AuthToken authToken, Long id );
+    Result<Long> removeRole( AuthToken authToken, Long id );
 }

@@ -31,6 +31,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.widget.attachment.popup.AttachPopup;
 import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidget;
+import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CustomerCompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.SubcontractorCompanyModel;
@@ -40,7 +41,10 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Активность таблицы обращений
@@ -75,7 +79,7 @@ public abstract class IssueTableFilterActivity
             return;
         }
 
-        filterView.resetFilter();
+        filterView.resetFilter(DEFAULT_MODIFIED_RANGE);
         filterView.presetFilterType();
         updateCaseStatesFilter();
         updateImportanceLevelButtons();
@@ -263,7 +267,7 @@ public abstract class IssueTableFilterActivity
         }
 
         if (value.isFavorite()) {
-            issueService.removeFavoriteState(policyService.getProfileId(), value.getId(), new FluentCallback<Boolean>()
+            issueService.removeFavoriteState(policyService.getProfileId(), value.getId(), new FluentCallback<Long>()
                     .withSuccess(result -> onSuccessChangeFavoriteState(value, view))
             );
         } else {
@@ -319,7 +323,7 @@ public abstract class IssueTableFilterActivity
     }
 
     private void fillFilterFieldsByCaseQuery(CaseFilter filter) {
-        filterView.resetFilter();
+        filterView.resetFilter(DEFAULT_MODIFIED_RANGE);
         filterView.userFilter().setValue(filter.toShortView());
 
         final CaseQuery caseQuery = filter.getParams();
@@ -465,4 +469,5 @@ public abstract class IssueTableFilterActivity
     private AppEvents.InitDetails initDetails;
     private Integer scrollTo = 0;
     private Boolean preScroll = false;
+    private static final DateIntervalWithType DEFAULT_MODIFIED_RANGE = new DateIntervalWithType(null, En_DateIntervalType.PREVIOUS_AND_THIS_MONTH);
 }

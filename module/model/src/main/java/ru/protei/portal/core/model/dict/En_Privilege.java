@@ -125,6 +125,7 @@ public enum En_Privilege {
     DUTY_LOG_VIEW(DUTY_LOG, VIEW),
     DUTY_LOG_CREATE(DUTY_LOG, CREATE),
     DUTY_LOG_EDIT(DUTY_LOG, EDIT),
+    DUTY_LOG_REPORT(DUTY_LOG, REPORT),
 
     // Набор дополнительных привилегий, которые вычисляются по scope и не пишутся в базу. Устанавливаются без action
     ISSUE_COMPANY_EDIT(ISSUE, null),

@@ -73,7 +73,6 @@ public abstract class CaseLinkListActivity
         }
 
         controller.getCaseLinks(caseId, new FluentCallback<List<CaseLink>>()
-                .withError(this::showErrorFromServer)
                 .withSuccess(this::fillView)
         );
     }
@@ -212,7 +211,6 @@ public abstract class CaseLinkListActivity
         }
 
         controller.createLinkWithPublish(value, caseType, new FluentCallback<CaseLink>()
-                .withError(this::showErrorFromServer)
                 .withSuccess(caseLink -> {
                     value.setId(caseLink.getId());
                     value.setCaseInfo(caseLink.getCaseInfo());
@@ -258,10 +256,6 @@ public abstract class CaseLinkListActivity
 
         itemWidget.setHref(caseLinkProvider.getLink(value.getType(), linkId));
         panel.add(itemWidget.asWidget());
-    }
-
-    private void showErrorFromServer(Throwable throwable) {
-        defaultErrorHandler.accept(throwable);
     }
 
     private void showError(String error) {
@@ -310,8 +304,6 @@ public abstract class CaseLinkListActivity
     private Provider<AbstractCaseLinkItemView> itemViewProvider;
     @Inject
     private CaseLinkProvider caseLinkProvider;
-    @Inject
-    DefaultErrorHandler defaultErrorHandler;
     @Inject
     Provider<TabWidgetPane> tabWidgetPaneProvider;
     @Inject

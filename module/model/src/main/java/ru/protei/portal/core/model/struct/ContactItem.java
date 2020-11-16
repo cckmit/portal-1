@@ -68,8 +68,7 @@ public class ContactItem implements Serializable {
         return this.accessType;
     }
 
-
-    public ContactItem modify (String value) {
+    public ContactItem modify ( String value) {
         this.value = value;
         return this;
     }

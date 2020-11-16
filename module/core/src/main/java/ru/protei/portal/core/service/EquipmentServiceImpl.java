@@ -87,18 +87,6 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public Result<List<DecimalNumber>> getDecimalNumbersOfEquipment( AuthToken token, long id) {
-
-        List<DecimalNumber> numbers = decimalNumberDAO.getDecimalNumbersByEquipmentId(id);
-
-        if (numbers == null) {
-            return error(En_ResultStatus.GET_DATA_ERROR);
-        }
-
-        return ok(numbers);
-    }
-
-    @Override
     @Transactional
     public Result<Equipment> saveEquipment( AuthToken token, Equipment equipment ) {
         if (StringUtils.isBlank(equipment.getName())) {
@@ -160,14 +148,6 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public Result<DecimalNumber> findDecimalNumber( AuthToken token, DecimalNumber number) {
-        DecimalNumber foundedNumber = decimalNumberDAO.find(number);
-        if (foundedNumber == null)
-            return error(En_ResultStatus.NOT_FOUND);
-        return ok(foundedNumber);
-    }
-
-    @Override
     public Result<Long> copyEquipment( AuthToken token, Long equipmentId, String newName, Long authorId ) {
         if (equipmentId == null || newName == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -192,7 +172,8 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public Result<Boolean> removeEquipment(AuthToken token, Long equipmentId, String author) {
+    @Transactional
+    public Result<Long> removeEquipment(AuthToken token, Long equipmentId, String author) {
 
         if (equipmentId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -200,8 +181,11 @@ public class EquipmentServiceImpl implements EquipmentService {
 
         removeLinkedDocuments(token, equipmentId, author);
 
-        Boolean removeStatus = equipmentDAO.removeByKey(equipmentId);
-        return ok(removeStatus );
+        if (!equipmentDAO.removeByKey(equipmentId)) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        return ok(equipmentId);
     }
 
     private boolean updateDecimalNumbers( Equipment equipment ) {
@@ -326,22 +310,25 @@ public class EquipmentServiceImpl implements EquipmentService {
             return;
         }
 
-        List<Document> documents2merge = new ArrayList<>();
+        List<Document> documents2merge = documents
+                .stream()
+                .filter(Document::getApproved)
+                .peek(document -> document.setEquipment(null))
+                .collect(Collectors.toList());
+
+        if (CollectionUtils.isNotEmpty(documents2merge)) {
+            documentDAO.mergeBatch(documents2merge);
+        }
 
         for (Document document : documents) {
             if (document.getApproved()) {
-                document.setEquipment(null);
-                documents2merge.add(document);
                 continue;
             }
+
             Result<Long> result = documentService.removeDocument(token, document.getId(), document.getProjectId(), author);
             if (result.isError()) {
                 log.error("removeLinkedDocuments(): failed to remove document | status={}", result.getStatus());
             }
-        }
-
-        if (CollectionUtils.isNotEmpty(documents2merge)) {
-            documentDAO.mergeBatch(documents2merge);
         }
     }
 }

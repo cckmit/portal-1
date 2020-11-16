@@ -46,7 +46,7 @@ public class RoomReservationControllerImpl implements RoomReservationController 
     }
 
     @Override
-    public RoomReservation removeReservation(Long reservationId) throws RequestFailedException {
+    public Long removeReservation(Long reservationId) throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
         return checkResultAndGetData(roomReservationService.removeReservation(token, reservationId));
     }

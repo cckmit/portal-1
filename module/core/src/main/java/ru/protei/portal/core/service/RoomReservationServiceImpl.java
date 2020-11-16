@@ -34,6 +34,19 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public class RoomReservationServiceImpl implements RoomReservationService {
 
+    @Autowired
+    PortalConfig config;
+    @Autowired
+    RoomReservationDAO roomReservationDAO;
+    @Autowired
+    RoomReservableDAO roomReservableDAO;
+    @Autowired
+    PersonDAO personDAO;
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
+    @Autowired
+    PolicyService policyService;
+
     @Override
     public Result<SearchResult<RoomReservation>> getReservations(AuthToken authToken, RoomReservationQuery query) {
         SearchResult<RoomReservation> result = roomReservationDAO.getSearchResultByQuery(query);
@@ -156,7 +169,7 @@ public class RoomReservationServiceImpl implements RoomReservationService {
 
     @Override
     @Transactional
-    public Result<RoomReservation> removeReservation(AuthToken token, Long reservationId) {
+    public Result<Long> removeReservation(AuthToken token, Long reservationId) {
 
         boolean valid = token != null && reservationId != null;
         if (!valid) {
@@ -180,10 +193,10 @@ public class RoomReservationServiceImpl implements RoomReservationService {
 
         boolean removed = roomReservationDAO.removeByKey(reservationId);
         if (!removed) {
-            return error(En_ResultStatus.NOT_REMOVED);
+            return error(En_ResultStatus.NOT_FOUND);
         }
 
-        return ok(stored)
+        return ok(stored.getId())
             .publishEvent(new RoomReservationNotificationEvent(
                 this,
                 stored,
@@ -371,17 +384,4 @@ public class RoomReservationServiceImpl implements RoomReservationService {
                 .distinct()
                 .collect(Collectors.toList());
     }
-
-    @Autowired
-    PortalConfig config;
-    @Autowired
-    RoomReservationDAO roomReservationDAO;
-    @Autowired
-    RoomReservableDAO roomReservableDAO;
-    @Autowired
-    PersonDAO personDAO;
-    @Autowired
-    JdbcManyRelationsHelper jdbcManyRelationsHelper;
-    @Autowired
-    PolicyService policyService;
 }

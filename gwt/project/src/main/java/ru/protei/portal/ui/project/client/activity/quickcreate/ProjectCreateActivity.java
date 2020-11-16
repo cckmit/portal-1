@@ -27,6 +27,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 /**
  * Активность создания проекта с минимальным набором параметров
@@ -95,7 +96,12 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
         view.product().setValue(project.getSingleProduct());
         view.updateProductDirection(project.getProductDirectionEntityOption() == null ? null : project.getProductDirectionEntityOption().getId());
         view.headManagers().setValue(new HashSet<>(emptyIfNull(project.getTeam())));
-        homeCompanyService.getAllHomeCompanies(homeCompanies -> view.setCompaniesSupplier(() -> new HashSet<>(homeCompanies)));
+        homeCompanyService.getAllHomeCompanies(homeCompanies -> {
+            asyncPersonModel.updateCompanies( CollectionUtils.toSet(homeCompanies, EntityOption::getId) );
+            if (isEmpty( homeCompanies )) {
+                view.headManagers().setValue( null );
+            }
+        });
     }
 
     private void fillProject() {

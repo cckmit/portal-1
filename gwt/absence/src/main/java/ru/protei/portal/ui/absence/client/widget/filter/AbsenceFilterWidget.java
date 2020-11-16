@@ -3,12 +3,12 @@ package ru.protei.portal.ui.absence.client.widget.filter;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.AbsenceFilter;
 import ru.protei.portal.core.model.query.AbsenceQuery;
-import ru.protei.portal.core.model.view.AbsenceFilterShortView;
+import ru.protei.portal.core.model.view.FilterShortView;
 import ru.protei.portal.ui.absence.client.widget.filter.paramview.AbsenceFilterParamWidget;
 import ru.protei.portal.ui.common.client.widget.filterwidget.FilterWidget;
 import ru.protei.portal.ui.common.client.widget.selector.absence.AbsenceFilterSelector;
 
-public class AbsenceFilterWidget extends FilterWidget<AbsenceFilter, AbsenceQuery, AbsenceFilterShortView> {
+public class AbsenceFilterWidget extends FilterWidget<AbsenceFilter, AbsenceQuery, FilterShortView> {
 
     // Неочевидная последовательность создания виджета super.onInit()
     @Inject

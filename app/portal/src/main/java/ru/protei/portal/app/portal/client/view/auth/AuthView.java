@@ -6,10 +6,7 @@ import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.ParagraphElement;
 import com.google.gwt.dom.client.SpanElement;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -17,11 +14,11 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.app.portal.client.activity.auth.AbstractAuthActivity;
+import ru.protei.portal.app.portal.client.activity.auth.AbstractAuthView;
 import ru.protei.portal.app.portal.client.widget.locale.LocaleBtnGroup;
 import ru.protei.portal.app.portal.client.widget.locale.LocaleImage;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.app.portal.client.activity.auth.AbstractAuthActivity;
-import ru.protei.portal.app.portal.client.activity.auth.AbstractAuthView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
@@ -70,6 +67,12 @@ public class AuthView extends Composite implements AbstractAuthView, KeyPressHan
             activity.onLoginClicked();
     }
 
+    private void notifyOnWindowFocus() {
+        if (activity != null) {
+            activity.onWindowsFocus();
+        }
+    }
+
     public void setFocus () {
         login.setFocus(true);
     }
@@ -113,6 +116,18 @@ public class AuthView extends Composite implements AbstractAuthView, KeyPressHan
         }
     }
 
+    @Override
+    protected void onLoad() {
+        super.onLoad();
+        initJsHandlers(this);
+    }
+
+    @Override
+    protected void onUnload() {
+        super.onUnload();
+        terminateJsHandlers();
+    }
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
@@ -127,6 +142,14 @@ public class AuthView extends Composite implements AbstractAuthView, KeyPressHan
         loginContainer.sinkEvents(Event.ONKEYPRESS);
         loginContainer.addHandler(this, KeyPressEvent.getType());
     }
+
+    public native void initJsHandlers(AuthView authView) /*-{
+        $wnd.onfocus = function() { authView.@ru.protei.portal.app.portal.client.view.auth.AuthView::notifyOnWindowFocus()(); }
+    }-*/;
+
+    public native void terminateJsHandlers() /*-{
+        $wnd.onfocus = null;
+    }-*/;
 
     private void initPlaceholders() {
         login.getElement().setAttribute("placeholder", lang.accountLogin() );

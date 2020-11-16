@@ -9,6 +9,11 @@ public class ResultStatusException extends RuntimeException {
         this.resultStatus = resultStatus;
     }
 
+    public ResultStatusException(En_ResultStatus resultStatus, String message) {
+        super(message);
+        this.resultStatus = resultStatus;
+    }
+
     public ResultStatusException(En_ResultStatus resultStatus, Throwable cause) {
         super(cause);
         this.resultStatus = resultStatus;

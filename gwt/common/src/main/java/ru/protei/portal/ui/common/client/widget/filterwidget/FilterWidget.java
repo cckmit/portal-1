@@ -12,7 +12,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.filterwidget.Filter;
 import ru.protei.portal.core.model.view.filterwidget.FilterQuery;
-import ru.protei.portal.core.model.view.filterwidget.FilterShortView;
+import ru.protei.portal.core.model.view.filterwidget.AbstractFilterShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
@@ -20,7 +20,7 @@ import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
 
-public abstract class FilterWidget<F extends Filter<FSV, Q>, Q extends FilterQuery, FSV extends FilterShortView> extends Composite {
+public abstract class FilterWidget<F extends Filter<FSV, Q>, Q extends FilterQuery, FSV extends AbstractFilterShortView> extends Composite {
 
     public void onInit(FilterWidgetModel<F> model) {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -102,7 +102,7 @@ public abstract class FilterWidget<F extends Filter<FSV, Q>, Q extends FilterQue
 
     @UiHandler( "removeBtn" )
     public void onRemoveClicked ( ClickEvent event ) {
-        FilterShortView value = filterSelector.getValue();
+        AbstractFilterShortView value = filterSelector.getValue();
         if (value == null || value.getId() == null) {
             return;
         }
@@ -125,7 +125,6 @@ public abstract class FilterWidget<F extends Filter<FSV, Q>, Q extends FilterQue
 
         model.onUserFilterChanged(filterShortView.getId(), filterAfter -> {
             filterParamView.fillFilterFields(filterAfter.getQuery(), filterAfter.getSelectorsParams());
-            fillFilterAfter();
             filterName.setValue( filterAfter.getName() );
             removeFilterBtnVisibility().setVisible( true );
             saveBtn.setVisible( true );
@@ -194,7 +193,6 @@ public abstract class FilterWidget<F extends Filter<FSV, Q>, Q extends FilterQue
         }
     }
 
-    protected void fillFilterAfter() {};
     abstract protected F fillUserFilter();
 
     @Inject

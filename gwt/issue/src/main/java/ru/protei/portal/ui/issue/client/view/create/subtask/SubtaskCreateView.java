@@ -20,6 +20,7 @@ import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.SubcontractorCompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.issue.client.activity.create.subtask.AbstractSubtaskCreateActivity;
@@ -28,6 +29,7 @@ import ru.protei.portal.ui.issue.client.activity.create.subtask.AbstractSubtaskC
 import java.util.Collections;
 import java.util.HashSet;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
 import static ru.protei.portal.core.model.util.CrmConstants.NAME_MAX_SIZE;
 
 public class SubtaskCreateView extends Composite implements AbstractSubtaskCreateView {
@@ -35,11 +37,12 @@ public class SubtaskCreateView extends Composite implements AbstractSubtaskCreat
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        initView();
-        ensureDebugIds();
         description.setRenderer((text, consumer) -> activity.renderMarkupText(text, consumer));
         description.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged(DESCRIPTION, isDisplay));
         name.setMaxLength(NAME_MAX_SIZE);
+        manager.setAsyncModel(managerModel);
+        initView();
+        ensureDebugIds();
     }
 
     @Override
@@ -84,7 +87,7 @@ public class SubtaskCreateView extends Composite implements AbstractSubtaskCreat
 
     @Override
     public void updateManagersCompanyFilter(Long managerCompanyId) {
-        manager.updateCompanies(new HashSet<>(Collections.singletonList(managerCompanyId)));
+        managerModel.updateCompanies(null, setOf(managerCompanyId));
     }
 
     @UiHandler("managerCompany")
@@ -149,6 +152,9 @@ public class SubtaskCreateView extends Composite implements AbstractSubtaskCreat
     @Inject
     @UiField(provided = true)
     PersonFormSelector manager;
+
+    @Inject
+    PersonModel managerModel;
 
     private AbstractSubtaskCreateActivity activity;
 

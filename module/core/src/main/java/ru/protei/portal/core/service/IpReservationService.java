@@ -74,11 +74,11 @@ public interface IpReservationService {
      * Удаление подсети
      * @param token
      * @param subnet
-     * @return
+     * @return Идентификатор удаленной подсети
      */
     @Privileged(En_Privilege.SUBNET_REMOVE)
     @Auditable(En_AuditType.SUBNET_REMOVE)
-    Result<Subnet> removeSubnet(AuthToken token, Subnet subnet, boolean removeWithIps);
+    Result<Long> removeSubnet(AuthToken token, Subnet subnet, boolean removeWithIps);
 
     /**
      *
@@ -112,13 +112,16 @@ public interface IpReservationService {
       Удаление/освобождение зарезервированного IP-адреса
      * @param token
      * @param reservedIp
-     * @return
+     * @return Идентификатор освобожденного IP-адреса
      */
     @Privileged(En_Privilege.RESERVED_IP_REMOVE)
     @Auditable(En_AuditType.RESERVED_IP_REMOVE)
-    Result<ReservedIp> removeReservedIp(AuthToken token, ReservedIp reservedIp);
+    Result<Long> removeReservedIp(AuthToken token, ReservedIp reservedIp);
 
     Result<Void> notifyOwnersAboutReleaseIp();
 
     Result<Void> notifyAdminsAboutExpiredReleaseDates();
+
+    @Privileged(En_Privilege.RESERVED_IP_VIEW)
+    Result<Boolean> isIpOnline(AuthToken token, ReservedIp reservedIp);
 }

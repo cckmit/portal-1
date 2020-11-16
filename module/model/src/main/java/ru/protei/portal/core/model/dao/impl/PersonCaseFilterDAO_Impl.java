@@ -27,9 +27,8 @@ public class PersonCaseFilterDAO_Impl extends PortalBaseJdbcDAO<PersonToCaseFilt
         Condition condition = query().asCondition()
                 .and("person_id").equal(personId)
                 .and("case_filter_id").equal(caseFilterId);
-        removeByCondition(condition.getSqlCondition(), condition.getSqlParameters());
 
-        return true;
+        return removeByCondition(condition.getSqlCondition(), condition.getSqlParameters()) > 0;
     }
 
     @Override

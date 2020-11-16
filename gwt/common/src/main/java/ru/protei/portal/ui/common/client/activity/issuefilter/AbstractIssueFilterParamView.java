@@ -17,9 +17,9 @@ import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
 import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
-import ru.protei.portal.ui.common.client.widget.selector.company.SubcontractorCompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.AsyncPersonModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
+import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 
 import java.util.List;
 import java.util.Set;
@@ -30,10 +30,6 @@ public interface AbstractIssueFilterParamView extends IsWidget {
     void setInitiatorCompaniesModel(AsyncSelectorModel companyModel);
 
     void setManagerCompaniesModel(AsyncSelectorModel companyModel);
-
-    void setInitiatorsModel(PersonModel personModel);
-
-    void setManagersModel(PersonModel personModel);
 
     void setCreatorModel(AsyncPersonModel asyncPersonModel);
 
@@ -69,7 +65,7 @@ public interface AbstractIssueFilterParamView extends IsWidget {
 
     HasVisibility planVisibility();
 
-    void resetFilter();
+    void resetFilter( DateIntervalWithType dateModified );
 
     void presetCompany(Company company);
 
@@ -91,7 +87,7 @@ public interface AbstractIssueFilterParamView extends IsWidget {
 
     boolean isModifiedRangeValid();
 
-    void applyVisibilityByFilterType(En_CaseFilterType filterType);
+    void applyVisibility(En_CaseFilterType filterType);
 
     void setCreatedRangeMandatory(boolean isMandatory);
 

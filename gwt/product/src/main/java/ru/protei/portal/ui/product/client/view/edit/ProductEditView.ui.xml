@@ -62,7 +62,7 @@
 
                             <g:HTMLPanel ui:field="commonManagerContainer" styleName="form-group col-md-6">
                                 <label><ui:text from="{lang.productCommonManager}"/></label>
-                                <manager:PersonButtonSelector ui:field="commonManager" defaultValue="{lang.productSelectCommonManager}" hasNullValue="true" people="false"/>
+                                <manager:PersonButtonSelector ui:field="commonManager" defaultValue="{lang.productSelectCommonManager}" hasNullValue="true"/>
                             </g:HTMLPanel>
                         </div>
 

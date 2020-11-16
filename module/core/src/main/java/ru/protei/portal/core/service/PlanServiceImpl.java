@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.PlanDAO;
@@ -159,7 +160,10 @@ public class PlanServiceImpl implements PlanService{
                         PlanToCaseObject planToCaseObject = new PlanToCaseObject(planId, issue.getId());
                         planToCaseObject.setOrderNumber(plan.getIssueList().indexOf(issue));
                         planToCaseObjectDAO.persist(planToCaseObject);
-                        createHistory(token, issue.getId(), En_HistoryType.PLAN, En_HistoryAction.ADD, null, plan);
+
+                        if (createHistory(token, issue.getId(), En_HistoryAction.ADD, null, plan).isError()) {
+                            throw createHistoryException(En_ResultStatus.NOT_CREATED, En_HistoryAction.ADD, null);
+                        }
             });
         }
 
@@ -167,6 +171,7 @@ public class PlanServiceImpl implements PlanService{
     }
 
     @Override
+    @Transactional
     public Result<Boolean> editPlanParams(AuthToken token, Plan plan) {
         if (plan == null || plan.getId() == null || !validatePlan(plan)){
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -185,7 +190,7 @@ public class PlanServiceImpl implements PlanService{
             return error(En_ResultStatus.ALREADY_EXIST);
         }
 
-        if (!planDAO.partialMerge(plan, "name", "start_date", "finish_date")){
+        if (!planDAO.partialMerge(plan, "name", "start_date", "finish_date")) {
             log.warn("editPlanParams(): NOT_UPDATED. planId={}, name={} ", plan.getId(), plan.getName());
             return error(En_ResultStatus.NOT_UPDATED);
         }
@@ -218,20 +223,23 @@ public class PlanServiceImpl implements PlanService{
 
         newIssueInPlan.setId(planToCaseObjectDAO.persist(newIssueInPlan));
 
-        if (newIssueInPlan.getId() == null){
+        if (newIssueInPlan.getId() == null) {
             log.warn("addIssueToPlan(): NOT CREATED. planId={}, issueId={} ", planId, issueId);
-            return error(En_ResultStatus.NOT_CREATED);
+            throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
         }
 
         Plan plan = planDAO.get(planId);
-        createHistory(token, issueId, En_HistoryType.PLAN, En_HistoryAction.ADD, null, plan);
+
+        if (createHistory(token, issueId, En_HistoryAction.ADD, null, plan).isError()) {
+            throw createHistoryException(En_ResultStatus.NOT_CREATED, En_HistoryAction.ADD, planId);
+        }
 
         return getPlanWithIssues(token, planId);
     }
 
     @Override
     @Transactional
-    public Result<Boolean> removeIssueFromPlan(AuthToken token, Long planId, Long issueId) {
+    public Result<Long> removeIssueFromPlan(AuthToken token, Long planId, Long issueId) {
         if (planId == null || issueId == null){
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -247,17 +255,20 @@ public class PlanServiceImpl implements PlanService{
 
         if (rowCount == 1) {
             updateOrderNumbers(planId);
-            createHistory(token, issueId, En_HistoryType.PLAN, En_HistoryAction.REMOVE, plan, null);
-            return ok();
+            if (createHistory(token, issueId, En_HistoryAction.REMOVE, plan, null).isError()) {
+                throw createHistoryException(En_ResultStatus.NOT_REMOVED, En_HistoryAction.REMOVE, planId);
+            }
+
+            return ok(issueId);
         }
 
         if (rowCount == 0) {
-            log.warn("removeIssueFromPlan(): NOT_REMOVED. plan id={}, token personId={}", planId, token.getPersonId());
-            return error(En_ResultStatus.NOT_REMOVED);
+            log.warn("removeIssueFromPlan(): NOT_FOUND. plan id={}, token personId={}", planId, token.getPersonId());
+            throw new ResultStatusException(En_ResultStatus.NOT_FOUND);
+        } else {
+            log.warn("removeIssueFromPlan(): More than one was removed! Rollback. plan id={}, token personId={}", planId, token.getPersonId());
+            throw new ResultStatusException(En_ResultStatus.NOT_REMOVED);
         }
-
-        log.warn("removeIssueFromPlan(): More that one was removed! Rollback. plan id={}, token personId={}", planId, token.getPersonId());
-        throw new RollbackTransactionException("removeIssueFromPlan(): rollback transaction");
     }
 
     @Override
@@ -339,13 +350,16 @@ public class PlanServiceImpl implements PlanService{
         Plan previousPlan = planDAO.get(currentPlanId);
         Plan newPlan = planDAO.get(newPlanId);
 
-        createHistory(token, issueId, En_HistoryType.PLAN, En_HistoryAction.CHANGE, previousPlan, newPlan);
+        if (createHistory(token, issueId, En_HistoryAction.CHANGE, previousPlan, newPlan).isError()) {
+            throw createHistoryException(En_ResultStatus.NOT_UPDATED, En_HistoryAction.CHANGE, currentPlanId);
+        }
 
         return ok();
     }
 
     @Override
-    public Result<Boolean> removePlan(AuthToken token, Long planId) {
+    @Transactional
+    public Result<Long> removePlan(AuthToken token, Long planId) {
         if (planId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -358,15 +372,19 @@ public class PlanServiceImpl implements PlanService{
         }
 
         if (!planDAO.removeByKey(planId)) {
-            log.warn("removePlan(): NOT_REMOVED. planId={}, token personId={}", planId, token.getPersonId());
-            return error(En_ResultStatus.NOT_REMOVED);
+            log.warn("removePlan(): NOT_FOUND. planId={}, token personId={}", planId, token.getPersonId());
+            return error(En_ResultStatus.NOT_FOUND);
         }
 
         if (plan.getIssueList() != null){
-            plan.getIssueList().forEach(issue -> createHistory(token, issue.getId(), En_HistoryType.PLAN, En_HistoryAction.REMOVE, plan, null));
+            plan.getIssueList().forEach(issue -> {
+                if (createHistory(token, issue.getId(), En_HistoryAction.REMOVE, plan, null).isError()) {
+                    throw createHistoryException(En_ResultStatus.NOT_REMOVED, En_HistoryAction.REMOVE, planId);
+                }
+            });
         }
 
-        return ok();
+        return ok(planId);
     }
 
     private boolean userIsCreator (AuthToken token, Plan plan){
@@ -433,12 +451,19 @@ public class PlanServiceImpl implements PlanService{
         return text.trim().replaceAll("[\\s]{2,}", " ");
     }
 
-    private Result<Long> createHistory(AuthToken token, Long id, En_HistoryType type, En_HistoryAction action, Plan oldPlan, Plan newPlan) {
-        return historyService.createHistory(token, id, action, type,
+    private Result<Long> createHistory(AuthToken token, Long id, En_HistoryAction action, Plan oldPlan, Plan newPlan) {
+        return historyService.createHistory(token, id, action, En_HistoryType.PLAN,
                 oldPlan == null ? null : oldPlan.getId(),
                 oldPlan == null ? null : oldPlan.getName(),
                 newPlan == null ? null : newPlan.getId(),
                 newPlan == null ? null : newPlan.getName()
+        );
+    }
+
+    private ResultStatusException createHistoryException(En_ResultStatus status, En_HistoryAction action, Long planId) {
+        return new ResultStatusException(
+                status,
+                String.format("Failed to create history for plan. action=%s, planId=%d", action, planId)
         );
     }
 }

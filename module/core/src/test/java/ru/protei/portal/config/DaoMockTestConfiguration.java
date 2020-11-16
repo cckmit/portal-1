@@ -70,6 +70,11 @@ public class DaoMockTestConfiguration {
     }
 
     @Bean
+    public PersonShortViewDAO getPersonShortViewDAO() {
+        return  mock(PersonShortViewDAO.class);
+    }
+
+    @Bean
     public DevUnitDAO getDevUnitDAO() {
         return  mock(DevUnitDAO.class);
     }
@@ -422,5 +427,15 @@ public class DaoMockTestConfiguration {
     @Bean
     public BootstrapAppDAO getBootstrapAppDAO() {
         return  mock( BootstrapAppDAO.class );
+    }
+
+    @Bean
+    public DutyLogDAO getDutyLogDAO() {
+        return mock( DutyLogDAO.class );
+    }
+
+    @Bean
+    public ProjectTechnicalSupportValidityReportInfoDAO getProjectTechnicalSupportValidityReportInfoDAO() {
+        return mock( ProjectTechnicalSupportValidityReportInfoDAO.class );
     }
 }

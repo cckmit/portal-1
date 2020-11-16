@@ -25,6 +25,7 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.stringselect.input.StringSelectInput;
@@ -39,6 +40,7 @@ import ru.protei.portal.ui.product.client.widget.type.ProductTypeBtnGroup;
 
 import java.util.*;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 
 /**
@@ -59,6 +61,8 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
         configuration.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged( CONFIGURATION, isDisplay ));
         cdrDescription.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged( CDR_DESCRIPTION, isDisplay ));
         info.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged(INFO, isDisplay));
+        commonManagerModel.setIsPeople(false);
+        commonManager.setAsyncPersonModel( commonManagerModel );
 
         ensureDebugIds();
     }
@@ -196,7 +200,7 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
     @Override
     public void setCommonManagerCompanyId(Long id) {
-        commonManager.updateCompanies(new HashSet<>(Collections.singleton(id)));
+        commonManagerModel.updateCompanies( commonManager, setOf(id) );
     }
 
     @Override
@@ -378,6 +382,9 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     DivElement typeImageContainer;
     @UiField
     ImageElement typeImage;
+
+    @Inject
+    PersonModel commonManagerModel;
 
     private Timer changeTimer = new Timer() {
         @Override

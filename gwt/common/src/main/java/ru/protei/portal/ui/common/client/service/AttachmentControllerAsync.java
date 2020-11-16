@@ -18,7 +18,7 @@ public interface AttachmentControllerAsync {
      * {@link ru.protei.portal.core.model.ent.CaseAttachment}
      * и из облака
      */
-    void removeAttachmentEverywhere(En_CaseType caseType, Long attachmentId, AsyncCallback<Boolean> async);
+    void removeAttachmentEverywhere(En_CaseType caseType, Long attachmentId, AsyncCallback<Long> async);
 
     /**
      * Очистка кэша загрузки

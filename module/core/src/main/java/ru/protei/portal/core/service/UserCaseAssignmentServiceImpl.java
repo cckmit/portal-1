@@ -3,6 +3,7 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.CaseShortViewDAO;
@@ -32,8 +33,23 @@ import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public class UserCaseAssignmentServiceImpl implements UserCaseAssignmentService {
+    private final static Logger log = LoggerFactory.getLogger(UserCaseAssignmentServiceImpl.class);
+
+    @Autowired
+    CaseTagService caseTagService;
+    @Autowired
+    UserCaseAssignmentDAO userCaseAssignmentDAO;
+    @Autowired
+    CaseShortViewDAO caseShortViewDAO;
+    @Autowired
+    PersonDAO personDAO;
+    @Autowired
+    CaseStateDAO caseStateDAO;
+    @Autowired
+    PortalConfig config;
 
     @Override
+    @Transactional
     public Result<UserCaseAssignmentTable> saveTableEntity(AuthToken token, UserCaseAssignment userCaseAssignment) {
 
         if (token == null || token.getUserLoginId() == null) {
@@ -62,6 +78,7 @@ public class UserCaseAssignmentServiceImpl implements UserCaseAssignmentService 
     }
 
     @Override
+    @Transactional
     public Result<UserCaseAssignmentTable> removeTableEntity(AuthToken token, Long id) {
 
         if (token == null || token.getUserLoginId() == null) {
@@ -300,19 +317,4 @@ public class UserCaseAssignmentServiceImpl implements UserCaseAssignmentService 
         }
         return true;
     }
-
-    @Autowired
-    CaseTagService caseTagService;
-    @Autowired
-    UserCaseAssignmentDAO userCaseAssignmentDAO;
-    @Autowired
-    CaseShortViewDAO caseShortViewDAO;
-    @Autowired
-    PersonDAO personDAO;
-    @Autowired
-    CaseStateDAO caseStateDAO;
-    @Autowired
-    PortalConfig config;
-
-    private final static Logger log = LoggerFactory.getLogger(UserCaseAssignmentServiceImpl.class);
 }

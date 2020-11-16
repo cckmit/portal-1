@@ -23,7 +23,7 @@ public interface CaseStateService {
     Result<CaseState> getCaseStateWithoutCompaniesOmitPrivileges(long id);
 
     @Privileged({ En_Privilege.CASE_STATES_EDIT })
-    Result<CaseState> saveCaseState(AuthToken authToken, CaseState state);
+    Result<CaseState> createCaseState(AuthToken authToken, CaseState state);
 
     @Privileged({ En_Privilege.CASE_STATES_EDIT })
     Result<CaseState> updateCaseState(AuthToken authToken, CaseState state);

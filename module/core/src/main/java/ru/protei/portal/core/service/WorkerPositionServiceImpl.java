@@ -1,6 +1,7 @@
 package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.WorkerEntryDAO;
 import ru.protei.portal.core.model.dao.WorkerPositionDAO;
@@ -33,6 +34,7 @@ public class WorkerPositionServiceImpl implements WorkerPositionService{
     }
 
     @Override
+    @Transactional
     public Result<Long> createWorkerPosition(AuthToken token, WorkerPosition workerPosition) {
         if (!isValid(workerPosition)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -52,6 +54,7 @@ public class WorkerPositionServiceImpl implements WorkerPositionService{
     }
 
     @Override
+    @Transactional
     public Result<Long> updateWorkerPosition(AuthToken token, WorkerPosition workerPosition) {
         if (!isValid(workerPosition)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -70,16 +73,16 @@ public class WorkerPositionServiceImpl implements WorkerPositionService{
     }
 
     @Override
+    @Transactional
     public Result<Long> removeWorkerPosition(AuthToken token, WorkerPosition workerPosition) {
 
         if(workerEntryDAO.checkExistsByPosId(workerPosition.getId())){
             return error(En_ResultStatus.WORKER_WITH_THIS_POSITION_ALREADY_EXIST);
         }
 
-        boolean result = workerPositionDAO.removeByKey(workerPosition.getId());
-
-        if ( !result )
-            return error(En_ResultStatus.NOT_REMOVED);
+        if (!workerPositionDAO.removeByKey(workerPosition.getId())) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
 
         return ok(workerPosition.getId());
     }

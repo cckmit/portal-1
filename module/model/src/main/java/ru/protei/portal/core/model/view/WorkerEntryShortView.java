@@ -50,7 +50,7 @@ public class WorkerEntryShortView implements Serializable {
     private Long positionId;
 
     @JdbcColumn(name = "is_contract_agreement")
-    private Boolean isContractAgreement;
+    private boolean isContractAgreement;
 
     public Long getId() {
         return id;
@@ -152,11 +152,11 @@ public class WorkerEntryShortView implements Serializable {
         this.positionName = positionName;
     }
 
-    public Boolean getContractAgreement() {
+    public boolean getContractAgreement() {
         return isContractAgreement;
     }
 
-    public void setContractAgreement(Boolean contractAgreement) {
+    public void setContractAgreement(boolean contractAgreement) {
         isContractAgreement = contractAgreement;
     }
 

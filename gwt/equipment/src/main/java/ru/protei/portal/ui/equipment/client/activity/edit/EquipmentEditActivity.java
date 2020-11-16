@@ -209,7 +209,7 @@ public abstract class EquipmentEditActivity
         if ( equipment.getManagerId() != null ) {
             manager = new PersonShortView();
             manager.setId( equipment.getManagerId() );
-            manager.setName( equipment.getManagerShortName() );
+            manager.setDisplayShortName( equipment.getManagerShortName() );
         }
         view.manager().setValue( manager );
 

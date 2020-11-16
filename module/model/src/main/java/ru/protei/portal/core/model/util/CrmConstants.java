@@ -14,7 +14,6 @@ public class CrmConstants {
     public static final float BYTES_IN_MEGABYTE = 1024 * 1024;
 
     public static final String SOME_LINKS_NOT_SAVED = "some links not saved";
-    public static final String SOME_PLANS_NOT_UPDATED = "some plans not updated";
 
     public static final String DEFAULT_LOCALE = "ru";
 

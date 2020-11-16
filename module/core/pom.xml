@@ -100,12 +100,16 @@
                         <argument>notification/email/absence.subject.ftl</argument>
                         <argument>notification/email/absence.body.ftl</argument>
                         <argument>notification/email/absence.report.subject.ftl</argument>
+                        <argument>notification/email/report.duty.log.subject.ftl</argument>
+                        <argument>notification/email/report.duty.log.body.ftl</argument>
                         <argument>notification/email/project.pausetime.subject.ftl</argument>
                         <argument>notification/email/project.pausetime.body.ftl</argument>
                         <argument>notification/email/birthdays.subject.ftl</argument>
                         <argument>notification/email/birthdays.body.ftl</argument>
                         <argument>notification/email/nrpe.ips.subject.ftl</argument>
                         <argument>notification/email/nrpe.ips.body.ftl</argument>
+                        <argument>notification/email/expiring.technical.support.validity.subject.ftl</argument>
+                        <argument>notification/email/expiring.technical.support.validity.body.ftl</argument>
                     </arguments>
                 </configuration>
             </plugin>

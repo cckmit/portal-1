@@ -18,4 +18,6 @@ public class DutyLogEvents {
     }
 
     public static class Update {}
+
+    public static class CreateReport {}
 }

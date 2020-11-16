@@ -167,12 +167,12 @@ public class RegionControllerImpl implements RegionController {
     }
 
     @Override
-    public Boolean removeProject(Long projectId) throws RequestFailedException {
+    public Long removeProject(Long projectId) throws RequestFailedException {
         log.info("removeProject(): id={}", projectId);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<Boolean> response = projectService.removeProject(token, projectId);
+        Result<Long> response = projectService.removeProject(token, projectId);
         log.info("removeProject(): id={}, result={}", projectId, response.isOk() ? "ok" : response.getStatus());
 
         if (response.isOk()) {

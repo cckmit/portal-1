@@ -51,12 +51,12 @@ public class DateIntervalWithType implements Serializable {
     }
 
 
-    public static DateIntervalWithType fromDateRange(DateRange range, boolean isMandatory) {
+    public static DateIntervalWithType fromDateRange(DateRange range) {
         if(range != null) {
             if(range.getFrom() != null || range.getTo() != null) {
                 return new DateIntervalWithType(new DateInterval(range.getFrom(), range.getTo()), En_DateIntervalType.FIXED);
             } else {
-                return new DateIntervalWithType(isMandatory ? new DateInterval() : null, range.getIntervalType());
+                return new DateIntervalWithType( null, range.getIntervalType());
             }
         } else {
             return null;

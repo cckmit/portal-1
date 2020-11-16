@@ -11,7 +11,6 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -26,7 +25,7 @@ import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.common.client.view.filter.IssueFilterParamView;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.AsyncPersonModel;
-import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
+import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
@@ -42,8 +41,6 @@ public class IssueFilterWidget extends Composite {
         initWidget(ourUiBinder.createAndBindUi(this));
         this.model = model;
         ensureDebugIds();
-        issueFilterParamView.setInitiatorsModel(personModelProvider.get());
-        issueFilterParamView.setManagersModel(personModelProvider.get());
         issueFilterParamView.setCreatorModel(asyncPersonModel);
         issueFilterParamView.commentAuthorsVisibility().setVisible(false);
         issueFilterParamView.timeElapsedVisibility().setVisible(false);
@@ -57,8 +54,8 @@ public class IssueFilterWidget extends Composite {
         issueFilterParamView.setManagerCompaniesModel(companyModel);
     }
 
-    public void resetFilter() {
-        issueFilterParamView.resetFilter();
+    public void resetFilter( DateIntervalWithType dateModified) {
+        issueFilterParamView.resetFilter( dateModified );
         userFilter.setValue(null);
         removeBtn.setVisible(false);
         saveBtn.setVisible(false);
@@ -70,6 +67,7 @@ public class IssueFilterWidget extends Composite {
         if (filterType != null && filterType.equals(En_CaseFilterType.CASE_RESOLUTION_TIME)) {
             issueFilterParamView.states().setValue(CaseStateUtils.getFilterCaseResolutionTimeActiveStates());
         }
+        applyVisibility(filterType);
     }
 
     public HasEnabled createEnabled() {
@@ -152,7 +150,7 @@ public class IssueFilterWidget extends Composite {
         if (value == null || value.getId() == null) {
             return;
         }
-        model.onRemoveClicked(value.getId(), this::resetFilter);
+        model.onRemoveClicked(value.getId(), () -> resetFilter(null) );
     }
 
     @UiHandler( "filterName" )
@@ -168,7 +166,7 @@ public class IssueFilterWidget extends Composite {
 
     private void onUserFilterChanged(CaseFilterShortView filter) {
         if (filter == null){
-            resetFilter();
+            resetFilter(null);
             showUserFilterControls();
 
             return;
@@ -223,13 +221,13 @@ public class IssueFilterWidget extends Composite {
 
     public void updateFilterType(En_CaseFilterType filterType) {
         this.filterType = filterType;
-        applyVisibilityByFilterType(filterType);
-        resetFilter();
+        applyVisibility(filterType);
+        resetFilter(null);
         userFilter.updateFilterType(filterType);
     }
 
-    private void applyVisibilityByFilterType(En_CaseFilterType filterType) {
-        issueFilterParamView.applyVisibilityByFilterType(filterType);
+    private void applyVisibility(En_CaseFilterType filterType) {
+        issueFilterParamView.applyVisibility(filterType);
     }
 
     private HasVisibility removeFilterBtnVisibility(){
@@ -304,8 +302,6 @@ public class IssueFilterWidget extends Composite {
 
     @Inject
     AsyncPersonModel asyncPersonModel;
-    @Inject
-    Provider<PersonModel> personModelProvider;
 
     AbstractIssueFilterWidgetModel model;
 

@@ -1,6 +1,6 @@
 package ru.protei.portal.core.model.struct.nrpe.response;
 
-public abstract class NRPEHost implements NRPEResponse {
+public abstract class NRPEHost extends NRPERaw {
     protected String ipTarget;
     protected String ipSource;
     protected int probes;

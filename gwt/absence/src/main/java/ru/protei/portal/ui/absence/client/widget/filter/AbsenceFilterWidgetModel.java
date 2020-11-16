@@ -28,8 +28,8 @@ public abstract class AbsenceFilterWidgetModel extends FilterWidgetModel<Absence
     }
 
     @Override
-    protected void removeFilter(Long filter, Consumer<Throwable> onError, Consumer<Boolean> onSuccess) {
-        filterService.removeFilter(filter, new FluentCallback<Boolean>()
+    protected void removeFilter(Long filter, Consumer<Throwable> onError, Consumer<Long> onSuccess) {
+        filterService.removeFilter(filter, new FluentCallback<Long>()
                 .withError(onError)
                 .withSuccess(onSuccess.andThen(f -> fireEvent(new AbsenceFilterEvents.Changed())))
         );

@@ -17,15 +17,33 @@ import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
+import static ru.protei.portal.core.model.ent.CaseObject.Columns.CASE_NAME;
+import static ru.protei.portal.core.model.ent.CaseObject.Columns.INFO;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 
 public class AssemblerServiceImpl implements AssemblerService {
+    private static final Logger log = LoggerFactory.getLogger( AssemblerServiceImpl.class );
+
+    @Autowired
+    EventPublisherService publisherService;
+    @Autowired
+    CaseCommentDAO caseCommentDAO;
+    @Autowired
+    CaseObjectDAO caseObjectDAO;
+    @Autowired
+    CaseObjectMetaDAO caseObjectMetaDAO;
+    @Autowired
+    CaseLinkDAO caseLinkDAO;
+    @Autowired
+    AttachmentDAO attachmentDAO;
+    @Autowired
+    PersonDAO personDAO;
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Async(BACKGROUND_TASKS)
     @Override
@@ -37,6 +55,7 @@ public class AssemblerServiceImpl implements AssemblerService {
                 this::fillCaseObject).flatMap(
                 this::fillCaseNameAndDescription).flatMap(
                 this::fillCaseMeta).flatMap(
+                this::fillManager).flatMap(
                 this::fillComments).flatMap(
                 this::fillAttachments).flatMap(
                 this::fillLinks).map(
@@ -56,6 +75,24 @@ public class AssemblerServiceImpl implements AssemblerService {
         e.setInitiator(initiator);
         log.info("fillInitiator(): CaseObjectID={} initiator is successfully filled.", e.getCaseObjectId());
 
+        return ok(e);
+    }
+
+    private Result<AssembledCaseEvent> fillManager( AssembledCaseEvent e ) {
+        if (e.getManager() != null) {
+            log.info("fillManager(): CaseObjectID={} manager is already filled.", e.getCaseObjectId());
+            return ok(e);
+        }
+        if (e.getCaseMeta().getManager() == null) {
+            log.info("fillManager(): CaseObjectID={} No manager is set, ignore filling manager.", e.getCaseObjectId());
+            return ok(e);
+        }
+
+        log.info("fillManager(): CaseObjectID={} Try to fill manager.", e.getCaseObjectId());
+        Person manager = personDAO.get(e.getCaseMeta().getManager().getId());
+        jdbcManyRelationsHelper.fill(manager, Person.Fields.CONTACT_ITEMS);
+        e.setManager(manager);
+        log.info("fillManager(): CaseObjectID={} manager is successfully filled.", e.getCaseObjectId());
         return ok(e);
     }
 
@@ -82,7 +119,7 @@ public class AssemblerServiceImpl implements AssemblerService {
 
         log.info("fillCaseNameAndDescription(): CaseObjectID={} Try to fill case's Name and Description.", e.getCaseObjectId());
 
-        CaseObject caseObject = caseObjectDAO.get(e.getCaseObjectId());
+        CaseObject caseObject = caseObjectDAO.partialGet(e.getCaseObjectId(), CASE_NAME, INFO);
 
         e.getName().setNewState(caseObject.getName());
         e.getInfo().setNewState(caseObject.getInfo());
@@ -111,7 +148,7 @@ public class AssemblerServiceImpl implements AssemblerService {
             return ok( e );
         }
         log.info( "fillAttachments(): CaseObjectID={} Try to fill attachments.", e.getCaseObjectId() );
-        e.setExistingAttachments(  stream(attachmentDAO.getAttachmentsByCaseId( e.getCaseObjectId() )).distinct().collect(Collectors.toList()) );
+        e.setExistingAttachments(  attachmentDAO.getAttachmentsByCaseId( e.getCaseObjectId() ) );
         log.info( "fillAttachments(): CaseObjectID={} Attachments are successfully filled.", e.getCaseObjectId() );
 
         return ok( e );
@@ -170,26 +207,6 @@ public class AssemblerServiceImpl implements AssemblerService {
     private AssembledCaseEvent fillEmails( AssembledCaseEvent e ) {
         if (e.getCreator() != null) jdbcManyRelationsHelper.fill( e.getCreator(), Person.Fields.CONTACT_ITEMS);
         if (e.getInitiator() != null) jdbcManyRelationsHelper.fill( e.getInitiator(), Person.Fields.CONTACT_ITEMS);
-        if (e.getManager() != null) jdbcManyRelationsHelper.fill( e.getManager(), Person.Fields.CONTACT_ITEMS);
         return e;
     }
-
-    @Autowired
-    EventPublisherService publisherService;
-    @Autowired
-    CaseCommentDAO caseCommentDAO;
-    @Autowired
-    CaseObjectDAO caseObjectDAO;
-    @Autowired
-    CaseObjectMetaDAO caseObjectMetaDAO;
-    @Autowired
-    CaseLinkDAO caseLinkDAO;
-    @Autowired
-    AttachmentDAO attachmentDAO;
-    @Autowired
-    PersonDAO personDAO;
-    @Autowired
-    JdbcManyRelationsHelper jdbcManyRelationsHelper;
-
-    private static final Logger log = LoggerFactory.getLogger( AssemblerServiceImpl.class );
 }

@@ -269,21 +269,17 @@ public abstract class ServerTableActivity implements
     }
 
     private Runnable removeAction(Long serverId) {
-        return () -> siteFolderController.removeServer(serverId, new RequestCallback<Boolean>() {
+        return () -> siteFolderController.removeServer(serverId, new RequestCallback<Long>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(lang.siteFolderServerNotRemoved(), NotifyEvents.NotifyType.ERROR));
             }
 
             @Override
-            public void onSuccess(Boolean result) {
-                if (result) {
-                    fireEvent(new SiteFolderServerEvents.ChangeModel());
-                    fireEvent(new SiteFolderServerEvents.Show(platformId, false));
-                    fireEvent(new NotifyEvents.Show(lang.siteFolderServerRemoved(), NotifyEvents.NotifyType.SUCCESS));
-                } else {
-                    fireEvent(new NotifyEvents.Show(lang.siteFolderServerNotRemoved(), NotifyEvents.NotifyType.ERROR));
-                }
+            public void onSuccess(Long result) {
+                fireEvent(new SiteFolderServerEvents.ChangeModel());
+                fireEvent(new SiteFolderServerEvents.Show(platformId, false));
+                fireEvent(new NotifyEvents.Show(lang.siteFolderServerRemoved(), NotifyEvents.NotifyType.SUCCESS));
             }
         });
     }

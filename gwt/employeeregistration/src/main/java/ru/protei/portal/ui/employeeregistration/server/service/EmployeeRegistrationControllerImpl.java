@@ -9,6 +9,8 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.ent.EmployeeRegistrationShortView;
+import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
 import ru.protei.portal.core.service.EmployeeRegistrationService;
@@ -20,6 +22,10 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
+import static ru.protei.portal.core.model.helper.CollectionUtils.toSet;
 
 @Service("EmployeeRegistrationController")
 public class EmployeeRegistrationControllerImpl implements EmployeeRegistrationController {
@@ -50,7 +56,19 @@ public class EmployeeRegistrationControllerImpl implements EmployeeRegistrationC
     public EmployeeRegistrationShortView getEmployeeRegistrationShortView(Long id) throws RequestFailedException {
         log.info(" get employee registration short view, id: {}", id);
 
-        return EmployeeRegistrationShortView.fromEmployeeRegistration(getEmployeeRegistration(id));
+        EmployeeRegistration employeeRegistration  =  getEmployeeRegistration(id);
+
+        if (employeeRegistration == null) {
+            return null;
+        }
+
+        EmployeeRegistrationShortView employeeRegistrationShortView = new EmployeeRegistrationShortView();
+        employeeRegistrationShortView.setId(employeeRegistration.getId());
+        employeeRegistrationShortView.setCurators( setOf( employeeRegistration.getCurators() ) );
+        employeeRegistrationShortView.setEmploymentDate(employeeRegistration.getEmploymentDate());
+        employeeRegistrationShortView.setHeadOfDepartmentId(employeeRegistration.getHeadOfDepartmentId());
+
+        return employeeRegistrationShortView;
     }
 
     @Override

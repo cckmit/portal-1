@@ -35,10 +35,10 @@ public class UserLoginControllerImpl implements UserLoginController {
     }
 
     @Override
-    public void removeUserDashboard(Long dashboardId) throws RequestFailedException {
+    public Long removeUserDashboard(Long dashboardId) throws RequestFailedException {
         log.info("removeUserDashboard(): dashboardId={}", dashboardId);
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
-        checkResult(userDashboardService.removeUserDashboard(token, dashboardId));
+        return checkResultAndGetData(userDashboardService.removeUserDashboard(token, dashboardId));
     }
 
     @Override

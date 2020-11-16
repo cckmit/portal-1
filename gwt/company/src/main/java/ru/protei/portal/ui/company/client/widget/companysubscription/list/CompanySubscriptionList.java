@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.company.client.widget.companysubscription.list;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
@@ -16,8 +17,8 @@ import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.struct.Pair;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.company.client.widget.companysubscription.group.CompanySubscriptionGroup;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
+import ru.protei.portal.ui.company.client.widget.companysubscription.group.CompanySubscriptionGroup;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -33,7 +34,7 @@ public class CompanySubscriptionList
     @Inject
     public void init() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        ensureDebugId(DebugIds.COMPANY.SUBSCRIPTIONS);
+        ensureDebugIds();
     }
 
     @Override
@@ -186,6 +187,14 @@ public class CompanySubscriptionList
                 makeGroupAndFillValue(pair.getA(), pair.getB(), currentIndex++);
             }
         }
+    }
+
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+
+        addButton.ensureDebugId(DebugIds.COMPANY.GROUP.ADD_BUTTON);
     }
 
     @UiField

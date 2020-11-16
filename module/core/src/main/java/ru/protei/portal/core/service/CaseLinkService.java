@@ -25,7 +25,7 @@ public interface CaseLinkService {
 
     @Privileged(requireAny = { En_Privilege.ISSUE_EDIT, En_Privilege.PROJECT_EDIT })
     @Auditable(En_AuditType.LINK_CREATE)
-    Result<CaseLink> createLink(AuthToken authToken, CaseLink value, En_CaseType caseType);
+    Result<List<CaseLink>> createLinks(AuthToken authToken, List<CaseLink> links, En_CaseType caseType);
 
     @Privileged(requireAny = { En_Privilege.ISSUE_EDIT, En_Privilege.PROJECT_EDIT })
     @Auditable(En_AuditType.LINK_CREATE)
@@ -33,7 +33,7 @@ public interface CaseLinkService {
 
     @Privileged(requireAny = { En_Privilege.ISSUE_EDIT, En_Privilege.PROJECT_EDIT })
     @Auditable(En_AuditType.LINK_REMOVE)
-    Result deleteLink(AuthToken authToken, Long id);
+    Result deleteLinks(AuthToken token, List<CaseLink> links);
 
     @Privileged(requireAny = { En_Privilege.ISSUE_EDIT, En_Privilege.PROJECT_EDIT })
     @Auditable(En_AuditType.LINK_REMOVE)

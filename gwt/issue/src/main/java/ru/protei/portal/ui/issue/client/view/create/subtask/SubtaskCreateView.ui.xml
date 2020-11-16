@@ -51,8 +51,7 @@
                                                        validation="false"
                                                        header="{lang.issueManager}"
                                                        hasNullValue="true"
-                                                       mandatory="false"
-                                                       fired="false"/>
+                                                       mandatory="false"/>
                         </div>
                     </div>
                 </div>

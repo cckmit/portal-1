@@ -20,7 +20,11 @@ import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public class UserDashboardServiceImpl implements UserDashboardService {
+    @Autowired
+    UserDashboardDAO userDashboardDAO;
+
     @Override
+    @Transactional
     public Result<Long> createUserDashboard(AuthToken token, UserDashboard dashboard) {
 
         if (!validateToken(token)) {
@@ -45,6 +49,7 @@ public class UserDashboardServiceImpl implements UserDashboardService {
     }
 
     @Override
+    @Transactional
     public Result<UserDashboard> editUserDashboard(AuthToken token, UserDashboard dashboard) {
 
         if (!validateToken(token)) {
@@ -81,7 +86,8 @@ public class UserDashboardServiceImpl implements UserDashboardService {
     }
 
     @Override
-    public Result<Void> removeUserDashboard(AuthToken token, Long dashboardId) {
+    @Transactional
+    public Result<Long> removeUserDashboard(AuthToken token, Long dashboardId) {
 
         if (!validateToken(token)) {
             return error(En_ResultStatus.PERMISSION_DENIED);
@@ -102,12 +108,12 @@ public class UserDashboardServiceImpl implements UserDashboardService {
         }
 
         if (!userDashboardDAO.removeByKey(dashboardId)) {
-            return error(En_ResultStatus.NOT_REMOVED);
+            return error(En_ResultStatus.NOT_FOUND);
         }
 
-        updateOrders(loginId);
+        userDashboardDAO.mergeBatch(updateOrders(userDashboardDAO.findByLoginId(loginId)));
 
-        return ok();
+        return ok(dashboardId);
     }
 
     @Override
@@ -146,12 +152,17 @@ public class UserDashboardServiceImpl implements UserDashboardService {
         return getUserDashboards(token);
     }
 
-    private void updateOrders(Long loginId) {
-        List<UserDashboard> userDashboards = userDashboardDAO.findByLoginId(loginId);
+    private List<UserDashboard> updateOrders(List<UserDashboard> userDashboards) {
+        userDashboards = userDashboards
+                .stream()
+                .sorted(Comparator.comparingInt(UserDashboard::getOrderNumber))
+                .collect(toList());
 
         for (int i = 0; i < userDashboards.size(); i++) {
             userDashboards.get(i).setOrderNumber(i);
         }
+
+        return userDashboards;
     }
 
     private boolean validateToken(AuthToken authToken) {
@@ -165,7 +176,4 @@ public class UserDashboardServiceImpl implements UserDashboardService {
 
         return true;
     }
-
-    @Autowired
-    UserDashboardDAO userDashboardDAO;
 }

@@ -6,6 +6,7 @@ import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.SubnetOption;
+import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 
 import java.util.Set;
 
@@ -20,7 +21,7 @@ public interface AbstractReservedIpFilterView extends IsWidget {
     HasValue<PersonShortView> owner();
     HasValue<DateInterval> reserveRange();
     HasValue<DateInterval> releaseRange();
-    HasValue<DateInterval> lastActiveRange();
+    HasValue<DateIntervalWithType> nonActiveRange();
 
     HasValue<En_SortField> sortField();
     HasValue< Boolean > sortDir();

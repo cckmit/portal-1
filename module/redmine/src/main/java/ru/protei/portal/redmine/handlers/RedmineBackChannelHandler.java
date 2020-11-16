@@ -15,6 +15,7 @@ import ru.protei.portal.redmine.service.CommonService;
 import ru.protei.portal.redmine.service.RedmineService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
@@ -31,6 +32,12 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
             logger.info("Redmine integration disabled in config, nothing happens");
             return;
         }
+
+        if (isPrivate(event)) {
+            logger.debug("case object {} is private change, skip", event.getCaseObject().defGUID());
+            return;
+        }
+
         logger.info("Handling action on redmine-related issue in Portal-CRM");
         try {
 
@@ -64,6 +71,39 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
         } catch (Exception e) {
             logger.error("error while handling event for case " + event.getCaseObject().getExtId(), e);
         }
+    }
+
+    private boolean isPrivate(AssembledCaseEvent event) {
+        return event.getCaseObject().isPrivateCase()
+                || isPrivateSend(event);
+    }
+
+    private boolean isPrivateSend(AssembledCaseEvent assembledCaseEvent) {
+        if (assembledCaseEvent.isCreateEvent()) {
+            return false;
+        }
+
+        if (isPublicChangesExist(assembledCaseEvent)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean isPublicChangesExist(AssembledCaseEvent assembledCaseEvent) {
+        return  assembledCaseEvent.isPublicCommentsChanged()
+                || assembledCaseEvent.isPublicAttachmentsChanged()
+                || assembledCaseEvent.isCaseImportanceChanged()
+                || assembledCaseEvent.isCaseStateChanged()
+                || assembledCaseEvent.isPauseDateChanged()
+                || assembledCaseEvent.isInitiatorChanged()
+                || assembledCaseEvent.isInitiatorCompanyChanged()
+                || assembledCaseEvent.isManagerCompanyChanged()
+                || assembledCaseEvent.isManagerChanged()
+                || assembledCaseEvent.getName().hasDifferences()
+                || assembledCaseEvent.getInfo().hasDifferences()
+                || assembledCaseEvent.isProductChanged()
+                || assembledCaseEvent.isPublicLinksChanged();
     }
 
     private Result<EndpointAndIssueId> findEndpointAndIssueId(ExternalCaseAppData externalCaseAppData) {
@@ -111,8 +151,12 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
             logger.debug("No attachments for Updating.");
             return ok(issue);
         }
+        final List<Attachment> publicAttachments = event.getAddedAttachments().stream().filter(a -> !a.isPrivate()).collect(Collectors.toList());
+        if (publicAttachments.isEmpty()) {
+            return ok(issue);
+        }
         logger.debug( "Updating attachment" );
-        return service.uploadAttachment( event.getAddedAttachments(), endpoint ).map( attachments -> {
+        return service.uploadAttachment( publicAttachments, endpoint ).map( attachments -> {
             attachments.forEach( issue::addAttachment );
             logger.debug( "Finished updating of attachment" );
             return issue;

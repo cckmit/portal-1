@@ -18,7 +18,7 @@ public class EmployeeCustomButtonSelector extends ButtonPopupSingleSelector<Pers
         this.model = model;
         setAsyncModel(model);
         setFilter(personView -> !personView.isFired());
-        setItemRenderer(value -> value == null ? defaultValue : value.getName());
+        setItemRenderer(value -> value == null ? defaultValue : value.getDisplayName());
     }
 
     @Override

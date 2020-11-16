@@ -37,11 +37,8 @@ public class Attachment extends AuditableObject {
     @JdbcColumn(name = "file_name")
     private String fileName;
 
-    @JdbcJoinedColumn(mappedColumn = "private_flag", joinPath = {
-            @JdbcJoinPath(localColumn = "id", remoteColumn = "att_id", table = "case_attachment"),
-            @JdbcJoinPath(localColumn = "ccomment_id", remoteColumn = "id", table = "case_comment")
-    })
-    private Boolean isPrivate;
+    @JdbcColumn(name = "private_flag")
+    private boolean isPrivate;
 
     public Attachment (Long attachmentId) {
         id = attachmentId;
@@ -115,10 +112,10 @@ public class Attachment extends AuditableObject {
     }
 
     public boolean isPrivate() {
-        return Boolean.TRUE.equals(isPrivate);
+        return isPrivate;
     }
 
-    public void setPrivate(Boolean isPrivate) {
+    public void setPrivate(boolean isPrivate) {
         this.isPrivate = isPrivate;
     }
 

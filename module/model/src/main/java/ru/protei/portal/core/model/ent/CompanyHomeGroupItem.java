@@ -14,7 +14,7 @@ public class CompanyHomeGroupItem {
         @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
         private Long id;
 
-        @JdbcColumn(name = "companyId")
+        @JdbcColumn(name = Columns.COMPANY_ID)
         private Long companyId;
 
         @JdbcColumn(name = "external_code")
@@ -53,5 +53,9 @@ public class CompanyHomeGroupItem {
 
         public void setMainId(Long mainId) {
                 this.mainId = mainId;
+        }
+
+        public interface Columns{
+                String COMPANY_ID = "companyId";
         }
 }

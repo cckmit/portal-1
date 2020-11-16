@@ -7,6 +7,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
+import ru.protei.portal.core.model.dao.PersonShortViewDAO;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
@@ -18,6 +19,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.portal.core.utils.SimpleProfiler;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
@@ -53,15 +55,17 @@ public class PersonServiceImpl implements PersonService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        Person person = personDAO.get(personId);
+        PersonShortView person = personShortViewDAO.get(personId);
         if(person==null) return error(En_ResultStatus.NOT_FOUND);
-        return ok(person.toFullNameShortView());
+
+        return ok(person);
     }
 
     @Override
-    public Result< List< PersonShortView > > shortViewList(AuthToken authToken, PersonQuery query) {
+    public Result< List< PersonShortView > > shortViewList( AuthToken authToken, PersonQuery query) {
         query = processQueryByPolicyScope(authToken, query);
-        return makeListPersonShortView(personDAO.getPersons(query));
+        List<PersonShortView> personList = personShortViewDAO.getPersonsShortView(query);
+        return ok(personList);
     }
 
     @Override
@@ -73,7 +77,7 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public Result<List<PersonShortView>> shortViewListByIds( List<Long> ids ) {
-        return makeListPersonShortView(personDAO.getListByKeys( ids ));
+        return ok(personShortViewDAO.getListByKeys( ids ));
     }
 
     @Override
@@ -119,20 +123,11 @@ public class PersonServiceImpl implements PersonService {
         }}).collect(Collectors.toSet());
 
         if (personQuery.getCompanyIds() != null) {
-            personQuery.getCompanyIds().retainAll(allowedCompanies);
+            personQuery.getCompanyIds().retainAll(token.getCompanyAndChildIds());
         }
 
         log.info("processQueryByPolicyScope(): PersonQuery modified: {}", personQuery);
         return personQuery;
-    }
-
-    private Result<List<PersonShortView>> makeListPersonShortView(List<Person> persons) {
-        if ( persons == null )
-            return error(En_ResultStatus.GET_DATA_ERROR );
-
-        List< PersonShortView > result = persons.stream().map( Person::toFullNameShortView ).collect( Collectors.toList() );
-
-        return ok(result);
     }
 
     @Autowired
@@ -141,7 +136,8 @@ public class PersonServiceImpl implements PersonService {
     PolicyService policyService;
     @Autowired
     CompanyService companyService;
-
+    @Autowired
+    PersonShortViewDAO personShortViewDAO;
     private static final Logger log = LoggerFactory.getLogger(PersonServiceImpl.class);
 
 }

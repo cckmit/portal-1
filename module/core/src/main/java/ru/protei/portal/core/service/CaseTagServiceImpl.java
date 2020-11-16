@@ -3,6 +3,7 @@ package ru.protei.portal.core.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.CaseObjectTagDAO;
 import ru.protei.portal.core.model.dao.CaseTagDAO;
 import ru.protei.portal.core.model.dict.En_HistoryAction;
@@ -148,7 +149,9 @@ public class CaseTagServiceImpl implements CaseTagService {
             CaseObjectTag cot = new CaseObjectTag(caseId, tagId);
             caseObjectTagDAO.persist(cot);
 
-            createHistory(authToken, caseId, En_HistoryAction.ADD, null, caseTag);
+            if (createHistory(authToken, caseId, En_HistoryAction.ADD, null, caseTag).isError()) {
+                throw createHistoryException(En_ResultStatus.NOT_CREATED, En_HistoryAction.ADD, tagId);
+            }
 
             return ok();
         });
@@ -168,14 +171,21 @@ public class CaseTagServiceImpl implements CaseTagService {
 
         caseObjectTagDAO.removeByCaseIdAndTagId(caseId, tagId);
 
-        createHistory(authToken, caseId, En_HistoryAction.REMOVE, caseTag, null);
+        if (createHistory(authToken, caseId, En_HistoryAction.REMOVE, caseTag, null).isError()) {
+            throw createHistoryException(En_ResultStatus.NOT_REMOVED, En_HistoryAction.REMOVE, tagId);
+        }
 
         return ok(tagId);
     }
 
     @Override
+    @Transactional
     public void addItemsToHistory(AuthToken authToken, Long caseId, List<CaseTag> tags) {
-        tags.forEach(tag -> createHistory(authToken, caseId, En_HistoryAction.ADD, null, tag));
+        tags.forEach(tag -> {
+            if (createHistory(authToken, caseId, En_HistoryAction.ADD, null, tag).isError()) {
+                throw createHistoryException(En_ResultStatus.NOT_CREATED, En_HistoryAction.ADD, tag.getId());
+            }
+        });
     }
 
     private boolean isCaseTagValid(CaseTag caseTag) {
@@ -201,6 +211,13 @@ public class CaseTagServiceImpl implements CaseTagService {
                 oldCaseTag == null ? null : oldCaseTag.getName(),
                 newCaseTag == null ? null : newCaseTag.getId(),
                 newCaseTag == null ? null : newCaseTag.getName()
+        );
+    }
+
+    private ResultStatusException createHistoryException(En_ResultStatus status, En_HistoryAction action, Long caseTagId) {
+        return new ResultStatusException(
+                status,
+                String.format("Failed to create history for case tag. action=%s, caseTagId=%d", action, caseTagId)
         );
     }
 }

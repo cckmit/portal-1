@@ -108,21 +108,17 @@ public abstract class ApplicationListActivity implements Activity, AbstractAppli
                 return;
             }
 
-            siteFolderController.removeApplication(value.getId(), new RequestCallback<Boolean>() {
+            siteFolderController.removeApplication(value.getId(), new RequestCallback<Long>() {
                 @Override
                 public void onError(Throwable throwable) {
                     fireEvent(new NotifyEvents.Show(lang.siteFolderAppNotRemoved(), NotifyEvents.NotifyType.ERROR));
                 }
 
                 @Override
-                public void onSuccess(Boolean result) {
-                    if (result) {
-                        fireEvent(new SiteFolderAppEvents.ChangeModel());
-                        fireEvent(new NotifyEvents.Show(lang.siteFolderAppRemoved(), NotifyEvents.NotifyType.SUCCESS));
-                        onRemoved(itemView);
-                    } else {
-                        fireEvent(new NotifyEvents.Show(lang.siteFolderAppNotRemoved(), NotifyEvents.NotifyType.ERROR));
-                    }
+                public void onSuccess(Long result) {
+                    fireEvent(new SiteFolderAppEvents.ChangeModel());
+                    fireEvent(new NotifyEvents.Show(lang.siteFolderAppRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                    onRemoved(itemView);
                 }
             });
         };

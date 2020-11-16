@@ -6,7 +6,6 @@ import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.core.model.view.PersonShortViewSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.ArrayList;
@@ -15,7 +14,7 @@ import java.util.List;
 import java.util.Objects;
 
 @JdbcEntity(table = "person")
-public class Person extends AuditableObject implements PersonShortViewSupport {
+public class Person extends AuditableObject {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -47,10 +46,10 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
     @JdbcColumn(name="secondname")
     private String secondName;
 
-    @JdbcColumn(name="displayname")
+    @JdbcColumn(name=Columns.DISPLAY_NAME)
     private String displayName;
 
-    @JdbcColumn(name="displayShortName")
+    @JdbcColumn(name=Columns.DISPLAY_SHORT_NAME)
     private String displayShortName;
 
     /**
@@ -71,7 +70,7 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
     @JdbcColumn(name="isdeleted")
     private boolean isDeleted;
 
-    @JdbcColumn(name = "isfired")
+    @JdbcColumn(name = Columns.IS_FIRED)
     private boolean isFired;
 
     @JdbcColumn(name = "firedate")
@@ -314,16 +313,6 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
     }
 
     @Override
-    public PersonShortView toShortNameShortView() {
-        return new PersonShortView(this.displayShortName, this.getId(), this.isFired);
-    }
-
-    @Override
-    public PersonShortView toFullNameShortView() {
-        return new PersonShortView(this.displayName, this.getId(), this.isFired);
-    }
-
-    @Override
     public int hashCode() {
         return Objects.hash( id );
     }
@@ -394,5 +383,12 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
 
     public interface Fields {
         String CONTACT_ITEMS = "contactItems";
+    }
+
+    public interface Columns {
+        String CONTACT_ITEMS = "contactItems";
+        String DISPLAY_SHORT_NAME = "displayShortName";
+        String DISPLAY_NAME = "displayname";
+        String IS_FIRED = "isfired";
     }
 }
