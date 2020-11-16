@@ -62,13 +62,13 @@ public class FilterColumn extends StaticColumn<ReportDto> {
                 case CASE_OBJECTS:
                 case CASE_TIME_ELAPSED:
                 case CASE_RESOLUTION_TIME:
-                    appendCaseQueryInfo(divElement, (CaseQuery) value.getQuery(), reportType);
+                    appendCaseQueryInfo(divElement, (CaseQuery) value.getQuery());
                     break;
                 case CONTRACT:
-                    appendContractQueryInfo(divElement, (ContractQuery) value.getQuery(), reportType);
+                    appendContractQueryInfo(divElement, (ContractQuery) value.getQuery());
                     break;
                 case PROJECT:
-                    appendProjectQueryInfo(divElement, (ProjectQuery) value.getQuery(), reportType);
+                    appendProjectQueryInfo(divElement, (ProjectQuery) value.getQuery());
                     break;
             }
         }
@@ -76,7 +76,7 @@ public class FilterColumn extends StaticColumn<ReportDto> {
         cell.appendChild(divElement);
     }
 
-    private void appendCaseQueryInfo(Element element, CaseQuery caseQuery, En_ReportType en_reportType) {
+    private void appendCaseQueryInfo(Element element, CaseQuery caseQuery) {
 
         // search string
         if (isNotBlank(caseQuery.getSearchString())) {
@@ -85,34 +85,32 @@ public class FilterColumn extends StaticColumn<ReportDto> {
             element.appendChild(managerElement);
         }
 
-        if (en_reportType != En_ReportType.PROJECT) {
-            // createdRange
-            if (caseQuery.getCreatedRange() == null || caseQuery.getCreatedRange().getIntervalType() == null) {
-                //для совместимости с созданными ранее фильтрами
-                //date CreatedFrom CreatedTo
-                if (caseQuery.getCreatedFrom() != null || caseQuery.getCreatedTo() != null) {
-                    element.appendChild(makeDateRangeElement(
-                            lang.created(),
-                            caseQuery.getCreatedFrom(),
-                            caseQuery.getCreatedTo()));
-                }
-            } else {
-                element.appendChild(makeDateRangeElement(lang.created(), caseQuery.getCreatedRange()));
+        // createdRange
+        if (caseQuery.getCreatedRange() == null || caseQuery.getCreatedRange().getIntervalType() == null) {
+            //для совместимости с созданными ранее фильтрами
+            //date CreatedFrom CreatedTo
+            if (caseQuery.getCreatedFrom() != null || caseQuery.getCreatedTo() != null) {
+                element.appendChild(makeDateRangeElement(
+                        lang.created(),
+                        caseQuery.getCreatedFrom(),
+                        caseQuery.getCreatedTo()));
             }
+        } else {
+            element.appendChild(makeDateRangeElement(lang.created(), caseQuery.getCreatedRange()));
+        }
 
-            // modifiedRange
-            if (caseQuery.getModifiedRange() == null || caseQuery.getModifiedRange().getIntervalType() == null) {
-                //для совместимости с созданными ранее фильтрами
-                //date ModifiedFrom ModifiedTo
-                if (caseQuery.getModifiedFrom() != null || caseQuery.getModifiedTo() != null) {
-                    element.appendChild(makeDateRangeElement(
-                            lang.updated(),
-                            caseQuery.getModifiedFrom(),
-                            caseQuery.getModifiedTo()));
-                }
-            } else {
-                element.appendChild(makeDateRangeElement(lang.updated(), caseQuery.getModifiedRange()));
+        // modifiedRange
+        if (caseQuery.getModifiedRange() == null || caseQuery.getModifiedRange().getIntervalType() == null) {
+            //для совместимости с созданными ранее фильтрами
+            //date ModifiedFrom ModifiedTo
+            if (caseQuery.getModifiedFrom() != null || caseQuery.getModifiedTo() != null) {
+                element.appendChild(makeDateRangeElement(
+                        lang.updated(),
+                        caseQuery.getModifiedFrom(),
+                        caseQuery.getModifiedTo()));
             }
+        } else {
+            element.appendChild(makeDateRangeElement(lang.updated(), caseQuery.getModifiedRange()));
         }
 
         // sorting
@@ -141,19 +139,7 @@ public class FilterColumn extends StaticColumn<ReportDto> {
         }
 
         // states
-        if (en_reportType == En_ReportType.PROJECT) {
-            if (isNotEmpty(caseQuery.getStateIds())) {
-                Element managerElement = DOM.createElement("p");
-                managerElement.setInnerText(lang.issueState() + ": " +
-                        caseQuery.getStateIds()
-                                .stream()
-                                .map(id -> En_RegionState.forId(id))
-                                .map(regionStateLang::getStateName)
-                                .collect(Collectors.joining(", "))
-                );
-                element.appendChild(managerElement);
-            }
-        } else if (isNotEmpty(caseQuery.getStateIds())) {
+        if (isNotEmpty(caseQuery.getStateIds())) {
             element.appendChild(makeArraySelectedElement(lang.issueState(), caseQuery.getStateIds()));
         }
 
@@ -189,28 +175,9 @@ public class FilterColumn extends StaticColumn<ReportDto> {
                     toSet(caseQuery.getTimeElapsedTypeIds(), En_TimeElapsedType::findById))
             );
         }
-
-        // project directions
-        if (isNotEmpty(caseQuery.getProductDirectionIds())) {
-            element.appendChild(makeArraySelectedElement(lang.productDirection(), caseQuery.getProductDirectionIds()));
-        }
-        // project region
-        if (isNotEmpty(caseQuery.getRegionIds())) {
-            element.appendChild(makeArraySelectedElement(lang.projectRegion(), caseQuery.getRegionIds()));
-        }
-
-        // project head manager
-        if (isNotEmpty(caseQuery.getHeadManagerIds())) {
-            element.appendChild(makeArraySelectedElement(lang.projectHeadManager(), caseQuery.getHeadManagerIds()));
-        }
-
-        // project team
-        if (isNotEmpty(caseQuery.getCaseMemberIds())) {
-            element.appendChild(makeArraySelectedElement(lang.projectTeam(), caseQuery.getCaseMemberIds()));
-        }
     }
 
-    private void appendProjectQueryInfo(Element element, ProjectQuery projectQuery, En_ReportType reportType){
+    private void appendProjectQueryInfo(Element element, ProjectQuery projectQuery){
 
         // search string
         if (isNotBlank(projectQuery.getSearchString())) {
@@ -231,10 +198,51 @@ public class FilterColumn extends StaticColumn<ReportDto> {
             element.appendChild(managerElement);
         }
 
-        //TODO требуется доработка.
+        // project directions
+        if (isNotEmpty(projectQuery.getDirections())) {
+            element.appendChild(makeArraySelectedElement(lang.productDirection(), projectQuery.getDirections()));
+        }
+
+        // states
+        if (isNotEmpty(projectQuery.getStates())) {
+            Element managerElement = DOM.createElement("p");
+            managerElement.setInnerText(lang.issueState() + ": " +
+                    projectQuery.getStates()
+                            .stream()
+                            .map(regionStateLang::getStateName)
+                            .collect(Collectors.joining(", "))
+            );
+            element.appendChild(managerElement);
+        }
+
+        // project region
+        if (isNotEmpty(projectQuery.getRegions())) {
+            element.appendChild(makeArraySelectedElement(lang.projectRegion(), projectQuery.getRegions()));
+        }
+
+        // project head manager
+        if (isNotEmpty(projectQuery.getHeadManagers())) {
+            element.appendChild(makeArraySelectedElement(lang.projectHeadManager(), projectQuery.getHeadManagers()));
+        }
+
+        // project team
+        if (isNotEmpty(projectQuery.getCaseMembers())) {
+            element.appendChild(makeArraySelectedElement(lang.projectTeam(), projectQuery.getCaseMembers()));
+        }
+
+        // companies
+        if (isNotEmpty(projectQuery.getInitiatorCompanyIds())) {
+            element.appendChild(makeArraySelectedElement(lang.issueCompany(), projectQuery.getInitiatorCompanyIds()));
+        }
+
+        // only mine
+            Element onlyMineElement = DOM.createElement("p");
+            onlyMineElement.setInnerText(lang.projectOnlyMine() + ": " +
+                    (projectQuery.getMemberId() != null ? lang.yes() : lang.no()));
+            element.appendChild(onlyMineElement);
     }
 
-    private void appendContractQueryInfo(Element element, ContractQuery contractQuery, En_ReportType reportType) {
+    private void appendContractQueryInfo(Element element, ContractQuery contractQuery) {
 
         // search string
         if (isNotBlank(contractQuery.getSearchString())) {

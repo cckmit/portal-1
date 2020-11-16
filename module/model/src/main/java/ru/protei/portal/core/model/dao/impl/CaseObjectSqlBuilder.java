@@ -1,6 +1,5 @@
 package ru.protei.portal.core.model.dao.impl;
 
-import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.dict.En_WorkTrigger;
@@ -215,20 +214,6 @@ public class CaseObjectSqlBuilder {
                 condition.append(")");
             }
 
-            if ( isNotEmpty(query.getProductDirectionIds()) ) {
-                if (query.getProductDirectionIds().remove(null)) {
-                    condition.append(" and (product_id is null");
-                    if (!query.getProductDirectionIds().isEmpty()) {
-                        condition.append(" or product_id in ")
-                                .append(makeInArg(query.getProductDirectionIds(), false));
-                    }
-                    condition.append(")");
-                } else {
-                    condition.append(" and product_id in ")
-                            .append(makeInArg(query.getProductDirectionIds(), false));
-                }
-            }
-
             if (isNotEmpty(query.getCreatorIds())) {
                 condition
                         .append(" and case_object.CREATOR in ")
@@ -239,57 +224,6 @@ public class CaseObjectSqlBuilder {
                 condition
                         .append(" and case_object.id in ")
                         .append(makeInArg(query.getCaseIds(), false));
-            }
-
-            if ( isNotEmpty(query.getRegionIds()) ) {
-                if (query.getRegionIds().remove(null)) {
-                    condition.append(" and (case_object.id not in (SELECT CASE_ID FROM case_location)");
-                    if (!query.getRegionIds().isEmpty()) {
-                        condition.append(" or case_object.id in (SELECT CASE_ID FROM case_location WHERE LOCATION_ID IN ")
-                                .append(makeInArg(query.getRegionIds(), false))
-                                .append(")");
-                    }
-                    condition.append(")");
-                } else {
-                    condition.append(" and case_object.id in (SELECT CASE_ID FROM case_location WHERE LOCATION_ID IN ")
-                            .append(makeInArg(query.getRegionIds(), false))
-                            .append(")");
-                }
-            }
-
-            if ( isNotEmpty(query.getHeadManagerIds()) ) {
-                if (query.getHeadManagerIds().remove(null)) {
-                    condition.append(" and (case_object.id not in (SELECT CASE_ID FROM case_member WHERE MEMBER_ROLE_ID = ?)");
-                    args.add(En_DevUnitPersonRoleType.HEAD_MANAGER.getId());
-                    if (!query.getHeadManagerIds().isEmpty()) {
-                        condition.append(" or case_object.id in (SELECT CASE_ID FROM case_member WHERE MEMBER_ROLE_ID = ? and MEMBER_ID IN ")
-                                .append(makeInArg(query.getHeadManagerIds(), false))
-                                .append(")");
-                        args.add(En_DevUnitPersonRoleType.HEAD_MANAGER.getId());
-                    }
-                    condition.append(")");
-                } else {
-                    condition.append(" and case_object.id in (SELECT CASE_ID FROM case_member WHERE MEMBER_ROLE_ID = ? and MEMBER_ID IN ")
-                            .append(makeInArg(query.getHeadManagerIds(), false))
-                            .append(")");
-                    args.add(En_DevUnitPersonRoleType.HEAD_MANAGER.getId());
-                }
-            }
-
-            if ( isNotEmpty(query.getCaseMemberIds()) ) {
-                if (query.getCaseMemberIds().remove(null)) {
-                    condition.append(" and (case_object.id not in (SELECT CASE_ID FROM case_member)");
-                    if (!query.getCaseMemberIds().isEmpty()) {
-                        condition.append(" or case_object.id in (SELECT CASE_ID FROM case_member WHERE MEMBER_ID IN ")
-                                .append(makeInArg(query.getCaseMemberIds(), false))
-                                .append(")");
-                    }
-                    condition.append(")");
-                } else {
-                    condition.append(" and case_object.id in (SELECT CASE_ID FROM case_member WHERE MEMBER_ID IN ")
-                            .append(makeInArg(query.getCaseMemberIds(), false))
-                            .append(")");
-                }
             }
 
             if (query.getPlanId() != null) {

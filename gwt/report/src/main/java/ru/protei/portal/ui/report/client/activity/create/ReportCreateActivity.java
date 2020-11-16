@@ -177,12 +177,21 @@ public abstract class ReportCreateActivity implements Activity,
 
     private void showFilterForReportType(En_ReportType reportType) {
         switch (reportType) {
-            case PROJECT:
-            case CONTRACT: {
+            case PROJECT: {
                 projectFilterView.resetFilter();
                 view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
                 view.getFilterContainer().clear();
                 view.getFilterContainer().add(projectFilterView.asWidget());
+                view.scheduledTypeContainerVisibility().setVisible(false);
+                view.additionalParamsVisibility().setVisible(false);
+                view.additionalParams().setValue(null);
+                break;
+            }
+            case CONTRACT: {
+                contractFilterView.resetFilter();
+                view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
+                view.getFilterContainer().clear();
+                view.getFilterContainer().add(contractFilterView.asWidget());
                 view.scheduledTypeContainerVisibility().setVisible(false);
                 view.additionalParamsVisibility().setVisible(false);
                 view.additionalParams().setValue(null);
