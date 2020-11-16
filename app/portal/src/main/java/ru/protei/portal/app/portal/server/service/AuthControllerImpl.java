@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.app.portal.client.service.AuthController;
-import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_PrivilegeEntity;
 import ru.protei.portal.core.model.dict.En_Scope;
@@ -33,6 +32,22 @@ public class AuthControllerImpl implements AuthController {
     public Profile authenticate( String login, String password) throws RequestFailedException {
 
         AuthToken token = sessionService.getAuthToken(httpRequest);
+
+        // ***
+        String headers = "\n pnp headers : ";
+        final Enumeration<String> headerNames = httpRequest.getHeaderNames();
+        while (headerNames.hasMoreElements()){
+            String header = headerNames.nextElement();
+            final Enumeration<String> headersValue = httpRequest.getHeaders(header);
+            while (headersValue.hasMoreElements()) {
+                headers += header + " = " + headersValue.nextElement() + "\n";
+            }
+        }
+
+        log.info(headers);
+        // ***
+
+         log.info("authentificate: token={}", token);
 
         if (token != null) {
             log.info("authentificate: token={}", token);
