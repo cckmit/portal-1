@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.UiResult;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -113,7 +114,8 @@ public abstract class SubtaskCreateActivity implements AbstractSubtaskCreateActi
         view.name().setValue(null);
         view.description().setValue(null);
         subcontractorCompanyModel.setCompanyId(caseObject.getInitiatorCompanyId());
-        view.managerCompany().setValue(null);
+        view.managerCompany().setValue(EntityOption.fromCompany(policyService.getUserCompany()));
+        view.updateManagersCompanyFilter(policyService.getUserCompany().getId());
         view.manager().setValue(null);
         view.setFocusName();
     }
