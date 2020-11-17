@@ -4,13 +4,13 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
  * Created by turik on 08.06.17.
  */
 public class PersonQuery extends BaseQuery {
+
     private Set<Long> companyIds;
 
     private Collection<Long> personIds;
@@ -26,7 +26,7 @@ public class PersonQuery extends BaseQuery {
     private String email;
 
     public PersonQuery() {
-        super( null, En_SortField.person_full_name, En_SortDir.ASC );
+        super(null, En_SortField.person_full_name, En_SortDir.ASC);
     }
 
     public PersonQuery(Set<Long> companyIds, Boolean people, Boolean fired, Boolean deleted, String searchString, En_SortField sortField, En_SortDir sortDir, Boolean hasCaseFilter) {
@@ -51,7 +51,7 @@ public class PersonQuery extends BaseQuery {
         return personIds;
     }
 
-    public void setPersonIds( Collection<Long> personIds ) {
+    public void setPersonIds(Collection<Long> personIds) {
         this.personIds = personIds;
     }
 
@@ -67,7 +67,7 @@ public class PersonQuery extends BaseQuery {
         return fired;
     }
 
-    public void setFired( Boolean fired ) {
+    public void setFired(Boolean fired) {
         this.fired = fired;
     }
 
@@ -91,7 +91,7 @@ public class PersonQuery extends BaseQuery {
         return email;
     }
 
-    public void setEmail( String email ) {
+    public void setEmail(String email) {
         this.email = email;
     }
 
