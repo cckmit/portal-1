@@ -678,6 +678,7 @@ public class BootstrapServiceImpl implements BootstrapService {
         // для тестирования
         login.setUpass("e4b48fd541b3dcb99cababc87c2ee88f");
         login.setAuthType(En_AuthType.LOCAL);
+                                            // vpn                  local                   host
         login.setIpMaskAllow(Arrays.asList("172.18.241.0/24", "192.168.110.0/24", "127.0.0.1", "0.0.0.0"));
 
         userLoginDAO.persist(login);

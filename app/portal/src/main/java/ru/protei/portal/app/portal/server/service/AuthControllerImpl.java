@@ -33,21 +33,7 @@ public class AuthControllerImpl implements AuthController {
 
         AuthToken token = sessionService.getAuthToken(httpRequest);
 
-        // ***
-        String headers = "\n pnp headers : ";
-        final Enumeration<String> headerNames = httpRequest.getHeaderNames();
-        while (headerNames.hasMoreElements()){
-            String header = headerNames.nextElement();
-            final Enumeration<String> headersValue = httpRequest.getHeaders(header);
-            while (headersValue.hasMoreElements()) {
-                headers += header + " = " + headersValue.nextElement() + "\n";
-            }
-        }
-
-        log.info(headers);
-        // ***
-
-         log.info("authentificate: token={}", token);
+        log.info("authentificate: token={}", token);
 
         if (token != null) {
             log.info("authentificate: token={}", token);

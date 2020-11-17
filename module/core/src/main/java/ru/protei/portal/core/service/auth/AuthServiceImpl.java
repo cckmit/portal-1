@@ -115,7 +115,7 @@ public class AuthServiceImpl implements AuthService {
             if (!AddressMask.isInRange(
                     new InetSocketAddress(ip, 0),
                     stream(userLogin.getIpMaskAllow()).map(AddressMask::new).collect(Collectors.toList()))) {
-                log.debug("login [{}] access denied by ip = {}", login, ip);
+                log.debug("login [{}] access denied by ip mask allow = {}", login, ip);
                 return error(En_ResultStatus.PERMISSION_DENIED);
             }
         }
