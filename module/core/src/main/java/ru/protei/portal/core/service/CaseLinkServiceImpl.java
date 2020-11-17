@@ -134,7 +134,9 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         synchronizeYouTrackLinks(Collections.singletonList(link), caseType);
 
-        return sendNotificationLinkAdded(authToken, link.getCaseId(), link, caseType, addedLinkResult.getEvents());
+        CaseLink addedLink = addedLinkResult.getData();
+
+        return sendNotificationLinkAdded(authToken, link.getCaseId(), addedLink, caseType, addedLinkResult.getEvents());
     }
 
     @Override
@@ -502,7 +504,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         });
 
         if (addedLinkResult.isOk()) {
-            return ok(caseLinkDAO.get(addedLinkResult.getData()));
+            return ok(caseLinkDAO.get(addedLinkResult.getData())).publishEvents(addedLinkResult.getEvents());
         }
 
         return error(addedLinkResult.getStatus(), "Link was not created");

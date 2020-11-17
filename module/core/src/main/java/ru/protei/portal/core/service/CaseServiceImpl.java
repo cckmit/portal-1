@@ -14,6 +14,7 @@ import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.*;
@@ -876,8 +877,8 @@ public class CaseServiceImpl implements CaseService {
     public Result<Long> openIssueIfNeed(AuthToken token, Long caseObjectId) {
         List<CaseLink> caseLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(caseObjectId, En_BundleType.PARENT_FOR));
 
-        if (caseLinks.stream()
-                .anyMatch(caseLink -> !isTerminalState(caseLink.getCaseInfo().getState().getId()))) {
+        if (CollectionUtils.isEmpty(caseLinks) ||
+                caseLinks.stream().anyMatch(caseLink -> !isTerminalState(caseLink.getCaseInfo().getState().getId()))) {
             log.info("Case with id {} not opened, not all subtasks is terminal", caseObjectId);
             return ok(caseObjectId);
         }
