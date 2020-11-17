@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static ru.protei.portal.core.model.dao.impl.CaseShortViewDAO_Impl.isFilterByTagNames;
 import static ru.protei.portal.core.model.dao.impl.CaseShortViewDAO_Impl.isSearchAtComments;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
@@ -51,9 +52,8 @@ public class CaseObjectSqlBuilder {
                 }
             }
 
-            if (isNotEmpty(query.getCaseTagsNames())) {
-                condition.append(" and case_object.id in")
-                        .append(" (select case_id from case_object_tag where tag_id in (select id from case_tag where name in " + makeInArg(query.getCaseTagsNames(), true) + "))");
+            if (isFilterByTagNames(query)) {
+                condition.append(" and case_tag.name in" + makeInArg(query.getCaseTagsNames(), true));
             }
 
             if ( !query.isAllowViewPrivate() ) {
@@ -65,7 +65,7 @@ public class CaseObjectSqlBuilder {
             }
 
             if ( query.getType() != null ) {
-                condition.append( " and case_type=?" );
+                condition.append( " and case_object.case_type=?" );
                 args.add( query.getType().getId() );
             }
 
