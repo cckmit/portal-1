@@ -44,7 +44,6 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
@@ -87,7 +86,7 @@ public class BootstrapServiceImpl implements BootstrapService {
         updateManagerFiltersWithoutManagerCompany();
         //fillWithCrossLinkColumn();
         //transferYoutrackLinks();
-        addCommonManager();
+        //addCommonManager();
         updateHistoryTable();
         updateIssueFiltersDateRanges();
         updateIssueReportDateRanges();
@@ -112,6 +111,17 @@ public class BootstrapServiceImpl implements BootstrapService {
 
         /**
          *  end Спринт 58 */
+
+        /**
+         *  begin Спринт 62 */
+
+        if(!bootstrapAppDAO.isActionExists( "AddContractEmployee" )) {
+            this.addContractEmployee();
+            bootstrapAppDAO.createAction("AddContractEmployee");
+        }
+
+        /**
+         *  end Спринт 62 */
 
         log.info( "bootstrapApplication(): BootstrapService complete."  );
     }
@@ -396,37 +406,6 @@ public class BootstrapServiceImpl implements BootstrapService {
         }
     }
 
-    private void addCommonManager() {
-        if (personDAO.getByCondition("displayname = 'Тех. поддержка NGN/ВКС'") != null) {
-            return;
-        }
-        log.info("Add Common Manager started");
-
-        Date created = java.sql.Timestamp.valueOf(LocalDateTime.now());
-        Stream.of(
-                "Тех. поддержка NGN/ВКС",
-                "Тех. поддержка ИП",
-                "Тех. поддержка Mobile",
-                "Тех. поддержка Top Connect",
-                "Тех. поддержка Billing",
-                "Тех. поддержка ЦОВ",
-                "Тех. поддержка 112",
-                "Тех. поддержка DPI"
-        ).map(name -> {
-            Person manager = new Person();
-            manager.setCreated(created);
-            manager.setCreator("DBA");
-            manager.setCompanyId(CrmConstants.Company.HOME_COMPANY_ID);
-            manager.setLastName(name);
-            manager.setDisplayName(name);
-            manager.setDisplayShortName(name);
-            manager.setGender(En_Gender.UNDEFINED);
-            manager.setLocale(CrmConstants.LocaleTags.RU);
-            return manager;
-        }).forEach(personDAO::persist);
-        log.info("Add Common Manager ended");
-    }
-
     private void updateHistoryTable() {
         List<History> histories = historyDAO.getListByCondition("old_value is null and new_value is null");
         for (History history : histories) {
@@ -668,6 +647,43 @@ public class BootstrapServiceImpl implements BootstrapService {
                 .collect(Collectors.toList());
     }
 
+    private void addContractEmployee() {
+        log.info("addContractEmployee started");
+        final Date now = java.sql.Timestamp.valueOf(LocalDateTime.now());
+
+        final Person person = new Person();
+        person.setCreated(now);
+        person.setCreator("BootstrapService");
+        person.setCompanyId(companyGroupHomeDAO.mainCompanyId());
+        person.setPosition("Не определена");
+        person.setDepartment("не определено");
+        person.setFirstName("Сотрудник");
+        person.setLastName("по");
+        person.setSecondName("контракту");
+        person.setDisplayName("Сотрудник по контракту");
+        person.setDisplayShortName("Сотрудник по контракту");
+        person.setGender(En_Gender.UNDEFINED);
+        person.setInfo("Сотрудник по контракту - PORTAL-1538");
+        person.setLocale(CrmConstants.LocaleTags.RU);
+        personDAO.persist(person);
+
+        final UserLogin login = new UserLogin();
+        login.setUlogin("contractemployee@protei.ru");
+        login.setCreated(now);
+        login.setAdminStateId(En_AdminState.UNLOCKED.getId());
+        login.setPersonId(person.getId());
+        login.setInfo("Сотрудник по контракту - PORTAL-1538");
+        login.setRoles(userRoleDAO.getDefaultEmployeeRoles());
+
+        // для тестирования
+        login.setUpass("e4b48fd541b3dcb99cababc87c2ee88f");
+        login.setAuthType(En_AuthType.LOCAL);
+        login.setIpMaskAllow(Arrays.asList("172.18.241.183", "192.168.10.0/24"));
+
+        userLoginDAO.persist(login);
+        log.info("addContractEmployee ended");
+    }
+
     private static class ContactInfoPersonMigration {
 
         public static void migrate(ApplicationContext applicationContext) {
@@ -844,8 +860,6 @@ public class BootstrapServiceImpl implements BootstrapService {
 
     @Inject
     UserRoleDAO userRoleDAO;
-    @Inject
-    DecimalNumberDAO decimalNumberDAO;
 
     @Autowired
     CaseObjectDAO caseObjectDAO;
@@ -910,6 +924,8 @@ public class BootstrapServiceImpl implements BootstrapService {
     PersonAbsenceDAO personAbsenceDAO;
     @Autowired
     UserDashboardDAO userDashboardDAO;
+    @Autowired
+    UserLoginDAO userLoginDAO;
     @Autowired
     ObjectMapper objectMapper;
     @Autowired
