@@ -146,7 +146,7 @@ public class BootstrapServiceImpl implements BootstrapService {
                     .map(contactItem ->
                         Arrays.stream(contactItem.value().split(","))
                                 .filter(HelperFunc::isNotEmpty)
-                                .map(s -> new ContactItem(En_ContactItemType.EMAIL, contactItem.accessType()).modify(s))
+                                .map(s -> new ContactItem(En_ContactItemType.EMAIL, contactItem.accessType()).modify(s.trim()))
                                 .collect(Collectors.toList())
                     )
                     .flatMap(Collection::stream)
