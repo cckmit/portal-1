@@ -42,7 +42,7 @@ public class AccordionWidget extends Tab {
     public void setBadge(String tabName, String badge) {
         tabNameToNavItem.entrySet().forEach(entry -> {
             if (Objects.equals(tabName, entry.getKey())) {
-                ((TabWidgetNavItem)entry.getValue()).setBadge(badge);
+                (entry.getValue()).setBadge(badge);
             }
         });
     }

@@ -88,7 +88,7 @@ public class IssueInfoWidget extends Composite {
 
         descriptionReadOnly.ensureDebugId(DebugIds.ISSUE.DESCRIPTION_FIELD );
         attachmentListContainer.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_LIST_CONTAINER);
-        //accordionWidget.setHeaderLabelDebugId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.ATTACHMENTS);
+        accordionWidget.setTabNameDebugId(lang.attachment(), DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.ATTACHMENTS);
         accordionWidget.setCollapseButtonDebugId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.ATTACHMENT_COLLAPSE_BUTTON);
     }
 

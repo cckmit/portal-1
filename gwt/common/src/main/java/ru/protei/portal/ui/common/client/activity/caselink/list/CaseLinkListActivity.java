@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.common.client.activity.caselink.list;
 
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.inject.Inject;
@@ -14,22 +13,20 @@ import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.NumberUtils;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
 import ru.protei.portal.ui.common.client.activity.caselink.item.AbstractCaseLinkItemActivity;
 import ru.protei.portal.ui.common.client.activity.caselink.item.AbstractCaseLinkItemView;
 import ru.protei.portal.ui.common.client.events.CaseLinkEvents;
-import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.En_BundleTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseLinkControllerAsync;
 import ru.protei.portal.ui.common.client.widget.tab.pane.TabWidgetPane;
-import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static ru.protei.portal.core.model.dict.En_CaseLink.CRM;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
@@ -106,7 +103,7 @@ public abstract class CaseLinkListActivity
                     removeLinkViewFromParentAndModifyLinksCount(itemView);
                     hideOrShowIfNoLinks();
                     fireEvent(new NotifyEvents.Show(lang.caseLinkSuccessfulRemoved(), NotifyEvents.NotifyType.SUCCESS));
-                    if (En_CaseType.CRM_SUPPORT.equals(caseType)) fireIssueEvents(caseLink);
+                    fireEvent(new CaseLinkEvents.Changed(caseLink, caseType));
                 })
         );
     }
@@ -136,6 +133,10 @@ public abstract class CaseLinkListActivity
             tabWidgetPane.add(panel);
             view.addTabWidgetPane(tabWidgetPane);
             bundleTypeToPanel.put(bundleType, panel);
+
+            String BUNDLE_TYPE_PREFIX = getBundleTypePrefix(bundleType);
+            tabWidgetPane.setTabDebugId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LINKS_CONTAINER + BUNDLE_TYPE_PREFIX);
+            view.setTabNameDebugId(tabWidgetPane.getTabName(), DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.LINKS + BUNDLE_TYPE_PREFIX);
         });
     }
 
@@ -217,20 +218,11 @@ public abstract class CaseLinkListActivity
                     addLinkToParentAndModifyLinksCount(value);
                     hideOrShowIfNoLinks();
                     fireEvent(new NotifyEvents.Show(lang.caseLinkSuccessfulCreated(), NotifyEvents.NotifyType.SUCCESS));
-                    if (En_CaseType.CRM_SUPPORT.equals(caseType)) fireIssueEvents(caseLink);
+                    fireEvent(new CaseLinkEvents.Changed(value, caseType));
                 })
         );
     }
 
-    private void fireIssueEvents(CaseLink caseLink) {
-        if (En_BundleType.PARENT_FOR.equals(caseLink.getBundleType())) {
-            fireEvent(new IssueEvents.IssueStateUpdated(caseLink.getCaseId()));
-        }
-        if (En_BundleType.SUBTASK.equals(caseLink.getBundleType())) {
-            fireEvent(new IssueEvents.IssueNotifiersUpdated(caseLink.getCaseId()));
-            fireEvent(new IssueEvents.ChangeIssue(NumberUtils.parseLong(caseLink.getRemoteId())));
-        }
-    }
 
     private void makeCaseLinkViewAndAddToParent(CaseLink value, HTMLPanel panel) {
         AbstractCaseLinkItemView itemWidget = itemViewProvider.get();
@@ -292,6 +284,10 @@ public abstract class CaseLinkListActivity
         bundleTypeToPanel.forEach((bundleType, panel) -> {
             view.tabVisibility(bundleTypeLang.getName(bundleType), panel.iterator().hasNext());
         });
+    }
+
+    private String getBundleTypePrefix(En_BundleType bundleType) {
+        return "-" + bundleType.name().replace("_", "-").toLowerCase();
     }
 
     @Inject

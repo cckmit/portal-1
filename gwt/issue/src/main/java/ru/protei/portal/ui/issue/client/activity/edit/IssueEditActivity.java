@@ -12,6 +12,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
@@ -27,10 +28,7 @@ import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.util.ClipboardUtils;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.PasteInfo;
-import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
-import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.common.shared.model.HandleOnError;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.issue.client.view.edit.IssueInfoWidget;
 import ru.protei.portal.ui.issue.client.view.edit.IssueNameDescriptionEditWidget;
@@ -229,6 +227,21 @@ public abstract class IssueEditActivity implements
 
         issue.setFavorite(event.isFavorite);
         view.setFavoriteButtonActive(event.isFavorite);
+    }
+
+    @Event
+    public void onIssueLinkChanged(CaseLinkEvents.Changed event) {
+
+        if (!En_CaseType.CRM_SUPPORT.equals(event.caseType)) return;
+
+        CaseLink caseLink = event.caseLink;
+        if (En_BundleType.PARENT_FOR.equals(caseLink.getBundleType())) {
+            fireEvent(new IssueEvents.IssueStateUpdated(caseLink.getCaseId()));
+        }
+        if (En_BundleType.SUBTASK.equals(caseLink.getBundleType())) {
+            fireEvent(new IssueEvents.IssueNotifiersUpdated(caseLink.getCaseId()));
+            fireEvent(new IssueEvents.ChangeIssue(NumberUtils.parseLong(caseLink.getRemoteId())));
+        }
     }
 
     @Override
