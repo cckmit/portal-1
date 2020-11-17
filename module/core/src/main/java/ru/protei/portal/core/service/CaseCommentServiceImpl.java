@@ -585,7 +585,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
 
         PersonQuery personQuery = new PersonQuery();
-        personQuery.setEmail( receivedMail.getSenderEmail());
+        personQuery.setEmail(receivedMail.getSenderEmail());
         List<Person> persons = personDAO.getPersons(personQuery);
         if (persons.isEmpty()) {
             log.warn("addCommentsReceivedByMail(): no found person person by mail ={}", receivedMail.getSenderEmail());

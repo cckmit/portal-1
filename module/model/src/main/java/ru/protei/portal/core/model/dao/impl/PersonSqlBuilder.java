@@ -3,12 +3,9 @@ package ru.protei.portal.core.model.dao.impl;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.query.PersonQuery;
-import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.sqlcondition.Condition;
 import ru.protei.portal.core.model.util.sqlcondition.Query;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
-
-import java.util.Arrays;
 
 import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.condition;
 import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
@@ -45,9 +42,8 @@ public class PersonSqlBuilder extends BaseSqlBuilder {
                     .where( "cip.contact_item_id" ).in( query()
                             .select( "ci.id" ).from( "contact_item AS ci" )
                             .where( "ci.item_type" ).equal( En_ContactItemType.EMAIL.getId() )
-                            .and( "ci.value" ).like( query.getEmail() ).asQuery()
+                            .and( "ci.value" ).equal( query.getEmail() ).asQuery()
                     ).asQuery()
-
             );
         }
 

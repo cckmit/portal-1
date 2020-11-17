@@ -2,7 +2,6 @@ package ru.protei.portal.core.model.query;
 
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.view.EntityOption;
 
@@ -30,7 +29,7 @@ public class EmployeeQuery extends BaseQuery {
 
     private String ipAddress;
 
-    private String email;
+    private String emailByLike;
 
     private String departmentParent;
 
@@ -62,7 +61,7 @@ public class EmployeeQuery extends BaseQuery {
         this(fired, deleted, onlyPeople, null, null, null, null, null, null, null, sortField, sortDir, null, null);
     }
 
-    public EmployeeQuery(Boolean fired, Boolean deleted, Boolean onlyPeople, Set<EntityOption> homeCompanies, String searchString, String workPhone, String mobilePhone, String ipAddress, String email, String departmentParent, En_SortField sortField, En_SortDir sortDir, List<Long> ids, Boolean absent) {
+    public EmployeeQuery(Boolean fired, Boolean deleted, Boolean onlyPeople, Set<EntityOption> homeCompanies, String searchString, String workPhone, String mobilePhone, String ipAddress, String emailByLike, String departmentParent, En_SortField sortField, En_SortDir sortDir, List<Long> ids, Boolean absent) {
         super(searchString, sortField, sortDir);
         this.fired = fired;
         this.deleted = deleted;
@@ -71,7 +70,7 @@ public class EmployeeQuery extends BaseQuery {
         this.workPhone = workPhone;
         this.mobilePhone = mobilePhone;
         this.ipAddress = ipAddress;
-        this.email = email;
+        this.emailByLike = emailByLike;
         this.departmentParent = departmentParent;
         this.limit = 1000;
         this.ids = ids;
@@ -134,12 +133,12 @@ public class EmployeeQuery extends BaseQuery {
         this.ipAddress = ipAddress;
     }
 
-    public String getEmail() {
-        return email;
+    public String getEmailByLike() {
+        return emailByLike;
     }
 
-    public void setEmail( String email ) {
-        this.email = email;
+    public void setEmailByLike(String emailByLike) {
+        this.emailByLike = emailByLike;
     }
 
     public String getDepartment() {
@@ -217,7 +216,7 @@ public class EmployeeQuery extends BaseQuery {
                 ", workPhone='" + workPhone + '\'' +
                 ", mobilePhone='" + mobilePhone + '\'' +
                 ", ipAddress='" + ipAddress + '\'' +
-                ", email='" + email + '\'' +
+                ", emailByLike='" + emailByLike + '\'' +
                 ", departmentParent='" + departmentParent + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +

@@ -4,7 +4,6 @@ import ru.protei.portal.core.model.dict.En_AbsenceReason;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.helper.DateRangeUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.EmployeeQuery;
@@ -19,7 +18,6 @@ import java.util.stream.Collectors;
 
 import static java.time.temporal.TemporalAdjusters.firstDayOfYear;
 import static java.time.temporal.TemporalAdjusters.lastDayOfYear;
-import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
 import static ru.protei.portal.core.utils.DateUtils.resetSeconds;
 
 public class EmployeeSqlBuilder {
@@ -148,7 +146,7 @@ public class EmployeeSqlBuilder {
                 args.add(HelperFunc.makeLikeArg(query.getIpAddress().trim(), true));
             }
 
-            if (HelperFunc.isLikeRequired(query.getWorkPhone()) || HelperFunc.isLikeRequired(query.getMobilePhone()) || HelperFunc.isLikeRequired(query.getEmail())) {
+            if (HelperFunc.isLikeRequired(query.getWorkPhone()) || HelperFunc.isLikeRequired(query.getMobilePhone()) || HelperFunc.isLikeRequired(query.getEmailByLike())) {
                 condition.append(" AND person.id IN (");
                 condition.append(" SELECT DISTINCT cip.person_id FROM contact_item_person AS cip WHERE cip.contact_item_id IN (");
                 condition.append(" SELECT DISTINCT ci.id FROM contact_item AS ci WHERE 1=1");
@@ -164,10 +162,10 @@ public class EmployeeSqlBuilder {
                     args.add(En_ContactItemType.MOBILE_PHONE.getId());
                     args.add(HelperFunc.makeLikeArg(query.getMobilePhone(), true));
                 }
-                if (HelperFunc.isLikeRequired(query.getEmail())) {
+                if (HelperFunc.isLikeRequired(query.getEmailByLike())) {
                     orCondition.add("(ci.item_type = ? and ci.value like ?)");
                     args.add(En_ContactItemType.EMAIL.getId());
-                    args.add(HelperFunc.makeLikeArg(query.getEmail().trim(), true));
+                    args.add(HelperFunc.makeLikeArg(query.getEmailByLike().trim(), true));
                 }
 
                 condition.append(" AND (").append(String.join(" OR ", orCondition)).append(")");
@@ -234,7 +232,7 @@ public class EmployeeSqlBuilder {
             countId++;
         }
 
-        if (HelperFunc.isLikeRequired(query.getEmail())) {
+        if (HelperFunc.isLikeRequired(query.getEmailByLike())) {
             countId++;
         }
 
