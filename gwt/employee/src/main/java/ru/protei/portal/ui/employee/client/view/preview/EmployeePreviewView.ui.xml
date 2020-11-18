@@ -31,17 +31,19 @@
             <g:HTMLPanel ui:field="positionsContainer"/>
 
             <h5><ui:text from="{lang.employeeAdditionalInfo}"/></h5>
-            <div class="small">
-                <b><ui:text from="{lang.employeeID}: "/></b>
-                <span ui:field="id"/>
-            </div>
-            <div class="small">
-                <b><ui:text from="{lang.employeeIPAddress}:"/></b>
-                <span ui:field="ip"/>
-            </div>
-            <div class="small p-b-10">
-                <b><ui:text from="{lang.accountLogin}:"/></b>
-                <span ui:field="login"/>
+            <div class="p-b-10">
+                <div class="small">
+                    <b><ui:text from="{lang.employeeID}: "/></b>
+                    <span ui:field="id"/>
+                </div>
+                <div class="small">
+                    <b><ui:text from="{lang.employeeIPAddress}:"/></b>
+                    <span ui:field="ip"/>
+                </div>
+                <div class="small">
+                    <b><ui:text from="{lang.accountLogin}:"/></b>
+                    <span ui:field="login"/>
+                </div>
             </div>
 
             <div ui:field="absencesPanel" class="row hide">
