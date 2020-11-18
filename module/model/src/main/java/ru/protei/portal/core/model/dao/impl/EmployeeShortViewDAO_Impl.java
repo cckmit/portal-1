@@ -3,8 +3,6 @@ package ru.protei.portal.core.model.dao.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.EmployeeShortViewDAO;
-import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.view.EmployeeShortView;
@@ -27,7 +25,7 @@ public class EmployeeShortViewDAO_Impl extends PortalBaseJdbcDAO<EmployeeShortVi
 
     @Override
     public EmployeeShortView get(Long employeeId) {
-        return getByCondition("id = ? limit 1", employeeId);
+        return getByCondition("person.id = ? limit 1", employeeId);
     }
 
     @Override
