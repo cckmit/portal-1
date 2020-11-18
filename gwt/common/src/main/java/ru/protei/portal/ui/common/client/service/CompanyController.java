@@ -71,7 +71,7 @@ public interface CompanyController extends RemoteService {
      * @param id идентификатор компании
      * @return Company
      */
-    Company getCompanyUnsafe(long id) throws RequestFailedException;
+    Company getCompanyOmitPrivileges(long id) throws RequestFailedException;
 
     /**
      * Получение списка сокращенного представления компании (name,id)

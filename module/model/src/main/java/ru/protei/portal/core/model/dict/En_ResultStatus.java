@@ -329,18 +329,18 @@ public enum En_ResultStatus {
     NOT_FOUND_PARENT,
 
     /**
-     * Запрещено создание подзадачи
-     */
-    NOT_ALLOWED_CREATE_SUBTASK,
-
-    /**
-     * запрещено менять статус обращения на verified, когда не все подзадачи в verified
+     * Запрещено менять статус обращения на verified, когда не все подзадачи в verified
      */
     INVALID_CASE_UPDATE_SUBTASK_NOT_CLOSED,
 
     /**
-     * запрещено создавать связку "Родитель для" для родителя в created или verified
+     * Родительская задача не может быть в статусе created или verified
      */
-    NOT_ALLOWED_LINK_ISSUE_STATE
+    NOT_ALLOWED_PARENT_STATE,
+
+    /**
+     * Родительская задача или подзадача не может быть с автоматическим открытием
+     */
+    NOT_ALLOWED_AUTOOPEN_ISSUE
     ;
 }

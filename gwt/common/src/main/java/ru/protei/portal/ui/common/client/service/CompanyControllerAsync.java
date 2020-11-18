@@ -115,5 +115,5 @@ public interface CompanyControllerAsync {
 
     void getAllHomeCompanies(AsyncCallback<List<EntityOption>> async);
 
-    void getCompanyUnsafe(long id, AsyncCallback<Company> async);
+    void getCompanyOmitPrivileges(long id, AsyncCallback<Company> async);
 }

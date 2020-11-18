@@ -227,7 +227,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         fillInitiatorValue(issueMetaView, companyOption);
 
-        companyController.getCompanyUnsafe(companyOption.getId(), new FluentCallback<Company>()
+        companyController.getCompanyOmitPrivileges(companyOption.getId(), new FluentCallback<Company>()
                 .withSuccess(company -> {
                     setCurrentCompany(company);
                     requestPlatforms(company.getId(), platformOptions -> {
@@ -476,7 +476,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         fillInitiatorValue(issueMetaView, initiatorCompany);
 
-        companyController.getCompanyUnsafe(initiatorCompany.getId(), new FluentCallback<Company>()
+        companyController.getCompanyOmitPrivileges(initiatorCompany.getId(), new FluentCallback<Company>()
                 .withSuccess(company -> {
                     setCurrentCompany(company);
                     requestPlatforms(company.getId(), platforms -> {

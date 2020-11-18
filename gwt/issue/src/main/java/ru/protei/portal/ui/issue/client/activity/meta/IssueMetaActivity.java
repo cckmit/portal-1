@@ -318,7 +318,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         fireEvent(new CaseStateEvents.UpdateSelectorOptions());
 
-        companyController.getCompanyUnsafe(selectedCompanyId, new FluentCallback<Company>()
+        companyController.getCompanyOmitPrivileges(selectedCompanyId, new FluentCallback<Company>()
                 .withSuccess(resultCompany -> {
                     setCurrentCompany(resultCompany);
                     fillPlatformValueAndUpdateProductsFilter(resultCompany);

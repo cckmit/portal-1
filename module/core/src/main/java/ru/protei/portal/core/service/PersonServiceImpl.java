@@ -19,7 +19,6 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
-import ru.protei.portal.core.utils.SimpleProfiler;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
@@ -109,7 +108,7 @@ public class PersonServiceImpl implements PersonService {
             return personQuery;
         }
 
-        Company company = companyService.getCompanyUnsafe(token, token.getCompanyId()).getData();
+        Company company = companyService.getCompanyOmitPrivileges(token, token.getCompanyId()).getData();
         Result<List<EntityOption>> result = company.getCategory() == En_CompanyCategory.SUBCONTRACTOR ?
                 companyService.companyOptionListBySubcontractorIds(token.getCompanyAndChildIds()) :
                 companyService.subcontractorOptionListByCompanyIds(token.getCompanyAndChildIds());

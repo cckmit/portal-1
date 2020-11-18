@@ -3206,19 +3206,17 @@ public interface Lang extends Messages, ContactItemLang {
 
     String subtaskCreate();
 
-    String errSaveSubtaskCompanyWithAutoOpenIssues();
+    String errNotAllowedCompanyWithAutoOpenIssues();
 
     String errSaveSubtaskFieldsInvalid();
 
     String errNotFoundParent();
 
-    String errNotAllowedCreateSubtask();
+    String errNotAllowedParentState();
 
     String parentFor();
 
     String subtask();
 
     String errInvalidCaseUpdateSubtaskNotClosed();
-
-    String errNotAllowedCreateLink();
 }

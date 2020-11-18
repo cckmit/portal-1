@@ -11,6 +11,7 @@ import ru.protei.portal.core.event.CaseNameAndDescriptionEvent;
 import ru.protei.portal.core.event.CaseObjectCreateEvent;
 import ru.protei.portal.core.event.CaseObjectMetaEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
+import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
@@ -473,9 +474,13 @@ public class CaseServiceImpl implements CaseService {
         }
 
         // Открываем родительскую задачу, если все подзадачи закрыты
-        Result<Long> openingParentsResult = ok(caseMeta.getId());
+        Result<Long> openedParentsResult = ok(caseMeta.getId());
         if (oldCaseMeta.getStateId() != caseMeta.getStateId() && isTerminalState(caseMeta.getStateId())) {
-            openingParentsResult = openParentIssuesIfNeed(token, caseMeta.getId());
+            openedParentsResult = openParentIssuesIfAllLinksInTerminalState(token, caseMeta.getId());
+            if (openedParentsResult.isError()) {
+                log.error("Failed to open parent issue | message = '{}'", openedParentsResult.getMessage());
+                throw new ResultStatusException(openedParentsResult.getStatus());
+            }
         }
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
@@ -489,7 +494,7 @@ public class CaseServiceImpl implements CaseService {
                 En_ExtAppType.forCode(oldState.getExtAppType()),
                 oldCaseMeta,
                 newCaseMeta))
-                .publishEvents(openingParentsResult.getEvents());
+                .publishEvents(openedParentsResult.getEvents());
     }
 
     @Override
@@ -846,11 +851,11 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if (parentCaseObject.getInitiatorCompany().getAutoOpenIssue()) {
-            return error(En_ResultStatus.NOT_ALLOWED_CREATE_SUBTASK);
+            return error(En_ResultStatus.NOT_ALLOWED_AUTOOPEN_ISSUE);
         }
 
-        if (isStateSubtaskNotAllowed(parentCaseObject)) {
-            return error(En_ResultStatus.NOT_ALLOWED_CREATE_SUBTASK);
+        if (isParentStateNotAllowed(parentCaseObject)) {
+            return error(En_ResultStatus.NOT_ALLOWED_PARENT_STATE);
         }
 
         fillCaseCreateRequest(caseObjectCreateRequest, parentCaseObject);
@@ -862,7 +867,6 @@ public class CaseServiceImpl implements CaseService {
         }
 
         parentCaseObject.setStateId(CrmConstants.State.BLOCKED);
-
         Result<CaseObjectMeta> parentUpdate = updateCaseObjectMeta(token, new CaseObjectMeta(parentCaseObject));
         if (parentUpdate.isError()) {
             log.error("createSubtask(): parent-id = {} | failed to save parent issue to db with result = {}", parentCaseObjectId, result);
@@ -874,38 +878,45 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public Result<Long> openIssueIfNeed(AuthToken token, Long caseObjectId) {
-        List<CaseLink> caseLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(caseObjectId, En_BundleType.PARENT_FOR));
+    public Result<CaseObjectMetaNotifiers> addNotifierToCaseObject(AuthToken authToken, Long caseId, PersonShortView personShortView) {
+        CaseObjectMetaNotifiers caseObjectMetaNotifiers = caseObjectMetaNotifiersDAO.get(caseId);
+        jdbcManyRelationsHelper.fill(caseObjectMetaNotifiers, "notifiers");
 
-        if (CollectionUtils.isEmpty(caseLinks) ||
-                caseLinks.stream().anyMatch(caseLink -> !isTerminalState(caseLink.getCaseInfo().getState().getId()))) {
-            log.info("Case with id {} not opened, not all subtasks is terminal", caseObjectId);
-            return ok(caseObjectId);
-        }
-
-        CaseObjectMeta caseObjectMeta = caseObjectMetaDAO.get(caseObjectId);
-        caseObjectMeta.setStateId(CrmConstants.State.OPENED);
-
-        Result<CaseObjectMeta> result = updateCaseObjectMeta(token, caseObjectMeta);
-        if (result.isError()) {
-            log.error("Failed to open case with id {}, status={}", caseObjectId, result.getStatus());
-            throw new ResultStatusException(result.getStatus());
-        }
-
-        return ok(caseObjectId).publishEvents(result.getEvents());
+        caseObjectMetaNotifiers.getNotifiers().add(Person.fromPersonShortView(personShortView));
+        return updateCaseObjectMetaNotifiers(authToken, caseObjectMetaNotifiers);
     }
 
-    private Result<Long> openParentIssuesIfNeed(AuthToken token, long caseObjectId) {
-        List<CaseLink> caseLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(caseObjectId, En_BundleType.SUBTASK));
+    private Result<Long> openParentIssuesIfAllLinksInTerminalState(AuthToken token, long caseObjectId) {
 
+        List<CaseLink> caseLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(caseObjectId, En_BundleType.SUBTASK));
         Result<Long> result = ok(caseObjectId);
 
         for(CaseLink caseLink : caseLinks) {
-            Result<Long> opened = openIssueIfNeed(token, NumberUtils.parseLong(caseLink.getRemoteId()));
-            result.publishEvents(opened.getEvents());
+            Long parentId = NumberUtils.parseLong(caseLink.getRemoteId());
+            boolean isAllLinksInTerminalState = isAllLinksInTerminalState(parentId);
+            if (isAllLinksInTerminalState) {
+                CaseObjectMeta caseObjectMeta = caseObjectMetaDAO.get(caseObjectId);
+                caseObjectMeta.setStateId(CrmConstants.State.OPENED);
+                Result<CaseObjectMeta> openedIssueResult = updateCaseObjectMeta(token, caseObjectMeta);
+                if (openedIssueResult.isError()) {
+                    return error(openedIssueResult.getStatus(), "issueId = " + parentId);
+                }
+                result.publishEvents(openedIssueResult.getEvents());
+            }
         }
 
         return result;
+    }
+
+    private boolean isAllLinksInTerminalState(Long caseObjectId) {
+        List<CaseLink> caseLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(caseObjectId, En_BundleType.PARENT_FOR));
+
+        if (CollectionUtils.isNotEmpty(caseLinks) &&
+                caseLinks.stream()
+                        .allMatch(caseLink -> isTerminalState(caseLink.getCaseInfo().getState().getId()))) {
+            return true;
+        }
+        return false;
     }
 
     private Long createAndPersistTimeElapsedMessage(Long authorId, Long caseId, Long timeElapsed, En_TimeElapsedType timeElapsedType) {
@@ -950,15 +961,15 @@ public class CaseServiceImpl implements CaseService {
     private void applyFilterByScope(AuthToken token, CaseQuery query) {
         Set<UserRole> roles = token.getRoles();
         if (!policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
-            Company company = companyService.getCompanyUnsafe(token, token.getCompanyId()).getData();
+            Company company = companyService.getCompanyOmitPrivileges(token, token.getCompanyId()).getData();
             query.setCompanyIds(
                     acceptAllowedCompanies(
                             query.getCompanyIds(),
-                            getCompanyIds(company.getCategory(), token.getCompanyAndChildIds())));
+                            getCompaniesBySubcontractorIds(company.getCategory(), token.getCompanyAndChildIds())));
             query.setManagerCompanyIds(
                     acceptAllowedCompanies(
                             query.getManagerCompanyIds(),
-                            getManagerCompanyIds(company.getCategory(), token.getCompanyAndChildIds())));
+                            getSubcontractorsByCompanyIds(company.getCategory(), token.getCompanyAndChildIds())));
             query.setAllowViewPrivate(false);
             query.setCustomerSearch(true);
         }
@@ -993,7 +1004,7 @@ public class CaseServiceImpl implements CaseService {
         if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_CREATE ) && policyService.hasScopeForPrivilege( roles, En_Privilege.ISSUE_CREATE, En_Scope.COMPANY ) ) {
             caseObject.setPrivateCase( false );
             if( !token.getCompanyAndChildIds().contains( caseObject.getInitiatorCompanyId() ) ) {
-                Company company = companyService.getCompanyUnsafe(token, token.getCompanyId()).getData();
+                Company company = companyService.getCompanyOmitPrivileges(token, token.getCompanyId()).getData();
                 caseObject.setInitiatorCompany( company );
             }
             caseObject.setManagerId( null );
@@ -1010,7 +1021,7 @@ public class CaseServiceImpl implements CaseService {
               !isTerminalState(newMeta.getStateId());
     }
 
-    private boolean isStateSubtaskNotAllowed(CaseObject caseObject) {
+    private boolean isParentStateNotAllowed(CaseObject caseObject) {
         return isTerminalState(caseObject.getStateId()) ||
                 CrmConstants.State.CREATED == caseObject.getStateId();
     }
@@ -1026,7 +1037,7 @@ public class CaseServiceImpl implements CaseService {
             return false;
         }
 
-        Result<Company> result = companyService.getCompanyUnsafe(token, token.getCompanyId());
+        Result<Company> result = companyService.getCompanyOmitPrivileges(token, token.getCompanyId());
         if (result.isError()) {
             return false;
         }
@@ -1345,26 +1356,26 @@ public class CaseServiceImpl implements CaseService {
         createRequest.addLink(caseLink);
     }
 
-    private Collection<Long> getManagerCompanyIds(En_CompanyCategory category, Collection<Long> companyIds) {
+    private Collection<Long> getSubcontractorsByCompanyIds(En_CompanyCategory category, Collection<Long> companyIds) {
         if (category == En_CompanyCategory.SUBCONTRACTOR) {
             return companyIds;
         }
 
         Result<List<EntityOption>> result = companyService.subcontractorOptionListByCompanyIds(companyIds);
         if (result.isError()) {
-            throw new ResultStatusException(result.getStatus());
+            throw new RuntimeException("Failed to get subcontractors by companies");
         }
         return result.getData().stream().map(EntityOption::getId).collect(Collectors.toList());
     }
 
-    private Collection<Long> getCompanyIds(En_CompanyCategory category, Collection<Long> subcontractorIds) {
+    private Collection<Long> getCompaniesBySubcontractorIds(En_CompanyCategory category, Collection<Long> subcontractorIds) {
         if (category != En_CompanyCategory.SUBCONTRACTOR) {
             return subcontractorIds;
         }
 
         Result<List<EntityOption>> result = companyService.companyOptionListBySubcontractorIds(subcontractorIds);
         if (result.isError()) {
-            throw new ResultStatusException(result.getStatus());
+            throw new RuntimeException("Failed to get companies by subcontractors");
         }
         return result.getData().stream().map(EntityOption::getId).collect(Collectors.toList());
     }

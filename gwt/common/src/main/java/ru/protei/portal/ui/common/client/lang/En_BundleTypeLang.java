@@ -6,6 +6,10 @@ import ru.protei.portal.core.model.dict.En_BundleType;
 public class En_BundleTypeLang {
 
     public String getName(En_BundleType type) {
+
+        if(type == null)
+            return lang.unknownField();
+
         switch (type) {
             case LINKED_WITH:
                 return lang.linkedWith();

@@ -134,9 +134,9 @@ public abstract class CaseLinkListActivity
             view.addTabWidgetPane(tabWidgetPane);
             bundleTypeToPanel.put(bundleType, panel);
 
-            String BUNDLE_TYPE_PREFIX = getBundleTypePrefix(bundleType);
-            tabWidgetPane.setTabDebugId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LINKS_CONTAINER + BUNDLE_TYPE_PREFIX);
-            view.setTabNameDebugId(tabWidgetPane.getTabName(), DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.LINKS + BUNDLE_TYPE_PREFIX);
+            String bundleTypePrefix = getBundleTypePrefix(bundleType);
+            tabWidgetPane.setTabDebugId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LINKS_CONTAINER + bundleTypePrefix);
+            view.setTabNameDebugId(tabWidgetPane.getTabName(), DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.LINKS + bundleTypePrefix);
         });
     }
 
@@ -152,7 +152,6 @@ public abstract class CaseLinkListActivity
         });
 
         hideOrShowIfNoLinks();
-        view.resetTabs();
     }
 
     private void addYtLink( CaseLink caseLink ) {
@@ -199,7 +198,6 @@ public abstract class CaseLinkListActivity
     }
 
     private void createLinkAndAddToParent(CaseLink value) {
-        //@ToDo check this
         if (bundleTypeToCaseLink.containsValue(value)) {
             fireEvent(new NotifyEvents.Show(lang.errCaseLinkAlreadyAdded(), NotifyEvents.NotifyType.ERROR));
             return;
@@ -283,6 +281,7 @@ public abstract class CaseLinkListActivity
         view.getContainerVisibility().setVisible(isPresent);
         bundleTypeToPanel.forEach((bundleType, panel) -> {
             view.tabVisibility(bundleTypeLang.getName(bundleType), panel.iterator().hasNext());
+            view.resetTabs();
         });
     }
 

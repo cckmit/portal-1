@@ -295,7 +295,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<Company> getCompanyUnsafe(AuthToken token, Long id) {
+    public Result<Company> getCompanyOmitPrivileges(AuthToken token, Long id) {
         return getCompany(token, id);
     }
 
