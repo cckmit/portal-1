@@ -38,6 +38,11 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
     }
 
     @Override
+    public void setLogin(String login) {
+        this.login.setInnerText(login);
+    }
+
+    @Override
     public void setPhotoUrl(String url) {
         photo.setUrl(url);
     }
@@ -134,6 +139,9 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
 
     @UiField
     SpanElement ip;
+
+    @UiField
+    SpanElement login;
 
     @UiField
     Image photo;
