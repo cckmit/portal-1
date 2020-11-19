@@ -2,6 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:company='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
              xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
+             xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
              xmlns:rolelist='urn:import:ru.protei.portal.ui.account.client.widget.role'
              xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
 >
@@ -58,6 +59,7 @@
                                 <label class="">
                                     <ui:text from="{lang.accountRoles}"/>
                                 </label>
+                                <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="m-b-15 m-t-15"/>
                                 <rolelist:RoleOptionList ui:field="roles"/>
                                 <div class="m-t-10 small">
                                     <i class="fa fa-info-circle m-r-5"/><ui:text from="{lang.rolePrivilegesNote}"/>

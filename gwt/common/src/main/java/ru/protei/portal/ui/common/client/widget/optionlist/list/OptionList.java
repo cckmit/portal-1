@@ -18,7 +18,6 @@ import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import java.util.*;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
-
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 
 /**
@@ -138,6 +137,7 @@ public class OptionList<T>
         if (selectorModel != null) {
             selectorModel.onSelectorUnload(this);
         }
+        filter = null;
     }
 
     public void clearOptions() {
@@ -185,6 +185,18 @@ public class OptionList<T>
 
     public void setFilter(Selector.SelectorFilter filter) {
         this.filter = filter;
+    }
+
+    public void refreshValueByFilter(Selector.SelectorFilter<T> filter) {
+        this.setFilter(filter);
+        container.clear();
+        for (Map.Entry<OptionItem, T> entry : itemViewToModel.entrySet()) {
+            T t = entry.getValue();
+            OptionItem optionItem = entry.getKey();
+            if (filter == null || filter.isDisplayed(t)) {
+                container.add(optionItem);
+            }
+        }
     }
 
     public void setEnsureDebugId(T value, String debugId) {
