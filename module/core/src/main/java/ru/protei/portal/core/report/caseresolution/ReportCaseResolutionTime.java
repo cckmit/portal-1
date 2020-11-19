@@ -1,6 +1,5 @@
 package ru.protei.portal.core.report.caseresolution;
 
-import org.apache.poi.hssf.usermodel.HSSFDataFormat;
 import org.apache.poi.xssf.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,17 +9,12 @@ import ru.protei.portal.core.model.dto.CaseResolutionTimeReportDto;
 import ru.protei.portal.core.model.helper.DateRangeUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.DateRange;
-import ru.protei.portal.core.utils.ExcelFormatUtils;
 import ru.protei.portal.core.utils.ExcelFormatUtils.ExcelFormat;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.size;
-import static ru.protei.portal.core.model.helper.StringUtils.join;
 import static ru.protei.portal.core.model.util.CrmConstants.Time.*;
 
 public class ReportCaseResolutionTime {
@@ -40,7 +34,6 @@ public class ReportCaseResolutionTime {
             columnNames.add( localizedLang.get( "maximumColumn" ) );
             columnNames.add( localizedLang.get( "minimumColumn" ) );
             columnNames.add( localizedLang.get( "numberUncompletedCases" ) );
-            columnNames.add( localizedLang.get( "uncompletedCasesNumbers" ) );
         }
 
         XSSFWorkbook workbook = createWorkBook( intervals, columnNames );
@@ -113,11 +106,7 @@ public class ReportCaseResolutionTime {
 
             XSSFCell caseNumbersSizeCell = row.createCell(++cellIndex);
             caseNumbersSizeCell.setCellStyle(createFormattedCellStyle(workbook, ExcelFormat.NUMBER));
-            caseNumbersSizeCell.setCellValue( interval.caseNumbers.size() );
-
-            XSSFCell caseNumberCell = row.createCell(++cellIndex);
-            caseNumberCell.setCellStyle(createFormattedCellStyle(workbook, ExcelFormat.STANDARD));
-            caseNumberCell.setCellValue( join(interval.caseNumbers, ", ") );
+            caseNumbersSizeCell.setCellValue( interval.casesCount );
         }
         log.info( "createWorkBook() intervals: {}", intervals );
         return workbook;
@@ -173,8 +162,8 @@ public class ReportCaseResolutionTime {
     }
 
     private static Integer calcAverage( Interval interval ) {
-        if (interval == null || size(interval.caseNumbers ) == 0) return 0;
-        return (int) ((interval.summTime / size(interval.caseNumbers )) / HOUR);
+        if (interval == null || interval.casesCount == 0) return 0;
+        return (int) ((interval.summTime / interval.casesCount) / HOUR);
     }
 
     private static Case mapCase( Case aCase, CaseResolutionTimeReportDto comment ) {
@@ -184,7 +173,7 @@ public class ReportCaseResolutionTime {
         return aCase;
     }
 
-    public static final List<String> DEFAULT_COLUMN_NAMES = Arrays.asList( "Date", "Average", "Maximum", "Minimum", "Case count", "Active cases" );
+    public static final List<String> DEFAULT_COLUMN_NAMES = Arrays.asList( "Date", "Average", "Maximum", "Minimum", "Case count");
 
     private List<Case> cases = new ArrayList<>();
     private List<Interval> intervals = new ArrayList<>();
@@ -207,7 +196,7 @@ public class ReportCaseResolutionTime {
                     continue;
                 }
 
-                caseNumbers.add( aCase.caseNumber );
+                casesCount++;
                 summTime += time;
                 if (time < minTime || minTime == 0) minTime = time;
                 if (time > maxTime || maxTime == 0) maxTime = time;
@@ -222,13 +211,13 @@ public class ReportCaseResolutionTime {
                     ", summTime=" + summTime +
                     ", maxTime=" + maxTime +
                     ", minTime=" + minTime +
-                    ", caseNumbers: " + caseNumbers +
+                    ", casesCount: " + casesCount +
                     '}';
         }
 
         public long from;
         public long to;
-        public List<Long> caseNumbers = new ArrayList<>( );
+        public long casesCount;
         public long summTime;
         public long maxTime;
         public long minTime;
