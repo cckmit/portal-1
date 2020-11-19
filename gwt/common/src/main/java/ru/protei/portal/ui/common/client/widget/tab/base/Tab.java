@@ -86,6 +86,13 @@ public abstract class Tab extends Composite implements HasWidgets, TabHandler {
         findFirstPane().ifPresent(p -> onTabSelected(p.getTabName()));
     }
 
+    public void selectTab(String tabName) {
+        TabWidgetPane pane = tabNameToPane.get(tabName);
+        if (pane != null && pane.isVisible()) {
+            onTabSelected(tabName);
+        }
+    }
+
     protected abstract HTMLPanel getContainer();
 
     protected abstract void addTab(TabWidgetPane widget);

@@ -59,7 +59,8 @@ public abstract class AbsenceCommonActivity implements AbstractAbsenceCommonActi
     }
 
     protected void fillView(PersonAbsence absence) {
-        PersonShortView currentPerson = new PersonShortView(policyService.getProfile().getFullName(), policyService.getProfile().getId());
+        PersonShortView currentPerson = new PersonShortView(policyService.getProfile().getId());
+        currentPerson.setDisplayName(policyService.getProfile().getFullName());
         view.employee().setValue(absence.getPerson() == null ? currentPerson : absence.getPerson());
         view.reason().setValue(absence.getReason());
         view.comment().setValue(absence.getUserComment());

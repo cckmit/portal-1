@@ -48,9 +48,7 @@ public class AccordionWidget extends Tab {
     }
 
     @Override
-    protected void onAttach() {
-        super.onAttach();
-
+    protected void onLoad() {
         initCollapseState(localStorageKey);
     }
 

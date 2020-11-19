@@ -11,7 +11,6 @@ import ru.protei.portal.core.event.CaseNameAndDescriptionEvent;
 import ru.protei.portal.core.event.CaseObjectCreateEvent;
 import ru.protei.portal.core.event.CaseObjectMetaEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
-import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
@@ -156,7 +155,8 @@ public class CaseServiceImpl implements CaseService {
     private CaseLinkDAO caseLinkDAO;
 
     @Override
-    public Result<SearchResult<CaseShortView>> getCaseObjects( AuthToken token, CaseQuery query) {
+    public Result<SearchResult<CaseShortView>> getCaseObjects(AuthToken token, CaseQuery query) {
+
         applyFilterByScope(token, query);
 
         SearchResult<CaseShortView> sr = caseShortViewDAO.getSearchResult(query);
@@ -473,7 +473,6 @@ public class CaseServiceImpl implements CaseService {
             }
         }
 
-        // Открываем родительскую задачу, если все подзадачи закрыты
         Result<Long> openedParentsResult = ok(caseMeta.getId());
         if (oldCaseMeta.getStateId() != caseMeta.getStateId() && isTerminalState(caseMeta.getStateId())) {
             openedParentsResult = openParentIssuesIfAllLinksInTerminalState(token, caseMeta.getId());

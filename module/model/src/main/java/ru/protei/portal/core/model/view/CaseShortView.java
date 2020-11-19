@@ -386,6 +386,7 @@ public class CaseShortView implements Serializable, Identifiable {
                 ", initiatorShortName='" + initiatorShortName + '\'' +
                 ", initiatorCompanyId=" + initiatorCompanyId +
                 ", initiatorCompanyName='" + initiatorCompanyName + '\'' +
+                ", autoOpenIssue=" + autoOpenIssue +
                 ", productId=" + productId +
                 ", productName='" + productName + '\'' +
                 ", managerId=" + managerId +
@@ -395,11 +396,11 @@ public class CaseShortView implements Serializable, Identifiable {
                 ", pauseDate=" + pauseDate +
                 ", managerCompanyId=" + managerCompanyId +
                 ", managerCompanyName='" + managerCompanyName + '\'' +
+                ", deadline=" + deadline +
+                ", workTrigger=" + workTrigger +
                 ", tags=" + tags +
                 ", isFavorite=" + isFavorite +
                 ", isPublicAttachmentExist=" + isPublicAttachmentExist +
-                ", deadline=" + deadline +
-                ", workTrigger=" + workTrigger +
                 '}';
     }
 }

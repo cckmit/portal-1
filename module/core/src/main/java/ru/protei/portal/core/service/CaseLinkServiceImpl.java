@@ -106,19 +106,22 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         List<CaseLink> successfullyCreatedLinks = new ArrayList<>();
 
-        linksToCreate.forEach(link -> {
+        linksToCreate.forEach(caseLink -> {
 
-            Result<CaseLink> createdLinkResult = createLink(link, caseType, authToken);
-
+            Result<CaseLink> createdLinkResult = createLink(caseLink, caseType, authToken);
             if (createdLinkResult.isOk()) {
 
                 CaseLink createdLink = createdLinkResult.getData();
 
-                // Блокируем родительскую задачу
-                blockParentIssue(authToken, createdLink);
+                Result<CaseObjectMeta> blockedParentIssue = blockParentIssue(authToken, createdLink);
+                if (blockedParentIssue.isError()) {
+                    throw new RollbackTransactionException("failed to block parent issue with result  = " + blockedParentIssue + " | link = " + createdLink);
+                }
 
-                // Добавляем менеджера в качестве подписчика подзадачи
-                addNotifierToSubtask(authToken, createdLink);
+                Result<CaseObjectMetaNotifiers> addedNotifierResult = addNotifierToSubtask(authToken, createdLink);
+                if (addedNotifierResult.isError()) {
+                    throw new RollbackTransactionException("failed to add subtask notifier with result = " + addedNotifierResult + " | link = " + createdLink);
+                }
 
                 CaseLink newState = caseLinkDAO.get(createdLink.getId());
                 successfullyCreatedLinks.add(newState);
@@ -135,7 +138,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     @Override
     @Transactional
-    public Result<CaseLink> createLinkWithPublish(AuthToken authToken, CaseLink link, En_CaseType caseType) {
+        public Result<CaseLink> createLinkWithPublish(AuthToken authToken, CaseLink link, En_CaseType caseType) {
 
         Result<CaseLink> createdLinkResult = createLink(link, caseType, authToken);
         if (createdLinkResult.isError()) {
@@ -144,21 +147,18 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         CaseLink createdLink = createdLinkResult.getData();
 
-        // Блокируем родительскую задачу
         Result<CaseObjectMeta> blockedParentIssue = blockParentIssue(authToken, createdLink);
         if (blockedParentIssue.isError()) {
             log.error("createLinkWithPublish(): failed to block parent issue with result = {} | link = {}", blockedParentIssue, link);
             throw new ResultStatusException(blockedParentIssue.getStatus());
         }
 
-        // Добавляем менеджера в качестве подписчика подзадачи
         Result<CaseObjectMetaNotifiers> addedNotifierResult = addNotifierToSubtask(authToken, createdLink);
         if (addedNotifierResult.isError()) {
             log.error("createLinkWithPublish(): failed to add subtask notifier with result = {} | link = {}", addedNotifierResult, link);
             throw new ResultStatusException(addedNotifierResult.getStatus());
         }
 
-        // Синхронизируем связки YT
         synchronizeYouTrackLinks(Collections.singletonList(link), caseType);
 
         CaseLink newState = caseLinkDAO.get(createdLink.getId());
@@ -174,9 +174,15 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         }
 
         links.forEach(link -> {
+
             Result<CaseLink> deletedLinkResult = deleteLink(link.getId());
             if (deletedLinkResult.isOk()) {
-                openParentIssueIfAllLinksInTerminalState(token, deletedLinkResult.getData());
+
+                Result<CaseObjectMeta> openedIssueResult = openParentIssueIfAllLinksInTerminalState(token, deletedLinkResult.getData());
+                if (openedIssueResult.isError()) {
+                    log.error("deleteLinks(): linkId = {} | failed to open parent issue with result = {}", link.getId(), openedIssueResult);
+                    throw new ResultStatusException(openedIssueResult.getStatus());
+                }
             }
         });
 
@@ -196,14 +202,12 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         CaseLink deletedLink = deletedLinkResult.getData();
 
-        // Открываем родительскую задачу, если все подзадачи закрыты
         Result<CaseObjectMeta> openedIssueResult = openParentIssueIfAllLinksInTerminalState(authToken, deletedLink);
         if (openedIssueResult.isError()) {
             log.error("deleteLinkWithPublish(): linkId = {} | failed to open parent issue with result = {}", id, openedIssueResult);
             throw new ResultStatusException(openedIssueResult.getStatus());
         }
 
-        // Синхронизируем связки YT
         synchronizeYouTrackLinks(Collections.singletonList(deletedLink), caseType);
 
         return sendNotificationLinkRemoved(authToken, deletedLink.getCaseId(), deletedLink, caseType)

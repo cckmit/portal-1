@@ -11,18 +11,11 @@ public class CaseLinkBundleTypeSelector extends ButtonPopupSingleSelector<En_Bun
 
     @Inject
     public void init(CaseLinkBundleTypeModel caseLinkBundleTypeModel) {
-        this.model = caseLinkBundleTypeModel;
         setModel(caseLinkBundleTypeModel);
         setSearchEnabled(false);
         setItemRenderer(value -> value == null ? defaultValue : bundleTypeLang.getName(value));
         setDisplayStyle("btn btn-default btn-block dropdown-toggle");
     }
-
-    public void updateElements(List<En_BundleType> list) {
-        model.updateElements(list);
-    }
-
-    CaseLinkBundleTypeModel model;
 
     @Inject
     En_BundleTypeLang bundleTypeLang;

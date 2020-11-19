@@ -152,6 +152,7 @@ public abstract class CaseLinkListActivity
         });
 
         hideOrShowIfNoLinks();
+        view.selectFirstTab();
     }
 
     private void addYtLink( CaseLink caseLink ) {
@@ -206,6 +207,7 @@ public abstract class CaseLinkListActivity
             fireEvent(new CaseLinkEvents.Added(show.caseId, value, caseType));
             addLinkToParentAndModifyLinksCount(value);
             hideOrShowIfNoLinks();
+            view.selectTab(bundleTypeLang.getName(value.getBundleType()));
             return;
         }
 
@@ -215,12 +217,12 @@ public abstract class CaseLinkListActivity
                     value.setCaseInfo(caseLink.getCaseInfo());
                     addLinkToParentAndModifyLinksCount(value);
                     hideOrShowIfNoLinks();
+                    view.selectTab(bundleTypeLang.getName(value.getBundleType()));
                     fireEvent(new NotifyEvents.Show(lang.caseLinkSuccessfulCreated(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new CaseLinkEvents.Changed(value, caseType));
                 })
         );
     }
-
 
     private void makeCaseLinkViewAndAddToParent(CaseLink value, HTMLPanel panel) {
         AbstractCaseLinkItemView itemWidget = itemViewProvider.get();
@@ -281,7 +283,6 @@ public abstract class CaseLinkListActivity
         view.getContainerVisibility().setVisible(isPresent);
         bundleTypeToPanel.forEach((bundleType, panel) -> {
             view.tabVisibility(bundleTypeLang.getName(bundleType), panel.iterator().hasNext());
-            view.resetTabs();
         });
     }
 

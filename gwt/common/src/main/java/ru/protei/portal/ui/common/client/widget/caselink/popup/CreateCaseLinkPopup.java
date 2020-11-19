@@ -52,6 +52,7 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
         };
 
         setInputTextHandler();
+        bundleTypeSelector.setModel(bundleTypeModel);
     }
 
     @Override
@@ -169,7 +170,7 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
     }
 
     private void updateBundleTypeSelector() {
-        bundleTypeSelector.updateElements(
+        bundleTypeModel.fill(
                 En_CaseType.CRM_SUPPORT.equals(caseType) && En_CaseLink.CRM.equals(typeSelector.getValue()) ?
                         listOf(En_BundleType.values()) :
                         listOf(En_BundleType.LINKED_WITH));
@@ -191,6 +192,8 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
     Lang lang;
     @Inject
     PolicyService policyService;
+    @Inject
+    CaseLinkBundleTypeModel bundleTypeModel;
 
     private UIObject relative;
     private En_CaseType caseType;

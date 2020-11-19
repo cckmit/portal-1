@@ -45,7 +45,7 @@ public abstract class ProfilePageActivity implements Activity, AbstractProfilePa
             fireEvent(new AppEvents.ShowProfileSubscriptions(view.getSubscriptionsContainer()));
         }
 
-        view.resetTabs();
+        view.selectFirstTab();
     }
 
     private void fillView(Profile value) {

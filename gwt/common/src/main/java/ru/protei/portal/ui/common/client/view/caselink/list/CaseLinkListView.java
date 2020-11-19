@@ -61,8 +61,13 @@ public class CaseLinkListView
     }
 
     @Override
-    public void resetTabs() {
+    public void selectFirstTab() {
         accordionWidget.selectFirstTab();
+    }
+
+    @Override
+    public void selectTab(String tabName) {
+        accordionWidget.selectTab(tabName);
     }
 
     @Override

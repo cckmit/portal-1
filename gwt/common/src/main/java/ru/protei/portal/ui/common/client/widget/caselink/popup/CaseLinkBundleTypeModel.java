@@ -8,7 +8,7 @@ import java.util.List;
 
 public abstract class CaseLinkBundleTypeModel extends BaseSelectorModel<En_BundleType> implements Activity {
 
-    public void updateElements(List<En_BundleType> result) {
-        super.updateElements(result);
+    public void fill(List<En_BundleType> result) {
+        updateElements(result);
     }
 }

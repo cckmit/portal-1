@@ -22,7 +22,9 @@ public interface AbstractCaseLinkListView extends IsWidget {
 
     void tabVisibility(String tabName, boolean isVisible);
 
-    void resetTabs();
+    void selectFirstTab();
+
+    void selectTab(String tabName);
 
     void setTabNameDebugId(String tabName, String debugId);
 }
