@@ -458,6 +458,7 @@ public class DebugIds {
         String STATE_SELECTOR = "project-state-selector";
         String REGION_SELECTOR = "project-region-selector";
         String DIRECTION_SELECTOR = "project-direction-selector";
+        String PRODUCT_SELECTOR = "project-product-selector";
         String CUSTOMER_TYPE_SELECTOR = "project-customer-type-selector";
         String COMPANY_SELECTOR = "project-company-selector";
         String LINKS_BUTTON = "project-links-button";

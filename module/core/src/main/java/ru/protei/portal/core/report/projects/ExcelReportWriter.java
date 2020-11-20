@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.ReportProjectWithLastComment;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.EnumLangUtil;
 import ru.protei.portal.core.utils.ExcelFormatUtils.ExcelFormat;
@@ -18,6 +19,9 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 public class ExcelReportWriter implements
         ReportWriter<ReportProjectWithLastComment>,
@@ -102,8 +106,7 @@ public class ExcelReportWriter implements
         values.add(project.getCustomer() != null ? project.getCustomer().getCname() : "");
         values.add(project.getRegion() != null && project.getRegion().getDisplayText() != null ?
                 project.getRegion().getDisplayText() : "");
-        values.add(project.getProductDirectionEntityOption() != null && project.getProductDirectionEntityOption().getDisplayText() != null ?
-                project.getProductDirectionEntityOption().getDisplayText() : "");
+        values.add(stream(project.getProductDirectionEntityOptionList()).map(EntityOption::getDisplayText).collect(Collectors.joining(", ")));
         values.add(project.getPauseDate() != null ? new Date(project.getPauseDate()) : "");
         values.add(comment != null ? comment.getCreated() : "");
         values.add(comment != null ? comment.getText() : "");

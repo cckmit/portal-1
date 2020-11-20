@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.util.UiResult;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -29,7 +30,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.dict.En_RegionState.PAUSED;
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 import static ru.protei.portal.ui.project.client.util.AccessUtil.*;
 
@@ -127,9 +128,14 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
     @Override
     public void onDirectionChanged() {
-        view.updateProductDirection(view.direction().getValue() == null ? null : view.direction().getValue().id);
+//        view.updateProductDirection(view.direction().getValue() == null ? null : view.direction().getValue().id);
         view.product().setValue(null);
         view.productEnabled().setEnabled(true);
+    }
+
+    @Override
+    public void onProductChanged() {
+        // todo
     }
 
     @Override
@@ -158,18 +164,18 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.setNumber( isNew( project ) ? null : project.getId().intValue() );
         view.name().setValue( isNew( project ) ? "" : project.getName());
         view.state().setValue( isNew( project ) ? En_RegionState.UNKNOWN : project.getState() );
-        view.direction().setValue( project.getProductDirectionEntityOption() == null ? null : new ProductDirectionInfo( project.getProductDirectionEntityOption() ) );
-        view.productEnabled().setEnabled(project.getProductDirectionEntityOption() != null);
+        view.direction().setValue( stream(project.getProductDirectionEntityOptionList()).map(ProductDirectionInfo::new).collect(Collectors.toSet()) );
+        view.productEnabled().setEnabled(project.getProductDirectionEntityOptionList() != null);
         view.team().setValue( project.getTeam() == null ? null : new HashSet<>( project.getTeam() ) );
         view.region().setValue( project.getRegion() );
         Company customer = project.getCustomer();
         view.company().setValue(customer == null ? null : customer.toEntityOption());
         view.companyEnabled().setEnabled(isNew( project ));
         view.description().setText(project.getDescription());
-        view.product().setValue(project.getSingleProduct());
+        view.product().setValue(new HashSet<>(project.getProductShortView()));
         if (isNew( project )) view.setHideNullValue(true);
         view.customerType().setValue(project.getCustomerType());
-        view.updateProductDirection(project.getProductDirectionEntityOption() == null ? null : project.getProductDirectionEntityOption().getId());
+        view.updateProductDirection( stream(project.getProductDirectionEntityOptionList()).map(EntityOption::getId).collect(Collectors.toSet()) );
         view.pauseDateContainerVisibility().setVisible( PAUSED == project.getState() );
         view.pauseDate().setValue( project.getPauseDate() == null ? null : new Date( project.getPauseDate() ) );
 
@@ -226,12 +232,11 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         project.setPauseDate( (PAUSED != view.state().getValue()) ? null : view.pauseDate().getValue().getTime() );
         project.setCustomer(Company.fromEntityOption(view.company().getValue()));
         project.setCustomerType(view.customerType().getValue());
-        project.setProducts(fillDevUnits());
+        project.setProducts( stream(view.product().getValue()).map(DevUnit::fromProductShortView).collect(Collectors.toSet()) );
         project.setTechnicalSupportValidity(view.technicalSupportValidity().getValue());
         project.setWorkCompletionDate(view.workCompletionDate().getValue());
         project.setPurchaseDate(view.purchaseDate().getValue());
-        project.setProductDirectionName(view.direction().getValue().name );
-        project.setProductDirectionId(view.direction().getValue().id );
+        project.setProductDirections( stream(view.direction().getValue()).map(DevUnit::fromProductDirectionInfo).collect(Collectors.toList()) );
         project.setRegion(view.region().getValue());
         project.setTeam(new ArrayList<>(view.team().getValue()));
         project.setProjectSlas(view.slaInput().getValue());
@@ -239,15 +244,6 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
                 .map(PlanOption::toPlan)
                 .collect(Collectors.toList()));
         return project;
-    }
-
-    private Set<DevUnit> fillDevUnits(){
-        if (view.product().getValue() == null) {
-            return new HashSet<>();
-        } else {
-            DevUnit product = DevUnit.fromProductShortView(view.product().getValue());
-            return new HashSet<>(Collections.singleton(product));
-        }
     }
 
     private void fillCaseLinks(Project project) {

@@ -26,9 +26,9 @@ import ru.protei.portal.ui.product.client.activity.filter.AbstractProductFilterA
 import ru.protei.portal.ui.product.client.activity.filter.AbstractProductFilterView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.util.Collections;
 import java.util.List;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.core.model.helper.StringUtils.nullIfEmpty;
 import static ru.protei.portal.core.model.util.AlternativeKeyboardLayoutTextService.makeAlternativeSearchString;
 
@@ -164,7 +164,7 @@ public abstract class ProductTableActivity implements
         pq.setSortField(filterView.sortField().getValue());
         pq.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
         pq.setTypes( CollectionUtils.nullIfEmpty( filterView.types().getValue() ) );
-        pq.setDirectionId(filterView.direction().getValue() == null ? null : filterView.direction().getValue().id);
+        pq.setDirectionIds(filterView.direction().getValue() == null ? null : Collections.singleton(filterView.direction().getValue().id));
 
         return pq;
     }

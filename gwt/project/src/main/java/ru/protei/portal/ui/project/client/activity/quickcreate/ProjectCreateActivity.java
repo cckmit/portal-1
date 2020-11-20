@@ -5,7 +5,6 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
-import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.DevUnit;
@@ -90,11 +89,11 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
         view.name().setValue(project.getName());
         view.description().setValue(project.getDescription());
         view.region().setValue(project.getRegion());
-        view.direction().setValue(project.getProductDirectionEntityOption() == null ? null : new ProductDirectionInfo(project.getProductDirectionEntityOption()));
+//        view.direction().setValue(project.getProductDirectionEntityOptionList() == null ? null : new ProductDirectionInfo(project.getProductDirectionEntityOptionList()));
         view.customerType().setValue(project.getCustomerType());
         view.company().setValue(EntityOption.fromCompany(project.getCustomer()));
         view.product().setValue(project.getSingleProduct());
-        view.updateProductDirection(project.getProductDirectionEntityOption() == null ? null : project.getProductDirectionEntityOption().getId());
+//        view.updateProductDirection(project.getProductDirectionEntityOptionList() == null ? null : project.getProductDirectionEntityOptionList().getId());
         view.headManagers().setValue(new HashSet<>(emptyIfNull(project.getTeam())));
         homeCompanyService.getAllHomeCompanies(homeCompanies -> {
             asyncPersonModel.updateCompanies( CollectionUtils.toSet(homeCompanies, EntityOption::getId) );
@@ -108,8 +107,8 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
         project.setName(view.name().getValue().trim());
         project.setDescription(view.description().getValue().trim());
         project.setRegion(view.region().getValue());
-        project.setProductDirectionName(view.direction().getValue().name );
-        project.setProductDirectionId(view.direction().getValue().id );
+//        project.setProductDirectionName(view.direction().getValue().name );
+//        project.setProductDirectionId(view.direction().getValue().id );
         project.setCustomerType(view.customerType().getValue());
         project.setCustomer(Company.fromEntityOption(view.company().getValue()));
         project.setProducts(fillDevUnits());

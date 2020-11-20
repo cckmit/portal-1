@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.ui.project.client.util.AccessUtil.*;
 
 /**
@@ -116,7 +117,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.setName( value.getName() );
         view.setCreatedBy(lang.createBy(value.getCreator().getDisplayShortName(), DateFormatter.formatDateTime(value.getCreated())));
         view.setState( value.getState().getId() );
-        view.setDirection( value.getProductDirectionEntityOption() == null ? "" : value.getProductDirectionEntityOption().getDisplayText() );
+        view.setDirection( stream(value.getProductDirectionEntityOptionList()).map(EntityOption::getDisplayText).collect(Collectors.joining(", ")));
         view.setDescription( value.getDescription() == null ? "" : value.getDescription() );
         view.setRegion( value.getRegion() == null ? "" : value.getRegion().getDisplayText() );
         view.setCompany(value.getCustomer() == null ? "" : value.getCustomer().getCname());

@@ -10,6 +10,8 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.input.InputPopupMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 
+import java.util.Set;
+
 /**
  * Мультиселектор продуктов
  */
@@ -34,6 +36,10 @@ public class DevUnitMultiSelector extends InputPopupMultiSelector<ProductShortVi
 
     public void setState(En_DevUnitState enDevUnitState) {
         model.setUnitState(enDevUnitState);
+    }
+
+    public void setDirectionIds(Set<Long> directionIds) {
+        model.setDirectionIds(directionIds);
     }
 
     private ProductModel model;

@@ -1,0 +1,34 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="create-project_to_direction-table" author="porubov">
+        <createTable tableName="project_to_direction">
+            <column name="project_id" type="BIGINT">
+                <constraints referencedTableName="project"
+                             referencedColumnNames="id"
+                             foreignKeyName="project_to_direction_project_id_fk" />
+            </column>
+            <column name="direction_id" type="BIGINT">
+                <constraints referencedTableName="dev_unit"
+                             referencedColumnNames="id"
+                             foreignKeyName="project_to_direction_direction_id_fk" />
+            </column>
+        </createTable>
+
+        <addPrimaryKey tableName="project_to_direction" columnNames="project_id, direction_id"/>
+    </changeSet>
+
+    <changeSet id="fill-project_to_direction-table" author="porubov">
+        <sql>
+            INSERT INTO project_to_direction(project_id, direction_id)
+            SELECT id, product_id
+            FROM case_object
+            WHERE CASE_TYPE = 9 AND product_id is NOT NULL
+            ORDER BY case_object.id;
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

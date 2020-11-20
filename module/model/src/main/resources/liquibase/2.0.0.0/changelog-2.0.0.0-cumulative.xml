@@ -64,5 +64,6 @@
   <include file="2020-10-26-add-notnull-constraint-to-worker_entry-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-10-28-edit-reserved-ip-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-11-13-add-private_flag-to-attachment.xml" relativeToChangelogFile="true"/>
+  <include file="2020-11-20-swap-project-to-direction-many-to-many.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

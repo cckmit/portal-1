@@ -54,7 +54,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Result<SearchResult<DevUnit>> getProducts( AuthToken token, ProductQuery query) {
-        if ( query.getDirectionId() != null && !checkIfDirection(query.getDirectionId()) ) {
+        if ( isNotEmpty(query.getDirectionIds()) && !checkIfDirection(query.getDirectionIds()) ) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -65,7 +65,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Result<List<ProductShortView>> shortViewList( AuthToken token, ProductQuery query ) {
-        if ( query.getDirectionId() != null && !checkIfDirection(query.getDirectionId()) ) {
+        if ( isNotEmpty(query.getDirectionIds()) && !checkIfDirection(query.getDirectionIds()) ) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -74,7 +74,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Result<List<ProductShortView>> productsShortViewListWithChildren(AuthToken token, ProductQuery query) {
-        if (query.getDirectionId() != null && !checkIfDirection(query.getDirectionId())) {
+        if ( isNotEmpty(query.getDirectionIds()) && !checkIfDirection(query.getDirectionIds()) ) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -262,14 +262,12 @@ public class ProductServiceImpl implements ProductService {
                 .collect(Collectors.toList());
     }
 
-    private boolean checkIfDirection(Long directionId) {
-        DevUnit direction = devUnitDAO.get(directionId);
-
-        if (direction == null) {
+    private boolean checkIfDirection(Set<Long> directionId) {
+        List<DevUnit> direction = devUnitDAO.getListByKeys(directionId);
+        if (isEmpty(direction)) {
             return false;
         }
-
-        return direction.isDirection();
+        return direction.stream().allMatch(DevUnit::isDirection);
     }
 
     private boolean validateFields(DevUnit product) {

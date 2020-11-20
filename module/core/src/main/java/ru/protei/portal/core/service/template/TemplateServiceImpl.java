@@ -524,8 +524,8 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("newCustomerType", newProjectState.getCustomerType());
 
         templateModel.put("productDirectionChanged", event.isProductDirectionChanged());
-        templateModel.put("oldProductDirection", getNullOrElse(getNullOrElse(oldProjectState, Project::getProductDirectionEntityOption), EntityOption::getDisplayText));
-        templateModel.put("newProductDirection", newProjectState.getProductDirectionEntityOption().getDisplayText());
+//        templateModel.put("oldProductDirection", getNullOrElse(getNullOrElse(oldProjectState, Project::getProductDirectionEntityOptionList), EntityOption::getDisplayText));
+//        templateModel.put("newProductDirection", newProjectState.getProductDirectionEntityOptionList().getDisplayText());
 
         templateModel.put("productChanged", event.isProductChanged());
         templateModel.put("oldProduct", getNullOrElse(getNullOrElse(oldProjectState, Project::getSingleProduct), ProductShortView::getName));

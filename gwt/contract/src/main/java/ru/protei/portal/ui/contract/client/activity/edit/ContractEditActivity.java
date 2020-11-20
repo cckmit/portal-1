@@ -187,7 +187,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
             clearProjectSpecificFields();
             return;
         }
-        view.direction().setValue(project.getProductDirection() == null ? null : new ProductDirectionInfo(project.getProductDirection()));
+//        view.direction().setValue(project.getProductDirection() == null ? null : new ProductDirectionInfo(project.getProductDirection()));
         view.manager().setValue(project.getManager() == null ? null : new PersonShortView(project.getManager()));
     }
 

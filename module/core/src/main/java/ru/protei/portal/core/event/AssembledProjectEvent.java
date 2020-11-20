@@ -115,7 +115,7 @@ public class AssembledProjectEvent extends ApplicationEvent implements HasCaseCo
     }
 
     public boolean isProductDirectionChanged() {
-        return isEditEvent() && !Objects.equals(oldProjectState.getProductDirectionEntityOption(), newProjectState.getProductDirectionEntityOption());
+        return isEditEvent() && !Objects.equals(oldProjectState.getProductDirectionEntityOptionList(), newProjectState.getProductDirectionEntityOptionList());
     }
 
     public boolean isProductChanged() {

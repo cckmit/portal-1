@@ -12,11 +12,14 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.dto.ProjectInfo;
+import ru.protei.portal.core.model.ent.DecimalNumber;
+import ru.protei.portal.core.model.ent.Document;
+import ru.protei.portal.core.model.ent.DocumentType;
+import ru.protei.portal.core.model.ent.Equipment;
+import ru.protei.portal.core.model.helper.DocumentUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -32,14 +35,12 @@ import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentMode
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
-import ru.protei.portal.core.model.helper.DocumentUtils;
 
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
-import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public abstract class DocumentEditActivity
         implements Activity, AbstractDocumentEditActivity {
@@ -574,7 +575,7 @@ public abstract class DocumentEditActivity
     private void fillViewProjectInfo(ProjectInfo project) {
         view.setProjectInfo(
             project == null ? "" : customerTypeLang.getName(project.getCustomerType()),
-            project == null ? "" : fetchDisplayText(project.getProductDirection()),
+            project == null ? "" : stream(project.getProductDirection()).map(EntityOption::getDisplayText).collect(Collectors.joining(", ")),
             project == null ? "" : fetchDisplayText(project.getRegion())
         );
     }

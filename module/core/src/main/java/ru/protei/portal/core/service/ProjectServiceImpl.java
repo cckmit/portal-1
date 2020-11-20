@@ -557,7 +557,7 @@ public class ProjectServiceImpl implements ProjectService {
         caseObject.setManagerId(project.getLeader() == null ? null : project.getLeader().getId());
         caseObject.setPauseDate( project.getPauseDate() );
 
-        caseObject.setProductId(project.getProductDirectionEntityOption() == null ? null :  project.getProductDirectionEntityOption().getId());
+//        caseObject.setProductId(project.getProductDirectionEntityOptionList() == null ? null :  project.getProductDirectionEntityOptionList().getId());
 
         if (project.getCustomer() == null) {
             caseObject.setInitiatorCompany(null);

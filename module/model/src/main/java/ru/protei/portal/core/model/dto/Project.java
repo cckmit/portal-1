@@ -68,18 +68,10 @@ public class Project extends AuditableObject {
     private Company customer;
 
     /**
-     * Имя продукта
+     * Продукты
      */
-    @JdbcJoinedColumn(joinPath = {
-            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
-            @JdbcJoinPath(localColumn = "product_id", remoteColumn = "id", table = "dev_unit")}, mappedColumn = "UNIT_NAME")
-    private String productDirectionName;
-
-    /**
-     * id продукта
-     */
-    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = "product_id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
-    private Long productDirectionId;
+    @JdbcManyToMany(linkTable = "project_to_direction", localLinkColumn = "project_id", remoteLinkColumn = "direction_id")
+    private List<DevUnit> productDirections;
 
     /**
      * Дата создания
@@ -186,28 +178,21 @@ public class Project extends AuditableObject {
         this.stateId = state.getId();
     }
 
-    public EntityOption getProductDirectionEntityOption() {
-        if (productDirectionName != null && productDirectionId != null) {
-            return new EntityOption(productDirectionName, productDirectionId);
-        } else {
+    public List<EntityOption> getProductDirectionEntityOptionList() {
+        if (isEmpty(productDirections)) {
             return null;
         }
+        return productDirections.stream()
+                .map(direction -> new EntityOption(direction.getName(), direction.getId()))
+                .collect(Collectors.toList());
     }
 
-    public String getProductDirectionName() {
-        return productDirectionName;
+    public List<DevUnit> getProductDirections() {
+        return productDirections;
     }
 
-    public void setProductDirectionName(String productDirectionName) {
-        this.productDirectionName = productDirectionName;
-    }
-
-    public Long getProductDirectionId() {
-        return productDirectionId;
-    }
-
-    public void setProductDirectionId(Long productDirectionId) {
-        this.productDirectionId = productDirectionId;
+    public void setProductDirections(List<DevUnit> productDirections) {
+        this.productDirections = productDirections;
     }
 
     public Date getCreated() {
@@ -341,6 +326,10 @@ public class Project extends AuditableObject {
         return products == null ? null : getProducts().stream().map(ProductShortView::fromProduct).findAny().orElse(null);
     }
 
+    public List<ProductShortView> getProductShortView() {
+        return products == null ? null : getProducts().stream().map(ProductShortView::fromProduct).collect(Collectors.toList());
+    }
+
     public List<EntityOption> getContracts() {
         return contracts;
     }
@@ -464,8 +453,7 @@ public class Project extends AuditableObject {
                 ", stateId=" + stateId +
                 ", customerType=" + customerType +
                 ", customer=" + customer +
-                ", productDirectionName='" + productDirectionName + '\'' +
-                ", productDirectionId=" + productDirectionId +
+                ", productDirections=" + productDirections +
                 ", created=" + created +
                 ", creatorId=" + creatorId +
                 ", members=" + members +
