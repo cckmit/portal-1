@@ -13,6 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static ru.protei.portal.core.model.helper.CaseCommentUtils.makeJiraImageString;
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 
 public class JiraUtils {
     private static Pattern pattern = Pattern.compile("((?<![\\p{L}\\p{Nd}\\\\])|(?<=inltokxyzkdtnhgnsbdfinltok))\\!([^\\s\\!]((?!\\!)[\\p{L}\\p{Nd}\\p{Z}\\p{S}\\p{M}\\p{P}]*?[^\\s\\!])?)(?<!\\\\)\\!((?![\\p{L}\\p{Nd}])|(?=inltokxyzkdtnhgnsbdfinltok))");;
@@ -99,7 +100,8 @@ public class JiraUtils {
         return resultText;
     }
 
-    static public void setTextWithReplacedImagesFromJira(CaseComment caseComment, Collection<Attachment> attachments) {
+    static public void setTextWithReplacedImagesFromJira(CaseComment caseComment, Collection<Attachment> attachments,
+                                                         Collection<CaseAttachment> caseLinkAttachments) {
         String textWithReplacedImages = getTextWithReplacedImages(
                 caseComment.getText(),
                 attachments,
@@ -108,15 +110,29 @@ public class JiraUtils {
                     String imageString = makeJiraImageString(attachment.getExtLink(),
                             attachment.getFileName() + (node.alt != null ? ", " + node.alt : ""));
 
-                    List<CaseAttachment> caseAttachments = (caseComment.getCaseAttachments() != null ?
+                    List<CaseAttachment> commentAttachments = (caseComment.getCaseAttachments() != null ?
                             caseComment.getCaseAttachments() : new ArrayList<>());
-                    caseAttachments.add(new CaseAttachment(caseComment.getCaseId(), attachment.getId()));
-                    caseComment.setCaseAttachments(caseAttachments);
+
+                    Optional<CaseAttachment> caseAttachment = findCaseAttachmentByAttachmentId(caseLinkAttachments, attachment.getId());
+
+                    if (!caseAttachment.isPresent() || caseAttachment.get().getCommentId() != null) {
+                        commentAttachments.add(new CaseAttachment(caseComment.getCaseId(), attachment.getId()));
+                    } else {
+                        commentAttachments.add(caseAttachment.get());
+                    }
+
+                    caseComment.setCaseAttachments(commentAttachments);
 
                     return imageString;
                 }
         );
         caseComment.setText(textWithReplacedImages);
+    }
+
+    static private Optional<CaseAttachment> findCaseAttachmentByAttachmentId(Collection<CaseAttachment>caseLinkAttachments, Long id) {
+        return emptyIfNull(caseLinkAttachments).stream()
+                .filter(caseLinkAttachment -> id.equals(caseLinkAttachment.getAttachmentId()))
+                .max(Comparator.nullsLast(Comparator.comparing(CaseAttachment::getId)));
     }
 
     static public String getDescriptionWithReplacedImagesFromJira(String text, Collection<Attachment> attachments) {

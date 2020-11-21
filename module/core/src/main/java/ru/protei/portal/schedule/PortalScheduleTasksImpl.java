@@ -19,6 +19,7 @@ import ru.protei.portal.core.service.bootstrap.BootstrapService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.syncronization.EmployeeRegistrationYoutrackSynchronizer;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -68,6 +69,8 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         scheduler.schedule(this::notifyAboutContractDates, new CronTrigger("0 14 11 * * ?"));
         // at 10:00:00 am every day
         scheduler.schedule(this::processPersonCaseFilterMailNotification, new CronTrigger( "0 0 10 * * ?"));
+        // at 08:00:00 am every day
+        scheduler.schedule(this::notifyExpiringTechnicalSupportValidity, new CronTrigger( "0 0 8 * * ?"));
         // at 09:00:00 am every MONDAY
         scheduler.schedule(this::notifyAboutBirthdays, new CronTrigger( "0 0 9 * * MON"));
         // every 5 minutes
@@ -156,6 +159,11 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         employeeService.notifyAboutBirthdays();
     }
 
+    private void notifyExpiringTechnicalSupportValidity() {
+        log.info( "notifyExpiringTechnicalSupportValidity" );
+        projectService.notifyExpiringProjectTechnicalSupportValidity(LocalDate.now());
+    }
+
     private boolean isNotConfiguredSystemId() {
         if (HelperFunc.isEmpty(config.data().getCommonConfig().getSystemId())) {
             log.warn("reports is not started because system.id not set in configuration");
@@ -192,6 +200,8 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
     AutoOpenCaseService autoOpenCaseService;
     @Autowired
     DocumentService documentService;
+    @Autowired
+    ProjectService projectService;
     @Autowired
     EmployeeRegistrationYoutrackSynchronizer employeeRegistrationYoutrackSynchronizer;
     private static AtomicBoolean isPortalStarted = new AtomicBoolean(false);

@@ -14,23 +14,22 @@ public class PersonProjectMemberView extends PersonShortView {
         this.role = role;
     }
 
+    public PersonProjectMemberView( Person person, En_DevUnitPersonRoleType role ) {
+        super(person);
+        this.role = role;
+    }
+
+    public PersonProjectMemberView( PersonShortView psv, En_DevUnitPersonRoleType role ) {
+        super(psv);
+        this.role = role;
+    }
+
     public En_DevUnitPersonRoleType getRole() {
         return role;
     }
 
     public void setRole(En_DevUnitPersonRoleType role) {
         this.role = role;
-    }
-
-    public static PersonProjectMemberView fromPersonShortView(PersonShortView psv, En_DevUnitPersonRoleType role) {
-        return new PersonProjectMemberView(psv.getName(), psv.getId(), psv.isFired(), role);
-    }
-
-    public static PersonProjectMemberView fromFullNamePerson(Person person, En_DevUnitPersonRoleType role) {
-        if (person == null) {
-            return null;
-        }
-        return new PersonProjectMemberView(person.getDisplayName(), person.getId(), person.isFired(), role);
     }
 
     @Override

@@ -210,7 +210,7 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
         publisherService.publishEvent(new CaseObjectCreateEvent(this, ServiceModule.REDMINE, contactPerson.getId(), obj));
 
         processComments(issue.getJournals(), obj, personMapper);
-        processAttachments(issue.getAttachments(), obj.getId(), endpoint, personMapper);
+        processAttachments(issue.getAttachments(), obj, endpoint, personMapper);
 
         if (obj != null) {
             logger.debug("Object with id {} was created, guid={}", obj.getId(), obj.defGUID());
@@ -255,7 +255,7 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
         }
 
         //Synchronize attachment
-        processAttachments(issue.getAttachments(), object.getId(), endpoint, personMapper);
+        processAttachments(issue.getAttachments(), object, endpoint, personMapper);
     }
 
     private void processComments( Collection<Journal> journals, CaseObject object, CachedPersonMapper personMapper ) {
@@ -267,14 +267,14 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
                 ) );
     }
 
-    private void processAttachments( Collection<Attachment> attachments, Long caseObjId, RedmineEndpoint endpoint, CachedPersonMapper personMapper ) {
+    private void processAttachments( Collection<Attachment> attachments, CaseObject caseObject, RedmineEndpoint endpoint, CachedPersonMapper personMapper ) {
         if (isEmpty( attachments )) {
-            logger.debug("No attachments to process for case with id {}, attachment", caseObjId);
+            logger.debug("No attachments to process for case with id {}, attachment", caseObject.getId());
             return;
         }
 
-        Set<Integer> existingAttachmentsHashCodes = commonService.getExistingAttachmentsHashCodes( caseObjId ).orElseGet( ignore -> ok(new HashSet<Integer>()) ).getData();
-        logger.debug("Process attachments for case with id {}, exists {} attachment", caseObjId, existingAttachmentsHashCodes.size());
+        Set<Integer> existingAttachmentsHashCodes = commonService.getExistingAttachmentsHashCodes( caseObject.getId() ).orElseGet( ignore -> ok(new HashSet<>()) ).getData();
+        logger.debug("Process attachments for case with id {}, exists {} attachment", caseObject.getId(), existingAttachmentsHashCodes.size());
 
         for (com.taskadapter.redmineapi.bean.Attachment attachment : emptyIfNull( attachments )) {
             if (personMapper.isTechUser( endpoint.getDefaultUserId(), attachment.getAuthor() )) continue;
@@ -292,7 +292,7 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
 
             Result<Long> saveResult = commonService.saveAttachment( a, author,
                     new HttpInputSource( attachment.getContentURL(), endpoint.getApiKey() ),
-                    attachment.getFileSize(), attachment.getContentType(), caseObjId );
+                    attachment.getFileSize(), attachment.getContentType(), caseObject );
 
             publishEvents( saveResult );
         }

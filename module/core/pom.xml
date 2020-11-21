@@ -108,6 +108,8 @@
                         <argument>notification/email/birthdays.body.ftl</argument>
                         <argument>notification/email/nrpe.ips.subject.ftl</argument>
                         <argument>notification/email/nrpe.ips.body.ftl</argument>
+                        <argument>notification/email/expiring.technical.support.validity.subject.ftl</argument>
+                        <argument>notification/email/expiring.technical.support.validity.body.ftl</argument>
                     </arguments>
                 </configuration>
             </plugin>

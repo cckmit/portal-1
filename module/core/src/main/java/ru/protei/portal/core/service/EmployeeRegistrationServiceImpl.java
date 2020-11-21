@@ -5,13 +5,11 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledEmployeeRegistrationEvent;
-import ru.protei.portal.core.exception.ResultStatusException;
+
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -19,7 +17,6 @@ import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import javax.annotation.PostConstruct;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -187,17 +184,21 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
             return null;
         }
         boolean needPC = contains(employeeRegistration.getEquipmentList(), En_EmployeeEquipment.COMPUTER);
+        boolean needMonitor = contains(employeeRegistration.getEquipmentList(), En_EmployeeEquipment.MONITOR);
 
         String summary = "Регистрация нового сотрудника " + employeeRegistration.getEmployeeFullName();
 
         String description = join( makeCommonDescriptionString( employeeRegistration ),
-                needPC ? "\n Требуется установить новый ПК." : "",
-                "\n", "Предоставить доступ к ресурсам: ", join( resourceList, r -> getResourceName( r ), ", " ),
-                (isBlank( employeeRegistration.getResourceComment() ) ? "" : "\n   Дополнительно: " + employeeRegistration.getResourceComment()),
+                needPC ? "\n Требуется установить новый ПК." : null,
+                needMonitor ? "\n Требуется установить новый Монитор." : null,
+                "\n Предоставить доступ к ресурсам: ", join( resourceList, r -> getResourceName( r ), ", " ),
+                isBlank( employeeRegistration.getResourceComment() ) ? null :
+                        "\n   Дополнительно: " + employeeRegistration.getResourceComment(),
                 makeWorkplaceConfigurationString( employeeRegistration.getOperatingSystem(), employeeRegistration.getAdditionalSoft() ),
-                "\n", employeeRegistration.getEmploymentDate() == null ? "" :
-                        "Дата приёма на работу: " +  new SimpleDateFormat("dd.MM.yyyy").format(employeeRegistration.getEmploymentDate()),
-                "\n", "Дополнительный комментарий: " + employeeRegistration.getComment()
+                employeeRegistration.getEmploymentDate() == null ? null :
+                        "\n Дата приёма на работу: " +  new SimpleDateFormat("dd.MM.yyyy").format(employeeRegistration.getEmploymentDate()),
+                isBlank( employeeRegistration.getComment() ) ? null :
+                        "\n Дополнительный комментарий: " + employeeRegistration.getComment()
         ).toString();
 
         final String ADMIN_PROJECT_NAME = portalConfig.data().youtrack().getAdminProject();
@@ -264,7 +265,10 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         if (isEmpty(employeeRegistration.getEquipmentList())) {
             return;
         }
-        Set<En_EmployeeEquipment> equipmentsListFurniture = getEquipmentsListFurniture(employeeRegistration.getEquipmentList());
+
+        List<En_EmployeeEquipment> equipmentsListFurniture = filterToList( employeeRegistration.getEquipmentList(),
+                eq -> En_EmployeeEquipment.CHAIR == eq || En_EmployeeEquipment.TABLE == eq );
+
         if (isEmpty(equipmentsListFurniture)) {
             return;
         }
@@ -283,16 +287,9 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         );
     }
 
-    private Set<En_EmployeeEquipment> getEquipmentsListFurniture(Set<En_EmployeeEquipment> employeeRegistration) {
-        Set<En_EmployeeEquipment> equipmentsListFurniture = new HashSet<>(employeeRegistration);
-        equipmentsListFurniture.remove(En_EmployeeEquipment.TELEPHONE);
-        equipmentsListFurniture.remove(En_EmployeeEquipment.COMPUTER);
-        return equipmentsListFurniture;
-    }
-
     private CharSequence makeCommonDescriptionString( EmployeeRegistration er ) {
         return join( "Анкета: ", makeYtLinkToCrmRegistration( er.getId(), er.getEmployeeFullName() ),
-                "\n", "Отдел: ", StringUtils.emptyIfNull(er.getDepartment()),
+                "\n", "Отдел: ", er.getDepartment(),
                 "\n", "Руководитель: ", er.getHeadOfDepartmentShortName(),
                 "\n", "Расположение рабочего места: ", er.getWorkplace()
         );

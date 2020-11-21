@@ -53,7 +53,7 @@ public class TeamSelectorItemModel {
     public static Set<PersonProjectMemberView> fromModel(Collection<TeamSelectorItemModel> model) {
         Set<PersonProjectMemberView> values = new HashSet<>();
         model.forEach(tsim -> tsim.members.forEach(psv -> {
-            values.add(PersonProjectMemberView.fromPersonShortView(psv, tsim.role));
+            values.add(new PersonProjectMemberView(psv, tsim.role));
         }));
         return values;
     }

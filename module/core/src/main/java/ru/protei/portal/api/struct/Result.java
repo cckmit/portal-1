@@ -128,7 +128,7 @@ public class Result<T> {
     }
 
     @JsonIgnore
-    public Result<T> publishEvents( List<ApplicationEvent> events ) {
+    public <E extends ApplicationEvent> Result<T> publishEvents( List<E> events ) {
         if (events == null) return this;
         if (this.events == null) this.events = new ArrayList<>();
         this.events.addAll( events );

@@ -136,9 +136,14 @@ public enum En_SortField {
     project_number("id"),
 
     /**
-     * project number
+     * project_creation_date
      */
     project_creation_date("CO.created"),
+
+    /**
+     * project_head_manager
+     */
+    project_head_manager("CM_MEMBER_ID"),
 
     /**
      * ip address

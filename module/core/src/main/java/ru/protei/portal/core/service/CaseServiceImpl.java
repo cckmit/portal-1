@@ -31,7 +31,6 @@ import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.utils.JiraUtils;
-import ru.protei.portal.core.utils.SimpleProfiler;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.LockStrategy;
@@ -256,6 +255,15 @@ public class CaseServiceImpl implements CaseService {
                             .map(a -> new CaseAttachment(caseId, a.getId()))
                             .collect(Collectors.toList())
             );
+
+            if (caseObject.isPrivateCase()) {
+                attachmentDAO.saveOrUpdateBatch(
+                        caseObject.getAttachments().stream()
+                                .map(a -> {
+                                    a.setPrivate(true);
+                                    return a;
+                                }).collect(Collectors.toList()));
+            }
         }
 
         if(isNotEmpty(caseObject.getNotifiers())){
@@ -358,6 +366,15 @@ public class CaseServiceImpl implements CaseService {
                                 .map(a -> new CaseAttachment(changeRequest.getId(), a.getId()))
                                 .collect(Collectors.toList())
                 );
+
+                if (caseObject.isPrivateCase()) {
+                    attachmentDAO.saveOrUpdateBatch(
+                            changeRequest.getAttachments().stream()
+                                    .map(a -> {
+                                        a.setPrivate(true);
+                                        return a;
+                                    }).collect(Collectors.toList()));
+                }
             }
 
             return ok(changeRequest)
@@ -650,12 +667,12 @@ public class CaseServiceImpl implements CaseService {
         if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_EDIT, caseObject ) ) {
             return error(En_ResultStatus.PERMISSION_DENIED );
         }
-        return attachToCaseId( attachment, caseObject.getId() );
+        return attachToCaseId( attachment, caseObject.getId(), caseObject.isPrivateCase());
     }
 
     @Override
     @Transactional
-    public Result<Long> attachToCaseId( Attachment attachment, long caseId) {
+    public Result<Long> attachToCaseId( Attachment attachment, long caseId, boolean isPrivateCase) {
         CaseAttachment caseAttachment = new CaseAttachment(caseId, attachment.getId());
         Long caseAttachId = caseAttachmentDAO.persist(caseAttachment);
 
@@ -666,6 +683,10 @@ public class CaseServiceImpl implements CaseService {
         caseObject.setAttachmentExists(true);
         caseObject.setModified(new Date());
         boolean isCaseUpdated = caseObjectDAO.partialMerge(caseObject, "ATTACHMENT_EXISTS", "MODIFIED");
+        if (isPrivateCase) {
+            attachment.setPrivate(true);
+            attachmentDAO.partialMerge(attachment, "private_flag");
+        }
 
         if (!isCaseUpdated) {
             throw new ResultStatusException(En_ResultStatus.NOT_UPDATED, "failed to update case object");
@@ -1187,7 +1208,5 @@ public class CaseServiceImpl implements CaseService {
         if (!policyService.hasGrantAccessFor(token.getRoles(), En_Privilege.ISSUE_VIEW)) {
             caseObject.setAttachments(stream(caseObject.getAttachments()).filter(not(Attachment::isPrivate)).collect(Collectors.toList()));
         }
-
-        caseObject.setAttachments(caseObject.getAttachments().stream().distinct().collect(Collectors.toList()));
     }
 }

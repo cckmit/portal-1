@@ -24,6 +24,7 @@ import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.jira.utils.CustomJiraIssueParser;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.utils.JiraUtils.getTextWithReplacedImagesToJira;
 
@@ -71,8 +72,8 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
             return;
         }
 
-        if (object.isPrivateCase()) {
-            logger.debug("case object {} is private, skip", object.defGUID());
+        if (isPrivate(event)) {
+            logger.debug("case object {} is private change, skip", object.defGUID());
             return;
         }
 
@@ -109,7 +110,10 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
             }
 
             if (event.getAddedAttachments() != null) {
-                issueClient.addAttachments(issue.getAttachmentsUri(), buildAttachmentsArray(event.getAddedAttachments())).claim();
+                final List<Attachment> publicAttachments = event.getAddedAttachments().stream().filter(a -> !a.isPrivate()).collect(Collectors.toList());
+                if (!publicAttachments.isEmpty()) {
+                    issueClient.addAttachments(issue.getAttachmentsUri(), buildAttachmentsArray(publicAttachments)).claim();
+                }
             }
 
             if (event.isCommentAttached()) {
@@ -186,5 +190,38 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
 
     private boolean isRequireGenericDataUpdate (AssembledCaseEvent event) {
         return event.isCaseStateChanged() || event.isCaseImportanceChanged();
+    }
+
+    private boolean isPrivate(AssembledCaseEvent event) {
+        return event.getCaseObject().isPrivateCase()
+                || isPrivateSend(event);
+    }
+
+    private boolean isPrivateSend(AssembledCaseEvent assembledCaseEvent) {
+        if (assembledCaseEvent.isCreateEvent()) {
+            return false;
+        }
+
+        if (isPublicChangesExist(assembledCaseEvent)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean isPublicChangesExist(AssembledCaseEvent assembledCaseEvent) {
+        return  assembledCaseEvent.isPublicCommentsChanged()
+                || assembledCaseEvent.isPublicAttachmentsChanged()
+                || assembledCaseEvent.isCaseImportanceChanged()
+                || assembledCaseEvent.isCaseStateChanged()
+                || assembledCaseEvent.isPauseDateChanged()
+                || assembledCaseEvent.isInitiatorChanged()
+                || assembledCaseEvent.isInitiatorCompanyChanged()
+                || assembledCaseEvent.isManagerCompanyChanged()
+                || assembledCaseEvent.isManagerChanged()
+                || assembledCaseEvent.getName().hasDifferences()
+                || assembledCaseEvent.getInfo().hasDifferences()
+                || assembledCaseEvent.isProductChanged()
+                || assembledCaseEvent.isPublicLinksChanged();
     }
 }

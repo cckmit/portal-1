@@ -14,6 +14,14 @@ public class DateRangeUtils {
         return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
 
+    public static Interval makeIntervalWithOffset(LocalDate now, int dayOffset) {
+        Interval interval = new Interval();
+        LocalDate local = now.plusDays(dayOffset);
+        interval.from = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        interval.to = Date.from(local.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
+        return interval;
+    }
+
     public static Interval makeToday() {
         Interval interval = new Interval();
         LocalDate local = LocalDate.now();

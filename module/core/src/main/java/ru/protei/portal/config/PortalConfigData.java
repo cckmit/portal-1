@@ -271,20 +271,24 @@ public class PortalConfigData {
         private final String host;
         private final String defaultCharset;
         private final int port;
-        private final String fromAddress;
+        private final String fromAddressCrm;
+        private final String fromAddressPortal;
         private final String fromAddressAbsence;
-        private final String fromAddressReport;
-        private final String fromAddressAlias;
+        private final String fromAddressCrmAlias;
+        private final String fromAddressPortalAlias;
+        private final String fromAddressAbsenceAlias;
         private final boolean blockExternalRecipients;
         private final String messageIdPattern;
 
         public SmtpConfig(PropertiesWrapper properties) throws ConfigException{
             host = properties.getProperty("smtp.host", "smtp.protei.ru");
             port = properties.getProperty("smtp.port", Integer.class, 2525);
-            fromAddress = properties.getProperty("smtp.from", "PORTAL");
-            fromAddressAbsence = properties.getProperty("smtp.from.absence", "absence");
-            fromAddressReport = properties.getProperty("smtp.from.report", "PORTAL");
-            fromAddressAlias = properties.getProperty("smtp.from.alias", "DO_NOT_REPLY");
+            fromAddressCrm = properties.getProperty("smtp.from.crm", "CRM");
+            fromAddressPortal = properties.getProperty("smtp.from.portal", "PORTAL");
+            fromAddressAbsence = properties.getProperty("smtp.from.absence", "ABSENCE");
+            fromAddressCrmAlias = properties.getProperty("smtp.from.crm.alias", "CRM");
+            fromAddressPortalAlias = properties.getProperty("smtp.from.portal.alias", "DO_NOT_REPLY");
+            fromAddressAbsenceAlias = properties.getProperty("smtp.from.absence.alias", "DO_NOT_REPLY");
             defaultCharset = properties.getProperty("smtp.charset", "utf-8");
             blockExternalRecipients = properties.getProperty("smtp.block_external_recipients", Boolean.class, false);
             messageIdPattern = properties.getProperty("smtp.message_id_pattern", "%id%@smtp.protei.ru");
@@ -306,24 +310,32 @@ public class PortalConfigData {
             return port;
         }
 
-        public String getFromAddress() {
-            return fromAddress;
+        public String getFromAddressCrm() {
+            return fromAddressCrm;
+        }
+
+        public String getFromAddressPortal() {
+            return fromAddressPortal;
         }
 
         public String getFromAddressAbsence() {
             return fromAddressAbsence;
         }
 
-        public String getFromAddressReport() {
-            return fromAddressReport;
-        }
-
         public String getMessageIdPattern() {
             return messageIdPattern;
         }
 
-        public String getFromAddressAlias() {
-            return fromAddressAlias;
+        public String getFromAddressCrmAlias() {
+            return fromAddressCrmAlias;
+        }
+
+        public String getFromAddressPortalAlias() {
+            return fromAddressPortalAlias;
+        }
+
+        public String getFromAddressAbsenceAlias() {
+            return fromAddressAbsenceAlias;
         }
     }
 

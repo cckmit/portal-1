@@ -2,9 +2,9 @@ package ru.protei.portal.core.service.template;
 
 import freemarker.template.TemplateException;
 import ru.protei.portal.core.event.*;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.dto.ReportDto;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.view.EmployeeShortView;
@@ -105,4 +105,8 @@ public interface TemplateService {
 
     PreparedTemplate getNRPENonAvailableIpsNotificationSubject();
     PreparedTemplate getNRPENonAvailableIpsNotificationBody(List<String> nonAvailableIps, Collection<String> recipients);
+
+    PreparedTemplate getExpiringTechnicalSupportValidityNotificationSubject();
+    PreparedTemplate getExpiringTechnicalSupportValidityNotificationBody(ExpiringProjectTSVNotificationEvent event,
+                                     Collection<String> recipients, String urlTemplate);
 }
