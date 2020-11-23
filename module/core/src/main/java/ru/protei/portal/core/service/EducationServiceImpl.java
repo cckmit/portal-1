@@ -94,9 +94,6 @@ public class EducationServiceImpl implements EducationService {
             if (wallet.getCoins() == null || wallet.getCoins() < 0) {
                 return error(En_ResultStatus.NOT_AVAILABLE);
             }
-            if (isQuotaExceededForDepartment(wallet.getDepartmentId())) {
-                return error(En_ResultStatus.NOT_AVAILABLE);
-            }
         }
 
         entry.setId(educationEntryDAO.persist(entry));
@@ -130,9 +127,6 @@ public class EducationServiceImpl implements EducationService {
         }
         EducationWallet wallet = walletResult.getData();
         if (wallet.getCoins() == null || wallet.getCoins() < 0) {
-            return error(En_ResultStatus.NOT_AVAILABLE);
-        }
-        if (isQuotaExceededForDepartment(wallet.getDepartmentId())) {
             return error(En_ResultStatus.NOT_AVAILABLE);
         }
 
@@ -356,27 +350,6 @@ public class EducationServiceImpl implements EducationService {
         for (Long childDepId : childDepIds) {
             fillChildDepartments(departments, childDepId);
         }
-    }
-
-    private boolean isQuotaExceededForDepartment(Long depId) {
-        LocalDate now = LocalDate.now();
-        Date monthStart = java.sql.Date.valueOf(now.withDayOfMonth(1));
-        Date monthEnd = java.sql.Date.valueOf(now.withDayOfMonth(now.lengthOfMonth()));
-        List<Long> depIds = getDepartmentGraph(depId);
-        long spent = stream(educationEntryAttendanceDAO.getAllForDepAndDates(depIds, monthStart, monthEnd))
-                .filter(attendance -> attendance.getCoins() != null)
-                .mapToLong(EducationEntryAttendance::getCoins)
-                .sum();
-        long workersCount = stream(workerEntryDAO.getWorkersByDepartment(depId))
-                .count();
-        long quota = getQuota(workersCount);
-        return spent > quota;
-    }
-
-    private long getQuota(long workersCount) {
-        long monthIncome = (workersCount * 2) + (long) Math.ceil(((double) workersCount) / 4);
-        long quota = monthIncome * 4;
-        return quota;
     }
 
     private Result<EducationEntry> validateEducationEntry(EducationEntry entry) {
