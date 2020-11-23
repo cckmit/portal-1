@@ -911,7 +911,7 @@ public class MailNotificationProcessor {
             try {
                 String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), true);
                 String subject = subjectTemplate.getText(entry.getAddress(), entry.getLangCode(), true);
-                sendMail(entry.getAddress(), subject, body, getFromPortalAddress());
+                sendMail(entry.getAddress(), subject, body, getFromAbsenceAddress());
             } catch (Exception e) {
                 log.error("Failed to make MimeMessage", e);
             }
