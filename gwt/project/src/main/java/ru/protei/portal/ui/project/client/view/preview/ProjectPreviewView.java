@@ -65,8 +65,19 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     public void setRegion( String value ) { this.projectRegion.setInnerText( value ); }
 
     @Override
-    public void setProduct(String value ) {
-        this.product.setText( value );
+    public void setProduct(Map<Long, String> value ) {
+        this.product.clear();
+        value.forEach((id, name) -> {
+            final Anchor anchor = new Anchor(name, "#");
+            anchor.setStyleName("project-preview-product-links");
+            anchor.addClickHandler(event -> {
+                event.preventDefault();
+                if (activity != null) {
+                    activity.onProductLinkClicked(id);
+                }
+            });
+            this.product.add(anchor);
+        });
     }
 
     @Override
@@ -195,14 +206,6 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         }
     }
 
-    @UiHandler("product")
-    public void onProductLinkClicked(ClickEvent event) {
-        event.preventDefault();
-        if (activity != null) {
-            activity.onProductLinkClicked();
-        }
-    }
-
     private void addLinksToContainer(Map<String, String> nameToLink, HTMLPanel linksContainer) {
         linksContainer.getElement().removeAllChildren();
 
@@ -275,7 +278,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @UiField
     SpanElement pauseDate;
     @UiField
-    Anchor product;
+    HTMLPanel product;
     @UiField
     DivElement team;
     @UiField

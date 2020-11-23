@@ -1,10 +1,11 @@
 package ru.protei.portal.core.model.view;
 
+import ru.protei.portal.core.model.dict.En_DevUnitType;
+import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 
 import java.io.Serializable;
-import java.util.stream.Collectors;
 
 /**
  * Сокращенное представление продукта
@@ -14,6 +15,8 @@ public class ProductShortView implements Serializable {
     private String name;
     private int stateId;
     private String aliases;
+    private En_DevUnitType type;
+    private ProductDirectionInfo productDirection;
 
     public ProductShortView() {
     }
@@ -24,11 +27,13 @@ public class ProductShortView implements Serializable {
         this.stateId = stateId;
     }
 
-    public ProductShortView( Long id, String name, int stateId, String aliases ) {
+    public ProductShortView( Long id, String name, int stateId, String aliases, En_DevUnitType type, ProductDirectionInfo productDirection ) {
         this.id = id;
         this.name = name;
         this.stateId = stateId;
         this.aliases = aliases;
+        this.type = type;
+        this.productDirection = productDirection;
     }
 
     public Long getId() {
@@ -59,6 +64,22 @@ public class ProductShortView implements Serializable {
         return aliases;
     }
 
+    public En_DevUnitType getType() {
+        return type;
+    }
+
+    public void setType(En_DevUnitType type) {
+        this.type = type;
+    }
+
+    public ProductDirectionInfo getProductDirection() {
+        return productDirection;
+    }
+
+    public void setProductDirection(ProductDirectionInfo productDirection) {
+        this.productDirection = productDirection;
+    }
+
     @Override
     public boolean equals( Object obj ) {
         if (obj instanceof ProductShortView) {
@@ -76,8 +97,13 @@ public class ProductShortView implements Serializable {
 
     public static ProductShortView fromProduct( DevUnit product ) {
         if(product == null) return null;
-        return new ProductShortView(product.getId(), product.getName(), product.getStateId(),
-                CollectionUtils.isEmpty(product.getAliases()) ? "" : product.getAliases().stream().collect(Collectors.joining(", ")));
+        return new ProductShortView(
+                product.getId(),
+                product.getName(),
+                product.getStateId(),
+                CollectionUtils.isEmpty(product.getAliases()) ? "" : String.join(", ", product.getAliases()),
+                product.getType(),
+                product.getProductDirection() == null ? null : product.getProductDirection().toProductDirectionInfo());
     }
 
     @Override

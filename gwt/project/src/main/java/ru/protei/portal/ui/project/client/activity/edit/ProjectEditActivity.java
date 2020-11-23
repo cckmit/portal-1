@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PlanOption;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -30,7 +31,8 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.dict.En_RegionState.PAUSED;
-import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 import static ru.protei.portal.ui.project.client.util.AccessUtil.*;
 
@@ -128,14 +130,32 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
     @Override
     public void onDirectionChanged() {
-//        view.updateProductDirection(view.direction().getValue() == null ? null : view.direction().getValue().id);
-        view.product().setValue(null);
-        view.productEnabled().setEnabled(true);
+        final Set<ProductDirectionInfo> directions = view.direction().getValue();
+
+        if (isEmpty(directions)) {
+            view.productEnabled().setEnabled(false);
+            view.updateProductSelector(new HashSet<>());
+            view.product().setValue(null);
+        } else {
+            view.productEnabled().setEnabled(true);
+            view.updateProductSelector(stream(directions).map(info -> info.id).collect(Collectors.toSet()));
+            view.product().setValue(
+                    stream(view.product().getValue()).
+                            filter(productShortView -> stream(directions).anyMatch(direction ->
+                                    Objects.equals(direction.id, productShortView.getProductDirection().id)))
+                            .collect(Collectors.toSet())
+            );
+        }
     }
 
     @Override
     public void onProductChanged() {
-        // todo
+        final Set<ProductDirectionInfo> directions = view.direction().getValue();
+        directions.addAll(stream(view.product().getValue())
+                .filter(info -> info.getType() == En_DevUnitType.COMPLEX && info.getProductDirection() != null)
+                .map(ProductShortView::getProductDirection)
+                .collect(Collectors.toSet()));
+        view.direction().setValue(directions);
     }
 
     @Override
@@ -175,7 +195,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.product().setValue(new HashSet<>(project.getProductShortView()));
         if (isNew( project )) view.setHideNullValue(true);
         view.customerType().setValue(project.getCustomerType());
-        view.updateProductDirection( stream(project.getProductDirectionEntityOptionList()).map(EntityOption::getId).collect(Collectors.toSet()) );
+        view.updateProductSelector( stream(project.getProductDirectionEntityOptionList()).map(EntityOption::getId).collect(Collectors.toSet()) );
         view.pauseDateContainerVisibility().setVisible( PAUSED == project.getState() );
         view.pauseDate().setValue( project.getPauseDate() == null ? null : new Date( project.getPauseDate() ) );
 
@@ -236,7 +256,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         project.setTechnicalSupportValidity(view.technicalSupportValidity().getValue());
         project.setWorkCompletionDate(view.workCompletionDate().getValue());
         project.setPurchaseDate(view.purchaseDate().getValue());
-        project.setProductDirections( stream(view.direction().getValue()).map(DevUnit::fromProductDirectionInfo).collect(Collectors.toList()) );
+        project.setProductDirections( stream(view.direction().getValue()).map(DevUnit::fromProductDirectionInfo).collect(Collectors.toSet()) );
         project.setRegion(view.region().getValue());
         project.setTeam(new ArrayList<>(view.team().getValue()));
         project.setProjectSlas(view.slaInput().getValue());
@@ -270,7 +290,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
             return false;
         }
 
-        if(view.direction().getValue() == null){
+        if(isEmpty(view.direction().getValue())){
             fireEvent(new NotifyEvents.Show(lang.errSaveProjectNeedSelectDirection(), NotifyEvents.NotifyType.ERROR));
             return false;
         }

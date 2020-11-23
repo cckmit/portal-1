@@ -547,6 +547,11 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public ProjectToDirectionDAO getProjectToDirectionDAO() {
+        return new ProjectToDirectionDAO_Impl();
+    }
+
+    @Bean
     public ContractDAO getContractDAO() {
         return new ContractDAO_Impl();
     }

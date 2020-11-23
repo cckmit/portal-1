@@ -71,7 +71,7 @@ public class Project extends AuditableObject {
      * Продукты
      */
     @JdbcManyToMany(linkTable = "project_to_direction", localLinkColumn = "project_id", remoteLinkColumn = "direction_id")
-    private List<DevUnit> productDirections;
+    private Set<DevUnit> productDirections;
 
     /**
      * Дата создания
@@ -187,11 +187,11 @@ public class Project extends AuditableObject {
                 .collect(Collectors.toList());
     }
 
-    public List<DevUnit> getProductDirections() {
+    public Set<DevUnit> getProductDirections() {
         return productDirections;
     }
 
-    public void setProductDirections(List<DevUnit> productDirections) {
+    public void setProductDirections(Set<DevUnit> productDirections) {
         this.productDirections = productDirections;
     }
 
@@ -320,10 +320,6 @@ public class Project extends AuditableObject {
 
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
-    }
-
-    public ProductShortView getSingleProduct() {
-        return products == null ? null : getProducts().stream().map(ProductShortView::fromProduct).findAny().orElse(null);
     }
 
     public List<ProductShortView> getProductShortView() {

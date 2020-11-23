@@ -69,7 +69,10 @@ public class ProductServiceImpl implements ProductService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        return makeListProductShortView( devUnitDAO.listByQuery(query) );
+        final List<DevUnit> devUnits = devUnitDAO.listByQuery(query);
+        devUnits.forEach(devUnit -> devUnit.setProductDirection(devUnitDAO.getProductDirection(devUnit.getId())));
+
+        return makeListProductShortView(devUnits);
     }
 
     @Override

@@ -136,7 +136,9 @@
                                 <div class="col-md-12">
                                     <devunit:DevUnitMultiSelector ui:field="product" validation="false"
                                                                  header="{lang.projectProducts}"
-                                                                 hasNullValue="true"/>
+                                                                 hasNullValue="true"
+                                                                 imageVisible="true"
+                                    />
                                 </div>
                             </div>
                             <div class="row clearfix reset-no-padding">

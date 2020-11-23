@@ -2,16 +2,17 @@ package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
+import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.AuditableObject;
-import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.model.view.ProductShortViewSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by michael on 23.05.16.
@@ -231,7 +232,13 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
 
     @Override
     public ProductShortView toProductShortView() {
-        return new ProductShortView(this.id, this.name, this.stateId, CollectionUtils.isEmpty(this.aliases) ? "" : this.aliases.stream().collect(Collectors.joining(", ")));
+        return new ProductShortView(
+                this.id,
+                this.name,
+                this.stateId,
+                CollectionUtils.isEmpty(this.aliases) ? "" : String.join(", ", this.aliases),
+                this.devUnitType,
+                this.productDirection == null? null : this.productDirection.toProductDirectionInfo());
     }
 
     public ProductDirectionInfo toProductDirectionInfo() {

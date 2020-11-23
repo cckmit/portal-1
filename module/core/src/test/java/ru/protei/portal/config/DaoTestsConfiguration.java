@@ -270,6 +270,11 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
+    public ProjectToDirectionDAO getProjectToDirectionDAO() {
+        return new ProjectToDirectionDAO_Impl();
+    }
+
+    @Bean
     public PlatformDAO getPlatformDAO() {
         return new PlatformDAO_Impl();
     }

@@ -92,7 +92,7 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
 //        view.direction().setValue(project.getProductDirectionEntityOptionList() == null ? null : new ProductDirectionInfo(project.getProductDirectionEntityOptionList()));
         view.customerType().setValue(project.getCustomerType());
         view.company().setValue(EntityOption.fromCompany(project.getCustomer()));
-        view.product().setValue(project.getSingleProduct());
+//        view.product().setValue(project.getSingleProduct());
 //        view.updateProductDirection(project.getProductDirectionEntityOptionList() == null ? null : project.getProductDirectionEntityOptionList().getId());
         view.headManagers().setValue(new HashSet<>(emptyIfNull(project.getTeam())));
         homeCompanyService.getAllHomeCompanies(homeCompanies -> {

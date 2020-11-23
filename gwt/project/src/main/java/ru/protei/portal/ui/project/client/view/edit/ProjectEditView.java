@@ -56,12 +56,8 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         product.setTypes(En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
         company.setDefaultValue(lang.selectIssueCompany());
 
-//        product.setDefaultValue(lang.selectIssueProduct());
-//        product.mandatory();
         projectState.setDefaultValue(regionStateLang.getStateName(En_RegionState.UNKNOWN));
         projectRegion.setDefaultValue(lang.selectOfficialRegion());
-//        productDirection.setDefaultValue(lang.contractSelectDirection());
-//        productDirection.mandatory();
         customerType.setDefaultValue(lang.selectCustomerType());
     }
 
@@ -77,9 +73,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
 
     @Override
     public void setHideNullValue(boolean isHideNullValue) {
-//        productDirection.setHideNullValue(isHideNullValue);
         customerType.setHideNullValue(isHideNullValue);
-//        company.setHideNullValue(isHideNullValue);
     }
 
     @Override
@@ -201,8 +195,8 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     }
 
     @Override
-    public void updateProductDirection(Set<Long> directionId) {
-        product.setDirectionIds(directionId);
+    public void updateProductSelector(Set<Long> directionIds) {
+        product.setDirectionIds(directionIds);
     }
 
     @UiHandler("saveButton")
@@ -279,7 +273,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     @UiHandler("product")
     public void onProductChanged(ValueChangeEvent<Set<ProductShortView>> event) {
         if (activity != null) {
-            activity.onDirectionChanged();
+            activity.onProductChanged();
         }
     }
 

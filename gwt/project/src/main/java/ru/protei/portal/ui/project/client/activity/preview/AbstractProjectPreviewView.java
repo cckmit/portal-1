@@ -32,7 +32,7 @@ public interface AbstractProjectPreviewView extends IsWidget {
 
     void setRegion( String value );
 
-    void setProduct(String value );
+    void setProduct(Map<Long, String> value );
 
     void setCompany( String value );
 

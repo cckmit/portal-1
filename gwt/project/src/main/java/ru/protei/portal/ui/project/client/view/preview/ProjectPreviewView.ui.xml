@@ -70,7 +70,7 @@
                             <label>
                                 <ui:text from="{lang.projectProducts}"/>
                             </label>
-                            <g:Anchor href="#" ui:field="product"/>
+                            <g:HTMLPanel ui:field="product"/>
                         </div>
                     </div>
                 </div>

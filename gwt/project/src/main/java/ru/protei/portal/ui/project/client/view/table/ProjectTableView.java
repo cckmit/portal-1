@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
+
 
 /**
  * Представление таблицы проектов
@@ -130,7 +132,7 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
                     StringBuilder content = new StringBuilder();
                     content.append("<b>").append(value.getId()).append("</b>").append("<br/>");
 
-                    if (value.getProductDirectionEntityOptionList() != null) {
+                    if (isNotEmpty(value.getProductDirectionEntityOptionList())) {
                         content.append(CollectionUtils.stream(value.getProductDirectionEntityOptionList()).map(EntityOption::getDisplayText).collect(Collectors.joining(", ")));
                     }
                     return content.toString();

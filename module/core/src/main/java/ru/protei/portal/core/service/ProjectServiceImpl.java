@@ -77,6 +77,8 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     ProjectToProductDAO projectToProductDAO;
     @Autowired
+    ProjectToDirectionDAO projectToDirectionDAO;
+    @Autowired
     AuthService authService;
     @Autowired
     ContractDAO contractDAO;
@@ -277,6 +279,7 @@ public class ProjectServiceImpl implements ProjectService {
             updateTeam( caseObject, project.getTeam() );
             updateLocations( caseObject, project.getRegion() );
             updateProducts( projectFormDB, project.getProducts() );
+            updateDirections( projectFormDB, project.getProductDirections() );
         } catch (Throwable e) {
             log.error("saveProject(): error during save project when update one of following parameters: team, location, or products;", e);
             throw new ResultStatusException(En_ResultStatus.INTERNAL_ERROR);
@@ -337,6 +340,7 @@ public class ProjectServiceImpl implements ProjectService {
             updateTeam(caseObject, project.getTeam());
             updateLocations(caseObject,  project.getRegion());
             updateProducts(project, project.getProducts());
+            updateDirections(project, project.getProductDirections());
         } catch (Throwable e) {
             log.error("createProject(): error during create project when set one of following parameters: team, location, or products; {}", e.getMessage());
             throw new ResultStatusException(En_ResultStatus.INTERNAL_ERROR);
@@ -397,6 +401,7 @@ public class ProjectServiceImpl implements ProjectService {
         jdbcManyRelationsHelper.fill(projects.getResults(), "members");
         jdbcManyRelationsHelper.fill(projects.getResults(), "products");
         jdbcManyRelationsHelper.fill(projects.getResults(), "locations");
+        jdbcManyRelationsHelper.fill(projects.getResults(), "productDirections");
 
         return ok(projects);
     }
@@ -652,6 +657,32 @@ public class ProjectServiceImpl implements ProjectService {
         });
 
         project.setProducts(newProducts);
+    }
+
+    private void updateDirections(Project project, Set<DevUnit> directions) {
+        if (directions == null)
+            return;
+
+        Set<DevUnit> oldDirections = project.getProductDirections() == null ? new HashSet<>() : project.getProductDirections();
+        Set<DevUnit> newDirections = directions == null ? new HashSet<>() : directions;
+
+        Set<DevUnit> toDelete = new HashSet<>(oldDirections);
+        Set<DevUnit> toCreate = new HashSet<>(newDirections);
+        toCreate.removeAll(oldDirections);
+        toDelete.removeAll(newDirections);
+
+        ProjectToDirection projectToDirection = new ProjectToDirection(project.getId(), null);
+
+        toDelete.forEach(du -> {
+            projectToDirection.setDirectionId(du.getId());
+            projectToDirectionDAO.removeByKey(projectToDirection);
+        });
+        toCreate.forEach(du -> {
+            projectToDirection.setDirectionId(du.getId());
+            projectToDirectionDAO.persist(projectToDirection);
+        });
+
+        project.setProductDirections(newDirections);
     }
 
     private void iterateAllLocations( Project project, Consumer< Location > handler ) {
