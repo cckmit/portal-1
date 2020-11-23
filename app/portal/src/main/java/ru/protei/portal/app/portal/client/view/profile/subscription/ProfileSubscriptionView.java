@@ -24,6 +24,7 @@ public class ProfileSubscriptionView extends Composite implements AbstractProfil
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        persons.setItemRenderer(PersonShortView::getName);
         ensureDebugIds();
     }
 
