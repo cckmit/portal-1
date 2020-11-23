@@ -6,7 +6,6 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.selector.input.InputPopupMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.item.PopupSelectableItem;
 
 /**
  * Селектор сотрудников
@@ -22,7 +21,7 @@ public class EmployeeMultiSelector
         setAddName(lang.buttonAdd());
         setClearName(lang.buttonClear());
         setFilter(personView -> !personView.isFired());
-        setItemRenderer(PersonShortView::getDisplayName);
+        setItemRenderer(PersonShortView::getName);
         setNullItem(() -> new PersonShortView(lang.employeeWithoutManager(), CrmConstants.Employee.UNDEFINED));
     }
 
