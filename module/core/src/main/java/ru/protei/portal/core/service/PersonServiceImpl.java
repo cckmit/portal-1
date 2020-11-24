@@ -61,7 +61,7 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public Result< List< PersonShortView > > shortViewList( AuthToken authToken, PersonQuery query) {
+    public Result< List< PersonShortView > > shortViewList(AuthToken authToken, PersonQuery query) {
         query = processQueryByPolicyScope(authToken, query);
         List<PersonShortView> personList = personShortViewDAO.getPersonsShortView(query);
         return ok(personList);
@@ -113,7 +113,7 @@ public class PersonServiceImpl implements PersonService {
                 companyService.companyOptionListBySubcontractorIds(token.getCompanyAndChildIds()) :
                 companyService.subcontractorOptionListByCompanyIds(token.getCompanyAndChildIds());
         if (result.isError()) {
-            throw new ResultStatusException(result.getStatus());
+            throw new RuntimeException("Failed to get companies");
         }
 
         Set<Long> allowedCompanies = stream(new HashSet<Long>() {{
@@ -122,7 +122,7 @@ public class PersonServiceImpl implements PersonService {
         }}).collect(Collectors.toSet());
 
         if (personQuery.getCompanyIds() != null) {
-            personQuery.getCompanyIds().retainAll(token.getCompanyAndChildIds());
+            personQuery.getCompanyIds().retainAll(allowedCompanies);
         }
 
         log.info("processQueryByPolicyScope(): PersonQuery modified: {}", personQuery);

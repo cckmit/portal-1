@@ -157,7 +157,7 @@ public class CaseServiceImpl implements CaseService {
     @Override
     public Result<SearchResult<CaseShortView>> getCaseObjects(AuthToken token, CaseQuery query) {
 
-        applyFilterByScope(token, query);
+        query = applyFilterByScope(token, query);
 
         SearchResult<CaseShortView> sr = caseShortViewDAO.getSearchResult(query);
 
@@ -957,21 +957,26 @@ public class CaseServiceImpl implements CaseService {
         return caseCommentDAO.persist(managerChangeMessage);
     }
 
-    private void applyFilterByScope(AuthToken token, CaseQuery query) {
+    private CaseQuery applyFilterByScope(AuthToken token, CaseQuery caseQuery) {
         Set<UserRole> roles = token.getRoles();
-        if (!policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
-            Company company = companyService.getCompanyOmitPrivileges(token, token.getCompanyId()).getData();
-            query.setCompanyIds(
-                    acceptAllowedCompanies(
-                            query.getCompanyIds(),
-                            getCompaniesBySubcontractorIds(company.getCategory(), token.getCompanyAndChildIds())));
-            query.setManagerCompanyIds(
-                    acceptAllowedCompanies(
-                            query.getManagerCompanyIds(),
-                            getSubcontractorsByCompanyIds(company.getCategory(), token.getCompanyAndChildIds())));
-            query.setAllowViewPrivate(false);
-            query.setCustomerSearch(true);
+        if (policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
+            return caseQuery;
         }
+
+        Company company = companyService.getCompanyOmitPrivileges(token, token.getCompanyId()).getData();
+        caseQuery.setCompanyIds(
+                acceptAllowedCompanies(
+                        caseQuery.getCompanyIds(),
+                        getCompaniesBySubcontractorIds(company.getCategory(), token.getCompanyAndChildIds())));
+        caseQuery.setManagerCompanyIds(
+                acceptAllowedCompanies(
+                        caseQuery.getManagerCompanyIds(),
+                        getSubcontractorsByCompanyIds(company.getCategory(), token.getCompanyAndChildIds())));
+        caseQuery.setAllowViewPrivate(false);
+        caseQuery.setCustomerSearch(true);
+
+        log.info("applyFilterByScope(): CaseQuery modified: {}", caseQuery);
+        return caseQuery;
     }
 
     private List<Long> acceptAllowedCompanies( List<Long> companyIds, Collection<Long> allowedCompaniesIds ) {
