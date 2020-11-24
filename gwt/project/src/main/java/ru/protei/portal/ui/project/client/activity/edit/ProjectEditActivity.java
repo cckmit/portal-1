@@ -31,8 +31,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.dict.En_RegionState.PAUSED;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 import static ru.protei.portal.ui.project.client.util.AccessUtil.*;
 
@@ -141,8 +140,11 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
             view.updateProductSelector(stream(directions).map(info -> info.id).collect(Collectors.toSet()));
             view.product().setValue(
                     stream(view.product().getValue()).
-                            filter(productShortView -> stream(directions).anyMatch(direction ->
-                                    Objects.equals(direction.id, productShortView.getProductDirection().id)))
+                            filter(productShortView -> {
+                                final Set<Long> ids = toSet(productShortView.getProductDirection(), ProductDirectionInfo::getId);
+                                return stream(directions).anyMatch(direction ->
+                                        ids.contains(direction.id));
+                            })
                             .collect(Collectors.toSet())
             );
         }
@@ -150,12 +152,20 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
     @Override
     public void onProductChanged() {
-        final Set<ProductDirectionInfo> directions = view.direction().getValue();
-        directions.addAll(stream(view.product().getValue())
+        final Set<ProductShortView> currentComplex = stream(view.product().getValue())
                 .filter(info -> info.getType() == En_DevUnitType.COMPLEX && info.getProductDirection() != null)
-                .map(ProductShortView::getProductDirection)
-                .collect(Collectors.toSet()));
-        view.direction().setValue(directions);
+                .collect(Collectors.toSet());
+        Set<ProductShortView> addedComplex = new HashSet<>(currentComplex);
+        addedComplex.removeAll(selectedComplex);
+        if (isNotEmpty(addedComplex)) {
+            final Set<ProductDirectionInfo> directions = view.direction().getValue();
+            directions.addAll(stream(currentComplex)
+                    .flatMap(productShortView -> stream(productShortView.getProductDirection()))
+                    .collect(Collectors.toSet()));
+            view.direction().setValue(directions);
+            onDirectionChanged();
+        }
+        selectedComplex = currentComplex;
     }
 
     @Override
@@ -192,7 +202,10 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.company().setValue(customer == null ? null : customer.toEntityOption());
         view.companyEnabled().setEnabled(isNew( project ));
         view.description().setText(project.getDescription());
+
         view.product().setValue(new HashSet<>(project.getProductShortView()));
+        selectedComplex.addAll(stream(project.getProductShortView()).filter(product -> product.getType() == En_DevUnitType.COMPLEX).collect(Collectors.toSet()) );
+
         if (isNew( project )) view.setHideNullValue(true);
         view.customerType().setValue(project.getCustomerType());
         view.updateProductSelector( stream(project.getProductDirectionEntityOptionList()).map(EntityOption::getId).collect(Collectors.toSet()) );
@@ -345,6 +358,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     DefaultErrorHandler defaultErrorHandler;
 
     private Project project;
+    private Set<ProductShortView> selectedComplex = new HashSet<>();
 
     private static final En_CaseType PROJECT_CASE_TYPE = En_CaseType.PROJECT;
 

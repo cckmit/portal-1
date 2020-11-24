@@ -79,6 +79,8 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     ProjectToDirectionDAO projectToDirectionDAO;
     @Autowired
+    DevUnitDAO devUnitDAO;
+    @Autowired
     AuthService authService;
     @Autowired
     ContractDAO contractDAO;
@@ -206,6 +208,11 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         jdbcManyRelationsHelper.fillAll( project );
+        final Set<DevUnit> products = project.getProducts();
+        if (isNotEmpty(products)) {
+            products.forEach(product -> product.setProductDirections(new HashSet<>(devUnitDAO.getProductDirections(product.getId()))));
+        }
+
         List<Contract> contracts = contractDAO.getByProjectId(id);
 
         if (CollectionUtils.isNotEmpty(contracts)) {

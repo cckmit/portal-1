@@ -10,6 +10,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.ProductQuery;
@@ -26,8 +27,9 @@ import ru.protei.portal.ui.product.client.activity.filter.AbstractProductFilterA
 import ru.protei.portal.ui.product.client.activity.filter.AbstractProductFilterView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static ru.protei.portal.core.model.helper.StringUtils.nullIfEmpty;
 import static ru.protei.portal.core.model.util.AlternativeKeyboardLayoutTextService.makeAlternativeSearchString;
@@ -164,9 +166,19 @@ public abstract class ProductTableActivity implements
         pq.setSortField(filterView.sortField().getValue());
         pq.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
         pq.setTypes( CollectionUtils.nullIfEmpty( filterView.types().getValue() ) );
-        pq.setDirectionIds(filterView.direction().getValue() == null ? null : Collections.singleton(filterView.direction().getValue().id));
+        pq.setDirectionIds(makeDirectionsIds(filterView.direction().getValue()));
 
         return pq;
+    }
+
+    private Set<Long> makeDirectionsIds(ProductDirectionInfo productDirectionInfo) {
+        if (productDirectionInfo == null) {
+            return null;
+        } else {
+            Set<Long> ids = new HashSet<>();
+            ids.add(productDirectionInfo.id);
+            return ids;
+        }
     }
 
     private void showPreview (DevUnit value ) {

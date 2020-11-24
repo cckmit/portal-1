@@ -56,8 +56,13 @@
 
                         <div class="row">
                             <g:HTMLPanel ui:field="directionContainer" styleName="form-group col-md-12">
-                                <label ui:field="directionLabel"><ui:text from="{lang.productDirection}"/></label>
-                                <productdirection:ProductDirectionButtonSelector ui:field="direction" defaultValue="{lang.productSelectDirection}"/>
+                                <productdirection:ProductDirectionButtonSelector ui:field="productDirection"
+                                                                                 defaultValue="{lang.productSelectDirection}"
+                                                                                 header="{lang.projectDirection}"/>
+                                <productdirection:ProductDirectionMultiSelector ui:field="productMultiDirections"
+                                                                                validation="true"
+                                                                                header="{lang.projectDirection}"
+                                                                                hasNullValue="true"/>
                             </g:HTMLPanel>
 
                             <g:HTMLPanel ui:field="commonManagerContainer" styleName="form-group col-md-6">

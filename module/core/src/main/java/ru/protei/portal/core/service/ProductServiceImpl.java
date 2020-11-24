@@ -70,7 +70,7 @@ public class ProductServiceImpl implements ProductService {
         }
 
         final List<DevUnit> devUnits = devUnitDAO.listByQuery(query);
-        devUnits.forEach(devUnit -> devUnit.setProductDirection(devUnitDAO.getProductDirection(devUnit.getId())));
+        devUnits.forEach(devUnit -> devUnit.setProductDirections(new HashSet<>(devUnitDAO.getProductDirections(devUnit.getId()))));
 
         return makeListProductShortView(devUnits);
     }
@@ -146,7 +146,7 @@ public class ProductServiceImpl implements ProductService {
 
         product.setParents(devUnitDAO.getParents(id));
         product.setChildren(devUnitDAO.getChildren(Collections.singleton(id)));
-        product.setProductDirection(devUnitDAO.getProductDirection(id));
+        product.setProductDirections(new HashSet<>(devUnitDAO.getProductDirections(id)));
 
         return ok(product);
     }
@@ -296,11 +296,13 @@ public class ProductServiceImpl implements ProductService {
 
         devUnitChildRefDAO.removeProductDirection(product.getId());
 
-        if (product.getProductDirection() == null) {
+        if (product.getProductDirections() == null) {
             return;
         }
 
-        devUnitChildRefDAO.persist(new DevUnitChildRef(product.getProductDirection().getId(), product.getId()));
+        product.getProductDirections().forEach(direction ->
+                devUnitChildRefDAO.persist(new DevUnitChildRef(direction.getId(), product.getId()))
+        );
     }
 
     private void saveParents(DevUnit product) {

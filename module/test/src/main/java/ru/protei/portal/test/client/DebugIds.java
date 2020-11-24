@@ -575,6 +575,7 @@ public class DebugIds {
         String SAVE_BUTTON = "product-save-button";
         String CANCEL_BUTTON = "product-cancel-button";
         String DIRECTION = "product-direction";
+        String DIRECTIONS = "product-directions";
         String DIRECTION_LABEL = "product-direction-label";
         String COMMON_MANAGER = "product-common-manager";
 

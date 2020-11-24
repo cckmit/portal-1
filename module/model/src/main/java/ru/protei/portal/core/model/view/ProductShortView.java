@@ -6,6 +6,9 @@ import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 
 import java.io.Serializable;
+import java.util.Set;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.toSet;
 
 /**
  * Сокращенное представление продукта
@@ -16,7 +19,7 @@ public class ProductShortView implements Serializable {
     private int stateId;
     private String aliases;
     private En_DevUnitType type;
-    private ProductDirectionInfo productDirection;
+    private Set<ProductDirectionInfo> productDirection;
 
     public ProductShortView() {
     }
@@ -27,7 +30,7 @@ public class ProductShortView implements Serializable {
         this.stateId = stateId;
     }
 
-    public ProductShortView( Long id, String name, int stateId, String aliases, En_DevUnitType type, ProductDirectionInfo productDirection ) {
+    public ProductShortView( Long id, String name, int stateId, String aliases, En_DevUnitType type, Set<ProductDirectionInfo> productDirection ) {
         this.id = id;
         this.name = name;
         this.stateId = stateId;
@@ -72,11 +75,11 @@ public class ProductShortView implements Serializable {
         this.type = type;
     }
 
-    public ProductDirectionInfo getProductDirection() {
+    public Set<ProductDirectionInfo> getProductDirection() {
         return productDirection;
     }
 
-    public void setProductDirection(ProductDirectionInfo productDirection) {
+    public void setProductDirection(Set<ProductDirectionInfo> productDirection) {
         this.productDirection = productDirection;
     }
 
@@ -103,7 +106,7 @@ public class ProductShortView implements Serializable {
                 product.getStateId(),
                 CollectionUtils.isEmpty(product.getAliases()) ? "" : String.join(", ", product.getAliases()),
                 product.getType(),
-                product.getProductDirection() == null ? null : product.getProductDirection().toProductDirectionInfo());
+                product.getProductDirections() == null ? null : toSet(product.getProductDirections(), DevUnit::toProductDirectionInfo));
     }
 
     @Override

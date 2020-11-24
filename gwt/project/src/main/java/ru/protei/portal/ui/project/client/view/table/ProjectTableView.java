@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 
 
@@ -162,7 +163,7 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
 
         DynamicColumn<Project> managerColumn = new DynamicColumn<>(lang.projectTeam(), "managers",
                 value -> {
-                    if (value.getTeam() == null) return null;
+                    if (isEmpty(value.getTeam())) return null;
 
                     Optional<PersonProjectMemberView> leader = value.getTeam().stream()
                             .filter(ppm -> En_DevUnitPersonRoleType.HEAD_MANAGER.equals(ppm.getRole()))
