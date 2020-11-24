@@ -7,4 +7,5 @@ public interface AbstractAccountEditActivity {
     void onSaveClicked();
     void onCancelClicked();
     void onChangeLogin();
+    void onSearchChanged();
 }

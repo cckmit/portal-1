@@ -18,15 +18,17 @@ import ru.protei.portal.ui.account.client.activity.edit.AbstractAccountEditActiv
 import ru.protei.portal.ui.account.client.activity.edit.AbstractAccountEditView;
 import ru.protei.portal.ui.account.client.widget.role.RoleOptionList;
 import ru.protei.portal.ui.common.client.common.NameStatus;
+import ru.protei.portal.ui.common.client.events.InputEvent;
+import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 
 import java.util.Set;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
 
 /**
@@ -68,6 +70,11 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
     @Override
     public HasText confirmPassword() {
         return confirmPassword;
+    }
+
+    @Override
+    public HasValue<String> searchPattern() {
+        return search;
     }
 
     @Override
@@ -121,6 +128,11 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
         personModel.updateCompanies( person, companyIds );
     }
 
+    @Override
+    public void setRolesFilter(Selector.SelectorFilter<UserRole> filter) {
+        roles.refreshValueByFilter(filter);
+    }
+
     @UiHandler( "company" )
     public void onChangeCompany( ValueChangeEvent< EntityOption > event ) {
         Long companyId = event.getValue() == null ? null : event.getValue().getId();
@@ -151,6 +163,13 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
         timer.schedule( 300 );
     }
 
+    @UiHandler("search")
+    public void onSearchChanged(InputEvent event) {
+        if ( activity != null ) {
+            activity.onSearchChanged();
+        }
+    }
+
     @Inject
     @UiField( provided = true )
     CompanySelector company;
@@ -173,6 +192,9 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
 
     @UiField
     HTMLPanel infoPanel;
+
+    @UiField
+    CleanableSearchBox search;
 
     @Inject
     @UiField( provided = true )
