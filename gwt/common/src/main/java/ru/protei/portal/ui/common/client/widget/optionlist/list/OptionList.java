@@ -137,7 +137,6 @@ public class OptionList<T>
         if (selectorModel != null) {
             selectorModel.onSelectorUnload(this);
         }
-        filter = null;
     }
 
     public void clearOptions() {
