@@ -146,8 +146,9 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
     }
 
     private Selector.SelectorFilter<UserRole> makerRolesFilter(String searchPattern) {
+        String upperCaseSearchPattern = searchPattern.toUpperCase();
         return userRole -> userRole != null &&
-                (userRole.getCode().contains(searchPattern) || userRole.getInfo().contains(searchPattern));
+                (userRole.getCode().toUpperCase().contains(upperCaseSearchPattern) || userRole.getInfo().contains(upperCaseSearchPattern));
     }
 
     private void resetValidationStatus(){
