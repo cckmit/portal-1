@@ -18,6 +18,7 @@ import ru.protei.portal.ui.account.client.activity.edit.AbstractAccountEditActiv
 import ru.protei.portal.ui.account.client.activity.edit.AbstractAccountEditView;
 import ru.protei.portal.ui.account.client.widget.role.RoleOptionList;
 import ru.protei.portal.ui.common.client.common.NameStatus;
+import ru.protei.portal.ui.common.client.events.InputEvent;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
@@ -163,7 +164,7 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
     }
 
     @UiHandler("search")
-    public void onSearchChanged(ValueChangeEvent<String> event) {
+    public void onSearchChanged(InputEvent event) {
         if ( activity != null ) {
             activity.onSearchChanged();
         }
