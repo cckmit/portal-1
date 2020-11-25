@@ -12,7 +12,6 @@ import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dto.Project;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -27,10 +26,8 @@ import ru.protei.portal.ui.project.client.activity.table.AbstractProjectTableVie
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 
 /**
@@ -134,7 +131,7 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
                     content.append("<b>").append(value.getId()).append("</b>").append("<br/>");
 
                     if (isNotEmpty(value.getProductDirectionEntityOptionList())) {
-                        content.append(CollectionUtils.stream(value.getProductDirectionEntityOptionList()).map(EntityOption::getDisplayText).collect(Collectors.joining(", ")));
+                        content.append(joining(value.getProductDirectionEntityOptionList(), ", ", EntityOption::getDisplayText));
                     }
                     return content.toString();
                 });

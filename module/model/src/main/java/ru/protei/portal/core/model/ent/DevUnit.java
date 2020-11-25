@@ -14,8 +14,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.core.model.helper.CollectionUtils.toSet;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 /**
  * Created by michael on 23.05.16.
@@ -239,7 +238,7 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
                 this.id,
                 this.name,
                 this.stateId,
-                isEmpty(this.aliases) ? "" : String.join(", ", this.aliases),
+                isEmpty(this.aliases) ? "" : joining(this.aliases, ", "),
                 this.devUnitType,
                 this.productDirections == null? null : toSet(this.productDirections, DevUnit::toProductDirectionInfo));
     }

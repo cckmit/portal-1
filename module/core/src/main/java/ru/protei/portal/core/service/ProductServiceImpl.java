@@ -146,7 +146,7 @@ public class ProductServiceImpl implements ProductService {
 
         product.setParents(devUnitDAO.getParents(id));
         product.setChildren(devUnitDAO.getChildren(Collections.singleton(id)));
-        product.setProductDirections(new HashSet<>(devUnitDAO.getProductDirections(id)));
+        product.setProductDirections(new HashSet<>(emptyIfNull(devUnitDAO.getProductDirections(id))));
 
         return ok(product);
     }
@@ -266,11 +266,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private boolean checkIfDirection(Set<Long> directionId) {
-        List<DevUnit> direction = devUnitDAO.getListByKeys(directionId);
-        if (isEmpty(direction)) {
+        List<DevUnit> directions = devUnitDAO.getListByKeys(directionId);
+        if (isEmpty(directions)) {
             return false;
         }
-        return direction.stream().allMatch(DevUnit::isDirection);
+        return directions.stream().allMatch(DevUnit::isDirection);
     }
 
     private boolean validateFields(DevUnit product) {
@@ -296,7 +296,7 @@ public class ProductServiceImpl implements ProductService {
 
         devUnitChildRefDAO.removeProductDirection(product.getId());
 
-        if (product.getProductDirections() == null) {
+        if (isEmpty(product.getProductDirections())) {
             return;
         }
 

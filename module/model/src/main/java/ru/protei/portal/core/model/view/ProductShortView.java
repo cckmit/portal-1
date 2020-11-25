@@ -3,13 +3,11 @@ package ru.protei.portal.core.model.view;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.ent.DevUnit;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 
 import java.io.Serializable;
 import java.util.Set;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
-import static ru.protei.portal.core.model.helper.CollectionUtils.toSet;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 /**
  * Сокращенное представление продукта
@@ -105,7 +103,7 @@ public class ProductShortView implements Serializable {
                 product.getId(),
                 product.getName(),
                 product.getStateId(),
-                CollectionUtils.isEmpty(product.getAliases()) ? "" : joining(product.getAliases(), ", "),
+                isEmpty(product.getAliases()) ? "" : joining(product.getAliases(), ", "),
                 product.getType(),
                 product.getProductDirections() == null ? null : toSet(product.getProductDirections(), DevUnit::toProductDirectionInfo));
     }

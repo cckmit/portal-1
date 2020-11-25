@@ -115,7 +115,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.setName( value.getName() );
         view.setCreatedBy(lang.createBy(value.getCreator().getDisplayShortName(), DateFormatter.formatDateTime(value.getCreated())));
         view.setState( value.getState().getId() );
-        view.setDirection( stream(value.getProductDirectionEntityOptionList()).map(EntityOption::getDisplayText).collect(Collectors.joining(", ")));
+        view.setDirection(joining(value.getProductDirectionEntityOptionList(), ", ", EntityOption::getDisplayText));
         view.setDescription( value.getDescription() == null ? "" : value.getDescription() );
         view.setRegion( value.getRegion() == null ? "" : value.getRegion().getDisplayText() );
         view.setCompany(value.getCustomer() == null ? "" : value.getCustomer().getCname());

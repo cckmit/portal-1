@@ -19,9 +19,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
 
 public class ExcelReportWriter implements
         ReportWriter<ReportProjectWithLastComment>,
@@ -106,7 +105,7 @@ public class ExcelReportWriter implements
         values.add(project.getCustomer() != null ? project.getCustomer().getCname() : "");
         values.add(project.getRegion() != null && project.getRegion().getDisplayText() != null ?
                 project.getRegion().getDisplayText() : "");
-        values.add(stream(project.getProductDirectionEntityOptionList()).map(EntityOption::getDisplayText).collect(Collectors.joining(", ")));
+        values.add(joining(project.getProductDirectionEntityOptionList(), ", ", EntityOption::getDisplayText));
         values.add(project.getPauseDate() != null ? new Date(project.getPauseDate()) : "");
         values.add(comment != null ? comment.getCreated() : "");
         values.add(comment != null ? comment.getText() : "");

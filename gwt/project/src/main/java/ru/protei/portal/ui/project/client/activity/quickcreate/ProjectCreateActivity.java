@@ -91,7 +91,7 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
             view.products().setValue(null);
         } else {
             view.productEnabled().setEnabled(true);
-            view.updateProductSelector(stream(directions).map(info -> info.id).collect(Collectors.toSet()));
+            view.updateProductSelector(toSet(directions, ProductDirectionInfo::getId));
             view.products().setValue(
                     stream(view.products().getValue()).
                             filter(productShortView -> {
@@ -127,7 +127,8 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
         view.name().setValue(project.getName());
         view.description().setValue(project.getDescription());
         view.region().setValue(project.getRegion());
-        view.directions().setValue(toSet(project.getProductDirectionEntityOptionList(), option -> new ProductDirectionInfo(option)));        view.customerType().setValue(project.getCustomerType());
+        view.directions().setValue(toSet(project.getProductDirectionEntityOptionList(), option -> new ProductDirectionInfo(option)));
+        view.customerType().setValue(project.getCustomerType());
         view.productEnabled().setEnabled(false);
         view.company().setValue(EntityOption.fromCompany(project.getCustomer()));
 

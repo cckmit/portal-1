@@ -137,7 +137,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
             view.products().setValue(null);
         } else {
             view.productEnabled().setEnabled(true);
-            view.updateProductSelector(stream(directions).map(info -> info.id).collect(Collectors.toSet()));
+            view.updateProductSelector(toSet(directions, ProductDirectionInfo::getId));
             view.products().setValue(
                     stream(view.products().getValue()).
                             filter(productShortView -> {

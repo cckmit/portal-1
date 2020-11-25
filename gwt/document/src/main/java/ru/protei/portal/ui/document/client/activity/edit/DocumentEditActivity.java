@@ -38,7 +38,6 @@ import ru.protei.portal.ui.common.shared.model.Profile;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
@@ -575,7 +574,7 @@ public abstract class DocumentEditActivity
     private void fillViewProjectInfo(ProjectInfo project) {
         view.setProjectInfo(
             project == null ? "" : customerTypeLang.getName(project.getCustomerType()),
-            project == null ? "" : stream(project.getProductDirection()).map(EntityOption::getDisplayText).collect(Collectors.joining(", ")),
+            project == null ? "" : joining(project.getProductDirection(), ", ", EntityOption::getDisplayText),
             project == null ? "" : fetchDisplayText(project.getRegion())
         );
     }
