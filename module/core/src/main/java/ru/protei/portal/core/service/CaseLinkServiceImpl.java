@@ -528,24 +528,27 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         boolean isParentFor = En_BundleType.PARENT_FOR.equals(link.getBundleType());
         boolean isSubtask = En_BundleType.SUBTASK.equals(link.getBundleType());
         if (isParentFor || isSubtask) {
-            CaseShortView parent = caseShortViewDAO.get(isParentFor ?
+            CaseObject parent = caseObjectDAO.get(isParentFor ?
                             link.getCaseId() :
                             NumberUtils.createLong(link.getRemoteId()));
-            CaseShortView subtask = caseShortViewDAO.get(isParentFor ?
+            CaseObject subtask = caseObjectDAO.get(isParentFor ?
                     NumberUtils.createLong(link.getRemoteId()) :
                     link.getCaseId());
 
+            // запрещено создание ссылок для задач с автооткрытием
+            if (parent.getInitiatorCompany().getAutoOpenIssue()) {
+                return En_ResultStatus.NOT_ALLOWED_AUTOOPEN_ISSUE;
+            }
+            if (subtask.getInitiatorCompany().getAutoOpenIssue()) {
+                return En_ResultStatus.NOT_ALLOWED_AUTOOPEN_ISSUE;
+            }
+            // запрещено создание ссылок, если родитель - интеграционная задача
+            if (isIntegrationIssue(parent)) {
+                return En_ResultStatus.NOT_ALLOWED_INTEGRATION_ISSUE;
+            }
             // запрещено создание ссылок, если родитель в статусе "created" или "verified"
             if (isParentStateNotAllowed(parent.getStateId())) {
                 return En_ResultStatus.NOT_ALLOWED_PARENT_STATE;
-            }
-            // запрещено создание ссылок для задач с автооткрытием
-            if (parent.getAutoOpenIssue()) {
-                return En_ResultStatus.NOT_ALLOWED_AUTOOPEN_ISSUE;
-            }
-            // запрещено создание ссылок для задач с автооткрытием
-            if (subtask.getAutoOpenIssue()) {
-                return En_ResultStatus.NOT_ALLOWED_AUTOOPEN_ISSUE;
             }
         }
 
@@ -865,5 +868,13 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     private boolean isParentStateNotAllowed(Long stateId) {
         return isTerminalState(stateId) || CrmConstants.State.CREATED == stateId;
+    }
+
+    private boolean isIntegrationIssue(CaseObject caseObject) {
+        En_ExtAppType extAppType = En_ExtAppType.forCode(caseObject.getExtAppType());
+        if (extAppType == null) {
+            return false;
+        }
+        return true;
     }
 }

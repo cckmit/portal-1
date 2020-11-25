@@ -872,6 +872,10 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             return true;
         }
 
+        if (policyService.isSubcontractorCompany()) {
+            return true;
+        }
+
         return false;
     }
 

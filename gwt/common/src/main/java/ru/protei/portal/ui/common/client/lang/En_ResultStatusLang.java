@@ -93,7 +93,8 @@ public class En_ResultStatusLang {
             case NOT_FOUND_PARENT: return lang.errNotFoundParent();
             case INVALID_CASE_UPDATE_SUBTASK_NOT_CLOSED: return lang.errInvalidCaseUpdateSubtaskNotClosed();
             case NOT_ALLOWED_PARENT_STATE: return lang.errNotAllowedParentState();
-            case NOT_ALLOWED_AUTOOPEN_ISSUE: return lang.errNotAllowedCompanyWithAutoOpenIssues();
+            case NOT_ALLOWED_AUTOOPEN_ISSUE: return lang.errNotAllowedCompanyWithAutoOpenIssue();
+            case NOT_ALLOWED_INTEGRATION_ISSUE: return lang.errNotAllowedIntegrationIssue();
             default: return lang.errUnknownResult();
         }
     }

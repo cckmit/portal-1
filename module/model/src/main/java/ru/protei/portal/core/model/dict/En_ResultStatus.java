@@ -341,6 +341,11 @@ public enum En_ResultStatus {
     /**
      * Родительская задача или подзадача не может быть с автоматическим открытием
      */
-    NOT_ALLOWED_AUTOOPEN_ISSUE
+    NOT_ALLOWED_AUTOOPEN_ISSUE,
+
+    /**
+     * Родительская задача не может быть интеграционной
+     */
+    NOT_ALLOWED_INTEGRATION_ISSUE
     ;
 }

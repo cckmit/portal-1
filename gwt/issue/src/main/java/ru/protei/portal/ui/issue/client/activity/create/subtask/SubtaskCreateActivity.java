@@ -128,7 +128,7 @@ public abstract class SubtaskCreateActivity implements AbstractSubtaskCreateActi
         }
 
         if (isCompanyWithAutoOpenIssues(parentCaseObject.getInitiatorCompany())) {
-            fireEvent(new NotifyEvents.Show(lang.errNotAllowedCompanyWithAutoOpenIssues(), NotifyEvents.NotifyType.ERROR));
+            fireEvent(new NotifyEvents.Show(lang.errNotAllowedCompanyWithAutoOpenIssue(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
 

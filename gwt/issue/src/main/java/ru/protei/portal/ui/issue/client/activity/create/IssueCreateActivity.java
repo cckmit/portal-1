@@ -925,6 +925,10 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
             return true;
         }
 
+        if (policyService.isSubcontractorCompany()) {
+            return true;
+        }
+
         return false;
     }
 

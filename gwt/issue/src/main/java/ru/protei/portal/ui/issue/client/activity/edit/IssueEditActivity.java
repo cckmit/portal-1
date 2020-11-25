@@ -203,7 +203,7 @@ public abstract class IssueEditActivity implements
     }
 
     @Event
-    public void onIssueMetaChanged( IssueEvents.IssueMetaChanged event ) {
+    public void onIssueMetaChanged(IssueEvents.IssueMetaChanged event) {
         if (issue == null) {
             return;
         }
@@ -212,7 +212,9 @@ public abstract class IssueEditActivity implements
                 fireEvent(new CaseCommentEvents.DisableNewComment());
             }
         }
-        view.createSubtaskButtonVisibility().setVisible(!isCreatingSubtaskNotAllowed(event.meta.getStateId()));
+        boolean isCreatingSubtaskNotAllowed = isCreatingSubtaskNotAllowed(event.meta.getStateId(),
+                issue.getInitiatorCompany().getAutoOpenIssue(), issue.getExtAppType());
+        view.createSubtaskButtonVisibility().setVisible(!isCreatingSubtaskNotAllowed);
     }
 
     @Event
@@ -504,7 +506,9 @@ public abstract class IssueEditActivity implements
         view.nameAndDescriptionEditButtonVisibility().setVisible(!readOnly && selfIssue);
         view.setFavoriteButtonActive(issue.isFavorite());
 
-        view.createSubtaskButtonVisibility().setVisible(!isCreatingSubtaskNotAllowed(issue.getStateId()));
+        boolean isCreatingSubtaskNotAllowed = isCreatingSubtaskNotAllowed(issue.getStateId(),
+                issue.getInitiatorCompany().getAutoOpenIssue(), issue.getExtAppType());
+        view.createSubtaskButtonVisibility().setVisible(!isCreatingSubtaskNotAllowed);
     }
 
     private void viewModeIsPreview( boolean isPreviewMode){
@@ -582,9 +586,10 @@ public abstract class IssueEditActivity implements
         return name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
     }
 
-    private boolean isCreatingSubtaskNotAllowed(Long stateId) {
+    private boolean isCreatingSubtaskNotAllowed(Long stateId, boolean isAutoOpenIssue, String extAppType) {
         return !policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT) ||
-                isTerminalState(stateId) || CrmConstants.State.CREATED == stateId;
+                isTerminalState(stateId) || CrmConstants.State.CREATED == stateId ||
+                isAutoOpenIssue || En_ExtAppType.forCode(extAppType) != null;
     }
 
     @Inject

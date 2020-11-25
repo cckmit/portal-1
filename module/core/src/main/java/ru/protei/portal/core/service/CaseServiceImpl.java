@@ -11,6 +11,7 @@ import ru.protei.portal.core.event.CaseNameAndDescriptionEvent;
 import ru.protei.portal.core.event.CaseObjectCreateEvent;
 import ru.protei.portal.core.event.CaseObjectMetaEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
+import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
@@ -199,7 +200,7 @@ public class CaseServiceImpl implements CaseService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        applyCaseByScope( token, caseObject );
+        caseObject = applyCaseByScope( token, caseObject );
         if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_EDIT, caseObject ) ) {
             return error(En_ResultStatus.PERMISSION_DENIED );
         }
@@ -853,6 +854,10 @@ public class CaseServiceImpl implements CaseService {
             return error(En_ResultStatus.NOT_ALLOWED_AUTOOPEN_ISSUE);
         }
 
+        if (isIntegrationIssue(parentCaseObject)) {
+            return error(En_ResultStatus.NOT_ALLOWED_INTEGRATION_ISSUE);
+        }
+
         if (isParentStateNotAllowed(parentCaseObject)) {
             return error(En_ResultStatus.NOT_ALLOWED_PARENT_STATE);
         }
@@ -873,6 +878,14 @@ public class CaseServiceImpl implements CaseService {
         }
 
         return result.publishEvents(parentUpdate.getEvents());
+    }
+
+    private boolean isIntegrationIssue(CaseObject caseObject) {
+        En_ExtAppType extAppType = En_ExtAppType.forCode(caseObject.getExtAppType());
+        if (extAppType == null) {
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -964,14 +977,13 @@ public class CaseServiceImpl implements CaseService {
         }
 
         Company company = companyService.getCompanyOmitPrivileges(token, token.getCompanyId()).getData();
-        caseQuery.setCompanyIds(
-                acceptAllowedCompanies(
-                        caseQuery.getCompanyIds(),
-                        getCompaniesBySubcontractorIds(company.getCategory(), token.getCompanyAndChildIds())));
-        caseQuery.setManagerCompanyIds(
-                acceptAllowedCompanies(
-                        caseQuery.getManagerCompanyIds(),
-                        getSubcontractorsByCompanyIds(company.getCategory(), token.getCompanyAndChildIds())));
+        if (company.getCategory() == En_CompanyCategory.SUBCONTRACTOR) {
+            caseQuery.setManagerCompanyIds(
+                    acceptAllowedCompanies(caseQuery.getManagerCompanyIds(), token.getCompanyAndChildIds()));
+        } else {
+            caseQuery.setCompanyIds(
+                    acceptAllowedCompanies(caseQuery.getCompanyIds(), token.getCompanyAndChildIds()));
+        }
         caseQuery.setAllowViewPrivate(false);
         caseQuery.setCustomerSearch(true);
 
@@ -1003,16 +1015,29 @@ public class CaseServiceImpl implements CaseService {
                 || !Objects.equals(co1.getWorkTrigger(), co2.getWorkTrigger());
     }
 
-    private void applyCaseByScope( AuthToken token, CaseObject caseObject ) {
+    private CaseObject applyCaseByScope(AuthToken token, CaseObject caseObject) {
         Set< UserRole > roles = token.getRoles();
-        if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_CREATE ) && policyService.hasScopeForPrivilege( roles, En_Privilege.ISSUE_CREATE, En_Scope.COMPANY ) ) {
-            caseObject.setPrivateCase( false );
-            if( !token.getCompanyAndChildIds().contains( caseObject.getInitiatorCompanyId() ) ) {
-                Company company = companyService.getCompanyOmitPrivileges(token, token.getCompanyId()).getData();
-                caseObject.setInitiatorCompany( company );
-            }
-            caseObject.setManagerId( null );
+        if (policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_CREATE)) {
+            return caseObject;
         }
+
+        caseObject.setPrivateCase(false);
+        Company company = companyService.getCompanyOmitPrivileges(token, token.getCompanyId()).getData();
+
+        Collection<Long> initiatorAllowedCompanies = getCompaniesBySubcontractorIds(company.getCategory(), token.getCompanyAndChildIds());
+        if(!initiatorAllowedCompanies.contains(caseObject.getInitiatorCompanyId())) {
+            caseObject.setInitiatorCompany(company);
+            caseObject.setInitiatorId(null);
+            log.info("applyCaseByScope(): CaseObject modified: {}", caseObject);
+        }
+        Collection<Long> managerAllowedCompanies = getSubcontractorsByCompanyIds(company.getCategory(), token.getCompanyAndChildIds());
+        if(!managerAllowedCompanies.contains(caseObject.getManagerCompanyId())) {
+            caseObject.setManagerCompanyId(CrmConstants.Company.HOME_COMPANY_ID);
+            caseObject.setManagerId(null);
+            log.info("applyCaseByScope(): CaseObject modified: {}", caseObject);
+        }
+
+        return caseObject;
     }
 
     private boolean hasAccessForCaseObject( AuthToken token, En_Privilege privilege, CaseObject caseObject ) {
@@ -1367,7 +1392,7 @@ public class CaseServiceImpl implements CaseService {
 
         Result<List<EntityOption>> result = companyService.subcontractorOptionListByCompanyIds(companyIds);
         if (result.isError()) {
-            throw new RuntimeException("Failed to get subcontractors by companies");
+            throw new RollbackTransactionException("Failed to get subcontractors by companies");
         }
         return result.getData().stream().map(EntityOption::getId).collect(Collectors.toList());
     }
@@ -1379,7 +1404,7 @@ public class CaseServiceImpl implements CaseService {
 
         Result<List<EntityOption>> result = companyService.companyOptionListBySubcontractorIds(subcontractorIds);
         if (result.isError()) {
-            throw new RuntimeException("Failed to get companies by subcontractors");
+            throw new RollbackTransactionException("Failed to get companies by subcontractors");
         }
         return result.getData().stream().map(EntityOption::getId).collect(Collectors.toList());
     }

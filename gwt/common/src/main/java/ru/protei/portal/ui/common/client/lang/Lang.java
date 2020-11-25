@@ -3206,7 +3206,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String subtaskCreate();
 
-    String errNotAllowedCompanyWithAutoOpenIssues();
+    String errNotAllowedCompanyWithAutoOpenIssue();
 
     String errSaveSubtaskFieldsInvalid();
 
@@ -3219,4 +3219,6 @@ public interface Lang extends Messages, ContactItemLang {
     String subtask();
 
     String errInvalidCaseUpdateSubtaskNotClosed();
+
+    String errNotAllowedIntegrationIssue();
 }

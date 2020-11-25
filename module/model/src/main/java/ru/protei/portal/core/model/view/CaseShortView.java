@@ -68,9 +68,6 @@ public class CaseShortView implements Serializable, Identifiable {
     @JdbcJoinedColumn( table="company", localColumn = "initiator_company", remoteColumn = "id", mappedColumn = "cname")
     private String initiatorCompanyName;
 
-    @JdbcJoinedColumn( table="company", localColumn = "initiator_company", remoteColumn = "id", mappedColumn = "auto_open_issue")
-    private Boolean autoOpenIssue;
-
     @JdbcColumn(name = "product_id")
     private Long productId;
 
@@ -351,14 +348,6 @@ public class CaseShortView implements Serializable, Identifiable {
         this.workTrigger = workTrigger;
     }
 
-    public Boolean getAutoOpenIssue() {
-        return autoOpenIssue;
-    }
-
-    public void setAutoOpenIssue(Boolean autoOpenIssue) {
-        this.autoOpenIssue = autoOpenIssue;
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (id != null) {
@@ -386,7 +375,6 @@ public class CaseShortView implements Serializable, Identifiable {
                 ", initiatorShortName='" + initiatorShortName + '\'' +
                 ", initiatorCompanyId=" + initiatorCompanyId +
                 ", initiatorCompanyName='" + initiatorCompanyName + '\'' +
-                ", autoOpenIssue=" + autoOpenIssue +
                 ", productId=" + productId +
                 ", productName='" + productName + '\'' +
                 ", managerId=" + managerId +

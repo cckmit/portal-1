@@ -405,10 +405,6 @@ public abstract class IssueTableFilterActivity
         return userCompany.getCategory() == En_CompanyCategory.SUBCONTRACTOR;
     }
 
-    private boolean isCustomerCompany(Company userCompany) {
-        return userCompany.getCategory() == En_CompanyCategory.CUSTOMER;
-    }
-
     @Inject
     Lang lang;
 
