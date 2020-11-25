@@ -4,7 +4,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -14,12 +13,9 @@ import ru.protei.portal.ui.common.client.widget.selector.input.InputPopupMultiSe
 import ru.protei.portal.ui.common.client.widget.selector.item.PopupSelectableItem;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import java.util.function.Supplier;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * Селектор контактов
@@ -72,7 +68,7 @@ public class PersonMultiSelector extends InputPopupMultiSelector<PersonShortView
     }
 
     @Override
-    protected ru.protei.portal.ui.common.client.selector.SelectorItem<PersonShortView> makeSelectorItem(PersonShortView value, String elementHtml) {
+    protected ru.protei.portal.ui.common.client.selector.SelectorItem<PersonShortView> makeSelectorItem(PersonShortView value, String elementHtml, String title) {
         PopupSelectableItem<PersonShortView> item = new PopupSelectableItem<>();
 
         if (value != null && value.isFired()) {

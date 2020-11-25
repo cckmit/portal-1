@@ -65,7 +65,6 @@
             <div class="form-group col-md-6">
                 <productselector:devunit.DevUnitMultiSelector ui:field="products" validation="false"
                                                               header="{lang.projectProducts}"
-                                                              hasNullValue="true"
                                                               imageVisible="true"
                 />
             </div>

@@ -162,11 +162,12 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         clearButton.setVisible( !isEmpty() );
     }
 
-    protected SelectorItem<T> makeSelectorItem( T element, String elementHtml ) {
+    @Override
+    protected SelectorItem<T> makeSelectorItem( T element, String elementHtml, String title ) {
         PopupSelectableItem<T> item = new PopupSelectableItem<>();
         item.setElementHtml( elementHtml );
         item.setSelected( isSelected( element ) );
-        item.setTitle(elementHtml);
+        item.setTitle(title);
         return item;
     }
 
@@ -179,7 +180,7 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
 
     private void addItem( T item ) {
         SelectItemView itemView = itemViewProvider.get();
-        itemView.setValue( getSelector().makeElementHtml( item ) );
+        itemView.setValue( getSelector().makeElementHtml( item ), getSelector().makeElementName( item ) );
         itemView.setEnabled( isEnabled );
 
         itemViews.add( itemView );

@@ -127,16 +127,18 @@
                             <div class="row clearfix reset-no-padding">
                                 <div class="col-md-12">
                                     <productdirection:ProductDirectionMultiSelector ui:field="productDirection"
-                                                                                   validation="true"
-                                                                                   header="{lang.projectDirection}"
-                                                                                   hasNullValue="true"/>
+                                                                                    header="{lang.projectDirection}"
+                                                                                    validation="true"
+                                                                                    hasNullValue="false"
+                                    />
                                 </div>
                             </div>
                             <div class="row clearfix reset-no-padding">
                                 <div class="col-md-12">
-                                    <devunit:DevUnitMultiSelector ui:field="products" validation="false"
+                                    <devunit:DevUnitMultiSelector ui:field="products"
                                                                   header="{lang.projectProducts}"
-                                                                  hasNullValue="true"
+                                                                  hasNullValue="false"
+                                                                  validation="false"
                                                                   imageVisible="true"
                                     />
                                 </div>

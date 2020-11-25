@@ -58,9 +58,9 @@
                             <g:HTMLPanel ui:field="directionContainer" styleName="form-group col-md-12">
                                 <productdirection:ProductDirectionButtonSelector ui:field="productDirection"
                                                                                  defaultValue="{lang.productSelectDirection}"
-                                                                                 header="{lang.projectDirection}"/>
+                                                                                 header="{lang.projectDirection}"
+                                />
                                 <productdirection:ProductDirectionMultiSelector ui:field="productMultiDirections"
-                                                                                validation="true"
                                                                                 header="{lang.projectDirection}"
                                                                                 hasNullValue="true"/>
                             </g:HTMLPanel>

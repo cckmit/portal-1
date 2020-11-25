@@ -10,7 +10,6 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.RootPanel;
 import ru.protei.portal.ui.common.client.selector.AbstractPopupSelector;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
-import ru.protei.portal.ui.common.client.selector.SelectorPopup;
 import ru.protei.portal.ui.common.client.selector.pageable.AbstractPageableSelector;
 import ru.protei.portal.ui.common.client.selector.pageable.SingleValuePageableSelector;
 import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
@@ -97,7 +96,7 @@ public class PopupSingleSelector<T> extends AbstractPopupSelector<T> implements 
     }
 
     @Override
-    protected SelectorItem<T> makeSelectorItem(T element, String elementHtml) {
+    protected SelectorItem<T> makeSelectorItem(T element, String elementHtml, String title) {
         PopupSelectorItem<T> item = new PopupSelectorItem<>();
         item.setName(elementHtml);
         return item;

@@ -20,7 +20,7 @@ public class EmployeeFormSelector extends FormPopupSingleSelector<PersonShortVie
     }
 
     @Override
-    protected SelectorItem makeSelectorItem( PersonShortView value, String elementHtml ) {
+    protected SelectorItem makeSelectorItem( PersonShortView value, String elementHtml, String title ) {
         PopupSelectorItem item = new PopupSelectorItem();
         item.setName(elementHtml);
         if(value!=null){

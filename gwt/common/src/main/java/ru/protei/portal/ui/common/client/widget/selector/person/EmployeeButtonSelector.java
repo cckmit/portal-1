@@ -3,7 +3,6 @@ package ru.protei.portal.ui.common.client.widget.selector.person;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
-import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonPopupSingleSelector;
 
 /**
@@ -20,7 +19,7 @@ public class EmployeeButtonSelector extends ButtonPopupSingleSelector<PersonShor
     }
 
     @Override
-    protected SelectorItem makeSelectorItem( PersonShortView value, String elementHtml ) {
+    protected SelectorItem makeSelectorItem( PersonShortView value, String elementHtml, String title ) {
          return PersonSelectorItemRenderer.makeSingleSelectorItem(value, elementHtml);
     }
 

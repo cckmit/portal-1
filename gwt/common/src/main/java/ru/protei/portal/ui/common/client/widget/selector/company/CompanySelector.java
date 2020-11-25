@@ -17,7 +17,7 @@ public class CompanySelector extends ButtonPopupSingleSelector<EntityOption> {
     }
 
     @Override
-    protected SelectorItem makeSelectorItem(EntityOption value, String elementHtml) {
+    protected SelectorItem makeSelectorItem(EntityOption value, String elementHtml, String title) {
         PopupSelectorItem item = new PopupSelectorItem();
         item.setName(elementHtml);
         return item;
