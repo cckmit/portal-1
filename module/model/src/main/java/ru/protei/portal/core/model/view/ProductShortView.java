@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import java.io.Serializable;
 import java.util.Set;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
 import static ru.protei.portal.core.model.helper.CollectionUtils.toSet;
 
 /**
@@ -104,7 +105,7 @@ public class ProductShortView implements Serializable {
                 product.getId(),
                 product.getName(),
                 product.getStateId(),
-                CollectionUtils.isEmpty(product.getAliases()) ? "" : String.join(", ", product.getAliases()),
+                CollectionUtils.isEmpty(product.getAliases()) ? "" : joining(product.getAliases(), ", "),
                 product.getType(),
                 product.getProductDirections() == null ? null : toSet(product.getProductDirections(), DevUnit::toProductDirectionInfo));
     }

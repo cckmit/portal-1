@@ -52,8 +52,8 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
-        product.setState(En_DevUnitState.ACTIVE);
-        product.setTypes(En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
+        products.setState(En_DevUnitState.ACTIVE);
+        products.setTypes(En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
         company.setDefaultValue(lang.selectIssueCompany());
 
         projectState.setDefaultValue(regionStateLang.getStateName(En_RegionState.UNKNOWN));
@@ -86,7 +86,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     public HasValue<En_RegionState> state() { return projectState; }
 
     @Override
-    public HasValue<Set<ProductDirectionInfo>> direction() { return productDirection; }
+    public HasValue<Set<ProductDirectionInfo>> directions() { return productDirection; }
 
     @Override
     public HasValidable nameValidator() {
@@ -100,8 +100,8 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     public HasValue< EntityOption > region() { return projectRegion; }
 
     @Override
-    public HasValue<Set<ProductShortView>> product() {
-        return product;
+    public HasValue<Set<ProductShortView>> products() {
+        return products;
     }
 
     @Override
@@ -140,7 +140,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
 
     @Override
     public HasEnabled productEnabled() {
-        return product;
+        return products;
     }
 
 
@@ -196,7 +196,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
 
     @Override
     public void updateProductSelector(Set<Long> directionIds) {
-        product.setDirectionIds(directionIds);
+        products.setDirectionIds(directionIds);
     }
 
     @UiHandler("saveButton")
@@ -270,7 +270,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         }
     }
 
-    @UiHandler("product")
+    @UiHandler("products")
     public void onProductChanged(ValueChangeEvent<Set<ProductShortView>> event) {
         if (activity != null) {
             activity.onProductChanged();
@@ -287,7 +287,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         projectState.setEnsureDebugId(DebugIds.PROJECT.STATE_SELECTOR);
         projectRegion.setEnsureDebugId(DebugIds.PROJECT.REGION_SELECTOR);
         productDirection.ensureDebugId(DebugIds.PROJECT.DIRECTION_SELECTOR);
-        product.ensureDebugId(DebugIds.PROJECT.PRODUCT_SELECTOR);
+        products.ensureDebugId(DebugIds.PROJECT.PRODUCT_SELECTOR);
         company.setEnsureDebugId(DebugIds.PROJECT.COMPANY_SELECTOR);
         customerType.setEnsureDebugId(DebugIds.PROJECT.CUSTOMER_TYPE_SELECTOR);
         saveButton.ensureDebugId(DebugIds.PROJECT.SAVE_BUTTON);
@@ -324,7 +324,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     CompanyFormSelector company;
     @Inject
     @UiField(provided = true)
-    DevUnitMultiSelector product;
+    DevUnitMultiSelector products;
     @Inject
     @UiField(provided = true)
     CustomerFormSelector customerType;

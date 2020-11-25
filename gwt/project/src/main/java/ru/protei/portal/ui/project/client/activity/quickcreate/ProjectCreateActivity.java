@@ -5,6 +5,8 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
+import ru.protei.portal.core.model.dict.En_DevUnitType;
+import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.DevUnit;
@@ -13,6 +15,7 @@ import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.events.ProjectEvents;
@@ -25,8 +28,8 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 /**
  * Активность создания проекта с минимальным набором параметров
@@ -52,7 +55,7 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
             return;
         }
 
-        view.product().setValue(event.product.toProductShortView());
+        view.products().setValue(event.product.toProductShortView() == null? null : setOf(event.product.toProductShortView()));
     }
 
     @Override
@@ -80,8 +83,43 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
 
     @Override
     public void onDirectionChanged() {
-        view.updateProductDirection(view.direction().getValue() == null ? null : view.direction().getValue().id);
-        view.product().setValue(null);
+        final Set<ProductDirectionInfo> directions = view.directions().getValue();
+
+        if (isEmpty(directions)) {
+            view.productEnabled().setEnabled(false);
+            view.updateProductSelector(new HashSet<>());
+            view.products().setValue(null);
+        } else {
+            view.productEnabled().setEnabled(true);
+            view.updateProductSelector(stream(directions).map(info -> info.id).collect(Collectors.toSet()));
+            view.products().setValue(
+                    stream(view.products().getValue()).
+                            filter(productShortView -> {
+                                final Set<Long> ids = toSet(productShortView.getProductDirection(), ProductDirectionInfo::getId);
+                                return stream(directions).anyMatch(direction ->
+                                        ids.contains(direction.id));
+                            })
+                            .collect(Collectors.toSet())
+            );
+        }
+    }
+
+    @Override
+    public void onProductChanged() {
+        final Set<ProductShortView> currentComplex = stream(view.products().getValue())
+                .filter(info -> info.getType() == En_DevUnitType.COMPLEX && info.getProductDirection() != null)
+                .collect(Collectors.toSet());
+        Set<ProductShortView> addedComplex = new HashSet<>(currentComplex);
+        addedComplex.removeAll(selectedComplex);
+        if (isNotEmpty(addedComplex)) {
+            final Set<ProductDirectionInfo> directions = view.directions().getValue();
+            directions.addAll(stream(currentComplex)
+                    .flatMap(productShortView -> stream(productShortView.getProductDirection()))
+                    .collect(Collectors.toSet()));
+            view.directions().setValue(directions);
+            onDirectionChanged();
+        }
+        selectedComplex = currentComplex;
     }
 
     private void initialView(Project project) {
@@ -89,11 +127,15 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
         view.name().setValue(project.getName());
         view.description().setValue(project.getDescription());
         view.region().setValue(project.getRegion());
-//        view.direction().setValue(project.getProductDirectionEntityOptionList() == null ? null : new ProductDirectionInfo(project.getProductDirectionEntityOptionList()));
-        view.customerType().setValue(project.getCustomerType());
+        view.directions().setValue(toSet(project.getProductDirectionEntityOptionList(), option -> new ProductDirectionInfo(option)));        view.customerType().setValue(project.getCustomerType());
+        view.productEnabled().setEnabled(false);
         view.company().setValue(EntityOption.fromCompany(project.getCustomer()));
-//        view.product().setValue(project.getSingleProduct());
-//        view.updateProductDirection(project.getProductDirectionEntityOptionList() == null ? null : project.getProductDirectionEntityOptionList().getId());
+
+        view.products().setValue(new HashSet<>(emptyIfNull(project.getProductShortView())));
+        selectedComplex = new HashSet<>();
+
+        view.updateProductSelector( toSet(project.getProductDirectionEntityOptionList(), EntityOption::getId));        selectedComplex.addAll(stream(project.getProductShortView()).filter(product -> product.getType() == En_DevUnitType.COMPLEX).collect(Collectors.toSet()) );
+
         view.headManagers().setValue(new HashSet<>(emptyIfNull(project.getTeam())));
         homeCompanyService.getAllHomeCompanies(homeCompanies -> {
             asyncPersonModel.updateCompanies( CollectionUtils.toSet(homeCompanies, EntityOption::getId) );
@@ -107,21 +149,11 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
         project.setName(view.name().getValue().trim());
         project.setDescription(view.description().getValue().trim());
         project.setRegion(view.region().getValue());
-//        project.setProductDirectionName(view.direction().getValue().name );
-//        project.setProductDirectionId(view.direction().getValue().id );
+        project.setProductDirections( toSet(view.directions().getValue(), DevUnit::fromProductDirectionInfo));
         project.setCustomerType(view.customerType().getValue());
         project.setCustomer(Company.fromEntityOption(view.company().getValue()));
-        project.setProducts(fillDevUnits());
+        project.setProducts( toSet(view.products().getValue(), DevUnit::fromProductShortView));
         project.setTeam(toPersonProjectMemberViewList(view.headManagers().getValue()));
-    }
-
-    private Set<DevUnit> fillDevUnits(){
-        if (view.product().getValue() == null) {
-           return new HashSet<>();
-        } else {
-            DevUnit product = DevUnit.fromProductShortView(view.product().getValue());
-            return new HashSet<>(Collections.singleton(product));
-        }
     }
 
     private boolean validate() {
@@ -153,4 +185,5 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
     Lang lang;
 
     private Project project;
+    private Set<ProductShortView> selectedComplex;
 }

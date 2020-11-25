@@ -14,7 +14,7 @@ import ru.protei.winter.jdbc.annotations.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 /**
  * Информация о проекте в регионе
@@ -323,7 +323,7 @@ public class Project extends AuditableObject {
     }
 
     public List<ProductShortView> getProductShortView() {
-        return products == null ? null : getProducts().stream().map(ProductShortView::fromProduct).collect(Collectors.toList());
+        return products == null ? null : toList(products, ProductShortView::fromProduct);
     }
 
     public List<EntityOption> getContracts() {

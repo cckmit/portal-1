@@ -11,6 +11,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
+
 public class ProjectInfo implements Serializable {
 
     /**
@@ -116,7 +118,7 @@ public class ProjectInfo implements Serializable {
                 project.getCreated(),
                 project.getCustomerType(),
                 CollectionUtils.isEmpty(project.getLocations()) ? null : EntityOption.fromLocation(project.getLocations().get(0).getLocation()),
-                new HashSet<>(project.getProductDirectionEntityOptionList()),
+                new HashSet<>(emptyIfNull(project.getProductDirectionEntityOptionList())),
                 project.getManagerId() == null || project.getManagerName() == null ? null : new EntityOption(project.getManagerName(), project.getManagerId()),
                 project.getCustomer() == null ? null : new EntityOption(project.getCustomer().getCname(), project.getCustomer().getId()),
                 project.getProducts() == null ? null : project.getProducts().stream().map(ProductShortView::fromProduct).collect(Collectors.toSet()),

@@ -129,17 +129,17 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
     @Override
     public void onDirectionChanged() {
-        final Set<ProductDirectionInfo> directions = view.direction().getValue();
+        final Set<ProductDirectionInfo> directions = view.directions().getValue();
 
         if (isEmpty(directions)) {
             view.productEnabled().setEnabled(false);
             view.updateProductSelector(new HashSet<>());
-            view.product().setValue(null);
+            view.products().setValue(null);
         } else {
             view.productEnabled().setEnabled(true);
             view.updateProductSelector(stream(directions).map(info -> info.id).collect(Collectors.toSet()));
-            view.product().setValue(
-                    stream(view.product().getValue()).
+            view.products().setValue(
+                    stream(view.products().getValue()).
                             filter(productShortView -> {
                                 final Set<Long> ids = toSet(productShortView.getProductDirection(), ProductDirectionInfo::getId);
                                 return stream(directions).anyMatch(direction ->
@@ -152,17 +152,17 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
     @Override
     public void onProductChanged() {
-        final Set<ProductShortView> currentComplex = stream(view.product().getValue())
+        final Set<ProductShortView> currentComplex = stream(view.products().getValue())
                 .filter(info -> info.getType() == En_DevUnitType.COMPLEX && info.getProductDirection() != null)
                 .collect(Collectors.toSet());
         Set<ProductShortView> addedComplex = new HashSet<>(currentComplex);
         addedComplex.removeAll(selectedComplex);
         if (isNotEmpty(addedComplex)) {
-            final Set<ProductDirectionInfo> directions = view.direction().getValue();
+            final Set<ProductDirectionInfo> directions = view.directions().getValue();
             directions.addAll(stream(currentComplex)
                     .flatMap(productShortView -> stream(productShortView.getProductDirection()))
                     .collect(Collectors.toSet()));
-            view.direction().setValue(directions);
+            view.directions().setValue(directions);
             onDirectionChanged();
         }
         selectedComplex = currentComplex;
@@ -194,7 +194,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.setNumber( isNew( project ) ? null : project.getId().intValue() );
         view.name().setValue( isNew( project ) ? "" : project.getName());
         view.state().setValue( isNew( project ) ? En_RegionState.UNKNOWN : project.getState() );
-        view.direction().setValue( stream(project.getProductDirectionEntityOptionList()).map(ProductDirectionInfo::new).collect(Collectors.toSet()) );
+        view.directions().setValue(toSet(project.getProductDirectionEntityOptionList(), option -> new ProductDirectionInfo(option)));
         view.productEnabled().setEnabled(project.getProductDirectionEntityOptionList() != null);
         view.team().setValue( project.getTeam() == null ? null : new HashSet<>( project.getTeam() ) );
         view.region().setValue( project.getRegion() );
@@ -203,12 +203,12 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.companyEnabled().setEnabled(isNew( project ));
         view.description().setText(project.getDescription());
 
-        view.product().setValue(new HashSet<>(project.getProductShortView()));
+        view.products().setValue(new HashSet<>(emptyIfNull(project.getProductShortView())));
         selectedComplex.addAll(stream(project.getProductShortView()).filter(product -> product.getType() == En_DevUnitType.COMPLEX).collect(Collectors.toSet()) );
 
         if (isNew( project )) view.setHideNullValue(true);
         view.customerType().setValue(project.getCustomerType());
-        view.updateProductSelector( stream(project.getProductDirectionEntityOptionList()).map(EntityOption::getId).collect(Collectors.toSet()) );
+        view.updateProductSelector( toSet(project.getProductDirectionEntityOptionList(), EntityOption::getId));
         view.pauseDateContainerVisibility().setVisible( PAUSED == project.getState() );
         view.pauseDate().setValue( project.getPauseDate() == null ? null : new Date( project.getPauseDate() ) );
 
@@ -265,11 +265,11 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         project.setPauseDate( (PAUSED != view.state().getValue()) ? null : view.pauseDate().getValue().getTime() );
         project.setCustomer(Company.fromEntityOption(view.company().getValue()));
         project.setCustomerType(view.customerType().getValue());
-        project.setProducts( stream(view.product().getValue()).map(DevUnit::fromProductShortView).collect(Collectors.toSet()) );
+        project.setProducts( toSet(view.products().getValue(), DevUnit::fromProductShortView));
         project.setTechnicalSupportValidity(view.technicalSupportValidity().getValue());
         project.setWorkCompletionDate(view.workCompletionDate().getValue());
         project.setPurchaseDate(view.purchaseDate().getValue());
-        project.setProductDirections( stream(view.direction().getValue()).map(DevUnit::fromProductDirectionInfo).collect(Collectors.toSet()) );
+        project.setProductDirections( toSet(view.directions().getValue(), DevUnit::fromProductDirectionInfo));
         project.setRegion(view.region().getValue());
         project.setTeam(new ArrayList<>(view.team().getValue()));
         project.setProjectSlas(view.slaInput().getValue());
@@ -303,7 +303,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
             return false;
         }
 
-        if(isEmpty(view.direction().getValue())){
+        if(isEmpty(view.directions().getValue())){
             fireEvent(new NotifyEvents.Show(lang.errSaveProjectNeedSelectDirection(), NotifyEvents.NotifyType.ERROR));
             return false;
         }

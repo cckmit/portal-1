@@ -134,10 +134,10 @@
                             </div>
                             <div class="row clearfix reset-no-padding">
                                 <div class="col-md-12">
-                                    <devunit:DevUnitMultiSelector ui:field="product" validation="false"
-                                                                 header="{lang.projectProducts}"
-                                                                 hasNullValue="true"
-                                                                 imageVisible="true"
+                                    <devunit:DevUnitMultiSelector ui:field="products" validation="false"
+                                                                  header="{lang.projectProducts}"
+                                                                  hasNullValue="true"
+                                                                  imageVisible="true"
                                     />
                                 </div>
                             </div>
