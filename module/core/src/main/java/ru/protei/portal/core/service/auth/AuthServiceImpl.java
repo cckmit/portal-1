@@ -10,7 +10,6 @@ import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.winter.core.utils.net.AddressMask;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -23,6 +22,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 
@@ -111,7 +111,7 @@ public class AuthServiceImpl implements AuthService {
             return error(loginStatus);
         }
 
-        if (CollectionUtils.isNotEmpty(userLogin.getIpMaskAllow())) {
+        if (isNotEmpty(userLogin.getIpMaskAllow())) {
             if (!AddressMask.isInRange(
                     new InetSocketAddress(ip, 0),
                     stream(userLogin.getIpMaskAllow()).map(AddressMask::new).collect(Collectors.toList()))) {
