@@ -678,8 +678,13 @@ public class BootstrapServiceImpl implements BootstrapService {
         // для тестирования
         login.setUpass("e4b48fd541b3dcb99cababc87c2ee88f");
         login.setAuthType(En_AuthType.LOCAL);
-                                         // vpn                                  local             host
-        login.setIpMaskAllow(Arrays.asList("172.18.240.0/22", "172.18.249.0/24", "192.168.0.0/17", "127.0.0.1", "0.0.0.0"));
+        login.setIpMaskAllow(Arrays.asList("172.18.240.0/22", // vpn
+                                           "172.18.249.0/24",
+                                           "172.16.202.0/24", // НЕОС
+                                           "172.16.201.0/24", // СИГУРД
+                                           "192.168.0.0/17",  // local
+                                           "127.0.0.1",       // host
+                                           "0.0.0.0"));
 
         userLoginDAO.persist(login);
         log.info("addContractEmployee ended");
