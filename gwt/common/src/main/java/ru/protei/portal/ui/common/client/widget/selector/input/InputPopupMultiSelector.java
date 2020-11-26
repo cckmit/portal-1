@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.*;
 
 /**
@@ -47,6 +48,14 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
     public void setHeader( String label ) {
         this.label.removeStyleName( HIDE );
         this.label.getElement().setInnerText( label == null ? "" : label );
+    }
+
+    public void setMandatory( boolean mandatory ) {
+        if ( mandatory ) {
+            select2.addStyleName(REQUIRED);
+            return;
+        }
+        select2.removeStyleName(REQUIRED);
     }
 
     @Override
@@ -96,8 +105,8 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
 
     @Override
     public boolean isValid() {
-        return true;
-    };
+        return isNotEmpty(getValue());
+    }
 
     @Override
     public void setValid(boolean isValid){

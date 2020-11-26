@@ -125,25 +125,6 @@
                                 </div>
                             </div>
                             <div class="row clearfix reset-no-padding">
-                                <div class="col-md-12">
-                                    <productdirection:ProductDirectionMultiSelector ui:field="productDirection"
-                                                                                    header="{lang.projectDirection}"
-                                                                                    validation="true"
-                                                                                    hasNullValue="false"
-                                    />
-                                </div>
-                            </div>
-                            <div class="row clearfix reset-no-padding">
-                                <div class="col-md-12">
-                                    <devunit:DevUnitMultiSelector ui:field="products"
-                                                                  header="{lang.projectProducts}"
-                                                                  hasNullValue="false"
-                                                                  validation="false"
-                                                                  imageVisible="true"
-                                    />
-                                </div>
-                            </div>
-                            <div class="row clearfix reset-no-padding">
                                 <div class="form-group form-group-default date-picker">
                                     <label class="fade"><ui:text from="{lang.technicalSupportValidity}"/></label>
                                     <datepicker:SinglePicker ui:field="technicalSupportValidity" type="DATE" formatValue="dd.MM.yyyy" mandatory="false"/>
@@ -163,24 +144,23 @@
                                     <datepicker:SinglePicker ui:field="purchaseDate" type="DATE" formatValue="dd.MM.yyyy" mandatory="false"/>
                                 </div>
                             </div>
-
-
                         </div>
-
-                        <div class="form-group m-t-20 m-b-0">
-                            <label ui:field="plansLabel"><ui:text from="{lang.plans}"/></label>
-                        </div>
-                        <g:HTMLPanel ui:field="ownerPlansContainer" styleName="form-group">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <plan:PlanMultiSelector ui:field="plans"
-                                                            buttonStyle="btn-info btn-xs"
-                                                            styleName="case-plans"
-                                                            hasNullValue="false"/>
-                                </div>
-                            </div>
-                        </g:HTMLPanel>
-
+                        <productdirection:ProductDirectionMultiSelector ui:field="productDirection" styleName="form-group"
+                                                                        header="{lang.projectDirection}"
+                                                                        validation="true"
+                                                                        hasNullValue="false"
+                                                                        mandatory="true"
+                        />
+                        <devunit:DevUnitMultiSelector ui:field="products" styleName="form-group"
+                                                      header="{lang.projectProducts}"
+                                                      hasNullValue="false"
+                                                      validation="false"
+                                                      imageVisible="true"
+                        />
+                        <plan:PlanMultiSelector ui:field="plans" styleName="form-group"
+                                                header="{lang.plans}"
+                                                hasNullValue="false"
+                        />
                         <div class="form-group m-t-20 m-b-0">
                             <label>
                                 <ui:text from="{lang.projectTeam}"/>

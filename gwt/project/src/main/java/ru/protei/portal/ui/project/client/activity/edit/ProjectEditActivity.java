@@ -194,7 +194,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.setNumber( isNew( project ) ? null : project.getId().intValue() );
         view.name().setValue( isNew( project ) ? "" : project.getName());
         view.state().setValue( isNew( project ) ? En_RegionState.UNKNOWN : project.getState() );
-        view.directions().setValue(toSet(project.getProductDirectionEntityOptionList(), option -> new ProductDirectionInfo(option)));
+        view.directions().setValue(project.getProductDirectionEntityOptionList() == null? null : toSet(project.getProductDirectionEntityOptionList(), option -> new ProductDirectionInfo(option)));
         view.productEnabled().setEnabled(project.getProductDirectionEntityOptionList() != null);
         view.team().setValue( project.getTeam() == null ? null : new HashSet<>( project.getTeam() ) );
         view.region().setValue( project.getRegion() );
