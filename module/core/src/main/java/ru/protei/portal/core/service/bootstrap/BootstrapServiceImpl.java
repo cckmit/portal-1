@@ -12,7 +12,7 @@ import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.exception.ResultStatusException;
+import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.index.document.DocumentStorageIndex;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.PortalBaseJdbcDAO;
@@ -190,7 +190,7 @@ public class BootstrapServiceImpl implements BootstrapService {
         try {
             return objectMapper.readValue(query, CaseQuery.class);
         } catch (IOException e) {
-            throw new ResultStatusException(En_ResultStatus.INTERNAL_ERROR, e);
+            throw new RollbackTransactionException("Failed deserialize report query");
         }
     }
 
@@ -198,7 +198,7 @@ public class BootstrapServiceImpl implements BootstrapService {
         try {
             return objectMapper.writeValueAsString(query);
         } catch (JsonProcessingException e) {
-            throw new ResultStatusException(En_ResultStatus.INTERNAL_ERROR, e);
+            throw new RollbackTransactionException("Failed serialize report query");
         }
     }
 

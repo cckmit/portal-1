@@ -880,14 +880,6 @@ public class CaseServiceImpl implements CaseService {
         return result.publishEvents(parentUpdate.getEvents());
     }
 
-    private boolean isIntegrationIssue(CaseObject caseObject) {
-        En_ExtAppType extAppType = En_ExtAppType.forCode(caseObject.getExtAppType());
-        if (extAppType == null) {
-            return false;
-        }
-        return true;
-    }
-
     @Override
     @Transactional
     public Result<CaseObjectMetaNotifiers> addNotifierToCaseObject(AuthToken authToken, Long caseId, PersonShortView personShortView) {
@@ -1407,5 +1399,13 @@ public class CaseServiceImpl implements CaseService {
             throw new RollbackTransactionException("Failed to get companies by subcontractors");
         }
         return result.getData().stream().map(EntityOption::getId).collect(Collectors.toList());
+    }
+
+    private boolean isIntegrationIssue(CaseObject caseObject) {
+        En_ExtAppType extAppType = En_ExtAppType.forCode(caseObject.getExtAppType());
+        if (extAppType == null) {
+            return false;
+        }
+        return true;
     }
 }
