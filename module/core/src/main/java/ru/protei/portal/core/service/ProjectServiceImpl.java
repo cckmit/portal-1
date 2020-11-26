@@ -434,6 +434,7 @@ public class ProjectServiceImpl implements ProjectService {
         List<Project> projects = projectDAO.listByQuery(query);
 
         jdbcManyRelationsHelper.fill(projects, "products");
+        jdbcManyRelationsHelper.fill(projects, "productDirections");
 
         List<ProjectInfo> result = projects.stream()
                 .map(ProjectInfo::fromProject).collect(toList());

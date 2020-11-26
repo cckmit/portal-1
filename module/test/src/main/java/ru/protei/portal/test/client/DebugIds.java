@@ -860,7 +860,7 @@ public class DebugIds {
         String DATE_VALID_CONTAINER = "contract-date-valid-container";
         String COST_WITH_CURRENCY_CONTAINER = "contract-cost-with-currency-container";
         String PROJECT_SELECTOR = "contract-project-selector";
-        String DIRECTION_SELECTOR = "contract-direction-selector";
+        String DIRECTION_INPUT = "contract-direction-input";
         String ORGANIZATION_SELECTOR = "contract-organization-selector";
         String CURATOR_SELECTOR = "contract-curator-selector";
         String MANAGER_SELECTOR = "contract-manager-selector";

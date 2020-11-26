@@ -32,7 +32,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.struct.Vat.NoVat;
 import static ru.protei.portal.ui.common.client.util.DateUtils.*;
@@ -187,12 +187,12 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
             clearProjectSpecificFields();
             return;
         }
-//        view.direction().setValue(project.getProductDirection() == null ? null : new ProductDirectionInfo(project.getProductDirection()));
+        view.directions().setValue(joining(project.getProductDirection(), ", ", EntityOption::getDisplayText));
         view.manager().setValue(project.getManager() == null ? null : new PersonShortView(project.getManager()));
     }
 
     private void clearProjectSpecificFields() {
-        view.direction().setValue(null);
+        view.directions().setValue(null);
         view.manager().setValue(null);
     }
 
@@ -290,10 +290,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
         if (contract.getProjectId() == null) {
             contract.setCaseManagerId(getPersonIdOrNull(view.manager().getValue()));
-            contract.setCaseDirectionId(getProductIdOrNull(view.direction().getValue()));
         } else {
             contract.setCaseManagerId(null);
-            contract.setCaseDirectionId(null);
         }
 
         return contract;

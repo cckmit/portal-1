@@ -37,7 +37,6 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
@@ -104,6 +103,7 @@ public class ContractServiceImpl implements ContractService {
         jdbcManyRelationsHelper.fill(contract, "childContracts");
         jdbcManyRelationsHelper.fill(contract, "contractDates");
         jdbcManyRelationsHelper.fill(contract, "contractSpecifications");
+        jdbcManyRelationsHelper.fill(contract, "productDirections");
         Collections.sort(contract.getContractSpecifications());
 
         return ok(contract);
@@ -522,7 +522,6 @@ public class ContractServiceImpl implements ContractService {
         caseObject.setStateId(contract.getState().getId());
         caseObject.setManagerId(contract.getCaseManagerId());
         caseObject.setInitiatorId(contract.getCuratorId());
-        caseObject.setProductId(contract.getCaseDirectionId());
 
         return caseObject;
     }

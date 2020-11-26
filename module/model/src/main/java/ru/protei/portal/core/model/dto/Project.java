@@ -68,7 +68,7 @@ public class Project extends AuditableObject {
     private Company customer;
 
     /**
-     * Продукты
+     * Продуктовые направления
      */
     @JdbcManyToMany(linkTable = "project_to_direction", localLinkColumn = "project_id", remoteLinkColumn = "direction_id")
     private Set<DevUnit> productDirections;
