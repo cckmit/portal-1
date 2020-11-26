@@ -63,7 +63,7 @@ public class IssueFilterWidget extends Composite {
         filterName.removeStyleName(REQUIRED);
         filterName.setValue("");
 
-        setUserFilterNameVisibility(false);
+        showUserFilterControls();
         if (filterType != null && filterType.equals(En_CaseFilterType.CASE_RESOLUTION_TIME)) {
             issueFilterParamView.states().setValue(CaseStateUtils.getFilterCaseResolutionTimeActiveStates());
         }
