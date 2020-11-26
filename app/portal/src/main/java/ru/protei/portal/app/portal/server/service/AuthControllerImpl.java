@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.app.portal.client.service.AuthController;
-import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_PrivilegeEntity;
 import ru.protei.portal.core.model.dict.En_Scope;
@@ -46,11 +45,13 @@ public class AuthControllerImpl implements AuthController {
 
         log.info( "authentificate: login={}", login );
 
+        String ip = httpRequest.getHeader("X-Real-IP");
+
         token = ServiceUtils.checkResultAndGetData(authService.login(
                 httpRequest.getSession().getId(),
                 login,
                 password,
-                httpRequest.getRemoteAddr(),
+                ip != null? ip : httpRequest.getRemoteAddr(),
                 httpRequest.getHeader(CrmConstants.Header.USER_AGENT)
         ));
 
