@@ -196,12 +196,8 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.info().setValue(devUnit.getInfo());
 
         currType = isNew ? En_DevUnitType.COMPLEX : devUnit.getType();
-        Set<ProductDirectionInfo> directions;
-        if (devUnit.getProductDirections() == null) {
-            directions = null;
-        } else {
-            directions = new HashSet<>(toSet(devUnit.getProductDirections(), DevUnit::toProductDirectionInfo));
-        }
+        Set<ProductDirectionInfo> directions = devUnit.getProductDirections() == null ? null
+                : new HashSet<>(toSet(devUnit.getProductDirections(), DevUnit::toProductDirectionInfo));
         view.setTypeAndDirections(currType, directions);
         view.directionSelectorVisibility(currType == En_DevUnitType.COMPLEX);
         view.typeVisibility().setVisible(isNew);

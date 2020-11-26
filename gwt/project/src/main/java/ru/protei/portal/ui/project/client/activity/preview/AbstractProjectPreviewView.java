@@ -24,7 +24,7 @@ public interface AbstractProjectPreviewView extends IsWidget {
 
     void setState( long value );
 
-    void setDirection( String value );
+    void setDirections(String value );
 
     void setTeam( String value );
 
@@ -32,7 +32,7 @@ public interface AbstractProjectPreviewView extends IsWidget {
 
     void setRegion( String value );
 
-    void setProduct(Map<Long, String> value );
+    void setProducts(Map<Long, String> value);
 
     void setCompany( String value );
 

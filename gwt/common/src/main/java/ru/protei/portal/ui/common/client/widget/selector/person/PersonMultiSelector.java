@@ -68,7 +68,7 @@ public class PersonMultiSelector extends InputPopupMultiSelector<PersonShortView
     }
 
     @Override
-    protected ru.protei.portal.ui.common.client.selector.SelectorItem<PersonShortView> makeSelectorItem(PersonShortView value, String elementHtml, String title) {
+    protected ru.protei.portal.ui.common.client.selector.SelectorItem<PersonShortView> makeSelectorItem(PersonShortView value, String elementHtml, String name) {
         PopupSelectableItem<PersonShortView> item = new PopupSelectableItem<>();
 
         if (value != null && value.isFired()) {

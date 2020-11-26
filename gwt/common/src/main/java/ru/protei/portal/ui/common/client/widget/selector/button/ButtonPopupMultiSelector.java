@@ -111,7 +111,7 @@ public class ButtonPopupMultiSelector<T> extends AbstractPopupSelector<T>
         this.button.setValue(sb.toString());
     }
 
-    protected SelectorItem<T> makeSelectorItem( T element, String elementHtml, String title ) {
+    protected SelectorItem<T> makeSelectorItem( T element, String elementHtml, String name) {
         PopupSelectorItem<T> item = new PopupSelectorItem<>();
         item.setName(elementHtml);
         return item;

@@ -105,7 +105,7 @@ public class ProductShortView implements Serializable {
                 product.getStateId(),
                 isEmpty(product.getAliases()) ? "" : joining(product.getAliases(), ", "),
                 product.getType(),
-                product.getProductDirections() == null ? null : toSet(product.getProductDirections(), DevUnit::toProductDirectionInfo));
+                isEmpty(product.getProductDirections()) ? null : toSet(product.getProductDirections(), DevUnit::toProductDirectionInfo));
     }
 
     @Override

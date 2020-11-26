@@ -32,7 +32,7 @@ public class PersonButtonSelector extends ButtonPopupSingleSelector< PersonShort
     }
 
     @Override
-    protected SelectorItem makeSelectorItem( PersonShortView value, String elementHtml, String title ) {
+    protected SelectorItem makeSelectorItem( PersonShortView value, String elementHtml, String name) {
         PopupSelectorItem item = new PopupSelectorItem();
         item.setName(elementHtml);
         if(value!=null){

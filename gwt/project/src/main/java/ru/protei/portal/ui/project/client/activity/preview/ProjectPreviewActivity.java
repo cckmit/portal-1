@@ -115,7 +115,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.setName( value.getName() );
         view.setCreatedBy(lang.createBy(value.getCreator().getDisplayShortName(), DateFormatter.formatDateTime(value.getCreated())));
         view.setState( value.getState().getId() );
-        view.setDirection(joining(value.getProductDirectionEntityOptionList(), ", ", EntityOption::getDisplayText));
+        view.setDirections(joining(value.getProductDirectionEntityOptionList(), ", ", EntityOption::getDisplayText));
         view.setDescription( value.getDescription() == null ? "" : value.getDescription() );
         view.setRegion( value.getRegion() == null ? "" : value.getRegion().getDisplayText() );
         view.setCompany(value.getCustomer() == null ? "" : value.getCustomer().getCname());
@@ -137,7 +137,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
             view.setTeam(teamBuilder.toString());
         }
 
-        view.setProduct( stream(value.getProducts()).collect(Collectors.toMap(DevUnit::getId, DevUnit::getName, (n1, n2) -> n1 + ", " + n2)));
+        view.setProducts( stream(value.getProducts()).collect(Collectors.toMap(DevUnit::getId, DevUnit::getName, (n1, n2) -> n1 + ", " + n2)));
         view.setCustomerType(customerTypeLang.getName(value.getCustomerType()));
         view.slaInputReadOnly().setValue(project.getProjectSlas());
         view.slaContainerVisibility().setVisible(isSlaContainerVisible(project.getProjectSlas()));

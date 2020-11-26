@@ -17,7 +17,6 @@ import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.ent.ContractSpecification;
-import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
@@ -118,7 +117,7 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
         view.setOrganization(sanitizeHtml(value.getOrganizationName()));
         view.setManager(value.getProjectId() == null ? sanitizeHtml(value.getCaseManagerShortName()) : sanitizeHtml(value.getManagerShortName()));
         view.setCurator(sanitizeHtml(value.getCuratorShortName()));
-        view.setDirections(joining(value.getProductDirections(), ", ", DevUnit::getName));
+        view.setDirections(joining(value.getProductDirections(), ", ", direction -> sanitizeHtml(direction.getName())));
         view.setDates(getAllDatesAsWidget(value.getContractDates()));
         view.setSpecifications(getAllSpecificationsAsWidgets(value.getContractSpecifications()));
         view.setParentContract(value.getParentContractNumber() == null ? "" : lang.contractNum(value.getParentContractNumber()));

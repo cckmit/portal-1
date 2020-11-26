@@ -19,7 +19,7 @@ public class EmployeeButtonSelector extends ButtonPopupSingleSelector<PersonShor
     }
 
     @Override
-    protected SelectorItem makeSelectorItem( PersonShortView value, String elementHtml, String title ) {
+    protected SelectorItem makeSelectorItem( PersonShortView value, String elementHtml, String name) {
          return PersonSelectorItemRenderer.makeSingleSelectorItem(value, elementHtml);
     }
 

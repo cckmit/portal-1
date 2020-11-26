@@ -52,7 +52,8 @@ public class DevUnitMultiSelector extends InputPopupMultiSelector<ProductShortVi
         return new SelectorItemRenderer<ProductShortView>() {
             @Override
             public String getElementName(ProductShortView productShortView) {
-                return "[" + lang.getName(productShortView.getType()) + "] " + makeName(productShortView);
+                return (isImageVisible && productShortView.getType() != null ? "[" + lang.getName(productShortView.getType()) + "] " : "")
+                            + makeName(productShortView);
             }
 
             @Override
@@ -68,7 +69,8 @@ public class DevUnitMultiSelector extends InputPopupMultiSelector<ProductShortVi
     }
 
     private String makeName(ProductShortView productShortView) {
-        return productShortView.getName() + (HelperFunc.isEmpty(productShortView.getAliases()) ? "" : " (" + productShortView.getAliases() + ")");
+        return productShortView.getName()
+                + (HelperFunc.isEmpty(productShortView.getAliases()) ? "" : " (" + productShortView.getAliases() + ")");
     }
 
     private Widget makeImage(En_DevUnitType type) {

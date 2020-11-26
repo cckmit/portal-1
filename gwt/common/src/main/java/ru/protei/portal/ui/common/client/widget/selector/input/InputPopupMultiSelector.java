@@ -172,11 +172,11 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
     }
 
     @Override
-    protected SelectorItem<T> makeSelectorItem( T element, String elementHtml, String title ) {
+    protected SelectorItem<T> makeSelectorItem( T element, String elementHtml, String name) {
         PopupSelectableItem<T> item = new PopupSelectableItem<>();
         item.setElementHtml( elementHtml );
         item.setSelected( isSelected( element ) );
-        item.setTitle(title);
+        item.setTitle(name);
         return item;
     }
 

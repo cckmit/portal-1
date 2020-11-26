@@ -37,7 +37,10 @@
                     <ui:text from="{lang.projectDirection}"/>
                 </label>
                 <productdirection:ProductDirectionMultiSelector ui:field="directions"
-                                                                validation="true"/>
+                                                                validation="true"
+                                                                hasNullValue="false"
+                                                                mandatory="true"
+                />
             </div>
             <div class="form-group col-md-3">
                 <label ui:field="customerTypeLabel">
@@ -63,8 +66,10 @@
                                         hasNullValue="false"/>
 
             <div class="form-group col-md-6">
-                <productselector:devunit.DevUnitMultiSelector ui:field="products" validation="false"
+                <productselector:devunit.DevUnitMultiSelector ui:field="products"
                                                               header="{lang.projectProducts}"
+                                                              hasNullValue="false"
+                                                              validation="false"
                                                               imageVisible="true"
                 />
             </div>

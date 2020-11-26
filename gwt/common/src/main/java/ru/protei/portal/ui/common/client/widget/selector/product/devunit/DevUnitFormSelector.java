@@ -65,7 +65,7 @@ public class DevUnitFormSelector extends FormPopupSingleSelector<ProductShortVie
     }
 
     @Override
-    protected SelectorItem<ProductShortView> makeSelectorItem(ProductShortView value, String elementHtml, String title) {
+    protected SelectorItem<ProductShortView> makeSelectorItem(ProductShortView value, String elementHtml, String name) {
         PopupSelectorItem<ProductShortView> item = new PopupSelectorItem<>();
         item.setName(elementHtml);
         if (value != null) {

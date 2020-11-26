@@ -96,7 +96,7 @@ public class PopupSingleSelector<T> extends AbstractPopupSelector<T> implements 
     }
 
     @Override
-    protected SelectorItem<T> makeSelectorItem(T element, String elementHtml, String title) {
+    protected SelectorItem<T> makeSelectorItem(T element, String elementHtml, String name) {
         PopupSelectorItem<T> item = new PopupSelectorItem<>();
         item.setName(elementHtml);
         return item;

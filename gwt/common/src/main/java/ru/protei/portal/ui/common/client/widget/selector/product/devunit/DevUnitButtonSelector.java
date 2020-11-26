@@ -27,7 +27,7 @@ public class DevUnitButtonSelector extends ButtonPopupSingleSelector<ProductShor
     }
 
     @Override
-    protected SelectorItem makeSelectorItem( ProductShortView value, String elementHtml, String title ) {
+    protected SelectorItem makeSelectorItem( ProductShortView value, String elementHtml, String name) {
         PopupSelectorItem item = new PopupSelectorItem();
         item.setName(elementHtml);
         if(value!=null){

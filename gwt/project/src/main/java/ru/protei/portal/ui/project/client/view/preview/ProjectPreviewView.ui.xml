@@ -62,7 +62,7 @@
                             <label>
                                 <ui:text from="{lang.projectDirection}"/>
                             </label>
-                            <span ui:field="projectDirection"/>
+                            <span ui:field="projectDirections"/>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -70,7 +70,7 @@
                             <label>
                                 <ui:text from="{lang.projectProducts}"/>
                             </label>
-                            <g:HTMLPanel ui:field="product"/>
+                            <g:HTMLPanel ui:field="products"/>
                         </div>
                     </div>
                 </div>
