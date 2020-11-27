@@ -29,7 +29,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.ui.project.client.util.AccessUtil.*;
 
 /**
@@ -123,9 +123,9 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.setContracts(emptyIfNull(value.getContracts()).stream().collect(Collectors.toMap(EntityOption::getDisplayText, contract -> LinkUtils.makePreviewLink(Contract.class, contract.getId()))));
         view.setPlatform(value.getPlatformName() == null ? "" : value.getPlatformName(), LinkUtils.makePreviewLink(Platform.class, value.getPlatformId()));
 
-        if( value.getTeam() != null ) {
+        if( isNotEmpty(value.getTeam()) ) {
             StringBuilder teamBuilder = new StringBuilder();
-            value.getTeam().stream()
+            stream(value.getTeam())
                     .collect(Collectors.groupingBy(PersonProjectMemberView::getRole,
                             Collectors.mapping(PersonProjectMemberView::getName, Collectors.joining(", "))))
                     .forEach((role, team) ->
@@ -136,6 +136,8 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
                                     .append("<br/>"));
 
             view.setTeam(teamBuilder.toString());
+        } else {
+            view.setTeam("");
         }
 
         view.setProduct(value.getSingleProduct() == null ? "" : value.getSingleProduct().getName());
