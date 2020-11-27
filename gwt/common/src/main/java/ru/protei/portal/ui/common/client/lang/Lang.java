@@ -3184,6 +3184,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errDeadlineError();
 
+    String errRemoteAccessParametersLengthExceeded(int maxLength);
+
     String workTriggerNone();
 
     String workTriggerPSGO();

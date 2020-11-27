@@ -198,4 +198,8 @@ public class CrmConstants {
         String UPDATED = "updated";
         String HIDE = "hide";
     }
+
+    public interface Platform {
+        int PARAMETERS_MAX_LENGTH = 256;
+    }
 }
