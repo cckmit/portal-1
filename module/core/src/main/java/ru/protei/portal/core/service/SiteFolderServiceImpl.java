@@ -3,7 +3,7 @@ package ru.protei.portal.core.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.exception.ResultStatusException;
+import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -193,20 +193,20 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         Long id = platformDAO.persist(platform);
 
         if (id == null) {
-            throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
         }
 
         CaseObject caseObject = makePlatformCaseObject(id, platform.getName());
         caseObject.setCreatorId(token.getPersonId());
         Long caseId = caseObjectDAO.persist(caseObject);
         if (caseId == null) {
-            throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
         }
 
         platform.setCaseId(caseId);
         boolean isCaseIdSet = platformDAO.partialMerge(platform, "case_id");
         if (!isCaseIdSet) {
-            throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
         }
 
         if (CollectionUtils.isNotEmpty(platform.getAttachments())) {
@@ -220,7 +220,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
 
         Platform result = platformDAO.get(id);
         if (result == null) {
-            throw new ResultStatusException(En_ResultStatus.INTERNAL_ERROR);
+            throw new RollbackTransactionException(En_ResultStatus.INTERNAL_ERROR);
         }
 
         return ok(result);
@@ -300,7 +300,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
 
         boolean caseStatus = caseObjectDAO.partialMerge(caseObject, "CASE_NAME");
         if (!caseStatus) {
-            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
         return ok(platformDAO.get(platform.getId()));
@@ -351,12 +351,12 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         boolean removePlatformResult = platformDAO.removeByKey(id);
 
         if (!removePlatformResult) {
-            throw new ResultStatusException(En_ResultStatus.NOT_REMOVED,
+            throw new RollbackTransactionException(En_ResultStatus.NOT_REMOVED,
                     "Platform was not removed. It could be removed earlier");
         }
 
         if (!caseObjectMergeResult) {
-            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
         return ok(id);

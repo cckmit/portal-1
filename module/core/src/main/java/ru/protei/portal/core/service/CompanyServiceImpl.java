@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
@@ -17,14 +16,11 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
-import ru.protei.portal.core.utils.EntityCache;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import javax.annotation.PostConstruct;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;

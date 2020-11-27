@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.*;
-import ru.protei.portal.core.exception.ResultStatusException;
+import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.Project;
@@ -279,21 +279,21 @@ public class ProjectServiceImpl implements ProjectService {
             updateProducts( projectFormDB, project.getProducts() );
         } catch (Throwable e) {
             log.error("saveProject(): error during save project when update one of following parameters: team, location, or products;", e);
-            throw new ResultStatusException(En_ResultStatus.INTERNAL_ERROR);
+            throw new RollbackTransactionException(En_ResultStatus.INTERNAL_ERROR);
         }
 
         boolean merge = projectDAO.merge(projectFormDB);
 
         if (!merge) {
             log.error("saveProject(): failed to merge project. Rollback transaction");
-            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
         merge = caseObjectDAO.merge( caseObject );
 
         if (!merge) {
             log.error("saveProject(): failed to merge caseObject. Rollback transaction");
-            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
         Project newStateProject = projectDAO.get(project.getId());
@@ -319,7 +319,7 @@ public class ProjectServiceImpl implements ProjectService {
         Long caseObjectId = caseObjectDAO.persist(caseObject);
         if (caseObjectId == null) {
             log.warn("createProject(): caseObject not created. project={}", project);
-            throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
         }
         project.setId(caseObjectId);
 
@@ -327,7 +327,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         if (projectId == null) {
             log.warn("createProject(): project not created. project={}", project);
-            throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
         }
 
         jdbcManyRelationsHelper.persist(project, "projectSlas");
@@ -339,12 +339,12 @@ public class ProjectServiceImpl implements ProjectService {
             updateProducts(project, project.getProducts());
         } catch (Throwable e) {
             log.error("createProject(): error during create project when set one of following parameters: team, location, or products; {}", e.getMessage());
-            throw new ResultStatusException(En_ResultStatus.INTERNAL_ERROR);
+            throw new RollbackTransactionException(En_ResultStatus.INTERNAL_ERROR);
         }
 
         boolean merged = caseObjectDAO.merge(caseObject);
         if (!merged) {
-            throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
         }
 
         List<CaseLink> links = emptyIfNull(project.getLinks());

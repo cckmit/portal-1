@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.client.enterprise1c.api.Api1C;
-import ru.protei.portal.core.exception.ResultStatusException;
+import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.CaseTypeDAO;
 import ru.protei.portal.core.model.dao.ContractDAO;
@@ -37,7 +37,6 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
@@ -155,7 +154,7 @@ public class ContractServiceImpl implements ContractService {
             Result<Long> result = saveContractor(contractor);
             if (result.isError()) {
                 log.error("createContract(): id = {} | failed to save contractor to db with result = {}", contractId, result);
-                throw new ResultStatusException(result.getStatus());
+                throw new RollbackTransactionException(result.getStatus());
             }
             contract.setContractorId(result.getData());
         } else {
@@ -165,13 +164,13 @@ public class ContractServiceImpl implements ContractService {
         boolean contractPersisted = contractDAO.persist(contract) != null;
         if (!contractPersisted) {
             log.error("createContract(): id = {} | failed to persist contract to db", contractId);
-            throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
         }
 
         Result<Long> historyResult = createStateHistory(token, contractId, En_HistoryAction.ADD, null, contract.getState());
         if (historyResult.isError()) {
             log.error("createContract(): id = {} | failed to create history for contract state : {}", contractId, historyResult.getStatus());
-            throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
         }
 
         try {
@@ -179,7 +178,7 @@ public class ContractServiceImpl implements ContractService {
             jdbcManyRelationsHelper.persist(contract, "contractSpecifications");
         } catch (Exception e) {
             log.error("createContract(): id = {} | failed to save contract's relations to db", contractId, e);
-            throw new ResultStatusException(En_ResultStatus.NOT_CREATED, e);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED, e);
         }
 
         boolean contractorDefined = contract.getContractor() != null;
@@ -188,7 +187,7 @@ public class ContractServiceImpl implements ContractService {
             Result<Contract1C> result = saveContract1C(contract);
             if (result.isError()) {
                 log.error("createContract(): id = {} | failed to save contract to 1c with result = {}", contractId, result);
-                throw new ResultStatusException(result.getStatus());
+                throw new RollbackTransactionException(result.getStatus());
             }
             contract.setRefKey(result.getData().getRefKey());
             boolean contractUpdated = contractDAO.mergeRefKey(contractId, contract.getRefKey());
@@ -251,7 +250,7 @@ public class ContractServiceImpl implements ContractService {
             Result<Long> result = saveContractor(contractor);
             if (result.isError()) {
                 log.error("updateContract(): id = {} | failed to save contractor to db with result = {}", contractId, result);
-                throw new ResultStatusException(result.getStatus());
+                throw new RollbackTransactionException(result.getStatus());
             }
             contract.setContractorId(result.getData());
         } else {
@@ -263,13 +262,13 @@ public class ContractServiceImpl implements ContractService {
         boolean contractCaseObjectSaved = caseObjectDAO.merge(prevContractCaseObject);
         if (!contractCaseObjectSaved) {
             log.error("updateContract(): id = {} | failed to save contract's case object to db", contractId);
-            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
         boolean contractSaved = contractDAO.merge(contract);
         if (!contractSaved) {
             log.error("updateContract(): id = {} | failed to save contract to db", contractId);
-            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
         boolean contractStateChanged = prevContract.getState() != contract.getState();
@@ -277,7 +276,7 @@ public class ContractServiceImpl implements ContractService {
             Result<Long> historyResult = createStateHistory(token, contractId, En_HistoryAction.CHANGE, prevContract.getState(), contract.getState());
             if (historyResult.isError()) {
                 log.error("updateContract(): id = {} | failed to create history for changed contract state : {}", contractId, historyResult.getStatus());
-                throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+                throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
             }
         }
 
@@ -286,7 +285,7 @@ public class ContractServiceImpl implements ContractService {
             jdbcManyRelationsHelper.persist(contract, "contractSpecifications");
         } catch (Exception e) {
             log.error("updateContract(): id = {} | failed to save contract's relations to db", contractId, e);
-            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED, e);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED, e);
         }
 
         boolean is1cSync = is1cSyncEnabled(contract);
@@ -312,7 +311,7 @@ public class ContractServiceImpl implements ContractService {
                 Result<Contract1C> removeResult = api1CService.saveContract(contract1C, organizationPrev);
                 if (removeResult.isError()) {
                     log.error("updateContract(): id = {} | organization removal | failed to remove contract from 1c with result = {}", contractId, removeResult);
-                    throw new ResultStatusException(removeResult.getStatus());
+                    throw new RollbackTransactionException(removeResult.getStatus());
                 }
                 contract.setRefKey(null);
                 boolean contractUpdated = contractDAO.mergeRefKey(contract.getId(), contract.getRefKey());
@@ -330,7 +329,7 @@ public class ContractServiceImpl implements ContractService {
                 Result<Contract1C> removeResult = api1CService.saveContract(contract1C, organizationPrev);
                 if (removeResult.isError()) {
                     log.error("updateContract(): id = {} | organization modification | failed to remove contract from 1c with result = {}", contractId, removeResult);
-                    throw new ResultStatusException(removeResult.getStatus());
+                    throw new RollbackTransactionException(removeResult.getStatus());
                 }
                 contract1C.setRefKey(null);
                 contract1C.setDeletionMark(false);
@@ -352,7 +351,7 @@ public class ContractServiceImpl implements ContractService {
                 Result<Contract1C> result = saveContract1C(contract);
                 if (result.isError()) {
                     log.error("updateContract(): id = {} | failed to save contractor to 1c with result = {}", contractId, result);
-                    throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+                    throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
                 }
                 contract.setRefKey(result.getData().getRefKey());
                 boolean contractUpdated = contractDAO.mergeRefKey(contract.getId(), contract.getRefKey());
@@ -468,7 +467,7 @@ public class ContractServiceImpl implements ContractService {
         Result<Contractor1C> result = api1CService.saveContractor(contractor1C, organization);
         if (result.isError()) {
             log.warn("removeContractor(): failed to save contractor to 1c with refKey = {} | result = {}", refKey, result);
-            throw new ResultStatusException(En_ResultStatus.NOT_REMOVED);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_REMOVED);
         }
 
         return ok(contractorId);

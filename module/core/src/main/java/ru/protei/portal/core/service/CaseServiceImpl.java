@@ -10,7 +10,7 @@ import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseNameAndDescriptionEvent;
 import ru.protei.portal.core.event.CaseObjectCreateEvent;
 import ru.protei.portal.core.event.CaseObjectMetaEvent;
-import ru.protei.portal.core.exception.ResultStatusException;
+import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
@@ -298,7 +298,7 @@ public class CaseServiceImpl implements CaseService {
                 Result<Plan> planResult = planService.addIssueToPlan(token, planOption.getId(), caseId);
 
                 if (planResult.isError()) {
-                    throw new ResultStatusException(
+                    throw new RollbackTransactionException(
                             planResult.getStatus(),
                             String.format("Issue was not added to plan. planId=%d", planOption.getId())
                     );
@@ -357,7 +357,7 @@ public class CaseServiceImpl implements CaseService {
                         = caseObjectDAO.partialMerge(caseObject, "ATTACHMENT_EXISTS");
 
                 if (!isAttachmentsExistUpdated) {
-                    throw new ResultStatusException(En_ResultStatus.NOT_UPDATED, "Attachment exists flag was not updated");
+                    throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED, "Attachment exists flag was not updated");
                 }
 
                 caseAttachmentDAO.persistBatch(
@@ -423,14 +423,14 @@ public class CaseServiceImpl implements CaseService {
         if (!isStateTransitionValidByWorkflow) {
             log.info("Wrong state transition for the issue {}: {} -> {}, workflow={}",
                     caseMeta.getId(), oldCaseMeta.getStateId(), caseMeta.getStateId(), workflow);
-            throw new ResultStatusException(En_ResultStatus.VALIDATION_ERROR);
+            throw new RollbackTransactionException(En_ResultStatus.VALIDATION_ERROR);
         }
 
         boolean isStateTransitionValidNoWorkflow = workflow != En_CaseStateWorkflow.NO_WORKFLOW || !isStateReopenNotAllowed(oldCaseMeta, caseMeta);
         if (!isStateTransitionValidNoWorkflow) {
             log.info("Wrong state transition for the issue {}: {} -> {}",
                     caseMeta.getId(), oldCaseMeta.getStateId(), caseMeta.getStateId());
-            throw new ResultStatusException(En_ResultStatus.INVALID_CASE_UPDATE_CASE_IS_CLOSED);
+            throw new RollbackTransactionException(En_ResultStatus.INVALID_CASE_UPDATE_CASE_IS_CLOSED);
         }
 
         caseMeta.setModified(new Date());
@@ -439,7 +439,7 @@ public class CaseServiceImpl implements CaseService {
         boolean isUpdated = caseObjectMetaDAO.merge(caseMeta);
         if (!isUpdated) {
             log.info("Failed to update issue meta data {} at db", caseMeta.getId());
-            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
         if (oldCaseMeta.getStateId() != caseMeta.getStateId()) {
@@ -518,7 +518,7 @@ public class CaseServiceImpl implements CaseService {
         boolean isUpdated = caseObjectMetaNotifiersDAO.merge(caseMetaNotifiers);
         if (!isUpdated) {
             log.info("Failed to update issue meta notifiers data {} at db", caseMetaNotifiers.getId());
-            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
         // Event not needed
@@ -689,7 +689,7 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if (!isCaseUpdated) {
-            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED, "failed to update case object");
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED, "failed to update case object");
         }
 
         return ok(caseAttachId);
@@ -749,13 +749,13 @@ public class CaseServiceImpl implements CaseService {
         Result<List<PlanOption>> oldPlansResult = planService.listPlanOptions(token, planQuery);
 
         if (oldPlansResult.isError()) {
-            throw new ResultStatusException(oldPlansResult.getStatus());
+            throw new RollbackTransactionException(oldPlansResult.getStatus());
         }
 
         En_ResultStatus resultStatus = updatePlans(token, caseId, new HashSet<>(oldPlansResult.getData()), plans);
 
         if (!En_ResultStatus.OK.equals(resultStatus)) {
-            throw new ResultStatusException(resultStatus);
+            throw new RollbackTransactionException(resultStatus);
         }
 
         return ok(plans);

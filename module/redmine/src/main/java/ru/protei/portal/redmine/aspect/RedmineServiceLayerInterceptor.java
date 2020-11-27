@@ -6,7 +6,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.exception.ResultStatusException;
+import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.struct.MethodProfile;
 import ru.protei.winter.jdbc.JdbcHelper;
@@ -54,8 +54,8 @@ public class RedmineServiceLayerInterceptor {
                     return error( En_ResultStatus.DB_COMMON_ERROR);
                 }
 
-                if ( e instanceof ResultStatusException) {
-                    return error( ((ResultStatusException) e).getResultStatus());
+                if ( e instanceof RollbackTransactionException) {
+                    return error( ((RollbackTransactionException) e).getResultStatus());
                 }
 
                 return error( En_ResultStatus.INTERNAL_ERROR );

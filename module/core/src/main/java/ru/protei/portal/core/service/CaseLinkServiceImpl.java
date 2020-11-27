@@ -11,13 +11,15 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseLinkEvent;
 import ru.protei.portal.core.event.ProjectLinkEvent;
-import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.AuditObjectDAO;
 import ru.protei.portal.core.model.dao.CaseLinkDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.CaseLink;
+import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
@@ -288,7 +290,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             }
         } catch (Exception e){
             log.error("changeYoutrackId(): change failed", e);
-            throw new ResultStatusException(En_ResultStatus.INTERNAL_ERROR);
+            throw new RollbackTransactionException(En_ResultStatus.INTERNAL_ERROR);
         }
 
         return ok();
@@ -636,7 +638,8 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         Long id = caseLinkDAO.persist( newLink );
         if (id == null) {
             log.error( "addYoutrackCaseLink(): Can`t add link on to youtrack into case, persistence error" );
-            throw new RollbackTransactionException( "addYoutrackCaseLink(): rollback transaction" );
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED,
+                    "addYoutrackCaseLink(): rollback transaction" );
         }
         newLink.setId( id );
         return ok( newLink );
@@ -646,7 +649,8 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         log.debug("removeCaseLinkOnToYoutrack(): caseLink={}", caseLink);
         if (!caseLinkDAO.removeByKey( caseLink.getId() )) {
             log.error( "removeCaseLinkOnToYoutrack(): Can`t remove link on to youtrack, persistence error" );
-            throw new RollbackTransactionException( "removeCaseLinkOnToYoutrack(): rollback transaction" );
+            throw new RollbackTransactionException(En_ResultStatus.NOT_REMOVED,
+                    "removeCaseLinkOnToYoutrack(): rollback transaction" );
         }
         log.info( "removeCaseLinkOnToYoutrack(): removed CaseLink with id={}", caseLink.getId() );
         return ok(caseLink);

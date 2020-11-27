@@ -12,7 +12,6 @@ import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.ProjectAttachmentEvent;
 import ru.protei.portal.core.event.ProjectCommentEvent;
-import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
@@ -121,12 +120,12 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     public Result<CaseComment> addCaseComment( AuthToken token, En_CaseType caseType, CaseComment comment) {
 
         if (comment == null) {
-            throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         Result<CaseCommentSaveOrUpdateResult> result = addCaseCommentWithoutEvent(token, caseType, comment);
         if (result.isError()) {
-            throw new ResultStatusException(result.getStatus());
+            throw new RollbackTransactionException(result.getStatus());
         }
         CaseCommentSaveOrUpdateResult resultData = result.getData();
 
@@ -158,6 +157,9 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             clientEventService.fireEvent( new CaseCommentSavedClientEvent( token.getPersonId(), comment.getCaseId(), resultData.getCaseComment().getId() ) );
         }
 */
+        if (true) {
+            throw new RollbackTransactionException(En_ResultStatus.INTERNAL_ERROR);
+        }
 
         return okResult;
     }
@@ -167,23 +169,23 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     public Result<CaseCommentSaveOrUpdateResult> addCaseCommentWithoutEvent( AuthToken token, En_CaseType caseType, CaseComment comment) {
 
         if (comment == null) {
-            throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         En_ResultStatus checkAccessStatus = checkAccessForCaseObjectById(token, caseType, comment.getCaseId());
         if (checkAccessStatus != null) {
-            throw new ResultStatusException(checkAccessStatus);
+            return error(checkAccessStatus);
         }
 
         if (caseType == CRM_SUPPORT && !allowedPrivateComment(token, caseType, comment)) {
-            throw new ResultStatusException(En_ResultStatus.PROHIBITED_PRIVATE_COMMENT);
+            return error(En_ResultStatus.PROHIBITED_PRIVATE_COMMENT);
         }
 
         comment.setCreated(new Date());
         Long commentId = caseCommentDAO.persist(comment);
         if (commentId == null) {
             log.info("Failed to create comment at db: {}", comment);
-            throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
         }
 
         if (CollectionUtils.isNotEmpty(comment.getCaseAttachments())) {
@@ -204,12 +206,12 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         boolean isCaseChanged = caseService.updateCaseModified(token, comment.getCaseId(), comment.getCreated()).getData();
         if (!isCaseChanged) {
             log.info("Failed to update case modifiedDate: {}", comment);
-            throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
         }
 
         if (!updateTimeElapsed(token, comment.getCaseId()).getData()) {
             log.info("Failed to update time elapsed on addCaseComment: {}", comment);
-            throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
         }
 
         // re-read data from db to get full-filled object
@@ -243,7 +245,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
         Result<CaseCommentSaveOrUpdateResult> result = updateCaseCommentWithoutEvent(token, caseType, comment);
         if (result.isError()) {
-            throw new ResultStatusException(result.getStatus());
+            throw new RollbackTransactionException(result.getStatus());
         }
         CaseCommentSaveOrUpdateResult resultData = result.getData();
 
@@ -282,24 +284,24 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     public Result<CaseCommentSaveOrUpdateResult> updateCaseCommentWithoutEvent( AuthToken token, En_CaseType caseType, CaseComment comment) {
 
         if (comment == null || comment.getId() == null || token.getPersonId() == null) {
-            throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         En_ResultStatus checkAccessStatus = checkAccessForCaseObjectById(token, caseType, comment.getCaseId());
         if (checkAccessStatus != null) {
-            throw new ResultStatusException(checkAccessStatus);
+            return error(checkAccessStatus);
         }
 
         if (caseType == CRM_SUPPORT && !allowedPrivateComment(token, caseType, comment)) {
-            throw new ResultStatusException(En_ResultStatus.PROHIBITED_PRIVATE_COMMENT);
+            return error(En_ResultStatus.PROHIBITED_PRIVATE_COMMENT);
         }
 
         if (!Objects.equals(token.getPersonId(), comment.getAuthorId())) {
-            throw new ResultStatusException(En_ResultStatus.NOT_AVAILABLE);
+            return error(En_ResultStatus.NOT_AVAILABLE);
         }
 
         if (isCaseCommentReadOnlyByTime(comment.getCreated())) {
-            throw new ResultStatusException(En_ResultStatus.NOT_ALLOWED_EDIT_COMMENT_BY_TIME);
+            return error(En_ResultStatus.NOT_ALLOWED_EDIT_COMMENT_BY_TIME);
         }
 
         CaseComment prevComment = caseCommentDAO.get(comment.getId());
@@ -309,7 +311,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         boolean isCommentUpdated = caseCommentDAO.merge(comment);
         if (!isCommentUpdated) {
             log.info("Failed to update comment {} at db", comment.getId());
-            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
         Collection<CaseAttachment> removedCaseAttachments = caseAttachmentDAO.calcDiffAndSynchronize(
@@ -325,12 +327,12 @@ public class CaseCommentServiceImpl implements CaseCommentService {
                         && caseService.updateCaseModified(token, comment.getCaseId(), new Date()).getData();
         if (!isCaseChanged) {
             log.info("Failed to update case modifiedDate for comment {}", comment.getId());
-            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
         if (!updateTimeElapsed(token, comment.getCaseId()).getData()) {
             log.info("Failed to update time elapsed on updateCaseComment for comment {}", comment.getId());
-            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
         Collection<Attachment> removedAttachments = attachmentService.getAttachments(
@@ -365,11 +367,11 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             }
 
             if (isCaseCommentReadOnlyByTime(removedComment.getCreated())) {
-                throw new ResultStatusException(En_ResultStatus.NOT_ALLOWED_REMOVE_COMMENT_BY_TIME);
+                return error(En_ResultStatus.NOT_ALLOWED_REMOVE_COMMENT_BY_TIME);
             }
         }
         if (checkAccessStatus != null) {
-            throw new ResultStatusException(checkAccessStatus);
+            return error(checkAccessStatus);
         }
 
         Collection<Attachment> removedAttachments = attachmentService.getAttachments(
@@ -383,7 +385,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         boolean isRemoved = caseCommentDAO.remove(removedComment);
         if (!isRemoved) {
             log.info("Failed to remove comment {} at db", removedComment.getId());
-            throw new ResultStatusException(En_ResultStatus.NOT_REMOVED);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_REMOVED);
         }
 
         boolean isCaseChanged = true;
@@ -400,12 +402,12 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         isCaseChanged &= caseService.updateCaseModified(token, caseId, new Date()).getData();
         if (!isCaseChanged) {
             log.info("Failed to update case modifiedDate for comment {}", removedComment.getId());
-            throw new ResultStatusException(En_ResultStatus.NOT_REMOVED);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_REMOVED);
         }
 
         if (!updateTimeElapsed(token, removedComment.getCaseId()).getData()) {
             log.info("Failed to update time elapsed on removeCaseComment for comment {}", removedComment.getId());
-            throw new ResultStatusException(En_ResultStatus.NOT_REMOVED);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_REMOVED);
         }
 
         Result<Long> okResult = ok(removedComment.getId());
@@ -535,7 +537,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         int updatedCount = caseCommentDAO.mergeBatch(updatedCaseComments);
 
         if (updatedCaseComments.size() != updatedCount){
-            throw new RollbackTransactionException("updatedCaseComments size = " + updatedCaseComments.size() + " but updatedCount = " + updatedCount);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED,
+                    "updatedCaseComments size = " + updatedCaseComments.size() + " but updatedCount = " + updatedCount);
         }
 
         List<ApplicationEvent> events = new ArrayList<>();
@@ -565,7 +568,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         int removedCount = caseCommentDAO.removeByKeys(caseComments.stream().map(CaseComment::getId).collect(Collectors.toList()));
 
         if (caseComments.size() != removedCount){
-            throw new RollbackTransactionException("caseComments size = " + caseComments.size() + " but removedCount = " + removedCount);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_REMOVED,
+                    "caseComments size = " + caseComments.size() + " but removedCount = " + removedCount);
         }
 
         List<ApplicationEvent> events = new ArrayList<>();

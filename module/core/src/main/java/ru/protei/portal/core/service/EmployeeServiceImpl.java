@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.BirthdaysNotificationEvent;
-import ru.protei.portal.core.exception.ResultStatusException;
+import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
@@ -280,7 +280,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                     .flatMap(userLogin -> {
                         userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
                         if (!saveUserLogin(userLogin, token)) {
-                            throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+                            throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
                         }
                         return ok();
                     }).map(ignore -> person);
@@ -403,7 +403,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             boolean isRemoved = removeWorkerEntriesByPersonId(personFromDb.getId());
 
             if (!isRemoved){
-                throw new ResultStatusException(En_ResultStatus.EMPLOYEE_NOT_FIRED_FROM_THESE_COMPANIES);
+                throw new RollbackTransactionException(En_ResultStatus.EMPLOYEE_NOT_FIRED_FROM_THESE_COMPANIES);
             }
 
             List<UserLogin> userLogins = userLoginDAO.findByPersonId(personFromDb.getId());
@@ -458,14 +458,14 @@ public class EmployeeServiceImpl implements EmployeeService {
                     Result createResult  = createEmployeeWorker(token, entry.getKey());
                     makeAudit(entry.getKey(), En_AuditType.WORKER_CREATE, token);
                     if (createResult.isError()){
-                        throw new ResultStatusException(createResult.getStatus(), "Error while worker entry creating");
+                        throw new RollbackTransactionException(createResult.getStatus(), "Error while worker entry creating");
                     }
                     break;
                 case TO_REMOVE :
                     Result removeStatus  = removeWorkerEntry(entry.getKey());
                     makeAudit(entry.getKey(), En_AuditType.WORKER_REMOVE, token);
                     if (removeStatus.isError()){
-                        throw new ResultStatusException(removeStatus.getStatus(), "Error while worker entry removing");
+                        throw new RollbackTransactionException(removeStatus.getStatus(), "Error while worker entry removing");
                     }
                     break;
             }
