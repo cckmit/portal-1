@@ -5,17 +5,17 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 public class ResultStatusException extends RuntimeException {
 
     public ResultStatusException(En_ResultStatus resultStatus) {
-        super();
+        super(resultStatus.name());
         this.resultStatus = resultStatus;
     }
 
     public ResultStatusException(En_ResultStatus resultStatus, String message) {
-        super(message);
+        super(resultStatus.name() + " - " + message);
         this.resultStatus = resultStatus;
     }
 
     public ResultStatusException(En_ResultStatus resultStatus, Throwable cause) {
-        super(cause);
+        super(resultStatus.name(), cause);
         this.resultStatus = resultStatus;
     }
 
