@@ -190,8 +190,8 @@ public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements Proje
             }
 
             if (query.getMemberId() != null) {
-                condition.append(" and (CO.id in (select case_id from case_member where member_id = ").append(query.getMemberId()).append(")");
-                condition.append(" or CO.creator = ").append(query.getMemberId()).append(")");
+                condition.append(" and CO.id in (select case_id from case_member where member_id = ?)");
+                args.add(query.getMemberId());
             }
 
             if (isNotEmpty(query.getProductIds())) {
