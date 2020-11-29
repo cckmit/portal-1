@@ -19,6 +19,7 @@ import ru.protei.portal.core.model.ent.ContractSpecification;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.MoneyRenderer;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.En_ContractDatesTypeLang;
 import ru.protei.portal.ui.common.client.lang.En_ContractTypeLang;
@@ -133,11 +134,14 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
         if ( dates == null ) return null;
         return dates.stream()
                 .map(p -> {
-                    HTMLPanel root = new HTMLPanel("span", "");
+                    HTMLPanel root = new HTMLPanel("div", "");
                     Element b = DOM.createElement("b");
                     b.setInnerText( datesTypeLang.getName(p.getType()));
                     root.getElement().appendChild(b);
-                    root.add(new InlineLabel(" - " + formatDate(p.getDate()) + (isNotEmpty(p.getComment()) ? " (" + p.getComment() + ")" : "")));
+                    root.add(new InlineLabel(" - " + formatDate(p.getDate())
+                            + (isNotEmpty(p.getComment()) ? " (" + p.getComment() + ")" : "")
+                            + ((p.getCost() != null) ? (". " + lang.contractCost() + " - " + MoneyRenderer.getInstance().render(p.getCost())
+                            + (p.getCurrency() != null ? p.getCurrency().getCode() : "")) : "")));
                     return root;
                 })
                 .collect(Collectors.toList());

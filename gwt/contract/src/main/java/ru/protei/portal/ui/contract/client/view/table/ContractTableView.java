@@ -19,6 +19,7 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
+import ru.protei.portal.ui.common.client.common.MoneyRenderer;
 import ru.protei.portal.ui.common.client.lang.En_ContractKindLang;
 import ru.protei.portal.ui.common.client.lang.En_ContractStateLang;
 import ru.protei.portal.ui.common.client.lang.En_ContractTypeLang;
@@ -265,7 +266,7 @@ public class ContractTableView extends Composite implements AbstractContractTabl
             Element root = DOM.createDiv();
             StringBuilder sb = new StringBuilder();
             if (contract.getCost() != null) {
-                sb.append(contract.getCost().toString()).append(" ");
+                sb.append(MoneyRenderer.getInstance().render(contract.getCost())).append(" ");
                 if (contract.getCurrency() != null) {
                     sb.append(contract.getCurrency().getCode()).append(" ");
                 }
