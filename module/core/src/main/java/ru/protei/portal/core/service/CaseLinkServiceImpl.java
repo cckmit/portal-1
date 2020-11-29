@@ -147,10 +147,10 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         CaseLink createdLink = createdLinkResult.getData();
 
-        Result<CaseObjectMeta> blockedParentIssue = blockParentIssue(authToken, createdLink);
-        if (blockedParentIssue.isError()) {
-            log.error("createLinkWithPublish(): failed to block parent issue with result = {} | link = {}", blockedParentIssue, link);
-            throw new ResultStatusException(blockedParentIssue.getStatus());
+        Result<CaseObjectMeta> blockedParentIssueResult = blockParentIssue(authToken, createdLink);
+        if (blockedParentIssueResult.isError()) {
+            log.error("createLinkWithPublish(): failed to block parent issue with result = {} | link = {}", blockedParentIssueResult, link);
+            throw new ResultStatusException(blockedParentIssueResult.getStatus());
         }
 
         Result<CaseObjectMetaNotifiers> addedNotifierResult = addNotifierToSubtask(authToken, createdLink);
@@ -163,7 +163,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         CaseLink newState = caseLinkDAO.get(createdLink.getId());
         return sendNotificationLinkAdded(authToken, link.getCaseId(), newState, caseType)
-                .publishEvents(blockedParentIssue.getEvents());
+                .publishEvents(blockedParentIssueResult.getEvents());
     }
 
     @Override
@@ -525,30 +525,39 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             return En_ResultStatus.NOT_ALLOWED_LINK_ISSUE_TO_ITSELF;
         }
 
-        boolean isParentFor = En_BundleType.PARENT_FOR.equals(link.getBundleType());
-        boolean isSubtask = En_BundleType.SUBTASK.equals(link.getBundleType());
-        if (isParentFor || isSubtask) {
-            CaseObject parent = caseObjectDAO.get(isParentFor ?
-                            link.getCaseId() :
-                            NumberUtils.createLong(link.getRemoteId()));
-            CaseObject subtask = caseObjectDAO.get(isParentFor ?
-                    NumberUtils.createLong(link.getRemoteId()) :
-                    link.getCaseId());
+        CaseShortView caseObject = caseShortViewDAO.get(link.getCaseId());
+        if (caseObject == null) {
+            return En_ResultStatus.NOT_FOUND;
+        }
 
-            // запрещено создание ссылок для задач с автооткрытием
-            if (parent.getInitiatorCompany().getAutoOpenIssue()) {
-                return En_ResultStatus.NOT_ALLOWED_AUTOOPEN_ISSUE;
+        if (En_CaseLink.CRM.equals(link.getType())) {
+
+            CaseShortView remoteObject = caseShortViewDAO.get(NumberUtils.createLong(link.getRemoteId()));
+            if (remoteObject == null) {
+                return En_ResultStatus.NOT_FOUND;
             }
-            if (subtask.getInitiatorCompany().getAutoOpenIssue()) {
-                return En_ResultStatus.NOT_ALLOWED_AUTOOPEN_ISSUE;
-            }
-            // запрещено создание ссылок, если родитель - интеграционная задача
-            if (isIntegrationIssue(parent)) {
-                return En_ResultStatus.NOT_ALLOWED_INTEGRATION_ISSUE;
-            }
-            // запрещено создание ссылок, если родитель в статусе "created" или "verified"
-            if (isParentStateNotAllowed(parent.getStateId())) {
-                return En_ResultStatus.NOT_ALLOWED_PARENT_STATE;
+
+            boolean isParentFor = En_BundleType.PARENT_FOR.equals(link.getBundleType());
+            boolean isSubtask = En_BundleType.SUBTASK.equals(link.getBundleType());
+            if (isParentFor || isSubtask) {
+                CaseShortView parent = isParentFor ? caseObject : remoteObject;
+                CaseShortView subtask = isParentFor ? remoteObject : caseObject;
+
+                // запрещено создание ссылок для задач с автооткрытием
+                if (parent.getAutoOpenIssue()) {
+                    return En_ResultStatus.NOT_ALLOWED_AUTOOPEN_ISSUE;
+                }
+                if (subtask.getAutoOpenIssue()) {
+                    return En_ResultStatus.NOT_ALLOWED_AUTOOPEN_ISSUE;
+                }
+                // запрещено создание ссылок, если родитель - интеграционная задача
+                if (isIntegrationIssue(parent.getExtAppType())) {
+                    return En_ResultStatus.NOT_ALLOWED_INTEGRATION_ISSUE;
+                }
+                // запрещено создание ссылок, если родитель в статусе "created" или "verified"
+                if (isParentStateNotAllowed(parent.getStateId())) {
+                    return En_ResultStatus.NOT_ALLOWED_PARENT_STATE;
+                }
             }
         }
 
@@ -870,9 +879,9 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         return isTerminalState(stateId) || CrmConstants.State.CREATED == stateId;
     }
 
-    private boolean isIntegrationIssue(CaseObject caseObject) {
-        En_ExtAppType extAppType = En_ExtAppType.forCode(caseObject.getExtAppType());
-        if (extAppType == null) {
+    private boolean isIntegrationIssue(String extAppType) {
+        En_ExtAppType type = En_ExtAppType.forCode(extAppType);
+        if (type == null) {
             return false;
         }
         return true;

@@ -212,11 +212,11 @@ public abstract class IssueEditActivity implements
                 fireEvent(new CaseCommentEvents.DisableNewComment());
             }
         }
-        boolean isCreatingSubtaskNotAllowed = isCreatingSubtaskNotAllowed(
+        boolean isCreatingSubtaskAllowed = isCreatingSubtaskAllowed(
                 event.meta.getStateId(),
                 issue.getInitiatorCompany().getAutoOpenIssue(),
                 issue.getExtAppType());
-        view.createSubtaskButtonVisibility().setVisible(!isCreatingSubtaskNotAllowed);
+        view.createSubtaskButtonVisibility().setVisible(isCreatingSubtaskAllowed);
     }
 
     @Event
@@ -508,11 +508,11 @@ public abstract class IssueEditActivity implements
         view.nameAndDescriptionEditButtonVisibility().setVisible(!readOnly && selfIssue);
         view.setFavoriteButtonActive(issue.isFavorite());
 
-        boolean isCreatingSubtaskNotAllowed = isCreatingSubtaskNotAllowed(
+        boolean isCreatingSubtaskAllowed = isCreatingSubtaskAllowed(
                 issue.getStateId(),
                 issue.getInitiatorCompany().getAutoOpenIssue(),
                 issue.getExtAppType());
-        view.createSubtaskButtonVisibility().setVisible(!isCreatingSubtaskNotAllowed);
+        view.createSubtaskButtonVisibility().setVisible(isCreatingSubtaskAllowed);
     }
 
     private void viewModeIsPreview( boolean isPreviewMode){
@@ -590,11 +590,11 @@ public abstract class IssueEditActivity implements
         return name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
     }
 
-    private boolean isCreatingSubtaskNotAllowed(Long stateId, boolean isAutoOpenIssue, String extAppType) {
-        return !policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT) ||
-                isTerminalState(stateId) || CrmConstants.State.CREATED == stateId ||
-                isAutoOpenIssue ||
-                En_ExtAppType.forCode(extAppType) != null;
+    private boolean isCreatingSubtaskAllowed(Long stateId, boolean isAutoOpenIssue, String extAppType) {
+        return policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT) &&
+                !isTerminalState(stateId) && CrmConstants.State.CREATED != stateId &&
+                !isAutoOpenIssue &&
+                En_ExtAppType.forCode(extAppType) == null;
     }
 
     @Inject

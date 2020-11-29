@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dao.PersonShortViewDAO;
@@ -62,8 +61,11 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public Result< List< PersonShortView > > shortViewList(AuthToken authToken, PersonQuery query) {
-        query = processQueryByPolicyScope(authToken, query);
-        List<PersonShortView> personList = personShortViewDAO.getPersonsShortView(query);
+        Result<PersonQuery> fillQueryByScopeResult = fillQueryByScope(authToken, query);
+        if (fillQueryByScopeResult.isError()) {
+            return error(En_ResultStatus.INTERNAL_ERROR);
+        }
+        List<PersonShortView> personList = personShortViewDAO.getPersonsShortView(fillQueryByScopeResult.getData());
         return ok(personList);
     }
 
@@ -102,10 +104,10 @@ public class PersonServiceImpl implements PersonService {
         return ok(person);
     }
 
-    private PersonQuery processQueryByPolicyScope(AuthToken token, PersonQuery personQuery) {
+    private Result<PersonQuery> fillQueryByScope(AuthToken token, PersonQuery personQuery) {
         Set<UserRole> roles = token.getRoles();
         if (policyService.hasGrantAccessFor(roles, En_Privilege.COMPANY_VIEW)) {
-            return personQuery;
+            return ok(personQuery);
         }
 
         Company company = companyService.getCompanyOmitPrivileges(token, token.getCompanyId()).getData();
@@ -113,7 +115,8 @@ public class PersonServiceImpl implements PersonService {
                 companyService.companyOptionListBySubcontractorIds(token.getCompanyAndChildIds()) :
                 companyService.subcontractorOptionListByCompanyIds(token.getCompanyAndChildIds());
         if (result.isError()) {
-            throw new RuntimeException("Failed to get companies");
+            log.error("fillQueryByScope(): failed to get companies with result = {}", result);
+            return error(result.getStatus());
         }
 
         Set<Long> allowedCompanies = stream(new HashSet<Long>() {{
@@ -125,8 +128,8 @@ public class PersonServiceImpl implements PersonService {
             personQuery.getCompanyIds().retainAll(allowedCompanies);
         }
 
-        log.info("processQueryByPolicyScope(): PersonQuery modified: {}", personQuery);
-        return personQuery;
+        log.info("fillQueryByScope(): PersonQuery modified: {}", personQuery);
+        return ok(personQuery);
     }
 
     @Autowired

@@ -160,46 +160,33 @@ public class BootstrapServiceImpl implements BootstrapService {
 
         List<Report> reportList = reportDAO.getListByCondition("type=? and is_removed=?", En_ReportType.CASE_OBJECTS.name(), false);
         reportList.forEach(report ->  {
+            try {
+                if (report.getCreator().getCompanyId() != CrmConstants.Company.HOME_COMPANY_ID) {
 
-            if (report.getCreator().getCompanyId() != CrmConstants.Company.HOME_COMPANY_ID) {
+                    CaseQuery caseQuery = new ReportCaseQuery(
+                            report,
+                            objectMapper.readValue(report.getQuery(), CaseQuery.class)
+                    ).getQuery();
 
-                CaseQuery caseQuery = new ReportCaseQuery(
-                        report,
-                        deserializeQuery(report.getQuery())
-                ).getQuery();
-
-                boolean isManagerCompanyIdsNeedToUpdate = CollectionUtils.isNotEmpty(caseQuery.getManagerCompanyIds());
-                boolean isManagerIdsNeedToUpdate = CollectionUtils.isNotEmpty(caseQuery.getManagerIds());
-                if (isManagerCompanyIdsNeedToUpdate) {
-                    caseQuery.getManagerCompanyIds().remove(report.getCreator().getCompanyId());
+                    boolean isManagerCompanyIdsNeedToUpdate = CollectionUtils.isNotEmpty(caseQuery.getManagerCompanyIds());
+                    boolean isManagerIdsNeedToUpdate = CollectionUtils.isNotEmpty(caseQuery.getManagerIds());
+                    if (isManagerCompanyIdsNeedToUpdate) {
+                        caseQuery.getManagerCompanyIds().remove(report.getCreator().getCompanyId());
+                    }
+                    if (isManagerIdsNeedToUpdate) {
+                        caseQuery.getManagerIds().clear();
+                    }
+                    if (isManagerCompanyIdsNeedToUpdate || isManagerIdsNeedToUpdate) {
+                        report.setQuery(objectMapper.writeValueAsString(caseQuery));
+                        reportDAO.partialMerge(report, "case_query");
+                    }
                 }
-                if (isManagerIdsNeedToUpdate) {
-                    caseQuery.getManagerIds().clear();
-                }
-                if (isManagerCompanyIdsNeedToUpdate || isManagerIdsNeedToUpdate) {
-                    report.setQuery(serializeQuery(caseQuery));
-                    reportDAO.partialMerge(report, "case_query");
-                }
+            } catch (Exception e) {
+                log.error("updateIssueReportsManager(): failed to update issue report with id = " + report.getId(), e);
             }
         });
 
         log.debug("updateIssueReportsManager(): stop");
-    }
-
-    private CaseQuery deserializeQuery(String query) {
-        try {
-            return objectMapper.readValue(query, CaseQuery.class);
-        } catch (IOException e) {
-            throw new RollbackTransactionException("Failed deserialize report query");
-        }
-    }
-
-    private String serializeQuery(CaseQuery query) {
-        try {
-            return objectMapper.writeValueAsString(query);
-        } catch (JsonProcessingException e) {
-            throw new RollbackTransactionException("Failed serialize report query");
-        }
     }
 
     private void updateUserDashboardOrders() {
@@ -745,14 +732,6 @@ public class BootstrapServiceImpl implements BootstrapService {
                 .collect(Collectors.toList());
     }
 
-    private List<Long> findAllCaseNumbersByYoutrackId(String youtrackId, Boolean withCrosslink){
-        List<CaseObject> caseObjects = caseObjectDAO.getListByKeys(findAllCaseIdsByYoutrackId(youtrackId, withCrosslink));
-
-        return caseObjects.stream()
-                .map(CaseObject::getCaseNumber)
-                .collect(Collectors.toList());
-    }
-
     private static class ContactInfoPersonMigration {
 
         public static void migrate(ApplicationContext applicationContext) {
@@ -903,8 +882,6 @@ public class BootstrapServiceImpl implements BootstrapService {
         private static class ContactItemCompanyDAO extends PortalBaseJdbcDAO<ContactItemCompany> {}
     }
 
-
-
     private static <T> void registerBeanDefinition(ApplicationContext context, Class<T> clazz) {
         String beanName = clazz.getName();
         String beanAlias = clazz.getSimpleName();
@@ -929,9 +906,6 @@ public class BootstrapServiceImpl implements BootstrapService {
 
     @Inject
     UserRoleDAO userRoleDAO;
-    @Inject
-    DecimalNumberDAO decimalNumberDAO;
-
     @Autowired
     CaseObjectDAO caseObjectDAO;
     @Autowired
@@ -958,9 +932,6 @@ public class BootstrapServiceImpl implements BootstrapService {
     CaseMemberDAO caseMemberDAO;
     @Autowired
     CaseTypeDAO caseTypeDAO;
-    @Autowired
-    JdbcManyRelationsHelper jdbcManyRelationsHelper;
-
     @Autowired
     CompanyDAO companyDAO;
     @Autowired
@@ -1001,6 +972,8 @@ public class BootstrapServiceImpl implements BootstrapService {
     ObjectMapper objectMapper;
     @Autowired
     ApplicationContext applicationContext;
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd");
 

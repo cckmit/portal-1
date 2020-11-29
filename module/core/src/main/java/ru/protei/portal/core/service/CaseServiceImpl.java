@@ -11,7 +11,6 @@ import ru.protei.portal.core.event.CaseNameAndDescriptionEvent;
 import ru.protei.portal.core.event.CaseObjectCreateEvent;
 import ru.protei.portal.core.event.CaseObjectMetaEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
-import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
@@ -200,9 +199,15 @@ public class CaseServiceImpl implements CaseService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        caseObject = applyCaseByScope( token, caseObject );
-        if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_EDIT, caseObject ) ) {
-            return error(En_ResultStatus.PERMISSION_DENIED );
+        Result<CaseObject> fillCaseObjectByScopeResult = fillCaseObjectByScope(token, caseObject);
+        if (fillCaseObjectByScopeResult.isError()) {
+            return error(En_ResultStatus.INTERNAL_ERROR);
+        }
+
+        caseObject = fillCaseObjectByScopeResult.getData();
+
+        if (!hasAccessForCaseObject(token, En_Privilege.ISSUE_EDIT, caseObject)) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
         Date now = new Date();
@@ -854,11 +859,11 @@ public class CaseServiceImpl implements CaseService {
             return error(En_ResultStatus.NOT_ALLOWED_AUTOOPEN_ISSUE);
         }
 
-        if (isIntegrationIssue(parentCaseObject)) {
+        if (isIntegrationIssue(parentCaseObject.getExtAppType())) {
             return error(En_ResultStatus.NOT_ALLOWED_INTEGRATION_ISSUE);
         }
 
-        if (isParentStateNotAllowed(parentCaseObject)) {
+        if (isParentStateNotAllowed(parentCaseObject.getStateId())) {
             return error(En_ResultStatus.NOT_ALLOWED_PARENT_STATE);
         }
 
@@ -871,13 +876,13 @@ public class CaseServiceImpl implements CaseService {
         }
 
         parentCaseObject.setStateId(CrmConstants.State.BLOCKED);
-        Result<CaseObjectMeta> parentUpdate = updateCaseObjectMeta(token, new CaseObjectMeta(parentCaseObject));
-        if (parentUpdate.isError()) {
+        Result<CaseObjectMeta> parentUpdateResult = updateCaseObjectMeta(token, new CaseObjectMeta(parentCaseObject));
+        if (parentUpdateResult.isError()) {
             log.error("createSubtask(): parent-id = {} | failed to save parent issue to db with result = {}", parentCaseObjectId, result);
-            throw new ResultStatusException(parentUpdate.getStatus());
+            throw new ResultStatusException(parentUpdateResult.getStatus());
         }
 
-        return result.publishEvents(parentUpdate.getEvents());
+        return result.publishEvents(parentUpdateResult.getEvents());
     }
 
     @Override
@@ -1007,50 +1012,65 @@ public class CaseServiceImpl implements CaseService {
                 || !Objects.equals(co1.getWorkTrigger(), co2.getWorkTrigger());
     }
 
-    private CaseObject applyCaseByScope(AuthToken token, CaseObject caseObject) {
+    private Result<CaseObject> fillCaseObjectByScope(AuthToken token, CaseObject caseObject) {
         Set< UserRole > roles = token.getRoles();
         if (policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_CREATE)) {
-            return caseObject;
+            return ok(caseObject);
         }
 
         caseObject.setPrivateCase(false);
+
         Company company = companyService.getCompanyOmitPrivileges(token, token.getCompanyId()).getData();
 
-        Collection<Long> initiatorAllowedCompanies = getCompaniesBySubcontractorIds(company.getCategory(), token.getCompanyAndChildIds());
+        List<Long> initiatorAllowedCompanies = new ArrayList<>();
+        if (company.getCategory() == En_CompanyCategory.SUBCONTRACTOR) {
+            Result<List<EntityOption>> result = companyService.companyOptionListBySubcontractorIds(token.getCompanyAndChildIds());
+            if (result.isError()) {
+                log.error("fillCaseObjectByScope(): failed to get companies by subcontractors with result {}", result);
+                return error(result.getStatus());
+            }
+            initiatorAllowedCompanies.addAll(result.getData().stream().map(EntityOption::getId).collect(Collectors.toList()));
+        } else {
+            initiatorAllowedCompanies.addAll(token.getCompanyAndChildIds());
+        }
         if(!initiatorAllowedCompanies.contains(caseObject.getInitiatorCompanyId())) {
             caseObject.setInitiatorCompany(company);
             caseObject.setInitiatorId(null);
-            log.info("applyCaseByScope(): CaseObject modified: {}", caseObject);
+            log.info("fillCaseObjectByScope(): CaseObject modified: {}", caseObject);
         }
-        Collection<Long> managerAllowedCompanies = getSubcontractorsByCompanyIds(company.getCategory(), token.getCompanyAndChildIds());
+
+        List<Long> managerAllowedCompanies = new ArrayList<>();
+        if (company.getCategory() == En_CompanyCategory.SUBCONTRACTOR) {
+            managerAllowedCompanies.addAll(token.getCompanyAndChildIds());
+        } else {
+            Result<List<EntityOption>> result = companyService.subcontractorOptionListByCompanyIds(token.getCompanyAndChildIds());
+            if (result.isError()) {
+                log.error("fillCaseObjectByScope(): failed to get subcontractors by companies with result {}", result);
+                return error(result.getStatus());
+            }
+            managerAllowedCompanies.addAll(result.getData().stream().map(EntityOption::getId).collect(Collectors.toList()));
+        }
         if(!managerAllowedCompanies.contains(caseObject.getManagerCompanyId())) {
             caseObject.setManagerCompanyId(CrmConstants.Company.HOME_COMPANY_ID);
             caseObject.setManagerId(null);
-            log.info("applyCaseByScope(): CaseObject modified: {}", caseObject);
+            log.info("fillCaseObjectByScope(): CaseObject modified: {}", caseObject);
         }
 
-        return caseObject;
+        return ok(caseObject);
     }
 
     private boolean hasAccessForCaseObject( AuthToken token, En_Privilege privilege, CaseObject caseObject ) {
         return policyService.hasAccessForCaseObject( token, privilege, caseObject );
     }
 
-
     private boolean isStateReopenNotAllowed(CaseObjectMeta oldMeta, CaseObjectMeta newMeta) {
         return isTerminalState(oldMeta.getStateId()) &&
               !isTerminalState(newMeta.getStateId());
     }
 
-    private boolean isParentStateNotAllowed(CaseObject caseObject) {
-        return isTerminalState(caseObject.getStateId()) ||
-                CrmConstants.State.CREATED == caseObject.getStateId();
-    }
-
-    private Set<UserRole> getRoles(AuthToken token) {
-        return Optional.ofNullable(token)
-                .map(d -> token.getRoles())
-                .orElse(new HashSet<>());
+    private boolean isParentStateNotAllowed(Long stateId) {
+        return isTerminalState(stateId) ||
+                CrmConstants.State.CREATED == stateId;
     }
 
     private boolean personBelongsToHomeCompany(AuthToken token) {
@@ -1377,33 +1397,9 @@ public class CaseServiceImpl implements CaseService {
         createRequest.addLink(caseLink);
     }
 
-    private Collection<Long> getSubcontractorsByCompanyIds(En_CompanyCategory category, Collection<Long> companyIds) {
-        if (category == En_CompanyCategory.SUBCONTRACTOR) {
-            return companyIds;
-        }
-
-        Result<List<EntityOption>> result = companyService.subcontractorOptionListByCompanyIds(companyIds);
-        if (result.isError()) {
-            throw new RollbackTransactionException("Failed to get subcontractors by companies");
-        }
-        return result.getData().stream().map(EntityOption::getId).collect(Collectors.toList());
-    }
-
-    private Collection<Long> getCompaniesBySubcontractorIds(En_CompanyCategory category, Collection<Long> subcontractorIds) {
-        if (category != En_CompanyCategory.SUBCONTRACTOR) {
-            return subcontractorIds;
-        }
-
-        Result<List<EntityOption>> result = companyService.companyOptionListBySubcontractorIds(subcontractorIds);
-        if (result.isError()) {
-            throw new RollbackTransactionException("Failed to get companies by subcontractors");
-        }
-        return result.getData().stream().map(EntityOption::getId).collect(Collectors.toList());
-    }
-
-    private boolean isIntegrationIssue(CaseObject caseObject) {
-        En_ExtAppType extAppType = En_ExtAppType.forCode(caseObject.getExtAppType());
-        if (extAppType == null) {
+    private boolean isIntegrationIssue(String extAppType) {
+        En_ExtAppType type = En_ExtAppType.forCode(extAppType);
+        if (type == null) {
             return false;
         }
         return true;

@@ -11,8 +11,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-import static ru.protei.portal.core.model.ent.CaseObject.Columns.DEADLINE;
-import static ru.protei.portal.core.model.ent.CaseObject.Columns.WORK_TRIGGER;
+import static ru.protei.portal.core.model.ent.CaseObject.Columns.*;
 
 /**
  * Сокращенное представление кейса
@@ -101,6 +100,12 @@ public class CaseShortView implements Serializable, Identifiable {
     @JdbcColumn(name = WORK_TRIGGER)
     @JdbcEnumerated(EnumType.ID)
     private En_WorkTrigger workTrigger;
+
+    @JdbcJoinedColumn( table="company", localColumn = "initiator_company", remoteColumn = "id", mappedColumn = "auto_open_issue")
+    private Boolean autoOpenIssue;
+
+    @JdbcColumn(name = EXT_APP)
+    private String extAppType;
 
     // ManyToMany via CaseTagService
     private List<CaseTag> tags;
@@ -348,6 +353,22 @@ public class CaseShortView implements Serializable, Identifiable {
         this.workTrigger = workTrigger;
     }
 
+    public Boolean getAutoOpenIssue() {
+        return autoOpenIssue;
+    }
+
+    public void setAutoOpenIssue(Boolean autoOpenIssue) {
+        this.autoOpenIssue = autoOpenIssue;
+    }
+
+    public String getExtAppType() {
+        return extAppType;
+    }
+
+    public void setExtAppType(String extAppType) {
+        this.extAppType = extAppType;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (id != null) {
@@ -386,6 +407,8 @@ public class CaseShortView implements Serializable, Identifiable {
                 ", managerCompanyName='" + managerCompanyName + '\'' +
                 ", deadline=" + deadline +
                 ", workTrigger=" + workTrigger +
+                ", autoOpenIssue=" + autoOpenIssue +
+                ", extAppType='" + extAppType + '\'' +
                 ", tags=" + tags +
                 ", isFavorite=" + isFavorite +
                 ", isPublicAttachmentExist=" + isPublicAttachmentExist +
