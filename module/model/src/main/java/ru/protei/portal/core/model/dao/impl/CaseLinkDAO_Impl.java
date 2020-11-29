@@ -57,7 +57,7 @@ public class CaseLinkDAO_Impl extends PortalBaseJdbcDAO<CaseLink> implements Cas
             }
 
             if(query.getType()!=null){
-                condition.append( " and link_type = '" + query.getType().name() + "'" );
+                condition.append(" and link_type = '" + query.getType().name() + "'");
             }
 
             if (StringUtils.isNotBlank(query.getRemoteId())) {
@@ -68,6 +68,11 @@ public class CaseLinkDAO_Impl extends PortalBaseJdbcDAO<CaseLink> implements Cas
             if (query.getWithCrosslink() != null){
                 condition.append(" and case_link.with_crosslink = ?");
                 args.add(query.getWithCrosslink());
+            }
+
+            if(query.getBundleType() != null){
+                condition.append(" and bundle_type = ?");
+                args.add(query.getBundleType().getId());
             }
         }));
     }

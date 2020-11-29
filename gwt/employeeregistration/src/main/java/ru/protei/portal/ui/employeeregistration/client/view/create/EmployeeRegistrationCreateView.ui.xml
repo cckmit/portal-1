@@ -95,7 +95,7 @@
                                 <ui:text from="{lang.employeeRegistrationCuratorsHint}"/>
                             </p>
 
-                            <person:EmployeeMultiSelector styleName="case-subscribers" ui:field="curators"/>
+                            <person:EmployeeMultiSelector styleName="multi-selector-without-border" ui:field="curators"/>
                         </g:HTMLPanel>
 
                         <div class="form-group col-md-12">

@@ -1420,6 +1420,10 @@ td.info {
   color: #868686 !important;
 }
 
+.state-blocked {
+  color: black;
+}
+
 /****************/
 
 .none-vertical-align {
@@ -1555,6 +1559,16 @@ td.info {
 .case-paused,
 .case-request_to_partner {
   color: #868686;
+  font-weight: bold;
+}
+
+.label-blocked,
+.option-blocked .option-name {
+  background-color: black;
+}
+
+.case-blocked {
+  color: black;
   font-weight: bold;
 }
 
@@ -2798,7 +2812,7 @@ div.select2-container {
   border: 1px solid $error_color;
 }
 
-.case-subscribers {
+.multi-selector-without-border {
   div.select2-container {
     border: 0 !important;
     ul.select2-choices {
@@ -4095,7 +4109,7 @@ table {
 .case-link-popup {
   z-index: 1000;
   float: left;
-  width: 320px;
+  width: 355px;
   min-width: 160px;
   text-align: left;
   box-sizing: border-box;
@@ -4114,11 +4128,21 @@ table {
     }
   }
 
+  > .bundle-type-selector {
+    float: left;
+    width: 125px;
+
+    button {
+      padding: 0 8px 0 0;
+      height: 31px;
+    }
+  }
+
   > .remote-id-input {
     position: relative;
     float: left;
     display: inline-block;
-    width: calc(100% - 47px);
+    width: calc(100% - 172px);
     margin: -1px -1px 0 -3px;
   }
 
@@ -5064,6 +5088,30 @@ table {
     padding-bottom: 10px;
     padding-top: 10px;
     min-height: auto;
+
+    .nav-tabs .nav-item {
+      margin-right: 10px;
+    }
+
+    .nav-tabs > li > a {
+      padding: 0;
+    }
+
+    .nav-tabs-simple > li > a:after {
+      background-color: #333;
+    }
+
+    .nav-tabs-simple > li > a.active:after, .nav-tabs-simple > li > a:hover:after {
+      height: 0;
+    }
+
+    .nav-tabs-simple:after {
+      border: 0;
+    }
+
+    .nav-item > a {
+      opacity: 1;
+    }
   }
 
   .accordion-body {
@@ -5089,9 +5137,6 @@ table {
     }
 
     .card-header {
-      label {
-        border-bottom: 2px solid;
-      }
 
       padding-bottom: 0;
 
@@ -5102,7 +5147,11 @@ table {
         left: 20px;
         right: 16px;
         position: absolute;
-        bottom: 2px;
+        bottom: 0;
+      }
+
+      .nav-tabs-simple > li > a.active:after {
+        height: 2px;
       }
     }
   }

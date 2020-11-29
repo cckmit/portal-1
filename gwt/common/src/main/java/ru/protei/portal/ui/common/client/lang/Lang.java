@@ -3203,4 +3203,24 @@ public interface Lang extends Messages, ContactItemLang {
     String overdueDeadlines();
 
     String fileNotFoundError();
+
+    String projectSubcontractor();
+
+    String subtaskCreate();
+
+    String errNotAllowedCompanyWithAutoOpenIssue();
+
+    String errSaveSubtaskFieldsInvalid();
+
+    String errNotFoundParent();
+
+    String errNotAllowedParentState();
+
+    String parentFor();
+
+    String subtask();
+
+    String errInvalidCaseUpdateSubtaskNotClosed();
+
+    String errNotAllowedIntegrationIssue();
 }

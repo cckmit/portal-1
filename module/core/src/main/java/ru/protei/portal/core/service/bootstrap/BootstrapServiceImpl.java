@@ -15,6 +15,7 @@ import ru.protei.portal.core.index.document.DocumentStorageIndex;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.PortalBaseJdbcDAO;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dto.ReportCaseQuery;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -114,6 +115,14 @@ public class BootstrapServiceImpl implements BootstrapService {
             normalizeEmails();
             bootstrapAppDAO.createAction("normalizeEmails");
         }
+        if(!bootstrapAppDAO.isActionExists("updateIssueFiltersCompanyManager")) {
+            updateIssueFiltersManager();
+            bootstrapAppDAO.createAction("updateIssueFiltersCompanyManager");
+        }
+        if(!bootstrapAppDAO.isActionExists("updateIssueReportsCompanyManager")) {
+            updateIssueReportsManager();
+            bootstrapAppDAO.createAction("updateIssueReportsCompanyManager");
+        }
 
         /**
          *  end Спринт 58 */
@@ -177,6 +186,68 @@ public class BootstrapServiceImpl implements BootstrapService {
                 .collect(Collectors.toList()));
 
         log.debug("normalizeEmails(): stop");
+    }
+
+    private void updateIssueFiltersManager() {
+
+        log.debug("updateIssueFiltersManager(): start");
+
+        List<CaseFilter> filterList = caseFilterDAO.getListByCondition("type=?", En_CaseFilterType.CASE_OBJECTS.name());
+        filterList.forEach(filter ->  {
+
+            UserLogin userLogin = userLoginDAO.get(filter.getLoginId());
+
+            if (userLogin.getCompanyId() != CrmConstants.Company.HOME_COMPANY_ID) {
+                boolean isManagerCompanyIdsNeedToUpdate = CollectionUtils.isNotEmpty(filter.getParams().getManagerCompanyIds());
+                boolean isManagerIdsNeedToUpdate = CollectionUtils.isNotEmpty(filter.getParams().getManagerIds());
+                if (isManagerCompanyIdsNeedToUpdate) {
+                    filter.getParams().getManagerCompanyIds().remove(userLogin.getCompanyId());
+                }
+                if (isManagerIdsNeedToUpdate) {
+                    filter.getParams().getManagerIds().clear();
+                }
+                if (isManagerCompanyIdsNeedToUpdate || isManagerIdsNeedToUpdate) {
+                    caseFilterDAO.partialMerge(filter, "params");
+                }
+            }
+        });
+
+        log.debug("updateIssueFiltersManager(): stop");
+    }
+
+    private void updateIssueReportsManager() {
+
+        log.debug("updateIssueReportsManager(): start");
+
+        List<Report> reportList = reportDAO.getListByCondition("type=? and is_removed=?", En_ReportType.CASE_OBJECTS.name(), false);
+        reportList.forEach(report ->  {
+            try {
+                if (report.getCreator().getCompanyId() != CrmConstants.Company.HOME_COMPANY_ID) {
+
+                    CaseQuery caseQuery = new ReportCaseQuery(
+                            report,
+                            objectMapper.readValue(report.getQuery(), CaseQuery.class)
+                    ).getQuery();
+
+                    boolean isManagerCompanyIdsNeedToUpdate = CollectionUtils.isNotEmpty(caseQuery.getManagerCompanyIds());
+                    boolean isManagerIdsNeedToUpdate = CollectionUtils.isNotEmpty(caseQuery.getManagerIds());
+                    if (isManagerCompanyIdsNeedToUpdate) {
+                        caseQuery.getManagerCompanyIds().remove(report.getCreator().getCompanyId());
+                    }
+                    if (isManagerIdsNeedToUpdate) {
+                        caseQuery.getManagerIds().clear();
+                    }
+                    if (isManagerCompanyIdsNeedToUpdate || isManagerIdsNeedToUpdate) {
+                        report.setQuery(objectMapper.writeValueAsString(caseQuery));
+                        reportDAO.partialMerge(report, "case_query");
+                    }
+                }
+            } catch (Exception e) {
+                log.error("updateIssueReportsManager(): failed to update issue report with id = " + report.getId(), e);
+            }
+        });
+
+        log.debug("updateIssueReportsManager(): stop");
     }
 
     private void updateUserDashboardOrders() {
@@ -892,8 +963,6 @@ public class BootstrapServiceImpl implements BootstrapService {
         private static class ContactItemCompanyDAO extends PortalBaseJdbcDAO<ContactItemCompany> {}
     }
 
-
-
     private static <T> void registerBeanDefinition(ApplicationContext context, Class<T> clazz) {
         String beanName = clazz.getName();
         String beanAlias = clazz.getSimpleName();
@@ -946,9 +1015,6 @@ public class BootstrapServiceImpl implements BootstrapService {
     @Autowired
     CaseTypeDAO caseTypeDAO;
     @Autowired
-    JdbcManyRelationsHelper jdbcManyRelationsHelper;
-
-    @Autowired
     CompanyDAO companyDAO;
     @Autowired
     CompanyImportanceItemDAO companyImportanceItemDAO;
@@ -990,6 +1056,8 @@ public class BootstrapServiceImpl implements BootstrapService {
     ApplicationContext applicationContext;
     @Autowired
     ContactItemDAO contactItemDAO;
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd");
 

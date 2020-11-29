@@ -76,7 +76,7 @@ public class AuthControllerImpl implements AuthController {
     private Profile makeProfileByAuthToken(AuthToken token) throws RequestFailedException {
 
         Person person = ServiceUtils.checkResultAndGetData(personService.getPerson(token, token.getPersonId()));
-        Company company = ServiceUtils.checkResultAndGetData(companyService.getCompanyUnsafe(token, token.getCompanyId()));
+        Company company = ServiceUtils.checkResultAndGetData(companyService.getCompanyOmitPrivileges(token, token.getCompanyId()));
         UserLogin userLogin = ServiceUtils.checkResultAndGetData(authService.getUserLogin(token, token.getUserLoginId()));
 
         Profile profile = new Profile();

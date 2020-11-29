@@ -57,12 +57,15 @@
   <include file="2020-09-30-modify-report-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-10-01-add-human_readable-column-to-report-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-10-02-bootstrap-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-10-13-add-blocked-state-to-issue.xml" relativeToChangelogFile="true"/>
+  <include file="2020-10-14-add-bundle_type-to-case_link-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-10-15-drop-uniq-instance_id-in-export_syb_entry-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-10-19-add-indexes.xml" relativeToChangelogFile="true"/>
   <include file="2020-10-16-add-deadline-work_trigger-in-case-object-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-10-21-add-duty_log_filter-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-10-26-add-notnull-constraint-to-worker_entry-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-10-28-edit-reserved-ip-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-10-28-create-project-to-company-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-11-13-add-private_flag-to-attachment.xml" relativeToChangelogFile="true"/>
   <include file="2020-11-16-change-type-ip-mask-allow-column-to-user_login-table.xml" relativeToChangelogFile="true"/>
 

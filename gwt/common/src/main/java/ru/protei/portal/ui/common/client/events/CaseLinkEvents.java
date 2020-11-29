@@ -86,4 +86,14 @@ public class CaseLinkEvents {
         public IsWidget target;
         public En_CaseType caseType;
     }
+
+    public static class Changed {
+        public Changed(CaseLink caseLink, En_CaseType caseType) {
+            this.caseLink = caseLink;
+            this.caseType = caseType;
+        }
+
+        public CaseLink caseLink;
+        public En_CaseType caseType;
+    }
 }

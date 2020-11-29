@@ -9,10 +9,12 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CompanyGroupQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
+import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.service.auth.AuthService;
@@ -69,6 +71,9 @@ public class CompanyServiceImpl implements CompanyService {
     @Autowired
     PortalConfig portalConfig;
 
+    @Autowired
+    ProjectDAO projectDAO;
+
     @Override
     public Result<SearchResult<Company>> getCompanies( AuthToken token, CompanyQuery query) {
 
@@ -90,7 +95,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<List<EntityOption>> companyOptionListIgnorePrivileges( AuthToken token, CompanyQuery query) {
+    public Result<List<EntityOption>> companyOptionListIgnorePrivileges(CompanyQuery query) {
         List<Company> list = companyDAO.listByQuery(query);
 
         if (list == null) {
@@ -108,6 +113,72 @@ public class CompanyServiceImpl implements CompanyService {
             return error(En_ResultStatus.GET_DATA_ERROR);
 
         return ok(list.stream()
+                .map(Company::toEntityOption)
+                .collect(Collectors.toList()));
+    }
+
+    @Override
+    public Result<List<EntityOption>> subcontractorOptionListByCompanyIds(Collection<Long> companyIds) {
+
+        if (CollectionUtils.isEmpty(companyIds)) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        ProjectQuery query = new ProjectQuery();
+        query.setInitiatorCompanyIds(setOf(companyIds));
+        Collection<Project> list = projectDAO.getProjects(query);
+        if (list == null) {
+            return error(En_ResultStatus.GET_DATA_ERROR);
+        }
+
+        jdbcManyRelationsHelper.fill(list, "subcontractors");
+
+        List<Company> companies = list.stream()
+                .map(Project::getSubcontractors)
+                .filter(Objects::nonNull)
+                .flatMap(Collection::stream)
+                .distinct()
+                .collect(Collectors.toList());
+
+        Company homeCompany = companyDAO.get(CrmConstants.Company.HOME_COMPANY_ID);
+        if (homeCompany == null) {
+            return error(En_ResultStatus.GET_DATA_ERROR);
+        }
+
+        companies.add(0, homeCompany);
+
+        return ok(companies.stream()
+                .map(Company::toEntityOption)
+                .collect(Collectors.toList()));
+    }
+
+    @Override
+    public Result<List<EntityOption>> companyOptionListBySubcontractorIds(Collection<Long> subcontractorIds) {
+
+        if (CollectionUtils.isEmpty(subcontractorIds)) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        ProjectQuery query = new ProjectQuery();
+        query.setSubcontractorIds(setOf(subcontractorIds));
+        Collection<Project> list = projectDAO.getProjects(query);
+        if (list == null) {
+            return error(En_ResultStatus.GET_DATA_ERROR);
+        }
+
+        List<Company> companies = list.stream()
+                .map(Project::getCustomer)
+                .distinct()
+                .collect(Collectors.toList());
+
+        Company homeCompany = companyDAO.get(CrmConstants.Company.HOME_COMPANY_ID);
+        if (homeCompany == null) {
+            return error(En_ResultStatus.GET_DATA_ERROR);
+        }
+
+        companies.add(0, homeCompany);
+
+        return ok(companies.stream()
                 .map(Company::toEntityOption)
                 .collect(Collectors.toList()));
     }
@@ -224,7 +295,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<Company> getCompanyUnsafe(AuthToken token, Long id) {
+    public Result<Company> getCompanyOmitPrivileges(AuthToken token, Long id) {
         return getCompany(token, id);
     }
 

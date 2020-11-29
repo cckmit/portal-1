@@ -10,7 +10,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import ru.protei.portal.ui.common.client.widget.tab.TabWidgetHandler;
+import ru.protei.portal.ui.common.client.widget.tab.base.TabHandler;
 
 public class TabWidgetNavItem extends Composite {
 
@@ -18,7 +18,7 @@ public class TabWidgetNavItem extends Composite {
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 
-    public void setActivity(TabWidgetHandler activity) {
+    public void setActivity(TabHandler activity) {
         this.activity = activity;
     }
 
@@ -42,6 +42,10 @@ public class TabWidgetNavItem extends Composite {
         }
     }
 
+    public void setBadge(String badge) {
+        this.badge.setInnerText("(" + badge + ")");
+    }
+
     public void setTabNameDebugId(String debugId) {
         anchor.ensureDebugId(debugId);
     }
@@ -49,8 +53,9 @@ public class TabWidgetNavItem extends Composite {
     @UiHandler("anchor")
     public void anchorClick(ClickEvent event) {
         event.preventDefault();
+        event.stopPropagation();
         if (activity != null) {
-            activity.onTabSelected(tabName);
+            activity.onTabClicked(tabName);
         }
     }
 
@@ -62,9 +67,11 @@ public class TabWidgetNavItem extends Composite {
     Element icon;
     @UiField
     SpanElement text;
+    @UiField
+    SpanElement badge;
 
     private String tabName;
-    private TabWidgetHandler activity;
+    private TabHandler activity;
 
     interface TabWidgetNavItemUiBinder extends UiBinder<HTMLPanel, TabWidgetNavItem> {}
     private static TabWidgetNavItemUiBinder ourUiBinder = GWT.create(TabWidgetNavItemUiBinder.class);

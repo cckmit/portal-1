@@ -82,4 +82,7 @@ public interface AbstractProjectEditView extends IsWidget {
     HasValue<Date> pauseDate();
 
     HasValue<Set<PlanOption>> plans();
+
+
+    HasValue<Set<EntityOption>> subcontractors();
 }

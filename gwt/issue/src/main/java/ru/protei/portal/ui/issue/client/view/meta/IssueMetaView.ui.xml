@@ -91,8 +91,7 @@
                                                validation="false"
                                                header="{lang.issueManager}"
                                                hasNullValue="true"
-                                               mandatory="false"
-                                               />
+                                               mandatory="false"/>
                 </div>
             </div>
         </div>
@@ -212,7 +211,7 @@
                 <label ui:field="notifiersLabel">
                     <ui:text from="{lang.caseSubscription}"/>
                 </label>
-                <person:EmployeeMultiSelector ui:field="notifiers" styleName="case-subscribers"
+                <person:EmployeeMultiSelector ui:field="notifiers" styleName="multi-selector-without-border"
                                               buttonStyle="btn-info btn-xs"/>
             </g:HTMLPanel>
         </div>

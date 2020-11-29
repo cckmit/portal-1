@@ -27,6 +27,7 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
 import ru.protei.portal.ui.common.client.view.selector.ElapsedTimeTypeFormSelector;
 import ru.protei.portal.ui.common.client.widget.issueimportance.ImportanceFormSelector;
 import ru.protei.portal.ui.common.client.widget.issuestate.IssueStateFormSelector;
@@ -115,6 +116,16 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @Override
     public Company getCompany() {
         return Company.fromEntityOption(company.getValue());
+    }
+
+    @Override
+    public void setCompanyModel(AsyncSelectorModel companyModel) {
+        company.setAsyncModel(companyModel);
+    }
+
+    @Override
+    public void setManagerCompanyModel(AsyncSelectorModel companyModel) {
+        managerCompany.setAsyncModel(companyModel);
     }
 
     @Override

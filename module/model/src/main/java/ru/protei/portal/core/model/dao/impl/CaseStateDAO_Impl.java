@@ -30,4 +30,9 @@ public class CaseStateDAO_Impl extends PortalBaseJdbcDAO<CaseState> implements C
 
         return caseStates;
     }
+
+    @Override
+    public CaseState getCaseStateByCaseId(Long caseId) {
+        return getByCondition("id = (select STATE from case_object where id = ?)", caseId);
+    }
 }

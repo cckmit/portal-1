@@ -28,6 +28,7 @@ import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterMode
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
 import ru.protei.portal.ui.common.client.view.selector.ElapsedTimeTypeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.issueimportance.ImportanceBtnGroupMulti;
@@ -81,6 +82,18 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @Override
     public void setModel(AbstractIssueFilterModel model) {
         this.model = model;
+    }
+
+    @Override
+    public void setInitiatorCompaniesModel(AsyncSelectorModel companyModel) {
+        companies.setAsyncModel(companyModel);
+        updateInitiators(companies.getValue());
+    }
+
+    @Override
+    public void setManagerCompaniesModel(AsyncSelectorModel companyModel) {
+        managerCompanies.setAsyncModel(companyModel);
+        updateManagers(managerCompanies.getValue());
     }
 
     @Override
@@ -184,12 +197,24 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
+    public HasVisibility initiatorsVisibility() {
+        return initiators;
+    }
+
+    @Override
+    public HasVisibility managersVisibility() {
+        return managers;
+    }
+
+    @Override
     public void resetFilter(DateIntervalWithType dateModified) {
         companies.setValue(null);
-        products.setValue(null);
-        managers.setValue(null);
-        managerCompanies.setValue(null);
         initiators.setValue(null);
+        updateInitiators(companies.getValue());
+        managerCompanies.setValue(null);
+        managers.setValue(null);
+        updateManagers(managerCompanies.getValue());
+        products.setValue(null);
         commentAuthors.setValue(null);
         timeElapsedTypes.setValue(null);
         creators.setValue(null);
@@ -220,7 +245,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         HashSet<EntityOption> companyIds = new HashSet<>();
         companyIds.add(toEntityOption(company));
         companies.setValue(companyIds);
-        updateInitiators( companyIds );
+        updateInitiators(companyIds);
     }
 
     @Override
@@ -475,6 +500,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         }
 
         final boolean isCustomer = isCustomer();
+        final boolean isSubcontractor = policyService.isSubcontractorCompany();
 
         search.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         searchFavoriteContainer.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
@@ -488,15 +514,15 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
             dateModifiedRange.addStyleName(HIDE);
             sortByContainer.addClassName(HIDE);
         }
-        creators.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
-        initiators.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        creators.setVisible(!isCustomer && filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        initiators.setVisible((!isCustomer || !isSubcontractor) && filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         managerCompanies.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
-        managers.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        managers.setVisible((!isCustomer || isSubcontractor) && filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         commentAuthors.setVisible(filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED));
         timeElapsedTypes.setVisible(filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED));
         tags.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS) || filterType.equals(En_CaseFilterType.CASE_RESOLUTION_TIME));
-        searchPrivateContainer.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
-        plan.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS) && policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PLAN_VIEW));
+        searchPrivateContainer.setVisible(!isCustomer && filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        plan.setVisible(!isCustomer && filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         workTriggers.setVisible(!isCustomer && filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         overdueDeadlinesContainer.setVisible(!isCustomer && filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         if (filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED)) {
@@ -847,7 +873,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     IssueStatesOptionList state;
     @Inject
     @UiField(provided = true)
-    WorkTriggerButtonMultiSelector workTriggers ;
+    WorkTriggerButtonMultiSelector workTriggers;
     @UiField
     HTMLPanel overdueDeadlinesContainer;
     @UiField

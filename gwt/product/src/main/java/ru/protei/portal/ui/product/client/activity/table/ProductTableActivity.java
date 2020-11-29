@@ -46,8 +46,6 @@ public abstract class ProductTableActivity implements
         pagerView.setActivity( this );
 
         view.getFilterContainer().add(filterView.asWidget());
-
-        query = makeQuery();
     }
 
     @Event
@@ -94,7 +92,6 @@ public abstract class ProductTableActivity implements
 
     @Override
     public void onFilterChanged() {
-        query = makeQuery();
         loadTable();
     }
 
@@ -137,6 +134,7 @@ public abstract class ProductTableActivity implements
     @Override
     public void loadData( int offset, int limit, AsyncCallback<List<DevUnit>> asyncCallback ) {
         boolean isFirstChunk = offset == 0;
+        query = makeQuery();
         query.setOffset(offset);
         query.setLimit(limit);
         productService.getProductList(query, new FluentCallback<SearchResult<DevUnit>>()

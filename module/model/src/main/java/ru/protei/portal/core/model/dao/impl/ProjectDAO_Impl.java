@@ -235,6 +235,10 @@ public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements Proje
                 condition.append(" and CO.deleted = ").append(query.getDeleted());
             }
 
+            if (isNotEmpty(query.getSubcontractorIds())) {
+                condition.append(" and project.id in (select project_to_company.project_id from project_to_company where project_to_company.company_id in")
+                        .append(makeInArg(query.getSubcontractorIds(), false)).append(")");
+            }
             if (!isEmpty(query.getTechnicalSupportExpiresInDays())) {
                 condition.append(
                         query.getTechnicalSupportExpiresInDays().stream().map(interval -> {
@@ -245,6 +249,4 @@ public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements Proje
             }
         }));
     }
-
-
 }

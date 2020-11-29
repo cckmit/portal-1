@@ -340,6 +340,7 @@ public class DebugIds {
         String PLANS_SELECTOR = "issue-plans-selector";
         String DEADLINE_CONTAINER = "issue-deadline-container";
         String WORK_TRIGGER_SELECTOR = "issue-work-trigger-selector";
+        String SUBTASK_BUTTON = "issue-subtask-button";
 
         interface LABEL {
             String NAME = "issue-label-name";
@@ -468,6 +469,12 @@ public class DebugIds {
 
         String SAVE_BUTTON = "project-save-button";
         String CANCEL_BUTTON = "project-cancel-button";
+
+        String SUBCONTRACTOR_SELECTOR_ADD_BUTTON = "project-subcontractor-selector-add-button";
+        String SUBCONTRACTOR_SELECTOR_CLEAR_BUTTON = "project-subcontractor-selector-clear-button";
+        String SUBCONTRACTOR_SELECTOR_ITEM_CONTAINER = "project-subcontractor-selector-item-container";
+        String SUBCONTRACTOR_SELECTOR_LABEL = "project-subcontractor-selector-label";
+
     }
 
     public interface PROJECT_PREVIEW {

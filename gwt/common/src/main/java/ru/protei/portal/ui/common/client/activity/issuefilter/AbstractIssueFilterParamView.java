@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
+import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.person.AsyncPersonModel;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
@@ -24,6 +25,10 @@ import java.util.Set;
 
 public interface AbstractIssueFilterParamView extends IsWidget {
     void setModel(AbstractIssueFilterModel model);
+
+    void setInitiatorCompaniesModel(AsyncSelectorModel companyModel);
+
+    void setManagerCompaniesModel(AsyncSelectorModel companyModel);
 
     void setCreatorModel(AsyncPersonModel asyncPersonModel);
 
@@ -90,4 +95,8 @@ public interface AbstractIssueFilterParamView extends IsWidget {
     void setCreatedRangeValid(boolean isTypeValid, boolean isRangeValid);
 
     void setModifiedRangeValid(boolean isTypeValid, boolean isRangeValid);
+
+    HasVisibility initiatorsVisibility();
+
+    HasVisibility managersVisibility();
 }

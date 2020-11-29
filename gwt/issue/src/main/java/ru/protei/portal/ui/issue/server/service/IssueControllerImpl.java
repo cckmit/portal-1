@@ -47,7 +47,7 @@ public class IssueControllerImpl implements IssueController {
 
     @Override
     public CaseObject getIssue( long number ) throws RequestFailedException {
-        log.info("getIssue(): number: {}", number);
+        log.info("getIssue(): number={}", number);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
@@ -59,6 +59,14 @@ public class IssueControllerImpl implements IssueController {
         }
 
         return response.getData();
+    }
+
+    @Override
+    public CaseObjectMetaNotifiers getIssueMetaNotifiers(long id) throws RequestFailedException {
+        log.info("getIssueMetaNotifiers(): id={}", id);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        Result<CaseObjectMetaNotifiers> response = caseService.getCaseObjectMetaNotifiers(token, id);
+        return checkResultAndGetData(response);
     }
 
     @Override
@@ -182,6 +190,35 @@ public class IssueControllerImpl implements IssueController {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
         return ServiceUtils.checkResultAndGetData(caseService.addFavoriteState(token, personId, issueId));
+    }
+
+    @Override
+    public UiResult<Long> createSubtask(CaseObjectCreateRequest createRequest, Long parentCaseId) throws RequestFailedException {
+        log.info("createSubtask(): createRequest={}, parentCaseId={}", createRequest, parentCaseId);
+
+        if (createRequest == null || createRequest.getCaseId() != null || parentCaseId == null) {
+            throw new RequestFailedException(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        createRequest.getCaseObject().setType(En_CaseType.CRM_SUPPORT);
+        createRequest.getCaseObject().setCreatorId(token.getPersonId());
+
+        Result<CaseObject> response = caseService.createSubtask(token, createRequest, parentCaseId);
+
+        if (response.isError()) {
+            log.info("createSubtask(): status={}", response.getStatus());
+            throw new RequestFailedException(response.getStatus());
+        }
+
+        if (response.getMessage() != null) {
+            log.info("createSubtask(): message={}", response.getMessage());
+        }
+
+        log.info("createSubtask(): id={}", response.getData().getId());
+
+        return new UiResult<>(response.getData().getId(), response.getMessage());
     }
 
     @Autowired

@@ -5,8 +5,6 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel ui:field="root" styleName="m-b-10 m-t-10">
-        <accordion:AccordionWidget ui:field="accordionWidget" styleName="card-links">
-            <g:HTMLPanel ui:field="linksPanel" styleName="case-links" tag="ul"/>
-        </accordion:AccordionWidget>
+        <accordion:AccordionWidget ui:field="accordionWidget" styleName="card-links"/>
     </g:HTMLPanel>
 </ui:UiBinder>

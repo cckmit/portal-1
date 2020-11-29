@@ -56,7 +56,7 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
     }
 
     @Override
-    public void resetTabs() {
+    public void selectFirstTab() {
         tabs.selectFirstTab();
     }
 

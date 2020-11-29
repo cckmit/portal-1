@@ -1,19 +1,18 @@
 package ru.protei.portal.ui.common.client.view.caselink.list;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.LabelElement;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.caselink.list.AbstractCaseLinkListActivity;
 import ru.protei.portal.ui.common.client.activity.caselink.list.AbstractCaseLinkListView;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.widget.accordion.AccordionWidget;
 import ru.protei.portal.ui.common.client.widget.caselink.popup.CreateCaseLinkPopup;
+import ru.protei.portal.ui.common.client.widget.tab.pane.TabWidgetPane;
 
 public class CaseLinkListView
         extends Composite
@@ -22,12 +21,13 @@ public class CaseLinkListView
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        initDebugIds();
 
         createCaseLinkPopup.addValueChangeHandler(event -> activity.onAddLinkClicked(event.getValue()));
 
         accordionWidget.setLocalStorageKey(UiConstants.LINKS_PANEL_VISIBILITY);
         accordionWidget.setMaxHeight(UiConstants.Accordion.LINKS_MAX_HEIGHT);
+
+        initDebugIds();
     }
 
     @Override
@@ -36,13 +36,8 @@ public class CaseLinkListView
     }
 
     @Override
-    public void showSelector(IsWidget target) {
-        createCaseLinkPopup.resetValueAndShow(target.asWidget());
-    }
-
-    @Override
-    public HasWidgets getLinksContainer() {
-        return linksPanel;
+    public void showSelector(En_CaseType caseType, IsWidget target) {
+        createCaseLinkPopup.resetValueAndShow(caseType, target.asWidget());
     }
 
     @Override
@@ -51,16 +46,37 @@ public class CaseLinkListView
     }
 
     @Override
-    public void setHeader(String value) {
-        accordionWidget.setHeader(value);
+    public void setCountOfLinks(String tabName, String count) {
+        accordionWidget.setBadge(tabName, count);
+    }
+
+    @Override
+    public void addTabWidgetPane(TabWidgetPane tabWidgetPane) {
+        accordionWidget.add(tabWidgetPane);
+    }
+
+    @Override
+    public void tabVisibility(String tabName, boolean isVisible) {
+        accordionWidget.tabVisibility(tabName).setVisible(isVisible);
+    }
+
+    @Override
+    public void selectFirstTab() {
+        accordionWidget.selectFirstTab();
+    }
+
+    @Override
+    public void selectTab(String tabName) {
+        accordionWidget.selectTab(tabName);
+    }
+
+    @Override
+    public void setTabNameDebugId(String tabName, String debugId) {
+        accordionWidget.setTabNameDebugId(tabName, debugId);
     }
 
     private void initDebugIds() {
-        linksPanel.ensureDebugId(DebugIds.ISSUE.LINKS_CONTAINER);
-
-        accordionWidget.setHeaderLabelDebugId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.LINKS);
         accordionWidget.setCollapseButtonDebugId(DebugIds.ISSUE.LINKS_COLLAPSE_BUTTON);
-
         createCaseLinkPopup.setEnsureDebugIdSelector(DebugIds.ISSUE.LINKS_TYPE_SELECTOR);
         createCaseLinkPopup.setEnsureDebugIdTextBox(DebugIds.ISSUE.LINKS_INPUT);
         createCaseLinkPopup.setEnsureDebugIdApply(DebugIds.ISSUE.LINKS_APPLY_BUTTON);
@@ -68,8 +84,6 @@ public class CaseLinkListView
 
     @UiField
     HTMLPanel root;
-    @UiField
-    HTMLPanel linksPanel;
     @Inject
     @UiField(provided = true)
     AccordionWidget accordionWidget;

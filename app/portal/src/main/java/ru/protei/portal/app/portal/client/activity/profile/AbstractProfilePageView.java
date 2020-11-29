@@ -20,5 +20,5 @@ public interface AbstractProfilePageView extends IsWidget {
 
     HasWidgets getSubscriptionsContainer();
 
-    void resetTabs();
+    void selectFirstTab();
 }

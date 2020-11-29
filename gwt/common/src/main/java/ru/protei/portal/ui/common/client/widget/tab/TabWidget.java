@@ -6,6 +6,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
+import ru.protei.portal.ui.common.client.widget.tab.base.Tab;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 import ru.protei.portal.ui.common.client.widget.tab.navitem.TabWidgetNavItem;
@@ -13,9 +14,7 @@ import ru.protei.portal.ui.common.client.widget.tab.pane.TabWidgetPane;
 
 import java.util.*;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
-
-public class TabWidget extends Composite implements HasWidgets, TabWidgetHandler {
+public class TabWidget extends Tab {
 
     public TabWidget() {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -24,21 +23,13 @@ public class TabWidget extends Composite implements HasWidgets, TabWidgetHandler
     }
 
     @Override
-    public void add(Widget widget) {
-        tabContent.add(widget);
-        if (widget instanceof TabWidgetPane) {
-            addTab((TabWidgetPane) widget);
-        }
+    public void onTabClicked(String tabName) {
+        onTabSelected(tabName);
     }
 
     @Override
-    public void clear() {
-        clearTabs();
-    }
-
-    @Override
-    public Iterator<Widget> iterator() {
-        return tabContent.iterator();
+    protected HTMLPanel getContainer() {
+        return tabContent;
     }
 
     @Override
@@ -52,55 +43,8 @@ public class TabWidget extends Composite implements HasWidgets, TabWidgetHandler
         return tabContent.remove(widget);
     }
 
-    public void selectFirstTab() {
-        findFirstPane().ifPresent(p -> onTabSelected(p.getTabName()));
-    }
-
-    public void setTabNameActiveByDefault(String tabNameActiveByDefault) {
-        this.tabNameActiveByDefault = tabNameActiveByDefault;
-        onTabSelected(tabNameActiveByDefault);
-    }
-
-    public void setTabNameDebugId(String tabName, String debugId) {
-        TabWidgetNavItem navItem = tabNameToNavItem.get(tabName);
-        if (navItem == null) return;
-        navItem.setTabNameDebugId(debugId);
-    }
-
-    public HasVisibility tabVisibility(String tabName) {
-        return new HasVisibility() {
-            public boolean isVisible() { return isTabVisible(tabName); }
-            public void setVisible(boolean visible) { setTabVisible(tabName, visible); }
-        };
-    }
-
-    public void setTabVisible(String tabName, boolean isVisible) {
-        TabWidgetNavItem navItem = tabNameToNavItem.get(tabName);
-        if (navItem != null) {
-            navItem.setVisible(isVisible);
-        }
-
-        SelectorItem selectorItem = tabNameToNavSelectorItem.get(tabName);
-        if (selectorItem != null) {
-            selectorItem.setVisible(isVisible);
-        }
-
-        TabWidgetPane pane = tabNameToPane.get(tabName);
-        if (pane != null) {
-            pane.setVisible(isVisible);
-        }
-
-        if (!isVisible && Objects.equals(selectedTabName, tabName)) {
-            selectFirstTab();
-        }
-    }
-
-    public boolean isTabVisible(String tabName) {
-        TabWidgetPane pane = tabNameToPane.get(tabName);
-        return pane != null && pane.isVisible();
-    }
-
-    private void addTab(TabWidgetPane pane) {
+    @Override
+    protected void addTab(TabWidgetPane pane) {
 
         TabWidgetNavItem navItem = makeNavItem(pane);
         SelectorItem selectorItem = makeSelectorItem(pane);
@@ -112,6 +56,26 @@ public class TabWidget extends Composite implements HasWidgets, TabWidgetHandler
         tabNameToPane.put(pane.getTabName(), pane);
 
         selectTabIfNeeded(pane);
+    }
+
+    @Override
+    protected void clearTabs() {
+        tabContent.clear();
+        navTabs.clear();
+        tabNameToNavSelectorItem.clear();
+        popup.getChildContainer().clear();
+    }
+
+    @Override
+    protected void onTabSelected(String tabName) {
+        super.onTabSelected(tabName);
+        setNavItemDropdownSelected(tabName);
+    }
+
+    @UiHandler("navDropdownTabsSelected")
+    public void navDropdownTabsSelectedClick(ClickEvent event) {
+        event.preventDefault();
+        popup.show(navDropdownTabsSelected);
     }
 
     private TabWidgetNavItem makeNavItem(TabWidgetPane pane) {
@@ -133,66 +97,8 @@ public class TabWidget extends Composite implements HasWidgets, TabWidgetHandler
         return selectorItem;
     }
 
-    private void selectTabIfNeeded(TabWidgetPane pane) {
-        boolean isFirstTab = tabNameActiveByDefault == null && currentTabName == null;
-        boolean isDefaultTab = tabNameActiveByDefault != null && Objects.equals(tabNameActiveByDefault, pane.getTabName());
-        if (isDefaultTab || isFirstTab) {
-            currentTabName = pane.getTabName();
-            onTabSelected(currentTabName);
-        }
-    }
-
-    private void clearTabs() {
-        tabContent.clear();
-        tabNameToPane.clear();
-        navTabs.clear();
-        tabNameToNavItem.clear();
-        tabNameToNavSelectorItem.clear();
-        popup.getChildContainer().clear();
-        selectedTabName = null;
-        currentTabName = null;
-    }
-
-    @Override
-    public void onTabSelected(String tabName) {
-        selectedTabName = tabName;
-        setNavItemSelected(tabName);
-        setNavItemDropdownSelected(tabName);
-        setPaneSelected(tabName);
-    }
-
-    private void setNavItemSelected(String tabName) {
-        for (Map.Entry<String, TabWidgetNavItem> entry : tabNameToNavItem.entrySet()) {
-            entry.getValue().setInActive();
-            if (Objects.equals(tabName, entry.getKey())) {
-                entry.getValue().setActive();
-            }
-        }
-    }
-
     private void setNavItemDropdownSelected(String tabName) {
         navDropdownTabsSelected.setText(tabName);
-    }
-
-    private void setPaneSelected(String tabName) {
-        for (Map.Entry<String, TabWidgetPane> entry : tabNameToPane.entrySet()) {
-            entry.getValue().setInActive();
-            if (Objects.equals(tabName, entry.getKey())) {
-                entry.getValue().setActive();
-            }
-        }
-    }
-
-    private Optional<TabWidgetPane> findFirstPane() {
-        return stream(tabNameToPane.values())
-                .filter(UIObject::isVisible)
-                .findFirst();
-    }
-
-    @UiHandler("navDropdownTabsSelected")
-    public void navDropdownTabsSelectedClick(ClickEvent event) {
-        event.preventDefault();
-        popup.show(navDropdownTabsSelected);
     }
 
     @UiField
@@ -203,12 +109,7 @@ public class TabWidget extends Composite implements HasWidgets, TabWidgetHandler
     HTMLPanel tabContent;
 
     private SelectorPopup popup = new SelectorPopup();
-    private String selectedTabName = null;
-    private String currentTabName = null;
-    private String tabNameActiveByDefault = null;
     private Map<String, SelectorItem> tabNameToNavSelectorItem = new HashMap<>();
-    private Map<String, TabWidgetNavItem> tabNameToNavItem = new HashMap<>();
-    private Map<String, TabWidgetPane> tabNameToPane = new HashMap<>();
 
     interface TabWidgetUiBinder extends UiBinder<HTMLPanel, TabWidget> {}
     private static TabWidgetUiBinder ourUiBinder = GWT.create(TabWidgetUiBinder.class);
