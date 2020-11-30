@@ -2046,8 +2046,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractTypeWorkContract();
 
-    String contractTypeHardwareSoftwareService();
-
     String contractTypeRequest();
 
     String goToContracts();
@@ -3203,4 +3201,6 @@ public interface Lang extends Messages, ContactItemLang {
     String overdueDeadlines();
 
     String fileNotFoundError();
+
+    String contractTypeAdditionalAgreement();
 }

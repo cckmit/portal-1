@@ -91,6 +91,11 @@ public enum En_ContractType implements HasId {
      * Заявка
      */
     REQUEST(16),
+
+    /**
+     * Доп соглашение
+     */
+    ADDITIONAL_AGREEMENT(17),
     ;
 
     En_ContractType(int id) {
