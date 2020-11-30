@@ -2,15 +2,19 @@ package ru.protei.portal.core.model.query;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.struct.DateRange;
+import ru.protei.portal.core.model.struct.Pair;
 
 import java.util.*;
-import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
+import static ru.protei.portal.core.model.helper.CollectionUtils.toSet;
 
 /**
  * Created by Mike on 02.11.2016.
@@ -27,6 +31,8 @@ public class CaseQuery extends BaseQuery {
 
     private List<Long> companyIds;
 
+    private List<Long> managerCompanyIds;
+
     private List<Long> initiatorIds;
 
     private Set<Long> productIds;
@@ -39,17 +45,11 @@ public class CaseQuery extends BaseQuery {
 
     private En_CaseType type;
 
-    private List<Integer> stateIds;
+    private List<Long> stateIds;
 
     private List<Integer> importanceIds;
 
-    private List<Long> regionIds;
-
-    private List<Long> headManagerIds;
-
-    private List<Long> caseMemberIds;
-
-    private List<Long> productDirectionIds;
+    private Pair<Long, Boolean> personIdToIsFavorite;
 
     /**
      * if true then both states otherwise only non-private state
@@ -58,25 +58,33 @@ public class CaseQuery extends BaseQuery {
 
     private Boolean viewPrivate = null;
 
+    @Deprecated
     @JsonAlias({"from", "createdFrom" })
     private Date createdFrom;
 
+    @Deprecated
     @JsonAlias({"to", "createdTo" })
     private Date createdTo;
 
+    @Deprecated
     private Date modifiedFrom;
 
+    @Deprecated
     private Date modifiedTo;
+
+    private DateRange createdRange;
+
+    private DateRange modifiedRange;
 
     private boolean searchStringAtComments = false;
 
     private String searchCasenoString;
 
-    private Long memberId;
-
     private List<Long> commentAuthorIds;
 
     private List<Long> caseTagsIds;
+
+    private List<String> caseTagsNames;
 
     private boolean customerSearch = false;
 
@@ -84,9 +92,17 @@ public class CaseQuery extends BaseQuery {
 
     private Integer local;
 
-    private Boolean platformIndependentProject;
-
     private List<Long> creatorIds;
+
+    private Boolean isCheckImportanceHistory;
+
+    private Long planId;
+
+    private List<Integer> timeElapsedTypeIds;
+
+    private List<Integer> workTriggersIds;
+
+    private Boolean overdueDeadlines;
 
     public CaseQuery() {}
 
@@ -110,6 +126,7 @@ public class CaseQuery extends BaseQuery {
         setCaseNumbers(query.getCaseNumbers());
         setCaseIds(query.getCaseIds());
         setCompanyIds(query.getCompanyIds());
+        setManagerCompanyIds(query.getManagerCompanyIds());
         setInitiatorIds(query.getInitiatorIds());
         setProductIds(query.getProductIds());
         setLocationIds(query.getLocationIds());
@@ -121,23 +138,25 @@ public class CaseQuery extends BaseQuery {
         setCreatedTo(query.getCreatedTo());
         setModifiedFrom(query.getModifiedFrom());
         setModifiedTo(query.getModifiedTo());
+        setCreatedRange(query.getCreatedRange());
+        setModifiedRange(query.getModifiedRange());
         setManagerIds(query.getManagerIds());
         setAllowViewPrivate(query.isAllowViewPrivate());
         setViewPrivate(query.isViewPrivate());
         setSearchStringAtComments(query.isSearchStringAtComments());
         setSearchCasenoString(query.getSearchCasenoString());
-        setMemberId(query.getMemberId());
         setCommentAuthorIds(query.getCommentAuthorIds());
         setCaseTagsIds(query.getCaseTagsIds());
+        setCaseTagsNames(query.getCaseTagsNames());
         setFindRecordByCaseComments(query.isFindRecordByCaseComments());
         setCustomerSearch(query.isCustomerSearch());
         setLocal(query.getLocal());
-        setPlatformIndependentProject(query.getPlatformIndependentProject());
-        setProductDirectionIds(query.getProductDirectionIds());
         setCreatorIds(query.getCreatorIds());
-        setRegionIds(query.getRegionIds());
-        setHeadManagerIds(query.getHeadManagerIds());
-        setCaseMemberIds(query.getCaseMemberIds());
+        setPlanId(query.getPlanId());
+        setPersonIdToIsFavorite(query.getPersonIdToIsFavorite());
+        setTimeElapsedTypeIds(query.getTimeElapsedTypeIds());
+        setWorkTriggersIds(query.getWorkTriggersIds());
+        setOverdueDeadlines(query.getOverdueDeadlines());
     }
 
     public Long getId() {
@@ -207,24 +226,23 @@ public class CaseQuery extends BaseQuery {
         this.type = type;
     }
 
-    public List<Integer> getStateIds() {
+    public List<Long> getStateIds() {
         return stateIds;
     }
 
-    public void setStateIds(List<Integer> stateIds) { this.stateIds = stateIds; }
-
-    @JsonIgnore
-    public void setStates(List<En_CaseState> states) {
-        List<Integer> stateIds = null;
-        if (states != null && !states.isEmpty()){
-            stateIds = states.stream().map(En_CaseState::getId).collect(Collectors.toList());
-        }
-        this.setStateIds(stateIds);
-    }
+    public void setStateIds(List<Long> stateIds) { this.stateIds = stateIds; }
 
     public List<Integer> getImportanceIds() { return importanceIds; }
 
     public void setImportanceIds(List<Integer> importanceIds) { this.importanceIds = importanceIds; }
+
+    public void setImportances(Iterable<En_ImportanceLevel> importances) {
+        this.importanceIds = importances == null ? null : toList( importances, importanceLevel -> importanceLevel.getId() );
+    }
+
+    public Set<En_ImportanceLevel> getImportances() {
+        return this.importanceIds == null ? null : toSet( importanceIds, id1 -> En_ImportanceLevel.getById( id1 ) );
+    }
 
     public Date getCreatedFrom() { return createdFrom; }
 
@@ -241,6 +259,14 @@ public class CaseQuery extends BaseQuery {
     public Date getModifiedTo() { return modifiedTo; }
 
     public void setModifiedTo( Date modifiedTo ) { this.modifiedTo = modifiedTo; }
+
+    public DateRange getCreatedRange() { return createdRange; }
+
+    public void setCreatedRange(DateRange createdRange) { this.createdRange = createdRange; }
+
+    public DateRange getModifiedRange() { return modifiedRange; }
+
+    public void setModifiedRange(DateRange modifiedRange) { this.modifiedRange = modifiedRange; }
 
     public List<Long> getManagerIds() { return managerIds; }
 
@@ -278,14 +304,6 @@ public class CaseQuery extends BaseQuery {
         this.viewPrivate = viewOnlyPrivate;
     }
 
-    public Long getMemberId() {
-        return memberId;
-    }
-
-    public void setMemberId(Long memberId) {
-        this.memberId = memberId;
-    }
-
     public List<Long> getCommentAuthorIds() {
         return commentAuthorIds;
     }
@@ -300,6 +318,14 @@ public class CaseQuery extends BaseQuery {
 
     public void setCaseTagsIds(List<Long> caseTagsIds) {
         this.caseTagsIds = caseTagsIds;
+    }
+
+    public List<String> getCaseTagsNames() {
+        return caseTagsNames;
+    }
+
+    public void setCaseTagsNames(List<String> caseTagsNames) {
+        this.caseTagsNames = caseTagsNames;
     }
 
     public boolean isFindRecordByCaseComments() {
@@ -318,28 +344,12 @@ public class CaseQuery extends BaseQuery {
         this.customerSearch = customerSearch;
     }
 
-    public Boolean getPlatformIndependentProject() {
-        return platformIndependentProject;
-    }
-
-    public void setPlatformIndependentProject(Boolean platformIndependentProject) {
-        this.platformIndependentProject = platformIndependentProject;
-    }
-
     public Integer getLocal() {
         return local;
     }
 
     public void setLocal(Integer local) {
         this.local = local;
-    }
-
-    public List<Long> getProductDirectionIds() {
-        return productDirectionIds;
-    }
-
-    public void setProductDirectionIds(List<Long> productDirectionIds) {
-        this.productDirectionIds = productDirectionIds;
     }
 
     public List<Long> getCreatorIds() {
@@ -350,37 +360,69 @@ public class CaseQuery extends BaseQuery {
         this.creatorIds = creatorIds;
     }
 
-    public List<Long> getRegionIds() {
-        return regionIds;
+    public void setCheckImportanceHistory( Boolean isCheckImportanceHistory ) {
+        this.isCheckImportanceHistory = isCheckImportanceHistory;
     }
 
-    public void setRegionIds(List<Long> regionIds) {
-        this.regionIds = regionIds;
+    public Boolean isCheckImportanceHistory() {
+        return isCheckImportanceHistory;
     }
 
-    public List<Long> getHeadManagerIds() {
-        return headManagerIds;
+    public List<Long> getManagerCompanyIds() {
+        return managerCompanyIds;
     }
 
-    public void setHeadManagerIds(List<Long> headManagerIds) {
-        this.headManagerIds = headManagerIds;
+    public void setManagerCompanyIds(List<Long> managerCompanyIds) {
+        this.managerCompanyIds = managerCompanyIds;
     }
 
-    public List<Long> getCaseMemberIds() {
-        return caseMemberIds;
+    public Long getPlanId() {
+        return planId;
     }
 
-    public void setCaseMemberIds(List<Long> caseMemberIds) {
-        this.caseMemberIds = caseMemberIds;
+    public void setPlanId(Long planId) {
+        this.planId = planId;
     }
 
-    @Override
+    public Pair<Long, Boolean> getPersonIdToIsFavorite() {
+        return personIdToIsFavorite;
+    }
+
+    public void setPersonIdToIsFavorite(Pair<Long, Boolean> personIdToIsFavorite) {
+        this.personIdToIsFavorite = personIdToIsFavorite;
+    }
+
+    public List<Integer> getTimeElapsedTypeIds() {
+        return timeElapsedTypeIds;
+    }
+
+    public void setTimeElapsedTypeIds(List<Integer> timeElapsedTypeIds) {
+        this.timeElapsedTypeIds = timeElapsedTypeIds;
+    }
+
+    public List<Integer> getWorkTriggersIds() {
+        return workTriggersIds;
+    }
+
+    public void setWorkTriggersIds(List<Integer> workTriggersIds) {
+        this.workTriggersIds = workTriggersIds;
+    }
+
+    public Boolean getOverdueDeadlines() {
+        return overdueDeadlines;
+    }
+
+    public void setOverdueDeadlines(Boolean overdueDeadlines) {
+        this.overdueDeadlines = overdueDeadlines;
+    }
+
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
                 id != null ||
                 CollectionUtils.isNotEmpty(caseNumbers) ||
                 CollectionUtils.isNotEmpty(caseIds) ||
                 CollectionUtils.isNotEmpty(companyIds) ||
+                CollectionUtils.isNotEmpty(managerCompanyIds) ||
                 CollectionUtils.isNotEmpty(initiatorIds) ||
                 CollectionUtils.isNotEmpty(productIds) ||
                 CollectionUtils.isNotEmpty(locationIds) ||
@@ -389,20 +431,18 @@ public class CaseQuery extends BaseQuery {
                 CollectionUtils.isNotEmpty(stateIds) ||
                 CollectionUtils.isNotEmpty(importanceIds) ||
                 CollectionUtils.isNotEmpty(creatorIds) ||
-                CollectionUtils.isNotEmpty(regionIds) ||
-                CollectionUtils.isNotEmpty(headManagerIds) ||
-                CollectionUtils.isNotEmpty(caseMemberIds) ||
-                CollectionUtils.isNotEmpty(productDirectionIds) ||
-                createdFrom != null ||
-                createdTo != null ||
-                modifiedFrom != null ||
-                modifiedTo != null ||
+                createdRange != null ||
+                modifiedRange != null ||
                 StringUtils.isNotBlank(searchCasenoString) ||
-                memberId != null ||
                 CollectionUtils.isNotEmpty(commentAuthorIds) ||
                 CollectionUtils.isNotEmpty(caseTagsIds) ||
+                CollectionUtils.isNotEmpty(caseTagsNames) ||
                 local != null ||
-                platformIndependentProject != null;
+                isCheckImportanceHistory != null ||
+                planId != null ||
+                personIdToIsFavorite != null ||
+                CollectionUtils.isNotEmpty(timeElapsedTypeIds) ||
+                CollectionUtils.isNotEmpty(workTriggersIds);
     }
 
     @Override
@@ -412,34 +452,38 @@ public class CaseQuery extends BaseQuery {
                 ", caseNumbers=" + caseNumbers +
                 ", caseIds=" + caseIds +
                 ", companyIds=" + companyIds +
+                ", managerCompanyIds=" + managerCompanyIds +
                 ", initiatorIds=" + initiatorIds +
                 ", productIds=" + productIds +
                 ", locationIds=" + locationIds +
                 ", districtIds=" + districtIds +
                 ", managerIds=" + managerIds +
-                ", regionsIds=" + regionIds +
-                ", headManagersIds=" + headManagerIds +
-                ", caseMemberIds=" + caseMemberIds +
-                ", productDirectionId=" + productDirectionIds +
                 ", type=" + type +
                 ", stateIds=" + stateIds +
                 ", importanceIds=" + importanceIds +
+                ", personIdToIsFavorite=" + personIdToIsFavorite +
                 ", allowViewPrivate=" + allowViewPrivate +
                 ", viewPrivate=" + viewPrivate +
                 ", createdFrom=" + createdFrom +
                 ", createdTo=" + createdTo +
                 ", modifiedFrom=" + modifiedFrom +
                 ", modifiedTo=" + modifiedTo +
+                ", createdRange=" + createdRange +
+                ", modifiedRange=" + modifiedRange +
                 ", searchStringAtComments=" + searchStringAtComments +
                 ", searchCasenoString='" + searchCasenoString + '\'' +
-                ", memberId=" + memberId +
                 ", commentAuthorIds=" + commentAuthorIds +
                 ", caseTagsIds=" + caseTagsIds +
+                ", caseTagsNames=" + caseTagsNames +
                 ", customerSearch=" + customerSearch +
                 ", findRecordByCaseComments=" + findRecordByCaseComments +
                 ", local=" + local +
-                ", platformIndependentProject=" + platformIndependentProject +
                 ", creatorIds=" + creatorIds +
+                ", isCheckImportanceHistory=" + isCheckImportanceHistory +
+                ", planId=" + planId +
+                ", timeElapsedTypeIds=" + timeElapsedTypeIds +
+                ", workTriggersIds=" + workTriggersIds +
+                ", overdueDeadlines=" + overdueDeadlines +
                 '}';
     }
 
@@ -456,38 +500,38 @@ public class CaseQuery extends BaseQuery {
                 Objects.equals(caseNumbers, caseQuery.caseNumbers) &&
                 Objects.equals(caseIds, caseQuery.caseIds) &&
                 Objects.equals(companyIds, caseQuery.companyIds) &&
+                Objects.equals(managerCompanyIds, caseQuery.managerCompanyIds) &&
                 Objects.equals(initiatorIds, caseQuery.initiatorIds) &&
                 Objects.equals(productIds, caseQuery.productIds) &&
                 Objects.equals(locationIds, caseQuery.locationIds) &&
                 Objects.equals(districtIds, caseQuery.districtIds) &&
                 Objects.equals(managerIds, caseQuery.managerIds) &&
-                Objects.equals(regionIds, caseQuery.regionIds) &&
-                Objects.equals(headManagerIds, caseQuery.headManagerIds) &&
-                Objects.equals(caseMemberIds, caseQuery.caseMemberIds) &&
                 type == caseQuery.type &&
                 Objects.equals(stateIds, caseQuery.stateIds) &&
                 Objects.equals(importanceIds, caseQuery.importanceIds) &&
                 Objects.equals(viewPrivate, caseQuery.viewPrivate) &&
-                Objects.equals(createdFrom, caseQuery.createdFrom) &&
-                Objects.equals(createdTo, caseQuery.createdTo) &&
-                Objects.equals(modifiedFrom, caseQuery.modifiedFrom) &&
-                Objects.equals(modifiedTo, caseQuery.modifiedTo) &&
+                Objects.equals(createdRange, caseQuery.createdRange) &&
+                Objects.equals(modifiedRange, caseQuery.modifiedRange) &&
                 Objects.equals(searchCasenoString, caseQuery.searchCasenoString) &&
-                Objects.equals(memberId, caseQuery.memberId) &&
                 Objects.equals(commentAuthorIds, caseQuery.commentAuthorIds) &&
                 Objects.equals(caseTagsIds, caseQuery.caseTagsIds) &&
+                Objects.equals(caseTagsNames, caseQuery.caseTagsNames) &&
                 Objects.equals(local, caseQuery.local) &&
-                Objects.equals(platformIndependentProject, caseQuery.platformIndependentProject) &&
-                Objects.equals(productDirectionIds, caseQuery.productDirectionIds) &&
-                Objects.equals(creatorIds, caseQuery.creatorIds);
+                Objects.equals(creatorIds, caseQuery.creatorIds) &&
+                Objects.equals(planId, caseQuery.planId) &&
+                Objects.equals(personIdToIsFavorite, caseQuery.personIdToIsFavorite) &&
+                Objects.equals(timeElapsedTypeIds, caseQuery.timeElapsedTypeIds) &&
+                Objects.equals(workTriggersIds, caseQuery.workTriggersIds) &&
+                Objects.equals(overdueDeadlines, caseQuery.overdueDeadlines);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, caseNumbers, caseIds, companyIds, initiatorIds, productIds, locationIds, districtIds, managerIds,
-                type, stateIds, importanceIds, allowViewPrivate, viewPrivate, createdFrom, createdTo, modifiedFrom,
-                modifiedTo, searchStringAtComments, searchCasenoString, memberId, commentAuthorIds, caseTagsIds,
-                customerSearch, findRecordByCaseComments, local, platformIndependentProject,
-                productDirectionIds, creatorIds, regionIds, headManagerIds, caseMemberIds);
+        return Objects.hash(id, caseNumbers, caseIds, companyIds, managerCompanyIds, initiatorIds, productIds, locationIds, districtIds, managerIds,
+                type, stateIds, importanceIds, allowViewPrivate, viewPrivate, createdRange, modifiedRange,
+                searchStringAtComments, searchCasenoString, commentAuthorIds, caseTagsIds, caseTagsNames,
+                customerSearch, findRecordByCaseComments, local,
+                creatorIds, planId, personIdToIsFavorite,
+                timeElapsedTypeIds, workTriggersIds, overdueDeadlines);
     }
 }

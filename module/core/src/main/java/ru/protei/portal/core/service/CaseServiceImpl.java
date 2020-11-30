@@ -15,16 +15,19 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.query.PersonQuery;
-import ru.protei.portal.core.model.struct.*;
+import ru.protei.portal.core.model.query.*;
+import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
+import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
+import ru.protei.portal.core.model.struct.JiraExtAppData;
 import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.util.DiffResult;
-import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.model.view.*;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.utils.JiraUtils;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -36,22 +39,137 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
+import static ru.protei.portal.core.model.dict.En_CaseType.CRM_SUPPORT;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.util.CaseStateUtil.isTerminalState;
 
 /**
  * Реализация сервиса управления обращениями
  */
 public class CaseServiceImpl implements CaseService {
+    private static Logger log = LoggerFactory.getLogger(CaseServiceImpl.class);
+
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
+
+    @Autowired
+    CaseObjectDAO caseObjectDAO;
+
+    @Autowired
+    CompanyDAO companyDAO;
+
+    @Autowired
+    PlatformDAO platformDAO;
+
+    @Autowired
+    SiteFolderService siteFolderService;
+
+    @Autowired
+    ProductService productService;
+
+    @Autowired
+    CaseShortViewDAO caseShortViewDAO;
+
+    @Autowired
+    CaseObjectMetaDAO caseObjectMetaDAO;
+
+    @Autowired
+    CaseObjectMetaNotifiersDAO caseObjectMetaNotifiersDAO;
+
+    @Autowired
+    CaseCommentDAO caseCommentDAO;
+
+    @Autowired
+    PersonDAO personDAO;
+
+    @Autowired
+    CaseAttachmentDAO caseAttachmentDAO;
+
+    @Autowired
+    AttachmentDAO attachmentDAO;
+
+    @Autowired
+    CaseNotifierDAO caseNotifierDAO;
+
+    @Autowired
+    ExternalCaseAppDAO externalCaseAppDAO;
+
+    @Autowired
+    CaseTagDAO caseTagDAO;
+
+    @Autowired
+    JiraEndpointDAO jiraEndpointDAO;
+
+    @Autowired
+    JiraSLAMapEntryDAO jiraSLAMapEntryDAO;
+
+    @Autowired
+    CaseStateDAO caseStateDAO;
+
+    @Autowired
+    PolicyService policyService;
+
+    @Autowired
+    AuthService authService;
+
+    @Autowired
+    CaseLinkService caseLinkService;
+
+    @Autowired
+    CaseCommentService caseCommentService;
+
+    @Autowired
+    CaseStateWorkflowService caseStateWorkflowService;
+
+    @Autowired
+    CaseTagService caseTagService;
+
+    @Autowired
+    YoutrackService youtrackService;
+
+    @Autowired
+    PortalConfig portalConfig;
+
+    @Autowired
+    LockService lockService;
+
+    @Autowired
+    CompanyService companyService;
+
+    @Autowired
+    CaseObjectTagDAO caseObjectTagDAO;
+
+    @Autowired
+    AutoOpenCaseService autoOpenCaseService;
+
+    @Autowired
+    PlanService planService;
+
+    @Autowired
+    PersonFavoriteIssuesDAO personFavoriteIssuesDAO;
+
+    @Autowired
+    private CaseLinkDAO caseLinkDAO;
 
     @Override
-    public Result<SearchResult<CaseShortView>> getCaseObjects( AuthToken token, CaseQuery query) {
-        applyFilterByScope(token, query);
+    public Result<SearchResult<CaseShortView>> getCaseObjects(AuthToken token, CaseQuery query) {
+
+        query = applyFilterByScope(token, query);
 
         SearchResult<CaseShortView> sr = caseShortViewDAO.getSearchResult(query);
+
+        List<Long> personFavoriteIssueIds = getPersonFavoriteIssueIds(token.getPersonId());
+
+        List<Long> caseIds = toList( sr.getResults(), CaseShortView::getId );
+        List<Long> hasPublicAttachments = attachmentDAO.findCasesIdsWithPublicAttachments(caseIds);
+
+        sr.getResults().forEach(caseShortView -> {
+            caseShortView.setFavorite(personFavoriteIssueIds.contains(caseShortView.getId()));
+            caseShortView.setPublicAttachmentsExist(hasPublicAttachments.contains(caseShortView.getId()));
+        });
 
         return ok(sr);
     }
@@ -66,55 +184,30 @@ public class CaseServiceImpl implements CaseService {
     @Override
     public Result<CaseObject> getCaseObjectByNumber( AuthToken token, long number ) {
 
-        CaseObject caseObject = caseObjectDAO.getCase( En_CaseType.CRM_SUPPORT, number );
+        CaseObject caseObject = caseObjectDAO.getCaseByNumber( CRM_SUPPORT, number );
 
         return fillCaseObject( token, caseObject );
     }
 
-    private Result<CaseObject> fillCaseObject( AuthToken token, CaseObject caseObject ) {
-        if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_VIEW, caseObject ) ) {
-            return error(En_ResultStatus.PERMISSION_DENIED);
-        }
-
-        if(caseObject == null)
-            return error(En_ResultStatus.NOT_FOUND);
-
-        jdbcManyRelationsHelper.fillAll( caseObject.getInitiatorCompany() );
-        jdbcManyRelationsHelper.fill( caseObject, "attachments");
-        jdbcManyRelationsHelper.fill( caseObject, "notifiers");
-
-        withJiraSLAInformation(caseObject);
-
-        // RESET PRIVACY INFO
-        if ( caseObject.getInitiator() != null ) {
-            caseObject.getInitiator().resetPrivacyInfo();
-        }
-        if ( caseObject.getCreator() != null ) {
-            caseObject.getCreator().resetPrivacyInfo();
-        }
-        if ( caseObject.getManager() != null ) {
-            caseObject.getManager().resetPrivacyInfo();
-        }
-        if ( isNotEmpty(caseObject.getNotifiers())) {
-            caseObject.getNotifiers().forEach( Person::resetPrivacyInfo);
-        }
-
-        return ok(caseObject);
-    }
-
     @Override
     @Transactional
-    public Result< CaseObject > createCaseObject( AuthToken token, CaseObjectCreateRequest caseObjectCreateRequest) {
+    public Result< CaseObject > createCaseObject(AuthToken token, CaseObjectCreateRequest caseObjectCreateRequest) {
 
         CaseObject caseObject = caseObjectCreateRequest.getCaseObject();
 
-        if (!validateFieldsOfNew(caseObject)) {
+        if (!validateFieldsOfNew(token, caseObject)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        applyCaseByScope( token, caseObject );
-        if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_EDIT, caseObject ) ) {
-            return error(En_ResultStatus.PERMISSION_DENIED );
+        Result<CaseObject> fillCaseObjectByScopeResult = fillCaseObjectByScope(token, caseObject);
+        if (fillCaseObjectByScopeResult.isError()) {
+            return error(En_ResultStatus.INTERNAL_ERROR);
+        }
+
+        caseObject = fillCaseObjectByScopeResult.getData();
+
+        if (!hasAccessForCaseObject(token, En_Privilege.ISSUE_EDIT, caseObject)) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
         Date now = new Date();
@@ -126,7 +219,7 @@ public class CaseServiceImpl implements CaseService {
                 caseObject.setTimeElapsed(null);
             }
         } else {
-            caseObject.setState(En_CaseState.CREATED);
+            caseObject.setStateId(CrmConstants.State.CREATED);
             caseObject.setTimeElapsed(null);
         }
 
@@ -139,7 +232,7 @@ public class CaseServiceImpl implements CaseService {
         else
             caseObject.setId(caseId);
 
-        Long stateMessageId = createAndPersistStateMessage(token.getPersonId(), caseId, caseObject.getState());
+        Long stateMessageId = createAndPersistStateMessage(token.getPersonId(), caseId, caseObject.getStateId());
         if (stateMessageId == null) {
             log.error("State message for the issue {} not saved!", caseId);
         }
@@ -171,6 +264,15 @@ public class CaseServiceImpl implements CaseService {
                             .map(a -> new CaseAttachment(caseId, a.getId()))
                             .collect(Collectors.toList())
             );
+
+            if (caseObject.isPrivateCase()) {
+                attachmentDAO.saveOrUpdateBatch(
+                        caseObject.getAttachments().stream()
+                                .map(a -> {
+                                    a.setPrivate(true);
+                                    return a;
+                                }).collect(Collectors.toList()));
+            }
         }
 
         if(isNotEmpty(caseObject.getNotifiers())){
@@ -181,12 +283,7 @@ public class CaseServiceImpl implements CaseService {
                             .collect(Collectors.toList()));
 
             // update partially filled objects
-            caseObject.setNotifiers(new HashSet<>(personDAO.partialGetListByKeys(
-                            caseObject.getNotifiers()
-                                    .stream()
-                                    .map(person ->  person.getId())
-                                    .collect(Collectors.toList()), "id", "contactInfo"))
-            );
+            jdbcManyRelationsHelper.fill(caseObject.getNotifiers(), Person.Fields.CONTACT_ITEMS);
         }
 
         if (isNotEmpty(caseObjectCreateRequest.getTags())) {
@@ -196,23 +293,44 @@ public class CaseServiceImpl implements CaseService {
                             .map(tag -> new CaseObjectTag(caseId, tag.getId()))
                             .collect(Collectors.toList())
             );
+            caseTagService.addItemsToHistory(token, caseId, caseObjectCreateRequest.getTags());
         }
 
-        Result addLinksResult = ok();
-
-        for (CaseLink caseLink : CollectionUtils.emptyIfNull(caseObjectCreateRequest.getLinks())) {
-            caseLink.setCaseId(caseObject.getId());
-            Result currentResult = caseLinkService.createLink(token, caseLink, true);
-            if (currentResult.isError()) addLinksResult = currentResult;
+        if (Boolean.TRUE.equals(caseObject.isFavorite())) {
+            addFavoriteState(token, token.getPersonId(), caseId);
         }
+
+        Set<PlanOption> plans = caseObjectCreateRequest.getPlans();
+
+        if (isNotEmpty(plans)) {
+            for (PlanOption planOption : plans) {
+                Result<Plan> planResult = planService.addIssueToPlan(token, planOption.getId(), caseId);
+
+                if (planResult.isError()) {
+                    throw new ResultStatusException(
+                            planResult.getStatus(),
+                            String.format("Issue was not added to plan. planId=%d", planOption.getId())
+                    );
+                }
+            }
+        }
+
+        List<CaseLink> links = emptyIfNull(caseObjectCreateRequest.getLinks());
+
+        links.forEach(link -> link.setCaseId(caseId));
+
+        Result<List<CaseLink>> createLinksResult =
+                caseLinkService.createLinks(token, links, CRM_SUPPORT);
+
+        autoOpenCaseService.processNewCreatedCaseToAutoOpen(caseId, caseObject.getInitiatorCompanyId());
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
         CaseObject newState = caseObjectDAO.get(caseId);
         newState.setAttachments(caseObject.getAttachments());
         newState.setNotifiers(caseObject.getNotifiers());
-        CaseObjectCreateEvent event = new CaseObjectCreateEvent(this, ServiceModule.GENERAL, token.getPersonId(), newState);
+        CaseObjectCreateEvent caseObjectCreateEvent = new CaseObjectCreateEvent(this, ServiceModule.GENERAL, token.getPersonId(), newState);
 
-        return addLinksResult.isOk() ? ok(newState).publishEvent(event) : error(En_ResultStatus.SOME_LINKS_NOT_ADDED);
+        return new Result<>(En_ResultStatus.OK, newState, createLinksResult.getMessage(), listOf(caseObjectCreateEvent));
     }
 
     @Override
@@ -244,7 +362,12 @@ public class CaseServiceImpl implements CaseService {
 
             if(isNotEmpty(changeRequest.getAttachments())){
                 caseObject.setAttachmentExists(true);
-                caseObjectDAO.partialMerge(caseObject, "ATTACHMENT_EXISTS");
+                boolean isAttachmentsExistUpdated
+                        = caseObjectDAO.partialMerge(caseObject, "ATTACHMENT_EXISTS");
+
+                if (!isAttachmentsExistUpdated) {
+                    throw new ResultStatusException(En_ResultStatus.NOT_UPDATED, "Attachment exists flag was not updated");
+                }
 
                 caseAttachmentDAO.persistBatch(
                         changeRequest.getAttachments()
@@ -252,6 +375,15 @@ public class CaseServiceImpl implements CaseService {
                                 .map(a -> new CaseAttachment(changeRequest.getId(), a.getId()))
                                 .collect(Collectors.toList())
                 );
+
+                if (caseObject.isPrivateCase()) {
+                    attachmentDAO.saveOrUpdateBatch(
+                            changeRequest.getAttachments().stream()
+                                    .map(a -> {
+                                        a.setPrivate(true);
+                                        return a;
+                                    }).collect(Collectors.toList()));
+                }
             }
 
             return ok(changeRequest)
@@ -278,6 +410,7 @@ public class CaseServiceImpl implements CaseService {
         if (oldState == null) {
             return error(En_ResultStatus.NOT_FOUND);
         }
+
         CaseObjectMeta oldCaseMeta = new CaseObjectMeta(oldState);
 
         if (!hasAccessForCaseObject(token, En_Privilege.ISSUE_EDIT, oldState)) {
@@ -286,7 +419,7 @@ public class CaseServiceImpl implements CaseService {
 
         applyStateBasedOnManager(caseMeta);
 
-        if (!validateMetaFields(caseMeta)) {
+        if (!validateMetaFields(token, caseMeta)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -295,18 +428,25 @@ public class CaseServiceImpl implements CaseService {
         }
 
         En_CaseStateWorkflow workflow = CaseStateWorkflowUtil.recognizeWorkflow(oldState.getExtAppType());
-        boolean isStateTransitionValidByWorkflow = isCaseStateTransitionValid(workflow, oldCaseMeta.getState(), caseMeta.getState());
+        boolean isStateTransitionValidByWorkflow = isStateTransitionValid(workflow, oldCaseMeta.getStateId(), caseMeta.getStateId());
         if (!isStateTransitionValidByWorkflow) {
             log.info("Wrong state transition for the issue {}: {} -> {}, workflow={}",
-                    caseMeta.getId(), oldCaseMeta.getState(), caseMeta.getState(), workflow);
+                    caseMeta.getId(), oldCaseMeta.getStateId(), caseMeta.getStateId(), workflow);
             throw new ResultStatusException(En_ResultStatus.VALIDATION_ERROR);
         }
 
-        boolean isStateTransitionValidNoWorkflow = workflow != En_CaseStateWorkflow.NO_WORKFLOW || !isStateReopenNotAllowed(token, oldCaseMeta, caseMeta);
+        boolean isStateTransitionValidNoWorkflow = workflow != En_CaseStateWorkflow.NO_WORKFLOW || !isStateReopenNotAllowed(oldCaseMeta, caseMeta);
         if (!isStateTransitionValidNoWorkflow) {
             log.info("Wrong state transition for the issue {}: {} -> {}",
-                    caseMeta.getId(), oldCaseMeta.getState(), caseMeta.getState());
+                    caseMeta.getId(), oldCaseMeta.getStateId(), caseMeta.getStateId());
             throw new ResultStatusException(En_ResultStatus.INVALID_CASE_UPDATE_CASE_IS_CLOSED);
+        }
+
+        boolean isStateTerminalValid = !isTerminalState(caseMeta.getStateId()) || isStateTerminalValid(caseMeta.getId());
+        if (!isStateTerminalValid) {
+            log.info("Impossible to terminate the issue {}: {} -> {}",
+                    caseMeta.getId(), oldCaseMeta.getStateId(), caseMeta.getStateId());
+            throw new ResultStatusException(En_ResultStatus.INVALID_CASE_UPDATE_SUBTASK_NOT_CLOSED);
         }
 
         caseMeta.setModified(new Date());
@@ -318,8 +458,8 @@ public class CaseServiceImpl implements CaseService {
             throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
         }
 
-        if (!Objects.equals(oldCaseMeta.getState(), caseMeta.getState())) {
-            Long messageId = createAndPersistStateMessage(token.getPersonId(), caseMeta.getId(), caseMeta.getState());
+        if (oldCaseMeta.getStateId() != caseMeta.getStateId()) {
+            Long messageId = createAndPersistStateMessage(token.getPersonId(), caseMeta.getId(), caseMeta.getStateId());
             if (messageId == null) {
                 log.error("State message for the issue {} isn't saved!", caseMeta.getId());
             }
@@ -339,17 +479,27 @@ public class CaseServiceImpl implements CaseService {
             }
         }
 
+        Result<Long> openedParentsResult = ok(caseMeta.getId());
+        if (oldCaseMeta.getStateId() != caseMeta.getStateId() && isTerminalState(caseMeta.getStateId())) {
+            openedParentsResult = openParentIssuesIfAllLinksInTerminalState(token, caseMeta.getId());
+            if (openedParentsResult.isError()) {
+                log.error("Failed to open parent issue | message = '{}'", openedParentsResult.getMessage());
+                throw new ResultStatusException(openedParentsResult.getStatus());
+            }
+        }
+
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
         CaseObjectMeta newCaseMeta = caseObjectMetaDAO.get(caseMeta.getId());
+
         return ok(newCaseMeta)
-                .publishEvent( new CaseObjectMetaEvent(
+                .publishEvent(new CaseObjectMetaEvent(
                 this,
                 ServiceModule.GENERAL,
                 token.getPersonId(),
                 En_ExtAppType.forCode(oldState.getExtAppType()),
                 oldCaseMeta,
-                newCaseMeta
-        ) );
+                newCaseMeta))
+                .publishEvents(openedParentsResult.getEvents());
     }
 
     @Override
@@ -357,6 +507,13 @@ public class CaseServiceImpl implements CaseService {
         CaseObjectMeta caseObjectMeta = caseObjectMetaDAO.get( issueId );
 
         return ok(caseObjectMeta);
+    }
+
+    @Override
+    public Result<CaseObjectMetaNotifiers> getCaseObjectMetaNotifiers(AuthToken token, Long issueId) {
+        CaseObjectMetaNotifiers caseObjectMetaNotifiers = caseObjectMetaNotifiersDAO.get(issueId);
+        jdbcManyRelationsHelper.fill(caseObjectMetaNotifiers, "notifiers");
+        return ok(caseObjectMetaNotifiers);
     }
 
     @Override
@@ -384,8 +541,9 @@ public class CaseServiceImpl implements CaseService {
                     caseMetaNotifiers.getNotifiers().stream()
                         .map(Person::getId)
                         .collect(Collectors.toList()),
-                    "id", "contactInfo", "displayShortName")
+                    "id", "displayShortName")
             ));
+            jdbcManyRelationsHelper.fill(caseMetaNotifiers.getNotifiers(), Person.Fields.CONTACT_ITEMS);
         }
         caseMetaNotifiers.setModified(new Date());
 
@@ -463,26 +621,7 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public Result<List<En_CaseState>> stateList( En_CaseType caseType ) {
-        List<CaseState> states = caseStateMatrixDAO.getStatesByCaseType(caseType);
-
-        if (states == null)
-            return error(En_ResultStatus.GET_DATA_ERROR);
-
-        return ok(states.stream().map(caseState -> En_CaseState.getById(caseState.getId())).collect( Collectors.toList()));
-    }
-
-    @Override
-    public Result<List<CaseState>> stateListWithViewOrder(En_CaseType caseType) {
-        List<CaseState> states = caseStateMatrixDAO.getStatesByCaseType(caseType);
-
-        if (states == null)
-            return error(En_ResultStatus.GET_DATA_ERROR);
-
-        return ok(states);
-    }
-
-    @Override
+    @Transactional
     public Result<Boolean> updateCaseModified( AuthToken token, Long caseId, Date modified) {
         if(caseId == null || !caseObjectDAO.checkExistsByKey(caseId))
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -496,6 +635,7 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
+    @Transactional
     public Result<Boolean> updateExistsAttachmentsFlag( Long caseId, boolean flag){
         if(caseId == null)
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -510,6 +650,7 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
+    @Transactional
     public Result<Boolean> updateExistsAttachmentsFlag( Long caseId){
         return isExistsAttachments(caseId).flatMap( isExists ->
                 updateExistsAttachmentsFlag(caseId, isExists));
@@ -528,12 +669,12 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public Result<CaseInfo> getCaseShortInfo( AuthToken token, Long caseNumber) {
-        if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_VIEW, caseObjectDAO.getCase(En_CaseType.CRM_SUPPORT, caseNumber) ) ) {
+    public Result<CaseInfo> getCaseInfo(AuthToken token, Long caseNumber) {
+        if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_VIEW, caseObjectDAO.getCaseByNumber(CRM_SUPPORT, caseNumber) ) ) {
             return error(En_ResultStatus.PERMISSION_DENIED );
         }
 
-        CaseShortView caseObject = caseShortViewDAO.getCase( caseNumber );
+        CaseShortView caseObject = caseShortViewDAO.getCaseByNumber( CRM_SUPPORT, caseNumber );
 
         if(caseObject == null)
             return error(En_ResultStatus.NOT_FOUND);
@@ -544,8 +685,9 @@ public class CaseServiceImpl implements CaseService {
         info.setPrivateCase(caseObject.isPrivateCase());
         info.setName(caseObject.getName());
         info.setImpLevel(caseObject.getImpLevel());
-        info.setStateId(caseObject.getStateId());
         info.setInfo(caseObject.getInfo());
+        info.setStateId(caseObject.getStateId());
+        info.setState(caseStateDAO.get(caseObject.getStateId()));
 
         return ok(info);
     }
@@ -553,16 +695,16 @@ public class CaseServiceImpl implements CaseService {
     @Override
     @Transactional
     public Result<Long> bindAttachmentToCaseNumber( AuthToken token, En_CaseType caseType, Attachment attachment, long caseNumber) {
-        CaseObject caseObject = caseObjectDAO.getCase(caseType, caseNumber);
+        CaseObject caseObject = caseObjectDAO.getCaseByNumber(caseType, caseNumber);
         if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_EDIT, caseObject ) ) {
             return error(En_ResultStatus.PERMISSION_DENIED );
         }
-        return attachToCaseId( attachment, caseObject.getId() );
+        return attachToCaseId( attachment, caseObject.getId(), caseObject.isPrivateCase());
     }
 
     @Override
     @Transactional
-    public Result<Long> attachToCaseId( Attachment attachment, long caseId) {
+    public Result<Long> attachToCaseId( Attachment attachment, long caseId, boolean isPrivateCase) {
         CaseAttachment caseAttachment = new CaseAttachment(caseId, attachment.getId());
         Long caseAttachId = caseAttachmentDAO.persist(caseAttachment);
 
@@ -573,28 +715,42 @@ public class CaseServiceImpl implements CaseService {
         caseObject.setAttachmentExists(true);
         caseObject.setModified(new Date());
         boolean isCaseUpdated = caseObjectDAO.partialMerge(caseObject, "ATTACHMENT_EXISTS", "MODIFIED");
+        if (isPrivateCase) {
+            attachment.setPrivate(true);
+            attachmentDAO.partialMerge(attachment, "private_flag");
+        }
 
-        if(!isCaseUpdated)
-            throw new RuntimeException("failed to update case object");
+        if (!isCaseUpdated) {
+            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED, "failed to update case object");
+        }
 
         return ok(caseAttachId);
     }
 
     @Override
     public Result<Boolean> isExistsAttachments(Long caseId) {
-        return ok(caseAttachmentDAO.checkExistsByCondition("case_id = ?", caseId));
+        return ok(caseAttachmentDAO.checkExistsByCondition("case_attachment.case_id = ?", caseId));
+    }
+
+    @Override
+    public Result<Boolean> isExistAnyAttachments(List<Long> attachmentIds) {
+        if (isEmpty(attachmentIds)) {
+            return ok(false);
+        }
+
+        return ok(caseAttachmentDAO.checkExistAnyAttachments(attachmentIds));
     }
 
     @Override
     public Result<List<CaseLink>> getCaseLinks( AuthToken token, Long caseId ) {
-        return caseLinkService.getLinks( token, caseId)
+        return caseLinkService.getLinks( token, caseId )
                 .map( this::fillYouTrackInfo );
     }
 
 
     @Override
-    public Result<Long> getCaseIdByNumber( AuthToken token, Long caseNumber ) {
-        Long caseId = caseObjectDAO.getCaseIdByNumber( caseNumber );
+    public Result<Long> getCaseId(AuthToken token, Long caseNumber, En_CaseType type ) {
+        Long caseId = caseObjectDAO.getCaseIdByNumber( type, caseNumber );
         if(caseId==null) error( En_ResultStatus.NOT_FOUND );
         return ok(caseId);
     }
@@ -604,6 +760,172 @@ public class CaseServiceImpl implements CaseService {
         Long caseNumber = caseObjectDAO.getCaseNumberById( caseId );
         if(caseNumber==null) error( En_ResultStatus.NOT_FOUND );
         return ok(caseNumber);
+    }
+
+    @Override
+    @Transactional
+    public Result<Set<PlanOption>> updateCasePlans(AuthToken token, Set<PlanOption> plans, Long caseId) {
+        log.info("CaseServiceImpl#updatePlans : plans={}, caseId={}", plans, caseId);
+
+        CaseObject caseObject = caseObjectDAO.partialGet(caseId, "MODIFIED");
+        caseObject.setModified(new Date());
+
+        if (!caseObjectDAO.partialMerge(caseObject, "MODIFIED")) {
+            return error(En_ResultStatus.NOT_UPDATED, "Modified column was not added");
+        }
+
+        PlanQuery planQuery = new PlanQuery();
+        planQuery.setIssueId(caseId);
+        planQuery.setCreatorId(token.getPersonId());
+
+        Result<List<PlanOption>> oldPlansResult = planService.listPlanOptions(token, planQuery);
+
+        if (oldPlansResult.isError()) {
+            throw new ResultStatusException(oldPlansResult.getStatus());
+        }
+
+        En_ResultStatus resultStatus = updatePlans(token, caseId, new HashSet<>(oldPlansResult.getData()), plans);
+
+        if (!En_ResultStatus.OK.equals(resultStatus)) {
+            throw new ResultStatusException(resultStatus);
+        }
+
+        return ok(plans);
+    }
+
+    @Override
+    @Transactional
+    public Result<Long> removeFavoriteState(AuthToken token, Long personId, Long issueId) {
+        if (personId == null || issueId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        personFavoriteIssuesDAO.removeState(personId, issueId);
+
+        return ok(issueId);
+    }
+
+    @Override
+    @Transactional
+    public Result<Long> addFavoriteState(AuthToken token, Long personId, Long issueId) {
+        if (personId == null || issueId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        Long personFavoriteIssuesId = personFavoriteIssuesDAO.persist(new PersonFavoriteIssues(personId, issueId));
+        return ok(personFavoriteIssuesId);
+    }
+
+    private List<Long> getPersonFavoriteIssueIds(Long personId) {
+        return personFavoriteIssuesDAO.getIssueIdListByPersonId(personId);
+    }
+
+    private En_ResultStatus updatePlans(AuthToken token, Long caseId, Set<PlanOption> oldPlans, Set<PlanOption> plans) {
+        DiffCollectionResult<PlanOption> planDiffs = diffCollection(oldPlans, plans);
+
+        for (PlanOption planOption : emptyIfNull(planDiffs.getAddedEntries())) {
+            Result<Plan> planResult = planService.addIssueToPlan(token, planOption.getId(), caseId);
+
+            if (planResult.isError()) {
+                return planResult.getStatus();
+            }
+        }
+
+        for (PlanOption planOption : emptyIfNull(planDiffs.getRemovedEntries())) {
+            Result<Long> planResult = planService.removeIssueFromPlan(token, planOption.getId(), caseId);
+
+            if (planResult.isError()) {
+                return planResult.getStatus();
+            }
+        }
+
+        return En_ResultStatus.OK;
+    }
+
+    @Override
+    @Transactional
+    public Result<CaseObject> createSubtask(AuthToken token, CaseObjectCreateRequest caseObjectCreateRequest, Long parentCaseObjectId) {
+
+        if (parentCaseObjectId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        CaseObject parentCaseObject = caseObjectDAO.get(parentCaseObjectId);
+        if (parentCaseObject == null) {
+            return error(En_ResultStatus.NOT_FOUND_PARENT);
+        }
+
+        if (parentCaseObject.getInitiatorCompany().getAutoOpenIssue()) {
+            return error(En_ResultStatus.NOT_ALLOWED_AUTOOPEN_ISSUE);
+        }
+
+        if (isIntegrationIssue(parentCaseObject.getExtAppType())) {
+            return error(En_ResultStatus.NOT_ALLOWED_INTEGRATION_ISSUE);
+        }
+
+        if (isParentStateNotAllowed(parentCaseObject.getStateId())) {
+            return error(En_ResultStatus.NOT_ALLOWED_PARENT_STATE);
+        }
+
+        fillCaseCreateRequest(caseObjectCreateRequest, parentCaseObject);
+
+        Result<CaseObject> result = createCaseObject(token, caseObjectCreateRequest);
+        if (result.isError()) {
+            log.error("createSubtask(): parent-id = {} | failed to save subtask to db with result = {}", parentCaseObjectId, result);
+            throw new ResultStatusException(result.getStatus());
+        }
+
+        parentCaseObject.setStateId(CrmConstants.State.BLOCKED);
+        Result<CaseObjectMeta> parentUpdateResult = updateCaseObjectMeta(token, new CaseObjectMeta(parentCaseObject));
+        if (parentUpdateResult.isError()) {
+            log.error("createSubtask(): parent-id = {} | failed to save parent issue to db with result = {}", parentCaseObjectId, result);
+            throw new ResultStatusException(parentUpdateResult.getStatus());
+        }
+
+        return result.publishEvents(parentUpdateResult.getEvents());
+    }
+
+    @Override
+    @Transactional
+    public Result<CaseObjectMetaNotifiers> addNotifierToCaseObject(AuthToken authToken, Long caseId, PersonShortView personShortView) {
+        CaseObjectMetaNotifiers caseObjectMetaNotifiers = caseObjectMetaNotifiersDAO.get(caseId);
+        jdbcManyRelationsHelper.fill(caseObjectMetaNotifiers, "notifiers");
+
+        caseObjectMetaNotifiers.getNotifiers().add(Person.fromPersonShortView(personShortView));
+        return updateCaseObjectMetaNotifiers(authToken, caseObjectMetaNotifiers);
+    }
+
+    private Result<Long> openParentIssuesIfAllLinksInTerminalState(AuthToken token, long caseObjectId) {
+
+        List<CaseLink> caseLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(caseObjectId, En_BundleType.SUBTASK));
+        Result<Long> result = ok(caseObjectId);
+
+        for(CaseLink caseLink : caseLinks) {
+            Long parentId = NumberUtils.parseLong(caseLink.getRemoteId());
+            boolean isAllLinksInTerminalState = isAllLinksInTerminalState(parentId);
+            if (isAllLinksInTerminalState) {
+                CaseObjectMeta caseObjectMeta = caseObjectMetaDAO.get(caseObjectId);
+                caseObjectMeta.setStateId(CrmConstants.State.OPENED);
+                Result<CaseObjectMeta> openedIssueResult = updateCaseObjectMeta(token, caseObjectMeta);
+                if (openedIssueResult.isError()) {
+                    return error(openedIssueResult.getStatus(), "issueId = " + parentId);
+                }
+                result.publishEvents(openedIssueResult.getEvents());
+            }
+        }
+
+        return result;
+    }
+
+    private boolean isAllLinksInTerminalState(Long caseObjectId) {
+        List<CaseLink> caseLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(caseObjectId, En_BundleType.PARENT_FOR));
+
+        if (CollectionUtils.isNotEmpty(caseLinks) &&
+                caseLinks.stream()
+                        .allMatch(caseLink -> isTerminalState(caseLink.getCaseInfo().getState().getId()))) {
+            return true;
+        }
+        return false;
     }
 
     private Long createAndPersistTimeElapsedMessage(Long authorId, Long caseId, Long timeElapsed, En_TimeElapsedType timeElapsedType) {
@@ -618,12 +940,12 @@ public class CaseServiceImpl implements CaseService {
         return caseCommentDAO.persist(stateChangeMessage);
     }
 
-    private Long createAndPersistStateMessage(Long authorId, Long caseId, En_CaseState state) {
+    private Long createAndPersistStateMessage(Long authorId, long caseId, long stateId) {
         CaseComment stateChangeMessage = new CaseComment();
         stateChangeMessage.setAuthorId(authorId);
         stateChangeMessage.setCreated(new Date());
         stateChangeMessage.setCaseId(caseId);
-        stateChangeMessage.setCaseStateId((long)state.getId());
+        stateChangeMessage.setCaseStateId(stateId);
         stateChangeMessage.setPrivacyType(En_CaseCommentPrivacyType.PUBLIC);
         return caseCommentDAO.persist(stateChangeMessage);
     }
@@ -648,27 +970,32 @@ public class CaseServiceImpl implements CaseService {
         return caseCommentDAO.persist(managerChangeMessage);
     }
 
-    private void applyFilterByScope( AuthToken token, CaseQuery query ) {
-        Set< UserRole > roles = token.getRoles();
-        if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_VIEW ) ) {
-            query.setCompanyIds( acceptAllowedCompanies( query.getCompanyIds(), token.getCompanyAndChildIds() ) );
-            query.setAllowViewPrivate( false );
-            query.setCustomerSearch( true );
+    private CaseQuery applyFilterByScope(AuthToken token, CaseQuery caseQuery) {
+        Set<UserRole> roles = token.getRoles();
+        if (policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
+            return caseQuery;
         }
+
+        Company company = companyService.getCompanyOmitPrivileges(token, token.getCompanyId()).getData();
+        if (company.getCategory() == En_CompanyCategory.SUBCONTRACTOR) {
+            caseQuery.setManagerCompanyIds(
+                    acceptAllowedCompanies(caseQuery.getManagerCompanyIds(), token.getCompanyAndChildIds()));
+        } else {
+            caseQuery.setCompanyIds(
+                    acceptAllowedCompanies(caseQuery.getCompanyIds(), token.getCompanyAndChildIds()));
+        }
+        caseQuery.setAllowViewPrivate(false);
+        caseQuery.setCustomerSearch(true);
+
+        log.info("applyFilterByScope(): CaseQuery modified: {}", caseQuery);
+        return caseQuery;
     }
 
     private List<Long> acceptAllowedCompanies( List<Long> companyIds, Collection<Long> allowedCompaniesIds ) {
         if( companyIds == null ) return new ArrayList<>( allowedCompaniesIds );
-        ArrayList allowedCompanies = new ArrayList( companyIds );
+        ArrayList<Long> allowedCompanies = new ArrayList<>( companyIds );
         allowedCompanies.retainAll( allowedCompaniesIds );
         return allowedCompanies.isEmpty() ? new ArrayList<>( allowedCompaniesIds ) : allowedCompanies;
-    }
-
-    private boolean isCaseChanged(CaseObject co1, CaseObject co2){
-        // without links
-        return     !Objects.equals(co1.getName(), co2.getName())
-                || !Objects.equals(co1.getInfo(), co2.getInfo())
-                || !Objects.equals(co1.isPrivateCase(), co2.isPrivateCase());
     }
 
     private boolean isCaseMetaChanged(CaseObjectMeta co1, CaseObjectMeta co2){
@@ -678,51 +1005,75 @@ public class CaseServiceImpl implements CaseService {
         return     !Objects.equals(co1.getInitiatorCompanyId(), co2.getInitiatorCompanyId())
                 || !Objects.equals(co1.getInitiatorId(), co2.getInitiatorId())
                 || !Objects.equals(co1.getProductId(), co2.getProductId())
-                || !Objects.equals(co1.getState(), co2.getState())
+                || !Objects.equals(co1.getStateId(), co2.getStateId())
+                || !Objects.equals(co1.getPauseDate(), co2.getPauseDate())
                 || !Objects.equals(co1.getImpLevel(), co2.getImpLevel())
+                || !Objects.equals(co1.getManagerCompanyId(), co2.getManagerCompanyId())
                 || !Objects.equals(co1.getManagerId(), co2.getManagerId())
-                || !Objects.equals(co1.getPlatformId(), co2.getPlatformId());
+                || !Objects.equals(co1.getPlatformId(), co2.getPlatformId())
+                || !Objects.equals(co1.getDeadline(), co2.getDeadline())
+                || !Objects.equals(co1.getWorkTrigger(), co2.getWorkTrigger());
     }
 
-    private boolean isLinksChanged( DiffCollectionResult<CaseLink> mergeLinks ){
-        if(mergeLinks == null) return false;
-        if(!isEmpty(mergeLinks.getAddedEntries())) return true;
-        if(!isEmpty(mergeLinks.getRemovedEntries())) return true;
-        return false;
-    }
-
-    private void applyCaseByScope( AuthToken token, CaseObject caseObject ) {
+    private Result<CaseObject> fillCaseObjectByScope(AuthToken token, CaseObject caseObject) {
         Set< UserRole > roles = token.getRoles();
-        if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_CREATE ) && policyService.hasScopeForPrivilege( roles, En_Privilege.ISSUE_CREATE, En_Scope.COMPANY ) ) {
-            caseObject.setPrivateCase( false );
-            if( !token.getCompanyAndChildIds().contains( caseObject.getInitiatorCompanyId() ) ) {
-                Company company = companyService.getCompanyUnsafe(token, token.getCompanyId()).getData();
-                caseObject.setInitiatorCompany( company );
-            }
-            caseObject.setManagerId( null );
+        if (policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_CREATE)) {
+            return ok(caseObject);
         }
+
+        caseObject.setPrivateCase(false);
+
+        Company company = companyService.getCompanyOmitPrivileges(token, token.getCompanyId()).getData();
+
+        List<Long> initiatorAllowedCompanies = new ArrayList<>();
+        if (company.getCategory() == En_CompanyCategory.SUBCONTRACTOR) {
+            Result<List<EntityOption>> result = companyService.companyOptionListBySubcontractorIds(token.getCompanyAndChildIds());
+            if (result.isError()) {
+                log.error("fillCaseObjectByScope(): failed to get companies by subcontractors with result {}", result);
+                return error(result.getStatus());
+            }
+            initiatorAllowedCompanies.addAll(result.getData().stream().map(EntityOption::getId).collect(Collectors.toList()));
+        } else {
+            initiatorAllowedCompanies.addAll(token.getCompanyAndChildIds());
+        }
+        if(!initiatorAllowedCompanies.contains(caseObject.getInitiatorCompanyId())) {
+            caseObject.setInitiatorCompany(company);
+            caseObject.setInitiatorId(null);
+            log.info("fillCaseObjectByScope(): CaseObject modified: {}", caseObject);
+        }
+
+        List<Long> managerAllowedCompanies = new ArrayList<>();
+        if (company.getCategory() == En_CompanyCategory.SUBCONTRACTOR) {
+            managerAllowedCompanies.addAll(token.getCompanyAndChildIds());
+        } else {
+            Result<List<EntityOption>> result = companyService.subcontractorOptionListByCompanyIds(token.getCompanyAndChildIds());
+            if (result.isError()) {
+                log.error("fillCaseObjectByScope(): failed to get subcontractors by companies with result {}", result);
+                return error(result.getStatus());
+            }
+            managerAllowedCompanies.addAll(result.getData().stream().map(EntityOption::getId).collect(Collectors.toList()));
+        }
+        if(!managerAllowedCompanies.contains(caseObject.getManagerCompanyId())) {
+            caseObject.setManagerCompanyId(CrmConstants.Company.HOME_COMPANY_ID);
+            caseObject.setManagerId(null);
+            log.info("fillCaseObjectByScope(): CaseObject modified: {}", caseObject);
+        }
+
+        return ok(caseObject);
     }
 
     private boolean hasAccessForCaseObject( AuthToken token, En_Privilege privilege, CaseObject caseObject ) {
         return policyService.hasAccessForCaseObject( token, privilege, caseObject );
     }
 
-
-    private boolean isStateReopenNotAllowed(AuthToken token, CaseObjectMeta oldMeta, CaseObjectMeta newMeta) {
-        return oldMeta.getState() == En_CaseState.VERIFIED &&
-                newMeta.getState() != En_CaseState.VERIFIED &&
-                !isPersonHasGrantAccess(token, En_Privilege.ISSUE_EDIT);
+    private boolean isStateReopenNotAllowed(CaseObjectMeta oldMeta, CaseObjectMeta newMeta) {
+        return isTerminalState(oldMeta.getStateId()) &&
+              !isTerminalState(newMeta.getStateId());
     }
 
-    private boolean isPersonHasGrantAccess(AuthToken token, En_Privilege privilege) {
-        Set<UserRole> roles = getRoles(token);
-        return policyService.hasGrantAccessFor(roles, privilege);
-    }
-
-    private Set<UserRole> getRoles(AuthToken token) {
-        return Optional.ofNullable(token)
-                .map(d -> token.getRoles())
-                .orElse(new HashSet<>());
+    private boolean isParentStateNotAllowed(Long stateId) {
+        return isTerminalState(stateId) ||
+                CrmConstants.State.CREATED == stateId;
     }
 
     private boolean personBelongsToHomeCompany(AuthToken token) {
@@ -730,7 +1081,7 @@ public class CaseServiceImpl implements CaseService {
             return false;
         }
 
-        Result<Company> result = companyService.getCompanyUnsafe(token, token.getCompanyId());
+        Result<Company> result = companyService.getCompanyOmitPrivileges(token, token.getCompanyId());
         if (result.isError()) {
             return false;
         }
@@ -746,17 +1097,17 @@ public class CaseServiceImpl implements CaseService {
     private void applyStateBasedOnManager(CaseObject caseObject) {
         CaseObjectMeta caseMeta = new CaseObjectMeta(caseObject);
         applyStateBasedOnManager(caseMeta);
-        caseObject.setState(caseMeta.getState());
+        caseObject.setStateId(caseMeta.getStateId());
     }
 
     private void applyStateBasedOnManager(CaseObjectMeta caseMeta) {
-        if (caseMeta.getState() == En_CaseState.CREATED && caseMeta.getManager() != null) {
-            caseMeta.setState(En_CaseState.OPENED);
+        if (CrmConstants.State.CREATED == caseMeta.getStateId() && caseMeta.getManager() != null) {
+            caseMeta.setStateId(CrmConstants.State.OPENED);
         }
     }
 
-    private boolean isCaseStateTransitionValid(En_CaseStateWorkflow workflow, En_CaseState caseStateFrom, En_CaseState caseStateTo) {
-        if (caseStateFrom == caseStateTo) {
+    private boolean isStateTransitionValid(En_CaseStateWorkflow workflow, long caseStateFromId, long caseStateToId) {
+        if (caseStateFromId == caseStateToId) {
             return true;
         }
         Result<CaseStateWorkflow> response = caseStateWorkflowService.getWorkflow(workflow);
@@ -764,34 +1115,162 @@ public class CaseServiceImpl implements CaseService {
             log.error("Failed to get case state workflow, status={}", response.getStatus());
             return false;
         }
-        return CaseStateWorkflowUtil.isCaseStateTransitionValid(response.getData(), caseStateFrom, caseStateTo);
+        return CaseStateWorkflowUtil.isCaseStateTransitionValid(response.getData(), caseStateFromId, caseStateToId);
     }
 
-    private boolean validateFieldsOfNew(CaseObject caseObject) {
-        if (!validateFields( caseObject )) return false;
+    private boolean isStateTerminalValid(long caseObjectId) {
+        List<CaseLink> caseLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(caseObjectId, En_BundleType.PARENT_FOR));
+
+        return caseLinks.stream()
+                .allMatch(caseLink -> isTerminalState(caseLink.getCaseInfo().getStateId()));
+    }
+
+    private boolean validateFieldsOfNew(AuthToken token, CaseObject caseObject) {
+        if (!validateFields( caseObject )) {
+            return false;
+        }
         CaseObjectMeta caseObjectMeta = new CaseObjectMeta( caseObject );
-        if (!validateMetaFields( caseObjectMeta )) return false;
+        if (!validateMetaFields(token, caseObjectMeta)) {
+            return false;
+        }
         return true;
     }
 
     private boolean validateFields(CaseObject caseObject) {
-        if(caseObject == null) return false;
-        if(caseObject.getName() == null) return false;
-        if(caseObject.getName().isEmpty()) return false;
-        if(caseObject.getType() == null) return false;
+        if (caseObject == null) {
+            log.warn("Case object cannot be null");
+            return false;
+        }
+        if (StringUtils.isEmpty(caseObject.getName())) {
+            log.warn("Name must be specified. caseId={}", caseObject.getId());
+            return false;
+        }
+        if (caseObject.getType() == null) {
+            log.warn("Type must be specified. caseId={}", caseObject.getId());
+            return false;
+        }
         return true;
     }
 
-    private boolean validateMetaFields(CaseObjectMeta caseMeta) {
-        if (caseMeta == null) return false;
-        if (caseMeta.getImpLevel() == null) return false;
-        if (En_ImportanceLevel.find(caseMeta.getImpLevel()) == null) return false;
-        if (En_CaseState.getById( caseMeta.getStateId() ) == null) return false;
-        if (!listOf( En_CaseState.CREATED, En_CaseState.CANCELED ).contains( caseMeta.getState() ) && caseMeta.getManagerId() == null) return false;
-        if (caseMeta.getInitiatorCompanyId() == null) return false;
-        if (caseMeta.getInitiatorId() != null && !personBelongsToCompany( caseMeta.getInitiatorId(), caseMeta.getInitiatorCompanyId() ))
+    private boolean validateMetaFields(AuthToken token, CaseObjectMeta caseMeta) {
+        if (caseMeta == null) {
+            log.warn("Case meta cannot be null");
             return false;
+        }
+        if (caseMeta.getImpLevel() == null) {
+            log.warn("Importance level must be specified. caseId={}", caseMeta.getId());
+            return false;
+        }
+        if (En_ImportanceLevel.find(caseMeta.getImpLevel()) == null) {
+            log.warn("Unknown importance level. caseId={}, importance={}", caseMeta.getId(), caseMeta.getImpLevel());
+            return false;
+        }
+        if (!isStateValid(caseMeta.getStateId(), caseMeta.getManagerId(), caseMeta.getPauseDate())) {
+            log.warn("State is not valid. caseId={}", caseMeta.getId());
+            return false;
+        }
+        if (caseMeta.getManagerCompanyId() == null) {
+            log.warn("Manager company must be specified. caseId={}", caseMeta.getId());
+            return false;
+        }
+        if (caseMeta.getManagerId() != null && !personBelongsToCompany(caseMeta.getManagerId(), caseMeta.getManagerCompanyId())) {
+            log.warn("Manager doesn't belong to company. caseId={}, managerId={}, managerCompanyId={}",
+                    caseMeta.getId(), caseMeta.getManagerId(), caseMeta.getManagerCompanyId());
+            return false;
+        }
+        if (caseMeta.getManagerId() != null && caseMeta.getProductId() == null) {
+            log.warn("Manager must be specified with product. caseId={}", caseMeta.getId());
+            return false;
+        }
+        if (caseMeta.getInitiatorCompanyId() == null) {
+            log.warn("Initiator company must be specified. caseId={}", caseMeta.getId());
+            return false;
+        }
+        if (caseMeta.getInitiatorId() != null && !personBelongsToCompany( caseMeta.getInitiatorId(), caseMeta.getInitiatorCompanyId() )) {
+            log.warn("Initiator doesn't belong to company. caseId={}, initiatorId={}, initiatorCompanyId={}",
+                    caseMeta.getId(), caseMeta.getInitiatorId(), caseMeta.getInitiatorCompanyId());
+            return false;
+        }
+        if (caseMeta.getPlatformId() != null && !platformBelongsToCompany(token, caseMeta.getPlatformId(), caseMeta.getInitiatorCompanyId())) {
+            log.warn("Platform doesn't belong to initiator company. caseId={}, platformId={}, initiatorCompanyId={}",
+                    caseMeta.getId(), caseMeta.getPlatformId(), caseMeta.getInitiatorCompanyId());
+            return false;
+        }
+        if (!isProductValid(token, caseMeta.getProductId(), caseMeta.getPlatformId(), caseMeta.getInitiatorCompanyId())) {
+            log.warn("Product is not valid. caseId={}", caseMeta.getId());
+            return false;
+        }
+        if (!isDeadlineValid(caseMeta.getDeadline())) {
+            log.warn("Deadline has passed. caseId={}", caseMeta.getId());
+            return false;
+        }
         return true;
+    }
+
+    private boolean isProductValid(AuthToken token, Long productId, Long platformId, Long companyId) {
+        Company company = companyDAO.get(companyId);
+
+        if (!Boolean.TRUE.equals(company.getAutoOpenIssue())) {
+            return true;
+        }
+
+        if (productId == null) {
+            log.warn("Company with auto open issues must be specified with product");
+            return false;
+        }
+
+        if (!isProductContainsInPlatformsProducts(token, productId, platformId, companyId)) {
+            if (platformId != null) {
+                log.warn("Product must be present in specified platform. platformId={}", platformId);
+            } else {
+                log.warn("Product must be present at least in one company platform. companyId={}", companyId);
+            }
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean isProductContainsInPlatformsProducts(AuthToken token, Long productId, Long platformId, Long companyId) {
+        ProductQuery productQuery = new ProductQuery();
+        productQuery.setState(En_DevUnitState.ACTIVE);
+        productQuery.setTypes(new HashSet<>(Arrays.asList(En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT)));
+
+        Set<Long> platformIds = new HashSet<>();
+
+        if (platformId != null) {
+            platformIds.add(platformId);
+        } else {
+            PlatformQuery platformQuery = new PlatformQuery();
+            platformQuery.setCompanyId(companyId);
+
+            Result<List<PlatformOption>> platformsResult = siteFolderService.listPlatformsOptionList(token, platformQuery);
+
+            platformIds.addAll(toSet(emptyIfNull(platformsResult.getData()), PlatformOption::getId));
+        }
+
+        if (platformIds.isEmpty()) {
+            return false;
+        }
+
+        productQuery.setPlatformIds(platformIds);
+
+        Result<List<ProductShortView>> productsResult = productService.productsShortViewListWithChildren(token, productQuery);
+
+        return toList(emptyIfNull(productsResult.getData()), ProductShortView::getId).contains(productId);
+    }
+
+    private boolean platformBelongsToCompany(AuthToken token, Long platformId, Long companyId) {
+        PlatformQuery platformQuery = new PlatformQuery();
+        platformQuery.setCompanyId(companyId);
+
+        Result<List<PlatformOption>> listResult = siteFolderService.listPlatformsOptionList(token, platformQuery);
+
+        if (isEmpty(listResult.getData())) {
+            return false;
+        }
+
+        return toList(listResult.getData(), PlatformOption::getId).contains(platformId);
     }
 
     private boolean personBelongsToCompany(Long personId, Long companyId) {
@@ -800,6 +1279,31 @@ public class CaseServiceImpl implements CaseService {
         List<Person> persons = personDAO.getPersons( personQuery );
         log.info( "personBelongsToCompany(): companyId={} personId={} in {}", companyId, personId, toList( persons, Person::getId ) );
         return persons.stream().anyMatch( person -> personId.equals( person.getId() ) );
+    }
+
+    private boolean isStateValid(long caseStateId, Long managerId, Long pauseDate) {
+        if (!(listOf(CrmConstants.State.CREATED, CrmConstants.State.CANCELED)
+                .contains(caseStateId)) && managerId == null) {
+
+            log.warn("State must be CREATED or CANCELED without manager");
+            return false;
+        }
+
+        if (CrmConstants.State.PAUSED == caseStateId) {
+            boolean isPauseDateValid = pauseDate != null && (System.currentTimeMillis() < pauseDate);
+
+            if (!isPauseDateValid) {
+                log.warn("Pause date has passed");
+            }
+
+            return isPauseDateValid;
+        }
+
+        return true;
+    }
+
+    private boolean isDeadlineValid(Long date) {
+        return date == null || date > System.currentTimeMillis();
     }
 
     private List<CaseLink> fillYouTrackInfo( List<CaseLink> caseLinks ) {
@@ -838,80 +1342,69 @@ public class CaseServiceImpl implements CaseService {
         return caseObject;
     }
 
-    @Autowired
-    JdbcManyRelationsHelper jdbcManyRelationsHelper;
+    private Result<CaseObject> fillCaseObject( AuthToken token, CaseObject caseObject ) {
+        if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_VIEW, caseObject ) ) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
 
-    @Autowired
-    CaseObjectDAO caseObjectDAO;
+        if(caseObject == null)
+            return error(En_ResultStatus.NOT_FOUND);
 
-    @Autowired
-    CaseShortViewDAO caseShortViewDAO;
+        jdbcManyRelationsHelper.fillAll( caseObject.getInitiatorCompany() );
+        jdbcManyRelationsHelper.fill( caseObject, "notifiers");
+        jdbcManyRelationsHelper.fill(caseObject, "plans");
+        fillAttachments(token, caseObject);
 
-    @Autowired
-    CaseObjectMetaDAO caseObjectMetaDAO;
+        withJiraSLAInformation(caseObject);
 
-    @Autowired
-    CaseObjectMetaNotifiersDAO caseObjectMetaNotifiersDAO;
+        caseObject.setFavorite(getPersonFavoriteIssueIds(token.getPersonId()).contains(caseObject.getId()));
 
-    @Autowired
-    CaseStateMatrixDAO caseStateMatrixDAO;
+        // RESET PRIVACY INFO
+        if ( caseObject.getInitiator() != null ) {
+            caseObject.getInitiator().resetPrivacyInfo();
+        }
+        if ( caseObject.getCreator() != null ) {
+            caseObject.getCreator().resetPrivacyInfo();
+        }
+        if ( isNotEmpty(caseObject.getNotifiers())) {
+            caseObject.getNotifiers().forEach( Person::resetPrivacyInfo);
+        }
 
-    @Autowired
-    CaseCommentDAO caseCommentDAO;
+        return ok(caseObject);
+    }
 
-    @Autowired
-    PersonDAO personDAO;
+    private void fillAttachments(AuthToken token, CaseObject caseObject) {
+        jdbcManyRelationsHelper.fill(caseObject, "attachments");
 
-    @Autowired
-    CaseAttachmentDAO caseAttachmentDAO;
+        if (!policyService.hasGrantAccessFor(token.getRoles(), En_Privilege.ISSUE_VIEW)) {
+            caseObject.setAttachments(stream(caseObject.getAttachments()).filter(not(Attachment::isPrivate)).collect(Collectors.toList()));
+        }
+    }
 
-    @Autowired
-    CaseNotifierDAO caseNotifierDAO;
+    private void fillCaseCreateRequest(CaseObjectCreateRequest createRequest, CaseObject parent) {
 
-    @Autowired
-    ExternalCaseAppDAO externalCaseAppDAO;
+        CaseObject subtask = createRequest.getCaseObject();
+        subtask.setPrivateCase(parent.isPrivateCase());
+        subtask.setImpLevel(parent.getImpLevel());
+        subtask.setInitiatorCompanyId(parent.getInitiatorCompanyId());
+        subtask.setInitiatorId(parent.getInitiatorId());
+        subtask.setProductId(parent.getProductId());
+        subtask.setPlatformId(parent.getPlatformId());
+        subtask.setNotifiers(setOf(Person.fromPersonShortView(parent.getManager())));
 
-    @Autowired
-    CaseTagDAO caseTagDAO;
+        CaseLink caseLink = new CaseLink();
+        caseLink.setType(En_CaseLink.CRM);
+        caseLink.setBundleType(En_BundleType.SUBTASK);
+        caseLink.setRemoteId(parent.getId().toString());
+        caseLink.setWithCrosslink(true);
+        createRequest.addLink(caseLink);
+    }
 
-    @Autowired
-    JiraEndpointDAO jiraEndpointDAO;
-
-    @Autowired
-    JiraSLAMapEntryDAO jiraSLAMapEntryDAO;
-
-    @Autowired
-    PolicyService policyService;
-
-    @Autowired
-    AuthService authService;
-
-    @Autowired
-    CaseLinkService caseLinkService;
-
-    @Autowired
-    CaseCommentService caseCommentService;
-
-    @Autowired
-    CaseStateWorkflowService caseStateWorkflowService;
-
-    @Autowired
-    CaseTagService caseTagService;
-
-    @Autowired
-    YoutrackService youtrackService;
-
-    @Autowired
-    PortalConfig portalConfig;
-
-    @Autowired
-    LockService lockService;
-
-    @Autowired
-    CompanyService companyService;
-
-    @Autowired
-    CaseObjectTagDAO caseObjectTagDAO;
-
-    private static Logger log = LoggerFactory.getLogger(CaseServiceImpl.class);
+    private boolean isIntegrationIssue(String extAppType) {
+        En_ExtAppType type = En_ExtAppType.forCode(extAppType);
+        if (type == null) {
+            return false;
+        }
+        return true;
+    }
 }

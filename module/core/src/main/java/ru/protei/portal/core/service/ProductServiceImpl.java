@@ -19,31 +19,24 @@ import ru.protei.portal.core.model.ent.DevUnitSubscription;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
-import ru.protei.portal.core.model.struct.ProductDirectionInfo;
+import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
-import ru.protei.winter.core.utils.collections.CollectionUtils;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+
 /**
  * Реализация сервиса управления продуктами
  */
 public class ProductServiceImpl implements ProductService {
-
-    /**
-     *  @TODO
-     *  - вынести обработку ответов БД в отдельный Interceptor
-     */
-
     @Autowired
     DevUnitDAO devUnitDAO;
 
@@ -77,6 +70,28 @@ public class ProductServiceImpl implements ProductService {
         }
 
         return makeListProductShortView( devUnitDAO.listByQuery(query) );
+    }
+
+    @Override
+    public Result<List<ProductShortView>> productsShortViewListWithChildren(AuthToken token, ProductQuery query) {
+        if (query.getDirectionId() != null && !checkIfDirection(query.getDirectionId())) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        Set<DevUnit> result = new HashSet<>(devUnitDAO.listByQuery(query));
+
+        if (isEmpty(result)) {
+            return ok(new ArrayList<>());
+        }
+
+        Set<Long> complexIds = toSet(getProductsByType(result, En_DevUnitType.COMPLEX), DevUnit::getId);
+
+        if (isNotEmpty(complexIds)) {
+            List<DevUnit> children = devUnitDAO.getChildren(complexIds);
+            result.addAll(children);
+        }
+
+        return ok(toList(getProductsByType(result, En_DevUnitType.PRODUCT), DevUnit::toProductShortView));
     }
 
     @Override
@@ -127,7 +142,7 @@ public class ProductServiceImpl implements ProductService {
         helper.fillAll( product );
 
         product.setParents(devUnitDAO.getParents(id));
-        product.setChildren(devUnitDAO.getChildren(id));
+        product.setChildren(devUnitDAO.getChildren(Collections.singleton(id)));
         product.setProductDirection(devUnitDAO.getProductDirection(id));
 
         return ok(product);
@@ -236,6 +251,17 @@ public class ProductServiceImpl implements ProductService {
         return ok(checkUniqueProduct(name, type, excludeId));
     }
 
+    private Collection<DevUnit> getProductsByType(Collection<DevUnit> products, En_DevUnitType type) {
+        if (type == null) {
+            return emptyIfNull(products);
+        }
+
+        return emptyIfNull(products)
+                .stream()
+                .filter(devUnit -> type.getId() == devUnit.getType().getId())
+                .collect(Collectors.toList());
+    }
+
     private boolean checkIfDirection(Long directionId) {
         DevUnit direction = devUnitDAO.get(directionId);
 
@@ -338,7 +364,7 @@ public class ProductServiceImpl implements ProductService {
         }
 
         if ( !CollectionUtils.isEmpty( oldSubscriptions ) ) {
-            log.info( "merge product subscriptions = {}cre", oldSubscriptions );
+            log.info( "merge product subscriptions = {}", oldSubscriptions );
             int countMerged = productSubscriptionDAO.mergeBatch( oldSubscriptions );
             if ( countMerged != oldSubscriptions.size() ) {
                 return false;

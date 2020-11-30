@@ -1,12 +1,12 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_AdminState;
-import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -74,7 +74,10 @@ public class UserLogin extends AuditableObject {
     private String info;
 
     @JdbcManyToMany( localLinkColumn = "login_id", remoteLinkColumn = "role_id", linkTable = "login_role_item" )
-    Set< UserRole > roles;
+    private Set< UserRole > roles;
+
+    @JdbcColumnCollection(name = "ipMaskAllow", separator = ",")
+    private List<String> ipMaskAllow;
 
     public UserLogin () {}
 
@@ -204,6 +207,14 @@ public class UserLogin extends AuditableObject {
         companyName = person.getCompany().getCname();
     }
 
+    public List<String> getIpMaskAllow() {
+        return ipMaskAllow;
+    }
+
+    public void setIpMaskAllow(List<String> ipMaskAllow) {
+        this.ipMaskAllow = ipMaskAllow;
+    }
+
     @Override
     public String getAuditType() {
         return "UserLogin";
@@ -223,22 +234,25 @@ public class UserLogin extends AuditableObject {
     }
 
     @Override
-    public String toString () {
+    public String toString() {
         return "UserLogin{" +
                 "id=" + id +
                 ", ulogin='" + ulogin + '\'' +
+                ", upass='" + upass + '\'' +
                 ", created=" + created +
                 ", lastPwdChange=" + lastPwdChange +
                 ", pwdExpired=" + pwdExpired +
                 ", adminStateId=" + adminStateId +
                 ", personId=" + personId +
                 ", displayName='" + displayName + '\'' +
+                ", displayShortName='" + displayShortName + '\'' +
                 ", isFired=" + isFired +
                 ", companyId=" + companyId +
                 ", companyName='" + companyName + '\'' +
                 ", authType=" + authType +
                 ", info='" + info + '\'' +
                 ", roles=" + roles +
+                ", ipMaskAllow=" + ipMaskAllow +
                 '}';
     }
 }

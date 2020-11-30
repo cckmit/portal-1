@@ -21,7 +21,7 @@
                     </div>
                 </div>
                 <div class="form-group col-md-12">
-                    <companyselector:CompanySelector ui:field="company" header="{lang.company}"/>
+                    <companyselector:CompanySelector ui:field="company" header="{lang.company}" hasNullValue="true"/>
                 </div>
                 <div class="form-group col-md-12">
                     <g:CheckBox ui:field="showFired" styleName="checkbox" text="{lang.contactShowFired}"/>

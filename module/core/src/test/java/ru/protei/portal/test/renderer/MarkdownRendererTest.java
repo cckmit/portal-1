@@ -10,6 +10,7 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.config.PortalConfigTestConfiguration;
 import ru.protei.portal.config.RendererTestConfiguration;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -235,7 +236,7 @@ public class MarkdownRendererTest {
     }
 
     private void doTest(String input, String expected) {
-        String actual = htmlRenderer.plain2html(input, En_TextMarkup.MARKDOWN).trim();
+        String actual = htmlRenderer.plain2html(input, En_TextMarkup.MARKDOWN).trim().replaceAll("\\?\\d+", "");
         Assert.assertEquals("Not matched", expected, actual);
     }
 

@@ -3,7 +3,6 @@ package ru.protei.portal.ui.common.client.activity.info;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.JiraStatusMapEntry;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -11,6 +10,7 @@ import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.JiraInfoEvents;
 import ru.protei.portal.ui.common.client.service.JiraStatusControllerAsync;
+import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.List;
@@ -36,7 +36,7 @@ public abstract class JiraInfoActivity implements AbstractJiraInfoActivity, Acti
 
     @Override
     public void onBackButtonClicked() {
-        fireEvent(new IssueEvents.Show());
+        fireEvent(new IssueEvents.Show(false));
     }
 
     private void fillView() {
@@ -65,7 +65,7 @@ public abstract class JiraInfoActivity implements AbstractJiraInfoActivity, Acti
             jiraStatusInfo.jiraStatus = entry.getJiraStatusName();
             jiraStatusInfo.crmStatus = entry.getLocalStatusName();
             jiraStatusInfo.definition = entry.getInfo();
-            jiraStatusInfo.comment = En_CaseState.getById((long) entry.getLocalStatusId()).getComment();
+            jiraStatusInfo.comment = CaseStateUtils.getJiraStatusComments().get(entry.getLocalStatusId());
 
             return jiraStatusInfo;
         }

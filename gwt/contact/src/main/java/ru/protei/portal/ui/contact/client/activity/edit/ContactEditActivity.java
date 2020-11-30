@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.contact.client.activity.edit;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.i18n.client.TimeZone;
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -21,8 +22,10 @@ import ru.protei.portal.ui.common.client.service.ContactControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
+import java.util.List;
 import java.util.Objects;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.StringUtils.defaultString;
 import static ru.protei.portal.core.model.util.CrmConstants.ContactConstants.*;
 
@@ -44,14 +47,19 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     @Event
     public void onShow( ContactEvents.Edit event ) {
         if (!hasPrivileges(event.id)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
         initDetails.parent.clear();
+        Window.scrollTo(0, 0);
         initDetails.parent.add(view.asWidget());
 
         origin = event.origin;
+        this.fireBackEvent =
+                event.backEvent == null ?
+                () -> fireEvent(new Back()) :
+                event.backEvent;
 
         if (event.id == null) {
             Person newPerson = new Person();
@@ -60,8 +68,8 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
             initialView(newPerson, new UserLogin());
         } else {
             contactService.getContact(event.id, new FluentCallback<Person>()
-                    .withSuccess(person -> accountService.getContactAccount(person.getId(), new FluentCallback<UserLogin>()
-                            .withSuccess(userLogin -> initialView(person, userLogin == null ? new UserLogin() : userLogin)))));
+                    .withSuccess(person -> accountService.getContactAccount(person.getId(), new FluentCallback<List<UserLogin>>()
+                            .withSuccess(userLogins -> initialView(person, isEmpty(userLogins) ? new UserLogin() : userLogins.get(0))))));
         }
     }
 
@@ -96,7 +104,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
                         userLogin.setInfo(person.getDisplayName());
                     }
 
-                    contactService.saveAccount(userLogin, sendWelcomeEmailVisibility && sendWelcomeEmail, new RequestCallback<Boolean>() {
+                    contactService.saveAccount(userLogin, sendWelcomeEmailVisibility && sendWelcomeEmail, new RequestCallback<Long>() {
                         @Override
                         public void onError(Throwable throwable) {
                             fireErrorMessage(lang.errEditContactLogin());
@@ -104,10 +112,10 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
                         }
 
                         @Override
-                        public void onSuccess(Boolean result) {
+                        public void onSuccess(Long result) {
                             fireEvent(new NotifyEvents.Show(lang.contactSaved(), NotifyEvents.NotifyType.SUCCESS));
                             fireEvent(new PersonEvents.PersonCreated(person, origin));
-                            fireEvent(isNew(contact) ? new ContactEvents.Show(true) : new Back());
+                            fireBackEvent.run();
                         }
                     });
                 }
@@ -115,7 +123,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     }
 
     @Override
-    public void onChangeContactLogin() {
+    public void onChangeContactLoginInfo() {
         view.sendWelcomeEmailVisibility().setVisible(isVisibleSendEmail());
         view.sendEmailWarningVisibility().setVisible(isVisibleSendEmailWarning());
 
@@ -144,7 +152,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
     @Override
     public void onCancelClicked() {
-        fireEvent(new Back());
+        fireBackEvent.run();
     }
 
     @Override
@@ -196,6 +204,9 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         String password = GenerationPasswordUtils.generate();
         view.password().setValue(password);
         view.confirmPassword().setValue(password);
+
+        view.sendWelcomeEmailVisibility().setVisible(isVisibleSendEmail());
+        view.sendEmailWarningVisibility().setVisible(isVisibleSendEmailWarning());
     }
 
     private boolean validateSaveButton() {
@@ -220,10 +231,6 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         }
 
         return true;
-    }
-
-    private boolean isNew(Person person) {
-        return person.getId() == null;
     }
 
     private void resetValidationStatus(){
@@ -335,6 +342,9 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.secondName().setText(person.getSecondName());
         view.displayName().setText(person.getDisplayName());
         view.shortName().setText(person.getDisplayShortName());
+        if (person.getBirthday() != null ) {
+            view.setBirthDayTimeZone(TimeZone.createTimeZone(person.getBirthday().getTimezoneOffset()));
+        }
         view.birthDay().setValue(person.getBirthday());
         view.locale().setValue(person.getLocale());
 
@@ -368,12 +378,6 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.sendEmailWarningVisibility().setVisible(false);
 
         view.showInfo(userLogin.getId() != null);
-
-        view.firstNameErrorLabel().setText(lang.contactFieldLengthExceed(view.firstNameLabel(), FIRST_NAME_SIZE));
-        view.secondNameErrorLabel().setText(lang.contactFieldLengthExceed(view.secondNameLabel(), SECOND_NAME_SIZE));
-        view.lastNameErrorLabel().setText(lang.contactFieldLengthExceed(view.lastNameLabel(), LAST_NAME_SIZE));
-        view.shortNameErrorLabel().setText(lang.contactFieldLengthExceed(view.shortNameLabel(), SHORT_NAME_SIZE));
-        view.loginErrorLabel().setText(lang.contactFieldLengthExceed(view.loginLabel(), LOGIN_SIZE));
     }
 
     private boolean passwordNotDefined() {
@@ -386,7 +390,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         return HelperFunc.isEmpty(view.login().getText()) ||
                 HelperFunc.isEmpty(view.password().getValue()) ||
                 (!HelperFunc.isEmpty(view.confirmPassword().getValue()) &&
-                        view.password().getValue().equals(view.confirmPassword().getValue()));
+                        view.confirmPassword().getValue().equals(view.password().getValue()));
     }
 
     private boolean isVisibleSendEmail() {
@@ -454,4 +458,5 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     private UserLogin account;
     private AppEvents.InitDetails initDetails;
     private String origin;
+    private Runnable fireBackEvent = () -> fireEvent(new Back());
 }

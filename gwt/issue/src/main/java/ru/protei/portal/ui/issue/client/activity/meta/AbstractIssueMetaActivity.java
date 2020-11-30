@@ -2,6 +2,7 @@ package ru.protei.portal.ui.issue.client.activity.meta;
 
 public interface AbstractIssueMetaActivity {
     void onCompanyChanged();
+    void onManagerCompanyChanged();
     void onCreateContactClicked();
     default void onCaseMetaNotifiersChanged() {}
     default void onCaseMetaJiraChanged() {}
@@ -9,8 +10,12 @@ public interface AbstractIssueMetaActivity {
     void onImportanceChanged();
     void onPlatformChanged();
     void onProductChanged();
-    default void onStateChange(){};
-    default void onManagerChanged(){};
+    void onPauseDateChanged();
+    void onStateChange();
+    void onPlansChanged();
+    void onManagerChanged();
     default void onInitiatorChanged(){};
     default void onTimeElapsedChanged(){};
+    void onDeadlineChanged();
+    default void onWorkTriggerChanged(){};
 }

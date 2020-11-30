@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import ru.protei.portal.core.model.dict.En_CaseType;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Параметры фильтрации case, полученные через API
@@ -15,7 +16,13 @@ public class CaseApiQuery extends BaseQuery {
 
     private List<Long> companyIds;
 
-    private List<String> states;
+    private List<Long> managerCompanyIds;
+
+    private List<Long> stateIds;
+
+    private Set<Long> productIds;
+
+    private List<String> caseTagsNames;
 
     @JsonIgnore
     private En_CaseType type;
@@ -41,8 +48,8 @@ public class CaseApiQuery extends BaseQuery {
         this.type = type;
     }
 
-    public List<String> getStates() { return states; }
-    public void setStates(List<String> states) { this.states = states; }
+    public List<Long> getStateIds() { return stateIds; }
+    public void setStateIds(List<Long> stateIds) { this.stateIds = stateIds; }
 
     public String getCreatedFrom() { return createdFrom; }
     public void setCreatedFrom(String createdFrom) { this.createdFrom = createdFrom; }
@@ -63,17 +70,41 @@ public class CaseApiQuery extends BaseQuery {
         this.allowViewPrivate = isAllowViewPrivate;
     }
 
+    public List<Long> getManagerCompanyIds() {
+        return managerCompanyIds;
+    }
+    public void setManagerCompanyIds(List<Long> managerCompanyIds) {
+        this.managerCompanyIds = managerCompanyIds;
+    }
+
+    public Set<Long> getProductIds() {
+        return productIds;
+    }
+    public void setProductIds(Set<Long> productIds) {
+        this.productIds = productIds;
+    }
+
+    public List<String> getCaseTagsNames() {
+        return caseTagsNames;
+    }
+    public void setCaseTagsNames(List<String> caseTagsNames) {
+        this.caseTagsNames = caseTagsNames;
+    }
+
     @Override
     public String toString() {
         return "CaseApiQuery{" +
                 "managerIds=" + managerIds +
-                ", states=" + states +
+                ", states=" + stateIds +
                 ", type=" + type +
                 ", allowViewPrivate=" + allowViewPrivate +
                 ", viewPrivate=" + viewPrivate +
                 ", createdFrom='" + createdFrom + '\'' +
                 ", createdTo='" + createdTo + '\'' +
                 ", companyIds=" + companyIds +
+                ", managerCompanyIds=" + managerCompanyIds +
+                ", productIds=" + productIds +
+                ", caseTagNames=" + caseTagsNames +
                 '}';
     }
 }

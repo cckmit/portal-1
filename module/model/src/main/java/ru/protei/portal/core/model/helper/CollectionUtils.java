@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.helper;
 
+import ru.protei.portal.core.model.marker.HasLongId;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 
 import java.util.*;
@@ -7,7 +8,9 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class CollectionUtils {
 
@@ -17,6 +20,14 @@ public class CollectionUtils {
 
     public static boolean isNotEmpty(Collection collection) {
         return !isEmpty(collection);
+    }
+
+    public static <K, V> boolean isEmpty(Map<K, V> map) {
+        return (null == map || map.isEmpty());
+    }
+
+    public static <K, V> boolean isNotEmpty(Map<K, V> map) {
+        return !isEmpty(map);
     }
 
     public static boolean isEmpty( Iterable iterable ) {
@@ -50,6 +61,15 @@ public class CollectionUtils {
         return null == collection ? Stream.empty() : collection.stream();
     }
 
+    public static <T> Stream<T> stream(Iterator<T> iterator) {
+        return null == iterator ? Stream.empty() :
+                StreamSupport.stream(((Iterable<T>)() -> iterator).spliterator(), false);
+    }
+
+    public static <T> Stream<T> stream(T[] array) {
+        return null == array ? Stream.empty() : Arrays.stream(array);
+    }
+
     public static <E> boolean contains( Collection<E> collection, E element ) {
         return null != collection ? collection.contains( element ) : false;
     }
@@ -68,6 +88,20 @@ public class CollectionUtils {
 
     public static <K, V> Map<K, V> emptyIfNull( Map<K, V> map ) {
         return map == null ? Collections.<K, V>emptyMap() : map;
+    }
+
+    public static <T> Set<T> nullIfEmpty( Set<T> set) {
+        if(isEmpty( set )) {
+            return null;
+        }
+        return set;
+    }
+
+    public static <T> List<T> nullIfEmpty( List<T> list) {
+        if(isEmpty( list )) {
+            return null;
+        }
+        return list;
     }
 
     public static <I, O> void transform( final Iterable<I> iterable, final Collection<O> output,
@@ -189,6 +223,11 @@ public class CollectionUtils {
         return list;
     }
 
+    public static <T> List<T> unmodifiableListOf(T... elements){
+        if(elements == null) return Collections.unmodifiableList(Collections.EMPTY_LIST);
+        return Collections.unmodifiableList( Arrays.asList( elements ));
+    }
+
     public static <T> List<T> listOf(T... elements){
         if(elements == null) return new ArrayList<>();
         return new ArrayList<>( Arrays.asList( elements ));
@@ -196,6 +235,11 @@ public class CollectionUtils {
 
     public static <T> List<T> listOf(Collection<T> elements){
         if(elements == null) return new ArrayList<>();
+        return new ArrayList<>( elements );
+    }
+
+    public static <T> List<T> listOfOrNull(Collection<T> elements){
+        if(elements == null) return null;
         return new ArrayList<>( elements );
     }
 
@@ -231,6 +275,12 @@ public class CollectionUtils {
             }
         }
         return null;
+    }
+
+    public static <T extends HasLongId> List<Long> collectIds(Collection<T> entities) {
+        return stream(entities)
+                .map(HasLongId::getId)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -295,5 +345,63 @@ public class CollectionUtils {
         }
 
         return null;
+    }
+
+    public static <T> Predicate<T> not(Predicate<T> predicate) {
+        return predicate.negate();
+    }
+
+
+
+    /**
+     * Равенство коллекций, без учета пордяка элементов
+     */
+    public static <T> boolean equals(Collection<T> firstCollection, Collection<T> secondCollection) {
+        if (firstCollection == null || secondCollection == null) {
+            return firstCollection == null && secondCollection == null;
+        }
+
+        if (firstCollection.size() != secondCollection.size()) {
+            return false;
+        }
+
+        if (!firstCollection.containsAll(secondCollection)) {
+            return false;
+        }
+
+        if (!secondCollection.containsAll(firstCollection)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Проход по списку в обратном направлении
+     */
+    public static <T> void forEachReverse(List<T> elements, Consumer<T> elementConsumer) {
+        if (isEmpty(elements) || elementConsumer == null) {
+            return;
+        }
+
+        ListIterator<T> listIterator = elements.listIterator(elements.size());
+
+        while (listIterator.hasPrevious()) {
+            elementConsumer.accept(listIterator.previous());
+        }
+    }
+
+    public static int[] toPrimitiveIntegerArray(List<Integer> elements) {
+        if (isEmpty(elements)) {
+            return new int[0];
+        }
+
+        int[] result = new int[elements.size()];
+
+        for (int i = 0; i < result.length; i++) {
+            result[i] = elements.get(i);
+        }
+
+        return result;
     }
 }

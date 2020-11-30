@@ -17,10 +17,9 @@ import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.controller.cloud.FileController;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
-import ru.protei.portal.core.service.events.AsyncEventPublisherService;
-import ru.protei.portal.core.service.events.EventAssemblerService;
-import ru.protei.portal.core.service.events.EventAssemblerServiceImpl;
-import ru.protei.portal.core.service.events.EventPublisherService;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseTaskHandler;
+import ru.protei.portal.core.service.events.*;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
 import ru.protei.portal.core.service.session.SessionService;
@@ -30,11 +29,11 @@ import ru.protei.portal.redmine.handlers.ForwardChannelEventHandler;
 import ru.protei.portal.redmine.handlers.RedmineBackChannelHandler;
 import ru.protei.portal.redmine.handlers.RedmineForwardChannel;
 import ru.protei.portal.redmine.service.*;
+import ru.protei.portal.schedule.PortalScheduleTasks;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 
 @EnableAspectJAutoProxy
 @EnableAsync
@@ -102,6 +101,11 @@ public class RedmineTestConfiguration {
         return new AsyncEventPublisherService();
     }
 
+    @Bean
+    public ProjectService getProjectService() {
+        return new ProjectServiceImpl();
+    }
+
 
     @Bean
     public CaseService getCaseService() {
@@ -122,6 +126,13 @@ public class RedmineTestConfiguration {
     public CaseLinkService getCaseLinkService() {
         return new CaseLinkServiceImpl();
     }
+
+/*
+    @Bean
+    public ClientEventService getClientEventService() {
+        return new ClientEventServiceImpl();
+    }
+*/
 
     @Bean
     public CaseCommentService getCaseCommentService() {
@@ -144,8 +155,18 @@ public class RedmineTestConfiguration {
     }
 
     @Bean
+    public EventProjectAssemblerService getProjectPublisherService() {
+        return new EventProjectAssemblerServiceImpl();
+    }
+
+    @Bean
     public AssemblerService getAssemblerService() {
         return new AssemblerServiceImpl();
+    }
+
+    @Bean
+    public AssemblerProjectService getAssemblerProjectService() {
+        return new AssemblerProjectServiceImpl();
     }
 
     @Bean
@@ -173,5 +194,38 @@ public class RedmineTestConfiguration {
         return new LockServiceImpl();
     }
 
+    @Bean
+    public AutoOpenCaseService getAutoOpenCaseService() {
+        return mock(AutoOpenCaseService.class);
+    }
 
+    @Bean
+    public AutoOpenCaseTaskHandler getAutoOpenCaseTaskHandler() {
+        return mock(AutoOpenCaseTaskHandler.class);
+    }
+
+    @Bean
+    public SiteFolderService getSiteFolderService() {
+        return mock(SiteFolderService.class);
+    }
+
+    @Bean
+    public ProductService getProductService() {
+        return mock(ProductService.class);
+    }
+
+    @Bean
+    public PlanService getPlanService() {
+        return mock(PlanService.class);
+    }
+
+    @Bean
+    public PortalScheduleTasks getPortalScheduleTasks() {
+        return mock(PortalScheduleTasks.class);
+    }
+
+    @Bean
+    public HistoryService getHistoryService() {
+        return new HistoryServiceImpl();
+    }
 }

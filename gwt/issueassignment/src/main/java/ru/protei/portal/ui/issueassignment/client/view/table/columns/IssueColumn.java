@@ -6,22 +6,20 @@ import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
-import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 
 public class IssueColumn extends ClickColumn<CaseShortView> {
 
     @Inject
-    public IssueColumn(Lang lang, En_CaseStateLang caseStateLang) {
+    public IssueColumn(Lang lang) {
         this.lang = lang;
-        this.caseStateLang = caseStateLang;
     }
 
     @Override
@@ -42,17 +40,16 @@ public class IssueColumn extends ClickColumn<CaseShortView> {
     private Node makePrimaryBlock(CaseShortView value) {
 
         En_ImportanceLevel importance = En_ImportanceLevel.getById(value.getImpLevel());
-        En_CaseState state = En_CaseState.getById(value.getStateId());
         boolean isPrivate = value.isPrivateCase();
         Long number = value.getCaseNumber();
         String name = value.getName();
 
         DivElement div = Document.get().createDivElement();
         div.appendChild(makeSpan(ImportanceStyleProvider.getImportanceIcon(importance), ""));
-        div.appendChild(makeSpan("label label-" + state.toString().toLowerCase(), caseStateLang.getStateName(state)));
+        div.appendChild(makeSpan("label label-" + CaseStateUtils.makeStyleName(value.getStateName()), value.getStateName()));
         if (isPrivate) div.appendChild(makeSpan("fa fa-fw fa-lock text-danger", ""));
         div.appendChild(makeSpan("font-weight-bold", String.valueOf(number)));
-        div.appendChild(makeSpan("", name));
+        div.appendChild(makeSpan("word-break-word", name));
         return div;
     }
 
@@ -74,10 +71,9 @@ public class IssueColumn extends ClickColumn<CaseShortView> {
     private SpanElement makeSpan(String className, String text) {
         SpanElement span = Document.get().createSpanElement();
         span.setClassName(className);
-        span.setInnerHTML(text);
+        span.setInnerText(text);
         return span;
     }
 
     private Lang lang;
-    private En_CaseStateLang caseStateLang;
 }

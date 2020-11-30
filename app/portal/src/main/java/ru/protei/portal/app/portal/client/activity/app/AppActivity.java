@@ -18,7 +18,7 @@ import ru.protei.portal.ui.common.client.common.PageService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.AvatarUtils;
+import ru.protei.portal.ui.common.client.util.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.PingControllerAsync;
 import ru.protei.portal.ui.common.client.util.LocaleUtils;
 import ru.protei.portal.ui.common.shared.model.ClientConfigData;
@@ -35,8 +35,7 @@ public abstract class AppActivity
     @PostConstruct
     public void onInit() {
         view.setActivity( this );
-
-        fireEvent( new MenuEvents.Init( view.getMenuContainer() ) );
+        requestsClientConfigAndSetAppVersion();
     }
 
     @Event
@@ -44,7 +43,6 @@ public abstract class AppActivity
         this.init = event;
 
         initApp();
-        requestsClientConfigAndSetAppVersion();
 
         initialToken = History.getToken();
         fireEvent( new AuthEvents.Show() );
@@ -74,6 +72,16 @@ public abstract class AppActivity
         startPingServerTimer();
     }
 
+    @Event
+    public void onInitExternalLinks(AppEvents.InitExternalLinks event) {
+        view.setExternalLinks(configStorage.getConfigData().externalLinksHtml);
+    }
+
+    @Event
+    public void onMenuClear(MenuEvents.Clear event) {
+        view.clearExternalLinks();
+    }
+
     @Override
     public void onLogoClicked() {
         fireEvent(pageService.getFirstAvailablePageEvent());
@@ -89,6 +97,11 @@ public abstract class AppActivity
         fireEvent( new AppEvents.ShowProfile());
     }
 
+    @Override
+    public void onMenuSectionsClose() {
+        fireEvent(new MenuEvents.CloseAll());
+    }
+
     public void onLogoutClicked() {
         initialToken = null;
         fireEvent( new AppEvents.Logout() );
@@ -98,6 +111,7 @@ public abstract class AppActivity
     }
 
     private void initApp() {
+        fireEvent( new MenuEvents.Init( view.getMenuContainer() ) );
         fireEvent( new AppEvents.InitDetails( view.getDetailsContainer() ) );
         fireEvent( new NotifyEvents.Init( view.getNotifyContainer() ) );
         fireEvent( new ActionBarEvents.Init( view.getActionBarContainer() ) );

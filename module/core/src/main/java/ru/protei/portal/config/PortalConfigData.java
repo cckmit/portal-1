@@ -8,7 +8,13 @@ import ru.protei.winter.core.utils.duration.DurationUtils;
 import ru.protei.winter.core.utils.duration.IncorrectDurationException;
 
 import java.net.Inet4Address;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 
 /**
  * Created by michael on 31.05.17.
@@ -29,10 +35,14 @@ public class PortalConfigData {
     private final CaseLinkConfig caseLinkConfig;
     private final MailNotificationConfig mailNotificationConfig;
     private final YoutrackConfig youtrackConfig;
+    private final Enterprise1CConfig enterprise1CConfig;
     private final JiraConfig jiraConfig;
     private final EmployeeConfig employeeConfig;
     private final LdapConfig ldapConfig;
     private final MarkupHelpLink markupHelpLink;
+    private final UiConfig uiConfig;
+    private final MailCommentConfig mailCommentConfig;
+    private final NRPEConfig nrpeConfig;
 
     private final String loginSuffixConfig;
     private final boolean taskSchedulerEnabled;
@@ -52,10 +62,14 @@ public class PortalConfigData {
         caseLinkConfig = new CaseLinkConfig(wrapper);
         mailNotificationConfig = new MailNotificationConfig(wrapper);
         youtrackConfig = new YoutrackConfig(wrapper);
+        enterprise1CConfig = new Enterprise1CConfig(wrapper);
         jiraConfig = new JiraConfig(wrapper);
         employeeConfig = new EmployeeConfig(wrapper);
         ldapConfig = new LdapConfig(wrapper);
         markupHelpLink = new MarkupHelpLink(wrapper);
+        uiConfig = new UiConfig(wrapper);
+        mailCommentConfig = new MailCommentConfig(wrapper);
+        nrpeConfig = new NRPEConfig(wrapper);
 
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
         taskSchedulerEnabled = wrapper.getProperty("task.scheduler.enabled", Boolean.class,false);
@@ -114,6 +128,10 @@ public class PortalConfigData {
         return youtrackConfig;
     }
 
+    public Enterprise1CConfig enterprise1C() {
+        return enterprise1CConfig;
+    }
+
     public JiraConfig jiraConfig() {
         return jiraConfig;
     }
@@ -130,6 +148,18 @@ public class PortalConfigData {
         return markupHelpLink;
     }
 
+    public UiConfig getUiConfig() {
+        return uiConfig;
+    }
+
+    public MailCommentConfig getMailCommentConfig() {
+        return mailCommentConfig;
+    }
+
+    public NRPEConfig getNrpeConfig() {
+        return nrpeConfig;
+    }
+
     public boolean isTaskSchedulerEnabled() {
         return taskSchedulerEnabled;
     }
@@ -142,6 +172,8 @@ public class PortalConfigData {
             crmUrlExternal = properties.getProperty( "crm.url.external", "http://newportal/crm/" );
             crmUrlCurrent = properties.getProperty( "crm.url.current", "http://newportal/crm/" );
             crmUrlFiles = properties.getProperty( "crm.url.files", "http://newportal/crm/" );
+            isProductionServer = properties.getProperty( "is.production.server", Boolean.class, false );
+            systemId = properties.getProperty( "system.id", "" );
         }
         public String getCrmUrlInternal() {
             return crmUrlInternal;
@@ -159,31 +191,52 @@ public class PortalConfigData {
             return crmUrlFiles;
         }
 
+        public boolean isProductionServer() {
+            return isProductionServer;
+        }
+
+        public String getSystemId() {
+            return systemId;
+        }
+
         private final String crmUrlInternal;
         private final String crmUrlExternal;
         private final String crmUrlCurrent;
         private final String crmUrlFiles;
+        private final Boolean isProductionServer;
+        private final String systemId;
     }
 
     public static class MailNotificationConfig extends CommonConfig {
         private final String crmCaseUrl;
+        private final String crmProjectUrl;
         private final String contractUrl;
         private final String crmDocumentPreviewUrl;
         private final String crmEmployeeRegistrationUrl;
         private final String[] crmEmployeeRegistrationNotificationsRecipients;
+        private final String[] crmRoomReservationNotificationsRecipients;
+        private final String[] crmIpReservationNotificationsRecipients;
+        private final String[] crmBirthdaysNotificationsRecipients;
 
         public MailNotificationConfig(PropertiesWrapper properties) throws ConfigException {
             super(properties);
             crmCaseUrl = properties.getProperty( "crm.case.url", "#issues/issue:id=%d;" );
+            crmProjectUrl = properties.getProperty("crm.project.url", "#project_preview:id=%d");
             contractUrl = properties.getProperty( "crm.contract.url", "#contracts/contract:id=%d;" );
-            crmDocumentPreviewUrl = properties.getProperty( "crm.document.url.preview");
+            crmDocumentPreviewUrl = properties.getProperty( "crm.document.url.preview", "#doc_preview:id=%d");
             crmEmployeeRegistrationUrl = properties.getProperty( "crm.employee_registration.url");
             crmEmployeeRegistrationNotificationsRecipients = properties.getProperty( "crm.employee_registration.recipients", "" ).split(",");
+            crmRoomReservationNotificationsRecipients = properties.getProperty("crm.room_reservation.recipients", "").split(",");
+            crmIpReservationNotificationsRecipients = properties.getProperty("crm.ip_reservation.recipients", "").split(",");
+            crmBirthdaysNotificationsRecipients = properties.getProperty("crm.birthdays.recipients", "").split(",");
         }
-
 
         public String getCrmCaseUrl() {
             return crmCaseUrl;
+        }
+
+        public String getCrmProjectUrl() {
+            return crmProjectUrl;
         }
 
         public String getContractUrl() {
@@ -201,22 +254,41 @@ public class PortalConfigData {
         public String[] getCrmEmployeeRegistrationNotificationsRecipients() {
             return crmEmployeeRegistrationNotificationsRecipients;
         }
+
+        public String[] getCrmRoomReservationNotificationsRecipients() {
+            return crmRoomReservationNotificationsRecipients;
+        }
+
+        public String[] getCrmIpReservationNotificationsRecipients() {
+            return crmIpReservationNotificationsRecipients;
+        }
+
+        public String[] getCrmBirthdaysNotificationsRecipients() { return crmBirthdaysNotificationsRecipients;
+        }
     }
 
     public static class SmtpConfig {
         private final String host;
         private final String defaultCharset;
         private final int port;
-        private final String fromAddress;
-        private final String fromAddressAlias;
+        private final String fromAddressCrm;
+        private final String fromAddressPortal;
+        private final String fromAddressAbsence;
+        private final String fromAddressCrmAlias;
+        private final String fromAddressPortalAlias;
+        private final String fromAddressAbsenceAlias;
         private final boolean blockExternalRecipients;
         private final String messageIdPattern;
 
         public SmtpConfig(PropertiesWrapper properties) throws ConfigException{
             host = properties.getProperty("smtp.host", "smtp.protei.ru");
             port = properties.getProperty("smtp.port", Integer.class, 2525);
-            fromAddress = properties.getProperty("smtp.from", "PORTAL");
-            fromAddressAlias = properties.getProperty("smtp.from.alias", "DO_NOT_REPLY");
+            fromAddressCrm = properties.getProperty("smtp.from.crm", "CRM");
+            fromAddressPortal = properties.getProperty("smtp.from.portal", "PORTAL");
+            fromAddressAbsence = properties.getProperty("smtp.from.absence", "ABSENCE");
+            fromAddressCrmAlias = properties.getProperty("smtp.from.crm.alias", "CRM");
+            fromAddressPortalAlias = properties.getProperty("smtp.from.portal.alias", "DO_NOT_REPLY");
+            fromAddressAbsenceAlias = properties.getProperty("smtp.from.absence.alias", "DO_NOT_REPLY");
             defaultCharset = properties.getProperty("smtp.charset", "utf-8");
             blockExternalRecipients = properties.getProperty("smtp.block_external_recipients", Boolean.class, false);
             messageIdPattern = properties.getProperty("smtp.message_id_pattern", "%id%@smtp.protei.ru");
@@ -238,16 +310,32 @@ public class PortalConfigData {
             return port;
         }
 
-        public String getFromAddress() {
-            return fromAddress;
+        public String getFromAddressCrm() {
+            return fromAddressCrm;
+        }
+
+        public String getFromAddressPortal() {
+            return fromAddressPortal;
+        }
+
+        public String getFromAddressAbsence() {
+            return fromAddressAbsence;
         }
 
         public String getMessageIdPattern() {
             return messageIdPattern;
         }
 
-        public String getFromAddressAlias() {
-            return fromAddressAlias;
+        public String getFromAddressCrmAlias() {
+            return fromAddressCrmAlias;
+        }
+
+        public String getFromAddressPortalAlias() {
+            return fromAddressPortalAlias;
+        }
+
+        public String getFromAddressAbsenceAlias() {
+            return fromAddressAbsenceAlias;
         }
     }
 
@@ -308,7 +396,7 @@ public class PortalConfigData {
 
         public LegacySystemConfig(PropertiesWrapper properties) throws ConfigException {
             this.jdbcDriver = properties.getProperty("syb.jdbc.driver", "net.sourceforge.jtds.jdbc.Driver");
-            this.jdbcURL = properties.getProperty("syb.jdbc.url", "jdbc:sybase:Tds:192.168.1.55:2638/PORTAL2017");
+            this.jdbcURL = properties.getProperty("syb.jdbc.url", "jdbc:sybase:Tds:192.168.101.140:2642/RESV3");
             this.login = properties.getProperty("syb.jdbc.login", "dba");
             this.passwd = properties.getProperty("syb.jdbc.pwd", "sql");
 
@@ -365,6 +453,10 @@ public class PortalConfigData {
         private final boolean redmineEnabled;
         private final boolean redmineBackchannelEnabled;
         private final boolean youtrackEnabled;
+        private final boolean youtrackCompanySyncEnabled;
+        private final boolean youtrackEmployeeSyncEnabled;
+        private final boolean youtrackLinksMigrationEnabled;
+        private final boolean youtrackProjectLinksMigrationEnabled;
         private final boolean jiraEnabled;
         private final boolean jiraBackchannelEnabled;
 
@@ -374,6 +466,10 @@ public class PortalConfigData {
             redmineEnabled = properties.getProperty("integration.redmine", Boolean.class, false);
             redmineBackchannelEnabled = properties.getProperty("integration.redmine.backchannel", Boolean.class, false);
             youtrackEnabled = properties.getProperty("integration.youtrack", Boolean.class, false);
+            youtrackCompanySyncEnabled = properties.getProperty("integration.youtrack.companies", Boolean.class, false);
+            youtrackEmployeeSyncEnabled = properties.getProperty("integration.youtrack.employees", Boolean.class, false);
+            youtrackLinksMigrationEnabled = properties.getProperty("migration.youtrack.links", Boolean.class, false);
+            youtrackProjectLinksMigrationEnabled = properties.getProperty("project.migration.youtrack.links", Boolean.class, false);
             jiraEnabled = properties.getProperty("integration.jira", Boolean.class, false);
             jiraBackchannelEnabled = properties.getProperty("integration.jira.backchannel", Boolean.class, false);
 
@@ -390,6 +486,20 @@ public class PortalConfigData {
 
         public boolean isYoutrackEnabled() {
             return youtrackEnabled;
+        }
+
+        public boolean isYoutrackCompanySyncEnabled() {
+            return youtrackCompanySyncEnabled;
+        }
+        public boolean isYoutrackEmployeeSyncEnabled() {
+            return youtrackEmployeeSyncEnabled;
+        }
+        public boolean isYoutrackLinksMigrationEnabled() {
+            return youtrackLinksMigrationEnabled;
+        }
+
+        public boolean isYoutrackProjectLinksMigrationEnabled() {
+            return youtrackProjectLinksMigrationEnabled;
         }
 
         public boolean isJiraEnabled() {
@@ -497,10 +607,14 @@ public class PortalConfigData {
     public static class CaseLinkConfig {
         private final String linkCrm;
         private final String linkYouTrack;
+        private final String crossCrmLinkYoutrack;
+        private final String crossProjectLinkYoutrack;
 
         public CaseLinkConfig(PropertiesWrapper properties) throws ConfigException {
             this.linkCrm = properties.getProperty("case.link.internal", "http://newportal/crm/#issues/issue_preview:id=%id%");
             this.linkYouTrack = properties.getProperty("case.link.youtrack", "https://youtrack.protei.ru/issue/%id%");
+            this.crossCrmLinkYoutrack = properties.getProperty("case.crm.crosslink.youtrack", "http://newportal/crm/#issues/issue:id=%id%");
+            this.crossProjectLinkYoutrack = properties.getProperty("case.project.crosslink.youtrack", "http://newportal/crm/#project_preview:id=%id%");
         }
 
         public String getLinkCrm() {
@@ -510,29 +624,45 @@ public class PortalConfigData {
         public String getLinkYouTrack() {
             return linkYouTrack;
         }
+
+        public String getCrossCrmLinkYoutrack() {
+            return crossCrmLinkYoutrack;
+        }
+
+        public String getCrossProjectLinkYoutrack() {
+            return crossProjectLinkYoutrack;
+        }
     }
 
     public static class YoutrackConfig {
         private final String apiBaseUrl;
+        private final String login;
         private final String authToken;
         private final String employeeRegistrationSyncSchedule;
         private final String equipmentProject;
         private final String adminProject;
         private final String phoneProject;
         private final Long youtrackUserId;
+        private final String youtrackCustomFieldCompanyId;
 
         public YoutrackConfig(PropertiesWrapper properties) {
             apiBaseUrl = properties.getProperty("youtrack.api.baseurl");
+            login = properties.getProperty("youtrack.api.login", "portal");
             authToken = properties.getProperty("youtrack.api.auth_token");
             employeeRegistrationSyncSchedule = properties.getProperty("youtrack.employee_registration.sync_schedule", "0 */15 * * * *");
             equipmentProject = properties.getProperty("youtrack.employee_registration.equipment_project");
             adminProject = properties.getProperty("youtrack.employee_registration.admin_project");
             phoneProject = properties.getProperty("youtrack.employee_registration.phone_project");
             youtrackUserId = properties.getProperty("youtrack.user_id_for_synchronization", Long.class);
+            youtrackCustomFieldCompanyId = properties.getProperty("youtrack.custom_field_company_id");
         }
 
         public String getApiBaseUrl() {
             return apiBaseUrl;
+        }
+
+        public String getLogin() {
+            return login;
         }
 
         public String getAuthToken() {
@@ -558,6 +688,62 @@ public class PortalConfigData {
         public Long getYoutrackUserId() {
             return youtrackUserId;
         }
+
+        public String getYoutrackCustomFieldCompanyId() {
+            return youtrackCustomFieldCompanyId;
+        }
+    }
+
+    public static class Enterprise1CConfig {
+        private final String apiBaseProteiUrl;
+        private final String apiBaseProteiStUrl;
+        private final String login;
+        private final String password;
+        private final String parentKeyST;
+        private final String parentKeyResident;
+        private final String parentKeyNotResident;
+        private final boolean contractSyncEnabled;
+
+        public Enterprise1CConfig(PropertiesWrapper properties) {
+            apiBaseProteiUrl = properties.getProperty("enterprise1c.api.base_protei_url");
+            apiBaseProteiStUrl = properties.getProperty("enterprise1c.api.base_protei_st_url");
+            login = properties.getProperty("enterprise1c.api.login");
+            password = properties.getProperty("enterprise1c.api.password");
+            parentKeyST = properties.getProperty("enterprise1c.api.parent_key_st");
+            parentKeyResident = properties.getProperty("enterprise1c.api.parent_key_resident");
+            parentKeyNotResident = properties.getProperty("enterprise1c.api.parent_key_not_resident");
+            contractSyncEnabled = properties.getProperty("enterprise1c.api.contract.sync.enabled", Boolean.class, false);
+        }
+
+        public String getApiBaseProteiUrl() {
+            return apiBaseProteiUrl;
+        }
+
+        public String getApiBaseProteiStUrl() {
+            return apiBaseProteiStUrl;
+        }
+
+        public String getLogin() {
+            return login;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public String getParentKeyST() {
+            return parentKeyST;
+        }
+
+        public String getParentKeyResident() {
+            return parentKeyResident;
+        }
+
+        public String getParentKeyNotResident() {
+            return parentKeyNotResident;
+        }
+
+        public boolean isContractSyncEnabled() { return contractSyncEnabled; }
     }
 
     public static class JiraConfig {
@@ -619,6 +805,103 @@ public class PortalConfigData {
 
         public String getJiraMarkup() {
             return jiraMarkup;
+        }
+    }
+
+    public static class UiConfig {
+        private final Long issueAssignmentDeskLimit;
+
+        public UiConfig(PropertiesWrapper properties) {
+            issueAssignmentDeskLimit = properties.getProperty("ui.issue-assignment.desk.limit", Long.class, 200L);
+        }
+
+        public Long getIssueAssignmentDeskLimit() {
+            return issueAssignmentDeskLimit;
+        }
+    }
+
+    public static class MailCommentConfig {
+        final String user;
+        final String pass;
+        final String host;
+
+        final boolean enable;
+        final List<String> blackList;
+        final boolean enableForwardMail;
+        final String forwardMail;
+
+        public MailCommentConfig(PropertiesWrapper properties) {
+            user = properties.getProperty("imap.user", "crm@protei.ru");
+            pass = properties.getProperty("imap.pass");
+            host = properties.getProperty("imap.host", "imap.protei.ru");
+
+            enable = properties.getProperty("mail.comment.enable", Boolean.class, false);
+            String temp = properties.getProperty("mail.comment.subject.black.list", "");
+            if (isNotEmpty(temp)) {
+                blackList = Arrays.stream(temp.split(",")).collect(Collectors.toList());
+            } else {
+                blackList = new ArrayList<>();
+            }
+            enableForwardMail = properties.getProperty("mail.comment.forward.enable", Boolean.class, false);
+            forwardMail = properties.getProperty("mail.comment.forward.email", "support@protei.ru");
+        }
+
+        public String getUser() {
+            return user;
+        }
+
+        public String getPass() {
+            return pass;
+        }
+
+        public String getHost() {
+            return host;
+        }
+
+        public boolean isEnable() {
+            return enable;
+        }
+
+        public List<String> getBlackList() {
+            return blackList;
+        }
+
+        public String getForwardMail() {
+            return forwardMail;
+        }
+
+        public boolean isEnableForwardMail() {
+            return enableForwardMail;
+        }
+    }
+
+    public static class NRPEConfig {
+        final String template;
+        final Boolean enable;
+        final List<String> adminMails;
+
+        public NRPEConfig(PropertiesWrapper properties) {
+            this.template = properties.getProperty("nrpe.template",
+                    "/usr/lib64/nagios/plugins/check_nrpe -H router.protei.ru -c check_arping_lan -a %s ; echo $?");
+            this.enable = properties.getProperty("nrpe.enable", Boolean.class, false);
+            String temp = properties.getProperty("nrpe.admin.mails");
+            if (isNotEmpty(temp)) {
+                adminMails = Arrays.stream(temp.split(",")).collect(Collectors.toList());
+            } else {
+                adminMails = new ArrayList<>();
+            }
+        }
+
+        public String getTemplate() {
+            return template;
+        }
+
+        public Boolean getEnable() {
+            return enable;
+        }
+
+        public List<String> getAdminMails() {
+            return adminMails;
         }
     }
 

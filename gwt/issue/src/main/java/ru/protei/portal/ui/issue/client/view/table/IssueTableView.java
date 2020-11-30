@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.issue.client.view.table;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -17,9 +16,8 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.AttachClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
-import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
+import ru.protei.portal.ui.common.client.columns.FavoritesClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.util.SimpleProfiler;
 import ru.protei.portal.ui.common.client.widget.separator.Separator;
 import ru.protei.portal.ui.issue.client.activity.table.AbstractIssueTableActivity;
 import ru.protei.portal.ui.issue.client.activity.table.AbstractIssueTableView;
@@ -28,7 +26,7 @@ import ru.protei.portal.ui.issue.client.view.table.columns.InfoColumn;
 import ru.protei.portal.ui.issue.client.view.table.columns.ManagerColumn;
 import ru.protei.portal.ui.issue.client.view.table.columns.NumberColumn;
 
-import java.util.logging.Logger;
+import java.util.function.Predicate;
 
 
 /**
@@ -45,6 +43,10 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     @Override
     public void setActivity( AbstractIssueTableActivity activity ) {
         this.activity = activity;
+
+        favoritesClickColumn.setHandler(activity);
+        favoritesClickColumn.setColumnProvider(columnProvider);
+        favoritesClickColumn.setFavoritesStateManager(activity);
 
         editClickColumn.setHandler( activity );
         editClickColumn.setEditHandler( activity );
@@ -97,7 +99,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 
     @Override
     public void clearSelection() {
-        columnProvider.setSelectedValue(null);
+        columnProvider.removeSelection();
     }
 
     @Override
@@ -132,24 +134,28 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
         table.setTotalRecords(totalRecords);
     }
 
+    @Override
+    public void setChangeSelectionIfSelectedPredicate(Predicate<CaseShortView> changeSelectionIfSelectedPredicate) {
+        columnProvider.setChangeSelectionIfSelectedPredicate(changeSelectionIfSelectedPredicate);
+    }
+
     private void initTable () {
         attachClickColumn = new AttachClickColumn<CaseShortView>(lang) {};
+        attachClickColumn.setDisplayPredicate(caseShortView -> policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW) || caseShortView.isPublicAttachmentsExist());
         editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT) );
-        issueNumber = new NumberColumn( lang, caseStateLang );
+        issueNumber = new NumberColumn( lang );
         contact = new ContactColumn( lang );
         manager = new ManagerColumn( lang );
         info = new InfoColumn( lang );
+        favoritesClickColumn = new FavoritesClickColumn<>(lang);
 
-//        table.addColumn( selectionColumn.header, selectionColumn.values );
+        table.addColumn(favoritesClickColumn.header, favoritesClickColumn.values);
         table.addColumn( issueNumber.header, issueNumber.values );
         table.addColumn( info.header, info.values );
-//        table.addColumn( contact.header, contact.values );
-//        table.addColumn( managers.header, managers.values );
         hideContact = table.addColumn( contact.header, contact.values );
         hideManager = table.addColumn( manager.header, manager.values );
         table.addColumn( attachClickColumn.header, attachClickColumn.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
-//        table.setSeparatorProvider( separator );
     }
 
     @UiField
@@ -169,8 +175,6 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     HTMLPanel pagerContainer;
 
     @Inject
-    En_CaseStateLang caseStateLang;
-    @Inject
     PolicyService policyService;
     @Inject
     Separator separator;
@@ -183,6 +187,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     ContactColumn contact;
     ManagerColumn manager;
     InfoColumn info;
+    FavoritesClickColumn<CaseShortView> favoritesClickColumn;
 
     AbstractColumn hideContact;
     AbstractColumn hideManager;

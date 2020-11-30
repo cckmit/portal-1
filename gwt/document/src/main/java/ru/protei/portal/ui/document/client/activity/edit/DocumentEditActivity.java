@@ -16,7 +16,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -38,6 +38,9 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
+import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
+
 public abstract class DocumentEditActivity
         implements Activity, AbstractDocumentEditActivity {
 
@@ -54,10 +57,11 @@ public abstract class DocumentEditActivity
     @Event
     public void onCreateFromWizard(DocumentEvents.CreateFromWizard event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_CREATE)) {
-            fireEvent(new ForbiddenEvents.Show(event.parent));
+            fireEvent(new ErrorPageEvents.ShowForbidden(event.parent));
             return;
         }
 
+        fireBackEvent = () -> fireEvent(new DocumentEvents.Show(false));
         placeView(event.parent);
         view.drawInWizardContainer(true);
         this.document = new Document();
@@ -67,7 +71,7 @@ public abstract class DocumentEditActivity
     @Event(Type.FILL_CONTENT)
     public void onEquipmentCreate(DocumentEvents.CreateWithEquipment event){
         if (!policyService.hasPrivilegeFor(En_Privilege.EQUIPMENT_EDIT)){
-            fireEvent(new ForbiddenEvents.Show(initDetails.parent));
+            fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
         if (event.projectId == null || event.equipmentId == null) {
@@ -76,18 +80,26 @@ public abstract class DocumentEditActivity
             return;
         }
 
+        fireBackEvent = () -> fireEvent(new Back());
+
         placeView(initDetails.parent);
         view.drawInWizardContainer(false);
         Document document = makeDocumentFromEvent(event);
+        this.document = document;
         requestEquipmentAndFillView(event.equipmentId, document);
     }
 
     @Event(Type.FILL_CONTENT)
     public void onEdit(DocumentEvents.Edit event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT) && !policyService.hasPrivilegeFor(En_Privilege.EQUIPMENT_EDIT)) {
-            fireEvent(new ForbiddenEvents.Show(initDetails.parent));
+            fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
+
+        fireBackEvent =
+                event.backEvent == null ?
+                () -> fireEvent(new Back()) :
+                event.backEvent;
 
         placeView(initDetails.parent);
         view.drawInWizardContainer(false);
@@ -186,7 +198,7 @@ public abstract class DocumentEditActivity
 
     @Override
     public void onCancelClicked() {
-       fireEvent(new Back());
+        fireBackEvent.run();
     }
 
     @Override
@@ -222,6 +234,7 @@ public abstract class DocumentEditActivity
 
     private void placeView(HasWidgets container) {
         container.clear();
+        Window.scrollTo(0, 0);
         container.add(view.asWidget());
     }
 
@@ -343,9 +356,8 @@ public abstract class DocumentEditActivity
                             fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                             if (stayOnPage){
                                 fillView(makeDocumentToContinue());
-                            }
-                            else {
-                                fireEvent(new Back());
+                            } else {
+                                fireBackEvent.run();
                             }
                         }
         ))));
@@ -480,24 +492,24 @@ public abstract class DocumentEditActivity
         d.setAnnotation(view.annotation().getValue());
         d.setDecimalNumber(StringUtils.nullIfEmpty(view.decimalNumberText().getText()));
         d.setType(view.documentType().getValue());
-        d.setMembers(CollectionUtils.stream(view.members().getValue()).map(Person::fromPersonShortView).collect(Collectors.toList()));
+        d.setMembers(listOf(view.members().getValue()));
         d.setExecutionType(view.executionType().getValue());
         d.setInventoryNumber(view.inventoryNumber().getValue());
         d.setKeywords(view.keywords().getValue());
-        d.setContractor(Person.fromPersonShortView(view.contractor().getValue()));
-        d.setRegistrar(Person.fromPersonShortView(view.registrar().getValue()));
+        d.setContractor(view.contractor().getValue());
+        d.setRegistrar(view.registrar().getValue());
         d.setVersion(view.version().getValue());
         d.setProjectId(view.project().getValue() == null? null : view.project().getValue().getId());
         d.setEquipment(view.equipment().getValue() == null ? null : new Equipment(view.equipment().getValue().getId()));
         d.setApproved(view.isApproved().getValue());
-        d.setApprovedBy(Person.fromPersonShortView(view.approvedBy().getValue()));
+        d.setApprovedBy(view.approvedBy().getValue());
         d.setApprovalDate(view.approvalDate().getValue());
         d.setState(document.getState());
         return d;
     }
 
     private void fillView(Document document) {
-        boolean isNew = document.getId() == null;
+        boolean isNew = isNew(document);
 
         view.setDownloadCloudsVisible(!isNew);
         view.name().setValue(document.getName());
@@ -506,7 +518,7 @@ public abstract class DocumentEditActivity
         view.setDocumentCategoryValue(availableDocumentCategories);
         view.documentCategory().setValue(document.getType() == null ? null : document.getType().getDocumentCategory());
         view.documentType().setValue(document.getType());
-        view.members().setValue(CollectionUtils.stream(document.getMembers()).map(PersonShortView::fromPerson).collect(Collectors.toSet()));
+        view.members().setValue( setOf(document.getMembers()));
         view.keywords().setValue(document.getKeywords());
         view.version().setValue(document.getVersion());
         view.inventoryNumber().setValue(document.getInventoryNumber());
@@ -521,21 +533,22 @@ public abstract class DocumentEditActivity
         setUploaderApprovalSheetEnable(view.isApproved().getValue());
 
         boolean isApproved = view.isApproved().getValue();
-        view.approvedBy().setValue(!isApproved || document.getApprovedBy() == null ? null : document.getApprovedBy().toShortNameShortView());
+        view.approvedBy().setValue(!isApproved || document.getApprovedBy() == null ? null : document.getApprovedBy());
         view.approvalDate().setValue(!isApproved ? null : document.getApprovalDate());
         view.approvedByEnabled(isApproved);
         view.approvalDateEnabled(isApproved);
 
         if (isNew) {
             Profile profile = policyService.getProfile();
-            PersonShortView currentPerson = new PersonShortView(profile.getShortName(), profile.getId(), profile.isFired());
+            PersonShortView currentPerson = new PersonShortView(null, profile.getId(), profile.isFired());
+            currentPerson.setDisplayShortName( profile.getShortName() );
             view.registrar().setValue(currentPerson);
             view.contractor().setValue(currentPerson);
             view.inventoryNumberEnabled(true);
             view.decimalNumberEnabled(true);
         } else {
-            view.registrar().setValue(document.getRegistrar() == null ? null : document.getRegistrar().toShortNameShortView());
-            view.contractor().setValue(document.getContractor() == null ? null : document.getContractor().toShortNameShortView());
+            view.registrar().setValue(document.getRegistrar() == null ? null : document.getRegistrar());
+            view.contractor().setValue(document.getContractor() == null ? null : document.getContractor());
             view.inventoryNumberEnabled(isEnableInventoryNumberByApproved(this.document));
             view.decimalNumberEnabled(isEnableDecimalNumberByApproved(this.document));
         }
@@ -585,6 +598,10 @@ public abstract class DocumentEditActivity
         return (doc == null) || (doc.getApproved() == null || !doc.getApproved()) || doc.getDecimalNumber() == null;
     }
 
+    private boolean isNew(Document document) {
+        return document == null || document.getId() == null;
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -607,4 +624,5 @@ public abstract class DocumentEditActivity
     private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/download/document/";
     private AppEvents.InitDetails initDetails;
     private List<En_DocumentCategory> availableDocumentCategories = new ArrayList<>(Arrays.asList(En_DocumentCategory.values()));
+    private Runnable fireBackEvent = () -> fireEvent(new Back());
 }

@@ -10,47 +10,74 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptorLogging;
+import ru.protei.portal.core.client.enterprise1c.api.Api1C;
+import ru.protei.portal.core.client.enterprise1c.api.Api1CImpl;
+import ru.protei.portal.core.client.enterprise1c.http.HttpClient1C;
+import ru.protei.portal.core.client.enterprise1c.http.HttpClient1CImpl;
+import ru.protei.portal.core.client.enterprise1c.mapper.FieldsMapper1C;
+import ru.protei.portal.core.client.enterprise1c.mapper.FieldsMapper1CImpl;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApiImpl;
-import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
-import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClientImpl;
+import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
+import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.index.document.DocumentStorageIndex;
 import ru.protei.portal.core.index.document.DocumentStorageIndexImpl;
-import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.renderer.MarkdownRenderer;
-import ru.protei.portal.core.renderer.HTMLRenderer;
-import ru.protei.portal.core.renderer.impl.JiraWikiMarkupRendererImpl;
-import ru.protei.portal.core.renderer.impl.HTMLRendererImpl;
+import ru.protei.portal.core.model.converter.MoneyJdbcConverter;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.model.ent.CaseInfo;
-import ru.protei.portal.core.service.*;
-import ru.protei.portal.core.service.AccountService;
-import ru.protei.portal.core.service.AccountServiceImpl;
-import ru.protei.portal.core.service.bootstrap.BootstrapService;
+import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.renderer.HTMLRenderer;
+import ru.protei.portal.core.renderer.JiraWikiMarkupRenderer;
+import ru.protei.portal.core.renderer.MarkdownRenderer;
+import ru.protei.portal.core.renderer.impl.HTMLRendererImpl;
+import ru.protei.portal.core.renderer.impl.JiraWikiMarkupRendererImpl;
+import ru.protei.portal.core.renderer.impl.MarkdownRendererImpl;
+import ru.protei.portal.core.report.absence.ReportAbsence;
+import ru.protei.portal.core.report.absence.ReportAbsenceImpl;
 import ru.protei.portal.core.report.caseobjects.ReportCase;
 import ru.protei.portal.core.report.caseobjects.ReportCaseImpl;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsed;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsedImpl;
-import ru.protei.portal.core.service.events.*;
-import ru.protei.portal.core.service.policy.PolicyService;
-import ru.protei.portal.core.service.policy.PolicyServiceImpl;
-import ru.protei.portal.core.service.template.TemplateService;
-import ru.protei.portal.core.service.template.TemplateServiceImpl;
+import ru.protei.portal.core.report.contract.ReportContract;
+import ru.protei.portal.core.report.contract.ReportContractImpl;
+import ru.protei.portal.core.report.dutylog.ReportDutyLog;
+import ru.protei.portal.core.report.dutylog.ReportDutyLogImpl;
+import ru.protei.portal.core.report.projects.ReportProject;
+import ru.protei.portal.core.report.projects.ReportProjectImpl;
+import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.auth.AuthServiceImpl;
 import ru.protei.portal.core.service.auth.LDAPAuthProvider;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceImpl;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceTaskHandlerImpl;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseTaskHandler;
+import ru.protei.portal.core.service.bootstrap.BootstrapService;
+import ru.protei.portal.core.service.bootstrap.BootstrapServiceImpl;
+import ru.protei.portal.core.service.events.*;
+import ru.protei.portal.core.service.nrpe.NRPEService;
+import ru.protei.portal.core.service.nrpe.NRPEServiceImpl;
+import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.portal.core.service.policy.PolicyServiceImpl;
+import ru.protei.portal.core.service.syncronization.EmployeeRegistrationYoutrackSynchronizer;
+import ru.protei.portal.core.service.syncronization.EmployeeRegistrationYoutrackSynchronizerImpl;
+import ru.protei.portal.core.service.template.TemplateService;
+import ru.protei.portal.core.service.template.TemplateServiceImpl;
 import ru.protei.portal.core.svn.document.DocumentSvnApi;
 import ru.protei.portal.core.svn.document.DocumentSvnApiImpl;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
+import ru.protei.portal.nrpe.NRPEExecutorTerminal;
+import ru.protei.portal.nrpe.NRPEProcessor;
 import ru.protei.portal.schedule.PortalScheduleTasks;
 import ru.protei.portal.schedule.PortalScheduleTasksImpl;
 import ru.protei.portal.tools.migrate.export.ActiveExportDataService;
@@ -62,8 +89,6 @@ import ru.protei.portal.tools.migrate.imp.MigrationRunner;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.portal.tools.migrate.sybase.SybConnProvider;
 import ru.protei.portal.tools.migrate.sybase.SybConnWrapperImpl;
-import ru.protei.portal.core.renderer.JiraWikiMarkupRenderer;
-import ru.protei.portal.core.renderer.impl.MarkdownRendererImpl;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
@@ -73,7 +98,7 @@ import ru.protei.winter.jdbc.config.JdbcConfigData;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.util.concurrent.*;
+import java.util.concurrent.Executor;
 
 @Configuration
 @EnableAspectJAutoProxy
@@ -114,7 +139,15 @@ public class MainConfiguration {
         return new BackgroundTaskThreadPoolTaskExecutor( maxDbConnectionPoolSize );
     }
 
-    @Bean
+    @Bean(name = REPORT_TASKS)
+    public Executor getReportThreadPoolTaskExecutor(@Autowired PortalConfig config) {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(config.data().reportConfig().getThreadsNumber());
+        executor.setMaxPoolSize(config.data().reportConfig().getThreadsNumber());
+        return executor;
+    }
+
+    @Bean()
     public FileStorage getFileStorage(@Autowired PortalConfig config) {
         PortalConfigData.CloudConfig cloud = config.data().cloud();
         return new FileStorage(cloud.getStoragePath(), cloud.getUser(), cloud.getPassword());
@@ -181,6 +214,23 @@ public class MainConfiguration {
         return new EmployeeSqlBuilder();
     }
 
+    @Bean
+    public PersonSqlBuilder getPersonSqlBuilder() {
+        return new PersonSqlBuilder();
+    }
+
+    @Bean
+    public ContactSqlBuilder getContactSqlBuilder() {
+        return new ContactSqlBuilder();
+    }
+
+    /* DAO converters */
+
+    @Bean
+    public MoneyJdbcConverter moneyJdbcConverter() {
+        return new MoneyJdbcConverter();
+    }
+
     /* DAO */
 
     @Bean
@@ -206,6 +256,11 @@ public class MainConfiguration {
     @Bean
     public PersonDAO getPersonDAO() {
         return new PersonDAO_Impl();
+    }
+
+    @Bean
+    public PersonShortViewDAO gePersonShortViewDAO() {
+        return new PersonShortViewDAOImpl();
     }
 
     @Bean
@@ -239,6 +294,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public BootstrapAppDAO getBootstrapAppDAO() {
+        return new BootstrapAppDAO_Impl();
+    }
+
+    @Bean
     public CaseObjectMetaDAO getCaseMetaDAO() {
         return new CaseObjectMetaDAO_Impl();
     }
@@ -266,6 +326,11 @@ public class MainConfiguration {
     @Bean
     public UserLoginDAO getUserLoginDAO() {
         return new UserLoginDAO_Impl();
+    }
+
+    @Bean
+    public UserLoginShortViewDAO getUserLoginShortViewDAO() {
+        return new UserLoginShortViewDAO_Impl();
     }
 
     @Bean
@@ -428,8 +493,6 @@ public class MainConfiguration {
         return new RedminePriorityMapEntryDAO_Impl();
     }
 
-
-
     @Bean
     public CaseFilterDAO getIssueFilterDAO() {
         return new CaseFilterDAO_Impl();
@@ -448,6 +511,21 @@ public class MainConfiguration {
     @Bean
     public CaseLinkDAO getCaseLinkDAO() {
         return new CaseLinkDAO_Impl();
+    }
+
+    @Bean
+    public PlanDAO getPlanDAO() {
+        return new PlanDAO_Impl();
+    }
+
+    @Bean
+    public PlanToCaseObjectDAO getPlanToCaseObjectDAO() {
+        return new PlanToCaseObjectDAO_Impl();
+    }
+
+    @Bean
+    public HistoryDAO getHistoryDAO() {
+        return new HistoryDAO_Impl();
     }
 
     @Bean
@@ -506,6 +584,16 @@ public class MainConfiguration {
     }
 
     @Bean
+    public ProjectDAO getProjectDAO() {
+        return new ProjectDAO_Impl();
+    }
+
+    @Bean
+    public ProjectTechnicalSupportValidityReportInfoDAO getProjectTechnicalSupportValidityReportInfoDAO() {
+        return new ProjectTechnicalSupportValidityReportInfoDAO_Impl();
+    }
+
+    @Bean
     public ContractDateDAO getContractDateDAO() {
         return new ContractDateDAO_Impl();
     }
@@ -531,6 +619,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public ContactItemDAO getContactItemDAO() {
+        return new ContactItemDAO_Impl();
+    }
+
+    @Bean
     public YoutrackHttpClient getYoutrackHttpClient() {
         return new YoutrackHttpClientImpl();
     }
@@ -546,8 +639,98 @@ public class MainConfiguration {
     }
 
     @Bean
+    public FieldsMapper1C getFieldsMapper1C() {
+        return new FieldsMapper1CImpl();
+    }
+
+    @Bean
+    public HttpClient1C getHttpClient1C() {
+        return new HttpClient1CImpl();
+    }
+
+    @Bean
+    public Api1C getApi1C() {
+        return new Api1CImpl();
+    }
+
+    @Bean
     public JiraCompanyGroupDAO getJiraCompanyGroupDAO() {
         return new JiraCompanyGroupDAO_Impl();
+    }
+
+    @Bean
+    public EducationWalletDAO getEducationWalletDAO() {
+        return new EducationWalletDAO_Impl();
+    }
+
+    @Bean
+    public EducationEntryDAO getEducationEntryDAO() {
+        return new EducationEntryDAO_Impl();
+    }
+
+    @Bean
+    public EducationEntryAttendanceDAO getEducationEntryAttendanceDAO() {
+        return new EducationEntryAttendanceDAO_Impl();
+    }
+
+    @Bean
+    public SubnetDAO getSubnetDAO() {
+        return new SubnetDAO_Impl();
+    }
+
+    @Bean
+    public ReservedIpDAO getReservedIpDAO() {
+        return new ReservedIpDAO_Impl();
+    }
+
+    @Bean
+    public RoomReservableDAO getRoomReservableDAO() {
+        return new RoomReservableDAO_Impl();
+    }
+
+    @Bean
+    public RoomReservationDAO getRoomReservationDAO() {
+        return new RoomReservationDAO_Impl();
+    }
+
+    @Bean
+    public PersonCaseFilterDAO getPersonToCaseFilterDAO() {
+        return new PersonCaseFilterDAO_Impl();
+    }
+
+    @Bean
+    public ContractSpecificationDAO getContractSpecificationDAO() {
+        return new ContractSpecificationDAO_Impl();
+    }
+
+    @Bean
+    public ContractorDAO getContractorDAO() {
+        return new ContractorDAO_Impl();
+    }
+
+    @Bean
+    public PersonNotifierDAO getPersonNotifierDAO() {
+        return new PersonNotifierDAO_Impl();
+    }
+
+    @Bean
+    public AbsenceFilterDAO getAbsenceFilterDAO() {
+        return new AbsenceFilterDAO_Impl();
+    }
+
+    @Bean
+    public DutyLogFilterDAO getDutyLogFilterDAO() {
+        return new DutyLogFilterDAO_Impl();
+    }
+
+    @Bean
+    public PersonFavoriteIssuesDAO getPersonFavoritesIssuesDAO() {
+        return new PersonFavoriteIssuesDAO_Impl();
+    }
+
+    @Bean
+    public DutyLogDAO getDutyLogDAO() {
+        return new DutyLogDAO_Impl();
     }
 
     /* SERVICES */
@@ -570,6 +753,16 @@ public class MainConfiguration {
     @Bean
     public CompanyService getCompanyService() {
         return new CompanyServiceImpl();
+    }
+
+    @Bean
+    public CompanyDepartmentService getCompanyDepartmentService() {
+        return new CompanyDepartmentServiceImpl();
+    }
+
+    @Bean
+    public WorkerPositionService getWorkerPositionService() {
+        return new WorkerPositionServiceImpl();
     }
 
     @Bean
@@ -654,7 +847,7 @@ public class MainConfiguration {
 
     @Bean
     public BootstrapService getBootstrapService() {
-        return new BootstrapService();
+        return new BootstrapServiceImpl();
     }
 
     @Bean
@@ -663,8 +856,18 @@ public class MainConfiguration {
     }
 
     @Bean
+    public EventProjectAssemblerService getEventProjectAssemblerService() {
+        return new EventProjectAssemblerServiceImpl();
+    }
+
+    @Bean
     public AssemblerService getAssemblerService() {
         return new AssemblerServiceImpl();
+    }
+
+    @Bean
+    public AssemblerProjectService getAssemblerProjectService() {
+        return new AssemblerProjectServiceImpl();
     }
 
     @Bean
@@ -733,6 +936,16 @@ public class MainConfiguration {
     }
 
     @Bean
+    public PlanService getPlanService() {
+        return new PlanServiceImpl();
+    }
+
+    @Bean
+    public HistoryService getHistoryService() {
+        return new HistoryServiceImpl();
+    }
+
+    @Bean
     public SiteFolderService getSiteFolderService() {
         return new SiteFolderServiceImpl();
     }
@@ -773,6 +986,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public IpReservationService getIpReservationService() {
+        return new IpReservationServiceImpl();
+    }
+
+    @Bean
     public CaseStateWorkflowService getCaseStateWorkflowService() {
         return new CaseStateWorkflowServiceImpl();
     }
@@ -792,6 +1010,66 @@ public class MainConfiguration {
         return new UserCaseAssignmentServiceImpl();
     }
 
+    @Bean
+    public EducationService getEducationService() {
+        return new EducationServiceImpl();
+    }
+
+    @Bean
+    public RoomReservationService getRoomReservationService() {
+        return new RoomReservationServiceImpl();
+    }
+
+    @Bean
+    public AutoOpenCaseService getAutoOpenCaseService() {
+        return new AutoOpenCaseServiceImpl();
+    }
+
+    @Bean
+    public AutoOpenCaseTaskHandler getAutoOpenCaseHandler() {
+        return new AutoOpenCaseServiceTaskHandlerImpl();
+    }
+
+    @Bean
+    public EmployeeRegistrationYoutrackSynchronizer getEmployeeRegistrationYoutrackSynchronizer() {
+        return new EmployeeRegistrationYoutrackSynchronizerImpl();
+    }
+
+    @Bean
+    public PersonCaseFilterService getPersonCaseFilterService() {
+        return new PersonCaseFilterServiceImpl();
+    }
+
+    @Bean
+    public AbsenceService getAbsenceService() {
+        return new AbsenceServiceImpl();
+    }
+
+    @Bean
+    public AbsenceFilterService getAbsenceFilterService() {
+        return new AbsenceFilterServiceImpl();
+    }
+
+    @Bean
+    public DutyLogFilterService getDutyLogFilterService() {
+        return new DutyLogFilterServiceImpl();
+    }
+
+
+    @Bean
+    public PersonSubscriptionService getPersonSubscriptionService() {
+        return new PersonSubscriptionServiceImpl();
+    }
+
+    @Bean
+    public MailReceiverService getMailReceiverService() {
+        return new MailReceiverServiceImpl();
+    }
+
+    @Bean
+    public DutyLogService getDutyLogService() {
+        return new DutyLogServiceImpl();
+    }
 
     @Bean
     public ReportCase getReportCase() {
@@ -799,8 +1077,28 @@ public class MainConfiguration {
     }
 
     @Bean
+    public ReportProject getReportProject() {
+        return new ReportProjectImpl();
+    }
+
+    @Bean
     public ReportCaseTimeElapsed getReportCaseTimeElapsed() {
         return new ReportCaseTimeElapsedImpl();
+    }
+
+    @Bean
+    public ReportAbsence getReportAbsence() {
+        return new ReportAbsenceImpl();
+    }
+
+    @Bean
+    public ReportDutyLog getReportDutyLog() {
+        return new ReportDutyLogImpl();
+    }
+
+    @Bean
+    public ReportContract getReportContract() {
+        return new ReportContractImpl();
     }
 
     @Bean
@@ -818,6 +1116,15 @@ public class MainConfiguration {
         return new JiraWikiMarkupRendererImpl();
     }
 
+    @Bean ExternalLinksHtml getExternalLinksHtml() {
+        return new ExternalLinksHtml();
+    }
+
+    @Bean
+    public NRPEService getNRPEService() {
+        return new NRPEServiceImpl();
+    }
+
     /* ASPECT/INTERCEPTORS */
 
     @Bean
@@ -830,7 +1137,13 @@ public class MainConfiguration {
         return new ServiceLayerInterceptorLogging();
     }
 
+    @Bean
+    public NRPEProcessor getNRPERequest() {
+        return new NRPEProcessor(new NRPEExecutorTerminal());
+    }
+
     public static final String BACKGROUND_TASKS = "backgroundTasks";
+    public static final String REPORT_TASKS = "reportTasks";
 
     private static final Logger log = LoggerFactory.getLogger( MainConfiguration.class );
 }

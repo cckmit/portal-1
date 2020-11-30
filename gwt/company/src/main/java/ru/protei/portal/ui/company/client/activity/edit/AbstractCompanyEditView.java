@@ -26,6 +26,11 @@ public interface AbstractCompanyEditView extends IsWidget {
 
     HasText webSite();
     HasText comment();
+
+    HasText companyNameErrorLabel();
+
+    HasVisibility companyNameErrorLabelVisibility();
+
     HasValue<EntityOption> parentCompany();
 
     HasValue<En_CompanyCategory> companyCategory();
@@ -42,4 +47,6 @@ public interface AbstractCompanyEditView extends IsWidget {
     void setParentCompanyFilter(Selector.SelectorFilter<EntityOption> companyFilter );
     void setParentCompanyEnabled( boolean isEnabled );
     void setCompanyIdToSubscriptionsList(Long companyId);
+
+    HasValue<Boolean> autoOpenIssues();
 }

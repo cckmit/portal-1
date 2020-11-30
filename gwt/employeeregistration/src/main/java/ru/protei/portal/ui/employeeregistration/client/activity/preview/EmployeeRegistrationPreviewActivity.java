@@ -10,12 +10,17 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.*;
 import ru.protei.portal.ui.common.client.service.EmployeeRegistrationControllerAsync;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+
+import java.util.Objects;
 
 import static ru.protei.portal.core.model.helper.StringUtils.join;
 
@@ -44,6 +49,11 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
 
     @Event
     public void onFullScreenShow(EmployeeRegistrationEvents.ShowFullScreen event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_REGISTRATION_VIEW)) {
+            fireEvent(new ErrorPageEvents.ShowForbidden());
+            return;
+        }
+
         if (event.id == null) {
             fireEvent(new Back());
             return;
@@ -51,15 +61,21 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
 
         employeeRegistrationId = event.id;
 
-        if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_REGISTRATION_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
-            return;
-        }
-
         fullScreenContainer.clear();
         fullScreenContainer.add( view.asWidget() );
         loadDetails(event.id);
         view.showFullScreen(true);
+    }
+
+    @Event
+    public void onEmployeeRegistrationChanged(EmployeeRegistrationEvents.ChangeEmployeeRegistration event) {
+        if (!Objects.equals(event.employeeRegistrationId, this.employeeRegistrationId)) {
+            return;
+        }
+
+        employeeRegistrationController.getEmployeeRegistration(event.employeeRegistrationId, new FluentCallback<EmployeeRegistration>()
+                .withSuccess(this::fillView)
+        );
     }
 
     @Override
@@ -69,7 +85,7 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
 
     @Override
     public void onBackButtonClicked() {
-        fireEvent(new EmployeeRegistrationEvents.Show());
+        fireEvent(new EmployeeRegistrationEvents.Show(true));
     }
 
     private void loadDetails(Long id) {
@@ -96,10 +112,10 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
         view.setWorkplace(value.getWorkplace());
         view.setEmploymentDate(DateFormatter.formatDateOnly(value.getEmploymentDate()));
         view.setCreatedBy(lang.createBy(value.getCreatorShortName(), DateFormatter.formatDateTime(value.getCreated())));
-        view.setEquipmentList( join(value.getEquipmentList(), equipmentLang::getName, ", "));
-        view.setResourceList( join(value.getResourceList(), resourceLang::getName, ", "));
-        view.setPhoneOfficeTypeList( join(value.getPhoneOfficeTypeList(), phoneOfficeTypeLang::getName, ", "));
-        view.setCurators( join( value.getCurators(), Person::getDisplayShortName, "," ) );
+        view.setEquipmentList( join(value.getEquipmentList(), equipment -> equipmentLang.getName(equipment), ", "));
+        view.setResourceList( join(value.getResourceList(), resource -> resourceLang.getName(resource), ", "));
+        view.setPhoneOfficeTypeList( join(value.getPhoneOfficeTypeList(), phoneOfficeType -> phoneOfficeTypeLang.getName(phoneOfficeType), ", "));
+        view.setCurators( join( value.getCurators(), PersonShortView::getDisplayShortName, "," ) );
         view.setPosition(value.getPosition());
         view.setProbationPeriodMonth(value.getProbationPeriodMonth() == null ?
                 lang.employeeRegistrationWithoutProbationPeriod() :
@@ -109,6 +125,8 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
         view.setResourceComment(value.getResourceComment());
         view.setAdditionalSoft(value.getAdditionalSoft());
         view.setHeadOfDepartment(value.getHeadOfDepartment() == null ? "" : value.getHeadOfDepartment().getName());
+        view.setCompany(StringUtils.emptyIfNull(value.getCompanyName()));
+        view.setDepartment(StringUtils.emptyIfNull(value.getDepartment()));
 
         if (value.getEmploymentType() == null) {
             view.setEmploymentType("");
@@ -120,17 +138,19 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
             view.setEmploymentType(employmentType);
         }
 
-        view.setState(value.getState());
+        view.setState(value.getStateName());
 
         fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
                 .withCaseType(En_CaseType.EMPLOYEE_REGISTRATION)
                 .withCaseId(value.getId())
                 .readOnly());
 
-        fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
-                .withCaseType(En_CaseType.EMPLOYEE_REGISTRATION)
-                .withCaseId(value.getId())
-                .withModifyEnabled(policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_REGISTRATION_VIEW)));
+        fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer(),
+                value.getId(),
+                En_CaseType.EMPLOYEE_REGISTRATION,
+                policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_REGISTRATION_VIEW),
+                value.getCreatorId())
+        );
     }
 
     private HasWidgets fullScreenContainer;

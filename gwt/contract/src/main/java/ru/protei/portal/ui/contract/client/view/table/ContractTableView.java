@@ -14,40 +14,35 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Contract;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
-import ru.protei.portal.ui.common.client.columns.DynamicColumn;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
+import ru.protei.portal.ui.common.client.lang.En_ContractKindLang;
 import ru.protei.portal.ui.common.client.lang.En_ContractStateLang;
 import ru.protei.portal.ui.common.client.lang.En_ContractTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.contract.client.activity.table.AbstractContractTableActivity;
 import ru.protei.portal.ui.contract.client.activity.table.AbstractContractTableView;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.util.ContractSupportService.getContractKind;
+import static ru.protei.portal.ui.common.shared.util.HtmlUtils.sanitizeHtml;
 
 public class ContractTableView extends Composite implements AbstractContractTableView {
 
     @Inject
     public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        initTable();
     }
 
     @Override
     public void setActivity(AbstractContractTableActivity activity) {
-        clickColumns.forEach(col -> {
-            col.setHandler(activity);
-            col.setColumnProvider(columnProvider);
-        });
-
-        editClickColumn.setEditHandler(activity);
-        editClickColumn.setColumnProvider(columnProvider);
-        table.setLoadHandler(activity);
+        this.activity = activity;
+        initTable();
     }
 
     @Override
@@ -98,73 +93,202 @@ public class ContractTableView extends Composite implements AbstractContractTabl
 
     @Override
     public void clearSelection() {
-        columnProvider.setSelectedValue(null);
+        columnProvider.removeSelection();
     }
 
     private void initTable() {
-        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.CONTRACT_EDIT) );
 
-        ClickColumn<Contract> type = new ClickColumn< Contract >() {
-            @Override
-            protected void fillColumnHeader( Element columnHeader ) {}
+        columnProvider = new ClickColumnProvider<>();
 
-            @Override
-            public void fillColumnValue( Element cell, Contract value ) {
-                cell.addClassName("contract-type-column");
-                Element root = DOM.createDiv();
-                cell.appendChild( root );
+        table.addColumn(columnState.header, columnState.values);
+        columnState.setHandler(activity);
+        columnState.setColumnProvider(columnProvider);
 
-                ImageElement image = DOM.createImg().cast();
-                image.addClassName("height-40");
-                image.setSrc( "./images/contract_" + value.getState().name().toLowerCase() + ".png" );
-                image.setTitle( contractStateLang.getName(value.getState()) );
-                root.appendChild( image );
-            }
-        };
-        clickColumns.add(type);
+        table.addColumn(columnInfo.header, columnInfo.values);
+        columnInfo.setHandler(activity);
+        columnInfo.setColumnProvider(columnProvider);
 
-        DynamicColumn<Contract> numTypeColumn = new DynamicColumn<>(lang.contractNumber(), "num-column",
-                contract -> "<b>" + lang.contractNum(contract.getNumber()) + "</b><br/>"
-                        + "<small>" + contractTypeLang.getName(contract.getContractType()) + "<br/>"
-                        + "<b>" + lang.contractDateSigning() + ":</b> " + (contract.getDateSigning() == null ? lang.contractDateNotDefined() : dateFormat.format(contract.getDateSigning())) + "<br/>"
-                        + "<b>" + lang.contractDateValid() + ":</b> " + (contract.getDateValid() == null ? lang.contractDateNotDefined() : dateFormat.format(contract.getDateValid()))  + "</small>");
-        clickColumns.add(numTypeColumn);
+        table.addColumn(columnContractor.header, columnContractor.values);
+        columnContractor.setHandler(activity);
+        columnContractor.setColumnProvider(columnProvider);
 
-        DynamicColumn<Contract> descriptionColumn = new DynamicColumn<>(lang.contractDescription(), "description-column",
-                contract -> "<b>" + (contract.getProjectId() == null ? StringUtils.emptyIfNull(contract.getCaseDirectionName()) : StringUtils.emptyIfNull(contract.getDirectionName())) + "</b><br/>"
-                        + StringUtils.emptyIfNull(contract.getDescription()));
-        clickColumns.add(descriptionColumn);
+        table.addColumn(columnDescription.header, columnDescription.values);
+        columnDescription.setHandler(activity);
+        columnDescription.setColumnProvider(columnProvider);
 
-        DynamicColumn<Contract> workGroupColumn = new DynamicColumn<>(lang.contractWorkGroup(), "work-group-column",
-                contract -> "<b>" + lang.contractOrganization() + ":</b> " + StringUtils.emptyIfNull(contract.getOrganizationName()) + "</b><br/>"
-                        +  "<b>" + lang.contractManager() + ":</b> " + (contract.getProjectId() == null ? StringUtils.emptyIfNull(contract.getCaseManagerShortName()) : StringUtils.emptyIfNull(contract.getManagerShortName())) + "</b><br/>"
-                        +  "<b>" + lang.contractCurator() + ":</b> " + StringUtils.emptyIfNull(contract.getCuratorShortName()) + "</b><br/>"
-                        +  "<b>" + lang.contractContragent() + ":</b> " + (contract.getProjectId() == null ? StringUtils.emptyIfNull(contract.getCaseContragentName()) : StringUtils.emptyIfNull(contract.getContragentName())) + "</b>");
-        clickColumns.add(workGroupColumn);
+        table.addColumn(columnWorkGroup.header, columnWorkGroup.values);
+        columnWorkGroup.setHandler(activity);
+        columnWorkGroup.setColumnProvider(columnProvider);
 
-        DynamicColumn<Contract> costColumn = new DynamicColumn<>(lang.contractCost(), "cost-column",
-                contract -> contract.getCost() == null ?
-                        lang.contractCostNotDefined() :
-                        contract.getCost().toString() + " " + contract.getCurrency().getCode()
-        );
-        clickColumns.add(costColumn);
+        table.addColumn(columnCost.header, columnCost.values);
+        columnCost.setHandler(activity);
+        columnCost.setColumnProvider(columnProvider);
 
-        clickColumns.forEach(c -> table.addColumn(c.header, c.values));
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.CONTRACT_EDIT));
         table.addColumn(editClickColumn.header, editClickColumn.values);
+        editClickColumn.setActionHandler(activity);
+        editClickColumn.setEditHandler(activity);
+        editClickColumn.setHandler(activity);
+        editClickColumn.setColumnProvider(columnProvider);
+
+        table.setLoadHandler(activity);
     }
 
+    private final ClickColumn<Contract> columnState = new ClickColumn<Contract>() {
+        protected String getColumnClassName() { return "contract-column-state"; }
+        protected void fillColumnHeader(Element columnHeader) {}
+        public void fillColumnValue(Element cell, Contract contract) {
+            Element root = DOM.createDiv();
+            ImageElement image = DOM.createImg().cast();
+            image.addClassName("height-40");
+            // https://www.flaticon.com/authors/flat_circular/flat
+            // https://www.flaticon.com/packs/business-strategy-2
+            image.setSrc( "./images/contract_" + contract.getState().name().toLowerCase() + ".png" );
+            image.setTitle( contractStateLang.getName(contract.getState()) );
+            root.appendChild(image);
+            cell.appendChild(root);
+        }
+    };
+
+    private final ClickColumn<Contract> columnInfo = new ClickColumn<Contract>(){
+        protected String getColumnClassName() { return "contract-column-info"; }
+        protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setInnerText(lang.contractNumber());
+        }
+        public void fillColumnValue(Element cell, Contract contract) {
+            Element root = DOM.createDiv();
+            StringBuilder sb = new StringBuilder();
+            sb.append("<b>")
+                    .append(sanitizeHtml(contractTypeLang.getName(contract.getContractType())))
+                    .append(" ")
+                    .append(sanitizeHtml(contract.getNumber()))
+                    .append("</b>");
+            sb.append("<br/>");
+            sb.append("<small>");
+            sb.append(contractKindLang.getName(getContractKind(contract)))
+                    .append("<br/>");
+            sb.append("<b>")
+                    .append(lang.contractDateSigning())
+                    .append(":</b> ")
+                    .append(contract.getDateSigning() != null
+                            ? dateFormat.format(contract.getDateSigning())
+                            : lang.contractDateNotDefined());
+            sb.append("<br/>");
+            sb.append("<b>")
+                    .append(lang.contractDateValid())
+                    .append(":</b> ")
+                    .append(contract.getDateValid() != null
+                            ? dateFormat.format(contract.getDateValid())
+                            : lang.contractDateNotDefined());
+            sb.append("</small>");
+            root.setInnerHTML(sb.toString());
+            cell.appendChild(root);
+        }
+    };
+
+    private final ClickColumn<Contract> columnContractor = new ClickColumn<Contract>(){
+        protected String getColumnClassName() { return "contract-column-contractor"; }
+        protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setInnerText(lang.contractContractor());
+        }
+        public void fillColumnValue(Element cell, Contract contract) {
+            Element root = DOM.createDiv();
+            StringBuilder sb = new StringBuilder();
+            sb.append(sanitizeHtml(contract.getContractor() != null
+                    ? contract.getContractor().getName()
+                    : ""));
+            root.setInnerHTML(sb.toString());
+            cell.appendChild(root);
+        }
+    };
+
+    private final ClickColumn<Contract> columnDescription = new ClickColumn<Contract>(){
+        protected String getColumnClassName() { return "contract-column-description"; }
+        protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setInnerText(lang.contractDescription());
+        }
+        public void fillColumnValue(Element cell, Contract contract) {
+            Element root = DOM.createDiv();
+            StringBuilder sb = new StringBuilder();
+            if (contract.getDirectionId() != null) {
+                sb.append("<b>")
+                        .append(sanitizeHtml(contract.getDirectionName()))
+                        .append("</b>")
+                        .append(" ");
+            }
+            if (contract.getProjectId() != null) {
+                sb.append(sanitizeHtml(contract.getProjectName()));
+            }
+            sb.append("<br/>");
+            sb.append(sanitizeHtml(contract.getDescription()));
+            root.setInnerHTML(sb.toString());
+            cell.appendChild(root);
+        }
+    };
+
+    private final ClickColumn<Contract> columnWorkGroup = new ClickColumn<Contract>(){
+        protected String getColumnClassName() { return "contract-column-work-group"; }
+        protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setInnerText(lang.contractWorkGroup());
+        }
+        public void fillColumnValue(Element cell, Contract contract) {
+            Element root = DOM.createDiv();
+            StringBuilder sb = new StringBuilder();
+            sb.append("<b>")
+                    .append(lang.contractOrganization())
+                    .append(":</b> ")
+                    .append(sanitizeHtml(contract.getOrganizationName()))
+                    .append("<br/>");
+            sb.append("<b>")
+                    .append(lang.contractManager())
+                    .append(":</b> ")
+                    .append(contract.getProjectId() == null
+                            ? sanitizeHtml(contract.getCaseManagerShortName())
+                            : sanitizeHtml(contract.getManagerShortName()))
+                    .append("<br/>");
+            sb.append("<b>")
+                    .append(lang.contractCurator())
+                    .append(":</b> ")
+                    .append(sanitizeHtml(contract.getCuratorShortName()))
+                    .append("<br/>");
+            root.setInnerHTML(sb.toString());
+            cell.appendChild(root);
+        }
+    };
+
+    private final ClickColumn<Contract> columnCost = new ClickColumn<Contract>(){
+        protected String getColumnClassName() { return "contract-column-cost"; }
+        protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setInnerText(lang.contractCost());
+        }
+        public void fillColumnValue(Element cell, Contract contract) {
+            Element root = DOM.createDiv();
+            StringBuilder sb = new StringBuilder();
+            if (contract.getCost() != null) {
+                sb.append(contract.getCost().toString()).append(" ");
+                if (contract.getCurrency() != null) {
+                    sb.append(contract.getCurrency().getCode()).append(" ");
+                }
+                sb.append("<br/>").append(contract.getVat() != null
+                        ? lang.vat(contract.getVat())
+                        : lang.withoutVat());
+            }
+            root.setInnerHTML(sb.toString());
+            cell.appendChild(root);
+        }
+    };
+
+    @Inject
+    @UiField
+    Lang lang;
     @UiField
     InfiniteTableWidget<Contract> table;
-
     @UiField
     HTMLPanel tableContainer;
     @UiField
     HTMLPanel previewContainer;
     @UiField
     HTMLPanel filterContainer;
-
-    @UiField
-    Lang lang;
     @UiField
     HTMLPanel pagerContainer;
 
@@ -174,14 +298,14 @@ public class ContractTableView extends Composite implements AbstractContractTabl
     private En_ContractStateLang contractStateLang;
     @Inject
     private En_ContractTypeLang contractTypeLang;
-
+    @Inject
+    private En_ContractKindLang contractKindLang;
     @Inject
     private PolicyService policyService;
 
     private ClickColumnProvider<Contract> columnProvider = new ClickColumnProvider<>();
-    private List<ClickColumn<Contract>> clickColumns = new LinkedList<>();
-
-    private DateTimeFormat dateFormat = DateTimeFormat.getFormat("dd.MM.yyyy");
+    private AbstractContractTableActivity activity;
+    private final DateTimeFormat dateFormat = DateTimeFormat.getFormat("dd.MM.yyyy");
 
     private static TableViewUiBinder ourUiBinder = GWT.create(TableViewUiBinder.class);
     interface TableViewUiBinder extends UiBinder<HTMLPanel, ContractTableView> {}

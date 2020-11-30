@@ -1,99 +1,99 @@
 package ru.protei.portal.ui.common.client.widget.selector.person;
 
+import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.query.PersonQuery;
+import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.selector.AsyncSearchSelectorModel;
 import ru.protei.portal.ui.common.client.selector.LoadingHandler;
-import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCache;
-import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCacheLoadHandler;
+import ru.protei.portal.ui.common.client.selector.model.BaseSelectorModel;
 import ru.protei.portal.ui.common.client.service.PersonControllerAsync;
-import ru.protei.portal.ui.common.shared.model.FluentCallback;
+import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
+import java.util.Set;
+import java.util.logging.Logger;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.nullIfEmpty;
 /**
- * Модель контактных лиц
+ * Синхронная модель Person
  */
-public abstract class PersonModel implements AsyncSearchSelectorModel<PersonShortView>, Activity {
+public abstract class PersonModel extends BaseSelectorModel<PersonShortView> implements Activity {
+
     @Event
     public void onInit(AuthEvents.Success event) {
-        requestCurrentPerson(event.profile.getId());
-        cache.clearCache();
-        cache.setLoadHandler(makeLoadHandler(makeQuery(null)));
+        myId = event.profile.getId();
+    }
+
+    public boolean isCompaniesPresent() {
+        return !isEmpty( query.getCompanyIds() );
+    }
+
+    public void setIsPeople( Boolean isPeople ) {
+        query.setPeople( isPeople );
+    }
+
+    public void setIsFired( Boolean isFired ) {
+        query.setFired( isFired );
     }
 
     @Override
-    public PersonShortView get(int elementIndex, LoadingHandler handler) {
-        if (currentPerson == null || StringUtils.isNotBlank(searchString)) {
-            return cache.get(elementIndex, handler);
-        }
-        if (elementIndex == 0) return currentPerson;
-        PersonShortView personShortView = cache.get(--elementIndex, handler);
-        if (Objects.equals(personShortView, currentPerson)) {
-            return cache.get(++elementIndex, handler);
-        }
-        return personShortView;
+    protected void requestData( LoadingHandler selector, String searchText) {
+        personService.getPersonViewList(query, new RequestCallback<List<PersonShortView>>() {
+
+            @Override
+            public void onError(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(List<PersonShortView> options) {
+                int value = options.indexOf(new PersonShortView("", myId, false));
+                if (value > 0) {
+                    options.add(0, options.remove(value));
+                }
+                options = transliteration(options);
+                updateElements(options, selector);
+                if(refreshable!=null){
+                    refreshable.refresh();
+                }
+            }
+        });
     }
 
-    @Override
-    public void setSearchString(String searchString) {
-        this.searchString = searchString;
-        cache.clearCache();
-        cache.setLoadHandler(makeLoadHandler(makeQuery(searchString)));
+    public void updateCompanies( Refreshable selector, Set<Long> companyIds ) {
+        this.refreshable = selector;
+        query.setCompanyIds( nullIfEmpty( companyIds ) );
+        clean();
     }
 
-    private SelectorDataCacheLoadHandler<PersonShortView> makeLoadHandler(PersonQuery query) {
-        return (offset, limit, handler) -> {
-            query.setOffset(offset);
-            query.setLimit(limit);
-            personService.getPersonViewList(query, new FluentCallback<List<PersonShortView>>()
-                    .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR)))
-                    .withSuccess(handler::onSuccess)
-            );
-        };
+    public Collection<PersonShortView> getValues() {
+        return elements;
     }
 
-    private void requestCurrentPerson(Long myId) {
-        if (currentPerson != null && Objects.equals(currentPerson.getId(), myId)) {
-            return;
-        }
-
-        currentPerson = null;
-        personService.getPerson(myId, new FluentCallback<Person>()
-                .withSuccess(this::savePerson)
-        );
+    private List<PersonShortView> transliteration( List<PersonShortView> options) {
+        options.forEach(option -> option.setName(TransliterationUtils.transliterate(option.getName(), LocaleInfo.getCurrentLocale().getLocaleName())));
+        return options;
     }
-
-    private void savePerson(Person person) {
-        currentPerson = person.toFullNameShortView();
-    }
-
-    private PersonQuery makeQuery(String searchString) {
-        PersonQuery personQuery = new PersonQuery();
-        personQuery.setDeleted(false);
-        personQuery.setSearchString(searchString);
-
-        return personQuery;
-    }
-
 
     @Inject
     PersonControllerAsync personService;
-
     @Inject
     Lang lang;
 
-    private PersonShortView currentPerson;
-    private String searchString;
-    private SelectorDataCache<PersonShortView> cache = new SelectorDataCache<>();
-}
+    private PersonQuery query = new PersonQuery(null, null, false, false, null, En_SortField.person_full_name, En_SortDir.ASC, null);
+    private Refreshable refreshable;
 
+    private Long myId;
+
+    private static final Logger log = Logger.getLogger( PersonModel.class.getName() );
+}

@@ -21,38 +21,38 @@ public class CaseAttachmentDAO_Impl extends PortalBaseJdbcDAO<CaseAttachment> im
 
     @Override
     public List<CaseAttachment> getListByCommentId(Long commentId) {
-        return getListByCondition("ccomment_id = ?", commentId);
+        return getListByCondition("case_attachment.ccomment_id = ?", commentId);
     }
 
     @Override
     public List<CaseAttachment> getListByCaseId(Long caseId) {
-        return getListByCondition("case_id = ?", caseId);
+        return getListByCondition("case_attachment.case_id = ?", caseId);
     }
 
     @Override
     public CaseAttachment getByAttachmentId(Long attachmentId) {
-        List<CaseAttachment> result = getListByCondition("att_id = ?", attachmentId);
+        List<CaseAttachment> result = getListByCondition("case_attachment.att_id = ?", attachmentId);
         return result.isEmpty()? null: result.get(0);
     }
 
     @Override
     public CaseAttachment getByRemoteId(String remoteId) {
-        return getByCondition("remote_id=?", remoteId);
+        return getByCondition("case_attachment.remote_id=?", remoteId);
     }
 
     @Override
     public int removeByCommentId(Long commentId) {
-        return removeByCondition("ccomment_id = ?", commentId);
+        return removeByCondition("case_attachment.ccomment_id = ?", commentId);
     }
 
     @Override
     public int removeByCaseId(Long caseId) {
-        return removeByCondition("case_id = ?", caseId);
+        return removeByCondition("case_attachment.case_id = ?", caseId);
     }
 
     @Override
     public int removeByAttachmentId(Long attachId) {
-        return removeByCondition("att_id = ?", attachId);
+        return removeByCondition("case_attachment.att_id = ?", attachId);
     }
 
     @Override
@@ -63,6 +63,11 @@ public class CaseAttachmentDAO_Impl extends PortalBaseJdbcDAO<CaseAttachment> im
         removeByKeys(
                 list.stream().map(CaseAttachment::getId).collect(Collectors.toList())
         );
+    }
+
+    @Override
+    public boolean checkExistAnyAttachments(List<Long> attachmentIds) {
+        return checkExistsByCondition("case_attachment.ATT_ID IN " + HelperFunc.makeInArg(attachmentIds, false));
     }
 
     @Override

@@ -10,10 +10,10 @@ public class ContractEvents {
     @Url( value = "contracts", primary = true )
     public static class Show {
         @Omit
-        public Boolean clearScroll = false;
+        public Boolean preScroll = false;
         public Show () {}
-        public Show (Boolean clearScroll) {
-            this.clearScroll = clearScroll;
+        public Show (Boolean preScroll) {
+            this.preScroll = preScroll;
         }
     }
 
@@ -48,6 +48,18 @@ public class ContractEvents {
 
         @Name("id")
         public Long contractId;
+    }
+
+    public static class ShowConciseTable {
+        public ShowConciseTable() {}
+
+        public ShowConciseTable(HasWidgets parent, Long parentContractId) {
+            this.parent = parent;
+            this.parentContractId = parentContractId;
+        }
+
+        public HasWidgets parent;
+        public Long parentContractId;
     }
 
     public static class ChangeModel {}

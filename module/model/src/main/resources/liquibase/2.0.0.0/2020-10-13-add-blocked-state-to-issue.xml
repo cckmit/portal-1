@@ -1,0 +1,31 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-blocked-state-to-case_state" author="turik">
+        <insert tableName="case_state">
+            <column name="ID" value="38" />
+            <column name="STATE" value="blocked" />
+            <column name="INFO" value="Задача заблокирована подзадачами." />
+        </insert>
+    </changeSet>
+
+    <changeSet id="add-blocked-state-to-case_state_matrix" author="turik">
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="4" />
+            <column name="CASE_STATE" value="38" />
+            <column name="view_order" value="3" />
+            <column name="info" value="blocked" />
+        </insert>
+    </changeSet>
+
+    <changeSet id="update-info-in-case_state_matrix" author="turik">
+        <update tableName="case_state_matrix">
+            <column name="info" value="request to partner"/>
+            <where>id = 37</where>
+        </update>
+    </changeSet>
+
+</databaseChangeLog>

@@ -11,13 +11,20 @@ import protei.sql.query.Tm_SqlQueryHelper;
 import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.*;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
+import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.query.WorkerEntryQuery;
 import ru.protei.portal.core.model.struct.*;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.service.EmployeeService;
+import ru.protei.portal.core.service.YoutrackService;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.tools.migrate.HelperService;
@@ -25,6 +32,7 @@ import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.portal.util.AuthUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -34,15 +42,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.PhoneUtils.normalizePhoneNumber;
 
 @RestController
@@ -59,6 +65,9 @@ public class WorkerController {
 
     @Autowired
     private PersonDAO personDAO;
+
+    @Autowired
+    private CompanyDAO companyDAO;
 
     @Autowired
     private CompanyGroupHomeDAO companyGroupHomeDAO;
@@ -82,6 +91,9 @@ public class WorkerController {
     private EmployeeRegistrationDAO employeeRegistrationDAO;
 
     @Autowired
+    ContactItemDAO contactItemDAO;
+
+    @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Autowired
@@ -92,6 +104,12 @@ public class WorkerController {
 
     @Autowired
     AuditObjectDAO auditObjectDAO;
+
+    @Autowired
+    PortalConfig portalConfig;
+
+    @Autowired
+    YoutrackService youtrackService;
 
     /**
      * Получить данные о физическом лице
@@ -110,7 +128,9 @@ public class WorkerController {
         if (!checkAuth(request, response)) return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
 
         try {
-            return ok(new WorkerRecord(personDAO.get(id)));
+            Person person = personDAO.get(id);
+            jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
+            return ok(new WorkerRecord(person));
         } catch (Throwable e) {
             logger.error("error while get worker", e);
             return error(En_ResultStatus.INTERNAL_ERROR,  e.getMessage());
@@ -138,8 +158,10 @@ public class WorkerController {
             return withHomeCompany(companyCode,
                     item -> {
                         WorkerEntry entry = workerEntryDAO.getByExternalId(id.trim(), item.getCompanyId());
+                        Person person = personDAO.get(entry.getPersonId());
+                        jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
                         EmployeeRegistration registration = employeeRegistrationDAO.getByPersonId(entry.getPersonId());
-                        return  ok(new WorkerRecord(entry, registration));
+                        return  ok(new WorkerRecord(person, entry, registration));
                     });
 
         } catch (NullPointerException e){
@@ -199,12 +221,20 @@ public class WorkerController {
         WorkerRecordList persons = new WorkerRecordList();
 
         try {
+            List<Company> homeCompaniesWithSync = companyDAO.listByQuery(new CompanyQuery(true, true).synchronizeWith1C(true));
+            Set<EntityOption> homeCompanies = new HashSet<>();
+            homeCompaniesWithSync.forEach(company -> homeCompanies.add(company.toEntityOption()));
 
             EmployeeQuery query = new EmployeeQuery(Tm_SqlQueryHelper.makeLikeArgEx(expr.trim()), En_SortField.person_full_name, En_SortDir.ASC);
 
-            personDAO.getEmployees(query).forEach(
-                    p -> persons.append(new WorkerRecord(p))
-            );
+            query.setHomeCompanies(homeCompanies);
+
+            stream(personDAO.getEmployees(query))
+                .map(person -> {
+                    jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
+                    return person;
+                })
+                .forEach(person -> persons.append(new WorkerRecord(person)));
 
         } catch (Exception e) {
             logger.error("error while get persons", e);
@@ -263,6 +293,9 @@ public class WorkerController {
                         if (person == null) {
                             person = personDAO.getByCondition("company_id=1 and isfired=0 and isdeleted=0 and firstname=? and lastname=? and birthday=?", rec.getFirstName().trim(), rec.getLastName().trim(), rec.getBirthday() );
                         }
+                        if (person != null) {
+                            jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
+                        }
                     }
 
                     if (person == null) {
@@ -270,6 +303,12 @@ public class WorkerController {
                     }
 
                     convert(rec, person);
+
+                    String email = new PlainContactInfoFacade(person.getContactInfo()).getEmail();
+                    if (isEmailExists(person.getId(), email)){
+                        logger.debug("addWorker(): worker with email={} already exists", email);
+                        return error(En_ResultStatus.EMPLOYEE_EMAIL_ALREADY_EXIST, En_ErrorCode.EMAIL_ALREADY_EXIST.getMessage());
+                    }
 
                     person.setFired(false);
                     person.setDeleted(false);
@@ -281,11 +320,24 @@ public class WorkerController {
                         mergePerson(person);
                     }
 
-                    UserLogin userLogin = operationData.account();
-                    if (userLogin == null) userLogin = createLDAPAccount(person);
-                    if (userLogin != null) {
-                        userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
-                        saveAccount(userLogin);
+                    List<UserLogin> userLogins = operationData.account();
+                    if (isEmpty(userLogins)) {
+
+                        Result<UserLogin> userLoginResult = createLDAPAccount(person);
+                        if (userLoginResult.isError()){
+                            return error(userLoginResult.getStatus(), userLoginResult.getMessage());
+                        }
+
+                        UserLogin userLogin = userLoginResult.getData();
+                        if (userLogin != null) {
+                            userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
+                            saveAccount(userLogin);
+                        }
+                    } else {
+                        for (UserLogin userLogin : userLogins) {
+                            userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
+                            saveAccount(userLogin);
+                        }
                     }
 
                     EmployeeRegistration employeeRegistration = operationData.registration();
@@ -307,6 +359,7 @@ public class WorkerController {
                     worker.setHireOrderNo(HelperFunc.isNotEmpty(rec.getHireOrderNo()) ? rec.getHireOrderNo().trim() : null);
                     worker.setActiveFlag(rec.getActive());
                     worker.setExternalId(rec.getWorkerId().trim());
+                    worker.setContractAgreement(false);
 
                     persistWorker(worker);
 
@@ -473,19 +526,22 @@ public class WorkerController {
 
                     WorkerEntry worker = operationData.worker();
                     Long personId = worker.getPersonId();
-                    UserLogin userLogin = userLoginDAO.findLDAPByPersonId(personId);
+                    List<UserLogin> userLogins = userLoginDAO.findLDAPByPersonId(personId);
 
                     removeWorker(worker);
 
                     if (!workerEntryDAO.checkExistsByPersonId(personId)) {
                         Person person = personDAO.get(personId);
+                        jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
                         person.setDeleted(true);
                         person.setIpAddress(person.getIpAddress() == null ? null : person.getIpAddress().replace(".", "_"));
 
                         mergePerson(person);
 
-                        if(userLogin != null) {
-                            removeAccount(userLogin);
+                        if(isNotEmpty(userLogins)) {
+                            for (UserLogin userLogin : userLogins) {
+                                removeAccount(userLogin);
+                            }
                         }
 
                         if (WSConfig.getInstance().isEnableMigration()) {
@@ -896,18 +952,14 @@ public class WorkerController {
         person.setGender(rec.getSex() == null ? En_Gender.UNDEFINED : rec.getSex() == 1 ? En_Gender.MALE : En_Gender.FEMALE);
         person.setBirthday(HelperFunc.isEmpty(rec.getBirthday()) ? null : HelperService.DATE.parse(rec.getBirthday()));
         person.setIpAddress(HelperFunc.isEmpty(rec.getIpAddress()) ? null : rec.getIpAddress().trim());
-        person.setPassportInfo(HelperFunc.isEmpty(rec.getPassportInfo()) ? null : rec.getPassportInfo().trim());
         person.setInfo(HelperFunc.isEmpty(rec.getInfo()) ? null : rec.getInfo().trim());
 
         PlainContactInfoFacade contactInfoFacade = new PlainContactInfoFacade(person.getContactInfo());
         contactInfoFacade.setWorkPhone(HelperFunc.isEmpty(rec.getPhoneWork()) ? null : normalizePhoneNumber(rec.getPhoneWork().trim()));
         contactInfoFacade.setMobilePhone(HelperFunc.isEmpty(rec.getPhoneMobile()) ? null : normalizePhoneNumber(rec.getPhoneMobile().trim()));
         contactInfoFacade.setHomePhone(HelperFunc.isEmpty(rec.getPhoneHome()) ? null : normalizePhoneNumber(rec.getPhoneHome().trim()));
-        contactInfoFacade.setLegalAddress(HelperFunc.isEmpty(rec.getAddress()) ? null : rec.getAddress().trim());
-        contactInfoFacade.setHomeAddress(HelperFunc.isEmpty(rec.getAddressHome()) ? null : rec.getAddressHome().trim());
         contactInfoFacade.setEmail(HelperFunc.isEmpty(rec.getEmail()) ? null : rec.getEmail().trim());
         contactInfoFacade.setEmail_own(HelperFunc.isEmpty(rec.getEmailOwn()) ? null : rec.getEmailOwn().trim());
-        contactInfoFacade.setFax(HelperFunc.isEmpty(rec.getFax()) ? null : rec.getFax().trim());
     }
 
     private WorkerPosition getValidPosition(String positionName, Long companyId) throws Exception {
@@ -926,23 +978,24 @@ public class WorkerController {
         return position;
     }
 
-    private UserLogin createLDAPAccount(Person person) throws Exception {
+    private Result<UserLogin> createLDAPAccount(Person person) throws Exception {
 
         ContactItem email = person.getContactInfo().findFirst(En_ContactItemType.EMAIL, En_ContactDataAccess.PUBLIC);
         if (!email.isEmpty() && HelperFunc.isNotEmpty(email.value())) {
             String login = email.value().substring(0, email.value().indexOf("@"));
             if (!userLoginDAO.isUnique(login.trim())) {
                 logger.debug("error: Login already exist.");
-                return null;
+                return error(En_ResultStatus.LOGIN_ALREADY_EXIST, En_ErrorCode.LOGIN_ALREADY_EXIST.getMessage());
             }
 
             UserLogin userLogin = userLoginDAO.createNewUserLogin(person);
             userLogin.setUlogin(login.trim());
             userLogin.setAuthType(En_AuthType.LDAP);
             userLogin.setRoles(new HashSet<>(userRoleDAO.getDefaultEmployeeRoles()));
-            return userLogin;
+            return ok(userLogin);
         }
-        return null;
+
+        return ok();
     }
 
     private String makeFileName(Long id) {
@@ -961,11 +1014,15 @@ public class WorkerController {
 
     private void persistPerson(Person person) throws Exception {
         personDAO.persist(person);
+        contactItemDAO.saveOrUpdateBatch(person.getContactItems());
+        jdbcManyRelationsHelper.persist(person, Person.Fields.CONTACT_ITEMS);
         makeAudit(person, En_AuditType.EMPLOYEE_CREATE);
     }
 
     private void mergePerson(Person person) throws Exception {
         personDAO.merge(person);
+        contactItemDAO.saveOrUpdateBatch(person.getContactItems());
+        jdbcManyRelationsHelper.persist(person, Person.Fields.CONTACT_ITEMS);
         makeAudit(person, En_AuditType.EMPLOYEE_MODIFY);
     }
 
@@ -1056,7 +1113,7 @@ public class WorkerController {
         WorkerEntry worker;
         Person person;
         WorkerPosition position;
-        UserLogin account;
+        List<UserLogin> account;
         EmployeeRegistration registration;
 
         Record record;
@@ -1137,7 +1194,7 @@ public class WorkerController {
             return this;
         }
 
-        public OperationData requireAccount(Supplier<UserLogin> optional) {
+        public OperationData requireAccount(Supplier<List<UserLogin>> optional) {
             if (isValid() && record.getPersonId() != null) {
                 this.account = handle(userLoginDAO.findLDAPByPersonId(record.getPersonId()), optional, null, true);
                 jdbcManyRelationsHelper.fill(account, "roles");
@@ -1272,7 +1329,7 @@ public class WorkerController {
             return position;
         }
 
-        public UserLogin account() {
+        public List<UserLogin> account() {
             return account;
         }
 
@@ -1460,11 +1517,18 @@ public class WorkerController {
                 try {
 
                     Person person = operationData.person();
+                    String personLastName = person.getLastName();
                     WorkerEntry worker = operationData.worker();
-                    UserLogin userLogin = operationData.account();
+                    List<UserLogin> userLogins = operationData.account();
                     EmployeeRegistration employeeRegistration = operationData.registration();
 
                     convert(rec, person);
+
+                    String email = new PlainContactInfoFacade(person.getContactInfo()).getEmail();
+                    if (isEmailExists(person.getId(), email)){
+                        logger.debug("addWorker(): worker with email={} already exists", email);
+                        return error(En_ResultStatus.EMPLOYEE_EMAIL_ALREADY_EXIST, En_ErrorCode.EMAIL_ALREADY_EXIST.getMessage());
+                    }
 
                     if (rec.isFired() || rec.isDeleted()) {
 
@@ -1475,12 +1539,16 @@ public class WorkerController {
                             person.setDeleted(rec.isDeleted());
                             person.setIpAddress(person.getIpAddress() == null ? null : person.getIpAddress().replace(".", "_"));
 
-                            if(userLogin != null) {
+                            if(isNotEmpty(userLogins)) {
                                 if (person.isDeleted()) {
-                                    removeAccount(userLogin);
+                                    for (UserLogin userLogin : userLogins) {
+                                        removeAccount(userLogin);
+                                    }
                                 } else {
-                                    userLogin.setAdminStateId(En_AdminState.LOCKED.getId());
-                                    saveAccount(userLogin);
+                                    for (UserLogin userLogin : userLogins) {
+                                        userLogin.setAdminStateId(En_AdminState.LOCKED.getId());
+                                        saveAccount(userLogin);
+                                    }
                                 }
                             }
                         }
@@ -1500,10 +1568,28 @@ public class WorkerController {
 
                     mergePerson(person);
 
-                    if (userLogin == null) userLogin = createLDAPAccount(person);
-                    if (userLogin != null) {
-                        userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
-                        saveAccount(userLogin);
+                    /* final boolean YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEmployeeSyncEnabled();
+                    if (YOUTRACK_INTEGRATION_ENABLED) {
+                        createAdminYoutrackIssueIfNeeded(person.getId(), person.getFirstName(), person.getLastName(), person.getSecondName(), personLastName);
+                    }*/
+
+                    if (isEmpty(userLogins)) {
+                        Result<UserLogin> userLoginResult = createLDAPAccount(person);
+                        if (userLoginResult.isError()){
+                            return error(userLoginResult.getStatus(), userLoginResult.getMessage());
+                        }
+
+                         UserLogin userLogin = userLoginResult.getData();
+
+                        if (userLogin != null) {
+                            userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
+                            saveAccount(userLogin);
+                        }
+                    } else {
+                        for (UserLogin userLogin : userLogins) {
+                            userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
+                            saveAccount(userLogin);
+                        }
                     }
 
                     if (employeeRegistration != null) {
@@ -1569,6 +1655,7 @@ public class WorkerController {
                             List<Person> personList = personDAO.getListByCondition(
                                     "person.isdeleted=false and person.isfired=true and person.lastname=? and person.firstname=? and person.birthday=?",
                                     rec.getLastName(), rec.getFirstName(), rec.getBirthday());
+                            jdbcManyRelationsHelper.fill(personList, Person.Fields.CONTACT_ITEMS);
 
                             if (personList.isEmpty()) return ok();
 
@@ -1623,4 +1710,50 @@ public class WorkerController {
 
         return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.NOT_UPDATE.getMessage());
     }
+
+    private void createAdminYoutrackIssueIfNeeded(Long employeeId, String firstName, String lastName, String secondName, String oldLastName) {
+        if (Objects.equals(lastName, oldLastName)) {
+            return;
+        }
+        final String ADMIN_PROJECT_NAME = portalConfig.data().youtrack().getAdminProject();
+        final String PORTAL_URL = portalConfig.data().getCommonConfig().getCrmUrlInternal();
+
+        String employeeOldFullName = oldLastName + " " + firstName + " " + (secondName != null ? secondName : "");
+        String employeeNewFullName = lastName + " " + firstName + " " + (secondName != null ? secondName : "");
+
+        String summary = "Смена фамилии сотрудника " + employeeOldFullName;
+
+        String description = "Карточка сотрудника: " + "[" + employeeNewFullName + "](" + PORTAL_URL + "#employee_preview:id=" + employeeId + ")" + "\n" +
+                             "Старое ФИО: " + employeeOldFullName + "\n" +
+                             "Новое ФИО: " + employeeNewFullName + "\n" +
+                             "\n" +
+                             "Необходимо изменение учетной записи, почты.";
+
+        youtrackService.createIssue( ADMIN_PROJECT_NAME, summary, description );
+    }
+
+    private boolean isEmailExists(Long personId, String email) {
+
+        if (email == null) {
+            return false;
+        }
+
+        PersonQuery personQuery = new PersonQuery();
+        personQuery.setEmail(email);
+        List<Person> employeeByEmail = personDAO.getPersons(personQuery);
+
+        if (CollectionUtils.isNotEmpty(employeeByEmail)){
+            if (personId == null) {
+                return true;
+            }
+
+            if (employeeByEmail.stream()
+                    .noneMatch(personFromDB -> personFromDB.getId().equals(personId))){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 }

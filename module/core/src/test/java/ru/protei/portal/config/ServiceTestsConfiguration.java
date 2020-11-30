@@ -5,16 +5,23 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptorLogging;
+import ru.protei.portal.core.client.enterprise1c.api.Api1C;
+import ru.protei.portal.core.client.enterprise1c.api.Api1CImpl;
+import ru.protei.portal.core.client.enterprise1c.http.HttpClient1C;
+import ru.protei.portal.core.client.enterprise1c.http.HttpClient1CImpl;
+import ru.protei.portal.core.client.enterprise1c.mapper.FieldsMapper1C;
+import ru.protei.portal.core.client.enterprise1c.mapper.FieldsMapper1CImpl;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApiImpl;
-import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
-import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClientImpl;
+import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
+import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.index.document.DocumentStorageIndex;
 import ru.protei.portal.core.index.document.DocumentStorageIndexImpl;
 import ru.protei.portal.core.renderer.HTMLRenderer;
@@ -23,31 +30,65 @@ import ru.protei.portal.core.renderer.MarkdownRenderer;
 import ru.protei.portal.core.renderer.impl.HTMLRendererImpl;
 import ru.protei.portal.core.renderer.impl.JiraWikiMarkupRendererImpl;
 import ru.protei.portal.core.renderer.impl.MarkdownRendererImpl;
+import ru.protei.portal.core.report.absence.ReportAbsence;
+import ru.protei.portal.core.report.absence.ReportAbsenceImpl;
 import ru.protei.portal.core.report.caseobjects.ReportCase;
 import ru.protei.portal.core.report.caseobjects.ReportCaseImpl;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsed;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsedImpl;
+import ru.protei.portal.core.report.contract.ReportContract;
+import ru.protei.portal.core.report.contract.ReportContractImpl;
+import ru.protei.portal.core.report.dutylog.ReportDutyLog;
+import ru.protei.portal.core.report.dutylog.ReportDutyLogImpl;
+import ru.protei.portal.core.report.projects.ReportProject;
+import ru.protei.portal.core.report.projects.ReportProjectImpl;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceImpl;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceTaskHandlerImpl;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseTaskHandler;
+import ru.protei.portal.core.service.bootstrap.BootstrapService;
+import ru.protei.portal.core.service.bootstrap.BootstrapServiceImpl;
 import ru.protei.portal.core.service.events.*;
+import ru.protei.portal.core.service.nrpe.NRPEService;
+import ru.protei.portal.core.service.nrpe.NRPEServiceImpl;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
+import ru.protei.portal.core.service.syncronization.EmployeeRegistrationYoutrackSynchronizer;
+import ru.protei.portal.core.service.syncronization.EmployeeRegistrationYoutrackSynchronizerImpl;
 import ru.protei.portal.core.service.template.TemplateService;
 import ru.protei.portal.core.service.template.TemplateServiceImpl;
 import ru.protei.portal.core.svn.document.DocumentSvnApi;
 import ru.protei.portal.core.svn.document.DocumentSvnApiImpl;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
-import ru.protei.portal.mock.AuthServiceMock;
-import ru.protei.portal.mock.PortalScheduleTasksStub;
+import ru.protei.portal.mock.*;
+import ru.protei.portal.nrpe.NRPEExecutorTest;
+import ru.protei.portal.nrpe.NRPEProcessor;
 import ru.protei.portal.schedule.PortalScheduleTasks;
-import ru.protei.portal.mock.ReportControlServiceMock;
+import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
+import ru.protei.portal.tools.migrate.sybase.SybConnProvider;
+import ru.protei.portal.tools.migrate.sybase.SybConnWrapperImpl;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
+
+import java.util.concurrent.Executor;
+
+import static org.mockito.Mockito.mock;
+import static ru.protei.portal.config.MainConfiguration.REPORT_TASKS;
 
 @Configuration
 @EnableAspectJAutoProxy
 public class ServiceTestsConfiguration {
+
+    @Bean(name = REPORT_TASKS)
+    public Executor getReportThreadPoolTaskExecutor(@Autowired PortalConfig config) {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(config.data().reportConfig().getThreadsNumber());
+        executor.setMaxPoolSize(config.data().reportConfig().getThreadsNumber());
+        return executor;
+    }
 
     @Bean
     public FileStorage getFileStorage (@Autowired PortalConfig config){
@@ -102,6 +143,20 @@ public class ServiceTestsConfiguration {
 
     @Bean
     public EmployeeService getEmployeeService () { return new EmployeeServiceImpl(); }
+
+    @Bean
+    public LegacySystemDAO getLegacySystemDAO() {
+        return new LegacySystemDAO();
+    }
+    @Bean
+    public SybConnProvider getSybConnProvider(@Autowired PortalConfig config) throws Throwable {
+        return new SybConnWrapperImpl(
+                config.data().legacySysConfig().getJdbcDriver(),
+                config.data().legacySysConfig().getJdbcURL(),
+                "fakeUser",
+                "fakePassword"
+        );
+    }
 
     @Bean
     public CompanyService getCompanyService() {
@@ -173,8 +228,18 @@ public class ServiceTestsConfiguration {
     }
 
     @Bean
+    public EventProjectAssemblerService getProjectPublisherService() {
+        return new EventProjectAssemblerServiceImpl();
+    }
+
+    @Bean
     public AssemblerService getAssemblerService() {
-        return new AssemblerServiceImpl();
+        return new AssemblerServiceStub();
+    }
+
+    @Bean
+    public AssemblerProjectService getAssemblerProjectService() {
+        return new AssemblerProjectServiceStub();
     }
 
     @Bean
@@ -280,6 +345,63 @@ public class ServiceTestsConfiguration {
         return new UserCaseAssignmentServiceImpl();
     }
 
+    @Bean
+    public EducationService getEducationService() {
+        return new EducationServiceImpl();
+    }
+
+    @Bean
+    public IpReservationService getIpReservationService() { return new IpReservationServiceImpl(); }
+
+    @Bean
+    public PlanService getPlanService() {
+        return new PlanServiceImpl();
+    }
+
+    @Bean
+    public HistoryService getHistoryService() {
+        return new HistoryServiceImpl();
+    }
+
+    @Bean
+    public RoomReservationService getRoomReservationService() {
+        return new RoomReservationServiceImpl();
+    }
+
+    @Bean
+    public AutoOpenCaseService getAutoOpenCaseService() {
+        return new AutoOpenCaseServiceImpl();
+    }
+
+    @Bean
+    public AutoOpenCaseTaskHandler getAutoOpenCaseTaskHandler() {
+        return new AutoOpenCaseServiceTaskHandlerImpl();
+    }
+
+    @Bean
+    public EmployeeRegistrationYoutrackSynchronizer getEmployeeRegistrationYoutrackSynchronizer() {
+        return new EmployeeRegistrationYoutrackSynchronizerImpl();
+    }
+
+    @Bean
+    public BootstrapService getBootstrapService() {
+        return new BootstrapServiceImpl();
+    }
+
+    @Bean
+    public PersonCaseFilterService getPersonCaseFilterService() {
+        return new PersonCaseFilterServiceImpl();
+    }
+
+    @Bean
+    public AbsenceService getAbsenceService() {
+        return new AbsenceServiceImpl();
+    }
+
+    @Bean
+    public MailReceiverService getMailReceiverService() {
+        return mock(MailReceiverService.class);
+    }
 
     @Bean
     public ReportCase getReportCase() {
@@ -289,6 +411,26 @@ public class ServiceTestsConfiguration {
     @Bean
     public ReportCaseTimeElapsed getReportCaseTimeElapsed() {
         return new ReportCaseTimeElapsedImpl();
+    }
+
+    @Bean
+    public ReportProject getReportProject() {
+        return new ReportProjectImpl();
+    }
+
+    @Bean
+    public ReportAbsence getReportAbsence() {
+        return new ReportAbsenceImpl();
+    }
+
+    @Bean
+    public ReportDutyLog getReportDutyLog() {
+        return new ReportDutyLogImpl();
+    }
+
+    @Bean
+    public ReportContract getReportContract() {
+        return new ReportContractImpl();
     }
 
     @Bean
@@ -306,6 +448,26 @@ public class ServiceTestsConfiguration {
         return new JiraWikiMarkupRendererImpl();
     }
 
+    @Bean
+    public FieldsMapper1C getFieldsMapper1C() {
+        return new FieldsMapper1CImpl();
+    }
+
+    @Bean
+    public HttpClient1C getHttpClient1C() {
+        return new HttpClient1CImpl();
+    }
+
+    @Bean
+    public Api1C getApi1C() {
+        return new Api1CImpl();
+    }
+
+    @Bean
+    public NRPEService getNRPEService() {
+        return new NRPEServiceImpl();
+    }
+
     /* ASPECT/INTERCEPTORS */
 
     @Bean
@@ -316,5 +478,10 @@ public class ServiceTestsConfiguration {
     @Bean
     public ServiceLayerInterceptorLogging getServiceLayerInterceptorLogging() {
         return new ServiceLayerInterceptorLogging();
+    }
+
+    @Bean
+    public NRPEProcessor getNRPERequest() {
+        return new NRPEProcessor(new NRPEExecutorTest());
     }
 }

@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.common.client.columns;
 
-import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;

@@ -3,16 +3,17 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.ContactInfo;
+import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EntityOptionSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * @author michael
- */
 @JdbcEntity(table = "company")
 public class Company extends AuditableObject implements EntityOptionSupport {
 
@@ -41,8 +42,8 @@ public class Company extends AuditableObject implements EntityOptionSupport {
     @JdbcColumn(name = "cname")
     private String cname;
 
-    @JdbcColumn(name = "contactInfo", converterType = ConverterType.JSON)
-    private ContactInfo contactInfo;
+    @JdbcManyToMany(linkTable = "contact_item_company", localLinkColumn = "company_id", remoteLinkColumn = "contact_item_id")
+    private List<ContactItem> contactItems;
 
     @JdbcColumn(name = "info")
     private String info;
@@ -65,6 +66,9 @@ public class Company extends AuditableObject implements EntityOptionSupport {
     @JdbcColumn(name = "is_deprecated")
     private boolean isArchived;
 
+    @JdbcColumn(name = "auto_open_issue")
+    private Boolean autoOpenIssue;
+
     public static Company fromEntityOption(EntityOption entityOption){
         if(entityOption == null)
             return null;
@@ -79,7 +83,6 @@ public class Company extends AuditableObject implements EntityOptionSupport {
     }
 
     public Company(Long id) {
-        this.contactInfo = new ContactInfo();
         this.id = id;
     }
 
@@ -123,12 +126,19 @@ public class Company extends AuditableObject implements EntityOptionSupport {
         this.created = created;
     }
 
+    public List<ContactItem> getContactItems() {
+        return contactItems;
+    }
+
     public ContactInfo getContactInfo() {
-        return contactInfo;
+        if (contactItems == null) {
+            contactItems = new ArrayList<>();
+        }
+        return new ContactInfo(contactItems);
     }
 
     public void setContactInfo(ContactInfo contactInfo) {
-        this.contactInfo = contactInfo;
+        this.contactItems = contactInfo != null ? contactInfo.getItems() : null;
     }
 
     public Long getGroupId() {
@@ -210,12 +220,12 @@ public class Company extends AuditableObject implements EntityOptionSupport {
         this.childCompanies = childCompanies;
     }
 
-    public Boolean getHideden() {
+    public Boolean getHidden() {
         return isHidden;
     }
 
-    public void setHideden(Boolean hideden) {
-        isHidden = hideden;
+    public void setHidden(Boolean hidden) {
+        isHidden = hidden;
     }
 
     public boolean isArchived() {
@@ -233,6 +243,14 @@ public class Company extends AuditableObject implements EntityOptionSupport {
             ids.addAll(getChildCompanies().stream().map(Company::getId).collect(Collectors.toList()));
         }
         return ids;
+    }
+
+    public Boolean getAutoOpenIssue() {
+        return autoOpenIssue;
+    }
+
+    public void setAutoOpenIssue(Boolean autoOpenIssue) {
+        this.autoOpenIssue = autoOpenIssue;
     }
 
     @Override
@@ -254,7 +272,7 @@ public class Company extends AuditableObject implements EntityOptionSupport {
                 ", parentCompanyName='" + parentCompanyName + '\'' +
                 ", childCompanies=" + childCompanies +
                 ", cname='" + cname + '\'' +
-                ", contactInfo=" + contactInfo +
+                ", contactItems=" + contactItems +
                 ", info='" + info + '\'' +
                 ", created=" + created +
                 ", oldId=" + oldId +
@@ -262,6 +280,11 @@ public class Company extends AuditableObject implements EntityOptionSupport {
                 ", subscriptions=" + subscriptions +
                 ", caseStates=" + caseStates +
                 ", isArchived=" + isArchived +
+                ", autoOpenIssue=" + autoOpenIssue +
                 '}';
+    }
+
+    public interface Fields {
+        String CONTACT_ITEMS = "contactItems";
     }
 }

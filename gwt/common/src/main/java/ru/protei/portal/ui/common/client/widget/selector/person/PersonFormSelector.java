@@ -10,18 +10,14 @@ import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.contains;
-
 /**
  * Селектор person
  */
-public class PersonFormSelector extends FormPopupSingleSelector<PersonShortView> implements Refreshable
+public class PersonFormSelector extends FormPopupSingleSelector<PersonShortView>
 {
 
     @Inject
-    public void init( InitiatorModel model ) {
-        this.model = model;
-        setModel( model );
+    public void init(  ) {
         setItemRenderer( value -> value == null ? defaultValue : value.getName() );
     }
 
@@ -38,28 +34,5 @@ public class PersonFormSelector extends FormPopupSingleSelector<PersonShortView>
         return item;
     }
 
-    public void setFired ( boolean fired ) {
-        this.fired = fired;
-    }
-
     private static final Logger log = Logger.getLogger( PersonFormSelector.class.getName() );
-
-    @Override
-    public void refresh() {
-        PersonShortView value = getValue();
-        if (value != null
-                && !contains( model.getValues(), value )) {
-            setValue( null );
-        }
-    }
-
-    public void updateCompanies(Set<Long> companyIds) {
-        if(model!=null){
-            model.updateCompanies(this, companyIds, fired);
-        }
-    }
-
-    private InitiatorModel model;
-
-    private boolean fired = false;
 }

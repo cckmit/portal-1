@@ -1,0 +1,10 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <g:Button ui:field="button" styleName="btn btn-complete">
+        <div ui:field="stateProcessingContainer" class="hide">
+            <i class="fas fa-circle-notch fa-spin m-r-10 m-l-10"/>
+        </div>
+        <div ui:field="stateStillContainer"/>
+    </g:Button>
+</ui:UiBinder>

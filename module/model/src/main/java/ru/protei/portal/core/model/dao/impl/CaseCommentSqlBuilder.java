@@ -5,6 +5,8 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class CaseCommentSqlBuilder {
@@ -23,12 +25,30 @@ public class CaseCommentSqlBuilder {
                 args.add(query.getCreatedBefore());
             }
 
-            if (query.isTimeElapsedNotNull() != null && query.isTimeElapsedNotNull()) {
-                condition.append(" and case_comment.time_elapsed is not null");
-            }
+            if (CollectionUtils.isNotEmpty(query.getCommentTypes())) {
+                condition.append(" and (");
 
-            if (query.isCaseStateNotNull() != null && query.isCaseStateNotNull()) {
-                condition.append(" and case_comment.cstate_id is not null");
+                List<String> conditions = new ArrayList<>();
+
+                if (query.getCommentTypes().contains(CaseCommentQuery.CommentType.CASE_STATE)) {
+                    conditions.add("case_comment.cstate_id IS NOT NULL");
+                }
+
+                if (query.getCommentTypes().contains(CaseCommentQuery.CommentType.IMPORTANCE)) {
+                    conditions.add("case_comment.cimp_level IS NOT NULL");
+                }
+
+                if (query.getCommentTypes().contains(CaseCommentQuery.CommentType.TIME_ELAPSED)) {
+                    conditions.add("case_comment.time_elapsed IS NOT NULL");
+                }
+
+                if (query.getCommentTypes().contains(CaseCommentQuery.CommentType.TEXT)) {
+                    conditions.add("case_comment.COMMENT_TEXT IS NOT NULL");
+                }
+
+                condition
+                        .append(String.join(" or ", conditions))
+                        .append(")");
             }
 
             if (CollectionUtils.isNotEmpty(query.getCaseObjectIds())) {
@@ -58,6 +78,11 @@ public class CaseCommentSqlBuilder {
             if (query.isViewPrivate() != null) {
                 condition.append( " and case_comment.privacy_type='PRIVATE'" );
                 args.add( query.isViewPrivate() ? 1 : 0 );
+            }
+
+            if (HelperFunc.isNotEmpty(query.getRemoteId())) {
+                condition.append( " and case_comment.remote_id=?" );
+                args.add( query.getRemoteId() );
             }
         });
     }

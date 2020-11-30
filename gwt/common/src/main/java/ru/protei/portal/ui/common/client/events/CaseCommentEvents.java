@@ -13,37 +13,16 @@ public class CaseCommentEvents {
 
         public Show() {}
 
-        public Show(HasWidgets parent) {
-            this.parent = parent;
+        public Show(HasWidgets parent, Long caseId, En_CaseType caseType, boolean isModifyEnabled) {
+            this(parent, caseId, caseType, isModifyEnabled, null);
         }
 
-        public Show withCaseType(En_CaseType caseType) {
-            this.caseType = caseType;
-            return this;
-        }
-        public Show withCaseId(Long caseId) {
+        public Show(HasWidgets parent, Long caseId, En_CaseType caseType, boolean isModifyEnabled, Long caseCreatorId) {
+            this.parent = parent;
             this.caseId = caseId;
-            return this;
-        }
-        public Show withModifyEnabled(boolean isModifyEnabled) {
+            this.caseType = caseType;
             this.isModifyEnabled = isModifyEnabled;
-            return this;
-        }
-        public Show withElapsedTimeEnabled(boolean isElapsedTimeEnabled) {
-            this.isElapsedTimeEnabled = isElapsedTimeEnabled;
-            return this;
-        }
-        public Show withPrivateVisible(boolean b) {
-            this.isPrivateVisible = b;
-            return this;
-        }
-        public Show withPrivateCase(boolean b) {
-            this.isPrivateCase = b;
-            return this;
-        }
-        public Show withTextMarkup(En_TextMarkup textMarkup) {
-            this.textMarkup = textMarkup;
-            return this;
+            this.caseCreatorId = caseCreatorId;
         }
         public Show withExtendedPrivacyType(boolean b) {
             this.extendedPrivacyType = b;
@@ -53,10 +32,12 @@ public class CaseCommentEvents {
         public HasWidgets parent;
         public En_CaseType caseType;
         public Long caseId;
+        public Long caseCreatorId;
         public boolean isElapsedTimeEnabled = false;
         public boolean isModifyEnabled = false;
         public boolean isPrivateVisible = false;
         public boolean isPrivateCase = false;
+        public boolean isNewCommentEnabled = true;
         public En_TextMarkup textMarkup = En_TextMarkup.MARKDOWN;
         public boolean extendedPrivacyType = false;
     }
@@ -66,5 +47,9 @@ public class CaseCommentEvents {
      */
     public static class Reload {
         public Reload() {}
+    }
+
+    public static class DisableNewComment {
+        public DisableNewComment() {}
     }
 }

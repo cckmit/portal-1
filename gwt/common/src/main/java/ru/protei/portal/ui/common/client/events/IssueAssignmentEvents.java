@@ -29,6 +29,14 @@ public class IssueAssignmentEvents {
         }
     }
 
+    public static class ShowIssuePreview {
+        public Long caseNumber;
+        public ShowIssuePreview() {}
+        public ShowIssuePreview(Long caseNumber) {
+            this.caseNumber = caseNumber;
+        }
+    }
+
     public static class ReloadTable {
         public ReloadTable () {}
     }

@@ -1,22 +1,25 @@
 package ru.protei.portal.core.model.dao.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.PortalBaseDAO;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.DataQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.portal.core.utils.SimpleProfiler;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.core.utils.beans.SearchResult;
-import ru.protei.winter.jdbc.JdbcBaseDAO;
-import ru.protei.winter.jdbc.JdbcHelper;
-import ru.protei.winter.jdbc.JdbcQueryParameters;
-import ru.protei.winter.jdbc.JdbcSort;
+import ru.protei.winter.core.utils.enums.HasId;
+import ru.protei.winter.jdbc.*;
 import ru.protei.winter.jdbc.column.JdbcObjectColumn;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.slf4j.LoggerFactory.*;
 
 /**
  * Created by michael on 25.05.16.
@@ -123,12 +126,15 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
     }
 
     @Override
-    public SearchResult<T> getSearchResult(JdbcQueryParameters parameters) {
-        if (parameters.getOffset() <= 0 && parameters.getLimit() > 0) {
-            return super.getSearchResult(parameters);
-        } else {
-            return new SearchResult<>(getList(parameters));
+    public SearchResult<T> getSearchResult( JdbcQueryParameters parameters ) {
+        SearchResult<T> searchResult = new SearchResult<>( getList( parameters ) );
+        if( searchResult.getTotalCount() < parameters.getLimit() ){
+            return searchResult;
         }
+        if (parameters.getOffset() <= 0 && parameters.getLimit() > 0) {
+            searchResult.setTotalCount( getObjectsCount( parameters.getSqlCondition(), parameters.getParamValues(), parameters.getJoins(), parameters.isDistinct() ) );
+        }
+        return searchResult;
     }
 
     private JdbcQueryParameters buildJdbcQueryParameters(DataQuery query) {
@@ -165,6 +171,19 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
         }
     }
 
+    @Override
+    public Long saveOrUpdateBatch(Collection<T> entities) {
+        if (entities == null) {
+            return 0L;
+        }
+        long handled = 0;
+        for (T entity : entities) {
+            if (saveOrUpdate(entity)) {
+                handled++;
+            }
+        }
+        return handled;
+    }
 
     public <V> V getMaxValue (String field, Class<V> type, String cond, Object...args) {
 
@@ -299,4 +318,22 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
 
         return jdbcTemplate.queryForList(query.toString(), Long.class, args.toArray());
     }
+
+    protected Integer booleanAsNumber( Boolean isExpression ) {
+        if (isExpression == null) return null;
+        return isExpression ? 1 : 0;
+    }
+
+    protected Collection<Integer> collectIds( Collection<? extends HasId> hasIds ) {
+        if (hasIds == null) return null;
+        ArrayList<Integer> ids = new ArrayList<>();
+        for (HasId hasId : hasIds) {
+            ids.add( hasId.getId() );
+        }
+
+        return ids;
+    }
+
+
+    private static final Logger log = getLogger( PortalBaseJdbcDAO.class );
 }

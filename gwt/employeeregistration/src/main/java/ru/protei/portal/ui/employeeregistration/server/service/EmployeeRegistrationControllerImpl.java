@@ -8,6 +8,9 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
+import ru.protei.portal.core.model.ent.EmployeeRegistrationShortView;
+import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
 import ru.protei.portal.core.service.EmployeeRegistrationService;
@@ -19,6 +22,10 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
+import static ru.protei.portal.core.model.helper.CollectionUtils.toSet;
 
 @Service("EmployeeRegistrationController")
 public class EmployeeRegistrationControllerImpl implements EmployeeRegistrationController {
@@ -46,6 +53,25 @@ public class EmployeeRegistrationControllerImpl implements EmployeeRegistrationC
     }
 
     @Override
+    public EmployeeRegistrationShortView getEmployeeRegistrationShortView(Long id) throws RequestFailedException {
+        log.info(" get employee registration short view, id: {}", id);
+
+        EmployeeRegistration employeeRegistration  =  getEmployeeRegistration(id);
+
+        if (employeeRegistration == null) {
+            return null;
+        }
+
+        EmployeeRegistrationShortView employeeRegistrationShortView = new EmployeeRegistrationShortView();
+        employeeRegistrationShortView.setId(employeeRegistration.getId());
+        employeeRegistrationShortView.setCurators( setOf( employeeRegistration.getCurators() ) );
+        employeeRegistrationShortView.setEmploymentDate(employeeRegistration.getEmploymentDate());
+        employeeRegistrationShortView.setHeadOfDepartmentId(employeeRegistration.getHeadOfDepartmentId());
+
+        return employeeRegistrationShortView;
+    }
+
+    @Override
     public Long createEmployeeRegistration(EmployeeRegistration employeeRegistration) throws RequestFailedException {
         if (employeeRegistration == null) {
             log.warn("null employee registration in request");
@@ -65,6 +91,29 @@ public class EmployeeRegistrationControllerImpl implements EmployeeRegistrationC
             log.info("create employee registration, applied id: {}", response.getData());
             return response.getData();
         }
+
+        throw new RequestFailedException(response.getStatus());
+    }
+
+    @Override
+    public Long updateEmployeeRegistration(EmployeeRegistrationShortView employeeRegistration) throws RequestFailedException {
+        log.info("updateEmployeeRegistration: employeeRegistration = {}", employeeRegistration);
+
+        if (employeeRegistration == null) {
+            log.warn("null employee registration in request");
+            throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
+        }
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
+
+        Result<Long> response = employeeRegistrationService.updateEmployeeRegistration(token, employeeRegistration);
+
+        if (response.isOk()) {
+            log.info("employee registration successfully updated. id = {}", response.getData());
+            return response.getData();
+        }
+
+        log.warn("updateEmployeeRegistration: status = {}", response.getStatus());
 
         throw new RequestFailedException(response.getStatus());
     }

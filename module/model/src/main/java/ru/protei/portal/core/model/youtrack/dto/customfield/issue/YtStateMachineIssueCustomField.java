@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.youtrack.dto.customfield.issue;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.youtrack.annotation.YtAlwaysInclude;
 import ru.protei.portal.core.model.youtrack.dto.bundleelemenet.YtStateBundleElement;
@@ -14,8 +15,8 @@ public class YtStateMachineIssueCustomField extends YtSingleValueIssueCustomFiel
     @YtAlwaysInclude
     public YtStateBundleElement value;
 
-    @Override
-    public String getValue() {
+    @JsonIgnore
+    public String getValueAsString() {
         if (value == null) {
             return null;
         }

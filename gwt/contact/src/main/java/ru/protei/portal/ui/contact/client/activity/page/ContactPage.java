@@ -32,7 +32,7 @@ public abstract class ContactPage
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.CONTACT_VIEW ) ) {
             fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.CONTACT, ТAB, DebugIds.SIDEBAR_MENU.CONTACT ) );
-            fireEvent( new AppEvents.InitPage( new ContactEvents.Show( true ) ) );
+            fireEvent( new AppEvents.InitPage( new ContactEvents.Show( false ) ) );
         }
     }
 
@@ -58,7 +58,7 @@ public abstract class ContactPage
         }
 
         fireSelectTab();
-        fireEvent( new ContactEvents.Show( true ) );
+        fireEvent( new ContactEvents.Show( false ) );
     }
 
     private void fireSelectTab() {

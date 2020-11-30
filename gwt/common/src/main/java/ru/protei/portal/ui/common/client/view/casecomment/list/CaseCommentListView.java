@@ -29,14 +29,16 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.HasAttachmentListHandlers;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveHandler;
-import ru.protei.portal.ui.common.client.widget.dndautoresizetextarea.DndAutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.imagepastetextarea.event.PasteEvent;
 import ru.protei.portal.ui.common.client.widget.privacytype.PrivacyTypeButtonSelector;
+import ru.protei.portal.ui.common.client.widget.mentioningtextarea.MentioningTextArea;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeTextBox;
-import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
-import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
+import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.impl.PasteInfo;
+
+import static ru.protei.portal.core.model.util.CrmConstants.Style.HIDE;
 
 /**
  * Контейнер для комментариев
@@ -48,7 +50,6 @@ public class CaseCommentListView
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        comment.getElement().setAttribute("placeholder", lang.commentAddMessagePlaceholder());
         timeElapsedType.setDisplayOptionCreator( type -> new DisplayOption( (type == null || En_TimeElapsedType.NONE.equals( type )) ? lang.issueCommentElapsedTimeTypeLabel() : elapsedTimeTypeLang.getName( type ) ) );
         timeElapsedType.fillOptions();
         comment.setOverlayText(lang.dropFilesHere());
@@ -59,6 +60,7 @@ public class CaseCommentListView
     @Override
     public void setActivity(AbstractCaseCommentListActivity activity) {
         this.activity = activity;
+        attachmentList.setActivity(activity);
     }
 
     @Override
@@ -82,8 +84,8 @@ public class CaseCommentListView
     }
 
     @Override
-    public void enabledNewComment( boolean value ) {
-        newMessage.setVisible(value);
+    public void setNewCommentHidden(boolean isHidden) {
+        newMessage.setVisible(!isHidden);
     }
 
     @Override
@@ -102,14 +104,21 @@ public class CaseCommentListView
         timeElapsedType.setValue( null );
     }
 
+    @Override
     public void setTimeElapsedVisibility(boolean visible) {
         timeElapsed.setVisible(visible);
         timeElapsedType.setVisible(visible);
         if (visible) {
-            timeElapsedInfoContainer.removeClassName("hide");
+            timeElapsedInfoContainer.removeClassName( HIDE );
         } else {
-            timeElapsedInfoContainer.addClassName("hide");
+            timeElapsedInfoContainer.addClassName( HIDE );
         }
+    }
+
+    @Override
+    public void setNewCommentDisabled(boolean isDisabled) {
+        newCommentContainer.setVisible(!isDisabled);
+        newCommentDisabledContainer.setVisible(isDisabled);
     }
 
     @Override
@@ -130,23 +139,23 @@ public class CaseCommentListView
     @Override
     public void setPreviewVisible(boolean isVisible) {
         if (isVisible) {
-            commentPreviewContainer.removeClassName("hide");
+            commentPreviewContainer.removeClassName( HIDE );
         } else {
-            commentPreviewContainer.addClassName("hide");
+            commentPreviewContainer.addClassName( HIDE );
         }
     }
 
     @Override
     public void setMarkupLabel(String label, String link) {
         if (label == null) {
-            markupLabel.addClassName("hide");
-            markupLink.addStyleName("hide");
+            markupLabel.addClassName( HIDE );
+            markupLink.addStyleName( HIDE );
         } else {
             markupLabel.setInnerText(label);
-            markupLabel.removeClassName("hide");
+            markupLabel.removeClassName( HIDE );
 
             markupLink.setHref(link);
-            markupLink.removeStyleName("hide");
+            markupLink.removeStyleName( HIDE );
         }
     }
 
@@ -167,8 +176,25 @@ public class CaseCommentListView
     }
 
     @Override
+    public void replaceCommentView( IsWidget removed, IsWidget inserted ) {
+        int widgetIndex = commentsContainer.getWidgetIndex( removed );
+        commentsContainer.insert( inserted.asWidget(), widgetIndex);
+        commentsContainer.remove( widgetIndex + 1 );
+    }
+
+    @Override
     public void removeComment(IsWidget comment) {
         commentsContainer.remove( comment.asWidget() );
+    }
+
+    @Override
+    public void setCaseCreatorId(Long personId) {
+        comment.setPersonId(personId);
+    }
+
+    @Override
+    public void setCommentPlaceholder(String placeholder) {
+        comment.getElement().setAttribute("placeholder", placeholder);
     }
 
     @UiHandler( "send" )
@@ -270,8 +296,9 @@ public class CaseCommentListView
 
     @UiField
     HTMLPanel root;
-    @UiField
-    DndAutoResizeTextArea comment;
+    @Inject
+    @UiField(provided = true)
+    MentioningTextArea comment;
     @UiField
     FlowPanel commentsContainer;
     @Inject
@@ -313,6 +340,10 @@ public class CaseCommentListView
     ToggleButton isDisplayPreview;
     @UiField
     HTMLPanel messageBlock;
+    @UiField
+    HTMLPanel newCommentContainer;
+    @UiField
+    HTMLPanel newCommentDisabledContainer;
     @UiField
     Element timeElapsedInfoContainer;
 

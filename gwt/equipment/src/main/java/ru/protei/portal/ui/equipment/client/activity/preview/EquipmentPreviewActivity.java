@@ -51,7 +51,7 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
     @Event
     public void onShowFullScreen( EquipmentEvents.ShowFullScreen event ) {
         if (!policyService.hasPrivilegeFor(En_Privilege.EQUIPMENT_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
@@ -137,10 +137,12 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
     }
 
     private Runnable removeAction(Long equipmentId) {
-        return () -> equipmentService.removeEquipment( equipmentId, new FluentCallback<Boolean>().withSuccess(result -> {
-            fireEvent( new EquipmentEvents.Show() );
-            fireEvent( new NotifyEvents.Show( lang.equipmentRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS ) );
-        }));
+        return () -> equipmentService.removeEquipment(equipmentId, new FluentCallback<Long>()
+                .withSuccess(result -> {
+                    fireEvent(new EquipmentEvents.Show(true));
+                    fireEvent(new NotifyEvents.Show(lang.equipmentRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
+                })
+        );
     }
 
     @Inject

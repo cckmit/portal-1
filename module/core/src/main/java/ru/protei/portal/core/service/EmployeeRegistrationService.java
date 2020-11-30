@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
+import ru.protei.portal.core.model.ent.EmployeeRegistrationShortView;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -22,4 +23,7 @@ public interface EmployeeRegistrationService {
     @Privileged(requireAny = En_Privilege.EMPLOYEE_REGISTRATION_CREATE)
     Result<Long> createEmployeeRegistration( AuthToken token, EmployeeRegistration employeeRegistration);
 
+    @Auditable(En_AuditType.EMPLOYEE_REGISTRATION_MODIFY)
+    @Privileged(requireAny = En_Privilege.EMPLOYEE_REGISTRATION_EDIT)
+    Result<Long> updateEmployeeRegistration(AuthToken token, EmployeeRegistrationShortView employeeRegistration);
 }

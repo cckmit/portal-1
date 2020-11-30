@@ -1,20 +1,21 @@
 package ru.protei.portal.core.model.query;
 
-import ru.protei.portal.core.model.dict.En_CustomerType;
-import ru.protei.portal.core.model.dict.En_RegionState;
-import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.struct.ProductDirectionInfo;
+import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 
 import java.util.*;
 
 /**
- * Запрос по регионам
+ * Запрос по проектам
  */
 public class ProjectQuery extends BaseQuery {
+
+    private En_CaseType type = En_CaseType.PROJECT;
+
     private List<Long> caseIds;
 
     private Set<En_RegionState> states;
@@ -29,7 +30,7 @@ public class ProjectQuery extends BaseQuery {
 
     private Set<Long> districtIds;
 
-    private Boolean onlyMineProjects;
+    private Long memberId;
 
     private Set<Long> productIds;
 
@@ -40,6 +41,16 @@ public class ProjectQuery extends BaseQuery {
     private Date createdTo;
 
     private Boolean platformIndependentProject;
+
+    private Set<Long> initiatorCompanyIds;
+
+    private Long pauseDateGreaterThan;
+
+    private Integer deleted;
+
+    private Set<Long> subcontractorIds;
+
+    private List<Interval> technicalSupportExpiresInDays;
 
     public ProjectQuery() {
         sortField = En_SortField.case_name;
@@ -71,6 +82,10 @@ public class ProjectQuery extends BaseQuery {
         this.caseIds.add(caseId);
     }
 
+    public En_CaseType getType() {
+        return type;
+    }
+
     public void setCaseIds(List<Long> caseIds) {
         this.caseIds = caseIds;
     }
@@ -99,12 +114,12 @@ public class ProjectQuery extends BaseQuery {
         this.directions = directions;
     }
 
-    public Boolean isOnlyMineProjects() {
-        return onlyMineProjects;
+    public Long getMemberId() {
+        return memberId;
     }
 
-    public void setOnlyMineProjects(Boolean onlyMineProjects) {
-        this.onlyMineProjects = onlyMineProjects;
+    public void setMemberId(Long memberId) {
+        this.memberId = memberId;
     }
 
     public Set<Long> getProductIds() {
@@ -171,6 +186,50 @@ public class ProjectQuery extends BaseQuery {
         this.caseMembers = caseMembers;
     }
 
+    public Set<Long> getInitiatorCompanyIds() {
+        return initiatorCompanyIds;
+    }
+
+    public void setInitiatorCompanyIds(Set<Long> initiatorCompanyIds) {
+        this.initiatorCompanyIds = initiatorCompanyIds;
+    }
+
+    public void setType(En_CaseType type) {
+        this.type = type;
+    }
+
+    public Long getPauseDateGreaterThan() {
+        return pauseDateGreaterThan;
+    }
+
+    public void setPauseDateGreaterThan(Long pauseDateGreaterThan) {
+        this.pauseDateGreaterThan = pauseDateGreaterThan;
+    }
+
+    public Integer getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Integer deleted) {
+        this.deleted = deleted;
+    }
+
+    public List<Interval> getTechnicalSupportExpiresInDays() {
+        return technicalSupportExpiresInDays;
+    }
+
+    public void setTechnicalSupportExpiresInDays(List<Interval> technicalSupportExpiresInDays) {
+        this.technicalSupportExpiresInDays = technicalSupportExpiresInDays;
+    }
+
+    public Set<Long> getSubcontractorIds() {
+        return subcontractorIds;
+    }
+
+    public void setSubcontractorIds(Set<Long> subcontractorIds) {
+        this.subcontractorIds = subcontractorIds;
+    }
+
     @Override
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
@@ -181,33 +240,39 @@ public class ProjectQuery extends BaseQuery {
                 CollectionUtils.isNotEmpty(caseMembers) ||
                 CollectionUtils.isNotEmpty(directions) ||
                 CollectionUtils.isNotEmpty(productIds) ||
+                CollectionUtils.isNotEmpty(initiatorCompanyIds) ||
+                CollectionUtils.isNotEmpty(subcontractorIds) ||
                 customerType != null ||
                 createdFrom != null ||
                 createdTo != null ||
-                platformIndependentProject != null;
+                platformIndependentProject != null ||
+                pauseDateGreaterThan != null ||
+                deleted != null ||
+                CollectionUtils.isNotEmpty(technicalSupportExpiresInDays);
     }
 
     @Override
     public String toString() {
         return "ProjectQuery{" +
-                "states=" + states +
+                "type=" + type +
+                ", caseIds=" + caseIds +
+                ", states=" + states +
                 ", regions=" + regions +
                 ", headManagers=" + headManagers +
                 ", caseMembers=" + caseMembers +
-                ", caseIds=" + caseIds +
-                ", districtIds=" + districtIds +
                 ", directions=" + directions +
-                ", onlyMineProjects=" + onlyMineProjects +
+                ", districtIds=" + districtIds +
+                ", memberId=" + memberId +
                 ", productIds=" + productIds +
                 ", customerType=" + customerType +
                 ", createdFrom=" + createdFrom +
                 ", createdTo=" + createdTo +
-                ", searchString='" + searchString + '\'' +
-                ", sortField=" + sortField +
-                ", sortDir=" + sortDir +
-                ", limit=" + limit +
-                ", offset=" + offset +
                 ", platformIndependentProject=" + platformIndependentProject +
+                ", initiatorCompanyIds=" + initiatorCompanyIds +
+                ", pauseDateGreaterThan=" + pauseDateGreaterThan +
+                ", deleted=" + deleted +
+                ", subcontractorIds=" + subcontractorIds +
+                ", technicalSupportExpiresInDays=" + technicalSupportExpiresInDays +
                 '}';
     }
 
@@ -223,18 +288,24 @@ public class ProjectQuery extends BaseQuery {
                 Objects.equals(caseMembers, that.caseMembers) &&
                 Objects.equals(directions, that.directions) &&
                 Objects.equals(districtIds, that.districtIds) &&
-                Objects.equals(onlyMineProjects, that.onlyMineProjects) &&
+                Objects.equals(memberId, that.memberId) &&
                 Objects.equals(productIds, that.productIds) &&
                 customerType == that.customerType &&
                 Objects.equals(createdFrom, that.createdFrom) &&
                 Objects.equals(createdTo, that.createdTo) &&
-                Objects.equals(platformIndependentProject, that.platformIndependentProject);
+                Objects.equals(platformIndependentProject, that.platformIndependentProject) &&
+                Objects.equals(initiatorCompanyIds, that.initiatorCompanyIds) &&
+                Objects.equals(pauseDateGreaterThan, that.pauseDateGreaterThan) &&
+                Objects.equals(deleted, that.deleted) &&
+                Objects.equals(subcontractorIds, that.subcontractorIds) &&
+                Objects.equals(technicalSupportExpiresInDays, that.technicalSupportExpiresInDays);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(caseIds, states, regions, headManagers, caseMembers, directions,
-                districtIds, onlyMineProjects, productIds, customerType, createdFrom, createdTo,
-                platformIndependentProject);
+                districtIds, memberId, productIds, customerType, createdFrom, createdTo,
+                platformIndependentProject, initiatorCompanyIds, pauseDateGreaterThan, deleted,
+                subcontractorIds, technicalSupportExpiresInDays);
     }
 }

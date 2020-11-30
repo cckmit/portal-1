@@ -1,6 +1,8 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
@@ -40,7 +42,7 @@ public class CompanyDepartment extends AuditableObject {
             @JdbcJoinPath(localColumn = "head_id", table = "worker_entry", remoteColumn = "id"),
             @JdbcJoinPath(localColumn = "personId", table = "person", remoteColumn = "id")
     })
-    private Person parentHead;
+    private PersonShortView parentHead;
 
     @JdbcColumn(name = "head_id")
     private Long headId;
@@ -52,7 +54,7 @@ public class CompanyDepartment extends AuditableObject {
             @JdbcJoinPath(localColumn = "head_id", table = "worker_entry", remoteColumn = "id"),
             @JdbcJoinPath(localColumn = "personId", table = "person", remoteColumn = "id")
     })
-    private Person head;
+    private PersonShortView head;
 
     @JdbcColumn(name = "dep_extId")
     private String externalId;
@@ -148,24 +150,28 @@ public class CompanyDepartment extends AuditableObject {
         this.headExternalId = headExternalId;
     }
 
-    public Person getParentHead() {
+    public PersonShortView getParentHead() {
         return parentHead;
     }
 
-    public void setParentHead( Person parentHead ) {
+    public void setParentHead( PersonShortView parentHead ) {
         this.parentHead = parentHead;
     }
 
-    public Person getHead() {
+    public PersonShortView getHead() {
         return head;
     }
 
-    public void setHead( Person head ) {
+    public void setHead( PersonShortView head ) {
         this.head = head;
     }
 
     @Override
     public String getAuditType() {
         return "Department";
+    }
+
+    public static EntityOption toOption(CompanyDepartment department) {
+        return new EntityOption(department.getName(), department.getId());
     }
 }

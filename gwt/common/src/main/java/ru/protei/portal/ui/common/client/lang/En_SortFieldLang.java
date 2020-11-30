@@ -12,6 +12,8 @@ public class En_SortFieldLang {
         switch (value)
         {
             case creation_date:
+            case contract_creation_date:
+            case project_creation_date:
                 return lang.created();
             case name:
                 return lang.name();
@@ -21,6 +23,8 @@ public class En_SortFieldLang {
                 return lang.name();
             case project_name:
                 return lang.name();
+            case project_number:
+                return lang.projectNumber();
             case last_update:
                 return lang.updated();
             case person_full_name:
@@ -36,6 +40,8 @@ public class En_SortFieldLang {
             case ulogin:
                 return lang.accountLogin();
             case project:
+            case document_project:
+                return lang.documentProject();
             case equipment_project:
                 return lang.equipmentProject();
             case equipment_name_sldwrks:
@@ -46,7 +52,34 @@ public class En_SortFieldLang {
                 return lang.birthday();
             case employee_ip:
                 return lang.employeeIPAddress();
-
+            case address:
+                return lang.reservedIpSubnetAddress();
+            case ip_address:
+                return lang.reservedIpIpAddress();
+            case check_date:
+                return lang.reservedIpNonActiveRange();
+            case start_date:
+                return lang.planStartDate();
+            case finish_date:
+                return lang.planFinishDate();
+            case author_id:
+                return lang.issueCommentAuthor();
+            case absence_date_from:
+                return lang.absenceFromTime();
+            case absence_date_till:
+                return lang.absenceTillTime();
+            case absence_person:
+                return lang.contactFullName();
+            case absence_reason:
+                return lang.absenceReason();
+            case contract_signing_date:
+                return lang.signingDate();
+            case duty_log_date_from:
+                return lang.dutyLogSortDateFrom();
+            case duty_log_employee:
+                return lang.dutyLogEmployee();
+            case duty_log_type:
+                return lang.dutyLogType();
             default:
                 return lang.unknownField();
         }

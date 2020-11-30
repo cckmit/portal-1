@@ -2,7 +2,6 @@ package ru.protei.portal.redmine.service;
 
 import com.taskadapter.redmineapi.bean.Journal;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.redmine.utils.CachedPersonMapper;
@@ -38,7 +37,7 @@ public interface CommonService {
 
     Result<Set<Integer>> getExistingAttachmentsHashCodes( long caseObjId );
 
-    Result<Long> saveAttachment( Attachment a, Person author, HttpInputSource httpInputSource, Long fileSize, String contentType, Long caseObjId );
+    Result<Long> saveAttachment( Attachment a, Person author, HttpInputSource httpInputSource, Long fileSize, String contentType, CaseObject caseObject );
 
     Result<CaseObject> getByExternalAppCaseId( String externalAppCaseId );
 
@@ -52,9 +51,11 @@ public interface CommonService {
     Result<RedminePriorityMapEntry> getByPortalPriorityId( Integer impLevel, long priorityMapId );
 
     Result<RedmineToCrmEntry> getLocalStatus( long statusMapId, Integer statusId );
-    Result<RedmineStatusMapEntry> getRedmineStatus( En_CaseState initState, En_CaseState lastState, long statusMapId );
+    Result<RedmineStatusMapEntry> getRedmineStatus(long initStateId, long lastStateId, long statusMapId );
 
 
     Result<Boolean> updateCreatedOn( RedmineEndpoint endpoint );
     Result<Boolean> updateUpdatedOn( RedmineEndpoint endpoint );
+
+    List<Platform> getPlatforms(Long companyId);
 }

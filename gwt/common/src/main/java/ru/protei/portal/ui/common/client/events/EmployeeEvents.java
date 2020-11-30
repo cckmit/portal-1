@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.events;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 import ru.brainworm.factory.context.client.annotation.Name;
+import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeShortView;
@@ -15,9 +16,18 @@ public class EmployeeEvents {
      */
     @Url( value = "employees", primary = true )
     public static class Show {
-
-        public Show () {}
-
+        public ViewType view;
+        @Omit
+        public Boolean preScroll = false;
+        public Show () {
+        }
+        public Show(Boolean preScroll) {
+            this.preScroll = preScroll;
+        }
+        public Show(ViewType view, Boolean preScroll) {
+            this.view = view;
+            this.preScroll = preScroll;
+        }
     }
 
     /**
@@ -25,15 +35,13 @@ public class EmployeeEvents {
      */
     public static class ShowPreview {
 
-        public ShowPreview( HasWidgets parent, EmployeeShortView employee, boolean isForTableView ) {
+        public ShowPreview( HasWidgets parent, EmployeeShortView employee ) {
             this.parent = parent;
             this.employee = employee;
-            this.isForTableView = isForTableView;
         }
 
         public HasWidgets parent;
         public EmployeeShortView employee;
-        public boolean isForTableView;
     }
 
     @Url(value = "employee_preview", primary = true)
@@ -49,21 +57,23 @@ public class EmployeeEvents {
     }
 
     public static class ShowDefinite {
-        public ShowDefinite (ViewType type, Widget filter, EmployeeQuery query) {
+        public ShowDefinite (ViewType type, Widget filter, EmployeeQuery query, Boolean preScroll) {
             this.viewType = type;
             this.filter = filter;
             this.query = query;
+            this.preScroll = preScroll;
         }
 
         public ViewType viewType;
         public Widget filter;
         public EmployeeQuery query;
+        public Boolean preScroll;
     }
 
     /**
      * Показать руководство
      */
-    @Url(value = "topbrass")
+    @Url(value = "topbrass", primary = true)
     public static class ShowTopBrass {}
 
     public static class UpdateData {
@@ -74,5 +84,45 @@ public class EmployeeEvents {
 
         public ViewType viewType;
         public EmployeeQuery query;
+    }
+
+    @Url( value = "employee" )
+    public static class Edit {
+
+        public Long id;
+
+        public Edit() { this.id = null; }
+        public Edit(Long id) { this.id = id; }
+    }
+
+    public static class Update {
+
+        public Long id;
+
+        public Update(Long id) { this.id = id; }
+    }
+
+    public static class UpdateDefinite {
+
+        public ViewType viewType;
+        public Long id;
+
+        public UpdateDefinite(ViewType type, Long id) {
+            this.viewType = type;
+            this.id = id;
+        }
+    }
+
+    @Url(value = "birthdays", primary = true)
+    public static class ShowBirthdays {
+        public ShowBirthdays() {}
+    }
+
+    public static class SelectTab {
+        public ViewType view;
+
+        public SelectTab(ViewType view) {
+            this.view = view;
+        }
     }
 }

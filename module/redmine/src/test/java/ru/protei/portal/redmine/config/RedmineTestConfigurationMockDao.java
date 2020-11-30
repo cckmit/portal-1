@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.support.TransactionTemplate;
+import ru.protei.portal.core.model.converter.MoneyJdbcConverter;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -143,6 +144,11 @@ public class RedmineTestConfigurationMockDao {
     }
 
     @Bean
+    public UserLoginShortViewDAO getUserLoginShortViewDAO() {
+        return mock(UserLoginShortViewDAO.class);
+    }
+
+    @Bean
     public UserDashboardDAO getUserDashboardDAO() {
         return mock( UserDashboardDAO.class );
     }
@@ -274,6 +280,11 @@ public class RedmineTestConfigurationMockDao {
     }
 
     @Bean
+    public ProjectDAO getProjectDAO() {
+        return mock( ProjectDAO.class );
+    }
+
+    @Bean
     public ServerDAO getServerDAO() {
         return mock( ServerDAO.class );
     }
@@ -358,6 +369,30 @@ public class RedmineTestConfigurationMockDao {
         return mock(CompanyImportanceItemDAO.class);
     }
 
+    @Bean
+    public HistoryDAO getHistoryDAO() {
+        return mock(HistoryDAO.class);
+    }
 
+    @Bean
+    public PersonFavoriteIssuesDAO getPersonFavoriteIssuesDAO() {
+        return mock(PersonFavoriteIssuesDAO.class);
+    }
 
+    @Bean
+    public ContactItemDAO getContactItemDAO() {
+        return mock(ContactItemDAO.class);
+    }
+
+    @Bean
+    public ProjectTechnicalSupportValidityReportInfoDAO getProjectTechnicalSupportValidityReportInfoDAO() {
+        return mock( ProjectTechnicalSupportValidityReportInfoDAO.class);
+    }
+
+    /* DAO converters */
+
+    @Bean
+    public MoneyJdbcConverter moneyJdbcConverter() {
+        return new MoneyJdbcConverter();
+    }
 }

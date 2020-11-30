@@ -4,7 +4,7 @@ import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.AuditableObject;
-import ru.protei.portal.core.model.struct.ProductDirectionInfo;
+import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.model.view.ProductShortViewSupport;
@@ -61,6 +61,12 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
 
     @JdbcColumn(name = Columns.HISTORY_VERSION)
     private String historyVersion;
+
+    @JdbcColumn(name = "common_manager_id")
+    private Long commonManagerId;
+
+    @JdbcJoinedColumn(localColumn = "common_manager_id", remoteColumn = "id", table = "person", mappedColumn = "displayname")
+    private String commonManagerName;
 
     private List<DevUnit> parents;
 
@@ -304,6 +310,22 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
         this.productDirection = productDirection;
     }
 
+    public Long getCommonManagerId() {
+        return commonManagerId;
+    }
+
+    public void setCommonManagerId(Long commonManagerId) {
+        this.commonManagerId = commonManagerId;
+    }
+
+    public String getCommonManagerName() {
+        return commonManagerName;
+    }
+
+    public void setCommonManagerName(String commonManagerName) {
+        this.commonManagerName = commonManagerName;
+    }
+
     @Override
     public String toString() {
         return "DevUnit{" +
@@ -317,12 +339,14 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
                 ", stateId=" + stateId +
                 ", oldId=" + oldId +
                 ", subscriptions=" + subscriptions +
-                ", parents=" + parents +
-                ", children=" + children +
                 ", wikiLink='" + wikiLink + '\'' +
                 ", configuration='" + configuration + '\'' +
                 ", cdrDescription='" + cdrDescription + '\'' +
                 ", historyVersion='" + historyVersion + '\'' +
+                ", commonManagerId=" + commonManagerId +
+                ", commonManagerName='" + commonManagerName + '\'' +
+                ", parents=" + parents +
+                ", children=" + children +
                 ", productDirection=" + productDirection +
                 ", aliases=" + aliases +
                 '}';

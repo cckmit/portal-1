@@ -2,7 +2,6 @@ package ru.protei.portal.ui.equipment.client.activity.edit;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
-import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
@@ -13,9 +12,12 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.dto.Project;
+import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.util.CrmConstants.EquipmentConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EquipmentShortView;
+import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -23,11 +25,15 @@ import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
+import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.List;
+import java.util.Objects;
+
+import static ru.protei.portal.core.model.helper.StringUtils.emptyIfNull;
 
 /**
  * Активность карточки редактирования единицы оборудования
@@ -49,7 +55,7 @@ public abstract class EquipmentEditActivity
     @Event(Type.FILL_CONTENT)
     public void onShow( EquipmentEvents.Edit event ) {
         if (!hasPrivileges(event.id)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
@@ -104,6 +110,13 @@ public abstract class EquipmentEditActivity
             return;
         }
 
+        if (equipment.getName().length() > EquipmentConstants.NAME_SIZE) {
+            fireEvent(new NotifyEvents.Show(lang.promptFieldLengthExceed(lang.equipmentNameBySpecification(), EquipmentConstants.NAME_SIZE), NotifyEvents.NotifyType.ERROR));
+            return;
+        }
+
+        view.saveProcessable().setProcessing(true);
+
         equipmentService.saveEquipment(equipment, new FluentCallback<Equipment>()
                 .withError(t -> {
                     if (t instanceof RequestFailedException) {
@@ -115,21 +128,36 @@ public abstract class EquipmentEditActivity
 
                     defaultErrorHandler.accept(t);
                     fireEvent(new NotifyEvents.Show(t.getMessage(), NotifyEvents.NotifyType.ERROR));
+
+                    view.saveProcessable().setProcessing(false);
                 })
                 .withSuccess(result -> {
                     fireEvent(new EquipmentEvents.ChangeModel());
-                    fireEvent(isNew(this.equipment) ? new EquipmentEvents.Show(true) : new Back());
+                    fireEvent(new EquipmentEvents.Show(!isNew(this.equipment)));
+
+                    view.saveProcessable().setProcessing(false);
                 })
         );
     }
 
     @Override
     public void onCancelClicked() {
-        fireEvent(new Back());
+        fireEvent(new EquipmentEvents.Show(!isNew(this.equipment)));
     }
 
     @Override
-    public void onDecimalNumbersChanged() {}
+    public void onProjectChanged() {
+        EntityOption project = view.project().getValue();
+
+        if (project == null) {
+            view.manager().setValue(null);
+            return;
+        }
+
+        projectService.getProjectLeader(project.getId(), new FluentCallback<PersonShortView>()
+                .withSuccess(view.manager()::setValue)
+        );
+    }
 
     @Override
     public void onCreateDocumentClicked() {
@@ -181,7 +209,7 @@ public abstract class EquipmentEditActivity
         if ( equipment.getManagerId() != null ) {
             manager = new PersonShortView();
             manager.setId( equipment.getManagerId() );
-            manager.setName( equipment.getManagerShortName() );
+            manager.setDisplayShortName( equipment.getManagerShortName() );
         }
         view.manager().setValue( manager );
 
@@ -195,6 +223,18 @@ public abstract class EquipmentEditActivity
 
         view.createDocumentButtonEnabled().setEnabled(!isCreate);
         view.documentsVisibility().setVisible(!isCreate);
+
+        view.setLinkedEquipmentFilter(isCreate ?
+                        (equipmentShortView -> true) :
+                        (equipmentShortView -> !Objects.equals(equipmentShortView.getId(), equipment.getId()))
+        );
+
+        view.setNameSizeValidationFunction(name -> {
+            boolean isValidSize = emptyIfNull(name).length() <= CrmConstants.EquipmentConstants.NAME_SIZE;
+
+            view.nameErrorLabelVisibility().setVisible(!isValidSize);
+            return isValidSize;
+        });
 
         fireEvent(new EquipmentEvents.ShowDocumentList(view.documents(), equipment.getId()));
     }
@@ -259,6 +299,8 @@ public abstract class EquipmentEditActivity
     DefaultErrorHandler defaultErrorHandler;
     @Inject
     PolicyService policyService;
+    @Inject
+    RegionControllerAsync projectService;
 
     private AppEvents.InitDetails initDetails;
 }

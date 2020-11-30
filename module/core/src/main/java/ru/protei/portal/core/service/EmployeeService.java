@@ -1,16 +1,21 @@
 package ru.protei.portal.core.service;
 
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
+import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.WorkerEntry;
 import ru.protei.portal.core.model.query.EmployeeQuery;
-import ru.protei.portal.core.model.view.EmployeeDetailView;
+import ru.protei.portal.core.model.struct.EmployeesBirthdays;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.core.model.view.WorkerView;
+import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -18,19 +23,48 @@ import java.util.List;
  */
 public interface EmployeeService {
 
-    Result<List<PersonShortView>> shortViewList(EmployeeQuery query);
-    Result<List<WorkerView>> list(String param);
-
     @Privileged(En_Privilege.EMPLOYEE_VIEW)
     Result<SearchResult<EmployeeShortView>> employeeList(AuthToken token, EmployeeQuery query);
 
-    Result<PersonShortView> getEmployee(AuthToken token, Long employeeId);
+    Result<List<PersonShortView>> shortViewList(EmployeeQuery query);
 
-    EmployeeDetailView getEmployeeProfile(Long id);
-    EmployeeDetailView getEmployeeAbsences(Long id, Long tFrom, Long tTill, Boolean isFull);
+    @Privileged(En_Privilege.EMPLOYEE_VIEW)
+    Result<SearchResult<EmployeeShortView>> employeeListWithChangedHiddenCompanyNames(AuthToken token, EmployeeQuery query);
+
+    @Privileged(En_Privilege.EMPLOYEE_VIEW)
+    Result<EmployeeShortView> getEmployee(AuthToken token, Long employeeId);
 
     Result<PersonShortView> getDepartmentHead(AuthToken token, Long departmentId);
 
+    Result<List<WorkerEntryShortView>> getWorkerEntryList(AuthToken token, int offset, int limit);
+
+    Result<EmployeeShortView> getEmployeeWithChangedHiddenCompanyNames(AuthToken token, Long employee);
+
+    @Auditable(En_AuditType.EMPLOYEE_CREATE)
+    @Privileged(En_Privilege.EMPLOYEE_CREATE)
+    Result<Person> createEmployeePerson(AuthToken token, Person person);
+
+    @Auditable(En_AuditType.EMPLOYEE_MODIFY)
+    @Privileged(En_Privilege.EMPLOYEE_EDIT)
+    Result<Boolean> updateEmployeePerson(AuthToken token, Person person, boolean needToChangeAccount);
+
+    @Auditable(En_AuditType.WORKER_CREATE)
+    @Privileged(En_Privilege.EMPLOYEE_CREATE)
+    Result<WorkerEntry> createEmployeeWorker(AuthToken token, WorkerEntry worker);
+
+    @Auditable(En_AuditType.WORKER_MODIFY)
+    @Privileged(En_Privilege.EMPLOYEE_EDIT)
+    Result<Boolean> updateEmployeeWorker(AuthToken token, WorkerEntry worker);
+
+    @Auditable(En_AuditType.EMPLOYEE_MODIFY)
+    @Privileged(En_Privilege.EMPLOYEE_EDIT)
+    Result<Boolean> fireEmployee(AuthToken token, Person person);
+
+    @Privileged(En_Privilege.EMPLOYEE_EDIT)
+    Result<Boolean> updateEmployeeWorkers(AuthToken token, List<WorkerEntry> workerEntryList);
+
     @Privileged(En_Privilege.EMPLOYEE_VIEW)
-    Result<EmployeeShortView> getEmployeeShortView(AuthToken token, Long employee);
+    Result<EmployeesBirthdays> getEmployeesBirthdays(AuthToken token, Date dateFrom, Date dateUntil);
+
+    Result<Void> notifyAboutBirthdays();
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_CaseLink;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.service.CaseLinkService;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.service.CaseService;
@@ -52,27 +53,15 @@ public class CaseLinkControllerImpl implements CaseLinkController {
     }
 
     @Override
-    public Long createLink(CaseLink value, boolean createCrossLinks) throws RequestFailedException {
+    public CaseLink createLinkWithPublish(CaseLink value, En_CaseType caseType) throws RequestFailedException {
         AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
-        return checkResultAndGetData( linkService.createLink( authToken, value, createCrossLinks) );
+        return checkResultAndGetData( linkService.createLinkWithPublish( authToken, value, caseType) );
     }
 
     @Override
-    public Long createLinkWithPublish(CaseLink value, boolean createCrossLinks) throws RequestFailedException {
+    public CaseLink deleteLinkWithPublish(Long id, En_CaseType caseType) throws RequestFailedException {
         AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
-        return checkResultAndGetData( linkService.createLinkWithPublish( authToken, value, createCrossLinks) );
-    }
-
-    @Override
-    public void deleteLink(Long id) throws RequestFailedException {
-        AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
-        checkResult( linkService.deleteLink( authToken, id) );
-    }
-
-    @Override
-    public void deleteLinkWithPublish(Long id) throws RequestFailedException {
-        AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
-        checkResult( linkService.deleteLinkWithPublish( authToken, id) );
+        return checkResultAndGetData( linkService.deleteLinkWithPublish( authToken, id, caseType) );
     }
 
     @Autowired

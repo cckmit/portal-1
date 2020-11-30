@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.issueassignment.client.view.desk.rowissue.issue;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -10,13 +9,13 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
-import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.common.client.widget.stringselectpopup.StringSelectPopup;
 import ru.protei.portal.ui.issueassignment.client.activity.desk.rowissue.issue.AbstractDeskIssueView;
 
@@ -61,12 +60,12 @@ public class DeskIssueView extends Composite implements AbstractDeskIssueView {
     }
 
     @Override
-    public void setState(En_CaseState state) {
+    public void setState(String state) {
         if (state == null) {
             this.state.setClassName("hide");
         } else {
-            this.state.setClassName("label label-" + state.toString().toLowerCase());
-            this.state.setInnerText(caseStateLang.getStateName(state));
+            this.state.setClassName("label label-" + CaseStateUtils.makeStyleName(state));
+            this.state.setInnerText(state);
         }
     }
 
@@ -112,6 +111,11 @@ public class DeskIssueView extends Composite implements AbstractDeskIssueView {
         this.modified.setInnerHTML(modified);
     }
 
+    @Override
+    public HasWidgets getTagsContainer() {
+        return tagsContainer;
+    }
+
     @UiHandler("openButton")
     public void openButtonClick(ClickEvent event) {
         if (handler != null) {
@@ -135,8 +139,6 @@ public class DeskIssueView extends Composite implements AbstractDeskIssueView {
     @Inject
     @UiField
     Lang lang;
-    @Inject
-    En_CaseStateLang caseStateLang;
 
     @UiField
     HTMLPanel root;
@@ -164,6 +166,8 @@ public class DeskIssueView extends Composite implements AbstractDeskIssueView {
     SpanElement created;
     @UiField
     SpanElement modified;
+    @UiField
+    HTMLPanel tagsContainer;
 
     private List<String> actions = new ArrayList<>();
     private StringSelectPopup popup = new StringSelectPopup();

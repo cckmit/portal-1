@@ -7,9 +7,11 @@ import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.CaseTypeDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.util.sqlcondition.Query;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcHelper;
@@ -17,6 +19,7 @@ import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.util.*;
 
+import static ru.protei.portal.core.model.dict.En_CaseType.CRM_SUPPORT;
 import static ru.protei.portal.core.model.ent.CaseObject.Columns.EXT_APP;
 import static ru.protei.portal.core.model.helper.StringUtils.length;
 import static ru.protei.portal.core.model.helper.StringUtils.trim;
@@ -52,14 +55,12 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     }
 
     @Override
-    public Long getCaseId(En_CaseType caseType, long number) {
-        CaseObject obj = partialGetByCondition("case_type=? and caseno=?", Arrays.asList(caseType.getId(), number), getIdColumnName());
-        return obj != null ? obj.getId() : null;
-    }
-
-    @Override
-    public Long getCaseIdByNumber( long number ) {
-        CaseObject obj = partialGetByCondition("caseno=?", Arrays.asList(number), getIdColumnName());
+    public Long getCaseIdByNumber(En_CaseType caseType, long number) {
+        Query q = query()
+                .where("case_type").equal(caseType.getId())
+                    .and("caseno").equal(number)
+                .asQuery();
+        CaseObject obj = partialGetByCondition(q.buildSql(), Arrays.asList(q.args()), getIdColumnName());
         return obj != null ? obj.getId() : null;
     }
 
@@ -70,13 +71,12 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     }
 
     @Override
-    public CaseObject getCaseByCaseno(long caseno) {
-        return getByCondition("case_object.caseno=?", caseno);
-    }
-
-    @Override
-    public CaseObject getCase(En_CaseType caseType, long number) {
-        return getByCondition("case_type=? and caseno=?", caseType.getId(), number);
+    public CaseObject getCaseByNumber(En_CaseType caseType, long caseNo) {
+        Query q = query()
+                .where("case_type").equal(caseType.getId())
+                    .and("caseno").equal(caseNo)
+                .asQuery();
+        return getByCondition(q.buildSql(), q.args());
     }
 
     @Override
@@ -123,6 +123,7 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
         String sql = "SELECT case_object.CASENO FROM " + getTableName() + " WHERE case_object.platform_id = " + id;
         return jdbcTemplate.queryForList(sql, Long.class);
     }
+
     @Override
     @Transactional
     public Long getAndIncrementEmailLastId( Long caseId ) {
@@ -138,6 +139,32 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     @Override
     public CaseObject getByCaseNameLike(String name) {
         return getByCondition("CASE_NAME like ?", "%" + name + "%");
+    }
+
+    @Override
+    public List<Long> getCaseIdToAutoOpen() {
+        Query query = query().select( "id" )
+                .from( "case_object" )
+                .where("case_object.state" ).equal(CrmConstants.State.CREATED)
+                .and("case_object.case_type").equal(CRM_SUPPORT.getId())
+                .and(query()
+                        .select( "SELECT company.auto_open_issue" ).from( "company" )
+                            .whereExpression( "company.id = case_object.initiator_company" ))
+                .asQuery();
+
+        return jdbcTemplate.queryForList(query.buildSql(), query.args(), Long.class);
+    }
+
+    @Override
+    public boolean isJiraDuplicateByClmId(String clmId) {
+        Query subQuery = query().select("JSON_EXTRACT(EXT_APP_DATA, '$.clmId') clmIds")
+                .from("case_object")
+                .where("EXT_APP").equal("jira")
+            .asQuery();
+
+        String query = "SELECT true WHERE '" + clmId + "' IN (" + subQuery.buildSql() + ");";
+
+        return !jdbcTemplate.queryForList(query, subQuery.args()).isEmpty();
     }
 
     @SqlConditionBuilder
@@ -162,11 +189,27 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
         parameters.withOffset(query.getOffset());
         parameters.withLimit(query.getLimit());
         parameters.withSort(TypeConverters.createSort( query ));
-        if (isSearchAtComments(query)) {
+        if (isNeedJoinComments(query)) {
             parameters.withDistinct(true);
             parameters.withJoins(LEFT_JOIN_CASE_COMMENT);
         }
 
         return parameters;
+    }
+
+    private boolean isNeedJoinComments(CaseQuery caseQuery) {
+        if (isSearchAtComments(caseQuery)) {
+            return true;
+        }
+
+        if (caseQuery.isCheckImportanceHistory()!=null && caseQuery.isCheckImportanceHistory()) {
+            return true;
+        }
+
+        if (CollectionUtils.isNotEmpty(caseQuery.getTimeElapsedTypeIds())) {
+            return true;
+        }
+
+        return false;
     }
 }

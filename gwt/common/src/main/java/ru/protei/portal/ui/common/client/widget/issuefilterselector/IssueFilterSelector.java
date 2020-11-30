@@ -26,8 +26,7 @@ public class IssueFilterSelector extends ButtonSelector< CaseFilterShortView > i
 
     @Override
     public void setValue(CaseFilterShortView value) {
-        fillMissingName(value);
-        super.setValue(value);
+        setValue(value, false);
     }
 
     @Override

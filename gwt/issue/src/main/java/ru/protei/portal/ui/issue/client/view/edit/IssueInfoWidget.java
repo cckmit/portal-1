@@ -2,23 +2,21 @@ package ru.protei.portal.ui.issue.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
-import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
-import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
+import ru.protei.portal.ui.common.client.widget.accordion.AccordionWidget;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
-import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.attachment.list.fullview.FullViewAttachmentList;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
 
@@ -30,47 +28,50 @@ public class IssueInfoWidget extends Composite {
     public void init() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         ensureDebugIds();
+
+        accordionWidget.setLocalStorageKey(UiConstants.ATTACHMENTS_PANEL_VISIBILITY);
+        accordionWidget.setMaxHeight(UiConstants.Accordion.ATTACHMENTS_MAX_HEIGHT);
     }
 
     public void setActivity( AbstractIssueEditActivity activity ) {
         this.activity = activity;
+        attachmentListContainer.setActivity(activity);
     }
 
     public HasWidgets getCommentsContainer() {
         return commentsContainer;
     }
 
-
-    public HasAttachments attachmentsContainer() {
-        return attachmentContainer;
+    public HasWidgets getHistoryContainer() {
+        return historyContainer;
     }
 
-    public AttachmentUploader getFileUploader(){
-        return fileUploader;
+    public HasAttachments attachmentsListContainer() {
+        return attachmentListContainer;
     }
 
-    public DivElement getDescriptionRO() {
-        return descriptionRO;
-    }
-
-    public void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler ) {
-        fileUploader.setUploadHandler( handler );
-    }
-
-    public void setCaseNumber( Long caseNumber ) {
-        fileUploader.autoBindingToCase( En_CaseType.CRM_SUPPORT, caseNumber );
+    public HasVisibility descriptionReadOnlyVisibility() {
+        return descriptionReadOnly;
     }
 
     public void setDescription( String issueDescription, En_TextMarkup textMarkup ) {
-        renderMarkupText(issueDescription, textMarkup, descriptionRO::setInnerHTML);
+        renderMarkupText(issueDescription, textMarkup, html -> descriptionReadOnly.getElement().setInnerHTML(html));
     }
 
-    public HasVisibility attachmentUploaderVisibility() {
-        return attachmentUploaderContainer;
+    public void setCountOfAttachments(int countOfAttachments) {
+        accordionWidget.setBadge(lang.attachment(), String.valueOf(countOfAttachments));
     }
 
-    @UiHandler("attachmentContainer")
-    public void attachmentContainerRemove( RemoveEvent event) {
+    public HasVisibility attachmentsVisibility() {
+        return accordionWidget;
+    }
+
+    public void setPrivateCase(boolean isPrivateCase) {
+        attachmentListContainer.setPrivateCase(isPrivateCase);
+    }
+
+    @UiHandler("attachmentListContainer")
+    public void attachmentContainerRemove(RemoveEvent event) {
         activity.removeAttachment(event.getAttachment());
     }
 
@@ -85,10 +86,10 @@ public class IssueInfoWidget extends Composite {
             return;
         }
 
-        descriptionRO.setId( DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.DESCRIPTION_FIELD );
-        fileUploader.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_UPLOAD_BUTTON);
-        attachmentContainer.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_LIST_CONTAINER);
-        attachmentsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.ATTACHMENTS);
+        descriptionReadOnly.ensureDebugId(DebugIds.ISSUE.DESCRIPTION_FIELD );
+        attachmentListContainer.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_LIST_CONTAINER);
+        accordionWidget.setTabNameDebugId(lang.attachment(), DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.ATTACHMENTS);
+        accordionWidget.setCollapseButtonDebugId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.ATTACHMENT_COLLAPSE_BUTTON);
     }
 
     @UiField
@@ -97,23 +98,15 @@ public class IssueInfoWidget extends Composite {
     @UiField
     HTMLPanel commentsContainer;
     @UiField
-    DivElement comments;
-    @Inject
-    @UiField
-    AttachmentUploader fileUploader;
-    @UiField
-    HTMLPanel attachmentUploaderContainer;
+    HTMLPanel historyContainer;
     @Inject
     @UiField(provided = true)
-    AttachmentList attachmentContainer;
+    FullViewAttachmentList attachmentListContainer;
     @UiField
-    LabelElement attachmentsLabel;
-    @UiField
-    DivElement attachmentsPanel;
-    @UiField
-    DivElement commentsPanel;
-    @UiField
-    DivElement descriptionRO;
+    HTMLPanel descriptionReadOnly;
+    @Inject
+    @UiField(provided = true)
+    AccordionWidget accordionWidget;
 
     @Inject
     TextRenderControllerAsync textRenderController;

@@ -1,6 +1,6 @@
 package ru.protei.portal.test.jira;
 
-import com.atlassian.jira.rest.client.api.domain.*;
+import com.atlassian.jira.rest.client.api.domain.Issue;
 import org.codehaus.jettison.json.JSONException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -16,18 +16,22 @@ import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
+import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.JiraEndpoint;
+import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.AssemblerService;
-import ru.protei.portal.jira.service.JiraIntegrationService;
-import ru.protei.portal.jira.dto.JiraHookEventData;
-import ru.protei.portal.jira.dict.JiraHookEventType;
-import ru.protei.portal.jira.utils.JiraHookEventParser;
-import ru.protei.portal.jira.utils.CustomJiraIssueParser;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
+import ru.protei.portal.jira.dict.JiraHookEventType;
+import ru.protei.portal.jira.dto.JiraHookEventData;
+import ru.protei.portal.jira.service.JiraIntegrationService;
+import ru.protei.portal.jira.utils.CustomJiraIssueParser;
+import ru.protei.portal.jira.utils.JiraHookEventParser;
 import ru.protei.portal.test.jira.config.JiraTestConfiguration;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
@@ -44,7 +48,11 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.getFirst;
 import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, JiraTestConfiguration.class})
+@ContextConfiguration(classes = {
+        CoreConfigurationContext.class,
+        JdbcConfigurationContext.class,
+        DatabaseConfiguration.class,
+        JiraTestConfiguration.class})
 public class JiraIntegrationServiceTest {
 
     @Autowired
@@ -80,6 +88,8 @@ public class JiraIntegrationServiceTest {
     private final String FILE_PATH_EMPTY_PROJECT_JSON = "issue.empty.project.json";
     private final String FILE_PATH_EMPTY_STATUS_JSON = "issue.empty.status.json";
     private final String FILE_PATH_COMPANY_GROUP_JSON = "issue.companygroup.json";
+    private final String FILE_PATH_DUPLICATE_CLM_ID_JSON = "issue.duplicate.clmid.json";
+    private final String FILE_PATH_NO_CLM_ID_JSON = "issue.no.clmid.json";
     private final String FILE_PATH_PRIVACY_TYPE_JSON = "issue.privacy.type.json";
 
     private String jsonString;
@@ -87,6 +97,12 @@ public class JiraIntegrationServiceTest {
     private String emptyKeyJsonString;
     private String unknownStatusJsonString;
     private String companyGroupJsonString;
+    private String duplicateClmIdJsonString;
+    private String noClmIdJsonString;
+
+    private static AtomicInteger uniqueIndex = new AtomicInteger( 0 );
+    private static final String JIRA_ID = "PRT-82";
+    private static final String CLM_ID = "CLM-367029";
     private String privacyTypeJsonString;
 
     private static final Logger log = LoggerFactory.getLogger(JiraIntegrationServiceTest.class);
@@ -104,6 +120,10 @@ public class JiraIntegrationServiceTest {
         unknownStatusJsonString = new String(encoded, StandardCharsets.UTF_8);
         encoded = Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(FILE_PATH_COMPANY_GROUP_JSON).getFile()));
         companyGroupJsonString = new String(encoded, StandardCharsets.UTF_8);
+        encoded = Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(FILE_PATH_DUPLICATE_CLM_ID_JSON).getFile()));
+        duplicateClmIdJsonString = new String(encoded, StandardCharsets.UTF_8);
+        encoded = Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(FILE_PATH_NO_CLM_ID_JSON).getFile()));
+        noClmIdJsonString = new String(encoded, StandardCharsets.UTF_8);
         encoded = Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(FILE_PATH_PRIVACY_TYPE_JSON).getFile()));
         privacyTypeJsonString = new String(encoded, StandardCharsets.UTF_8);
     }
@@ -141,7 +161,7 @@ public class JiraIntegrationServiceTest {
 
         caseEvent = jiraIntegrationService.updateOrCreate(endpoint, new JiraHookEventData(JiraHookEventType.ISSUE_UPDATED, issue));
         CaseObject object = caseObjectDAO.get(caseEvent.get().getCaseObjectId());
-        Assert.assertEquals("Issue not updated", object.getState(), En_CaseState.OPENED);
+        Assert.assertEquals("Issue not updated", object.getStateId(), CrmConstants.State.OPENED);
     }
 
     @Test
@@ -204,7 +224,7 @@ public class JiraIntegrationServiceTest {
 
         for (CompletableFuture<AssembledCaseEvent> caseEvent : caseEvents) {
             CaseObject object = caseObjectDAO.get( caseEvent.get().getCaseObjectId() );
-            Assert.assertEquals( "Issue not updated", object.getState(), En_CaseState.OPENED );
+            Assert.assertEquals( "Issue not updated", object.getStateId(), CrmConstants.State.OPENED );
         }
     }
 
@@ -216,8 +236,62 @@ public class JiraIntegrationServiceTest {
         Assert.assertEquals(issue.getFieldByName(CustomJiraIssueParser.COMPANY_GROUP_CODE_NAME).getValue(), "chinguitel_mr_Group");
     }
 
+    @Test
+    public void duplicateIssueByClmId() throws Exception {
+        int index = uniqueIndex.getAndIncrement();
+
+        Issue originalIssue = makeIssue(duplicateClmIdJsonString, index, null);
+        Assert.assertNotNull("Error parsing json for create", originalIssue);
+
+        Company company = makeCompany();
+        Person person = makePerson(company);
+        JiraEndpoint endpoint = jiraEndpointDAO.getByProjectId(company.getId(), originalIssue.getProject().getId());
+        endpoint.setPersonId(person.getId());
+
+        CompletableFuture<AssembledCaseEvent> caseEventOriginalIssue = jiraIntegrationService.create(endpoint, new JiraHookEventData(JiraHookEventType.ISSUE_CREATED, originalIssue));
+        AssembledCaseEvent assembledCaseEventOriginalIssue = caseEventOriginalIssue.get();
+        Assert.assertNotNull("Issue not created", assembledCaseEventOriginalIssue.getCaseObject().getId());
+
+        Issue duplicateIssue = makeIssue(replaceJiraId(duplicateClmIdJsonString, JIRA_ID + index), null, null);
+        Assert.assertNotNull("Error parsing json for create", duplicateIssue);
+
+        CompletableFuture<AssembledCaseEvent> CaseEventDuplicateIssue = jiraIntegrationService.create(endpoint, new JiraHookEventData(JiraHookEventType.ISSUE_CREATED, duplicateIssue));
+        AssembledCaseEvent assembledCaseEventDublicateIssue = CaseEventDuplicateIssue.get();
+
+        Assert.assertNull("Issue created", assembledCaseEventDublicateIssue);
+    }
+
+    @Test
+    public void IssueNoClmId() throws Exception {
+        Issue issue = makeIssue(noClmIdJsonString);
+        Assert.assertNotNull("Error parsing json for create", issue);
+
+        Company company = makeCompany();
+        Person person = makePerson(company);
+
+        JiraEndpoint endpoint = jiraEndpointDAO.getByProjectId(company.getId(), issue.getProject().getId());
+        endpoint.setPersonId(person.getId());
+
+        CompletableFuture<AssembledCaseEvent> caseEvent = jiraIntegrationService.create(endpoint, new JiraHookEventData(JiraHookEventType.ISSUE_CREATED, issue));
+        Assert.assertNotNull("Issue not created", caseEvent.get().getCaseObject().getId());
+    }
+
+    private String replaceJiraId(String json, String jiraId) {
+        return json.replaceAll(jiraId, JIRA_ID + uniqueIndex.getAndIncrement());
+    }
+
     private Issue makeIssue(String jsonString) {
-        jsonString = jsonString.replaceAll( "PRT-82", "PRT-82" + uniquieIndex.getAndIncrement() );
+        int index = uniqueIndex.getAndIncrement();
+        return makeIssue(jsonString, index, index);
+    }
+
+    private Issue makeIssue(String jsonString, Integer uniqueIndexId, Integer uniqueIndexCldId) {
+        if (uniqueIndexId != null) {
+            jsonString = jsonString.replaceAll(JIRA_ID, JIRA_ID + uniqueIndexId);
+        }
+        if (uniqueIndexCldId != null) {
+            jsonString = jsonString.replaceAll(CLM_ID, CLM_ID + uniqueIndexCldId);
+        }
         try {
             JiraHookEventData data = JiraHookEventParser.parse(jsonString);
             return data == null ? null : data.getIssue();
@@ -244,6 +318,4 @@ public class JiraIntegrationServiceTest {
         person.setId(personDAO.persist(person));
         return person;
     }
-
-    private static AtomicInteger uniquieIndex = new AtomicInteger( 0 );
 }

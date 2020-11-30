@@ -5,7 +5,8 @@
              xmlns:list="urn:import:ru.protei.portal.ui.common.client.widget.decimalnumber.multiple"
              xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
              xmlns:equipment="urn:import:ru.protei.portal.ui.common.client.widget.selector.equipment"
-             xmlns:type="urn:import:ru.protei.portal.ui.equipment.client.widget.type">
+             xmlns:type="urn:import:ru.protei.portal.ui.equipment.client.widget.type"
+             xmlns:btnProcessable="urn:import:ru.protei.portal.ui.common.client.widget.button">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -27,6 +28,7 @@
                                 </label>
                                 <validatefield:ValidableTextBox ui:field="nameSpecification" styleName="form-control"
                                                                 notNull="true"/>
+                                <g:Label ui:field="nameSpecificationErrorLabel" styleName="text-danger size-error" visible="false"/>
                             </div>
 
                             <div class="form-group col-md-6">
@@ -114,7 +116,7 @@
         <div class="card-footer">
             <div class="card card-transparent no-margin">
                 <div class="text-right">
-                    <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
+                    <btnProcessable:ButtonProcessable ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
                     <g:Button ui:field="cancelButton" styleName="btn btn-default" text="{lang.buttonCancel}"/>
                 </div>
             </div>

@@ -7,6 +7,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.i18n.client.TimeZone;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -21,6 +22,7 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.InputEvent;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.view.passwordgen.popup.PasswordGenPopup;
 import ru.protei.portal.ui.common.client.widget.passwordbox.PasswordTextBox;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
@@ -34,6 +36,8 @@ import ru.protei.portal.ui.contact.client.activity.edit.AbstractContactEditView;
 
 import java.util.Arrays;
 import java.util.Date;
+
+import static ru.protei.portal.core.model.util.CrmConstants.ContactConstants.*;
 
 /**
  * Представление создания и редактирования контактного лица
@@ -52,6 +56,12 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         personalEmail.setRegexp( CrmConstants.Masks.EMAIL );
         workEmail.setMaxLength( CrmConstants.EMAIL_MAX_SIZE );
         personalEmail.setMaxLength( CrmConstants.EMAIL_MAX_SIZE );
+
+        firstNameErrorLabel.setText(lang.promptFieldLengthExceed(firstNameLabel(), FIRST_NAME_SIZE));
+        secondNameErrorLabel.setText(lang.promptFieldLengthExceed(secondNameLabel(), SECOND_NAME_SIZE));
+        lastNameErrorLabel.setText(lang.promptFieldLengthExceed(lastNameLabel(), LAST_NAME_SIZE));
+        shortNameErrorLabel.setText(lang.promptFieldLengthExceed(shortNameLabel(), SHORT_NAME_SIZE));
+        loginErrorLabel.setText(lang.promptFieldLengthExceed(loginLabel(), LOGIN_SIZE));
 
         passwordGenPopup.addApproveHandler(event -> activity.onPasswordGenerationClicked());
         passwordGenPopup.addRejectHandler(event -> password.setFocus(true));
@@ -90,6 +100,11 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     @Override
     public HasValue<Date> birthDay() {
         return birthDay;
+    }
+
+    @Override
+    public void setBirthDayTimeZone(TimeZone timeZone){
+        birthDay.setTimeZone(timeZone);
     }
 
     @Override
@@ -284,31 +299,6 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     }
 
     @Override
-    public HasText firstNameErrorLabel() {
-        return firstNameErrorLabel;
-    }
-
-    @Override
-    public HasText secondNameErrorLabel() {
-        return secondNameErrorLabel;
-    }
-
-    @Override
-    public HasText lastNameErrorLabel() {
-        return lastNameErrorLabel;
-    }
-
-    @Override
-    public HasText shortNameErrorLabel() {
-        return shortNameErrorLabel;
-    }
-
-    @Override
-    public HasText loginErrorLabel() {
-        return loginErrorLabel;
-    }
-
-    @Override
     public HasEnabled saveEnabled() {
         return saveButton;
     }
@@ -377,8 +367,8 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     @UiHandler("login")
     public void onChangeContactLogin( InputEvent inputEvent ) {
         verifiableIcon.setClassName( NameStatus.UNDEFINED.getStyle() );
-        changeContactLoginTimer.cancel();
-        changeContactLoginTimer.schedule( 300 );
+        changeContactLoginInfoTimer.cancel();
+        changeContactLoginInfoTimer.schedule( 300 );
     }
 
     @UiHandler({"workEmail", "personalEmail"})
@@ -413,7 +403,7 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
 
     @UiHandler("password")
     public void onPasswordChanged(InputEvent event) {
-        changeContactLoginTimer.schedule( 300 );
+        changeContactLoginInfoTimer.schedule( 300 );
         showGenPasswordPopupIfNeeded();
     }
 
@@ -572,11 +562,14 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     @Inject
     CompanyModel companyModel;
 
-    private Timer changeContactLoginTimer = new Timer() {
+    @UiField
+    Lang lang;
+
+    private Timer changeContactLoginInfoTimer = new Timer() {
         @Override
         public void run() {
             if ( activity != null ) {
-                activity.onChangeContactLogin();
+                activity.onChangeContactLoginInfo();
             }
         }
     };

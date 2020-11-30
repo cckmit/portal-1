@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
 import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
 import static ru.protei.portal.ui.common.server.ServiceUtils.getAuthToken;
@@ -146,11 +147,69 @@ public class CompanyControllerImpl implements CompanyController {
     }
 
     @Override
+    public Company getCompanyOmitPrivileges(long id) throws RequestFailedException {
+        log.info("getCompanyUnsafe(): id={}", id);
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        Result<Company> response = companyService.getCompanyOmitPrivileges(token, id);
+
+        log.info("getCompanyUnsafe(): response.isOk()={} | response.getData() = {}", response.isOk(), response.getData());
+
+        if (response.isError()) throw new RequestFailedException(response.getStatus());
+
+        return response.getData();
+    }
+
+    @Override
     public List< EntityOption > getCompanyOptionList(CompanyQuery query) throws RequestFailedException {
-        log.info( "getCompanyOptionList()" );
+        log.info( "getCompanyOptionList(): query={}", query  );
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
         Result< List< EntityOption > > result = companyService.companyOptionList(token, query);
+
+        log.info( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
+
+        if ( result.isError() )
+            throw new RequestFailedException( result.getStatus() );
+
+        return result.getData();
+    }
+
+    @Override
+    public List<EntityOption> getSubcontractorOptionList(Long companyId) throws RequestFailedException {
+        log.info("getSubcontractorOptionList(): companyId={}", companyId);
+
+        Result<List<EntityOption>> result = companyService.subcontractorOptionListByCompanyIds(setOf(companyId));
+
+        log.info("getSubcontractorOptionList(): {}", result.isOk() ? "ok" : result.getStatus());
+
+        if (result.isError())
+            throw new RequestFailedException(result.getStatus());
+
+        return result.getData();
+    }
+
+    @Override
+    public List<EntityOption> getInitiatorOptionList(Long subcontractorId) throws RequestFailedException {
+        log.info("getInitiatorOptionList(): subcontractorId={}", subcontractorId);
+
+        Result<List<EntityOption>> result = companyService.companyOptionListBySubcontractorIds(setOf(subcontractorId));
+
+        log.info("getInitiatorOptionList(): {}", result.isOk() ? "ok" : result.getStatus());
+
+        if (result.isError())
+            throw new RequestFailedException(result.getStatus());
+
+        return result.getData();
+    }
+
+    @Override
+    public List< EntityOption > getCompanyOptionListIgnorePrivileges(CompanyQuery query) throws RequestFailedException {
+        log.info( "getCompanyOptionListIgnorePrivileges(): query={}", query );
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        Result< List< EntityOption > > result = companyService.companyOptionListIgnorePrivileges(query);
 
         log.info( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 
@@ -207,37 +266,35 @@ public class CompanyControllerImpl implements CompanyController {
     }
 
     @Override
-    public List< CompanySubscription > getCompanyWithParentCompanySubscriptions( Long companyId ) throws RequestFailedException {
-        log.info( "getCompanyWithParentCompanySubscriptions() companyId={}", companyId );
-        AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
-        return ServiceUtils.checkResultAndGetData( companyService.getCompanyWithParentCompanySubscriptions( authToken, companyId ));
+    public List<CompanySubscription> getCompanyWithParentCompanySubscriptions(Set<Long> companyIds) throws RequestFailedException {
+        log.info("getCompanyWithParentCompanySubscriptions() companyIds={}", companyIds);
+        AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(companyService.getCompanyWithParentCompanySubscriptions(authToken, companyIds));
     }
 
     @Override
     public List<CaseState> getCompanyCaseStates(Long companyId) throws RequestFailedException {
-        log.info( "getCompanyCaseStates() companyId={}", companyId );
-        AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
+        log.info("getCompanyCaseStates() companyId={}", companyId);
         return checkResultAndGetData( caseStateService.getCaseStatesForCompanyOmitPrivileges(companyId));
     }
 
     @Override
-    public List<Long> getAllHomeCompanyIds() throws RequestFailedException {
-        log.info("getAllHomeCompanyIds()");
+    public List<EntityOption> getAllHomeCompanies() throws RequestFailedException {
+        log.info("getAllHomeCompanies()");
         AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
-        return checkResultAndGetData(companyService.getAllHomeCompanyIds(authToken));
+        List<Company> companies = checkResultAndGetData(companyService.getAllHomeCompanies(authToken));
+
+        return companies.stream().map(company -> new EntityOption(company.getCname(), company.getId())).collect(Collectors.toList());
     }
 
     @Override
     public List<En_ImportanceLevel> getImportanceLevels(Long companyId) throws RequestFailedException {
         log.info("getImportanceLevels() companyId={}", companyId);
-        AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
-
         List<CompanyImportanceItem> importanceItems = checkResultAndGetData(companyService.getImportanceLevels(companyId));
         List<En_ImportanceLevel> importanceLevels = importanceItems.stream()
                 .map(CompanyImportanceItem::getImportanceLevelId)
                 .map(En_ImportanceLevel::getById)
                 .collect(Collectors.toList());
-
         log.info("getImportanceLevels() importanceLevels={}", importanceLevels);
 
         return importanceLevels;

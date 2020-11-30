@@ -2,12 +2,15 @@ package ru.protei.portal.core.model.query;
 
 import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.dict.En_ReportStatus;
+import ru.protei.portal.core.model.dict.En_ReportType;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 public class ReportQuery extends BaseQuery {
+
+    private List<En_ReportType> types;
 
     private List<En_ReportStatus> statuses;
 
@@ -29,6 +32,10 @@ public class ReportQuery extends BaseQuery {
 
     private List<En_ReportScheduledType> scheduledTypes;
 
+    private Boolean isRemoved = false;
+
+    private String systemId;
+
     public ReportQuery() {}
 
     public ReportQuery(List<En_ReportStatus> statuses, String name, String locale, Date fromCreated, Date toCreated) {
@@ -43,6 +50,14 @@ public class ReportQuery extends BaseQuery {
         this.toCreated = toCreated;
         this.offset = offset;
         this.limit = limit;
+    }
+
+    public List<En_ReportType> getTypes() {
+        return types;
+    }
+
+    public void setTypes(List<En_ReportType> types) {
+        this.types = types;
     }
 
     public List<En_ReportStatus> getStatuses() {
@@ -125,22 +140,38 @@ public class ReportQuery extends BaseQuery {
         this.scheduledTypes = scheduledTypes;
     }
 
+    public Boolean isRemoved() {
+        return isRemoved;
+    }
+
+    public void setRemoved(Boolean removed) {
+        isRemoved = removed;
+    }
+
+    public String getSystemId() {
+        return systemId;
+    }
+
+    public void setSystemId(String systemId) {
+        this.systemId = systemId;
+    }
+
     @Override
-    public String toString () {
+    public String toString() {
         return "ReportQuery{" +
-                "statuses=" + statuses +
-                ", name=" + searchString +
-                ", locale=" + locale +
+                "types=" + types +
+                ", statuses=" + statuses +
+                ", locale='" + locale + '\'' +
                 ", fromCreated=" + fromCreated +
                 ", toCreated=" + toCreated +
                 ", fromModified=" + fromModified +
                 ", toModified=" + toModified +
-                ", offset=" + offset +
-                ", limit=" + limit +
                 ", creatorId=" + creatorId +
                 ", includeIds=" + includeIds +
                 ", excludeIds=" + excludeIds +
-                ", enReportScheduledType=" + scheduledTypes +
+                ", scheduledTypes=" + scheduledTypes +
+                ", isRemoved=" + isRemoved +
+                ", systemId='" + systemId + '\'' +
                 '}';
     }
 }

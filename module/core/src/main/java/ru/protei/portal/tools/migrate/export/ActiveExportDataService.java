@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.CreateAuditObjectEvent;
-import ru.protei.portal.core.model.dao.CompanyDAO;
-import ru.protei.portal.core.model.dao.DevUnitDAO;
-import ru.protei.portal.core.model.dao.ExportSybEntryDAO;
-import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Company;
@@ -17,11 +14,13 @@ import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.ExportSybEntry;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.service.CompanyService;
 import ru.protei.portal.tools.migrate.struct.ExternalCompany;
 import ru.protei.portal.tools.migrate.struct.ExternalPerson;
 import ru.protei.portal.tools.migrate.struct.ExternalProduct;
 import ru.protei.portal.tools.migrate.sybase.LegacyDAO_Transaction;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -50,7 +49,16 @@ public class ActiveExportDataService implements ExportDataService {
     PersonDAO personDAO;
 
     @Autowired
+    CompanyGroupHomeDAO companyGroupHomeDAO;
+
+    @Autowired
     DevUnitDAO devUnitDAO;
+
+    @Autowired
+    CompanyService companyService;
+
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     private Map<Class<? extends AuditableObject>, ExportHandler> handlerMap;
 
@@ -106,14 +114,17 @@ public class ActiveExportDataService implements ExportDataService {
 
         ExportSybEntry exportEntry = new ExportSybEntry(event.getAuditObject().getEntryInfo(),
                 config.data().legacySysConfig().getInstanceId());
-
-        if (exportSybEntryDAO.persist(exportEntry) != null) {
-            logger.debug("registered exported entry for type {}, obj-id={}, reg-id={}", exportEntry.getEntityType(), exportEntry.getLocalId(), exportEntry.getId());
-            queue.offer(exportEntry);
-            return true;
-        }
-        else {
+        try {
+            if (exportSybEntryDAO.persist(exportEntry) != null) {
+                logger.debug("registered exported entry for type {}, obj-id={}, reg-id={}", exportEntry.getEntityType(), exportEntry.getLocalId(), exportEntry.getId());
+                queue.offer(exportEntry);
+                return true;
+            } else {
+                logger.error("unable to register export-entry, type={}, obj-id={}", exportEntry.getEntityType(), exportEntry.getLocalId());
+            }
+        } catch (Exception exception) {
             logger.error("unable to register export-entry, type={}, obj-id={}", exportEntry.getEntityType(), exportEntry.getLocalId());
+            logger.error("unable to register export-entry", exception);
         }
 
         return false;
@@ -170,7 +181,7 @@ public class ActiveExportDataService implements ExportDataService {
 
     @Override
     public En_ResultStatus exportPerson(Person person) {
-        if (personDAO.isEmployee(person)) {
+        if (personIsEmployee(person.getCompanyId())) {
             /**
              * Теперь этим занимается новое API для 1C
              */
@@ -181,6 +192,7 @@ public class ActiveExportDataService implements ExportDataService {
 
         try {
             final Company personCompany = companyDAO.get(person.getCompanyId());
+            jdbcManyRelationsHelper.fill(personCompany, Company.Fields.CONTACT_ITEMS);
 
             return legacyDAO.runAction(transaction -> {
                 ExternalCompany externalCompany = transaction.dao(ExternalCompany.class).get(personCompany.getOldId());
@@ -270,8 +282,17 @@ public class ActiveExportDataService implements ExportDataService {
                 logger.debug("Export-handler task is requested to exit");
             }
             catch (Exception e) {
-                logger.error("Error in export-handler task, exit now", e);
+                Thread.currentThread().interrupt();
+                if (isAppShutdown(e)) {
+                    logger.debug("Shutdown export data service");
+                } else {
+                    logger.error("Error in export-handler task, exit now", e);
+                }
             }
+        }
+
+        boolean isAppShutdown(Exception e) {
+            return e.getMessage() == null;
         }
 
         private void tryExport(ExportSybEntry entry) throws Exception {
@@ -304,5 +325,9 @@ public class ActiveExportDataService implements ExportDataService {
                     break;
             }
         }
+    }
+
+    private Boolean personIsEmployee( Long companyId ) {
+        return companyGroupHomeDAO.isHomeCompany( companyId );
     }
 }

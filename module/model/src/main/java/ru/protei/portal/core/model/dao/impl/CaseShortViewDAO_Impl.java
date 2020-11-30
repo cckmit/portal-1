@@ -3,9 +3,11 @@ package ru.protei.portal.core.model.dao.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.CaseShortViewDAO;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.util.sqlcondition.Query;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -13,8 +15,10 @@ import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.util.List;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.StringUtils.length;
 import static ru.protei.portal.core.model.helper.StringUtils.trim;
+import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
 
 /**
  * Created by michael on 19.05.16.
@@ -22,6 +26,8 @@ import static ru.protei.portal.core.model.helper.StringUtils.trim;
 public class CaseShortViewDAO_Impl extends PortalBaseJdbcDAO<CaseShortView> implements CaseShortViewDAO {
 
     public static final String LEFT_JOIN_CASE_COMMENT = " LEFT JOIN case_comment ON case_object.id = case_comment.CASE_ID";
+    public static final String LEFT_JOIN_CASE_TAG =
+            " LEFT JOIN case_object_tag on case_object.ID = case_object_tag.case_id join case_tag on case_tag.id = case_object_tag.tag_id";
 
     @Autowired
     private CaseObjectSqlBuilder caseObjectSqlBuilder;
@@ -43,8 +49,12 @@ public class CaseShortViewDAO_Impl extends PortalBaseJdbcDAO<CaseShortView> impl
     }
 
     @Override
-    public CaseShortView getCase(Long caseNo) {
-        return getByCondition("case_object.caseno=?", caseNo);
+    public CaseShortView getCaseByNumber(En_CaseType caseType, Long caseNo) {
+        Query q = query()
+                .where("case_type").equal(caseType.getId())
+                    .and("caseno").equal(caseNo)
+                .asQuery();
+        return getByCondition(q.buildSql(), q.args());
     }
 
     @SqlConditionBuilder
@@ -55,6 +65,10 @@ public class CaseShortViewDAO_Impl extends PortalBaseJdbcDAO<CaseShortView> impl
     public static boolean isSearchAtComments(CaseQuery query) {
         return query.isSearchStringAtComments()
                 && length(trim( query.getSearchString() )) >= CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS;
+    }
+
+    public static boolean isFilterByTagNames(CaseQuery query) {
+        return isNotEmpty(query.getCaseTagsNames());
     }
 
     private JdbcQueryParameters buildJdbcQueryParameters(CaseQuery query) {
@@ -72,6 +86,11 @@ public class CaseShortViewDAO_Impl extends PortalBaseJdbcDAO<CaseShortView> impl
         if (isSearchAtComments(query)) {
             parameters.withDistinct(true);
             parameters.withJoins(LEFT_JOIN_CASE_COMMENT);
+        }
+
+        if (isFilterByTagNames(query)) {
+            parameters.withDistinct(true);
+            parameters.withJoins(LEFT_JOIN_CASE_TAG);
         }
 
         return parameters;

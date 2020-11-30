@@ -1,10 +1,10 @@
 package ru.protei.portal.core.service.events;
 
-import ru.protei.portal.core.event.EmployeeRegistrationEvent;
-import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.event.AssembledEmployeeRegistrationEvent;
 import ru.protei.portal.core.model.ent.CaseObjectMeta;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -14,5 +14,9 @@ public interface CaseSubscriptionService {
 
     Set<NotificationEntry> subscribers(CaseObjectMeta caseMeta);
 
-    Set<NotificationEntry> subscribers(EmployeeRegistrationEvent event);
+    Set<NotificationEntry> subscribers(AssembledEmployeeRegistrationEvent event);
+
+    Set<NotificationEntry> subscribers(Set<String> loginSet, Long companyId);
+
+    Set<NotificationEntry> subscribers(List<Long> personIds);
 }

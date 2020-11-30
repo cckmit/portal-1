@@ -12,7 +12,7 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
-import ru.protei.portal.core.model.struct.ProductDirectionInfo;
+import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -27,7 +27,10 @@ public interface ProductService {
     Result<SearchResult<DevUnit>> getProducts( AuthToken token, ProductQuery query);
 
     Result<List<ProductShortView>> shortViewList( AuthToken token, ProductQuery query );
-    Result<List<ProductShortView>> shortViewListByIds( AuthToken token, List<Long> ids );
+
+    Result<List<ProductShortView>> productsShortViewListWithChildren(AuthToken token, ProductQuery query);
+
+    Result<List<ProductShortView>> shortViewListByIds(AuthToken token, List<Long> ids );
 
     @Privileged( En_Privilege.PRODUCT_VIEW )
     Result<DevUnit> getProduct( AuthToken token, Long id );

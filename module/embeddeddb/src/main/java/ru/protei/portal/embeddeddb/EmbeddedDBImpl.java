@@ -12,7 +12,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import ru.protei.portal.embeddeddb.TestConfig;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -37,6 +36,7 @@ public class EmbeddedDBImpl implements EmbeddedDB, ApplicationContextAware {
 
     @PostConstruct
     public void onInit() {
+        log.info( "onInit(): PostConstruct initilisation" );
         if (isInitialized) {
             log.error("Attempt to initialize already initialized EmbeddedDB");
             return;
@@ -72,11 +72,11 @@ public class EmbeddedDBImpl implements EmbeddedDB, ApplicationContextAware {
     }
 
     private MysqldConfig buildConfig(int port) {
-        return MysqldConfig.aMysqldConfig(Version.v5_7_19)
+        return MysqldConfig.aMysqldConfig(Version.v8_0_17)
                 .withCharset(Charset.UTF8)
                 .withPort(port)
                 .withUser(DB_USERNAME, DB_PASSWORD)
-                .withServerVariable("lower_case_table_names", 1)//на 8ке не работает
+//                .withServerVariable("lower_case_table_names", 1)//на 8ке не работает
                 .build();
     }
 }

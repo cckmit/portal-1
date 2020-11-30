@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.project.client.view.table;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.safehtml.shared.SimpleHtmlSanitizer;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -10,7 +11,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
@@ -58,6 +59,7 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
     @Override
     public void setAnimation ( TableAnimation animation ) {
         animation.setContainers( tableContainer, previewContainer, filterContainer );
+        columnProvider.setChangeSelectionIfSelectedPredicate(project -> animation.isPreviewShow());
     }
 
     @Override
@@ -68,7 +70,7 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
 
     @Override
     public void clearSelection() {
-        columnProvider.setSelectedValue(null);
+        columnProvider.removeSelection();
     }
 
     @Override
@@ -125,16 +127,19 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
                     StringBuilder content = new StringBuilder();
                     content.append("<b>").append(value.getId()).append("</b>").append("<br/>");
 
-                    if (value.getProductDirection() != null) {
-                        content.append(value.getProductDirection().getDisplayText());
+                    if (value.getProductDirectionEntityOption() != null) {
+                        content.append(value.getProductDirectionEntityOption().getDisplayText());
                     }
                     return content.toString();
                 });
         columns.add(numberColumn);
 
-        DynamicColumn<Project> customerColumn = new DynamicColumn<>(lang.projectCustomerType(), "customers",
+        DynamicColumn<Project> customerColumn = new DynamicColumn<>(lang.projectCustomer(), "customers",
                 value -> {
                     StringBuilder content = new StringBuilder();
+                    if ( value.getCustomer() != null && value.getCustomer().toEntityOption() != null) {
+                        content.append("<b>").append(value.getCustomer().toEntityOption().getDisplayText()).append("</b>").append("<br/>");
+                    }
                     if (value.getCustomerType() != null) {
                         content.append("<i>").append(customerTypeLang.getName(value.getCustomerType())).append("</i>").append("<br/>");
                     }
@@ -146,7 +151,8 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
         columns.add(customerColumn);
 
         DynamicColumn<Project> infoColumn = new DynamicColumn<>(lang.projectInfo(), "info",
-                value -> "<b>" + value.getName() + "</b>" + (value.getDescription() == null ? "" : "<br/><small>" + value.getDescription() + "</small>"));
+                value -> "<b>" + SimpleHtmlSanitizer.sanitizeHtml(value.getName()).asString() + "</b>" +
+                                    (value.getDescription() == null ? "" : "<br/><small>" + SimpleHtmlSanitizer.sanitizeHtml(value.getDescription()).asString() + "</small>"));
         columns.add(infoColumn);
 
         DynamicColumn<Project> managerColumn = new DynamicColumn<>(lang.projectTeam(), "managers",

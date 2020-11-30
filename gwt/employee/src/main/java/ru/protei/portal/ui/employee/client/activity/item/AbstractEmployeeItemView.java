@@ -1,7 +1,8 @@
 package ru.protei.portal.ui.employee.client.activity.item;
 
-import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.core.model.ent.PersonAbsence;
+
 /**
  * Представление сотрудника
  */
@@ -19,13 +20,19 @@ public interface AbstractEmployeeItemView extends IsWidget {
 
     void setPhoto ( String photo );
 
-    void setDepartmentParent( String value);
+    void setDepartmentParent( String value );
 
     void setDepartment( String value );
 
     void setPosition( String value );
 
+    void setCompany( String value );
+
     void setIP( String value );
 
-    void setFireDate (String value );
+    void setFireDate ( String value );
+
+    void setEditIcon( String link );
+
+    void setCurrentAbsence(PersonAbsence absence);
 }

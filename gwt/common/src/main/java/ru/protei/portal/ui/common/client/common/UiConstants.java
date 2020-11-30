@@ -1,7 +1,5 @@
 package ru.protei.portal.ui.common.client.common;
 
-import com.google.gwt.core.client.GWT;
-
 /**
  * Системные константы приложения
  */
@@ -24,16 +22,54 @@ public class UiConstants {
         String OFFICIAL = "fa fa-user-plus";
         String DOCUMENT = "fa fa-book";
         String DOCUMENT_TYPE = "fa fa-list-alt";
-        String ISSUE_REPORTS = "fa fa-file-download";
+        String REPORTS = "fa fa-file-download";
         String CASE_STATE = "fa fa-bookmark ";
         String SITE_FOLDER = "fa fa-briefcase"  ;
         String EMPLOYEE = "fa fa-user-circle";
         String EMPLOYEE_REGISTRATION = "fa fa-clipboard";
         String CONTRACT = "fa fa-file-signature";
+        String EDUCATION = "fas fa-graduation-cap";
+        String IP_RESERVATION = "fa fa-sitemap";
+        String ROOM_RESERVATION = "fas fa-clock";
+        String PLAN = "fa fa-list-ol";
+        String EMPLOYEE_LIST = "fas fa-th";
+        String EMPLOYEE_TABLE = "fas fa-th-list";
+        String TOP_BRASS = "fas fa-user-tie";
+        String EMPLOYEE_BIRTHDAY = "fas fa-birthday-cake";
+        String ABSENCE = "fas fa-user-alt-slash";
+        String ARCHIVE = "fas fa-file-archive";
+        String BUG_TRACKING = "fas fa-bug";
+        String TODO_LIST = "fas fa-clipboard-check";
+        String FEATURE_REQUEST = "fas fa-question-circle";
+        String CRM = "fas fa-handshake";
+        String ADMIN_CRM = "fas fa-tools";
+        String TEST_ZONE = "fas fa-database";
+        String STORE_AND_DELIVERY = "fas fa-warehouse";
+        String CARD_SEARCH = "fas fa-search";
+        String DELIVERY = "fas fa-truck";
+        String STORE = "fas fa-memory";
+        String FLOOR_PLAN = "fas fa-search-location";
+        String NOTIFICATION_SYSTEM = "fas fa-envelope";
+        String YOUTRACK = "fas fa-list-ul";
+        String YOUTRACK_ADMIN = "fas fa-tools";
+        String RESERVED_IP = "fas fa-map-marker";
+        String SUBNET = "fas fa-project-diagram";
+        String ROOM_RESERVATION_CALENDAR = "fas fa-calendar-day";
+        String ROOM_RESERVATION_TABLE = "fas fa-th-list";
+        String DUTY_LOG = "fas fa-book";
     }
     public interface Icons {
         String APPROVED = "fa-clipboard-check";
         String NOT_APPROVED = "fa-clipboard";
+
+        String REMOVE = "fa-trash-alt";
+        String DOWNLOAD = "fa-cloud-download-alt";
+        String REFRESH = "fa-redo";
+        String CANCEL = "fa-window-close";
+        String FAVORITE_ACTIVE = "fas fa-star";
+        String FAVORITE_NOT_ACTIVE = "far fa-star";
+
+        String BIG_ICON = "fa-lg";
     }
 
     public interface ActionBarIcons {
@@ -68,14 +104,54 @@ public class UiConstants {
         String CONTRACT = "contract";
         String EMPLOYEE_TYPE_VIEW = "employeeTypeView";
         String TOP_BRASS = "top_brass";
+        String EMPLOYEE_VIEW = "employee_view";
+        String EMPLOYEE_CREATE = "employee_create";
+        String SUBNET = "subnet";
+        String SUBNET_CREATE = "subnet_create";
+        String RESERVED_IP = "reserved_ip";
+        String RESERVED_IP_CREATE = "reserved_ip_create";
+        String PLAN_CREATE = "plan_create";
+        String ABSENCE = "absence";
+        String ABSENCE_REPORT = "absence_report";
+        String EMPLOYEE_BIRTHDAYS = "employee_birthdays";
+        String ABSENCE_SUMMARY_TABLE = "absence_summary_table";
+        String ROOM_RESERVATION_CALENDAR = "room_reservation_calendar";
+        String ROOM_RESERVATION_TABLE = "room_reservation_table";
+        String ROOM_RESERVATION_CREATE = "room_reservation_create";
+        String DUTY_LOG = "duty_log";
+        String DUTY_LOG_CREATE_REPORT = "duty_log_create_report";
     }
 
     public interface Styles {
+        String STYLE_ATTRIBUTE = "style";
+
+        String SHOW = "show";
         String HIDE = "hide";
+        String HAS_ERROR = "has-error";
+        String INACTIVE = "inactive";
         String REQUIRED = "required";
         String TEXT_CENTER = "text-center";
         String SEARCH_NO_RESULT = "search-no-result";
         String MULTIPLE_ANY = "multiple-any";
+        String SHORT_VIEW = "col-md-6";
+        String FULL_VIEW = "col-md-12";
+        String LINK_DISABLE = "link-disabled";
+        String WIDE_MODAL = "modal-lg";
+        String XL_MODAL = "modal-xl";
+        String FAVORITES = "favorites";
+        String FAVORITE_ICON = "favorite-icon";
+    }
+
+    public interface ColumnClassName {
+        String REMOVE = "remove";
+        String DOWNLOAD = "download";
+        String REFRESH = "refresh";
+        String CANCEL = "cancel";
+    }
+
+    public interface Accordion {
+        int ATTACHMENTS_MAX_HEIGHT = 300;
+        int LINKS_MAX_HEIGHT = 120;
     }
 
     /**
@@ -86,4 +162,5 @@ public class UiConstants {
     public static final String REMEMBER_ME_PREFIX = "auth_remember_me_";
     public static final String LINKS_PANEL_VISIBILITY = "case-link-panel-body";
     public static final String ISSUE_CREATE_PREVIEW_DISPLAYED = "issue_create_is_preview_displayed";
+    public static final String ATTACHMENTS_PANEL_VISIBILITY = "attachments-panel-body";
 }

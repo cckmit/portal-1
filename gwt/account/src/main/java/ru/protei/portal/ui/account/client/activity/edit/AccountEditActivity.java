@@ -1,28 +1,32 @@
 package ru.protei.portal.ui.account.client.activity.edit;
 
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
-import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.UserLogin;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.AccountEvents;
 import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
+import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
-import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.Collections;
 import java.util.function.Consumer;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
 
 /**
  * Активность создания и редактирования учетной записи
@@ -41,11 +45,12 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
     @Event
     public void onShow( AccountEvents.Edit event ) {
         if (!hasPrivileges(event.id)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
         initDetails.parent.clear();
+        Window.scrollTo(0, 0);
         initDetails.parent.add(view.asWidget());
 
         if( event.id == null ) {
@@ -84,7 +89,7 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
 
             @Override
             public void onSuccess( UserLogin userLogin ) {
-                fireEvent( isNew( account ) ? new AccountEvents.Show( true ) : new Back() );
+                fireEvent(new AccountEvents.Show(!isNew(account)));
             }
         } );
     }
@@ -115,7 +120,7 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
 
     @Override
     public void onCancelClicked() {
-        fireEvent( new Back() );
+        fireEvent(new AccountEvents.Show(!isNew(account)));
     }
 
     private boolean isNew(UserLogin userLogin) {
@@ -132,6 +137,18 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
                 successAction.accept( userLogin );
             }
         } );
+    }
+
+    @Override
+    public void onSearchChanged() {
+        final String searchPattern = view.searchPattern().getValue().trim();
+        view.setRolesFilter(StringUtils.isEmpty(searchPattern) ? null : makerRolesFilter(searchPattern));
+    }
+
+    private Selector.SelectorFilter<UserRole> makerRolesFilter(String searchPattern) {
+        String upperCaseSearchPattern = searchPattern.toUpperCase();
+        return userRole -> userRole != null &&
+                (userRole.getCode().toUpperCase().contains(upperCaseSearchPattern) || userRole.getInfo().contains(upperCaseSearchPattern));
     }
 
     private void resetValidationStatus(){
@@ -165,7 +182,7 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
             view.company().setValue( new EntityOption(userLogin.getCompanyName(), userLogin.getCompanyId()) );
             view.person().setValue( new PersonShortView(userLogin.getDisplayName(), userLogin.getPersonId()), userLogin.isFired() );
         }
-        view.setCompaniesForInitiator(userLogin.getCompanyId() == null ? Collections.emptySet() : InitiatorModel.makeCompanyIds(userLogin.getCompanyId()));
+        view.setCompaniesForInitiator(userLogin.getCompanyId() == null ? Collections.emptySet() : setOf(userLogin.getCompanyId()));
         view.password().setText( "" );
         view.confirmPassword().setText( "" );
         view.roles().setValue( userLogin.getRoles() );
@@ -174,6 +191,7 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
         view.showInfo( userLogin.getId() != null && !userLogin.isLDAP_Auth() );
         view.sendWelcomeEmailVisibility().setVisible(userLogin.getId() == null);
         view.sendWelcomeEmail().setValue(false);
+        view.searchPattern().setValue(null);
     }
 
     private boolean validate() {

@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
@@ -33,6 +34,9 @@ public class CaseComment extends AuditableObject {
     @JdbcColumn(name="cstate_id")
     private Long caseStateId;
 
+    @JdbcJoinedColumn(localColumn = "cstate_id", table = "case_state", remoteColumn = "id", mappedColumn = "STATE")
+    private String caseStateName;
+
     @JdbcColumn(name="cimp_level")
     private Integer caseImpLevel;
 
@@ -44,9 +48,6 @@ public class CaseComment extends AuditableObject {
 
     @JdbcColumn(name="reply_to")
     private Long replyTo;
-
-//    @JdbcColumn(name="vroom")
-//    private Long vroomId;
 
     @JdbcColumn(name="comment_text")
     private String text;
@@ -82,6 +83,12 @@ public class CaseComment extends AuditableObject {
     @JdbcColumn(name = "privacy_type")
     @JdbcEnumerated
     private En_CaseCommentPrivacyType privacyType;
+
+    @JdbcJoinedColumn(mappedColumn = "cname", joinPath = {
+            @JdbcJoinPath(localColumn = "cmanager_id", remoteColumn = "id", table = "person"),
+            @JdbcJoinPath(localColumn = "company_id", remoteColumn = "id", table = "company")
+    })
+    private String managerCompanyName;
 
     // not db column
     private Date updated;
@@ -154,12 +161,29 @@ public class CaseComment extends AuditableObject {
         this.caseStateId = caseStateId;
     }
 
+    public String getCaseStateName() {
+        return caseStateName;
+    }
+
+    public void setCaseStateName(String caseStateName) {
+        this.caseStateName = caseStateName;
+    }
+
     public Integer getCaseImpLevel() {
         return caseImpLevel;
     }
 
     public void setCaseImpLevel(Integer caseImpLevel) {
         this.caseImpLevel = caseImpLevel;
+    }
+
+    public En_ImportanceLevel getCaseImportance() {
+        return En_ImportanceLevel.getById(this.caseImpLevel);
+    }
+
+    public void setCaseImportance( En_ImportanceLevel caseImportance ) {
+        if(caseImportance == null) caseImpLevel = null;
+        this.caseImpLevel = caseImportance.getId();
     }
 
     public Long getCaseManagerId() {
@@ -185,14 +209,6 @@ public class CaseComment extends AuditableObject {
     public void setReplyTo(Long replyTo) {
         this.replyTo = replyTo;
     }
-
-//    public Long getVroomId() {
-//        return vroomId;
-//    }
-//
-//    public void setVroomId(Long vroomId) {
-//        this.vroomId = vroomId;
-//    }
 
     public String getText() {
         return text;
@@ -306,6 +322,14 @@ public class CaseComment extends AuditableObject {
         this.privacyType = privacyType;
     }
 
+    public String getManagerCompanyName() {
+        return managerCompanyName;
+    }
+
+    public void setManagerCompanyName(String managerCompanyName) {
+        this.managerCompanyName = managerCompanyName;
+    }
+
     @Override
     public String getAuditType() {
         return "CaseComment";
@@ -333,11 +357,11 @@ public class CaseComment extends AuditableObject {
                 ", caseId=" + caseId +
                 ", author=" + author +
                 ", caseStateId=" + caseStateId +
+                ", caseStateName=" + caseStateName +
                 ", caseImpLevel=" + caseImpLevel +
                 ", caseManagerId=" + caseManagerId +
                 ", caseManagerShortName='" + caseManagerShortName + '\'' +
                 ", replyTo=" + replyTo +
-//                ", vroomId=" + vroomId +
                 ", text='" + text + '\'' +
                 ", oldId=" + oldId +
                 ", caseAttachments=" + caseAttachments +
@@ -349,6 +373,7 @@ public class CaseComment extends AuditableObject {
                 ", originalAuthorName='" + originalAuthorName + '\'' +
                 ", originalAuthorFullName='" + originalAuthorFullName + '\'' +
                 ", privacyType=" + privacyType +
+                ", managerCompanyName='" + managerCompanyName + '\'' +
                 ", updated=" + updated +
                 ", deleted=" + deleted +
                 '}';

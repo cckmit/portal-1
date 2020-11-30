@@ -15,6 +15,7 @@ import ru.protei.portal.ui.common.client.service.PersonController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
@@ -51,8 +52,8 @@ public class PersonControllerImpl implements PersonController {
     public Map<Long, String> getPersonNames(Collection<Long> ids) throws RequestFailedException {
         log.info( "getPersonName: ids={}", ids );
 
-
-        Result<Map<Long, String>> result = personService.getPersonNames(ids);
+        AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        Result<Map<Long, String>> result = personService.getPersonNames(authToken, ids);
 
         log.info( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 
@@ -63,17 +64,24 @@ public class PersonControllerImpl implements PersonController {
     }
 
     @Override
-    public Person getPerson(Long id) throws RequestFailedException {
-        log.info( "getPerson: id={}", id );
+    public List<Person> getPersonsByIds(Collection<Long> ids) throws RequestFailedException {
+        log.info( "getPersonsByIds: ids={}", ids );
+        AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(personService.getPersonsByIds(authToken, ids));
+    }
+
+    @Override
+    public PersonShortView getPersonShortView(Long id) throws RequestFailedException {
+        log.info("getPersonShortView: id={}", id);
 
         AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<Person> result = personService.getPerson(authToken, id);
+        Result<PersonShortView> result = personService.getPersonShortView(authToken, id);
 
-        log.info( "result status: {}, data: {}", result.getStatus(), result.getData() );
+        log.info("result status: {}, data: {}", result.getStatus(), result.getData());
 
-        if ( result.isError() )
-            throw new RequestFailedException( result.getStatus() );
+        if (result.isError())
+            throw new RequestFailedException(result.getStatus());
 
         return result.getData();
     }

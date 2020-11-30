@@ -114,7 +114,7 @@ public class SqlQueryBuilder implements Operator, Condition, Query {
 
         if (selectExpression != null) result.append( "SELECT " ).append( selectExpression );
         if (fromExpression != null) result.append( " FROM " ).append( fromExpression );
-        if (fromExpression != null && !isEmpty( where )) result.append( " WHERE " );
+        if ((selectExpression != null || fromExpression != null) && !isEmpty( where )) result.append( " WHERE " );
         if (!isEmpty( where )) result.append( getSqlCondition() );
         result.append( makeGroupByString( groupBy ) );
         result.append( makeSortString( sortFields ) );
@@ -256,7 +256,7 @@ public class SqlQueryBuilder implements Operator, Condition, Query {
 
     // Condition begin
     @Override
-    public Condition condition( String arbitrarySqlCondition ) {
+    public Condition condition( CharSequence arbitrarySqlCondition ) {
         if (arbitrarySqlCondition == null) return this;
         this.where.append( arbitrarySqlCondition );
         return this;
@@ -486,6 +486,13 @@ public class SqlQueryBuilder implements Operator, Condition, Query {
     }
 
     @Override
+    public Operator not(Object addNotIfTrue) {
+        if (addNotIfTrue == null) return this;
+        if ((addNotIfTrue instanceof Boolean) && !((Boolean) addNotIfTrue)) return this;
+        return not();
+    }
+
+    @Override
     public SqlQueryBuilder equal( Object attr ) {
         if (columnName == null || attr == null) return done();
         operator().column().append( " " ).not( "!" ).append( "= ?" ).attribute( attr );
@@ -546,10 +553,14 @@ public class SqlQueryBuilder implements Operator, Condition, Query {
     public Condition in( Collection attr ) {
         if (columnName == null || attr == null) return done();
         StringBuilder sb = new StringBuilder();
-        for (Object o : attr) {
-            if (o == null) continue;
-            if (sb.length() > 0) sb.append( "," );
-            sb.append( inString( o ) );
+        if (attr.isEmpty()) {
+            sb.append(" NULL");
+        } else {
+            for (Object o : attr) {
+                if (o == null) continue;
+                if (sb.length() > 0) sb.append(",");
+                sb.append(inString(o));
+            }
         }
 
         operator().column().not( " NOT" ).append( " IN (" + sb + ")" );

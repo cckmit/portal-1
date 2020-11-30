@@ -2,8 +2,11 @@ package ru.protei.portal.ui.common.client.common;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Widget;
 import ru.protei.portal.core.model.struct.ContactItem;
 
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -27,7 +30,7 @@ public class EmailRender {
             i.setClassName(icon);
             div.appendChild(i);
         }
-        String emailsHtml = showComments ? renderToHtml(stream) : renderToHtml(stream, false);
+        String emailsHtml = showComments ? renderToHtml(stream) : renderToHtml(stream);
 
         Element span = DOM.createSpan();
         span.setInnerHTML(emailsHtml);
@@ -39,20 +42,24 @@ public class EmailRender {
         if (stream == null)
             return null;
 
-        return stream.map(
-                e -> isNotEmpty(e.value()) ? "<a href='mailto:" + e.value() + "'>" + e.value() + (isNotEmpty(e.comment()) ? " (" + e.comment() + ")</a>" : "</a>") : ""
-        ).collect(Collectors.joining("<span>, </span>"));
+        return stream
+                .map(e -> isNotEmpty(e.value()) ? "<a href='mailto:" + e.value() + "'>" + e.value() + "</a>" : "")
+                .collect(Collectors.joining("<span>, </span>"));
     }
 
-    public static String renderToHtml(Stream <ContactItem> stream, boolean showComments){
+    public static List<Widget> renderToHtmlWidget(Stream <ContactItem> stream){
         if (stream == null)
             return null;
 
-        if (showComments) return renderToHtml(stream);
-
-        return stream.map(
-                e -> isNotEmpty(e.value()) ? "<a href='mailto:" + e.value() + "'>" + e.value() +  "</a>" : ""
-        ).collect(Collectors.joining("<span>, </span>"));
+        return stream
+                .map(EmailRender::createMailLinkWithComments)
+                .collect(Collectors.toList());
     }
 
+    public static Widget createMailLinkWithComments(ContactItem item) {
+        Anchor a = new Anchor();
+        a.setHref("mailto:" + item.value());
+        a.setText(item.value());
+        return a;
+    }
 }

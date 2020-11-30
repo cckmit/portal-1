@@ -36,6 +36,8 @@ public enum En_ErrorCode {
     DELETED_OR_FIRED_RECORD("Deleted or fired record."),
     EMPTY_BIRTHDAY("The birthday is empty."),
     EMPTY_FIRE_DATE("The fire date is empty."),
+    LOGIN_ALREADY_EXIST("Worker with this login already exist."),
+    EMAIL_ALREADY_EXIST("Worker with this email already exist."),
     UNKNOWN_REG("Unknown EmployeeRegistration.");
 
     En_ErrorCode (String message) {

@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
+import ru.protei.portal.core.model.dict.En_DateIntervalType;
+import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -101,8 +103,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
 
     @Test
     public void intervalsTest() {
-        int numberOfDays = 12;
-        List<Interval> intervals = makeIntervals( date9, addHours( date9, numberOfDays * H_DAY ), DAY );
+        List<Interval> intervals = makeIntervals( dateRange(), DAY );
         assertEquals( numberOfDays, intervals.size() );
         assertEquals( date9.getTime(), intervals.get( 0 ).from );
         assertEquals( addHours( date9, 1 * H_DAY ).getTime(), intervals.get( 0 ).to );
@@ -131,9 +132,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
     @Test
     public void caseInIntervalTest() {
         Person person = new Person( 1L );
-
-        int numberOfDays = 12;
-        List<Interval> intervals = makeIntervals( date9, addHours( date9, numberOfDays * H_DAY ), DAY );
+        List<Interval> intervals = makeIntervals( dateRange(), DAY );
 
         List<CaseComment> comments = new ArrayList<>();
         //                         | 0| 1| 2| 3| 4| 5| 6| 7| 8| 9|10|11|
@@ -166,7 +165,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         assertEquals( 1 * DAY, intervals.get( 1 ).minTime );
         assertEquals( 1 * DAY, intervals.get( 1 ).maxTime );
 
-        assertEquals( 2, size( intervals.get( 2 ).caseNumbers ));
+        assertEquals( 2, intervals.get( 2 ).casesCount );
         assertEquals( 3 * DAY, intervals.get( 2 ).summTime );
         assertEquals( 1 * DAY, intervals.get( 2 ).minTime );
         assertEquals( 2 * DAY, intervals.get( 2 ).maxTime );
@@ -191,7 +190,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         assertEquals( 3 * DAY, intervals.get( 7 ).minTime );
         assertEquals( 3 * DAY, intervals.get( 7 ).maxTime );
 
-        assertEquals( 2, size( intervals.get( 8 ).caseNumbers ));
+        assertEquals( 2,  intervals.get( 8 ).casesCount);
         assertEquals( 9 * DAY, intervals.get( 8 ).summTime );
         assertEquals( 4 * DAY, intervals.get( 8 ).minTime );
         assertEquals( 5 * DAY, intervals.get( 8 ).maxTime );
@@ -249,8 +248,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
     @Test
     public void makeWorkBook() {
         Person person = new Person( 1L );
-        int numberOfDays = 12;
-        List<Interval> intervals = makeIntervals( date9, addHours( date9, numberOfDays * H_DAY ), DAY );
+        List<Interval> intervals = makeIntervals( dateRange(), DAY );
 
         List<CaseComment> comments = new ArrayList<>();
         //                         | 0| 1| 2| 3| 4| 5| 6| 7| 8| 9|10|11|
@@ -370,39 +368,39 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
 
         assertEquals( numberOfDays, intervals.size() );
 
-        assertEquals( 1, size( intervals.get( 0 ).caseNumbers ));
+        assertEquals( 1,  intervals.get( 0 ).casesCount );
         assertEquals( 2 * DAY, intervals.get( 0 ).minTime );
         assertEquals( 2 * DAY, intervals.get( 0 ).maxTime );
         assertEquals( 2 * DAY, intervals.get( 0 ).summTime );
 
-        assertEquals( 2, size( intervals.get( 1 ).caseNumbers ));
+        assertEquals( 2, intervals.get( 1 ).casesCount );
         assertEquals( 6 * HOUR, intervals.get( 1 ).minTime );
         assertEquals( 3 * DAY, intervals.get( 1 ).maxTime );
         assertEquals( 3 * DAY + 6 * HOUR, intervals.get( 1 ).summTime );
 
-        assertEquals( 1, size( intervals.get( 2 ).caseNumbers ));
+        assertEquals( 1, intervals.get( 2 ).casesCount );
         assertEquals( 4 * DAY, intervals.get( 2 ).minTime );
         assertEquals( 4 * DAY, intervals.get( 2 ).maxTime );
         assertEquals( 4 * DAY, intervals.get( 2 ).summTime );
 
-        assertEquals( 2, size( intervals.get( 3 ).caseNumbers ));
+        assertEquals( 2, intervals.get( 3 ).casesCount );
         assertEquals( 1 * DAY, intervals.get( 3 ).minTime );
         assertEquals( 5 * DAY, intervals.get( 3 ).maxTime );
         assertEquals( 6 * DAY, intervals.get( 3 ).summTime );
 
-        assertEquals( 1, size( intervals.get( 6 ).caseNumbers ));
+        assertEquals( 1, intervals.get( 6 ).casesCount );
         assertEquals( 4 * DAY, intervals.get( 6 ).minTime );
         assertEquals( 4 * DAY, intervals.get( 6 ).maxTime );
         assertEquals( 4 * DAY, intervals.get( 6 ).summTime );
 
-        assertEquals( 2, size( intervals.get( 7 ).caseNumbers ));
+        assertEquals( 2, intervals.get( 7 ).casesCount );
         long case3Time = 5 * DAY;
         assertEquals( case3Time, intervals.get( 7 ).minTime );
         long case2Time = 6 * DAY + 5 * HOUR + DAY - 11 * HOUR;
         assertEquals( case2Time, intervals.get( 7 ).maxTime );
         assertEquals( case2Time + case3Time, intervals.get( 7 ).summTime );
 
-        assertEquals( 2, size( intervals.get( 11 ).caseNumbers ));
+        assertEquals( 2, intervals.get( 11 ).casesCount );
         long case11minTime = 9 * DAY;
         assertEquals( case11minTime, intervals.get( 11 ).minTime );
         long case11maxTime = 7 * DAY + 5 * HOUR + 4 * DAY - 11 * HOUR;
@@ -431,8 +429,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
     private CaseQuery createCaseQuery(  Date from, Date to ) {
         CaseQuery caseQuery = new CaseQuery();
         caseQuery.setStateIds( activeStatesShort );
-        caseQuery.setCreatedFrom( from );
-        caseQuery.setCreatedTo( to );
+        caseQuery.setCreatedRange(new DateRange(En_DateIntervalType.FIXED, from, to));
         return caseQuery;
     }
 
@@ -464,12 +461,17 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         return addHours( date1, (day_of_month - 1) * H_DAY );
     }
 
+    private DateRange dateRange () {
+        return new DateRange(En_DateIntervalType.FIXED, date9, addHours( date9, numberOfDays * H_DAY ));
+    }
+
 
     private static Date date1 = new GregorianCalendar( 2050, Calendar.JANUARY, 1, 0, 0 ).getTime();
     private static Date date10 = new GregorianCalendar( 2050, Calendar.JANUARY, 10, 0, 0 ).getTime();
     private static Date date9 = new GregorianCalendar( 2050, Calendar.JANUARY, 9, 0, 0 ).getTime();
+    private static int numberOfDays = 12;
 
-    private static List<Integer> activeStatesShort = Arrays.asList( 1, 2, 6, 16, 19, 30 );
+    private static List<Long> activeStatesShort = Arrays.asList( 1L, 2L, 6L, 16L, 19L, 30L );
     private static List<Long> commentsIds = new ArrayList<>();
 
     private static final Long CREATED = 1L;

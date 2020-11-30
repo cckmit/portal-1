@@ -1,36 +1,39 @@
 package ru.protei.portal.ui.sitefolder.client.activity.plaform.edit;
 
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
-import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_FileUploadStatus;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Attachment;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.dto.ProjectInfo;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
+import ru.protei.portal.ui.common.client.service.AttachmentControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
-import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
-import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
+import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.impl.PasteInfo;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
 import java.util.function.Consumer;
 
-public abstract class PlatformEditActivity implements Activity, AbstractPlatformEditActivity {
+import static ru.protei.portal.core.model.util.CrmConstants.Platform.PARAMETERS_MAX_LENGTH;
+
+public abstract class PlatformEditActivity implements AbstractPlatformEditActivity {
 
     @PostConstruct
     public void onInit() {
@@ -60,12 +63,19 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
     @Event(Type.FILL_CONTENT)
     public void onShow(SiteFolderPlatformEvents.Edit event) {
         if (!hasPrivileges(event.platformId)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
         initDetails.parent.clear();
+        Window.scrollTo(0, 0);
         initDetails.parent.add(view.asWidget());
+        previousCompanyName = EMPTY_NAME;
+
+        this.fireBackEvent =
+                event.backEvent == null ?
+                () -> fireEvent(new Back()) :
+                event.backEvent;
 
         fireEvent(new ActionBarEvents.Clear());
         if (event.platformId == null) {
@@ -92,8 +102,10 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
 
     @Override
     public void onSaveClicked() {
-        if (!isValid()) {
-            fireEvent(new NotifyEvents.Show(lang.errFieldsRequired(), NotifyEvents.NotifyType.ERROR));
+
+        String validationErrorMsg = validate();
+        if (validationErrorMsg != null) {
+            fireEvent(new NotifyEvents.Show(validationErrorMsg, NotifyEvents.NotifyType.ERROR));
             return;
         }
 
@@ -103,7 +115,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
                 .withSuccess(result -> {
                     fireEvent(new SiteFolderPlatformEvents.ChangeModel());
                     fireEvent(new SiteFolderPlatformEvents.Changed(result));
-                    fireEvent(isNew(platform) ? new SiteFolderPlatformEvents.Show(true) : new Back());
+                    fireBackEvent.run();
                     fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformSaved(), NotifyEvents.NotifyType.SUCCESS));
                 })
         );
@@ -111,13 +123,13 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
 
     @Override
     public void onCancelClicked() {
-        fireEvent(new Back());
+        fireBackEvent.run();
     }
 
     @Override
     public void onOpenClicked() {
         if (platform != null) {
-            fireEvent(new SiteFolderServerEvents.Show(platform.getId()));
+            fireEvent(new SiteFolderServerEvents.Show(platform.getId(), false));
         }
     }
 
@@ -137,24 +149,37 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
 
     @Override
     public void onCompanySelected() {
-        EntityOption value = view.company().getValue();
+        EntityOption companyValue = view.company().getValue();
 
-        view.name().setValue(value == null ? "" : value.getDisplayText());
-        fireShowCompanyContacts(value == null ? null : value.getId() );
+        if (StringUtils.isEmpty(view.name().getValue()) || previousCompanyName.equals(view.name().getValue())) {
+            view.name().setValue(companyValue == null ? EMPTY_NAME : companyValue.getDisplayText());
+        }
+
+        previousCompanyName = companyValue == null ? EMPTY_NAME : companyValue.getDisplayText();
+        fireShowCompanyContacts(companyValue == null ? null : companyValue.getId() );
     }
 
     @Override
     public void onRemoveAttachment(Attachment attachment) {
-        attachmentService.removeAttachmentEverywhere(En_CaseType.SF_PLATFORM, attachment.getId(), new FluentCallback<Boolean>()
-                .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR)))
-                .withSuccess(result -> {
-                    if (!result) {
+        attachmentService.removeAttachmentEverywhere(En_CaseType.SF_PLATFORM, attachment.getId(), new FluentCallback<Long>()
+                .withError((throwable, defaultErrorHandler, status) -> {
+                    if (En_ResultStatus.NOT_FOUND.equals(status)) {
+                        fireEvent(new NotifyEvents.Show(lang.fileNotFoundError(), NotifyEvents.NotifyType.ERROR));
+                        return;
+                    }
+
+                    if (En_ResultStatus.NOT_REMOVED.equals(status)) {
                         fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR));
                         return;
                     }
+
+                    defaultErrorHandler.accept(throwable);
+                })
+                .withSuccess(result -> {
                     view.attachmentsContainer().remove(attachment);
                     platform.getAttachments().remove(attachment);
-                }));
+                })
+        );
     }
 
     @Override
@@ -172,12 +197,11 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
 
     private void fillProjectSpecificFieldsOnRefresh(ProjectInfo project) {
         view.company().setValue(project.getContragent());
-        view.name().setValue(project.getContragent() == null ? null : project.getContragent().getDisplayText());
+        onCompanySelected();
         view.manager().setValue(project.getManager() == null ? null : new PersonShortView(project.getManager()));
         view.companyEnabled().setEnabled(false);
         view.managerEnabled().setEnabled(false);
         view.companyValidator().setValid(true);
-        fireShowCompanyContacts(project.getContragent().getId());
     }
 
     private void fillProjectSpecificFieldsOnLoad(ProjectInfo project){
@@ -196,8 +220,8 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
 
     private void clearProjectSpecificFields() {
         view.company().setValue(null);
+        onCompanySelected();
         view.manager().setValue(null);
-        view.name().setValue(null);
         view.companyEnabled().setEnabled(true);
         view.managerEnabled().setEnabled(true);
         view.companyValidator().setValid(false);
@@ -215,7 +239,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
             view.project().setValue(null);
             clearProjectSpecificFields();
             view.company().setValue(EntityOption.fromCompany(platform.getCompany()));
-            view.manager().setValue(platform.getManager() == null ? null : platform.getManager().toShortNameShortView());
+            view.manager().setValue(platform.getManager() == null ? null : platform.getManager());
             fireShowCompanyContacts(platform.getCompanyId());
         }
         view.name().setValue(platform.getName());
@@ -253,7 +277,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
         if (view.project().getValue() == null){
             platform.setProjectId(null);
             platform.setCompanyId(view.company().getValue().getId());
-            platform.setManager(Person.fromPersonShortView(view.manager().getValue()));
+            platform.setManager(view.manager().getValue());
         }
         else {
             platform.setProjectId(view.project().getValue().getId());
@@ -263,11 +287,19 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
         }
     }
 
-    private boolean isValid() {
-        if (view.project().getValue() != null)
-            return view.nameValidator().isValid();
-        else
-            return view.nameValidator().isValid() && view.companyValidator().isValid();
+    private String validate() {
+        boolean isValid = view.project().getValue() != null
+                            ? view.nameValidator().isValid()
+                            : view.nameValidator().isValid() && view.companyValidator().isValid();
+        if (!isValid) {
+            return lang.errFieldsRequired();
+        }
+
+        if (view.parameters().getValue().length() > PARAMETERS_MAX_LENGTH) {
+            return lang.errRemoteAccessParametersLengthExceeded(PARAMETERS_MAX_LENGTH);
+        }
+
+        return null;
     }
 
     private void addAttachmentsToCase(Collection<Attachment> attachments) {
@@ -301,10 +333,14 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
     @Inject
     PolicyService policyService;
     @Inject
-    AttachmentServiceAsync attachmentService;
+    AttachmentControllerAsync attachmentService;
     @Inject
     RegionControllerAsync regionService;
 
     private Platform platform;
+    private String previousCompanyName = EMPTY_NAME;
     private AppEvents.InitDetails initDetails;
+    private Runnable fireBackEvent = () -> fireEvent(new Back());
+
+    private static final String EMPTY_NAME = "";
 }

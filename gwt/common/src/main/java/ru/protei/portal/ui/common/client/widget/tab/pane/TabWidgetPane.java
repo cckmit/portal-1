@@ -60,6 +60,10 @@ public class TabWidgetPane extends Composite implements HasWidgets {
         return tabIcon;
     }
 
+    public void setTabDebugId(String debugId) {
+        root.ensureDebugId(debugId);
+    }
+
     @UiField
     HTMLPanel root;
 

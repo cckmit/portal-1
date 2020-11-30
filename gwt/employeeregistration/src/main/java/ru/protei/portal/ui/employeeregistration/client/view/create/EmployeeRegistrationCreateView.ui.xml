@@ -1,0 +1,212 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:validatefield="urn:import:ru.protei.portal.ui.common.client.widget.validatefield"
+             xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
+             xmlns:selector='urn:import:ru.protei.portal.ui.employeeregistration.client.widget.selector'
+             xmlns:multiselector='urn:import:ru.protei.portal.ui.employeeregistration.client.widget.optionlist'
+             xmlns:option='urn:import:ru.protei.portal.ui.common.client.widget.optionlist.item'
+             xmlns:datepicker="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
+             xmlns:textarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
+             xmlns:company="urn:import:ru.protei.portal.ui.common.client.widget.homecompany"
+             xmlns:employeedepartment="urn:import:ru.protei.portal.ui.common.client.widget.selector.employeedepartment">
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel styleName="card card-transparent no-margin card-with-fixable-footer">
+        <div class="card-body no-padding">
+        <div class="container-fluid padding-15">
+            <div class="card card-transparent no-margin">
+                <div class="card-header">
+                    <div class="card-title">
+                        <ui:text from="{lang.employeeRegistrationMainInfoTitle}"/>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <g:HTMLPanel styleName="form-group col-md-9">
+                            <label>
+                                <ui:text from="{lang.employeeRegistrationEmployeeFullName}"/>
+                            </label>
+                            <validatefield:ValidableTextBox ui:field="fullName" styleName="form-control"
+                                                            notNull="true"/>
+                        </g:HTMLPanel>
+
+                        <div class="form-group col-md-3">
+                            <label>
+                                <ui:text from="{lang.employeeRegistrationEmploymentDate}"/>
+                            </label>
+                            <datepicker:SinglePicker ui:field="employmentDate" type="DATE" formatValue="dd.MM.yyyy"
+                                                     mandatory="true"/>
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label>
+                                <ui:text from="{lang.company}"/>
+                            </label>
+                            <company:HomeCompanyButtonSelector ui:field="company"/>
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label>
+                                <ui:text from="{lang.employeeRegistrationHeadOfDepartment}"/>
+                            </label>
+                            <person:EmployeeButtonSelector ui:field="headOfDepartment" hasNullValue="false" defaultValue="{lang.selectValue}"/>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label>
+                                <ui:text from="{lang.employeeRegistrationDepartment}"/>
+                            </label>
+                            <employeedepartment:EmployeeDepartmentButtonSelector ui:field="department" hasNullValue="false"/>
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label>
+                                <ui:text from="{lang.employeeRegistrationEmploymentType}"/>
+                            </label>
+                            <selector:EmploymentTypeSelector ui:field="employmentType" hasNullValue="false"/>
+                            <g:CheckBox ui:field="withRegistration" styleName="checkbox"
+                                        text="{lang.employeeRegistrationWithRegistration}"/>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label>
+                                <ui:text from="{lang.employeeRegistrationPost}"/>
+                            </label>
+                            <validatefield:ValidableTextBox styleName="form-control" ui:field="position"
+                                                            notNull="true"/>
+                            <g:Label ui:field="positionErrorLabel" styleName="text-danger size-error" visible="false"/>
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label><!--Испытательный срок-->
+                                <ui:text from="{lang.employeeRegistrationProbationPeriod}"/>
+                            </label>
+                            <g:IntegerBox ui:field="probationPeriod"
+
+                                          styleName="form-control"/>
+                        </div>
+
+                        <g:HTMLPanel styleName="form-group col-md-12">
+                            <label>
+                                <ui:text from="{lang.employeeRegistrationCurators}"/>
+                            </label>
+                            <p class="small hint-text">
+                                <ui:text from="{lang.employeeRegistrationCuratorsHint}"/>
+                            </p>
+
+                            <person:EmployeeMultiSelector styleName="multi-selector-without-border" ui:field="curators"/>
+                        </g:HTMLPanel>
+
+                        <div class="form-group col-md-12">
+                            <label>
+                                <ui:text from="{lang.employeeRegistrationComment}"/>
+                            </label>
+                            <textarea:AutoResizeTextArea ui:field="comment" minRows="1" styleName="form-control"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid padding-15 bg-white">
+            <div class="card card-transparent no-margin">
+                <div class="card-header">
+                    <div class="card-title">
+                        <ui:text from="{lang.employeeRegistrationWorkplaceTitle}"/>
+                    </div>
+                    <p class="small hint-text">
+                        <ui:text from="{lang.employeeRegistrationWorkplaceHint}"/>
+                    </p>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="form-group col-md-12">
+                            <label>
+                                <ui:text from="{lang.employeeRegistrationWorkplace}"/>
+                            </label>
+                            <textarea:AutoResizeTextArea ui:field="workplace" minRows="1" styleName="form-control"/>
+                            <g:Label ui:field="workplaceErrorLabel" styleName="text-danger size-error" visible="false"/>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>
+                                <ui:text from="{lang.employeeRegistrationEquipmentList}"/>
+                            </label>
+                            <multiselector:EmployeeEquipmentOptionList ui:field="equipmentList"
+                                                                       styleName="inherit-color-checkbox-group"/>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label><!--Требуемая ОС-->
+                                <ui:text from="{lang.employeeRegistrationOS}"/>
+                            </label>
+                            <validatefield:ValidableTextBox ui:field="operatingSystem" notNull="false"
+                                                            placeholder="{lang.employeeRegistrationOSPlaceholder}"
+                                                            styleName="form-control"/>
+                            <g:Label ui:field="OSErrorLabel" styleName="text-danger size-error" visible="false"/>
+
+                            <label class="m-t-10"><!--Дополнительное ПО-->
+                                <ui:text from="{lang.employeeRegistrationAdditionalSoft}"/>
+                            </label>
+                            <textarea:AutoResizeTextArea ui:field="additionalSoft"
+                                                         placeholder="{lang.employeeRegistrationAdditionalSoftPlaceholder}"
+                                                         minRows="1" styleName="form-control"/>
+                            <g:Label ui:field="additionalSoftErrorLabel" styleName="text-danger size-error" visible="false"/>
+                        </div>
+
+                        <div class="form-group col-md-12">
+                            <label><!--Необходимо подключить связь-->
+                                <ui:text from="{lang.employeeRegistrationPhoneOfficeTypeList}"/>
+                            </label>
+                            <multiselector:PhoneOfficeTypeOptionList ui:field="phoneTypeList"
+                                                                     styleName="inherit-color-checkbox-group"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fluid padding-15">
+            <div class="card card-transparent no-margin">
+                <div class="card-header">
+                    <div class="card-title">
+                        <ui:text from="{lang.employeeRegistrationResourceTitle}"/>
+                    </div>
+                    <p class="small hint-text">
+                        <ui:text from="{lang.employeeRegistrationResourceHint}"/>
+                    </p>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="form-group col-md-4">
+                            <label><!--Доступ к внутренним ресурсам-->
+                                <ui:text from="{lang.employeeRegistrationResourceList}"/>
+                            </label>
+                            <multiselector:InternalResourceOptionList ui:field="resourcesList"
+                                                                      styleName="inherit-color-checkbox-group"/>
+                        </div>
+                        <div class="form-group col-md-8">
+                            <div class="form-group col-md-8">
+                                <label><!--Прочие ресурсы-->
+                                    <ui:text from="{lang.employeeRegistrationResourceOtherComment}"/>
+                                </label>
+                                <textarea:AutoResizeTextArea ui:field="resourceComment" minRows="1"
+                                                             placeholder="{lang.employeeRegistrationInternalResourceOtherCommentPlaceholder}"
+                                                             styleName="form-control"/>
+                                <g:Label ui:field="resourceCommentErrorLabel" styleName="text-danger size-error" visible="false"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+        <div class="card-footer">
+            <div class="card card-transparent no-margin">
+                    <div class="text-right">
+                        <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
+                        <g:Button ui:field="cancelButton" styleName="btn btn-default close_btn"
+                                  text="{lang.buttonCancel}"/>
+                    </div>
+            </div>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

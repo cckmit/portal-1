@@ -85,4 +85,6 @@ public interface AbstractContactInfo {
      * @return
      */
     ContactItem replaceOthers(En_ContactItemType type);
+
+    List<ContactItem> addItems(List<ContactItem> items);
 }

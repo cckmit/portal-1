@@ -9,6 +9,8 @@
 @import "display-table";
 @import "dropzone";
 @import "desk";
+@import "quickview";
+@import "birthday-calendar";
 @import "pages";
 
 /**
@@ -157,6 +159,12 @@ div.select2-container ul.select2-choices li.select2-search-choice a.select2-sear
   font-weight: 900;
 }
 
+div.select2-container {
+  &.has-error {
+    border: 1px solid $error_color;
+  }
+}
+
 .card .card-body > .row {
   margin-right: -15px;
   margin-left: -15px;
@@ -193,3 +201,73 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
 .document-approval-date {
   height: 56px;
 }
+
+.fa.fa-clock-o {
+  font-weight: 400;
+
+  &:before {
+    content: "\f017";
+  }
+}
+
+// Pages calendar overrides
+.calendar {
+  padding-top: 1px; // fix margin offset
+
+  .weeks-wrapper .week:last-child {
+    padding-left: 30px;
+  }
+
+  .week-dragger.scroll-content {
+    overflow-x: auto;
+  }
+
+  .calendar-container .grid {
+    overflow: hidden;
+  }
+
+  .calendar-container .event-container {
+    min-height: 0 !important;
+  }
+}
+
+
+.contract-specification-preview-item {
+  padding-left: 24px;
+
+  &.nest1 {
+    padding-left: 0;
+  }
+  &.nest2 {
+    padding-left: 12px;
+  }
+  &.nest3 {
+    padding-left: 24px;
+  }
+
+  .item-clause {
+    padding-right: 12px;
+    font-weight: bold;
+  }
+}
+
+.contractor-description {
+  .description-title {
+    font-weight: bold;
+  }
+}
+
+.input-group-day-date {
+  .input-group-element-day {
+    flex-grow: initial;
+    min-width: 30%;
+  }
+}
+
+.input-group-money {
+  .input-group-money-percent {
+    flex-grow: initial;
+    min-width: 30%;
+  }
+}
+

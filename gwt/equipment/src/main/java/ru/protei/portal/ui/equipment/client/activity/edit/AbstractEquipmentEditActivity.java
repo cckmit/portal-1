@@ -9,7 +9,7 @@ public interface AbstractEquipmentEditActivity {
 
     void onCancelClicked();
 
-    void onCreateDocumentClicked();
+    void onProjectChanged();
 
-    void onDecimalNumbersChanged();
+    void onCreateDocumentClicked();
 }

@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -29,22 +30,23 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
     }
 
     @Event
-    public void onShow(CaseTagEvents.Edit event) {
+    public void onShow(CaseTagEvents.ShowEdit event) {
         if ( event.caseTag == null ) {
             fireEvent(new NotifyEvents.Show(lang.error(), NotifyEvents.NotifyType.ERROR));
             return;
         }
 
         this.caseTag = event.caseTag;
+        this.caseType = event.caseType;
 
         boolean isCreationMode = caseTag.getId() == null;
         boolean isTagOwner = Objects.equals(caseTag.getPersonId(), policyService.getProfile().getId());
-        boolean isSystemScope = policyService.hasSystemScopeForPrivilege( En_Privilege.ISSUE_EDIT );
-        boolean isAllowedChangeCompany = isSystemScope && (isCreationMode || isTagOwner) ;
+        boolean isSystemScope = policyService.hasSystemScopeForPrivilege(privilegeByCaseType(caseType));
+        boolean isAllowedChangeCompany = isCompanySelectorEnabled(caseType) && isSystemScope && (isCreationMode || isTagOwner) ;
 
-        // создавать могут все с привилегией ISSUE_EDIT. Заказчики только для своих компаний, сотрудники НТЦ протей для всех.
+        // создавать могут все с привилегией по типу кейса. Заказчики только для своих компаний, сотрудники НТЦ протей для всех.
         // редактируем/удаляем только свои кейсы
-        boolean isAllowedEdit = policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT) && (isCreationMode || isTagOwner);
+        boolean isAllowedEdit = policyService.hasPrivilegeFor(privilegeByCaseType(caseType)) && (isCreationMode || isTagOwner);
 
         view.name().setValue(caseTag.getName());
         view.color().setValue(caseTag.getColor());
@@ -131,6 +133,21 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
         return caseTag!=null && caseTag.getId() == null;
     }
 
+    private boolean isCompanySelectorEnabled(En_CaseType caseType) {
+        switch (caseType) {
+            case CONTRACT: return false;
+        }
+        return true;
+    }
+
+    private En_Privilege privilegeByCaseType(En_CaseType caseType) {
+        switch (caseType) {
+            case CRM_SUPPORT: return En_Privilege.ISSUE_EDIT;
+            case CONTRACT: return En_Privilege.CONTRACT_EDIT;
+        }
+        return En_Privilege.ISSUE_EDIT;
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -143,4 +160,5 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
     PolicyService policyService;
 
     private CaseTag caseTag;
+    private En_CaseType caseType;
 }

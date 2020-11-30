@@ -5,10 +5,9 @@ import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseLink;
 
+import java.util.List;
+
 public class CaseLinkEvents {
-
-    private static final String PAGE_ID_DEFAULT_VALUE = "";
-
     public static class Show {
 
         public Show() {}
@@ -32,65 +31,69 @@ public class CaseLinkEvents {
             return this;
         }
 
-        public Show withPageId(String pageId){
-            this.pageId = pageId;
-            return this;
-        }
-
         public Show readOnly() {
             return withReadOnly(true);
+        }
+
+        public Show withLinks(List<CaseLink> links) {
+            this.links = links;
+            return this;
         }
 
         public HasWidgets parent;
         public Long caseId;
         public En_CaseType caseType;
         public boolean isEnabled = true;
-        public String pageId = PAGE_ID_DEFAULT_VALUE;
+        public List<CaseLink> links;
     }
 
     public static class Removed {
-        public Removed(Long caseId, CaseLink caseLink, String pageId) {
+        public Removed(Long caseId, CaseLink caseLink, En_CaseType caseType) {
             this.caseId = caseId;
             this.caseLink = caseLink;
-            this.pageId = pageId;
+            this.caseType = caseType;
         }
 
         public CaseLink caseLink;
         public Long caseId;
-        public String pageId;
+        public En_CaseType caseType;
     }
 
     public static class Added {
-        public Added(Long caseId, CaseLink caseLink, String pageId) {
+        public Added(Long caseId, CaseLink caseLink, En_CaseType caseType) {
             this.caseId = caseId;
             this.caseLink = caseLink;
-            this.pageId = pageId;
+            this.caseType = caseType;
         }
 
         public Long caseId;
         public CaseLink caseLink;
-        public String pageId;
+        public En_CaseType caseType;
     }
 
     public static class ShowLinkSelector {
         public ShowLinkSelector() {}
 
         public ShowLinkSelector(IsWidget target) {
-            this(target, "");
+            this(target, null);
         }
 
-        public ShowLinkSelector(IsWidget target, String pageId) {
-            this(target, pageId, true);
-        }
-
-        public ShowLinkSelector(IsWidget target, String pageId, boolean createCrossLinks) {
+        public ShowLinkSelector(IsWidget target, En_CaseType caseType) {
             this.target = target;
-            this.pageId = pageId;
-            this.createCrossLinks = createCrossLinks;
+            this.caseType = caseType;
         }
 
         public IsWidget target;
-        public String pageId = PAGE_ID_DEFAULT_VALUE;
-        public boolean createCrossLinks = true;
+        public En_CaseType caseType;
+    }
+
+    public static class Changed {
+        public Changed(CaseLink caseLink, En_CaseType caseType) {
+            this.caseLink = caseLink;
+            this.caseType = caseType;
+        }
+
+        public CaseLink caseLink;
+        public En_CaseType caseType;
     }
 }

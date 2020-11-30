@@ -1,9 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.winter.jdbc.annotations.IdInsertMode;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
-import ru.protei.winter.jdbc.annotations.JdbcEntity;
-import ru.protei.winter.jdbc.annotations.JdbcId;
+import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -28,6 +25,9 @@ public class CaseAttachment implements Serializable{
 
     @JdbcColumn(name = "remote_id")
     private String remoteId;
+
+    @JdbcJoinedColumn(localColumn = "ccomment_id", remoteColumn = "id", table = "case_comment", mappedColumn = "private_flag")
+    private Boolean isPrivate;
 
     public CaseAttachment() {
     }
@@ -87,6 +87,14 @@ public class CaseAttachment implements Serializable{
         this.remoteId = remoteId;
     }
 
+    public boolean isPrivate() {
+        return Boolean.TRUE.equals(isPrivate);
+    }
+
+    public void setPrivate(Boolean isPrivate) {
+        this.isPrivate = isPrivate;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if(!(obj instanceof CaseAttachment))
@@ -96,5 +104,17 @@ public class CaseAttachment implements Serializable{
 
         return Objects.equals(id, ca.getId())
                 || (Objects.equals(caseId, ca.getCaseId()) && Objects.equals(attachmentId, ca.getAttachmentId()));
+    }
+
+    @Override
+    public String toString() {
+        return "CaseAttachment{" +
+                "id=" + id +
+                ", caseId=" + caseId +
+                ", attachmentId=" + attachmentId +
+                ", commentId=" + commentId +
+                ", remoteId='" + remoteId + '\'' +
+                ", isPrivate=" + isPrivate +
+                '}';
     }
 }

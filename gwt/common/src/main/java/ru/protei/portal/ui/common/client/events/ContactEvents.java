@@ -19,10 +19,10 @@ public class ContactEvents {
     @Url( value = "contacts", primary = true )
     public static class Show {
         @Omit
-        public Boolean clearScroll = false;
+        public Boolean preScroll = false;
         public Show () {}
-        public Show (Boolean clearScroll) {
-            this.clearScroll = clearScroll;
+        public Show (Boolean preScroll) {
+            this.preScroll = preScroll;
         }
     }
 
@@ -30,10 +30,14 @@ public class ContactEvents {
      * Показать таблицу котактов
      */
     public static class ShowConciseTable {
-
-        public ShowConciseTable(HasWidgets parent, Long companyId) {
+        public ShowConciseTable(HasWidgets parent, Long companyId, boolean embedded) {
             this.parent = parent;
             this.companyId = companyId;
+            this.embedded = embedded;
+        }
+
+        public ShowConciseTable(HasWidgets parent, Long companyId) {
+            this(parent, companyId, false);
         }
 
         public ShowConciseTable readOnly() {
@@ -44,6 +48,7 @@ public class ContactEvents {
         public HasWidgets parent;
         public Long companyId;
         public boolean editable = true;
+        public boolean embedded;
     }
 
     /**
@@ -87,6 +92,8 @@ public class ContactEvents {
         @Omit
         public Company company;
         public String origin;
+        @Omit
+        public Runnable backEvent;
 
         public Edit() { this.id = null; }
         public Edit (Long id, Long companyId) {
@@ -105,6 +112,11 @@ public class ContactEvents {
 
         public static Edit newItem (EntityOption option) {
             return new Edit(null, option != null ? option.getId() : null);
+        }
+
+        public Edit withBackEvent(Runnable backEvent) {
+            this.backEvent = backEvent;
+            return this;
         }
     }
 }

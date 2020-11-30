@@ -58,7 +58,7 @@
                     </h5>
                     <w:attachment.list.AttachmentList ui:field="attachmentContainer" addStyleNames="p-l-0"/>
 
-                    <tab:TabWidget styleName="">
+                    <tab:TabWidget styleName="" ui:field="tabWidget">
 
                         <tab:pane.TabWidgetPane tabName="{lang.siteFolderServers}">
                             <g:HTMLPanel ui:field="serversContainer"/>

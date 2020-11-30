@@ -75,7 +75,7 @@
         </dependency>
         <dependency>
             <groupId>ru.protei</groupId>
-            <artifactId>portal4.ui.issuereport</artifactId>
+            <artifactId>portal4.ui.report</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
@@ -136,6 +136,36 @@
         <dependency>
             <groupId>ru.protei</groupId>
             <artifactId>portal4.ui.contract</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>ru.protei</groupId>
+            <artifactId>portal4.ui.education</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>ru.protei</groupId>
+            <artifactId>portal4.ui.ipreservation</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>ru.protei</groupId>
+            <artifactId>portal4.ui.roomreservation</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>ru.protei</groupId>
+            <artifactId>portal4.ui.plan</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>ru.protei</groupId>
+            <artifactId>portal4.ui.absence</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>ru.protei</groupId>
+            <artifactId>portal4.ui.dutylog</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
@@ -225,6 +255,7 @@
                     <sourceLevel>1.8</sourceLevel>
                     <runTarget>index.html</runTarget>
                     <hostedWebapp>${webappDirectory}</hostedWebapp>
+                    <extraJvmArgs>-Xmx1024m</extraJvmArgs>
                 </configuration>
             </plugin>
 
@@ -233,7 +264,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.6</version>
+                <version>2.1.1</version>
                 <executions>
                     <execution>
                         <phase>compile</phase>

@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.contact.client.view.table.concise;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.DOM;
@@ -15,6 +16,7 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
@@ -31,6 +33,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
+
 public class ContactConciseTableView extends Composite implements AbstractContactConciseTableView {
 
     @Inject
@@ -39,6 +43,7 @@ public class ContactConciseTableView extends Composite implements AbstractContac
         this.editClickColumn = editClickColumn;
         this.removeClickColumn = removeClickColumn;
         initTable();
+        setTestAttributes();
     }
 
     @Override
@@ -91,6 +96,13 @@ public class ContactConciseTableView extends Composite implements AbstractContac
         table.addColumn(phones.header, phones.values);
         editColumn = table.addColumn(editClickColumn.header, editClickColumn.values);
         removeColumn = table.addColumn(removeClickColumn.header, removeClickColumn.values);
+    }
+
+    private void setTestAttributes() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+        getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONCISE_TABLE.CONTACT);
     }
 
     @UiField
@@ -166,10 +178,9 @@ public class ContactConciseTableView extends Composite implements AbstractContac
 
             Stream<ContactItem> contactItems = infoFacade.allPhonesStream();
 
-            String phones = contactItems.map(
-                    p -> "<span class=\"nowrap\">" + p.value() + "</span>"
-                            + (!StringUtils.isEmpty(p.comment()) ? " (" + p.comment() + ")" : "")
-            ).collect(Collectors.joining(", "));
+            String phones = contactItems
+                    .map(p -> "<span class=\"nowrap\">" + p.value() + "</span>")
+                    .collect(Collectors.joining(", "));
 
             if (StringUtils.isNotBlank(phones)) {
                 com.google.gwt.dom.client.Element label = DOM.createLabel();

@@ -17,23 +17,31 @@ import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.core.mail.VirtualMailSendChannel;
+import ru.protei.portal.core.model.converter.MoneyJdbcConverter;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.auth.AuthServiceImpl;
 import ru.protei.portal.core.service.auth.LDAPAuthProvider;
-import ru.protei.portal.core.service.events.AsyncEventPublisherService;
-import ru.protei.portal.core.service.events.EventAssemblerService;
-import ru.protei.portal.core.service.events.EventAssemblerServiceImpl;
-import ru.protei.portal.core.service.events.EventPublisherService;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseTaskHandler;
+import ru.protei.portal.core.service.events.*;
+import ru.protei.portal.core.service.nrpe.NRPEService;
+import ru.protei.portal.core.service.nrpe.NRPEServiceImpl;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
 import ru.protei.portal.jira.aspect.JiraServiceLayerInterceptorLogging;
 import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.jira.factory.JiraClientFactoryImpl;
-import ru.protei.portal.jira.service.*;
+import ru.protei.portal.jira.service.JiraBackchannelHandler;
+import ru.protei.portal.jira.service.JiraBackchannelHandlerImpl;
+import ru.protei.portal.jira.service.JiraIntegrationService;
+import ru.protei.portal.jira.service.JiraIntegrationServiceImpl;
 import ru.protei.portal.jira.utils.JiraQueueSingleThreadPoolTaskExecutor;
+import ru.protei.portal.nrpe.NRPEExecutorTest;
+import ru.protei.portal.nrpe.NRPEProcessor;
+import ru.protei.portal.schedule.PortalScheduleTasks;
 import ru.protei.portal.test.jira.mock.JiraEndpointDAO_ImplMock;
 import ru.protei.portal.test.jira.mock.JiraPriorityMapEntryDAO_ImplMock;
 import ru.protei.portal.test.jira.mock.JiraStatusMapEntryDAO_ImplMock;
@@ -44,6 +52,7 @@ import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import static org.mockito.Mockito.mock;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
 import static ru.protei.portal.jira.config.JiraConfigurationContext.JIRA_INTEGRATION_SINGLE_TASK_QUEUE;
 
@@ -98,6 +107,16 @@ public class JiraTestConfiguration {
     @Bean
     public EmployeeSqlBuilder employeeSqlBuilder() {
         return new EmployeeSqlBuilder();
+    }
+
+    @Bean
+    public PersonSqlBuilder getPersonSqlBuilder() {
+        return new PersonSqlBuilder();
+    }
+
+    @Bean
+    public ContactSqlBuilder getContactSqlBuilder() {
+        return new ContactSqlBuilder();
     }
 
     @Bean
@@ -206,8 +225,23 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public UserLoginShortViewDAO getUserLoginShortViewDAO() {
+        return new UserLoginShortViewDAO_Impl();
+    }
+
+    @Bean
     public CaseLinkDAO getCaseLinkDAO() {
         return new CaseLinkDAO_Impl();
+    }
+
+    @Bean
+    public CaseStateDAO getCaseStateDAO() {
+        return new CaseStateDAO_Impl();
+    }
+
+    @Bean
+    public AuditObjectDAO getAuditDAO() {
+        return new AuditObjectDAO_Impl();
     }
 
     @Bean
@@ -290,6 +324,13 @@ public class JiraTestConfiguration {
         return new CaseCommentServiceImpl();
     }
 
+/*
+    @Bean
+    public ClientEventService getClientEventService() {
+        return new ClientEventServiceImpl();
+    }
+*/
+
     @Bean
     public CaseStateWorkflowService getCaseStateWorkflowService() {
         return new CaseStateWorkflowServiceImpl();
@@ -306,13 +347,33 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public EventProjectAssemblerService getProjectPublisherService() {
+        return new EventProjectAssemblerServiceImpl();
+    }
+
+    @Bean
     public AssemblerService getAssemblerService() {
         return new AssemblerServiceImpl();
     }
 
     @Bean
+    public AssemblerProjectService getAssemblerProjectService() {
+        return new AssemblerProjectServiceImpl();
+    }
+
+    @Bean
+    public ProjectDAO getProjectDAO() {
+        return new ProjectDAO_Impl();
+    }
+
+    @Bean
     public YoutrackService getYoutrackService() {
         return new YoutrackServiceImpl();
+    }
+
+    @Bean
+    public MailReceiverService getMailReceiverService() {
+        return mock(MailReceiverService.class);
     }
 
     @Bean
@@ -348,5 +409,168 @@ public class JiraTestConfiguration {
     @Bean
     public CompanyImportanceItemDAO getCompanyImportanceItemDAO() {
         return new CompanyImportanceItemDAO_Impl();
+    }
+
+    @Bean
+    public SiteFolderService getSiteFolderService() {
+        return new SiteFolderServiceImpl();
+    }
+
+    @Bean
+    public ProductService getProductService() {
+        return new ProductServiceImpl();
+    }
+
+    @Bean
+    public ProjectService getProjectService() {
+        return new ProjectServiceImpl();
+    }
+
+    @Bean
+    public PlatformDAO getPlatformDAO() {
+        return new PlatformDAO_Impl();
+    }
+
+    @Bean
+    public ServerDAO getServerDAO() {
+        return new ServerDAO_Impl();
+    }
+
+    @Bean
+    public ServerSqlBuilder getServerSqlBuilder() {
+        return new ServerSqlBuilder();
+    }
+
+    @Bean
+    public ApplicationDAO getApplicationDAO() {
+        return new ApplicationDAO_Impl();
+    }
+
+    @Bean
+    public ServerApplicationDAO getServerApplicationDAO() {
+        return new ServerApplicationDAO_Impl();
+    }
+
+    @Bean
+    public ProductSubscriptionDAO getProductSubscriptionDAO() {
+        return new ProductSubscriptionDAO_Impl();
+    }
+
+    @Bean
+    public DevUnitDAO getDevUnitDAO() {
+        return new DevUnitDAO_Impl();
+    }
+
+    @Bean
+    public DevUnitChildRefDAO getDevUnitChildRefDAO() {
+        return new DevUnitChildRefDAO_Impl();
+    }
+
+    @Bean
+    public AutoOpenCaseService getAutoOpenCaseService() {
+        return mock(AutoOpenCaseService.class);
+    }
+
+    @Bean
+    public AutoOpenCaseTaskHandler getAutoOpenCaseTaskHandler() {
+        return mock(AutoOpenCaseTaskHandler.class);
+    }
+
+    @Bean
+    public PortalScheduleTasks getPortalScheduleTasks() {
+        return mock(PortalScheduleTasks.class);
+    }
+
+    @Bean
+    public UserRoleDAO getUserRoleDAO() {
+        return new UserRoleDAO_impl();
+    }
+
+    @Bean
+    public PlanService getPlanService() {
+        return new PlanServiceImpl();
+    }
+
+    @Bean
+    public PlanDAO getPlanDAO() {
+        return new PlanDAO_Impl();
+    }
+
+    @Bean
+    public HistoryService getHistoryService() {
+        return new HistoryServiceImpl();
+    }
+
+    @Bean
+    public HistoryDAO getHistoryDAO() {
+        return new HistoryDAO_Impl();
+    }
+
+    @Bean
+    public PlanToCaseObjectDAO getPlanToCaseObjectDAO() {
+        return new PlanToCaseObjectDAO_Impl();
+    }
+
+    @Bean
+    public PersonFavoriteIssuesDAO getPersonFavoritesIssuesDAO() {
+        return new PersonFavoriteIssuesDAO_Impl();
+    }
+
+    @Bean
+    public ContactItemDAO getContactItemDAO() {
+        return new ContactItemDAO_Impl();
+    }
+
+    @Bean
+    public EmployeeShortViewDAO getEmployeeShortViewDAO() {
+        return new EmployeeShortViewDAO_Impl();
+    }
+
+    @Bean
+    public LocationDAO getLocationDAO() {
+        return new LocationDAO_Impl();
+    }
+
+    @Bean
+    public CaseMemberDAO getCaseMemberDAO() {
+        return new CaseMemberDAO_Impl();
+    }
+
+    @Bean
+    public CaseLocationDAO getCaseLocationDAO() {
+        return new CaseLocationDAO_Impl();
+    }
+
+    @Bean
+    public ProjectToProductDAO getProjectToProductDAO() {
+        return new ProjectToProductDAO_Impl();
+    }
+
+    @Bean
+    public ContractDAO getContractDAO() {
+        return new ContractDAO_Impl();
+    }
+
+    @Bean
+    public ProjectTechnicalSupportValidityReportInfoDAO getProjectTechnicalSupportValidityReportInfoDAO() {
+        return new ProjectTechnicalSupportValidityReportInfoDAO_Impl();
+    }
+
+    /* DAO converters */
+
+    @Bean
+    public MoneyJdbcConverter moneyJdbcConverter() {
+        return new MoneyJdbcConverter();
+    }
+
+    @Bean
+    public NRPEService getNRPEService() {
+        return new NRPEServiceImpl();
+    }
+
+    /* NRPE */
+    @Bean
+    public NRPEProcessor getNRPERequest() {
+        return new NRPEProcessor(new NRPEExecutorTest());
     }
 }

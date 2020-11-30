@@ -9,7 +9,9 @@
                 <g:Image ui:field="photo" styleName="employee-preview-image"/>
             </div>
 
-            <h4 class="m-b-0 all-caps"><g:Anchor ui:field="employeeName" href="#"/></h4>
+            <h4 class="m-b-0 all-caps">
+                <g:Anchor ui:field="employeeName" href="#"/>
+            </h4>
             <g:HTMLPanel ui:field="birthdayContainer" styleName="small m-b-10" visible="false">
                 <i class="fa fa-birthday-cake"/>
                 <span ui:field="birthday"/>
@@ -29,13 +31,29 @@
             <g:HTMLPanel ui:field="positionsContainer"/>
 
             <h5><ui:text from="{lang.employeeAdditionalInfo}"/></h5>
-            <div class="small">
-                <b><ui:text from="{lang.employeeID}: "/></b>
-                <span ui:field="id"/>
+            <div class="p-b-10">
+                <div class="small">
+                    <b><ui:text from="{lang.employeeID}: "/></b>
+                    <span ui:field="id"/>
+                </div>
+                <div class="small">
+                    <b><ui:text from="{lang.employeeIPAddress}:"/></b>
+                    <span ui:field="ip"/>
+                </div>
+                <div class="small">
+                    <b><ui:text from="{lang.accountLogin}:"/></b>
+                    <span ui:field="login"/>
+                </div>
             </div>
-            <div class="small">
-                <b><ui:text from="{lang.employeeIPAddress}:"/></b>
-                <span ui:field="ip"/>
+
+            <div ui:field="absencesPanel" class="row hide">
+                <div class="col-md-6">
+                    <h5><ui:text from="{lang.absences}"/></h5>
+                </div>
+                <div class="col-md-6 text-right">
+                    <g:Button styleName="btn btn-xs btn-info" ui:field="createAbsenceButton" text="{lang.absenceButtonCreate}"/>
+                </div>
+                <g:HTMLPanel ui:field="absencesContainer" styleName="col-md-12"/>
             </div>
         </div>
 

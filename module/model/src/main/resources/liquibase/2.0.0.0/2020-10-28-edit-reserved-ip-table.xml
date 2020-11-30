@@ -1,0 +1,13 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="rename-last_check_date-in-reserved-ip-table" author="porubov">
+        <renameColumn tableName="reserved_ip"
+                      oldColumnName="last_check_date"
+                      newColumnName="last_active_date"
+                      columnDataType="DATETIME"/>
+    </changeSet>
+</databaseChangeLog>

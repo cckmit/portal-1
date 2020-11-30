@@ -4,21 +4,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.event.EmployeeRegistrationEvent;
+import ru.protei.portal.core.event.AssembledEmployeeRegistrationEvent;
 import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dict.En_AdminState;
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.query.UserLoginShortViewQuery;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.StringUtils.join;
 
 /**
@@ -39,7 +44,7 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
     CompanyGroupHomeDAO companyGroupHomeDAO;
 
     @Autowired
-    PersonDAO personDAO;
+    UserLoginShortViewDAO userLoginShortViewDAO;
 
     @Autowired
     CaseObjectMetaNotifiersDAO caseObjectMetaNotifiersDAO;
@@ -49,6 +54,9 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
 
     @Autowired
     PortalConfig portalConfig;
+
+    @Autowired
+    PersonFavoriteIssuesDAO personFavoriteIssuesDAO;
 
     private Set<NotificationEntry> employeeRegistrationEventSubscribers = new HashSet<>();
 
@@ -63,11 +71,15 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
     }
 
     @Override
-    public Set<NotificationEntry> subscribers(EmployeeRegistrationEvent event) {
+    public Set<NotificationEntry> subscribers(AssembledEmployeeRegistrationEvent event) {
         HashSet<NotificationEntry> notifiers = new HashSet<>(employeeRegistrationEventSubscribers);
-        Optional.ofNullable(event.getEmployeeRegistration())
+        Optional.ofNullable(event.getNewState())
                 .map(EmployeeRegistration::getCreatorId)
-                .map(personDAO::get)
+                .map(Person::new)
+                .map(person -> {
+                    jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
+                    return person;
+                })
                 .map(Person::getContactInfo)
                 .map(contactInfo -> new PlainContactInfoFacade(contactInfo).getEmail())
                 .map(email -> new NotificationEntry(email, En_ContactItemType.EMAIL, "ru"))
@@ -82,11 +94,43 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
         appendCompanySubscriptions(caseMeta, result);
         appendProductSubscriptions(caseMeta.getProductId(), result);
         appendNotifiers(caseMeta.getId(), result);
+        appendNotifiersByFavoriteIssues(caseMeta.getId(), result);
         //HomeCompany persons don't need to get notifications
 //        companyGroupHomeDAO.getAll().forEach( hc -> appendCompanySubscriptions(hc.getCompanyIds(), result));
         log.info( "subscribers: AssembledCaseEvent: {}", join( result, NotificationEntry::getAddress, ",") );
         return result;
     }
+
+    @Override
+    public Set<NotificationEntry> subscribers(Set<String> loginSet, Long companyId) {
+        if (CollectionUtils.isEmpty(loginSet)) {
+            return new HashSet<>();
+        }
+
+        UserLoginShortViewQuery query = new UserLoginShortViewQuery();
+        query.setAdminState(En_AdminState.UNLOCKED);
+        query.setLoginSet(loginSet);
+        query.setCompanyIds(Collections.singleton(companyId));
+
+        return subscribers(CollectionUtils.toList(userLoginShortViewDAO.getSearchResult(query).getResults(), UserLoginShortView::getPersonId));
+    }
+
+    @Override
+    public Set<NotificationEntry> subscribers(List<Long> personIds) {
+        return stream(personIds)
+                .map(Person::new)
+                .map(person -> {
+                    jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
+                    return person;
+                })
+                .map(Person::getContactInfo)
+                .map(PlainContactInfoFacade::new)
+                .map(PlainContactInfoFacade::getEmail)
+                .filter(StringUtils::isNotEmpty)
+                .map(email -> new NotificationEntry(email, En_ContactItemType.EMAIL, "ru"))
+                .collect(Collectors.toSet());
+    }
+
     private List<CompanySubscription> safeGetByCompany( Long companyId ) {
         if (companyId == null) return Collections.emptyList();
         Company company = companyDAO.get( companyId );
@@ -104,15 +148,20 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
 
     private void appendCompanySubscriptions(CaseObjectMeta caseMeta, Set<NotificationEntry> result) {
         List<CompanySubscription> companySubscriptions = safeGetByCompany(caseMeta.getInitiatorCompanyId());
+        List<CompanySubscription> managerCompanySubscriptions = safeGetByCompany(caseMeta.getManagerCompanyId());
 
-        List<CompanySubscription> subscriptionsBasedOnPlatformAndProduct = filterByPlatformAndProduct(companySubscriptions, caseMeta.getPlatformId(), caseMeta.getProductId());
+        Set<CompanySubscription> allCompanySubscriptions = new HashSet<>();
+        allCompanySubscriptions.addAll(companySubscriptions);
+        allCompanySubscriptions.addAll(managerCompanySubscriptions);
+
+        List<CompanySubscription> subscriptionsBasedOnPlatformAndProduct = filterByPlatformAndProduct(allCompanySubscriptions, caseMeta.getPlatformId(), caseMeta.getProductId());
 
         subscriptionsBasedOnPlatformAndProduct.forEach(s -> result.add(NotificationEntry.email(s.getEmail(), s.getLangCode())));
 
         log.info( "companySubscriptions: {}", join( result, NotificationEntry::getAddress, ",") );
     }
 
-    private List<CompanySubscription> filterByPlatformAndProduct(List<CompanySubscription> companySubscriptions, Long platformId, Long productId) {
+    private List<CompanySubscription> filterByPlatformAndProduct(Set<CompanySubscription> companySubscriptions, Long platformId, Long productId) {
         return companySubscriptions.stream()
                 .filter(companySubscription -> (companySubscription.getPlatformId() == null || Objects.equals(platformId, companySubscription.getPlatformId()))
                                             && (companySubscription.getProductId() == null || Objects.equals(productId, companySubscription.getProductId())))
@@ -127,11 +176,34 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
     private void appendNotifiers(Long caseId, Set<NotificationEntry> result) {
         CaseObjectMetaNotifiers caseMetaNotifiers = caseObjectMetaNotifiersDAO.get(caseId);
         jdbcManyRelationsHelper.fill(caseMetaNotifiers, "notifiers");
-        for (Person notifier : CollectionUtils.emptyIfNull(caseMetaNotifiers.getNotifiers())) {
+        Set<Person> notifiers = CollectionUtils.emptyIfNull(caseMetaNotifiers.getNotifiers());
+        jdbcManyRelationsHelper.fill(notifiers, Person.Fields.CONTACT_ITEMS);
+        for (Person notifier : notifiers) {
             ContactItem email = notifier.getContactInfo().findFirst(En_ContactItemType.EMAIL, En_ContactDataAccess.PUBLIC);
             if (email == null) continue;
-            result.add(NotificationEntry.email(email.value(), "ru"));
+            result.add(NotificationEntry.email(email.value(), CrmConstants.LocaleTags.RU));
         }
+    }
+
+    private void appendNotifiersByFavoriteIssues(Long caseId, Set<NotificationEntry> result) {
+        List<Long> personIdsByFavoriteIssueId = personFavoriteIssuesDAO.getPersonIdsByIssueId(caseId);
+
+        if (CollectionUtils.isEmpty(personIdsByFavoriteIssueId)) {
+            return;
+        }
+
+        result.addAll(stream(personIdsByFavoriteIssueId)
+            .map(Person::new)
+            .map(person -> {
+                jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
+                return person;
+            })
+            .map(Person::getContactInfo)
+            .map(contactInfo -> contactInfo.findFirst(En_ContactItemType.EMAIL, En_ContactDataAccess.PUBLIC))
+            .filter(Objects::nonNull)
+            .map(email -> NotificationEntry.email(email.value(), CrmConstants.LocaleTags.RU))
+            .collect(Collectors.toList())
+        );
     }
 
     private static final Logger log = LoggerFactory.getLogger( CaseSubscriptionServiceImpl.class );

@@ -19,14 +19,16 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.selector.AbstractPopupSelector;
-import ru.protei.portal.ui.common.client.selector.pageable.SelectorItemRenderer;
-import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
-import ru.protei.portal.ui.common.client.selector.pageable.AbstractPageableSelector;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
-import ru.protei.portal.ui.common.client.selector.pageable.SingleValuePageableSelector;
 import ru.protei.portal.ui.common.client.selector.SelectorPopup;
+import ru.protei.portal.ui.common.client.selector.pageable.AbstractPageableSelector;
+import ru.protei.portal.ui.common.client.selector.pageable.SelectorItemRenderer;
+import ru.protei.portal.ui.common.client.selector.pageable.SingleValuePageableSelector;
 import ru.protei.portal.ui.common.client.selector.popup.SelectorPopupWithSearch;
+import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
+
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 
 /**
  * Вид селектора
@@ -45,6 +47,12 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
         setPageSize( CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE );
         setEmptyListText( lang.emptySelectorList() );
         setEmptySearchText( lang.searchNoMatchesFound() );
+
+        root.add(popup);
+    }
+
+    public interface SelectedValueRenderer<T> {
+        String render(T value);
     }
 
     @Override
@@ -95,6 +103,10 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
         setAddButtonVisibility( isVisible );
     }
 
+    public void setValueRenderer(SelectedValueRenderer<T> renderer) {
+        this.selectedValueRenderer = renderer;
+    }
+
     @Override
     public boolean isValid(){
         return getValue() != null;
@@ -127,7 +139,7 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
     }
 
     public void setHeader( String header ) {
-        label.removeClassName("hide");
+        label.removeClassName(HIDE);
         label.setInnerText( header );
     }
 
@@ -139,10 +151,10 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
         formContainer.removeStyleName(REQUIRED_STYLENAME);
     }
 
-    public void onShowPopupClicked( HTMLPanel button) {
+    public void onShowPopupClicked(HTMLPanel button) {
         getPopup().getChildContainer().clear();
         getSelector().fillFromBegin(this);
-        getPopup().showNear(button);
+        getPopup().showNear(button.getElement());
     }
 
     public void setEnsureDebugId(String debugId) {
@@ -157,20 +169,21 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
     private void initHandler() {
         formContainer.sinkEvents(Event.ONCLICK);
         formContainer.addHandler(event -> {
-            formContainer.addStyleName(FOCUS_STYLENAME);
-            onShowPopupClicked(formContainer);
+            if (!getPopup().isVisible()) {
+                formContainer.addStyleName(FOCUS_STYLENAME);
+                onShowPopupClicked(formContainer);
+            }
         }, ClickEvent.getType());
-
     }
 
     @Override
-    public void onPopupUnload( SelectorPopup selectorPopup ) {
-        super.onPopupUnload( selectorPopup );
+    public void onPopupHide(SelectorPopup selectorPopup ) {
+        super.onPopupHide( selectorPopup );
         formContainer.removeStyleName(FOCUS_STYLENAME);
     }
 
     protected void showValue( T value) {
-        this.text.setInnerHTML(selector.makeElementHtml(value));
+        this.text.setInnerHTML(selectedValueRenderer.render(value));
     }
 
     @Override
@@ -196,6 +209,8 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
     protected String defaultValue = null;
 
     @UiField
+    HTMLPanel root;
+    @UiField
     HTMLPanel formContainer;
     @UiField
     LabelElement label;
@@ -210,14 +225,14 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
     }
     private SingleValuePageableSelector<T> selector = new SingleValuePageableSelector<T>();
     private boolean isValidable;
-
+    private SelectedValueRenderer<T> selectedValueRenderer = selector::makeElementHtml;
 
     private static final String ERROR_STYLENAME ="has-error";
     private static final String REQUIRED_STYLENAME ="required";
     private static final String DISABLE_STYLENAME ="disabled";
     private static final String FOCUS_STYLENAME ="focused";
     private SelectorPopupWithSearch popup = new SelectorPopupWithSearch();
-    interface InputSelectorUiBinder extends UiBinder<HTMLPanel, FormPopupSingleSelector> { }
-    private static InputSelectorUiBinder ourUiBinder = GWT.create(InputSelectorUiBinder.class);
+    interface FormPopupSingleSelectorUiBinder extends UiBinder<HTMLPanel, FormPopupSingleSelector> { }
+    private static FormPopupSingleSelectorUiBinder ourUiBinder = GWT.create(FormPopupSingleSelectorUiBinder.class);
 
 }

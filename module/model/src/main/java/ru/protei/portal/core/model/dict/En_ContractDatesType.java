@@ -4,7 +4,8 @@ package ru.protei.portal.core.model.dict;
 import ru.protei.winter.core.utils.enums.HasId;
 
 public enum En_ContractDatesType implements HasId {
-    PAYMENT(0),
+    PREPAYMENT(2),
+    POSTPAYMENT(0),
     SUPPLY(1),
     ;
 

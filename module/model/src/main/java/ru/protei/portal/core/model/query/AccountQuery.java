@@ -58,6 +58,7 @@ public class AccountQuery extends BaseQuery {
     public String toString() {
         return "AccountQuery{" +
                 "types=" + types +
+                ", roleIds=" + roleIds +
                 ", companyId=" + companyId +
                 ", searchString='" + searchString + '\'' +
                 ", sortField=" + sortField +

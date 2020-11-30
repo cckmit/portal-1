@@ -19,7 +19,6 @@ import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.ActionIconClickColumn;
-import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
 import ru.protei.portal.ui.common.client.widget.loading.IndeterminateCircleLoading;
@@ -28,6 +27,7 @@ import ru.protei.portal.ui.issueassignment.client.activity.table.AbstractTableVi
 import ru.protei.portal.ui.issueassignment.client.view.table.columns.IssueColumn;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 public class TableView extends Composite implements AbstractTableView {
 
@@ -88,8 +88,9 @@ public class TableView extends Composite implements AbstractTableView {
     private void initTable() {
 
         columnProvider = new ClickColumnProvider<>();
+        columnProvider.setChangeSelectionIfSelectedPredicate(caseShortView -> false);
 
-        IssueColumn number = new IssueColumn(lang, caseStateLang);
+        IssueColumn number = new IssueColumn(lang);
         table.addColumn(number.header, number.values);
         number.setHandler(value -> activity.onItemClicked(value));
         number.setColumnProvider(columnProvider);
@@ -122,8 +123,6 @@ public class TableView extends Composite implements AbstractTableView {
     @Inject
     @UiField
     Lang lang;
-    @Inject
-    En_CaseStateLang caseStateLang;
 
     @Inject
     @UiField(provided = true)

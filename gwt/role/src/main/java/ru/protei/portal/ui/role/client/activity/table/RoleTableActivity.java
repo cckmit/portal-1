@@ -49,12 +49,13 @@ public abstract class RoleTableActivity
     @Event
     public void onShow( RoleEvents.Show event ) {
         if (!policyService.hasPrivilegeFor(En_Privilege.ROLE_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
         init.parent.clear();
         init.parent.add( view.asWidget() );
+        view.clearSelection();
 
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.ROLE_CREATE ) ?
                 new ActionBarEvents.Add( CREATE_ACTION, null, UiConstants.ActionBarIdentity.ROLE ) :
@@ -144,10 +145,12 @@ public abstract class RoleTableActivity
     }
 
     private Runnable removeAction(Long roleId) {
-        return () -> roleService.removeRole(roleId, new FluentCallback<Boolean>().withSuccess(result -> {
-            fireEvent(new RoleEvents.Show());
-            fireEvent(new NotifyEvents.Show(lang.roleRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
-        }));
+        return () -> roleService.removeRole(roleId, new FluentCallback<Long>()
+                .withSuccess(result -> {
+                    fireEvent(new RoleEvents.Show());
+                    fireEvent(new NotifyEvents.Show(lang.roleRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
+                })
+        );
     }
 
     @Inject

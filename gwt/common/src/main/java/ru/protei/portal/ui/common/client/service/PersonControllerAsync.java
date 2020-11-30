@@ -19,9 +19,11 @@ public interface PersonControllerAsync {
      * @param query запрос
      * @param callback
      */
-    void getPersonViewList( PersonQuery query, AsyncCallback< List< PersonShortView > > callback );
+    void getPersonViewList(PersonQuery query, AsyncCallback<List<PersonShortView>> callback);
 
     void getPersonNames(Collection<Long> ids, AsyncCallback<Map<Long, String>> async);
 
-    void getPerson(Long id, AsyncCallback<Person> async);
+    void getPersonShortView(Long id, AsyncCallback<PersonShortView> async);
+
+    void getPersonsByIds(Collection<Long> ids, AsyncCallback<List<Person>> async);
 }

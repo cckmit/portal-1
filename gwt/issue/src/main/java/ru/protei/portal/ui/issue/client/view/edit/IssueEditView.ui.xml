@@ -1,7 +1,8 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:nw='urn:import:ru.protei.portal.ui.issue.client.view.edit'
->
+             xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader.buttonpanel'
+             xmlns:buttonpanel="urn:import:ru.protei.portal.ui.common.client.widget.uploader.impl.buttonpanel">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -17,14 +18,24 @@
                             <g:Button ui:field="showEditViewButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.openFullScreen}">
                                 <i class="fas fa-expand-arrows-alt"/>
                             </g:Button>
+                            <g:Button ui:field="favoritesButton" styleName="btn btn-default btn-xs btn-cons-toolbar">
+                                <i ui:field="favoriteButtonIcon" class="favorite-icon"/>
+                            </g:Button>
                             <g:Button ui:field="addTagButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.tagAdd}">
                                 <i class="fas fa-tag"/>
                             </g:Button>
                             <g:Button ui:field="addLinkButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.linkAdd}">
                                 <i class="fas fa-link"/>
                             </g:Button>
+                            <buttonpanel:ButtonPanelAttachmentUploader ui:field="fileUploader"
+                                                                       styleName="btn btn-default btn-xs btn-cons-toolbar attachment-full-view-uploader"
+                                                                       title="{lang.attachmentAdd}"/>
+
                             <g:Button ui:field="nameAndDescriptionEditButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.editNameAndDescription}">
                                 <i class="fa fa-pencil-alt"/>
+                            </g:Button>
+                            <g:Button ui:field="createSubtaskButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.subtaskCreate}">
+                                <i class="fas fa-code-branch"></i>
                             </g:Button>
                         </div>
                     </div>
@@ -39,9 +50,15 @@
                             <span ui:field="number"/>
                         </h5>
 
-                        <div class="inline pull-right">
-                            <small ui:field="createdBy"/>
-                            <i ui:field="privacyIcon"/>
+                        <div class="inline pull-right text-right">
+                            <div>
+                                <small ui:field="createdBy"/>
+                                <i ui:field="privacyIcon"/>
+                            </div>
+                            <g:HTMLPanel ui:field="integrationLabel" visible="false">
+                                <small><ui:text from="{lang.issueSyncedWith}"/> <b ui:field="integrationLabelName"></b></small>
+                                <i class="fa-fw fas fa-sync-alt"/>
+                            </g:HTMLPanel>
                         </div>
                     </g:HTMLPanel>
 

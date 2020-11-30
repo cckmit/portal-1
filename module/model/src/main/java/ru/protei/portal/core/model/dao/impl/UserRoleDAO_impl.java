@@ -118,17 +118,19 @@ public class UserRoleDAO_impl extends PortalBaseJdbcDAO<UserRole> implements Use
     }
 
 
-    static final DefRoleSetup ROLE_SETUP_EMPLOYEE = new DefRoleSetup("Сотрудник", En_Scope.SYSTEM,
-            En_Privilege.ISSUE_CREATE,
-            En_Privilege.ISSUE_EDIT,
-            En_Privilege.ISSUE_EXPORT,
-            En_Privilege.ISSUE_VIEW,
-            En_Privilege.ISSUE_REPORT,
-            En_Privilege.CONTACT_VIEW,
+    static final DefRoleSetup ROLE_SETUP_EMPLOYEE = new DefRoleSetup("Сотрудник", En_Scope.USER,
             En_Privilege.COMMON_PROFILE_VIEW,
-            En_Privilege.COMPANY_VIEW,
-            En_Privilege.DASHBOARD_VIEW
-//            En_Privilege.EMPLOYEE_VIEW
+            En_Privilege.EMPLOYEE_VIEW,
+            En_Privilege.DOCUMENT_VIEW,
+            En_Privilege.ROOM_RESERVATION_VIEW,
+            En_Privilege.ROOM_RESERVATION_CREATE,
+            En_Privilege.ROOM_RESERVATION_EDIT,
+            En_Privilege.ROOM_RESERVATION_REMOVE,
+            En_Privilege.RESERVED_IP_VIEW,
+            En_Privilege.RESERVED_IP_CREATE,
+            En_Privilege.RESERVED_IP_EDIT,
+            En_Privilege.RESERVED_IP_REMOVE,
+            En_Privilege.SUBNET_VIEW
     );
 
     static final DefRoleSetup ROLE_SETUP_EMPL_MANAGER = new DefRoleSetup("ТПиМ : Менеджер", En_Scope.SYSTEM,

@@ -1,32 +1,32 @@
 package ru.protei.portal.ui.common.client.activity.caselink.list;
 
-import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_BundleType;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseInfo;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.NumberUtils;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
 import ru.protei.portal.ui.common.client.activity.caselink.item.AbstractCaseLinkItemActivity;
 import ru.protei.portal.ui.common.client.activity.caselink.item.AbstractCaseLinkItemView;
-import ru.protei.portal.ui.common.client.common.LocalStorageService;
-import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.CaseLinkEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.lang.En_BundleTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseLinkControllerAsync;
-import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
+import ru.protei.portal.ui.common.client.widget.tab.pane.TabWidgetPane;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.dict.En_CaseLink.CRM;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
@@ -41,42 +41,48 @@ public abstract class CaseLinkListActivity
     @Inject
     public void onInit() {
         view.setActivity( this );
+        initTabs();
     }
 
     @Event
     public void onShow(CaseLinkEvents.Show event) {
         this.show = event;
-        pageId = event.pageId;
         caseId = event.caseId;
+        caseType = event.caseType;
 
         event.parent.clear();
         event.parent.add(view.asWidget());
 
-        view.getLinksContainer().clear();
-        view.setLinksContainerVisible(Boolean.parseBoolean(storage.get(UiConstants.LINKS_PANEL_VISIBILITY)));
-        hideOrShowIfNoLinks();
+        bundleTypeToCaseLink.clear();
+        bundleTypeToPanel.values().forEach(Panel::clear);
 
-        linksSet.clear();
+        hideOrShowIfNoLinks();
         resetLinksContainerStateByLinksCount();
 
-        if (isCaseCreationMode()) return;
+        boolean isCaseLinksDefined = event.links != null;
+        if (isCaseLinksDefined) {
+            fillView(CollectionUtils.emptyIfNull(event.links));
+            return;
+        }
+
+        if (isCaseCreationMode()) {
+            return;
+        }
 
         controller.getCaseLinks(caseId, new FluentCallback<List<CaseLink>>()
-                .withError(this::showErrorFromServer)
                 .withSuccess(this::fillView)
         );
     }
 
     @Event
-    public void onShowTagSelector(CaseLinkEvents.ShowLinkSelector event) {
+    public void onShowLinkSelector(CaseLinkEvents.ShowLinkSelector event) {
         if (!show.isEnabled) {
             return;
         }
 
-        this.pageId = event.pageId;
-        this.createCrossLinks = event.createCrossLinks;
+        this.caseType = event.caseType;
 
-        view.showSelector(event.target);
+        view.showSelector(event.caseType, event.target);
     }
 
     @Override
@@ -86,28 +92,20 @@ public abstract class CaseLinkListActivity
         }
 
         if (isCaseCreationMode()) {
-            fireEvent(new CaseLinkEvents.Removed(show.caseId, itemView.getModel(), pageId));
+            fireEvent(new CaseLinkEvents.Removed(show.caseId, itemView.getModel(), caseType));
             removeLinkViewFromParentAndModifyLinksCount(itemView);
             hideOrShowIfNoLinks();
             return;
         }
 
-        if (lang.issues().equals(pageId)) {
-            controller.deleteLinkWithPublish(itemView.getModel().getId(), new FluentCallback<Void>()
-                    .withSuccess(res -> {
-                        removeLinkViewFromParentAndModifyLinksCount(itemView);
-                        hideOrShowIfNoLinks();
-                        fireEvent(new NotifyEvents.Show(lang.caseLinkSuccessfulRemoved(), NotifyEvents.NotifyType.SUCCESS));
-                    }));
-        }
-        else{
-            controller.deleteLink(itemView.getModel().getId(), new FluentCallback<Void>()
-                    .withSuccess(res -> {
-                        removeLinkViewFromParentAndModifyLinksCount(itemView);
-                        hideOrShowIfNoLinks();
-                        fireEvent(new NotifyEvents.Show(lang.caseLinkSuccessfulRemoved(), NotifyEvents.NotifyType.SUCCESS));
-                    }));
-        }
+        controller.deleteLinkWithPublish(itemView.getModel().getId(), caseType, new FluentCallback<CaseLink>()
+                .withSuccess(caseLink -> {
+                    removeLinkViewFromParentAndModifyLinksCount(itemView);
+                    hideOrShowIfNoLinks();
+                    fireEvent(new NotifyEvents.Show(lang.caseLinkSuccessfulRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new CaseLinkEvents.Changed(caseLink, caseType));
+                })
+        );
     }
 
     @Override
@@ -126,26 +124,35 @@ public abstract class CaseLinkListActivity
         }
     }
 
-    @Override
-    public void onLinksContainerStateChanged(boolean isVisible) {
-        storage.set(UiConstants.LINKS_PANEL_VISIBILITY, String.valueOf(isVisible));
-        view.setLinksContainerVisible(isVisible);
+    private void initTabs() {
+        Arrays.asList(En_BundleType.values()).forEach(bundleType -> {
+            TabWidgetPane tabWidgetPane = tabWidgetPaneProvider.get();
+            tabWidgetPane.setTabName(bundleTypeLang.getName(bundleType));
+            HTMLPanel panel = new HTMLPanel("ul","");
+            panel.addStyleName("case-links");
+            tabWidgetPane.add(panel);
+            view.addTabWidgetPane(tabWidgetPane);
+            bundleTypeToPanel.put(bundleType, panel);
+
+            String bundleTypePrefix = getBundleTypePrefix(bundleType);
+            tabWidgetPane.setTabDebugId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LINKS_CONTAINER + bundleTypePrefix);
+            view.setTabNameDebugId(tabWidgetPane.getTabName(), DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.LINKS + bundleTypePrefix);
+        });
     }
 
     private void fillView(List<CaseLink> links) {
-        if (links.isEmpty() || !links.iterator().next().getCaseId().equals(caseId)) {
+        if (CollectionUtils.isEmpty(links) || !Objects.equals(links.iterator().next().getCaseId(), caseId)) {
             return;
         }
-        view.getLinksContainer().clear();
 
-        if (CollectionUtils.isEmpty(links)) {
-            return;
-        }
-        linksSet = CollectionUtils.setOf(links);
+        bundleTypeToCaseLink = links.stream().collect(Collectors.groupingBy(CaseLink::getBundleType));
+        bundleTypeToCaseLink.forEach((bundleType, caseLinks) -> {
+            caseLinks.forEach(caseLink -> makeCaseLinkViewAndAddToParent(caseLink, bundleTypeToPanel.get(bundleType)));
+            resetLinksContainerStateByLinksCount();
+        });
 
-        resetLinksContainerStateByLinksCount();
-        links.forEach(this::makeCaseLinkViewAndAddToParent);
         hideOrShowIfNoLinks();
+        view.selectFirstTab();
     }
 
     private void addYtLink( CaseLink caseLink ) {
@@ -192,67 +199,55 @@ public abstract class CaseLinkListActivity
     }
 
     private void createLinkAndAddToParent(CaseLink value) {
-        if (linksSet.contains(value)){
+        if (bundleTypeToCaseLink.containsValue(value)) {
             fireEvent(new NotifyEvents.Show(lang.errCaseLinkAlreadyAdded(), NotifyEvents.NotifyType.ERROR));
             return;
         }
         if (isCaseCreationMode()) {
-            fireEvent(new CaseLinkEvents.Added(show.caseId, value, pageId));
+            fireEvent(new CaseLinkEvents.Added(show.caseId, value, caseType));
             addLinkToParentAndModifyLinksCount(value);
             hideOrShowIfNoLinks();
+            view.selectTab(bundleTypeLang.getName(value.getBundleType()));
             return;
         }
 
-        if (lang.issues().equals(pageId)) {
-            controller.createLinkWithPublish(value, createCrossLinks, new FluentCallback<Long>()
-                    .withError(this::showErrorFromServer)
-                    .withSuccess(id -> {
-                        value.setId(id);
-                        addLinkToParentAndModifyLinksCount(value);
-                        hideOrShowIfNoLinks();
-                        fireEvent(new NotifyEvents.Show(lang.caseLinkSuccessfulCreated(), NotifyEvents.NotifyType.SUCCESS));
-                    }));
-        }
-        else {
-            controller.createLink(value, createCrossLinks, new FluentCallback<Long>()
-                    .withError(this::showErrorFromServer)
-                    .withSuccess(id -> {
-                        value.setId(id);
-                        addLinkToParentAndModifyLinksCount(value);
-                        hideOrShowIfNoLinks();
-                        fireEvent(new NotifyEvents.Show(lang.caseLinkSuccessfulCreated(), NotifyEvents.NotifyType.SUCCESS));
-                    }));
-        }
+        controller.createLinkWithPublish(value, caseType, new FluentCallback<CaseLink>()
+                .withSuccess(caseLink -> {
+                    value.setId(caseLink.getId());
+                    value.setCaseInfo(caseLink.getCaseInfo());
+                    addLinkToParentAndModifyLinksCount(value);
+                    hideOrShowIfNoLinks();
+                    view.selectTab(bundleTypeLang.getName(value.getBundleType()));
+                    fireEvent(new NotifyEvents.Show(lang.caseLinkSuccessfulCreated(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new CaseLinkEvents.Changed(value, caseType));
+                })
+        );
     }
 
-    private void makeCaseLinkViewAndAddToParent(CaseLink value) {
+    private void makeCaseLinkViewAndAddToParent(CaseLink value, HTMLPanel panel) {
         AbstractCaseLinkItemView itemWidget = itemViewProvider.get();
         itemWidget.setActivity(this);
         itemWidget.setEnabled(show.isEnabled);
         itemWidget.setModel(value);
 
         String linkId = null;
-        if ( Objects.equals(value.getType(), CRM) && value.getCaseInfo() != null) {
+        if (Objects.equals(value.getType(), CRM) && value.getCaseInfo() != null) {
             linkId = String.valueOf(value.getCaseInfo().getCaseNumber());
             itemWidget.setNumber(lang.crmPrefix() + linkId);
             itemWidget.setName(value.getCaseInfo().getName());
-            itemWidget.setState(En_CaseState.getById(value.getCaseInfo().getStateId()));
-        } else if ( Objects.equals(value.getType(), YT) && value.getYouTrackInfo() != null) {
+            itemWidget.setState(value.getCaseInfo().getState());
+        } else if (Objects.equals(value.getType(), YT) && value.getYouTrackInfo() != null) {
             linkId = value.getRemoteId();
             itemWidget.setNumber(linkId);
             itemWidget.setName(value.getYouTrackInfo().getSummary());
-            itemWidget.setState(value.getYouTrackInfo().getCaseState());
+            itemWidget.setState(value.getYouTrackInfo().getState());
         } else {
             itemWidget.setName(value.getRemoteId());
             itemWidget.setNumber(lang.errCaseLinkNotFound());
         }
 
         itemWidget.setHref(caseLinkProvider.getLink(value.getType(), linkId));
-        view.getLinksContainer().add(itemWidget.asWidget());
-    }
-
-    private void showErrorFromServer(Throwable throwable) {
-        defaultErrorHandler.accept(throwable);
+        panel.add(itemWidget.asWidget());
     }
 
     private void showError(String error) {
@@ -261,33 +256,42 @@ public abstract class CaseLinkListActivity
 
     private void removeLinkViewFromParentAndModifyLinksCount(AbstractCaseLinkItemView itemView) {
         itemView.asWidget().removeFromParent();
-        linksSet.remove(itemView.getModel());
+        CaseLink caseLink = itemView.getModel();
+        En_BundleType bundleType = caseLink.getBundleType();
+        bundleTypeToCaseLink.get(bundleType).remove(caseLink);
+        bundleTypeToPanel.get(bundleType).remove(itemView);
         resetLinksContainerStateByLinksCount();
     }
 
     private void addLinkToParentAndModifyLinksCount(CaseLink value) {
-        linksSet.add(value);
-        makeCaseLinkViewAndAddToParent(value);
+        bundleTypeToCaseLink.computeIfAbsent(value.getBundleType(), bundleType -> new ArrayList<>()).add(value);
+        makeCaseLinkViewAndAddToParent(value, bundleTypeToPanel.get(value.getBundleType()));
         resetLinksContainerStateByLinksCount();
     }
 
     private void resetLinksContainerStateByLinksCount() {
-        view.setLinksContainerVisible(linksSet.size() > 0);
-        view.setHeader(lang.linkedWith() + (linksSet.size() == 0 ? "" : " (" + linksSet.size() + ")"));
+        bundleTypeToCaseLink.forEach((bundleType, links) ->
+            view.setCountOfLinks(bundleTypeLang.getName(bundleType), String.valueOf(links.size())));
     }
+
     private boolean isCaseCreationMode() {
         return show.caseId == null;
     }
 
     private void hideOrShowIfNoLinks() {
-        boolean isEmpty = !view.getLinksContainer().iterator().hasNext();
-        view.getContainerVisibility().setVisible(!isEmpty);
+        boolean isPresent = bundleTypeToPanel.values().stream().anyMatch(panel -> panel.iterator().hasNext());
+        view.getContainerVisibility().setVisible(isPresent);
+        bundleTypeToPanel.forEach((bundleType, panel) -> {
+            view.tabVisibility(bundleTypeLang.getName(bundleType), panel.iterator().hasNext());
+        });
+    }
+
+    private String getBundleTypePrefix(En_BundleType bundleType) {
+        return "-" + bundleType.name().replace("_", "-").toLowerCase();
     }
 
     @Inject
     private Lang lang;
-    @Inject
-    private LocalStorageService storage;
     @Inject
     private CaseLinkControllerAsync controller;
     @Inject
@@ -297,12 +301,13 @@ public abstract class CaseLinkListActivity
     @Inject
     private CaseLinkProvider caseLinkProvider;
     @Inject
-    DefaultErrorHandler defaultErrorHandler;
+    Provider<TabWidgetPane> tabWidgetPaneProvider;
+    @Inject
+    En_BundleTypeLang bundleTypeLang;
 
-    private int linksCount = 0;
-    private Set<CaseLink> linksSet = new HashSet<>();
+    private En_CaseType caseType;
+    Map<En_BundleType, List<CaseLink>> bundleTypeToCaseLink = new HashMap<>();
+    Map<En_BundleType, HTMLPanel> bundleTypeToPanel = new HashMap<>();
     private CaseLinkEvents.Show show;
-    private String pageId;
     private Long caseId;
-    private boolean createCrossLinks;
 }

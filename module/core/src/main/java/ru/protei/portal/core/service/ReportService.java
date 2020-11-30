@@ -3,86 +3,45 @@ package ru.protei.portal.core.service;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dto.ReportDto;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.ReportQuery;
 import ru.protei.portal.core.model.struct.ReportContent;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.util.List;
 import java.util.Set;
 
-/**
- * Сервис управления отчетами
- */
 public interface ReportService {
 
-    /**
-     * Запрос создания отчета
-     *
-     * @param authToken токен авторизации
-     * @param report    информация об отчете
-     * @return идентификатор отчета
-     */
-    @Privileged({ En_Privilege.ISSUE_REPORT })
-    Result<Long> createReport( AuthToken authToken, Report report);
+    @Privileged(requireAny = { En_Privilege.ISSUE_REPORT, En_Privilege.CONTRACT_REPORT })
+    Result<Long> createReport(AuthToken authToken, ReportDto report);
 
-    /**
-     * Запрос повторного создания отчета, если он не создался
-     *
-     * @param authToken токен авторизации
-     * @param id        идентификатор отчета
-     * @return идентификатор отчета
-     */
-    @Privileged({ En_Privilege.ISSUE_REPORT })
-    Result recreateReport( AuthToken authToken, Long id);
+    @Privileged(requireAny = { En_Privilege.ISSUE_REPORT, En_Privilege.CONTRACT_REPORT })
+    Result<Long> recreateReport(AuthToken authToken, Long reportId);
 
-    /**
-     * Получение отчёта по идентификатору
-     *
-     * @param authToken токен авторизации
-     * @param id        идентификатор отчета
-     * @return отчёт
-     */
-    @Privileged({ En_Privilege.ISSUE_REPORT })
-    Result<Report> getReport( AuthToken authToken, Long id);
+    @Privileged(requireAny = { En_Privilege.ISSUE_REPORT, En_Privilege.CONTRACT_REPORT })
+    Result<ReportDto> getReport(AuthToken authToken, Long reportId);
 
-    /**
-     * Получение информации об отчетах по фильтру
-     *
-     * @param token
-     * @param query
-     * @return
-     */
-    @Privileged({ En_Privilege.ISSUE_REPORT })
-    Result<SearchResult<Report>> getReports( AuthToken token, ReportQuery query);
+    @Privileged(requireAny = { En_Privilege.ISSUE_REPORT, En_Privilege.CONTRACT_REPORT })
+    Result<SearchResult<ReportDto>> getReports(AuthToken token, ReportQuery query);
 
-    /**
-     * Получение файла отчета
-     *
-     * @param authToken токен авторизации
-     * @param id        идентификатор отчета
-     * @return файловый контент
-     */
-    @Privileged({ En_Privilege.ISSUE_REPORT })
-    Result<ReportContent> downloadReport( AuthToken authToken, Long id);
+    @Privileged(requireAny = { En_Privilege.ISSUE_REPORT, En_Privilege.CONTRACT_REPORT })
+    Result<ReportContent> downloadReport(AuthToken authToken, Long reportId);
 
-    /**
-     * Запрос на удаление отчётов по идентификаторам
-     *
-     * @param authToken токен авторизации
-     * @param include   набор идентификаторов отчётов, включаемых в удаление
-     * @param exclude   набор идентификаторов отчётов, исключаемых из удаления
-     */
-    @Privileged({ En_Privilege.ISSUE_REPORT })
-    Result removeReports( AuthToken authToken, Set<Long> include, Set<Long> exclude);
+    @Privileged(requireAny = { En_Privilege.ISSUE_REPORT, En_Privilege.CONTRACT_REPORT })
+    Result<List<Long>> removeReports(AuthToken authToken, Set<Long> includeIds, Set<Long> excludeIds);
 
-    /**
-     * Запрос на удаление отчётов по фильтру
-     *
-     * @param authToken токен авторизации
-     * @param query     фильтр для удаления
-     * @param exclude   набор идентификаторов отчётов, исключаемых из удаления
-     */
-    @Privileged({ En_Privilege.ISSUE_REPORT })
-    Result removeReports( AuthToken authToken, ReportQuery query, Set<Long> exclude);
+    @Privileged(requireAny = { En_Privilege.ISSUE_REPORT, En_Privilege.CONTRACT_REPORT })
+    Result<List<Long>> removeReports(AuthToken authToken, ReportQuery query, Set<Long> excludeIds);
+
+    @Privileged(requireAny = { En_Privilege.ISSUE_REPORT, En_Privilege.CONTRACT_REPORT })
+    Result<Long> cancelReport(AuthToken authToken, Long reportId);
+
+    Result<List<Long>> removeReports(List<Report> reports);
+
+    Result<ReportDto> convertReportToDto(Report report);
+
+    Result<String> getReportFilename(Long reportId, ReportDto reportDto);
 }

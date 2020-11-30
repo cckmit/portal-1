@@ -10,11 +10,15 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.ent.DecimalNumber;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.model.marker.HasProcessable;
+import ru.protei.portal.ui.common.client.widget.button.ButtonProcessable;
 import ru.protei.portal.ui.common.client.widget.decimalnumber.multiple.MultipleDecimalNumberInput;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.project.ProjectButtonSelector;
@@ -24,6 +28,7 @@ import ru.protei.portal.ui.equipment.client.activity.edit.AbstractEquipmentEditV
 import ru.protei.portal.ui.equipment.client.widget.type.EquipmentTypeBtnGroup;
 
 import java.util.List;
+import java.util.function.Function;
 
 
 /**
@@ -34,6 +39,8 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        nameErrorLabel().setText(lang.promptFieldLengthExceed(lang.equipmentNameBySpecification(), CrmConstants.EquipmentConstants.NAME_SIZE));
+        manager.setItemRenderer( value -> value == null ? lang.equipmentManagerNotDefined() : value.getDisplayShortName() );
     }
 
     @Override
@@ -125,6 +132,45 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
         return documents;
     }
 
+    @Override
+    public void setLinkedEquipmentFilter(Selector.SelectorFilter<EquipmentShortView> filter) {
+        linkedEquipment.setFilter(filter);
+    }
+
+    @Override
+    public void setVisibilitySettingsForCreated(boolean isVisible) {
+        if (!isVisible) {
+            projectBox.removeStyleName("col-md-4");
+            projectBox.addStyleName("col-md-8");
+        }
+        else {
+            projectBox.removeStyleName("col-md-8");
+            projectBox.addStyleName("col-md-4");
+        }
+        date.setVisible(isVisible);
+        dateTextBox.setEnabled(false);
+    }
+
+    @Override
+    public HasVisibility nameErrorLabelVisibility() {
+        return nameSpecificationErrorLabel;
+    }
+
+    @Override
+    public HasText nameErrorLabel() {
+        return nameSpecificationErrorLabel;
+    }
+
+    @Override
+    public void setNameSizeValidationFunction(Function<String, Boolean> validationFunction) {
+        nameSpecification.setValidationFunction(validationFunction);
+    }
+
+    @Override
+    public HasProcessable saveProcessable() {
+        return saveButton;
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -146,25 +192,9 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
         }
     }
 
-    @UiHandler( "numbers" )
-    public void onDecimalNumbersChanged(ValueChangeEvent<List<DecimalNumber>> event) {
-        if ( activity != null ) {
-            activity.onDecimalNumbersChanged();
-        }
-    }
-
-    @Override
-    public void setVisibilitySettingsForCreated(boolean isVisible) {
-        if (!isVisible) {
-            projectBox.removeStyleName("col-md-4");
-            projectBox.addStyleName("col-md-8");
-        }
-        else {
-            projectBox.removeStyleName("col-md-8");
-            projectBox.addStyleName("col-md-4");
-        }
-        date.setVisible(isVisible);
-        dateTextBox.setEnabled(false);
+    @UiHandler("project")
+    public void onProjectChanged(ValueChangeEvent<EntityOption> event) {
+        activity.onProjectChanged();
     }
 
     @Inject
@@ -172,7 +202,7 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     Lang lang;
 
     @UiField
-    Button saveButton;
+    ButtonProcessable saveButton;
 
     @UiField
     Button cancelButton;
@@ -180,6 +210,8 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     ValidableTextBox nameSldWrks;
     @UiField
     ValidableTextBox nameSpecification;
+    @UiField
+    Label nameSpecificationErrorLabel;
     @UiField
     TextArea comment;
     @Inject

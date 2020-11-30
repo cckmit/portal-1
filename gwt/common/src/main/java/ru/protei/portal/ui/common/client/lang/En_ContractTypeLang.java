@@ -14,7 +14,7 @@ public class En_ContractTypeLang {
             case EXPORT_OF_SERVICE_CONTRACT:
                 return lang.contractTypeExportOfServiceContract();
             case GOVERNMENT_CONTRACT:
-                return lang.contractTypeGovermentContract();
+                return lang.contractTypeGovernmentContract();
             case LEASE_CONTRACT:
                 return lang.contractTypeLeaseContract();
             case LICENSE_CONTRACT:
@@ -39,6 +39,10 @@ public class En_ContractTypeLang {
                 return lang.contractTypeSupplyFrameworkContract();
             case WORK_CONTRACT:
                 return lang.contractTypeWorkContract();
+            case HARDWARE_SOFTWARE_SERVICE:
+                return lang.contractTypeHardwareSoftwareService();
+            case REQUEST:
+                return lang.contractTypeRequest();
         }
         return lang.unknownField();
     }

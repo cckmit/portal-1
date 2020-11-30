@@ -6,12 +6,13 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
-import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
 import ru.protei.portal.ui.common.client.selector.LoadingHandler;
+import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.size;
@@ -28,8 +29,14 @@ public abstract class HomeCompanyModel implements Activity, AsyncSelectorModel<E
 
     @Override
     public EntityOption get( int elementIndex, LoadingHandler handler ) {
-        if(list==null)refreshOptions(reverseOrder, handler);
-        if (size( list ) <= elementIndex) return null;
+        if (list == null) {
+            refreshOptions(reverseOrder, handler, synchronizeWith1C);
+        }
+
+        if (size( list ) <= elementIndex) {
+            return null;
+        }
+
         return list.get( elementIndex );
     }
 
@@ -37,14 +44,22 @@ public abstract class HomeCompanyModel implements Activity, AsyncSelectorModel<E
         this.reverseOrder = reverseOrder;
     }
 
+    public void setSynchronizeWith1C( Boolean synchronizeWith1C ) {
+        this.synchronizeWith1C = synchronizeWith1C;
+    }
+
     public void clear(  ) {
         list = null;
     }
 
-    private void refreshOptions( boolean reverseOrder, LoadingHandler handler) {
+    public void refreshOptions() {
+       list = null;
+    }
+
+    private void refreshOptions( boolean reverseOrder, LoadingHandler handler, Boolean synchronizeWith1C) {
         handler.onLoadingStart();
         list = new ArrayList<>(  );
-        companyService.getCompanyOptionList(new CompanyQuery(true).onlyVisibleFields().reverseOrder(reverseOrder),
+        companyService.getCompanyOptionListIgnorePrivileges(new CompanyQuery(true, false).onlyVisibleFields().reverseOrder(reverseOrder).synchronizeWith1C(synchronizeWith1C),
                 new FluentCallback<List<EntityOption>>()
                         .withSuccess(companies -> {
                             list.clear();
@@ -58,4 +73,5 @@ public abstract class HomeCompanyModel implements Activity, AsyncSelectorModel<E
 
     private List< EntityOption > list;
     private boolean reverseOrder;
+    private Boolean synchronizeWith1C;
 }

@@ -1,5 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:tab="urn:import:ru.protei.portal.ui.common.client.widget.tab"
 >
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -13,11 +14,12 @@
 
                     <img ui:field="state" src="" class="preview-title-image-right"/>
 
-                    <small ui:field="type"/>
-
                     <div class="small hint-text pre-formatted-info">
-                        <g:InlineLabel ui:field="description" styleName="m-l--3"/>
+                        <span ui:field="description"/>
                     </div>
+
+                    <h5><ui:text from="{lang.contractContractor}"/></h5>
+                    <span ui:field="contractor"/>
 
                     <h5><ui:text from="{lang.contractCommonHeader}"/></h5>
 
@@ -45,6 +47,9 @@
                         <span ui:field="contractChild"/>
                     </div>
 
+                    <h5><ui:text from="{lang.tags}"/></h5>
+                    <g:HTMLPanel ui:field="tagsContainer" styleName="clearfix"/>
+
                     <h5><ui:text from="{lang.contractWorkGroup}"/></h5>
 
                     <div class="small">
@@ -53,8 +58,8 @@
                     </div>
 
                     <div class="small">
-                        <b><ui:text from="{lang.contractManager}: "/></b>
-                        <span ui:field="manager"/>
+                        <b><ui:text from="{lang.contractProject}: "/></b>
+                        <g:Anchor ui:field="project" href="#" target="_blank"/>
                     </div>
 
                     <div class="small">
@@ -63,18 +68,21 @@
                     </div>
 
                     <div class="small">
-                        <b><ui:text from="{lang.contractContragent}: "/></b>
-                        <span ui:field="contragent"/>
+                        <b><ui:text from="{lang.contractManager}: "/></b>
+                        <span ui:field="manager"/>
                     </div>
 
-                    <div class="small">
-                        <b><ui:text from="{lang.contractProject}: "/></b>
-                        <g:Anchor ui:field="project" href="#" target="_blank"/>
-                    </div>
+                    <tab:TabWidget styleName="">
+                        <tab:pane.TabWidgetPane tabName="{lang.contractDeliveryAndPaymentsPeriodHeader}">
+                            <g:HTMLPanel>
+                                <g:HTMLPanel ui:field="dates" styleName="small"/>
+                            </g:HTMLPanel>
+                        </tab:pane.TabWidgetPane>
 
-                    <h5><ui:text from="{lang.contractDeliveryAndPaymentsPeriodHeader}"/></h5>
-
-                    <label ui:field="dates"/>
+                        <tab:pane.TabWidgetPane tabName="{lang.contractSpecificationHeader}">
+                            <g:HTMLPanel ui:field="specifications" styleName="small"/>
+                        </tab:pane.TabWidgetPane>
+                    </tab:TabWidget>
 
                     <h5><ui:text from="{lang.comments}"/></h5>
 

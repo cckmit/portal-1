@@ -22,20 +22,17 @@ public interface CaseObjectDAO extends PortalBaseDAO<CaseObject> {
 
     Long insertCase (CaseObject object);
 
-    CaseObject getCase(En_CaseType caseType, long number);
-    Long getCaseId(En_CaseType caseType, long number);
-
-    Long getCaseIdByNumber( long number );
+    Long getCaseIdByNumber(En_CaseType caseType, long number);
 
     Long getCaseNumberById( long caseId);
 
-    CaseObject getCaseByCaseno(long caseno);
+    CaseObject getCaseByNumber(En_CaseType caseType, long caseNo);
 
     CaseObject getByExternalAppCaseId (String externalApplicationCaseId);
 
     Long getAndIncrementEmailLastId( Long caseId );
 
-    List<Long> getCaseNumbersByPlatformId(Long id);
+    List<Long> getCaseNumbersByPlatformId(Long platformId);
 
     CaseObject getByCaseNameLike(String name);
 
@@ -45,4 +42,8 @@ public interface CaseObjectDAO extends PortalBaseDAO<CaseObject> {
     int countByQuery(CaseQuery query);
 
     String getExternalAppName( Long caseId );
+
+    List<Long> getCaseIdToAutoOpen();
+
+    boolean isJiraDuplicateByClmId(String clmId);
 }

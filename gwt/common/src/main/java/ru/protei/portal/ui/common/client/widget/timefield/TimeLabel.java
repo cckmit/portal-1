@@ -28,5 +28,9 @@ public class TimeLabel extends Label implements HasTime {
         workTimeFormatter.setDisplayFomat(format);
     }
 
+    public void setFullDayTime(boolean isFullDayTime) {
+        workTimeFormatter.setFullDayTime(isFullDayTime);
+    }
+
     WorkTimeFormatter workTimeFormatter;
 }

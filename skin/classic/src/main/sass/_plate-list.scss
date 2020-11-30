@@ -51,6 +51,7 @@ ul.plate-list {
     -webkit-transition: opacity 0.35s;
     transition: opacity 0.35s;
     -webkit-font-smoothing: antialiased;
+    padding-left: 0;
 
     &.inactive {
       .header-block {
@@ -107,6 +108,7 @@ ul.plate-list {
 
     &.employee {
       height: auto;
+      margin: 15px;
       .header-block {
         height: auto;
 
@@ -263,6 +265,13 @@ ul.plate-list {
       z-index: 0;
       box-sizing: border-box;
     }
+
+    &.plate-list-entry-wallet {
+      height: auto;
+      padding: 0;
+      border: none;
+      background: transparent;
+    }
   }
 }
 
@@ -272,8 +281,4 @@ ul.plate-list {
   height: 135px;
   float: right;
   margin: 0 0 10px 5px;
-}
-
-.fired {
-  opacity: 0.5;
 }

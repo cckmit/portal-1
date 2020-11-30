@@ -75,7 +75,7 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
 
     @Override
     public void clearSelection() {
-        columnProvider.setSelectedValue(null);
+        columnProvider.removeSelection();
     }
 
     @Override
@@ -162,7 +162,7 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
         ClickColumn< Equipment > comment = new ClickColumn< Equipment >() {
             @Override
             protected void fillColumnHeader( Element element ) {
-                element.addClassName( "column-hidable" );
+                element.addClassName( "equipment-comment column-hidable" );
                 element.setInnerText( lang.equipmentComment() );
             }
 
@@ -235,7 +235,7 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
         ClickColumn< Equipment > project = new ClickColumn< Equipment >() {
             @Override
             protected void fillColumnHeader( Element element ) {
-                element.addClassName( "column-hidable" );
+                element.addClassName( "equipment-project column-hidable" );
                 element.setInnerText( lang.equipmentProject() );
             }
 

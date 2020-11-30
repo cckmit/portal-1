@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.DragAndDropElementsHandler;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
@@ -31,6 +32,11 @@ import java.util.Objects;
 
 public abstract class DashboardActivity implements AbstractDashboardActivity, Activity{
 
+    @Inject
+    public void onInit() {
+        dragAndDropElementsHandler.addDropConsumer(this::swapElements);
+    }
+
     @Event
     public void onInitDetails( AppEvents.InitDetails initDetails ) {
         this.initDetails = initDetails;
@@ -39,7 +45,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     @Event(Type.FILL_CONTENT)
     public void onShow(DashboardEvents.Show event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.DASHBOARD_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show(initDetails.parent));
+            fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
         showView();
@@ -74,6 +80,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     private void showView() {
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
+        view.showQuickview(false);
     }
 
     private void showActionBarActions() {
@@ -88,7 +95,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         hideLoader();
         hideError();
         hideEmpty();
-        view.container().clear();
+        view.clearContainers();
         view.loadingViewVisibility().setVisible(true);
     }
 
@@ -96,7 +103,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         hideLoader();
         hideError();
         hideEmpty();
-        view.container().clear();
+        view.clearContainers();
         view.failedViewVisibility().setVisible(true);
         view.setFailedViewText(text);
     }
@@ -105,7 +112,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         hideLoader();
         hideError();
         hideEmpty();
-        view.container().clear();
+        view.clearContainers();
         view.emptyViewVisibility().setVisible(true);
     }
 
@@ -147,6 +154,9 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
             showEmpty();
             return;
         }
+
+        view.clearContainers();
+
         for (int i = 0; i < dashboardList.size(); i++) {
             UserDashboard dashboard = dashboardList.get(i);
             if (dashboard.getCaseFilter() == null || dashboard.getCaseFilter().getParams() == null) {
@@ -154,25 +164,39 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
             }
             CaseFilter filter = dashboard.getCaseFilter();
             String name = dashboard.getName();
-            CaseQuery query = new CaseQuery(filter.getParams());
-            AbstractDashboardTableView table = createIssueTable(dashboard, i, name, query);
-            view.container().add(table.asWidget());
-            loadTable(table, query);
+            AbstractDashboardTableView table = createIssueTable(dashboard, i, name, filter);
+            dragAndDropElementsHandler.addDraggableElement(dashboard.getId(), table);
+            view.addTableToContainer(table.asWidget());
+            loadTable(table, new CaseQuery(filter.getParams()));
         }
     }
 
-    private AbstractDashboardTableView createIssueTable(UserDashboard dashboard, int order, String name, CaseQuery query) {
+    private void swapElements(Long src, Long dst) {
+        if (Objects.equals(src, dst)) {
+            return;
+        }
+
+        userLoginController.swapUserDashboards(src, dst, new FluentCallback<List<UserDashboard>>()
+                .withSuccess(this::showDashboard)
+        );
+    }
+
+    private AbstractDashboardTableView createIssueTable(UserDashboard dashboard, int order, String name, CaseFilter filter) {
         AbstractDashboardTableView table = tableProvider.get();
         table.setEnsureDebugId(DebugIds.DASHBOARD.TABLE + order);
         table.setName(name);
+        table.setCollapsed(dashboard.getCollapsed() == null ? false : dashboard.getCollapsed());
+        table.setChangeSelectionIfSelectedPredicate(caseShortView -> view.isQuickviewShow());
         table.setActivity(new AbstractDashboardTableActivity() {
             @Override
             public void onItemClicked(CaseShortView value) {
-                fireEvent(new IssueEvents.Edit(value.getCaseNumber()));
+                if (value != null) {
+                    showIssuePreview(value.getCaseNumber());
+                }
             }
             @Override
             public void onOpenClicked() {
-                fireEvent(new IssueEvents.Show(new CaseQuery(query), true));
+                fireEvent(new IssueEvents.Show(filter, false));
             }
             @Override
             public void onEditClicked() {
@@ -183,8 +207,13 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
                 removeTable(dashboard);
             }
             @Override
+            public void onCollapseClicked(boolean isCollapsed){
+                dashboard.setCollapsed(isCollapsed);
+                userLoginController.saveUserDashboard(dashboard, new FluentCallback<Long>());
+            }
+            @Override
             public void onReloadClicked() {
-                loadTable(table, query);
+                loadTable(table, filter.getParams());
             }
         });
         return table;
@@ -223,11 +252,17 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     }
 
     private Runnable removeAction(Long dashboardId) {
-        return () -> userLoginController.removeUserDashboard(dashboardId, new FluentCallback<Void>()
-                .withSuccess(v -> {
+        return () -> userLoginController.removeUserDashboard(dashboardId, new FluentCallback<Long>()
+                .withSuccess(result -> {
                     fireEvent(new NotifyEvents.Show(lang.dashboardTableRemoved(), NotifyEvents.NotifyType.SUCCESS));
                     loadDashboard();
                 }));
+    }
+
+    private void showIssuePreview(Long caseNumber) {
+        view.showQuickview(false);
+        fireEvent(new IssueEvents.ShowPreview(view.quickview(), caseNumber));
+        view.showQuickview(true);
     }
 
     @Inject
@@ -244,7 +279,10 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     Provider<AbstractDashboardTableView> tableProvider;
     @Inject
     PolicyService policyService;
+    @Inject
+    private DragAndDropElementsHandler<Long> dragAndDropElementsHandler;
 
     private AppEvents.InitDetails initDetails;
+
     private final static int TABLE_LIMIT = 50;
 }

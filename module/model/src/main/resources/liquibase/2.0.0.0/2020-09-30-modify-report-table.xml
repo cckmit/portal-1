@@ -1,0 +1,18 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-system_id-column-to-report-table" author="turik">
+        <addColumn tableName="report">
+            <column name="system_id" type="VARCHAR(32)" defaultValue="INTERNAL">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="drop-default-value-system_id-in-report-table" author="turik">
+        <dropDefaultValue tableName="report" columnName="system_id" columnDataType="VARCHAR(32)"/>
+    </changeSet>
+</databaseChangeLog>

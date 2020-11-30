@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.contact.client.activity.edit;
 
+import com.google.gwt.i18n.client.TimeZone;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -22,6 +23,8 @@ public interface AbstractContactEditView extends IsWidget {
     HasText shortName();
 
     HasValue<Date> birthDay ();
+
+    void setBirthDayTimeZone(TimeZone timeZone);
 
     HasText workPhone ();
 
@@ -97,14 +100,6 @@ public interface AbstractContactEditView extends IsWidget {
 
     HasVisibility shortNameErrorLabelVisibility();
 
-    HasText firstNameErrorLabel();
-
-    HasText secondNameErrorLabel();
-
-    HasText lastNameErrorLabel();
-
-    HasText shortNameErrorLabel();
-
     String firstNameLabel();
 
     String secondNameLabel();
@@ -118,8 +113,6 @@ public interface AbstractContactEditView extends IsWidget {
     String workEmailLabel();
 
     String loginLabel();
-
-    HasText loginErrorLabel();
 
     HasEnabled saveEnabled();
 

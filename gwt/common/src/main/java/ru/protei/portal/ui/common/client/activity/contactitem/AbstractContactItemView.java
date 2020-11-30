@@ -15,7 +15,6 @@ public interface AbstractContactItemView extends IsWidget {
     void setActivity(AbstractContactItemActivity activity);
 
     HasText value();
-    HasText comment();
     HasValue<En_ContactItemType> type();
     HasVisibility typeVisibility();
     void fillTypeOptions(List<En_ContactItemType> options);

@@ -4,10 +4,8 @@ import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.ent.DocumentType;
-import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.util.documentvalidators.DocumentDecimalNumberValidator;
-
-import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 
 public class DocumentUtils {
 

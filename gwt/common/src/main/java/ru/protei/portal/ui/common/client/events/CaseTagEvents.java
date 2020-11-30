@@ -1,40 +1,69 @@
 package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.UIObject;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseTag;
+import ru.protei.portal.ui.common.client.activity.casetag.taglist.AbstractCaseTagListActivity;
+
+import java.util.List;
+import java.util.function.Consumer;
 
 public class CaseTagEvents {
 
-    public static class Show {
-        public Show() {}
+    public static class ShowList {
+        public ShowList() {}
 
-        public Show( HasWidgets parent, En_CaseType caseType, boolean isEditTagEnabled ) {
-            this(parent, caseType, isEditTagEnabled, null, false);
-        }
-
-        public Show( HasWidgets parent, En_CaseType caseType, boolean isEditTagEnabled, Long caseId, boolean isReadOnly ) {
+        public ShowList(HasWidgets parent, En_CaseType caseType, Long caseId, boolean isReadOnly, Consumer<AbstractCaseTagListActivity> tagListActivityConsumer) {
             this.parent = parent;
             this.caseType = caseType;
-            this.isEditTagEnabled = isEditTagEnabled;
             this.caseId = caseId;
+            this.caseTags = null;
             this.isReadOnly = isReadOnly;
+            this.tagListActivityConsumer = tagListActivityConsumer;
+        }
+
+        public ShowList(HasWidgets parent, En_CaseType caseType, List<CaseTag> caseTags, boolean isReadOnly, Consumer<AbstractCaseTagListActivity> tagListActivityConsumer) {
+            this.parent = parent;
+            this.caseType = caseType;
+            this.caseId = null;
+            this.caseTags = caseTags;
+            this.isReadOnly = isReadOnly;
+            this.tagListActivityConsumer = tagListActivityConsumer;
         }
 
         public HasWidgets parent;
-        public Long caseId;
         public En_CaseType caseType;
+        public Long caseId;
+        public List<CaseTag> caseTags;
         public boolean isReadOnly = false;
-        public boolean isEditTagEnabled = false;
+        public Consumer<AbstractCaseTagListActivity> tagListActivityConsumer;
     }
 
-    public static class Edit {
-        public Edit(CaseTag caseTag) {
+    public static class ShowSelector {
+        public ShowSelector() {}
+
+        public ShowSelector(UIObject relative, En_CaseType caseType, boolean isEditTagEnabled, AbstractCaseTagListActivity tagListActivity) {
+            this.relative = relative;
+            this.caseType = caseType;
+            this.isEditTagEnabled = isEditTagEnabled;
+            this.tagListActivity = tagListActivity;
+        }
+
+        public UIObject relative;
+        public En_CaseType caseType;
+        public boolean isEditTagEnabled = false;
+        public AbstractCaseTagListActivity tagListActivity;
+    }
+
+    public static class ShowEdit {
+        public ShowEdit(CaseTag caseTag, En_CaseType caseType) {
             this.caseTag = caseTag;
+            this.caseType = caseType;
         }
 
         public CaseTag caseTag;
+        public En_CaseType caseType;
     }
 
     public static class Created {
@@ -79,14 +108,5 @@ public class CaseTagEvents {
 
         public Long caseId;
         public CaseTag tag;
-    }
-
-    public static class ShowTagSelector {
-        public ShowTagSelector() {}
-        public ShowTagSelector(IsWidget target) {
-            this.target = target;
-        }
-
-        public IsWidget target;
     }
 }

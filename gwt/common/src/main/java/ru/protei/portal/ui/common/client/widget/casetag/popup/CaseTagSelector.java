@@ -11,7 +11,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -19,19 +18,18 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.popup.BasePopupView;
-import ru.protei.portal.ui.common.client.service.CaseTagControllerAsync;
 import ru.protei.portal.ui.common.client.widget.casetag.item.CaseTagSelectorItem;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
-import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.List;
 import java.util.Objects;
+
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 
 public class CaseTagSelector extends BasePopupView implements HasValueChangeHandlers<CaseTag>, HasAddHandlers, HasEditHandlers {
 
@@ -63,17 +61,14 @@ public class CaseTagSelector extends BasePopupView implements HasValueChangeHand
         return root;
     }
 
-    public void init(En_CaseType caseType) {
+    public void setCaseType(En_CaseType caseType) {
+        this.caseType = caseType;
+    }
+
+    public void setTags(List<CaseTag> tags) {
         resetSearchFilter();
-        CaseTagQuery query = new CaseTagQuery();
-        query.setCaseType(caseType);
-        // TODO: убрать запрос из вью!
-        caseTagController.getTags(query, new FluentCallback<List<CaseTag>>()
-                .withSuccess(tags -> {
-                    caseTags = tags;
-                    displayTags();
-                })
-        );
+        caseTags = tags;
+        displayTags();
     }
 
     @UiHandler("search")
@@ -90,9 +85,9 @@ public class CaseTagSelector extends BasePopupView implements HasValueChangeHand
 
     public void setAddTagsEnabled(boolean enabled) {
         if (enabled) {
-            addButton.getElement().removeClassName("hide");
+            addButton.getElement().removeClassName(HIDE);
         } else {
-            addButton.getElement().addClassName("hide");
+            addButton.getElement().addClassName(HIDE);
         }
     }
 
@@ -124,6 +119,7 @@ public class CaseTagSelector extends BasePopupView implements HasValueChangeHand
 
     private void addTagToListView(CaseTag caseTag) {
         CaseTagSelectorItem caseTagSelectorItem = caseTagViewProvider.get();
+        caseTagSelectorItem.setCaseType(caseType);
         caseTagSelectorItem.setValue(caseTag);
         caseTagSelectorItem.editIconVisibility().setVisible(enabled);
         caseTagSelectorItem.tagEditable(Objects.equals(policyService.getProfile().getId(), caseTag.getPersonId()));
@@ -154,8 +150,6 @@ public class CaseTagSelector extends BasePopupView implements HasValueChangeHand
     }
 
     @Inject
-    CaseTagControllerAsync caseTagController;
-    @Inject
     Provider<CaseTagSelectorItem> caseTagViewProvider;
 
     @Inject
@@ -175,6 +169,7 @@ public class CaseTagSelector extends BasePopupView implements HasValueChangeHand
 
     private String searchNameFilter = "";
     private List<CaseTag> caseTags;
+    private En_CaseType caseType;
     private boolean enabled;
 
     interface CaseTagSelectorPopupUiBinder extends UiBinder<HTMLPanel, CaseTagSelector> {}

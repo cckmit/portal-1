@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.ent.WorkerEntry;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.query.WorkerEntryQuery;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -48,8 +49,23 @@ public class WorkerEntryDAO_Impl extends PortalBaseJdbcDAO<WorkerEntry> implemen
     }
 
     @Override
+    public WorkerEntry getByPersonId(Long personId) {
+        return getByCondition("worker_entry.personId = ?", personId);
+    }
+
+    @Override
     public List< WorkerEntry > getWorkers(WorkerEntryQuery query) {
         return listByQuery(query);
+    }
+
+    @Override
+    public List<WorkerEntry> getWorkersByDepartment(Long depId) {
+        return getListByCondition("worker_entry.dep_id = ?", depId);
+    }
+
+    @Override
+    public Long getDepIdForWorker(Long workerId) {
+        return partialGetByCondition("worker_entry.id = ?", Collections.singletonList(workerId), "id", "dep_id").getDepartmentId();
     }
 
     @SqlConditionBuilder

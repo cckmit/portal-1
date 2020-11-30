@@ -40,6 +40,7 @@ public class SelectorItem
 
     public void setName( String name ) {
         text.setInnerText( name );
+        setTitle(name);
     }
 
     public void setStyle( String style ) {
@@ -53,6 +54,10 @@ public class SelectorItem
     public void setImage( String src ) {
         image.removeClassName( "hide" );
         image.setSrc( src );
+    }
+
+    public void setTitle(String title) {
+        root.setTitle(title);
     }
 
     @UiHandler( "anchor" )

@@ -16,6 +16,7 @@
 <@set name="_position" value="${position}"/>
 <@set name="_state" value="${state}"/>
 <@set name="_employment_date" value="${employment_date}"/>
+<@set name="_curators" value="${curators}"/>
 <@set name="_created" value="${created}"/>
 <@set name="_workplace" value="${workplace}"/>
 <@set name="_equipment_list" value="${equipment_list}"/>
@@ -38,6 +39,7 @@
 <@set name="_employee_resource_crm" value="${employee_resource_crm}"/>
 <@set name="_employee_resource_store_delivery" value="${employee_resource_store_delivery}"/>
 <@set name="_employee_resource_email" value="${employee_resource_email}"/>
+<@set name="_employee_resource_vpn" value="${employee_resource_vpn}"/>
 
 <@set name="_phone_type_text" value="${phone_type_text}"/>
 <@set name="_phone_type_international" value="${phone_type_international}"/>
@@ -49,6 +51,12 @@
 <@set name="_additional_soft" value="${additional_soft}"/>
 
 <#noparse>
+<#macro changeTo old, new>
+    <span style="color:#bd1313;text-decoration:line-through;">${old}</span>
+    <span style="margin:0 5px;">&rarr;</span>
+    <span style="color:#11731d;background:#dff7e2;padding:2px 4px">${new}</span>
+</#macro>
+
 <html>
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
@@ -66,7 +74,7 @@
                 ${_employee_full_name}
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                ${(er.employeeFullName)!''}
+                ${(employeeFullName)!''}
             </td>
         </tr>
         <tr>
@@ -74,7 +82,7 @@
                 ${_head_of_department}
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                ${(er.headOfDepartmentShortName)!''}
+                ${(headOfDepartmentShortName)!''}
             </td>
         </tr>
         <tr>
@@ -82,7 +90,7 @@
                 ${_employment_type}
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                <#switch (er.employmentType.name())!>
+                <#switch (employmentType)!>
                     <#case "FULL_TIME">
                         ${_employment_type_full_time}
                         <#break>
@@ -103,7 +111,7 @@
                 ${_with_registration}
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                <#if er.withRegistration>
+                <#if withRegistration>
                     ${_yes}
                 <#else>
                     ${_no}
@@ -115,7 +123,7 @@
                 ${_position}
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                ${(er.position)!''}
+                ${(position)!''}
             </td>
         </tr>
         <tr>
@@ -123,7 +131,7 @@
                 ${_state}
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                ${(er.state.getName())!}
+                ${(state)!}
             </td>
         </tr>
         <tr>
@@ -131,7 +139,42 @@
                 ${_employment_date}
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                ${(er.employmentDate?date)!}
+                <#if employmentDateChanged>
+                    <@changeTo
+                    old="${(oldEmploymentDate??)?then(oldEmploymentDate?date, '?')}"
+                    new="${(newEmploymentDate??)?then(newEmploymentDate?date, '?')}"
+                    />
+                <#else>
+                    ${(newEmploymentDate??)?then(newEmploymentDate?date, '?')}
+                </#if>
+            </td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
+                ${_curators}
+            </td>
+            <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
+                <#if curatorsDiff.getSameEntries()??>
+                    <#list curatorsDiff.getSameEntries() as same>
+                        <span style="display:inline-block;padding:1px 4px 1px 0px;white-space:nowrap;text-decoration:none">
+                                ${TransliterationUtils.transliterate(same.displayName, lang)}
+                            </span>
+                    </#list>
+                </#if>
+                <#if curatorsDiff.getAddedEntries()??>
+                    <#list curatorsDiff.getAddedEntries() as added>
+                        <span style="display:inline-block;padding:1px 5px;white-space:nowrap;text-decoration:none;color:#11731d;background:#dff7e2;">
+                                ${TransliterationUtils.transliterate(added.displayName, lang)}
+                            </span>
+                    </#list>
+                </#if>
+                <#if curatorsDiff.getRemovedEntries()??>
+                    <#list curatorsDiff.getRemovedEntries() as removed>
+                        <span style="display:inline-block;padding:1px 5px;white-space:nowrap;text-decoration:line-through;color:#bd1313;">
+                                ${TransliterationUtils.transliterate(removed.displayName, lang)}
+                            </span>
+                    </#list>
+                </#if>
             </td>
         </tr>
         <tr>
@@ -139,22 +182,22 @@
                 ${_created}
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                ${(er.created)!}
+                ${(created)!}
             </td>
         </tr>
         <tr>
             <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
                 ${_workplace}
             </td>
-            <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;white-space:pre-wrap;">${(er.workplace)!}</td>
+            <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;white-space:pre-wrap;">${(workplace)!}</td>
         </tr>
         <tr>
             <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
                 ${_equipment_list}
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;white-space:pre-wrap;"><#rt>
-                <#if (er.equipmentList)??><#rt>
-                    <#list er.equipmentList as eq><#rt>
+                <#if (equipmentList)??><#rt>
+                    <#list equipmentList as eq><#rt>
                         <#switch (eq.name())!''>
                             <#case "TABLE">${_employee_equipment_table}<#break>
                             <#case "CHAIR">${_employee_equipment_chair}<#break>
@@ -167,27 +210,27 @@
             </td>
         </tr>
 
-    <#if (er.operatingSystem)??><#rt>
-        <tr>
-            <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">${_operating_system}</td>
-            <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;white-space:pre-wrap;">${(er.operatingSystem)!}</td>
-        </tr>
-    </#if><#rt>
+        <#if (operatingSystem)??><#rt>
+            <tr>
+                <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">${_operating_system}</td>
+                <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;white-space:pre-wrap;">${(operatingSystem)!}</td>
+            </tr>
+        </#if><#rt>
 
-    <#if (er.additionalSoft)??><#rt>
-        <tr>
-            <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">${_additional_soft}</td>
-            <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;white-space:pre-wrap;">${(er.additionalSoft)!}</td>
-        </tr>
-    </#if><#rt>
+        <#if (additionalSoft)??><#rt>
+            <tr>
+                <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">${_additional_soft}</td>
+                <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;white-space:pre-wrap;">${(additionalSoft)!}</td>
+            </tr>
+        </#if><#rt>
 
         <tr>
             <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
                 ${_resources_list}
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;white-space:pre-wrap;"><#rt>
-                <#if (er.resourceList)??><#rt>
-                    <#list er.resourceList as eq><#rt>
+                <#if (resourceList)??><#rt>
+                    <#list resourceList as eq><#rt>
                         <#switch (eq.name())!''>
                             <#case "YOUTRACK">${_employee_resource_youtrack}<#break>
                             <#case "CVS">${_employee_resource_cvs}<#break>
@@ -197,26 +240,27 @@
                             <#case "CRM">${_employee_resource_crm}<#break>
                             <#case "STORE_DELIVERY">${_employee_resource_store_delivery}<#break>
                             <#case "EMAIL">${_employee_resource_email}<#break>
+                            <#case "VPN">${_employee_resource_vpn}<#break>
                         </#switch><#sep>, </#sep><#rt>
                     </#list><#rt>
                 </#if><#rt>
             </td>
         </tr>
 
-    <#if (er.resourceComment)??><#rt>
-        <tr>
-            <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">${_additional_resource}</td>
-            <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;white-space:pre-wrap;">${(er.resourceComment)!}</td>
-        </tr>
-    </#if><#rt>
+        <#if (resourceComment)??><#rt>
+            <tr>
+                <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">${_additional_resource}</td>
+                <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;white-space:pre-wrap;">${(resourceComment)!}</td>
+            </tr>
+        </#if><#rt>
 
         <tr>
             <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
                 ${_phone_type_text}
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;white-space:pre-wrap;"><#rt>
-                <#if (er.phoneOfficeTypeList)??><#rt>
-                    <#list er.phoneOfficeTypeList as eq><#rt>
+                <#if (phoneOfficeTypeList)??><#rt>
+                    <#list phoneOfficeTypeList as eq><#rt>
                         <#switch (eq.name())!''>
                             <#case "LONG_DISTANCE">${_phone_type_long_distance}<#break>
                             <#case "INTERNATIONAL">${_phone_type_international}<#break>
@@ -230,7 +274,7 @@
             <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
                 ${_description}
             </td>
-            <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;white-space:pre-wrap;">${(er.comment)!''}</td>
+            <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;white-space:pre-wrap;">${(comment)!''}</td>
         </tr>
         </tbody>
     </table>

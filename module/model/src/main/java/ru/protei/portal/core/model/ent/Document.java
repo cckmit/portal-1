@@ -4,6 +4,7 @@ import ru.protei.portal.core.model.dict.En_DocumentExecutionType;
 import ru.protei.portal.core.model.dict.En_DocumentState;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -59,13 +60,13 @@ public class Document extends AuditableObject {
      * Ответственный за регистрацию
      */
     @JdbcJoinedObject(localColumn = "registrar_id")
-    private Person registrar;
+    private PersonShortView registrar;
 
     /**
      * Исполнитель
      */
     @JdbcJoinedObject(localColumn = "contractor_id")
-    private Person contractor;
+    private PersonShortView contractor;
 
     @JdbcColumn(name = "project_id")
     private Long projectId;
@@ -114,7 +115,7 @@ public class Document extends AuditableObject {
      * Утвердил
      */
     @JdbcJoinedObject(localColumn = "approved_by_id")
-    private Person approvedBy;
+    private PersonShortView approvedBy;
 
     /**
      * Дата создания
@@ -127,7 +128,7 @@ public class Document extends AuditableObject {
     private En_DocumentExecutionType executionType;
 
     @JdbcManyToMany(linkTable = "document_member", localLinkColumn = "document_id", remoteLinkColumn = "person_id")
-    private List<Person> members;
+    private List<PersonShortView> members;
 
 
     public Document(){}
@@ -244,19 +245,19 @@ public class Document extends AuditableObject {
         this.version = version;
     }
 
-    public Person getRegistrar() {
+    public PersonShortView getRegistrar() {
         return registrar;
     }
 
-    public void setRegistrar(Person registrar) {
+    public void setRegistrar(PersonShortView registrar) {
         this.registrar = registrar;
     }
 
-    public Person getContractor() {
+    public PersonShortView getContractor() {
         return contractor;
     }
 
-    public void setContractor(Person contractor) {
+    public void setContractor(PersonShortView contractor) {
         this.contractor = contractor;
     }
 
@@ -268,11 +269,11 @@ public class Document extends AuditableObject {
         isApproved = approved;
     }
 
-    public Person getApprovedBy() {
+    public PersonShortView getApprovedBy() {
         return approvedBy;
     }
 
-    public void setApprovedBy(Person approvedBy) {
+    public void setApprovedBy(PersonShortView approvedBy) {
         this.approvedBy = approvedBy;
     }
 
@@ -300,11 +301,11 @@ public class Document extends AuditableObject {
         return state;
     }
 
-    public List<Person> getMembers() {
+    public List<PersonShortView> getMembers() {
         return members;
     }
 
-    public void setMembers(List<Person> members) {
+    public void setMembers(List<PersonShortView> members) {
         this.members = members;
     }
 

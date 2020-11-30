@@ -1,7 +1,13 @@
 package ru.protei.portal.ui.contract.client.activity.preview;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
@@ -9,9 +15,9 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.ContractDate;
-import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.ent.ContractSpecification;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.En_ContractDatesTypeLang;
@@ -20,12 +26,16 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.contract.client.widget.contractspecification.previewitem.ContractSpecificationPreviewItem;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.HelperFunc.isNotEmpty;
+import static ru.protei.portal.ui.common.shared.util.HtmlUtils.sanitizeHtml;
 
 public abstract class ContractPreviewActivity implements AbstractContractPreviewActivity, Activity {
 
@@ -53,7 +63,7 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
     @Event
     public void onShow(ContractEvents.ShowFullScreen event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.CONTRACT_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
@@ -73,7 +83,7 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
 
     @Override
     public void onGoToContractsClicked() {
-        fireEvent(new ContractEvents.Show());
+        fireEvent(new ContractEvents.Show(true));
     }
 
     private void loadDetails(Long id) {
@@ -95,40 +105,53 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
     }
 
     private void fillView( Contract value ) {
-        view.setHeader(lang.contractNum(value.getNumber()));
-        String stateImage = null;
-        if ( value.getState() != null ) {
-            stateImage = "./images/contract_" + value.getState().name().toLowerCase() + ".png";
-        }
-        view.setState( stateImage );
-
-        view.setType(typeLang.getName(value.getContractType()));
+        view.setHeader(sanitizeHtml(typeLang.getName(value.getContractType()) + " " + value.getNumber()));
+        view.setState(value.getState() != null
+                ? "./images/contract_" + value.getState().name().toLowerCase() + ".png"
+                : null);
         view.setDateSigning(formatDate(value.getDateSigning()));
         view.setDateValid(formatDate(value.getDateValid()));
-        view.setDescription(StringUtils.emptyIfNull(value.getDescription()));
-        view.setContragent(value.getProjectId() == null ? StringUtils.emptyIfNull(value.getCaseContragentName()) : StringUtils.emptyIfNull(value.getContragentName()));
-        view.setOrganization(StringUtils.emptyIfNull(value.getOrganizationName()));
-        view.setManager(value.getProjectId() == null ? StringUtils.emptyIfNull(value.getCaseManagerShortName()) : StringUtils.emptyIfNull(value.getManagerShortName()));
-        view.setCurator(StringUtils.emptyIfNull(value.getCuratorShortName()));
-        view.setDirection(value.getProjectId() == null ? StringUtils.emptyIfNull(value.getCaseDirectionName()) : StringUtils.emptyIfNull(value.getDirectionName()));
-        view.setDates(getAllDatesAsString(value.getContractDates()));
+        view.setDescription(sanitizeHtml(value.getDescription()));
+        view.setContractor(value.getContractor() == null ? "" : sanitizeHtml(value.getContractor().getName()));
+        view.setOrganization(sanitizeHtml(value.getOrganizationName()));
+        view.setManager(value.getProjectId() == null ? sanitizeHtml(value.getCaseManagerShortName()) : sanitizeHtml(value.getManagerShortName()));
+        view.setCurator(sanitizeHtml(value.getCuratorShortName()));
+        view.setDirection(value.getProjectId() == null ? sanitizeHtml(value.getCaseDirectionName()) : sanitizeHtml(value.getDirectionName()));
+        view.setDates(getAllDatesAsWidget(value.getContractDates()));
+        view.setSpecifications(getAllSpecificationsAsWidgets(value.getContractSpecifications()));
         view.setParentContract(value.getParentContractNumber() == null ? "" : lang.contractNum(value.getParentContractNumber()));
-        view.setChildContracts(CollectionUtils.stream(value.getChildContracts())
-                .map(contract -> lang.contractNum(contract.getNumber()))
+        view.setChildContracts(stream(value.getChildContracts())
+                .map(contract -> sanitizeHtml(typeLang.getName(contract.getContractType()) + " " + contract.getNumber()))
                 .collect(Collectors.joining(", ")));
-        view.setProject(StringUtils.emptyIfNull(value.getProjectName()), LinkUtils.makeLink(Project.class, value.getProjectId()));
+        view.setProject(StringUtils.emptyIfNull(value.getProjectName()), LinkUtils.makePreviewLink(Project.class, value.getProjectId()));
 
-        fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
-                .withCaseType(En_CaseType.CONTRACT)
-                .withCaseId(value.getId())
-                .withModifyEnabled(true));
+        fireEvent(new CaseTagEvents.ShowList(view.getTagsContainer(), En_CaseType.CONTRACT, contractId, true, a -> {}));
+        fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer(), value.getId(), En_CaseType.CONTRACT, true, value.getCreatorId()));
     }
 
-    private String getAllDatesAsString(List<ContractDate> dates) {
-        if ( dates == null ) return "";
+    private List<Widget> getAllDatesAsWidget(List<ContractDate> dates) {
+        if ( dates == null ) return null;
         return dates.stream()
-                .map(p -> datesTypeLang.getName(p.getType()) + " – " + formatDate(p.getDate()) + (isNotEmpty(p.getComment()) ? " (" + p.getComment() + ")" : ""))
-                .collect(Collectors.joining(", "));
+                .map(p -> {
+                    HTMLPanel root = new HTMLPanel("span", "");
+                    Element b = DOM.createElement("b");
+                    b.setInnerText( datesTypeLang.getName(p.getType()));
+                    root.getElement().appendChild(b);
+                    root.add(new InlineLabel(" - " + formatDate(p.getDate()) + (isNotEmpty(p.getComment()) ? " (" + p.getComment() + ")" : "")));
+                    return root;
+                })
+                .collect(Collectors.toList());
+    }
+
+    private List<ContractSpecificationPreviewItem> getAllSpecificationsAsWidgets(List<ContractSpecification> specifications) {
+        if (specifications == null) return new ArrayList<>();
+        return specifications.stream()
+                .map(spec -> {
+                    ContractSpecificationPreviewItem item = contractSpecificationPreviewItemProvider.get();
+                    item.setValue(spec);
+                    return item;
+                })
+                .collect(Collectors.toList());
     }
 
     private String formatDate(Date date) {
@@ -148,6 +171,9 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
     private ContractControllerAsync contractController;
     @Inject
     private PolicyService policyService;
+
+    @Inject
+    private Provider<ContractSpecificationPreviewItem> contractSpecificationPreviewItemProvider;
 
     private Long contractId;
 

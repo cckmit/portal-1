@@ -1,19 +1,22 @@
 package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.WorkerEntry;
 import ru.protei.portal.core.model.query.EmployeeQuery;
+import ru.protei.portal.core.model.struct.EmployeesBirthdays;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.util.Date;
 import java.util.List;
 
 /**
  * Сервис управления сотрудниками
  */
 public interface EmployeeControllerAsync {
-
-    void getEmployee(Long emploeeId, AsyncCallback<PersonShortView> async);
 
     /**
      * Получение списка сотрудников
@@ -28,6 +31,8 @@ public interface EmployeeControllerAsync {
      */
     void getEmployeeViewList(EmployeeQuery query, AsyncCallback<List<PersonShortView>> callback);
 
+    void getEmployee(Long employeeId, AsyncCallback<EmployeeShortView> async);
+
     /**
      * Получение руководителя подразделения
      * @param departmentId айди подразделения
@@ -35,5 +40,23 @@ public interface EmployeeControllerAsync {
      */
     void getDepartmentHead(Long departmentId, AsyncCallback<PersonShortView> async);
 
-    void getEmployeeShortView(Long employeeId, AsyncCallback<EmployeeShortView> async);
+    void getWorkerEntryList(int offset, int limit, AsyncCallback<List<WorkerEntryShortView>> async);
+
+    void createEmployeePerson(Person person, AsyncCallback<Person> async);
+
+    void createEmployeeWorker(WorkerEntry workerEntry, AsyncCallback<WorkerEntry> async);
+
+    void updateEmployeeWorker(WorkerEntry workerEntry, AsyncCallback<Boolean> async);
+
+    void updateEmployeeWorkers(List<WorkerEntry> workerEntryList, AsyncCallback<Boolean> async);
+
+    void getEmployeeWithChangedHiddenCompanyNames(Long employeeId, AsyncCallback<EmployeeShortView> async);
+
+    void getEmployeesWithChangedHiddenCompanyNames(EmployeeQuery query, AsyncCallback<SearchResult<EmployeeShortView>> async);
+
+    void fireEmployee(Person person, AsyncCallback<Boolean> async);
+
+    void updateEmployeePerson(Person person, boolean needToChangeAccount, AsyncCallback<Boolean> async);
+
+    void getEmployeesBirthdays(Date dateFrom, Date dateUntil, AsyncCallback<EmployeesBirthdays> async);
 }

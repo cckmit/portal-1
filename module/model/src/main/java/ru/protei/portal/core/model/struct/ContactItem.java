@@ -5,36 +5,41 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
+import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 
-/**
- * Created by michael on 07.11.16.
- */
 @JsonAutoDetect
+@JdbcEntity(table = "contact_item")
 public class ContactItem implements Serializable {
 
-    @JsonProperty("v")
-    private String value;
-
-    @JsonProperty("c")
-    private String comment;
-
-    @JsonProperty("a")
-    private En_ContactDataAccess accessType;
+    @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
+    private Long id;
 
     @JsonProperty("t")
+    @JdbcColumn(name = "item_type")
+    @JdbcEnumerated(EnumType.ID)
     private En_ContactItemType itemType;
 
-    public ContactItem (String value, String comment, En_ContactItemType type) {
-        this.value = value;
-        this.comment = comment;
-        this.itemType = type;
-    }
+    @JsonProperty("a")
+    @JdbcColumn(name = "access_type")
+    @JdbcEnumerated(EnumType.ID)
+    private En_ContactDataAccess accessType;
 
-    public ContactItem () {
-        this.accessType = En_ContactDataAccess.PUBLIC;
-        this.itemType = En_ContactItemType.UNDEFINED;
+    @JsonProperty("v")
+    @JdbcColumn(name = "value")
+    private String value;
+
+    @Deprecated
+    @JsonProperty("c")
+    // not db column (legacy field from json)
+    private String comment;
+
+    public ContactItem() {}
+
+    public ContactItem (String value, En_ContactItemType type) {
+        this.value = value;
+        this.itemType = type;
     }
 
     public ContactItem (En_ContactItemType type) {
@@ -47,11 +52,9 @@ public class ContactItem implements Serializable {
     }
 
 
-    /*
-     *
-     *   readers
-     *
-     */
+    public Long id() {
+        return this.id;
+    }
 
     public String value () {
         return this.value;
@@ -61,29 +64,12 @@ public class ContactItem implements Serializable {
         return itemType;
     }
 
-    public String comment() {
-        return comment;
-    }
-
     public En_ContactDataAccess accessType () {
         return this.accessType;
     }
 
-
-    /*
-     *
-     *   writers
-     *
-     */
-
-    public ContactItem modify (String value) {
+    public ContactItem modify ( String value) {
         this.value = value;
-        return this;
-    }
-
-    public ContactItem modify (String value, String comment) {
-        this.value = value;
-        this.comment = comment;
         return this;
     }
 
@@ -97,17 +83,6 @@ public class ContactItem implements Serializable {
         return this;
     }
 
-    public ContactItem toggleAccessType () {
-        this.accessType = (this.accessType == En_ContactDataAccess.PRIVATE ? En_ContactDataAccess.PUBLIC : En_ContactDataAccess.PRIVATE);
-        return this;
-    }
-
-
-    /*
-     *
-     *   predicates
-     *
-     */
 
     @JsonIgnore
     public boolean isItemOf (En_ContactItemType type) {
@@ -120,13 +95,8 @@ public class ContactItem implements Serializable {
     }
 
     @JsonIgnore
-    public boolean isEmptyComment () {
-        return this.comment == null || this.comment.trim().isEmpty();
-    }
-
-    @JsonIgnore
     public boolean isEmpty () {
-        return isEmptyValue() && isEmptyComment();
+        return isEmptyValue();
     }
 
     @JsonIgnore

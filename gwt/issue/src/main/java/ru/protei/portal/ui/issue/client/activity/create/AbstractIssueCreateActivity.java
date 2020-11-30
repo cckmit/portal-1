@@ -1,11 +1,12 @@
 package ru.protei.portal.ui.issue.client.activity.create;
 
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.protei.portal.core.model.ent.Attachment;
 
 import java.util.function.Consumer;
 
-public interface AbstractIssueCreateActivity {
+public interface AbstractIssueCreateActivity extends Activity {
     void onSaveClicked();
 
     void onCancelClicked();
@@ -21,4 +22,6 @@ public interface AbstractIssueCreateActivity {
     void renderMarkupText(String text, Consumer<String> consumer);
 
     void onDisplayPreviewChanged(String description, boolean isDisplay);
+
+    void onFavoriteStateChanged();
 }

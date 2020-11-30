@@ -16,19 +16,11 @@ public class ProductQuery extends BaseQuery {
     private En_DevUnitState state;
     private Set<En_DevUnitType> types;
     private Long directionId;
+    private Set<Long> platformIds;
 
     public ProductQuery() {
         sortField = En_SortField.prod_name;
         sortDir = En_SortDir.ASC;
-    }
-
-    public ProductQuery(String searchString, En_SortField sortField, En_SortDir sortDir) {
-        super(searchString, sortField, sortDir);
-    }
-
-    public ProductQuery(En_DevUnitState state, String searchString, En_SortField sortField, En_SortDir sortDir) {
-        super(searchString, sortField, sortDir);
-        this.state = state;
     }
 
     public En_DevUnitState getState() {
@@ -55,21 +47,26 @@ public class ProductQuery extends BaseQuery {
         this.directionId = productDirectionId;
     }
 
-    public void addType(En_DevUnitType type) {
-        if (this.types == null) {
-            this.types = new HashSet<>();
-        }
-        this.types.add(type);
+    public Set<Long> getPlatformIds() {
+        return platformIds;
     }
 
-    public void addTypes(Set<En_DevUnitType> types) {
-        if (this.types == null) {
-            this.types = new HashSet<>();
-        }
-
-        if (types != null) {
-            this.types.addAll(types);
-        }
+    public void setPlatformIds(Set<Long> platformIds) {
+        this.platformIds = platformIds;
     }
 
+    @Override
+    public String toString() {
+        return "ProductQuery{" +
+                "state=" + state +
+                ", types=" + types +
+                ", directionId=" + directionId +
+                ", platformIds=" + platformIds +
+                ", searchString='" + searchString + '\'' +
+                ", sortField=" + sortField +
+                ", sortDir=" + sortDir +
+                ", limit=" + limit +
+                ", offset=" + offset +
+                '}';
+    }
 }

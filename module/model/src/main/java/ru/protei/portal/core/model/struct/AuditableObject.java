@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
 
 import java.io.Serializable;
@@ -21,7 +22,7 @@ import java.io.Serializable;
         @JsonSubTypes.Type(value = Person.class, name = "Person"),
         @JsonSubTypes.Type(value = Equipment.class, name = "Equipment"),
         @JsonSubTypes.Type(value = DevUnit.class, name = "DevUnit"),
-        @JsonSubTypes.Type(value = Project.class, name = "Project"),
+        @JsonSubTypes.Type(value = Project.class, name = Project.AUDIT_TYPE),
         @JsonSubTypes.Type(value = UserRole.class, name = "UserRole"),
         @JsonSubTypes.Type(value = CompanyDepartment.class, name = "Department"),
         @JsonSubTypes.Type(value = WorkerPosition.class, name = "Position"),
@@ -39,7 +40,16 @@ import java.io.Serializable;
         @JsonSubTypes.Type(value = DocumentType.class, name = DocumentType.AUDIT_TYPE),
         @JsonSubTypes.Type(value = Platform.class, name = Platform.AUDIT_TYPE),
         @JsonSubTypes.Type(value = Server.class, name = Server.AUDIT_TYPE),
-        @JsonSubTypes.Type(value = Application.class, name = Application.AUDIT_TYPE)
+        @JsonSubTypes.Type(value = Application.class, name = Application.AUDIT_TYPE),
+        @JsonSubTypes.Type(value = RoomReservation.class, name = RoomReservation.AUDIT_TYPE),
+        @JsonSubTypes.Type(value = EmployeeRegistrationShortView.class, name = EmployeeRegistrationShortView.AUDIT_TYPE),
+        @JsonSubTypes.Type(value = ReservedIpRequest.class, name = ReservedIpRequest.AUDIT_TYPE),
+        @JsonSubTypes.Type(value = ReservedIp.class, name = ReservedIp.AUDIT_TYPE),
+        @JsonSubTypes.Type(value = Subnet.class, name = Subnet.AUDIT_TYPE),
+        @JsonSubTypes.Type(value = Plan.class, name = Plan.AUDIT_TYPE),
+        @JsonSubTypes.Type(value = PersonAbsence.class, name = PersonAbsence.AUDIT_TYPE),
+        @JsonSubTypes.Type(value = PersonSubscriptionChangeRequest.class, name = PersonSubscriptionChangeRequest.AUDIT_TYPE),
+        @JsonSubTypes.Type(value = DutyLog.class, name = DutyLog.AUDIT_TYPE)
 })
 public abstract class AuditableObject implements Serializable {
 

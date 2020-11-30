@@ -4,12 +4,16 @@
              xmlns:productselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.product'
              xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
              xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
-             xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
+             xmlns:range='urn:import:ru.protei.portal.ui.common.client.widget.typedrangepicker'
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
              xmlns:threestate='urn:import:ru.protei.portal.ui.common.client.widget.threestate'
              xmlns:casetag="urn:import:ru.protei.portal.ui.common.client.widget.selector.casetag"
              xmlns:issuestate="urn:import:ru.protei.portal.ui.common.client.widget.issuestate"
-             xmlns:issueimportance="urn:import:ru.protei.portal.ui.common.client.widget.issueimportance">
+             xmlns:plan="urn:import:ru.protei.portal.ui.common.client.widget.selector.plan.selector"
+             xmlns:issueimportance="urn:import:ru.protei.portal.ui.common.client.widget.issueimportance"
+             xmlns:timeelapsedtypeselector="urn:import:ru.protei.portal.ui.common.client.view.selector"
+             xmlns:worktrigger="urn:import:ru.protei.portal.ui.common.client.widget.selector.worktrigger"
+>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -26,14 +30,12 @@
         </div>
 
         <div class="row">
-            <div class="form-group col-md-4 resize-md-12">
-                <label ui:field="labelCreated"><ui:text from="{lang.created}"/></label>
-                <range:RangePicker ui:field="dateCreatedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
-            </div>
-            <div ui:field="modifiedRangeContainer" class="form-group col-md-4 resize-md-12">
-                <label ui:field="labelUpdated"><ui:text from="{lang.updated}"/></label>
-                <range:RangePicker ui:field="dateModifiedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
-            </div>
+            <range:TypedSelectorRangePicker ui:field="dateCreatedRange" formatValue="dd.MM.yyyy HH:mm"
+                                            addStyleNames="form-group col-md-4 resize-md-12"/>
+
+            <range:TypedSelectorRangePicker ui:field="dateModifiedRange" formatValue="dd.MM.yyyy HH:mm"
+                                            addStyleNames="form-group col-md-4 resize-md-12"/>
+
             <div ui:field="sortByContainer" class="form-group col-md-4 resize-md-12">
                 <label ui:field="labelSortBy"><ui:text from="{lang.sortBy}"/></label>
                 <div class="control-group">
@@ -46,11 +48,12 @@
         <div class="row">
             <person:PersonMultiSelector ui:field="creators"
                                         header="{lang.issueCreator}"
-                                        addStyleNames="form-group col-md-4 resize-md-12"/>
+                                        addStyleNames="form-group col-md-4 resize-md-12 3"/>
 
             <productselector:devunit.DevUnitMultiSelector ui:field="products"
                                                           header="{lang.issueProduct}"
-                                                          addStyleNames="form-group col-md-4 resize-md-12"/>
+                                                          addStyleNames="form-group col-md-4 resize-md-12"
+                                                          hasNullValue="true"/>
 
             <companyselector:CompanyMultiSelector ui:field="companies"
                                                   header="{lang.issueCompany}"
@@ -58,37 +61,72 @@
 
             <person:PersonMultiSelector ui:field="initiators"
                                         header="{lang.issueInitiator}"
-                                        addStyleNames="form-group col-md-4 resize-md-12"/>
+                                        selectCompanyMessage="{lang.initiatorSelectACompany}"
+                                        addStyleNames="form-group col-md-4 resize-md-12 1"/>
 
-            <person:EmployeeMultiSelector ui:field="managers"
-                                          header="{lang.issueManager}"
-                                          addStyleNames="form-group col-md-4 resize-md-12"
-                                          firedEmployeesVisible="true"/>
+            <companyselector:CompanyMultiSelector ui:field="managerCompanies"
+                                                  header="{lang.issueManagerCompany}"
+                                                  addStyleNames="form-group col-md-4 resize-md-12"/>
+
+            <person:PersonMultiSelector ui:field="managers"
+                                        header="{lang.issueManager}"
+                                        selectCompanyMessage="{lang.managerSelectACompany}"
+                                        addStyleNames="form-group col-md-4 resize-md-12 2"
+                                        hasNullValue="true"/>
 
             <person:EmployeeMultiSelector ui:field="commentAuthors"
                                           header="{lang.reportTypeCaseTimeElapsedWorkAutor}"
                                           addStyleNames="form-group col-md-4 resize-md-12"/>
+
+            <timeelapsedtypeselector:ElapsedTimeTypeMultiSelector ui:field="timeElapsedTypes"
+                                                                  header="{lang.timeElapsedType}"
+                                                                  addStyleNames="form-group col-md-4 resize-md-12"/>
 
             <casetag:CaseTagMultiSelector ui:field="tags"
                                           caseType="CRM_SUPPORT"
                                           header="{lang.tags}"
                                           addStyleNames="form-group col-md-4 resize-md-12"/>
 
+            <div class="form-group col-md-4 resize-md-12">
+                <plan:PlanButtonSelector ui:field="plan"
+                                         defaultValue="{lang.selectPlan}"
+                                         hasNullValue="true"
+                                         header="{lang.plan}"/>
+            </div>
+
+            <worktrigger:WorkTriggerButtonMultiSelector ui:field="workTriggers"
+                                                        header="{lang.issueWorkTrigger}"
+                                                        addStyleNames="form-group col-md-4 resize-md-12"
+                                                        searchEnabled="false"
+
+            />
+        </div>
+        <div class="row">
             <g:HTMLPanel ui:field="searchPrivateContainer" styleName="form-group col-md-4 resize-md-12">
                 <label ui:field="labelSearchPrivate"><ui:text from="{lang.searchPrivate}"/></label>
                 <threestate:ThreeStateButton ui:field="searchPrivate"/>
             </g:HTMLPanel>
-        </div>
 
-        <div class="row">
-            <div ui:field="importanceContainer" class="form-group col-md-4 resize-md-12">
-                <label ui:field="labelIssueImportance"><ui:text from="{lang.issueImportance}"/></label><br/>
-                <issueimportance:ImportanceBtnGroupMulti ui:field="importance" styleName="btn-group btn-group-justified justify-content-between importance-btn-group"/>
-            </div>
+            <g:HTMLPanel ui:field="searchFavoriteContainer" styleName="form-group col-md-4 resize-md-12">
+                <label><ui:text from="{lang.issueFavorites}"/></label>
+                <threestate:ThreeStateButton ui:field="searchFavorite"/>
+            </g:HTMLPanel>
+
+            <g:HTMLPanel ui:field="overdueDeadlinesContainer" styleName="form-group col-md-4 resize-md-12">
+                <label><ui:text from="{lang.overdueDeadlines}"/></label>
+                <threestate:ThreeStateButton ui:field="overdueDeadlines"/>
+            </g:HTMLPanel>
 
             <div ui:field="stateContainer" class="form-group col-md-8 resize-md-12">
                 <label ui:field="labelIssueState"><ui:text from="{lang.issueState}"/></label>
                 <issuestate:IssueStatesOptionList ui:field="state"/>
+            </div>
+        </div>
+
+        <div class="row">
+            <div ui:field="importanceContainer" class="form-group col-md-4 resize-md-8">
+                <label ui:field="labelIssueImportance"><ui:text from="{lang.issueImportance}"/></label><br/>
+                <issueimportance:ImportanceBtnGroupMulti ui:field="importance" styleName="btn-group btn-group-justified justify-content-between importance-btn-group"/>
             </div>
         </div>
 

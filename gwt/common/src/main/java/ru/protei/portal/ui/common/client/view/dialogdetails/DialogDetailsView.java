@@ -15,6 +15,8 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.animation.DialogAnimation;
+import ru.protei.portal.ui.common.client.model.marker.HasProcessable;
+import ru.protei.portal.ui.common.client.widget.button.ButtonProcessable;
 
 /**
  * Вид для карточки
@@ -64,6 +66,31 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
         return save;
     }
 
+    @Override
+    public HasVisibility cancelButtonVisibility() {
+        return cancel;
+    }
+
+    @Override
+    public HasProcessable saveButtonProcessable() {
+        return save;
+    }
+
+    @Override
+    public HasEnabled removeButtonEnabled() {
+        return remove;
+    }
+
+    @Override
+    public HasEnabled saveButtonEnabled() {
+        return save;
+    }
+
+    @Override
+    public HasEnabled cancelButtonEnabled() {
+        return cancel;
+    }
+
     public DialogAnimation getDialogAnimation() {
         return dialogAnimation;
     }
@@ -76,6 +103,36 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
     @Override
     public void addStyleName(String value) {
         this.modalDialog.addClassName(value);
+    }
+
+    @Override
+    public void setSaveOnEnterClick(boolean isSaveOnEnterClick) {
+        this.isSaveOnEnterClick = isSaveOnEnterClick;
+    }
+
+    @Override
+    public void setSaveButtonName( String name ) {
+        save.setText( name );
+    }
+
+    @Override
+    public void setCancelVisible( boolean isCancelVisible ) {
+        cancel.setVisible( isCancelVisible );
+    }
+
+    @Override
+    public void setCloseVisible( boolean isCloseVisible ) {
+        close.setVisible( isCloseVisible );
+    }
+
+    @Override
+    public void setAdditionalVisible(boolean isAdditionalVisible) {
+        additional.setVisible(isAdditionalVisible);
+    }
+
+    @Override
+    public void setAdditionalButtonName(String name) {
+        additional.setText(name);
     }
 
     @UiHandler( "save" )
@@ -96,14 +153,22 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
         fireRemoveClicked();
     }
 
+    @UiHandler( "additional" )
+    public void onAdditionalClicked( ClickEvent event ) {
+        event.preventDefault();
+        fireAdditionalClicked();
+    }
+
     @Override
     protected void onPreviewNativeEvent( Event.NativePreviewEvent event ) {
         super.onPreviewNativeEvent( event );
 
         if ( event.getTypeInt() == Event.ONKEYDOWN ) {
-            if ( event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ESCAPE ) {
+            boolean isEscapeClicked = event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ESCAPE;
+            boolean isEnterClicked = event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER;
+            if (isEscapeClicked) {
                 fireCancelClicked();
-            } else if ( event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER ) {
+            } else if (isEnterClicked && isSaveOnEnterClick) {
                 fireSaveClicked();
             }
         }
@@ -116,6 +181,7 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
         cancel.ensureDebugId(DebugIds.DIALOG_DETAILS.CANCEL_BUTTON);
         remove.ensureDebugId(DebugIds.DIALOG_DETAILS.REMOVE_BUTTON);
         close.ensureDebugId(DebugIds.DIALOG_DETAILS.CLOSE_BUTTON);
+        additional.ensureDebugId(DebugIds.DIALOG_DETAILS.ADDITIONAL_BUTTON);
     }
 
     private void fireCancelClicked() {
@@ -136,14 +202,22 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
         }
     }
 
+    private void fireAdditionalClicked() {
+        if ( activity != null ) {
+            activity.onAdditionalClicked();
+        }
+    }
+
     @UiField
     HTMLPanel bodyContainer;
     @UiField
-    Anchor save;
+    ButtonProcessable save;
     @UiField
-    Anchor cancel;
+    Button cancel;
     @UiField
-    Anchor remove;
+    Button remove;
+    @UiField
+    Button additional;
     @UiField
     HeadingElement header;
     @UiField
@@ -155,6 +229,7 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
 
     private DialogAnimation dialogAnimation;
     private boolean isSaveEnabled;
+    private boolean isSaveOnEnterClick = true;
 
     interface DetailsViewUiBinder extends UiBinder<HTMLPanel, DialogDetailsView> {}
     private static DetailsViewUiBinder ourUiBinder = GWT.create( DetailsViewUiBinder.class );

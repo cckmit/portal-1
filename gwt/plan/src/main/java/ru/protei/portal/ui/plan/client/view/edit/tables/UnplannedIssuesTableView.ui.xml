@@ -1,0 +1,30 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:issuefilterselector='urn:import:ru.protei.portal.ui.common.client.widget.issuefilterselector'
+             xmlns:validatefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
+             xmlns:table='urn:import:ru.brainworm.factory.widget.table.client'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel styleName="planned-issue-wrapper p-t-10">
+        <div>
+
+            <div class="row">
+                <div class="form-group col-md-8 p-l-30">
+                    <label class="inline"><ui:text from="{lang.planUnplannedTableFilter}"/></label>
+                    <issuefilterselector:IssueFilterSelector ui:field="filter" defaultValue="{lang.planUnplannedTableFilterDefault}"/>
+                </div>
+                <div class="form-group col-md-4 p-r-30">
+                    <label><ui:text from="{lang.planIssueNumber}"/></label>
+                    <validatefield:ValidableTextBox ui:field="issueNumber" styleName="form-control" notNull="false"/>
+                </div>
+            </div>
+            <div class="row">
+                <g:Label styleName="form-group col-md-12 p-l-30 m-0 inline half-opacity plan-limit-label" ui:field="limitLabel"/>
+            </div>
+        </div>
+        <div class="auto-overflow">
+            <table:TableWidget ui:field="table" styleName="table table-hover planned-issue-table"/>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

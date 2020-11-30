@@ -1,103 +1,94 @@
 package ru.protei.portal.core.model.dict;
 
 import ru.protei.portal.core.model.dict.lang.ContactItemLang;
+import ru.protei.winter.core.utils.enums.HasId;
 
 import java.io.Serializable;
 
-/**
- * Created by michael on 08.11.16.
- */
-public enum En_ContactItemType implements Serializable {
-    /**
-     * используется для заполнения в default-конструкторе, в UI не используется
-     */
-    UNDEFINED {
-        @Override
-        public String getMessage(ContactItemLang lang) {
-            return "-";
-        }
-    },
+public enum En_ContactItemType implements HasId, Serializable {
 
-    EMAIL{
-        @Override
+    EMAIL(1) {
         public String getMessage(ContactItemLang lang) {
             return lang.contactEmail();
         }
     },
-    /**
-     * адрес
-     */
-    ADDRESS{
-        @Override
+
+    ADDRESS(2) {
         public String getMessage(ContactItemLang lang) {
             return lang.contactActualAddress();
         }
     },
-    /**
-     * De-Jure == LEGAL
-     */
-    ADDRESS_LEGAL{
-        @Override
+
+    ADDRESS_LEGAL(3) {
         public String getMessage(ContactItemLang lang) {
             return lang.contactLegalAddress();
         }
     },
 
-    FAX{
-        @Override
+    FAX(4) {
         public String getMessage(ContactItemLang lang) {
             return lang.contactFax();
         }
     },
-    MOBILE_PHONE{
-        @Override
+
+    MOBILE_PHONE(5) {
         public String getMessage(ContactItemLang lang) {
             return lang.contactMobilePhone();
         }
     },
-    GENERAL_PHONE{
-        @Override
+
+    GENERAL_PHONE(6) {
         public String getMessage(ContactItemLang lang) {
             return lang.contactWorkPhone();
         }
     },
 
-    ICQ{
-        @Override
-        public String getMessage(ContactItemLang lang) {
-            return lang.contactIcq();
-        }
-    },
-    JABBER{
-        @Override
-        public String getMessage(ContactItemLang lang) {
-            return lang.contactJabber();
-        }
-    },
-    SKYPE{
-        @Override
-        public String getMessage(ContactItemLang lang) {
-            return lang.contactSkype();
-        }
-    },
-
-    WEB_SITE{
-        @Override
+    WEB_SITE(7) {
         public String getMessage(ContactItemLang lang) {
             return lang.contactWebSite();
         }
     },
 
-    SOCIAL_NET{
-        @Override
+
+    @Deprecated
+    UNDEFINED(0) {
+        public String getMessage(ContactItemLang lang) {
+            return "-";
+        }
+    },
+    @Deprecated
+    ICQ(-1) {
+        public String getMessage(ContactItemLang lang) {
+            return lang.contactIcq();
+        }
+    },
+    @Deprecated
+    JABBER(-2) {
+        public String getMessage(ContactItemLang lang) {
+            return lang.contactJabber();
+        }
+    },
+    @Deprecated
+    SKYPE(-3) {
+        public String getMessage(ContactItemLang lang) {
+            return lang.contactSkype();
+        }
+    },
+    @Deprecated
+    SOCIAL_NET(-4) {
         public String getMessage(ContactItemLang lang) {
             return lang.contactSocialNet();
         }
-    };
+    },
+    ;
 
 
-    En_ContactItemType() {}
-
+    En_ContactItemType(int id) {
+        this.id = id;
+    }
+    private final int id;
+    public int getId() {
+        return id;
+    }
     public abstract String getMessage(ContactItemLang lang);
-
 }

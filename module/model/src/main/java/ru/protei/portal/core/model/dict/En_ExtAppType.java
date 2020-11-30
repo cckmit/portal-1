@@ -4,7 +4,6 @@ import java.util.Objects;
 
 public enum En_ExtAppType {
     REDMINE("redmine"),
-    HPSM("hpsm"),
     JIRA("jira"),
     ;
 

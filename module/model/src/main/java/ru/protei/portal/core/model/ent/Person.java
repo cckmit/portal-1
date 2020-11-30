@@ -4,18 +4,18 @@ import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.ContactInfo;
+import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.core.model.view.PersonShortViewSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
-/**
- * Created by michael on 30.03.16.
- */
 @JdbcEntity(table = "person")
-public class Person extends AuditableObject implements PersonShortViewSupport {
+public class Person extends AuditableObject {
+
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
@@ -46,10 +46,10 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
     @JdbcColumn(name="secondname")
     private String secondName;
 
-    @JdbcColumn(name="displayname")
+    @JdbcColumn(name=Columns.DISPLAY_NAME)
     private String displayName;
 
-    @JdbcColumn(name="displayShortName")
+    @JdbcColumn(name=Columns.DISPLAY_SHORT_NAME)
     private String displayShortName;
 
     /**
@@ -64,23 +64,20 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
     @JdbcColumn(name="ipaddress")
     private String ipAddress;
 
-    @JdbcColumn(name="passportinfo")
-    private String passportInfo;
-
     @JdbcColumn(name="info")
     private String info;
 
     @JdbcColumn(name="isdeleted")
     private boolean isDeleted;
 
-    @JdbcColumn(name = "isfired")
+    @JdbcColumn(name = Columns.IS_FIRED)
     private boolean isFired;
 
     @JdbcColumn(name = "firedate")
     private Date fireDate;
 
-    @JdbcColumn(name = "contactInfo", converterType = ConverterType.JSON)
-    private ContactInfo contactInfo;
+    @JdbcManyToMany(linkTable = "contact_item_person", localLinkColumn = "person_id", remoteLinkColumn = "contact_item_id")
+    private List<ContactItem> contactItems;
 
     @JdbcColumn(name = "old_id")
     private Long oldId;
@@ -119,7 +116,6 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
     }
 
     public Person () {
-        this.contactInfo = new ContactInfo();
     }
 
     public Long getId() {
@@ -230,20 +226,19 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
     }
 
 
+    public List<ContactItem> getContactItems() {
+        return contactItems;
+    }
+
     public ContactInfo getContactInfo() {
-        return contactInfo;
+        if (contactItems == null) {
+            contactItems = new ArrayList<>();
+        }
+        return new ContactInfo(contactItems);
     }
 
     public void setContactInfo(ContactInfo contactInfo) {
-        this.contactInfo = contactInfo;
-    }
-
-    public String getPassportInfo() {
-        return passportInfo;
-    }
-
-    public void setPassportInfo(String passportInfo) {
-        this.passportInfo = passportInfo;
+        this.contactItems = contactInfo != null ? contactInfo.getItems() : null;
     }
 
     public String getInfo() {
@@ -318,16 +313,6 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
     }
 
     @Override
-    public PersonShortView toShortNameShortView() {
-        return new PersonShortView(this.displayShortName, this.getId(), this.isFired);
-    }
-
-    @Override
-    public PersonShortView toFullNameShortView() {
-        return new PersonShortView(this.displayName, this.getId(), this.isFired);
-    }
-
-    @Override
     public int hashCode() {
         return Objects.hash( id );
     }
@@ -357,15 +342,14 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
     }
 
     public void resetPrivacyInfo() {
-        passportInfo = null;
         department = null;
         position = null;
         info = null;
         ipAddress = null;
 
-        if (contactInfo != null) {
-            contactInfo.getItems().removeIf( (info)-> !info.isItemOf(En_ContactItemType.EMAIL) );
-        };
+        if (contactItems != null) {
+            contactItems.removeIf((info) -> !info.isItemOf(En_ContactItemType.EMAIL));
+        }
     }
 
     @Override
@@ -389,10 +373,22 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
                 ", info='" + info + '\'' +
                 ", isDeleted=" + isDeleted +
                 ", isFired=" + isFired +
-                ", contactInfo=" + contactInfo +
+                ", fireDate=" + fireDate +
+                ", contactItems=" + contactItems +
                 ", oldId=" + oldId +
                 ", relations='" + relations + '\'' +
                 ", locale='" + locale + '\'' +
                 '}';
+    }
+
+    public interface Fields {
+        String CONTACT_ITEMS = "contactItems";
+    }
+
+    public interface Columns {
+        String CONTACT_ITEMS = "contactItems";
+        String DISPLAY_SHORT_NAME = "displayShortName";
+        String DISPLAY_NAME = "displayname";
+        String IS_FIRED = "isfired";
     }
 }

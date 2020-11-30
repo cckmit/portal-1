@@ -7,6 +7,7 @@ public enum En_Currency implements HasId {
     RUB(1, "RUB"),
     USD(2, "USD"),
     EUR(3, "EUR"),
+    CONVENTIONAL_UNIT(4, "у.е."),
     ;
 
     En_Currency(int id, String code) {

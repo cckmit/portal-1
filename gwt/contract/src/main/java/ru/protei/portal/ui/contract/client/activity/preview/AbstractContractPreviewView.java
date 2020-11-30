@@ -3,15 +3,19 @@ package ru.protei.portal.ui.contract.client.activity.preview;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Widget;
+import ru.protei.portal.ui.contract.client.widget.contractspecification.previewitem.ContractSpecificationPreviewItem;
+
+import java.util.List;
 
 public interface AbstractContractPreviewView extends IsWidget {
     void setActivity(AbstractContractPreviewActivity activity);
 
     HasWidgets getCommentsContainer();
 
-    void setHeader(String value);
+    HasWidgets getTagsContainer();
 
-    void setType(String value);
+    void setHeader(String value);
 
     void setState(String value);
 
@@ -23,13 +27,15 @@ public interface AbstractContractPreviewView extends IsWidget {
 
     void setDirection(String value);
 
-    void setContragent(String value);
+    void setContractor(String value);
 
     void setCurator(String value);
 
     void setManager(String value);
 
-    void setDates(String value);
+    void setDates(List<Widget> value);
+
+    void setSpecifications(List<ContractSpecificationPreviewItem> value);
 
     void setOrganization(String value);
 

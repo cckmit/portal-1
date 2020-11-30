@@ -7,20 +7,23 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dao.CaseCommentTimeElapsedSumDAO;
 import ru.protei.portal.core.model.dao.CaseShortViewDAO;
+import ru.protei.portal.core.model.dao.ReportDAO;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.CaseCommentTimeElapsedSum;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.report.ReportWriter;
-import ru.protei.portal.core.utils.TimeFormatter;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.text.DateFormat;
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.toSet;
 
 public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
 
@@ -34,11 +37,14 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
     CaseShortViewDAO caseShortViewDAO;
     @Autowired
     CaseCommentTimeElapsedSumDAO caseCommentTimeElapsedSumDAO;
+    @Autowired
+    ReportDAO reportDAO;
 
     @Override
-    public boolean writeReport(OutputStream buffer, Report report, DateFormat dateFormat, TimeFormatter timeFormatter) throws IOException {
-
-        CaseQuery caseQuery = report.getCaseQuery();
+    public boolean writeReport(OutputStream buffer,
+                               Report report,
+                               CaseQuery caseQuery,
+                               Predicate<Long> isCancel) throws IOException {
         if (caseQuery == null) {
             log.debug("writeReport : reportId={} has invalid queries: caseQuery={}, aborting task",
                     report.getId(), caseQuery);
@@ -46,8 +52,6 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
         }
 
         Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
-        ReportWriter<CaseCommentTimeElapsedSum> writer = new ExcelReportWriter(localizedLang, dateFormat, timeFormatter);
-
         caseQuery.useSort(En_SortField.author_id, En_SortDir.DESC);
 
         final Processor processor = new Processor();
@@ -55,8 +59,14 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
         int offset = 0;
 
         log.info( "writeReport(): Start report {}", report );
-        try {
+        try (ReportWriter<CaseCommentTimeElapsedSum> writer =
+                     new ExcelReportWriter(localizedLang, makeTimeElapsedTypes(caseQuery.getTimeElapsedTypeIds()))) {
+
             while (true) {
+                if (isCancel.test(report.getId())) {
+                    log.info( "writeReport(): Cancel processing of report {}", report.getId() );
+                    return true;
+                }
                 caseQuery.setOffset( offset );
                 caseQuery.setLimit( step );
                 List<CaseCommentTimeElapsedSum> comments = caseCommentTimeElapsedSumDAO.getListByQuery( caseQuery );
@@ -71,14 +81,26 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
                     break;
                 }
             }
+
+            writer.collect( buffer );
+            return true;
         } catch (Throwable th) {
-            writer.close();
             log.warn( "writeReport : fail to process chunk [{} - {}] : reportId={} e: ", offset, offset + step, report.getId(), th );
             return false;
         }
+    }
 
-        writer.collect( buffer );
-        return true;
+    private Set<En_TimeElapsedType> makeTimeElapsedTypes(List<Integer> timeElapsedTypeIds) {
+        if (isEmpty(timeElapsedTypeIds)) {
+//            Если фильтр по типам работ не был задан, то учитываем все типы
+            return new HashSet<>(Arrays.asList(En_TimeElapsedType.values()));
+        }
+
+        return timeElapsedTypeIds
+                .stream()
+                .filter(Objects::nonNull)
+                .map(En_TimeElapsedType::findById)
+                .collect(Collectors.toSet());
     }
 
     private class Processor {

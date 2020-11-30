@@ -23,6 +23,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public abstract class ProductModel implements Activity,
@@ -63,7 +64,12 @@ public abstract class ProductModel implements Activity,
         query.setDirectionId(directionId);
     }
 
-    private SelectorDataCacheLoadHandler<ProductShortView> makeLoadHandler( final ProductQuery query) {
+    public void setPlatformIds(Set<Long> platformIds) {
+        cache.clearCache();
+        query.setPlatformIds(platformIds);
+    }
+
+    protected SelectorDataCacheLoadHandler<ProductShortView> makeLoadHandler( final ProductQuery query) {
         return new SelectorDataCacheLoadHandler() {
             @Override
             public void loadData( int offset, int limit, AsyncCallback handler ) {

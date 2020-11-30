@@ -9,7 +9,9 @@ public interface UserLoginControllerAsync {
 
     void saveUserDashboard(UserDashboard dashboard, AsyncCallback<Long> async);
 
-    void removeUserDashboard(Long dashboardId, AsyncCallback<Void> async);
+    void removeUserDashboard(Long dashboardId, AsyncCallback<Long> async);
 
     void getUserDashboards(AsyncCallback<List<UserDashboard>> async);
+
+    void swapUserDashboards(Long srcDashboardId, Long dstDashboardId, AsyncCallback<List<UserDashboard>> async);
 }

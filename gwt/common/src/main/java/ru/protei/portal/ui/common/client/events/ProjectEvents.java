@@ -4,6 +4,7 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
+import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 
@@ -15,10 +16,10 @@ public class ProjectEvents {
     @Url( value = "projects", primary = true )
     public static class Show {
         @Omit
-        public Boolean clearScroll = false;
+        public Boolean preScroll = false;
         public Show () {}
-        public Show (Boolean clearScroll) {
-            this.clearScroll = clearScroll;
+        public Show (Boolean preScroll) {
+            this.preScroll = preScroll;
         }
     }
 
@@ -110,8 +111,13 @@ public class ProjectEvents {
      * Показать форму поиска
      */
     public static class Search {
-        public Search(HasWidgets parent) {
+        public boolean showProducts;
+        public boolean showManagers;
+
+        public Search(HasWidgets parent, boolean showProducts, boolean showManagers) {
             this.parent = parent;
+            this.showProducts = showProducts;
+            this.showManagers = showManagers;
         }
         public HasWidgets parent;
     }

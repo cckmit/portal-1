@@ -31,18 +31,11 @@ public interface EquipmentControllerAsync {
      */
     void saveEquipment( Equipment p, AsyncCallback<Equipment> callback );
 
-    void getDecimalNumbersOfEquipment(long equipmentId, AsyncCallback<List<DecimalNumber>> async);
-
     /**
      * Проверка валидности заданного децимального номера
      * @param number
      */
     void checkIfExistDecimalNumber( DecimalNumber number, AsyncCallback<Boolean> callback );
-
-    /**
-     * Поиск децимального номера
-     */
-     void findDecimalNumber(DecimalNumber number, AsyncCallback<DecimalNumber> callback);
 
     /**
      * Получение следующего доступного номера
@@ -55,14 +48,9 @@ public interface EquipmentControllerAsync {
 
     void copyEquipment( Long equipmentId, String newName, AsyncCallback<Long> async );
 
-    void removeEquipment( Long equipmentId, AsyncCallback<Boolean> async );
+    void removeEquipment( Long equipmentId, AsyncCallback<Long> async );
 
     void equipmentOptionList( EquipmentQuery query, AsyncCallback< List< EquipmentShortView > > async );
 
-
     void getDocuments(Long equipmentId, AsyncCallback<SearchResult<Document>> async);
-
-    void getDocument(Long id, AsyncCallback<Document> async);
-
-    void saveDocument(Document document, AsyncCallback<Document> async);
 }

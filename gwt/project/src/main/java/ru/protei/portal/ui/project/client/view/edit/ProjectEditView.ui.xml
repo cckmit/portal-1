@@ -11,6 +11,7 @@
              xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
              xmlns:datepicker="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
              xmlns:sla="urn:import:ru.protei.portal.ui.common.client.widget.sla"
+             xmlns:plan="urn:import:ru.protei.portal.ui.common.client.widget.selector.plan.selector"
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -62,6 +63,13 @@
                         <sla:SlaInput ui:field="slaInput"/>
                     </div>
 
+                    <div class="form-group form-group-default col-md-12">
+                        <label class="fade">
+                            <ui:text from="{lang.projectSubcontractor}"/>
+                        </label>
+                        <company:CompanyMultiSelector ui:field="subcontractors" styleName="multi-selector-without-border" buttonStyle="btn-info btn-xs"/>
+                    </div>
+
                     <div class="form-group col-md-12" ui:field="documents">
                         <label>
                             <ui:text from="{lang.equipmentDocuments}"/>
@@ -90,6 +98,14 @@
                                                                    mandatory="false"/>
                                 </div>
                             </div>
+                            <g:HTMLPanel ui:field="pauseDateContainer" styleName="row">
+                                <div class="col-md-12">
+                                    <div class="form-group form-group-default date-picker" >
+                                        <label class="fade" ><ui:text from="{lang.issuePauseDateValidity}"/></label>
+                                        <datepicker:SinglePicker ui:field="pauseDate" type="DATE" formatValue="dd-MM-yyyy" mandatory="true"/>
+                                    </div>
+                                </div>
+                            </g:HTMLPanel>
                             <div class="row clearfix reset-no-padding">
                                 <div class="col-md-12">
                                     <region:RegionFormSelector ui:field="projectRegion"
@@ -133,14 +149,44 @@
                                 </div>
                             </div>
                             <div class="row clearfix reset-no-padding">
-                                <div class="form-group form-group-default technical-validity" ui:field="approvalDateContainer">
-                                    <label class="fade" ui:field="approvalDateLabel"><ui:text from="{lang.technicalSupportValidity}"/></label>
-                                    <datepicker:SinglePicker ui:field="technicalSupportValidity" type="DATE" formatValue="dd.MM.yyyy"/>
+                                <div class="form-group form-group-default date-picker">
+                                    <label class="fade"><ui:text from="{lang.technicalSupportValidity}"/></label>
+                                    <datepicker:SinglePicker ui:field="technicalSupportValidity" type="DATE" formatValue="dd.MM.yyyy" mandatory="false"/>
                                 </div>
                             </div>
+
+                            <div class="row clearfix reset-no-padding">
+                                <div class="form-group form-group-default date-picker">
+                                    <label class="fade"><ui:text from="{lang.workCompletionDate}"/></label>
+                                    <datepicker:SinglePicker ui:field="workCompletionDate" type="DATE" formatValue="dd.MM.yyyy" mandatory="false"/>
+                                </div>
+                            </div>
+
+                            <div class="row clearfix reset-no-padding">
+                                <div class="form-group form-group-default date-picker">
+                                    <label class="fade"><ui:text from="{lang.purchaseDate}"/></label>
+                                    <datepicker:SinglePicker ui:field="purchaseDate" type="DATE" formatValue="dd.MM.yyyy" mandatory="false"/>
+                                </div>
+                            </div>
+
+
                         </div>
 
-                        <div class="form-group m-t-10 m-b-0">
+                        <div class="form-group m-t-20 m-b-0">
+                            <label ui:field="plansLabel"><ui:text from="{lang.plans}"/></label>
+                        </div>
+                        <g:HTMLPanel ui:field="ownerPlansContainer" styleName="form-group">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <plan:PlanMultiSelector ui:field="plans"
+                                                            buttonStyle="btn-info btn-xs"
+                                                            styleName="case-plans"
+                                                            hasNullValue="false"/>
+                                </div>
+                            </div>
+                        </g:HTMLPanel>
+
+                        <div class="form-group m-t-20 m-b-0">
                             <label>
                                 <ui:text from="{lang.projectTeam}"/>
                             </label>

@@ -8,7 +8,7 @@ import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
-import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
 
 /**
  * Представление списка комментариев
@@ -21,6 +21,8 @@ public interface AbstractCaseCommentListView extends IsWidget {
 
     void addCommentToFront( IsWidget comment );
 
+    void replaceCommentView( IsWidget removed, IsWidget inserted );
+
     void removeComment( IsWidget comment );
 
     HasValue<String> message();
@@ -31,7 +33,9 @@ public interface AbstractCaseCommentListView extends IsWidget {
 
     HasAttachments attachmentContainer();
 
-    void enabledNewComment( boolean value );
+    void setNewCommentHidden(boolean isHidden);
+
+    void setNewCommentDisabled(boolean isDisabled);
 
     HasTime timeElapsed();
 
@@ -47,6 +51,10 @@ public interface AbstractCaseCommentListView extends IsWidget {
 
     void setPreviewVisible(boolean isVisible);
 
+    void setCaseCreatorId(Long personId);
+
+    void setCommentPlaceholder(String placeholder);
+
     HasVisibility getPrivacyVisibility();
 
     void setMarkupLabel(String label, String link);
@@ -54,6 +62,8 @@ public interface AbstractCaseCommentListView extends IsWidget {
     boolean isDisplayPreview();
 
     void setTimeElapsedVisibility(boolean visible);
+
+    boolean isAttached();
 
     void setExtendedPrivacyTypeAndResetSelector(boolean extendedPrivacyType);
 

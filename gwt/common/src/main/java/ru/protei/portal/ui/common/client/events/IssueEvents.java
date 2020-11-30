@@ -4,6 +4,7 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
+import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.CaseObjectMeta;
 import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -19,38 +20,38 @@ public class IssueEvents {
 
         public Show () {}
 
-        public Show (Boolean clearScroll) {
-            this.clearScroll = clearScroll;
+        public Show (Boolean preScroll) {
+            this.preScroll = preScroll;
         }
 
-        public Show (CaseQuery query) {
-            this.query = query;
-        }
-
-        public Show (CaseQuery query, Boolean clearScroll) {
-            this.query = query;
-            this.clearScroll = clearScroll;
+        public Show (CaseFilter filter, Boolean preScroll) {
+            this.filter = filter;
+            this.preScroll = preScroll;
         }
 
         @Omit
-        public CaseQuery query;
+        public CaseFilter filter;
         @Omit
-        public Boolean clearScroll = false;
+        public Boolean preScroll = false;
     }
 
     /**
      * Показать превью обращения
      */
     public static class ShowPreview {
-
         public ShowPreview ( HasWidgets parent, Long issueCaseNumber ) {
             this.parent = parent;
             this.issueCaseNumber = issueCaseNumber;
         }
 
+        public ShowPreview withBackHandler(Runnable backHandler) {
+            this.backHandler = backHandler;
+            return this;
+        }
+
         public HasWidgets parent;
         public Long issueCaseNumber;
-
+        public Runnable backHandler;
     }
 
     /**
@@ -69,10 +70,17 @@ public class IssueEvents {
     public static class Edit {
         @Name( "id" )
         public Long caseNumber;
+        @Omit
+        public Runnable backHandler;
 
         public Edit() { this.caseNumber = null; }
         public Edit (Long caseNumber) {
             this.caseNumber = caseNumber;
+        }
+
+        public Edit withBackHandler(Runnable backHandler) {
+            this.backHandler = backHandler;
+            return this;
         }
     }
 
@@ -141,10 +149,12 @@ public class IssueEvents {
     }
 
     public static class IssueStateChanged {
-        public IssueStateChanged( Long issueId ) {
+        public IssueStateChanged( Long issueId, Long stateId ) {
             this.issueId = issueId;
+            this.stateId = stateId;
         }
         public Long issueId;
+        public Long stateId;
     }
 
     public static class IssueImportanceChanged {
@@ -159,6 +169,53 @@ public class IssueEvents {
             this.issueId = issueId;
         }
         public Long issueId;
+    }
+
+    public static class IssueProductChanged {
+        public IssueProductChanged( Long issueId ) {
+            this.issueId = issueId;
+        }
+        public Long issueId;
+    }
+
+    public static class IssueMetaChanged {
+        public IssueMetaChanged(CaseObjectMeta meta) {
+            this.meta = meta;
+        }
+        public CaseObjectMeta meta;
+    }
+
+    public static class IssueFavoriteStateChanged {
+        public IssueFavoriteStateChanged(Long issueId, boolean isFavorite) {
+            this.isFavorite = isFavorite;
+            this.issueId = issueId;
+        }
+
+        public boolean isFavorite;
+        public Long issueId;
+    }
+
+    public static class IssueStateUpdated {
+        public IssueStateUpdated(Long issueId) {
+            this.issueId = issueId;
+        }
+        public Long issueId;
+    }
+
+    public static class IssueNotifiersUpdated {
+        public IssueNotifiersUpdated(Long issueId) {
+            this.issueId = issueId;
+        }
+        public Long issueId;
+    }
+
+    public static class CreateSubtask {
+
+        public CreateSubtask(Long caseNumber) {
+            this.caseNumber = caseNumber;
+        }
+
+        public Long caseNumber;
     }
 }
 

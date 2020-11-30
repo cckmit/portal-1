@@ -1,6 +1,7 @@
 package ru.protei.portal.core.service;
 
 import org.apache.commons.fileupload.FileItem;
+import org.springframework.scheduling.annotation.Async;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
@@ -16,10 +17,15 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import java.io.OutputStream;
 import java.util.List;
 
+import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
+
 public interface DocumentService {
 
     @Privileged(requireAny = {En_Privilege.DOCUMENT_VIEW, En_Privilege.EQUIPMENT_VIEW})
     Result<SearchResult<Document>> getDocuments( AuthToken token, DocumentQuery query);
+
+    @Async(BACKGROUND_TASKS)
+    void documentBuildFullIndex();
 
     @Privileged(requireAny = {En_Privilege.DOCUMENT_VIEW, En_Privilege.EQUIPMENT_VIEW})
     Result<SearchResult<Document>> getDocuments( AuthToken token, Long equipmentId);

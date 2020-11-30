@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_MigrationEntry;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.tools.migrate.struct.*;
 import ru.protei.portal.tools.migrate.sybase.LegacyDAO_Transaction;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
@@ -22,6 +23,8 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 public class ImportDataServiceImpl implements ImportDataService {
 
@@ -62,6 +65,9 @@ public class ImportDataServiceImpl implements ImportDataService {
 
     @Autowired
     CaseStateMatrixDAO caseStateMatrixDAO;
+
+    @Autowired
+    ContactItemDAO contactItemDAO;
 
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
@@ -139,9 +145,16 @@ public class ImportDataServiceImpl implements ImportDataService {
 
         logger.debug("handled {} companies", src.size());
 
-        HelperFunc.splitBatch(src, 100, importList ->
-                companyDAO.persistBatch(importList.stream().map(imp -> MigrateUtils.fromExternalCompany(imp)).collect(Collectors.toList()))
-        );
+        HelperFunc.splitBatch(src, 100, importList -> {
+            List<Company> companies = stream(importList)
+                    .map(MigrateUtils::fromExternalCompany)
+                    .collect(Collectors.toList());
+            companyDAO.persistBatch(companies);
+            for (Company company : companies) {
+                contactItemDAO.saveOrUpdateBatch(company.getContactItems());
+            }
+            jdbcManyRelationsHelper.persist(companies, Company.Fields.CONTACT_ITEMS);
+        });
     }
 
     private void importContacts (LegacyDAO_Transaction transaction) throws SQLException {
@@ -348,6 +361,7 @@ public class ImportDataServiceImpl implements ImportDataService {
 //                    obj.setKeywords((String)row.get("strKeyWord"));
 //                    obj.setLocal(row.get("lIsLocal") == null ? 1 : ((Number) row.get("lIsLocal")).intValue());
             obj.setName("CRM-" + obj.getCaseNumber());
+            obj.setManagerCompanyId(CrmConstants.Company.HOME_COMPANY_ID);
             obj.setManagerId(ext.getManagerId() != null ? personMap.get(ext.getManagerId()) : null);
             obj.setModified(ext.getLastUpdate());
 
@@ -394,7 +408,7 @@ public class ImportDataServiceImpl implements ImportDataService {
             List<CaseComment> toInsert = new ArrayList<>();
 
             src.forEach(ext -> {
-                Long ourCaseId = caseIdMap.computeIfAbsent(ext.getSessionId(), extId -> caseObjectDAO.getCaseId(En_CaseType.CRM_SUPPORT,extId));
+                Long ourCaseId = caseIdMap.computeIfAbsent(ext.getSessionId(), extId -> caseObjectDAO.getCaseIdByNumber(En_CaseType.CRM_SUPPORT,extId));
                 if (ourCaseId == null) {
                     logger.debug("unable to map external comment {}, case not found for {}", ext.getId(), ext.getSessionId());
                     return;
@@ -449,7 +463,7 @@ public class ImportDataServiceImpl implements ImportDataService {
             List<CaseObject> toUpdate = new ArrayList<>();
 
             for (ExtCrmSession ext : src) {
-                CaseObject ourObj = caseObjectDAO.getCase(En_CaseType.CRM_SUPPORT, ext.getId());
+                CaseObject ourObj = caseObjectDAO.getCaseByNumber(En_CaseType.CRM_SUPPORT, ext.getId());
                 if (ourObj == null) {
                     // new case
                     ourObj = fromSupportSession(ext);
@@ -769,13 +783,24 @@ public class ImportDataServiceImpl implements ImportDataService {
             });
 
             companyDAO.mergeBatch(forUpate);
+            for (Company company : forUpate) {
+                contactItemDAO.saveOrUpdateBatch(company.getContactItems());
+            }
+            jdbcManyRelationsHelper.persist(forUpate, Company.Fields.CONTACT_ITEMS);
 
             // excludes already existing
             src.removeIf(imp -> compIdSet.contains(imp.getId()));
 
-            HelperFunc.splitBatch(src, 100, importList ->
-                    companyDAO.persistBatch(importList.stream().map(imp -> MigrateUtils.fromExternalCompany(imp)).collect(Collectors.toList()))
-            );
+            HelperFunc.splitBatch(src, 100, importList -> {
+                List<Company> companies = importList.stream()
+                        .map(MigrateUtils::fromExternalCompany)
+                        .collect(Collectors.toList());
+                companyDAO.persistBatch(companies);
+                for (Company company : companies) {
+                    contactItemDAO.saveOrUpdateBatch(company.getContactItems());
+                }
+                jdbcManyRelationsHelper.persist(companies, Company.Fields.CONTACT_ITEMS);
+            });
 
             return src.size();
         }
@@ -892,10 +917,18 @@ public class ImportDataServiceImpl implements ImportDataService {
 
                 if (!updateBatch.isEmpty()) {
                     personDAO.mergeBatch(updateBatch);
+                    for (Person person : updateBatch) {
+                        contactItemDAO.saveOrUpdateBatch(person.getContactItems());
+                    }
+                    jdbcManyRelationsHelper.persist(updateBatch, Person.Fields.CONTACT_ITEMS);
                 }
 
                 if (!personBatch.isEmpty()) {
                     personDAO.persistBatch(personBatch);
+                    for (Person person : personBatch) {
+                        contactItemDAO.saveOrUpdateBatch(person.getContactItems());
+                    }
+                    jdbcManyRelationsHelper.persist(personBatch, Person.Fields.CONTACT_ITEMS);
                 }
 
                 if (!loginBatch.isEmpty()) {

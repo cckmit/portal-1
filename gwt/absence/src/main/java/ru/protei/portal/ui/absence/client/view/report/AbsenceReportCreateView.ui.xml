@@ -1,0 +1,27 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:filter="urn:import:ru.protei.portal.ui.absence.client.widget.filter">
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel styleName="card card-transparent no-margin">
+        <g:HTMLPanel ui:field="content" styleName="card-body">
+            <div class="row">
+                <div class="form-group col-md-12 small hint-text">
+                    <ui:text from="{lang.absenceReportHint}"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-12">
+                    <label ui:field="absenceReportTitleLabel"><ui:text from="{lang.absenceReportTitle}"/></label>
+                    <g:TextBox ui:field="name" styleName="form-control" maxLength="64"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-12 report-absence-filter-widget">
+                    <filter:AbsenceFilterWidget ui:field="filterWidget"/>
+                </div>
+            </div>
+        </g:HTMLPanel>
+    </g:HTMLPanel>
+</ui:UiBinder>

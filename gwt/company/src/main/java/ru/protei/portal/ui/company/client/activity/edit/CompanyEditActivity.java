@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.company.client.activity.edit;
 
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -10,6 +11,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.NameStatus;
@@ -54,6 +56,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     @Event
     public void onShow(CompanyEvents.Edit event) {
         initDetails.parent.clear();
+        Window.scrollTo(0, 0);
         initDetails.parent.add(view.asWidget());
         view.tableContainer().clear();
         view.siteFolderContainer().clear();
@@ -67,33 +70,40 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     @Override
     public void onSaveClicked() {
-        if (validateFieldsAndGetResult() && !tempCompany.isArchived()) {
-            fillDto(tempCompany);
-
-            companyService.saveCompany(tempCompany, new FluentCallback<Boolean>()
-                    .withSuccess(result -> {
-                        fireEvent(isNew(tempCompany) ? new CompanyEvents.Show(true) : new Back());
-                        fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                        fireEvent(new CompanyEvents.ChangeModel());
-                    })
-            );
+        if (tempCompany.isArchived()) {
+            fireEvent(new NotifyEvents.Show(lang.errCompanyFieldsFill(), NotifyEvents.NotifyType.ERROR));
+            return;
         }
+
+        if (!validateFieldsAndGetResult()) {
+            fireEvent(new NotifyEvents.Show(lang.errCompanyFieldsFill(), NotifyEvents.NotifyType.ERROR));
+            return;
+        }
+
+        fillDto(tempCompany);
+
+        companyService.saveCompany(tempCompany, new FluentCallback<Boolean>()
+                .withSuccess(result -> {
+                    fireEvent(new CompanyEvents.Show(!isNew(tempCompany)));
+                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new CompanyEvents.ChangeModel());
+                })
+        );
     }
 
     @Override
     public void onCancelClicked() {
-        fireEvent(new Back());
+        fireEvent(new CompanyEvents.Show(!isNew(tempCompany)));
     }
 
     @Override
     public void onChangeCompanyName() {
         String value = view.companyName().getValue().trim();
 
-        //isCompanyNameExists не принимает пустые строки!
-        if (value.isEmpty()) {
-            view.setCompanyNameStatus(NameStatus.NONE);
+        if (!validateCompanyName(value)){
             return;
         }
+
         companyService.isCompanyNameExists(
                 value,
                 tempCompany.getId(),
@@ -105,9 +115,30 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
                     @Override
                     public void onSuccess(Boolean isExists) {
                         view.setCompanyNameStatus(isExists ? NameStatus.ERROR : NameStatus.SUCCESS);
+                        view.companyNameErrorLabel().setText(isExists ? lang.errCompanyNameExists() : "");
+                        view.companyNameErrorLabelVisibility().setVisible(isExists);
                     }
                 }
         );
+    }
+
+    private boolean validateCompanyName (String companyName) {
+        //isCompanyNameExists не принимает пустые строки!
+        if (companyName.isEmpty()) {
+            view.setCompanyNameStatus(NameStatus.NONE);
+            return false;
+        }
+
+        boolean containsIllegalChars = companyName.matches(CrmConstants.Masks.COMPANY_NAME_ILLEGAL_CHARS);
+        view.companyNameErrorLabel().setText(containsIllegalChars ? lang.errCompanyNameContainsIllegalChars() : "");
+        view.companyNameErrorLabelVisibility().setVisible(containsIllegalChars);
+
+        if (containsIllegalChars){
+            view.setCompanyNameStatus(NameStatus.ERROR);
+            return false;
+        }
+
+        return true;
     }
 
     private boolean isNew(Company company) {
@@ -116,7 +147,8 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     private boolean validateFieldsAndGetResult() {
         return view.companyNameValidator().isValid()
-                && view.companySubscriptionsValidator().isValid();
+                && view.companySubscriptionsValidator().isValid()
+                && !view.companyName().getValue().trim().matches(CrmConstants.Masks.COMPANY_NAME_ILLEGAL_CHARS);
     }
 
     private void resetValidationStatus() {
@@ -166,13 +198,15 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
         view.tableContainer().clear();
         if (company.getId() != null && policyService.hasPrivilegeFor(En_Privilege.CONTACT_VIEW)) {
-            fireEvent(new ContactEvents.ShowConciseTable(view.tableContainer(), company.getId()));
+            fireEvent(new ContactEvents.ShowConciseTable(view.tableContainer(), company.getId(), true));
         }
 
         view.siteFolderContainer().clear();
         if (company.getId() != null && policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_VIEW)) {
             fireEvent(new SiteFolderPlatformEvents.ShowConciseTable(view.siteFolderContainer(), company.getId()));
         }
+
+        view.autoOpenIssues().setValue(company.getAutoOpenIssue());
     }
 
     private EntityOption makeCompanyOption(Company company) {
@@ -182,15 +216,16 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     private void fillDto(Company company) {
         company.setCname(view.companyName().getValue());
+        company.setInfo(view.comment().getText());
+        company.setCategory(view.companyCategory().getValue());
+        company.setParentCompanyId(view.parentCompany().getValue() == null ? null : view.parentCompany().getValue().getId());
+        company.setSubscriptions(new ArrayList<>(view.companySubscriptions().getValue()));
+        company.setAutoOpenIssue(view.autoOpenIssues().getValue());
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(company.getContactInfo());
 
         infoFacade.setLegalAddress(view.legalAddress().getValue());
         infoFacade.setFactAddress(view.actualAddress().getValue());
-        company.setInfo(view.comment().getText());
-        company.setCategory(view.companyCategory().getValue());
-        company.setParentCompanyId(view.parentCompany().getValue() == null ? null : view.parentCompany().getValue().getId());
-        company.setSubscriptions(new ArrayList<>(view.companySubscriptions().getValue()));
         infoFacade.setWebSite(view.webSite().getText());
     }
 

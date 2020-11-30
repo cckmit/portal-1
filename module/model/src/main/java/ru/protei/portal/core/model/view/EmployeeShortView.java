@@ -1,23 +1,43 @@
 package ru.protei.portal.core.model.view;
 
+import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.ent.PersonAbsence;
 import ru.protei.portal.core.model.struct.ContactInfo;
+import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Сокращенное представление Person
  */
-@JdbcEntity(selectSql = "person.* FROM person, JSON_TABLE(person.contactInfo, '$.items[*]' COLUMNS ( a VARCHAR(32) PATH '$.a', t VARCHAR(64) PATH '$.t', v VARCHAR(128) PATH '$.v')) info")
+@JdbcEntity(table = "person")
 public class EmployeeShortView implements Serializable {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
+    @JdbcColumn(name="company_id")
+    private Long companyId;
+
     @JdbcColumn(name="displayname")
     private String displayName;
+
+    @JdbcColumn(name="displayShortName")
+    private String displayShortName;
+
+    @JdbcColumn(name="firstname")
+    private String firstName;
+
+    @JdbcColumn(name="lastname")
+    private String lastName;
+
+    @JdbcColumn(name="secondname")
+    private String secondName;
 
     @JdbcColumn(name="birthday")
     private Date birthday;
@@ -31,11 +51,19 @@ public class EmployeeShortView implements Serializable {
     @JdbcColumn(name="firedate")
     private Date fireDate;
 
-    @JdbcColumn(name = "contactInfo", converterType = ConverterType.JSON)
-    private ContactInfo contactInfo;
+    @JdbcColumn(name="sex")
+    private String gender;
+
+    @JdbcManyToMany(linkTable = "contact_item_person", localLinkColumn = "person_id", remoteLinkColumn = "contact_item_id")
+    private List<ContactItem> contactItems;
 
     @JdbcOneToMany(table = "worker_entry", localColumn = "id", remoteColumn = "personId")
     private List<WorkerEntryShortView> workerEntries;
+
+    @JdbcJoinedColumn(mappedColumn = "ulogin", table = "user_login", localColumn = "id", remoteColumn = "personId")
+    private String login;
+
+    private PersonAbsence currentAbsence;
 
     public Long getId() {
         return id;
@@ -45,12 +73,28 @@ public class EmployeeShortView implements Serializable {
         this.id = id;
     }
 
+    public Long getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(Long companyId) {
+        this.companyId = companyId;
+    }
+
     public String getDisplayName() {
         return displayName;
     }
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    public String getDisplayShortName() {
+        return displayShortName;
+    }
+
+    public void setDisplayShortName(String displayShortName) {
+        this.displayShortName = displayShortName;
     }
 
     public Date getBirthday() {
@@ -70,11 +114,14 @@ public class EmployeeShortView implements Serializable {
     }
 
     public ContactInfo getContactInfo() {
-        return contactInfo;
+        if (contactItems == null) {
+            contactItems = new ArrayList<>();
+        }
+        return new ContactInfo(contactItems);
     }
 
     public void setContactInfo(ContactInfo contactInfo) {
-        this.contactInfo = contactInfo;
+        this.contactItems = contactInfo != null ? contactInfo.getItems() : null;
     }
 
     public List<WorkerEntryShortView> getWorkerEntries() {
@@ -99,5 +146,70 @@ public class EmployeeShortView implements Serializable {
 
     public void setFireDate(Date fireDate) {
         this.fireDate = fireDate;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getSecondName() {
+        return secondName;
+    }
+
+    public void setSecondName(String secondName) {
+        this.secondName = secondName;
+    }
+
+    public En_Gender getGender () {
+        return En_Gender.parse(this.gender);
+    }
+
+    public void setGender (En_Gender gender) {
+        this.gender = gender.getCode();
+    }
+
+    public PersonAbsence getCurrentAbsence() {
+        return currentAbsence;
+    }
+
+    public void setCurrentAbsence(PersonAbsence absence) {
+        this.currentAbsence = absence;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        EmployeeShortView that = (EmployeeShortView) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    public interface Fields {
+        String CONTACT_ITEMS = "contactItems";
     }
 }

@@ -2,6 +2,9 @@ package ru.protei.portal.ui.employeeregistration.client.factory;
 
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
+import ru.protei.portal.ui.employeeregistration.client.activity.create.AbstractEmployeeRegistrationCreateView;
+import ru.protei.portal.ui.employeeregistration.client.activity.create.EmployeeRegistrationCreateActivity;
+import ru.protei.portal.ui.employeeregistration.client.activity.edit.AbstractEmployeeRegistrationEditActivity;
 import ru.protei.portal.ui.employeeregistration.client.activity.edit.AbstractEmployeeRegistrationEditView;
 import ru.protei.portal.ui.employeeregistration.client.activity.edit.EmployeeRegistrationEditActivity;
 import ru.protei.portal.ui.employeeregistration.client.activity.filter.AbstractEmployeeRegistrationFilterView;
@@ -10,6 +13,7 @@ import ru.protei.portal.ui.employeeregistration.client.activity.preview.Abstract
 import ru.protei.portal.ui.employeeregistration.client.activity.preview.EmployeeRegistrationPreviewActivity;
 import ru.protei.portal.ui.employeeregistration.client.activity.table.AbstractEmployeeRegistrationTableView;
 import ru.protei.portal.ui.employeeregistration.client.activity.table.EmployeeRegistrationTableActivity;
+import ru.protei.portal.ui.employeeregistration.client.view.create.EmployeeRegistrationCreateView;
 import ru.protei.portal.ui.employeeregistration.client.view.edit.EmployeeRegistrationEditView;
 import ru.protei.portal.ui.employeeregistration.client.view.filter.EmployeeRegistrationFilterView;
 import ru.protei.portal.ui.employeeregistration.client.view.preview.EmployeeRegistrationPreviewView;
@@ -22,6 +26,9 @@ public class EmployeeRegistrationClientModule extends AbstractGinModule {
 
         bind(EmployeeRegistrationTableActivity.class).asEagerSingleton();
         bind(AbstractEmployeeRegistrationTableView.class).to(EmployeeRegistrationTableView.class).in(Singleton.class);
+
+        bind(EmployeeRegistrationCreateActivity.class).asEagerSingleton();
+        bind(AbstractEmployeeRegistrationCreateView.class).to(EmployeeRegistrationCreateView.class).in(Singleton.class);
 
         bind(EmployeeRegistrationEditActivity.class).asEagerSingleton();
         bind(AbstractEmployeeRegistrationEditView.class).to(EmployeeRegistrationEditView.class).in(Singleton.class);

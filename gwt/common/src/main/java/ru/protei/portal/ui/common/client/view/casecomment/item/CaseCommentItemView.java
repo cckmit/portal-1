@@ -13,15 +13,17 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
 import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
-import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.throttler.Throttler;
+import ru.protei.portal.ui.common.client.throttler.ThrottlerFactory;
+import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
@@ -47,6 +49,7 @@ public class CaseCommentItemView
     @Override
     public void setActivity( AbstractCaseCommentItemActivity activity ) {
         this.activity = activity;
+        attachList.setActivity(activity);
     }
 
     @Override
@@ -74,13 +77,13 @@ public class CaseCommentItemView
     public void setMessage( String html ) {
         if ( html == null ) {
             this.message.getElement().setInnerText("");
-            this.messageBlock.addClassName( "hide" );
+            this.messageBlock.addClassName(  CrmConstants.Style.HIDE );
             this.hideOptions();
             return;
         }
 
         this.message.getElement().setInnerHTML(html);
-        this.messageBlock.removeClassName( "hide" );
+        this.messageBlock.removeClassName(  CrmConstants.Style.HIDE );
     }
 
     @Override
@@ -89,19 +92,20 @@ public class CaseCommentItemView
     }
 
     @Override
-    public void setStatus( En_CaseState value ) {
-        if ( root.getStyleName().contains( "right" ) ) {
-            owner.removeClassName( "name" );
-            owner.addClassName( "status" );
-            owner.addClassName( "case-" + value.name().toLowerCase() );
-            owner.setInnerText( stateLang.getStateName( value ) );
+    public void setStatus(String value) {
+        String styleName = CaseStateUtils.makeStyleName(value);
+        if ( root.getStyleName().contains("right")) {
+            owner.removeClassName("name");
+            owner.addClassName("status");
+            owner.addClassName("case-" + styleName);
+            owner.setInnerText(value);
             info.setInnerText(lang.issueCommentChangeStatusTo());
-            info.removeClassName( "hide" );
+            info.removeClassName("hide");
         } else {
-            status.addClassName( "case-" + value.name().toLowerCase() );
-            status.setInnerText( stateLang.getStateName( value ) );
+            this.status.addClassName("case-" + styleName);
+            this.status.setInnerText(value);
             info.setInnerText(lang.issueCommentChangeStatusTo());
-            info.removeClassName( "hide" );
+            info.removeClassName("hide");
         }
     }
 
@@ -123,17 +127,17 @@ public class CaseCommentItemView
     }
 
     @Override
-    public void setManager(String managerShortName) {
+    public void setManagerInfo(String managerInfo) {
         if (root.getStyleName().contains("right")) {
             owner.removeClassName("name");
             owner.addClassName("status");
             owner.addClassName("name");
-            owner.setInnerText(managerShortName);
+            owner.setInnerText(managerInfo);
             info.setInnerText(lang.issueCommentChangeManagerTo());
             info.removeClassName("hide");
         } else {
             status.addClassName("name");
-            status.setInnerText(managerShortName);
+            status.setInnerText(managerInfo);
             info.setInnerText(lang.issueCommentChangeManagerTo());
             info.removeClassName("hide");
         }
@@ -151,16 +155,11 @@ public class CaseCommentItemView
     }
 
     @Override
-    public void enableUpdateTimeElapsedType(boolean isTimeElapsedTypeEnabled) {
-        this.isTimeElapsedTypeEditEnabled = isTimeElapsedTypeEnabled;
-    }
-
-    @Override
     public void showAttachments( boolean isShow ){
         if( isShow )
-            attachBlock.removeClassName( "hide" );
+            attachBlock.removeClassName( CrmConstants.Style.HIDE );
         else
-            attachBlock.addClassName( "hide" );
+            attachBlock.addClassName(  CrmConstants.Style.HIDE );
     }
 
     @Override
@@ -226,6 +225,23 @@ public class CaseCommentItemView
         timeElapsedTypePopup.setTimeElapsedType(type);
     }
 
+    @Override
+    public void displayUpdatedAnimation() {
+        root.getElement().addClassName(CrmConstants.Style.UPDATED);
+        removeUpdatedTimer.run();
+    }
+
+    @Override
+    public void displayAddedAnimation() {
+        root.getElement().addClassName(CrmConstants.Style.ADDED);
+        removeAddedTimer.run();
+    }
+
+    @Override
+    public HasVisibility timeElapsedTypePopupVisibility() {
+        return timeElapsedTypePopup;
+    }
+
     @UiHandler( "remove" )
     public void onRemoveClicked( ClickEvent event ) {
         event.preventDefault();
@@ -257,9 +273,7 @@ public class CaseCommentItemView
 
     @UiHandler("timeElapsed")
     public void onTimeElapsedClicked(ClickEvent event) {
-        if (isTimeElapsedTypeEditEnabled) {
-            timeElapsedTypePopup.showNear(timeElapsed.asWidget());
-        }
+        activity.onTimeElapsedTypeClicked(this);
     }
 
     private void setTestAttributes() {
@@ -311,6 +325,7 @@ public class CaseCommentItemView
     @UiField
     ImageElement icon;
     @Inject
+    @UiField(provided = true)
     EditTimeElapsedTypePopup timeElapsedTypePopup;
 
     @Inject
@@ -319,12 +334,13 @@ public class CaseCommentItemView
     @UiField
     DivElement messageContainer;
     @Inject
-    En_CaseStateLang stateLang;
-    @Inject
     En_CaseImportanceLang importanceLang;
+    Throttler removeUpdatedTimer = ThrottlerFactory.makeDelayedAntiRapidThrottler( 1 * SECOND, ()-> root.getElement().removeClassName( CrmConstants.Style.UPDATED ) );
+    Throttler removeAddedTimer = ThrottlerFactory.makeDelayedAntiRapidThrottler( 1 * SECOND,  () -> root.getElement().removeClassName( CrmConstants.Style.ADDED ) );
 
-    private boolean isTimeElapsedTypeEditEnabled;
     private AbstractCaseCommentItemActivity activity;
+
+    private static int SECOND = (int) CrmConstants.Time.SEC;
 
     interface CaseCommentUiBinder extends UiBinder<Widget, CaseCommentItemView> {}
     private static CaseCommentUiBinder ourUiBinder = GWT.create( CaseCommentUiBinder.class );

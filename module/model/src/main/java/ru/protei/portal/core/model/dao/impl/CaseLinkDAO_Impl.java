@@ -3,7 +3,6 @@ package ru.protei.portal.core.model.dao.impl;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.CaseLinkDAO;
 import ru.protei.portal.core.model.dict.En_CaseLink;
-import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CaseLink;
@@ -13,7 +12,6 @@ import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class CaseLinkDAO_Impl extends PortalBaseJdbcDAO<CaseLink> implements CaseLinkDAO {
@@ -53,18 +51,28 @@ public class CaseLinkDAO_Impl extends PortalBaseJdbcDAO<CaseLink> implements Cas
                 args.add(query.getCaseId());
             }
 
-            if (query.isShowOnlyPrivate() == Boolean.TRUE) {
+            if (query.isShowOnlyPublic() == Boolean.TRUE) {
                 condition.append(" and link_type = 'CRM'");
                 condition.append(" and (case_object.private_flag = FALSE or case_object.private_flag IS NULL)");
             }
 
             if(query.getType()!=null){
-                condition.append( " and link_type = '" + query.getType().name() + "'" );
+                condition.append(" and link_type = '" + query.getType().name() + "'");
             }
 
             if (StringUtils.isNotBlank(query.getRemoteId())) {
                 condition.append(" and case_link.remote_id = ?");
                 args.add(query.getRemoteId());
+            }
+
+            if (query.getWithCrosslink() != null){
+                condition.append(" and case_link.with_crosslink = ?");
+                args.add(query.getWithCrosslink());
+            }
+
+            if(query.getBundleType() != null){
+                condition.append(" and bundle_type = ?");
+                args.add(query.getBundleType().getId());
             }
         }));
     }

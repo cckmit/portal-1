@@ -2,17 +2,15 @@ package ru.protei.portal.ui.contact.client.activity.table;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.ContactQuery;
-import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -27,8 +25,11 @@ import ru.protei.portal.ui.contact.client.activity.filter.AbstractContactFilterV
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.Date;
+import java.util.List;
 
-import static ru.protei.portal.ui.common.client.util.PaginationUtils.*;
+import static ru.protei.portal.core.model.helper.StringUtils.*;
+import static ru.protei.portal.core.model.util.AlternativeKeyboardLayoutTextService.*;
+
 /**
  * Активность таблицы контактов
  */
@@ -55,10 +56,10 @@ public abstract class ContactTableActivity
         filterView.resetFilter();
     }
 
-    @Event
+    @Event(Type.FILL_CONTENT)
     public void onShow( ContactEvents.Show event ) {
         if (!policyService.hasPrivilegeFor(En_Privilege.CONTACT_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
@@ -72,12 +73,9 @@ public abstract class ContactTableActivity
                 new ActionBarEvents.Clear()
         );
 
-        isShowTable = false;
-        query = makeQuery( null );
+        this.preScroll = event.preScroll;
 
-        clearScroll( event );
-
-        requestContacts( this.page );
+        loadTable();
     }
 
     @Event
@@ -97,16 +95,15 @@ public abstract class ContactTableActivity
     }
 
     @Override
-    public void onItemClicked ( Person value ) {
-        if ( !isShowTable ) {
-            showPreview( value );
-        }
+    public void onItemClicked(Person value) {
+        persistScroll();
+        showPreview(value);
     }
 
     @Override
     public void onEditClicked(Person value ) {
-        persistScrollTopPosition();
-        fireEvent(ContactEvents.Edit.byId(value.getId()));
+        persistScroll();
+        fireEvent(ContactEvents.Edit.byId(value.getId()).withBackEvent(() -> fireEvent(new ContactEvents.Show(true))));
     }
 
     @Override
@@ -118,40 +115,55 @@ public abstract class ContactTableActivity
 
     @Override
     public void onFilterChanged() {
-        query = makeQuery( null );
-        this.page = 0;
-        requestContacts( this.page );
+        loadTable();
+    }
+
+    @Override
+    public void onPageChanged(int page) {
+        pagerView.setCurrentPage(page);
     }
 
     @Override
     public void onPageSelected( int page ) {
-        this.page = page;
-        requestContacts( this.page );
+        view.scrollTo(page);
     }
 
-    private void requestContacts( int page ) {
-        view.clearRecords();
-        animation.closeDetails();
-
-        boolean isFirstChunk = page == 0;
+    @Override
+    public void loadData(int offset, int limit, AsyncCallback<List<Person>> asyncCallback) {
+        boolean isFirstChunk = offset == 0;
         marker = new Date().getTime();
 
-        query.setOffset( page*PAGE_SIZE );
-        query.setLimit( PAGE_SIZE );
+        ContactQuery query = makeQuery();
+        query.setOffset( offset );
+        query.setLimit( limit );
 
         contactService.getContacts( query, new FluentCallback< SearchResult< Person> >()
-                .withMarkedSuccess( marker, ( m, r ) -> {
-                    if ( marker == m ) {
-                        if ( isFirstChunk ) {
-                            pagerView.setTotalCount( r.getTotalCount() );
-                            pagerView.setTotalPages( getTotalPages( r.getTotalCount() ) );
-                        }
-                        pagerView.setCurrentPage( page );
-                        view.addRecords( r.getResults() );
-                        restoreScrollTopPositionOrClearSelection();
+                .withSuccess( sr -> {
+                    if ( isFirstChunk ) {
+                        view.setTotalRecords(sr.getTotalCount());
+                        pagerView.setTotalPages(view.getPageCount());
+                        pagerView.setTotalCount( sr.getTotalCount() );
+                        restoreScroll();
                     }
+
+                    asyncCallback.onSuccess(sr.getResults());
                 })
-                .withErrorMessage( lang.errGetList() ) );
+        );
+    }
+
+    private void restoreScroll() {
+        if (!preScroll) {
+            view.clearSelection();
+            return;
+        }
+
+        Window.scrollTo(0, scrollTo);
+        preScroll = false;
+        scrollTo = 0;
+    }
+
+    private void persistScroll() {
+        scrollTo = Window.getScrollTop();
     }
 
     private void showPreview ( Person value ) {
@@ -163,59 +175,31 @@ public abstract class ContactTableActivity
         }
     }
 
-    private ContactQuery makeQuery( Long companyId ) {
-        if ( companyId != null ) {
-            return new ContactQuery( companyId, null, false, null, En_SortField.person_full_name, En_SortDir.ASC );
-        }
-        return new ContactQuery( filterView.company().getValue(),
+    private ContactQuery makeQuery() {
+        ContactQuery query = new ContactQuery( filterView.company().getValue(),
                 filterView.showFired().getValue() ? null : filterView.showFired().getValue(),
                 false,
-                filterView.searchPattern().getValue(), filterView.sortField().getValue(),
-                filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC );
+                nullIfEmpty( filterView.searchPattern().getValue() ), filterView.sortField().getValue(),
+                filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC );
+
+        query.setAlternativeSearchString( makeAlternativeSearchString( filterView.searchPattern().getValue() ) );
+        return query;
 
     };
 
-    private void persistScrollTopPosition() {
-        scrollTop = Window.getScrollTop();
-    }
-
-    private void restoreScrollTopPositionOrClearSelection() {
-        if (scrollTop == null) {
-            view.clearSelection();
-            return;
-        }
-        int trh = RootPanel.get(DebugIds.DEBUG_ID_PREFIX + DebugIds.APP_VIEW.GLOBAL_CONTAINER).getOffsetHeight() - Window.getClientHeight();
-        if (scrollTop <= trh) {
-            Window.scrollTo(0, scrollTop);
-            scrollTop = null;
-        }
-    }
-
-    private void clearScroll(ContactEvents.Show event) {
-        if (event.clearScroll) {
-            event.clearScroll = false;
-            this.scrollTop = null;
-            this.page = 0;
-        }
-    }
-
     private Runnable removeAction(Long contactId) {
-        return () -> contactService.removeContact(contactId, new AsyncCallback<Boolean>() {
-            @Override
-            public void onFailure(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(Boolean result) {
-                if (result) {
-                    fireEvent(new ContactEvents.Show());
+        return () -> contactService.removeContact(contactId, new FluentCallback<Long>()
+                .withSuccess(result -> {
+                    fireEvent(new ContactEvents.Show(false));
                     fireEvent(new NotifyEvents.Show(lang.contactDeleted(), NotifyEvents.NotifyType.SUCCESS));
-                } else {
-                    fireEvent(new NotifyEvents.Show(lang.errInternalError(), NotifyEvents.NotifyType.ERROR));
-                }
-            }
-        });
+                })
+        );
+    }
+
+    private void loadTable() {
+        animation.closeDetails();
+        view.clearRecords();
+        view.triggerTableLoad();
     }
 
     @Inject
@@ -238,16 +222,12 @@ public abstract class ContactTableActivity
     @Inject
     PolicyService policyService;
 
-    private boolean isShowTable = false;
-
     private AppEvents.InitDetails init;
-    private ContactQuery query;
 
     private static String CREATE_ACTION;
 
     private long marker;
 
-    private Integer scrollTop;
-
-    private int page = 0;
+    private Integer scrollTo = 0;
+    private Boolean preScroll = false;
 }

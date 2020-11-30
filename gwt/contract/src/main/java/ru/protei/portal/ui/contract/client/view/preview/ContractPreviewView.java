@@ -3,7 +3,6 @@ package ru.protei.portal.ui.contract.client.view.preview;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
-import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -14,6 +13,9 @@ import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.contract.client.activity.preview.AbstractContractPreviewActivity;
 import ru.protei.portal.ui.contract.client.activity.preview.AbstractContractPreviewView;
+import ru.protei.portal.ui.contract.client.widget.contractspecification.previewitem.ContractSpecificationPreviewItem;
+
+import java.util.List;
 
 public class ContractPreviewView extends Composite implements AbstractContractPreviewView {
 
@@ -33,13 +35,13 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     }
 
     @Override
-    public void setHeader(String value) {
-        this.header.setText(value);
+    public HasWidgets getTagsContainer() {
+        return tagsContainer;
     }
 
     @Override
-    public void setType(String value) {
-        this.type.setInnerText(value);
+    public void setHeader(String value) {
+        this.header.setText(value);
     }
 
     @Override
@@ -49,57 +51,64 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
 
     @Override
     public void setDateSigning(String value) {
-        this.dateSigning.setInnerText(value);
+        this.dateSigning.setInnerHTML(value);
     }
 
     @Override
     public void setDateValid(String value) {
-        this.dateValid.setInnerText(value);
+        this.dateValid.setInnerHTML(value);
     }
 
     @Override
     public void setDescription(String value) {
-        this.description.setText(value);
+        this.description.setInnerHTML(value);
     }
 
     @Override
     public void setDirection(String value) {
-        this.direction.setInnerText(value);
+        this.direction.setInnerHTML(value);
     }
 
     @Override
-    public void setContragent(String value) {
-        this.contragent.setInnerText(value);
+    public void setContractor(String value) {
+        this.contractor.setInnerHTML(value);
     }
 
     @Override
     public void setCurator(String value) {
-        this.curator.setInnerText(value);
+        this.curator.setInnerHTML(value);
     }
 
     @Override
     public void setManager(String value) {
-        this.manager.setInnerText(value);
+        this.manager.setInnerHTML(value);
     }
 
     @Override
-    public void setDates(String value) {
-        this.dates.setInnerText(value);
+    public void setDates(List<Widget> value) {
+        this.dates.clear();
+        value.forEach(widget -> this.dates.add(widget));
+    }
+
+    @Override
+    public void setSpecifications(List<ContractSpecificationPreviewItem> value) {
+        this.specifications.clear();
+        value.forEach(item -> this.specifications.add(item));
     }
 
     @Override
     public void setOrganization(String value) {
-        this.organization.setInnerText(value);
+        this.organization.setInnerHTML(value);
     }
 
     @Override
     public void setParentContract(String value) {
-        this.contractParent.setInnerText(value);
+        this.contractParent.setInnerHTML(value);
     }
 
     @Override
     public void setChildContracts(String value) {
-        this.contractChild.setInnerText(value);
+        this.contractChild.setInnerHTML(value);
     }
 
     @Override
@@ -141,13 +150,11 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     @UiField
     HTMLPanel commentContainer;
     @UiField
-    Element type;
-    @UiField
     SpanElement dateSigning;
     @UiField
     SpanElement dateValid;
     @UiField
-    InlineLabel description;
+    SpanElement description;
     @UiField
     SpanElement direction;
     @UiField
@@ -159,11 +166,13 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     @UiField
     SpanElement curator;
     @UiField
-    SpanElement contragent;
+    SpanElement contractor;
     @UiField
     Anchor header;
     @UiField
-    LabelElement dates;
+    HTMLPanel dates;
+    @UiField
+    HTMLPanel specifications;
     @UiField
     SpanElement contractParent;
     @UiField
@@ -174,6 +183,8 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     HTMLPanel footerContainer;
     @UiField
     HTMLPanel previewWrapperContainer;
+    @UiField
+    HTMLPanel tagsContainer;
 
     private AbstractContractPreviewActivity activity;
 

@@ -3,12 +3,14 @@ package ru.protei.portal.ui.equipment.client.activity.edit;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.ent.DecimalNumber;
-import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.model.marker.HasProcessable;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 
 import java.util.List;
+import java.util.function.Function;
 
 
 /**
@@ -39,6 +41,8 @@ public interface AbstractEquipmentEditView extends IsWidget {
 
     HasWidgets documents();
 
+    void setLinkedEquipmentFilter(Selector.SelectorFilter<EquipmentShortView> filter);
+
     void setVisibilitySettingsForCreated(boolean isVisible);
 
     boolean isDecimalNumbersCorrect();
@@ -50,4 +54,12 @@ public interface AbstractEquipmentEditView extends IsWidget {
     HasEnabled createDocumentButtonEnabled();
 
     HasVisibility documentsVisibility();
+
+    HasVisibility nameErrorLabelVisibility();
+
+    HasText nameErrorLabel();
+
+    void setNameSizeValidationFunction(Function<String, Boolean> validationFunction);
+
+    HasProcessable saveProcessable();
 }

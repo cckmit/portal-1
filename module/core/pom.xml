@@ -86,6 +86,30 @@
                         <argument>notification/email/document.doc.file.updated.by.member.body.ftl</argument>
                         <argument>notification/email/report.subject.ftl</argument>
                         <argument>notification/email/report.body.ftl</argument>
+                        <argument>notification/email/project.body.ftl</argument>
+                        <argument>notification/email/project.subject.ftl</argument>
+                        <argument>notification/email/reservation.room.subject.ftl</argument>
+                        <argument>notification/email/reservation.room.body.ftl</argument>
+                        <argument>notification/email/subnet.subject.ftl</argument>
+                        <argument>notification/email/subnet.body.ftl</argument>
+                        <argument>notification/email/reserved.ip.subject.ftl</argument>
+                        <argument>notification/email/reserved.ip.body.ftl</argument>
+                        <argument>notification/email/reserved.ip.remaining.subject.ftl</argument>
+                        <argument>notification/email/person.case.filter.subject.ftl</argument>
+                        <argument>notification/email/person.case.filter.body.ftl</argument>
+                        <argument>notification/email/absence.subject.ftl</argument>
+                        <argument>notification/email/absence.body.ftl</argument>
+                        <argument>notification/email/absence.report.subject.ftl</argument>
+                        <argument>notification/email/report.duty.log.subject.ftl</argument>
+                        <argument>notification/email/report.duty.log.body.ftl</argument>
+                        <argument>notification/email/project.pausetime.subject.ftl</argument>
+                        <argument>notification/email/project.pausetime.body.ftl</argument>
+                        <argument>notification/email/birthdays.subject.ftl</argument>
+                        <argument>notification/email/birthdays.body.ftl</argument>
+                        <argument>notification/email/nrpe.ips.subject.ftl</argument>
+                        <argument>notification/email/nrpe.ips.body.ftl</argument>
+                        <argument>notification/email/expiring.technical.support.validity.subject.ftl</argument>
+                        <argument>notification/email/expiring.technical.support.validity.body.ftl</argument>
                     </arguments>
                 </configuration>
             </plugin>
@@ -168,6 +192,11 @@
             <groupId>ru.protei</groupId>
             <artifactId>jmc</artifactId>
             <version>3.6-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>ru.protei</groupId>
+            <artifactId>portal4.nrpe</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -418,6 +447,12 @@
             <artifactId>mockito-core</artifactId>
             <version>${project.mockito.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.12.1</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 

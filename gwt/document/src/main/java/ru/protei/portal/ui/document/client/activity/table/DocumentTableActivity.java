@@ -2,7 +2,6 @@ package ru.protei.portal.ui.document.client.activity.table;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -15,7 +14,6 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.query.DocumentQuery;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -24,14 +22,12 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DocumentControllerAsync;
-import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.document.client.activity.filter.AbstractDocumentFilterActivity;
 import ru.protei.portal.ui.document.client.activity.filter.AbstractDocumentFilterView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 public abstract class DocumentTableActivity
@@ -54,7 +50,7 @@ public abstract class DocumentTableActivity
     @Event(Type.FILL_CONTENT)
     public void onShow(DocumentEvents.Show event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
@@ -68,8 +64,7 @@ public abstract class DocumentTableActivity
         );
 
         query = makeQuery();
-
-        clearScroll(event);
+        this.preScroll = event.preScroll;
 
         loadTable();
     }
@@ -129,8 +124,8 @@ public abstract class DocumentTableActivity
     @Override
     public void onEditClicked(Document value) {
         if (!value.isDeprecatedUnit()) {
-            persistScrollTopPosition();
-            fireEvent(DocumentEvents.Edit.byId(value.getId()));
+            persistScroll();
+            fireEvent(new DocumentEvents.Edit(value.getId()).withBackEvent(() -> fireEvent(new DocumentEvents.Show(true))));
         }
     }
 
@@ -142,6 +137,7 @@ public abstract class DocumentTableActivity
 
     @Override
     public void onItemClicked(Document value) {
+        persistScroll();
         showPreview(value);
     }
 
@@ -162,13 +158,13 @@ public abstract class DocumentTableActivity
                     callback.onFailure(throwable);
                 })
                 .withSuccess(sr -> {
-                    callback.onSuccess(sr.getResults());
                     if (isFirstChunk) {
                         view.setTotalRecords(sr.getTotalCount());
                         pagerView.setTotalPages(view.getPageCount());
                         pagerView.setTotalCount(sr.getTotalCount());
-                        restoreScrollTopPositionOrClearSelection();
+                        restoreScroll();
                     }
+                    callback.onSuccess(sr.getResults());
                 }));
     }
 
@@ -209,33 +205,25 @@ public abstract class DocumentTableActivity
         );
     }
 
-    private void persistScrollTopPosition() {
-        scrollTop = Window.getScrollTop();
+    private void persistScroll() {
+        scrollTo = Window.getScrollTop();
     }
 
-    private void restoreScrollTopPositionOrClearSelection() {
-        if (scrollTop == null) {
+    private void restoreScroll() {
+        if (!preScroll) {
             view.clearSelection();
             return;
         }
-        int trh = RootPanel.get(DebugIds.DEBUG_ID_PREFIX + DebugIds.APP_VIEW.GLOBAL_CONTAINER).getOffsetHeight() - Window.getClientHeight();
-        if (scrollTop <= trh) {
-            Window.scrollTo(0, scrollTop);
-            scrollTop = null;
-        }
-    }
 
-    private void clearScroll(DocumentEvents.Show event) {
-        if (event.clearScroll) {
-            event.clearScroll = false;
-            this.scrollTop = null;
-        }
+        Window.scrollTo(0, scrollTo);
+        preScroll = false;
+        scrollTo = 0;
     }
 
     private Runnable removeAction(Document document) {
         return () -> documentService.removeDocument(document, new FluentCallback<Long>()
                 .withSuccess(id -> {
-                    fireEvent(new DocumentEvents.Show());
+                    fireEvent(new DocumentEvents.Show(false));
                     fireEvent(new NotifyEvents.Show(lang.documentRemoved(), NotifyEvents.NotifyType.SUCCESS));
                 }));
     }
@@ -255,7 +243,8 @@ public abstract class DocumentTableActivity
     @Inject
     PolicyService policyService;
 
-    private Integer scrollTop;
+    private Integer scrollTo = 0;
+    private Boolean preScroll = false;
     private static String CREATE_ACTION;
     private AppEvents.InitDetails init;
     private DocumentQuery query;

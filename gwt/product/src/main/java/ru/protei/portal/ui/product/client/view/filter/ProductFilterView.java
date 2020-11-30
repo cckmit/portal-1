@@ -11,7 +11,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.struct.ProductDirectionInfo;
+import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
@@ -125,8 +125,8 @@ public class ProductFilterView extends Composite implements AbstractProductFilte
     }
 
     private void ensureDebugIds() {
-        search.setEnsureDebugIdTextBox(DebugIds.FILTER.SEARCH_INPUT);
-        search.setEnsureDebugIdAction(DebugIds.FILTER.SEARCH_CLEAR_BUTTON);
+        search.setDebugIdTextBox(DebugIds.FILTER.SEARCH_INPUT);
+        search.setDebugIdAction(DebugIds.FILTER.SEARCH_CLEAR_BUTTON);
         sortField.setEnsureDebugId(DebugIds.FILTER.SORT_FIELD_SELECTOR);
         sortDir.ensureDebugId(DebugIds.FILTER.SORT_DIR_BUTTON);
 

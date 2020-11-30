@@ -12,25 +12,28 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
-import ru.protei.portal.ui.common.client.widget.selector.button.ButtonPopupSingleSelector;
 import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
+
+import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 
 /**
  * Вид селектора
  *  @deprecated  следует использовать {@link FormPopupSingleSelector}
  */
 @Deprecated
-public class FormSelector<T> extends Selector<T> implements HasValidable, HasEnabled{
+public class FormSelector<T> extends Selector<T> implements HasValidable, HasEnabled {
+    public FormSelector() {
+        initWidget(ourUiBinder.createAndBindUi(this));
+    }
 
     @Inject
     public void onInit() {
-        initWidget(ourUiBinder.createAndBindUi(this));
         initHandler();
+        root.add(popup);
     }
 
     @Override
@@ -47,9 +50,11 @@ public class FormSelector<T> extends Selector<T> implements HasValidable, HasEna
         }
         innerHtml += valueName;
 
+        String title = isNotEmpty(selectedValue.getTitle()) ? selectedValue.getTitle() : valueName;
+
         text.setInnerHTML(innerHtml);
-        if (StringUtils.isNotEmpty(valueName)) {
-            text.setTitle(valueName);
+        if (isNotEmpty(title)) {
+            text.setTitle(title);
         }
 
         if (selectedValue.getExternalLink() != null) {
@@ -135,7 +140,9 @@ public class FormSelector<T> extends Selector<T> implements HasValidable, HasEna
         formContainer.sinkEvents(Event.ONCLICK);
         formContainer.addHandler(event -> {
             formContainer.addStyleName(FOCUS_STYLENAME);
-            showPopup(formContainer);
+            if (!popup.isVisible()) {
+                showPopup(formContainer);
+            }
         }, ClickEvent.getType());
 
         popup.addCloseHandler(event -> formContainer.removeStyleName(FOCUS_STYLENAME));
@@ -148,6 +155,8 @@ public class FormSelector<T> extends Selector<T> implements HasValidable, HasEna
         })
     }-*/;
 
+    @UiField
+    HTMLPanel root;
     @UiField
     HTMLPanel formContainer;
     @UiField

@@ -13,9 +13,17 @@ import ru.protei.portal.api.model.*;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.config.PortalConfigReloadable;
+import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
+import ru.protei.portal.core.client.youtrack.api.YoutrackApiImpl;
+import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
+import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClientImpl;
+import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
+import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.model.struct.Photo;
+import ru.protei.portal.core.service.YoutrackService;
+import ru.protei.portal.core.service.YoutrackServiceImpl;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.auth.AuthServiceImpl;
 import ru.protei.portal.core.service.auth.LDAPAuthProvider;
@@ -55,6 +63,16 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
     }
 
     @Bean
+    public ContactSqlBuilder getContactSqlBuilder() {
+        return new ContactSqlBuilder();
+    }
+
+    @Bean
+    public PersonSqlBuilder getPersonSqlBuilder() {
+        return new PersonSqlBuilder();
+    }
+
+    @Bean
     public CompanyGroupHomeDAO getCompanyGroupHomeDAO() {
         return new CompanyGroupHomeDAO_Impl();
     }
@@ -80,6 +98,11 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
     }
 
     @Bean
+    public UserLoginShortViewDAO getUserLoginShortViewDAO() {
+        return new UserLoginShortViewDAO_Impl();
+    }
+
+    @Bean
     public UserRoleDAO getUserRoleDAO() {
         return new UserRoleDAO_impl();
     }
@@ -100,8 +123,48 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
     }
 
     @Bean
+    public CaseStateDAO getCaseStateDAO() {
+        return new CaseStateDAO_Impl();
+    }
+
+    @Bean
+    public ContactItemDAO getContactItemDAO() {
+        return new ContactItemDAO_Impl();
+    }
+
+    @Bean
+    public PersonFavoriteIssuesDAO getPersonFavoritesIssuesDAO() {
+        return new PersonFavoriteIssuesDAO_Impl();
+    }
+
+    @Bean
+    public YoutrackService getYoutrackService() {
+        return new YoutrackServiceImpl();
+    }
+
+    @Bean
+    public YoutrackApi getYoutrackApi() {
+        return new YoutrackApiImpl();
+    }
+
+    @Bean
+    public YoutrackHttpClient getYoutrackHttpClient() {
+        return new YoutrackHttpClientImpl();
+    }
+
+    @Bean
+    public YtDtoFieldsMapper getYtDtoFieldsMapper() {
+        return new YtDtoFieldsMapperImpl();
+    }
+
+    @Bean
     public EmployeeRegistrationDAO getEmployeeRegistrationDAO() {
         return new EmployeeRegistrationDAO_Impl();
+    }
+
+    @Bean
+    public EmployeeShortViewDAO getEmployeeShortViewDAO() {
+        return new EmployeeShortViewDAO_Impl();
     }
 
     /**

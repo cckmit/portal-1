@@ -1,12 +1,8 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.struct.AuditableObject;
-import ru.protei.winter.jdbc.annotations.IdInsertMode;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
-import ru.protei.winter.jdbc.annotations.JdbcEntity;
-import ru.protei.winter.jdbc.annotations.JdbcId;
+import ru.protei.winter.jdbc.annotations.*;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
@@ -40,6 +36,9 @@ public class Attachment extends AuditableObject {
 
     @JdbcColumn(name = "file_name")
     private String fileName;
+
+    @JdbcColumn(name = "private_flag")
+    private boolean isPrivate;
 
     public Attachment (Long attachmentId) {
         id = attachmentId;
@@ -112,6 +111,14 @@ public class Attachment extends AuditableObject {
         this.fileName = fileName;
     }
 
+    public boolean isPrivate() {
+        return isPrivate;
+    }
+
+    public void setPrivate(boolean isPrivate) {
+        this.isPrivate = isPrivate;
+    }
+
     public int toHashCodeForRedmineCheck() {
         return ((created == null ? "" : created.getTime()) + (fileName == null ? "" : fileName)).hashCode();
     }
@@ -135,7 +142,14 @@ public class Attachment extends AuditableObject {
     public String toString() {
         return "Attachment{" +
                 "id=" + id +
-                " fileName=" + fileName +
+                ", created=" + created +
+                ", creatorId=" + creatorId +
+                ", labelText='" + labelText + '\'' +
+                ", extLink='" + extLink + '\'' +
+                ", mimeType='" + mimeType + '\'' +
+                ", dataSize=" + dataSize +
+                ", fileName='" + fileName + '\'' +
+                ", isPrivate=" + isPrivate +
                 '}';
     }
 }

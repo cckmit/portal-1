@@ -53,7 +53,6 @@ public class MigrateBugs implements MigrateAction {
                     obj.setInfo((String) row.get("strInfo"));
                     obj.setInitiatorId((Long) row.get("nDeclarantId"));
                     obj.setKeywords((String) row.get("strKeyWord"));
-                    obj.setLocal(row.get("lIsLocal") == null ? 1 : ((Number) row.get("lIsLocal")).intValue());
                     obj.setName((String) row.get("strSubject"));
                     obj.setManagerId(obj.getCreatorId());
                     obj.setModified(new Date());

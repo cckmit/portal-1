@@ -101,6 +101,11 @@ public enum En_SortField {
     project("project"),
 
     /**
+     * document project
+     */
+    document_project("case_object.case_name"),
+
+    /**
      * equipment primary use
      */
     primary_use("primary_use"),
@@ -123,7 +128,109 @@ public enum En_SortField {
     /**
      * project name
      */
-    project_name("CASE_NAME");
+    project_name("CASE_NAME"),
+
+    /**
+     * project number
+     */
+    project_number("id"),
+
+    /**
+     * project_creation_date
+     */
+    project_creation_date("CO.created"),
+
+    /**
+     * project_head_manager
+     */
+    project_head_manager("CM_MEMBER_ID"),
+
+    /**
+     * ip address
+     */
+    ip_address("INET_ATON(ip_address)"),
+
+    /**
+     * subnet address
+     */
+    address("INET_ATON(address)"),
+
+    /**
+     * last active IP-address date
+     */
+    check_date("last_check_date"),
+
+    /**
+     * state order
+     */
+    state_order("VIEW_ORDER"),
+
+    /**
+     * start_date
+     */
+    start_date("start_date"),
+
+    /**
+     * finish_date
+     */
+    finish_date("finish_date"),
+
+    /**
+     * absence date from
+     */
+    absence_date_from("from_time"),
+
+    /**
+     * absence date till
+     */
+    absence_date_till("till_time"),
+
+    /**
+     * absence person
+     */
+    absence_person("pa.displayname"),
+
+    /**
+     * absence reason
+     */
+    absence_reason("reason_id"),
+
+    /**
+     * room_reservation_date_from
+     */
+    room_reservation_date_from("room_reservation.date_from"),
+
+    /**
+     * Дата создания контракта
+     */
+    contract_creation_date("CO.created"),
+
+    /**
+     * Дата подписания контракта
+     */
+    contract_signing_date("contract.date_signing"),
+
+
+    /**
+     * Журнал дежурств date from
+     */
+    duty_log_date_from("duty_log.date_from"),
+
+    /**
+     * Журнал дежурств employee
+     */
+    duty_log_employee("duty_log.person_id"),
+
+    /**
+     * Журнал дежурств type
+     */
+    duty_log_type("duty_log.type"),
+
+    /**
+     * Просто значение
+     */
+    value("value"),
+    ;
 
     private String fieldName;
     private String bundleKey;

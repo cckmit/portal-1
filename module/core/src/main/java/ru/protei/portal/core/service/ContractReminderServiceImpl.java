@@ -16,7 +16,9 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.events.EventPublisherService;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -28,6 +30,18 @@ import java.util.Set;
 import static ru.protei.portal.api.struct.Result.ok;
 
 public class ContractReminderServiceImpl implements ContractReminderService {
+    private static final Logger log = LoggerFactory.getLogger(ContractReminderServiceImpl.class);
+
+    @Autowired
+    ContractDAO contractDAO;
+    @Autowired
+    ContractDateDAO contractDateDAO;
+    @Autowired
+    PersonDAO personDAO;
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
+    @Autowired
+    EventPublisherService publisherService;
 
     @Override
     public Result<Integer> notifyAboutDates() {
@@ -87,14 +101,15 @@ public class ContractReminderServiceImpl implements ContractReminderService {
 
     private Set<NotificationEntry> getNotificationEntries(Set<Long> personIdList) {
         Set<NotificationEntry> notificationEntries = new HashSet<>();
-        List<Person> personList = personDAO.partialGetListByKeys(personIdList, "contactInfo", "locale");
+        List<Person> personList = personDAO.partialGetListByKeys(personIdList, "locale");
+        jdbcManyRelationsHelper.fill(personList, Person.Fields.CONTACT_ITEMS);
         for (Person person : personList) {
             ContactInfo contactInfo = person.getContactInfo();
             if (contactInfo == null) {
                 continue;
             }
             String email = new PlainContactInfoFacade(contactInfo).getEmail();
-            String locale = person.getLocale() == null ? DEFAULT_LOCALE : person.getLocale();
+            String locale = person.getLocale() == null ? CrmConstants.DEFAULT_LOCALE : person.getLocale();
             if (StringUtils.isBlank(email)) {
                 continue;
             }
@@ -113,16 +128,4 @@ public class ContractReminderServiceImpl implements ContractReminderService {
         }
         return personIdList;
     }
-
-    @Autowired
-    ContractDAO contractDAO;
-    @Autowired
-    ContractDateDAO contractDateDAO;
-    @Autowired
-    PersonDAO personDAO;
-    @Autowired
-    EventPublisherService publisherService;
-
-    private static final String DEFAULT_LOCALE = "ru";
-    private static final Logger log = LoggerFactory.getLogger(ContractReminderServiceImpl.class);
 }

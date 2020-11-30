@@ -25,13 +25,19 @@ public interface AbstractEmployeePreviewView extends IsWidget {
 
     void setIP(String ip);
 
+    void setLogin(String login);
+
     HasVisibility birthdayContainerVisibility();
 
     HasVisibility phonesContainerVisibility();
 
     HasVisibility emailContainerVisibility();
 
-    HasWidgets getPositionsContainer();
+    HasWidgets positionsContainer();
+
+    HasWidgets absencesContainer();
 
     void showFullScreen(boolean isFullScreen);
+
+    void showAbsencesPanel(boolean isShow);
 }

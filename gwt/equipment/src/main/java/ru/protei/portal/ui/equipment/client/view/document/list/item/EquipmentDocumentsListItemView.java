@@ -11,9 +11,12 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
+import org.apache.poi.hssf.record.HideObjRecord;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.equipment.client.activity.document.list.item.AbstractEquipmentDocumentsListItemActivity;
 import ru.protei.portal.ui.equipment.client.activity.document.list.item.AbstractEquipmentDocumentsListItemView;
+
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 
 public class EquipmentDocumentsListItemView extends Composite implements AbstractEquipmentDocumentsListItemView {
 
@@ -39,9 +42,9 @@ public class EquipmentDocumentsListItemView extends Composite implements Abstrac
     public void setDecimalNumber(String number) {
         if (StringUtils.isNotBlank(number)) {
             decimalNumber.setInnerText(number.trim());
-            decimalNumber.removeClassName("hide");
+            decimalNumber.removeClassName(HIDE);
         } else {
-            decimalNumber.addClassName("hide");
+            decimalNumber.addClassName(HIDE);
         }
     }
 
@@ -49,9 +52,9 @@ public class EquipmentDocumentsListItemView extends Composite implements Abstrac
     public void setInfo(String info) {
         if (StringUtils.isNotBlank(info)) {
             information.setInnerText(info.trim());
-            information.removeClassName("hide");
+            information.removeClassName(HIDE);
         } else {
-            information.addClassName("hide");
+            information.addClassName(HIDE);
         }
     }
 

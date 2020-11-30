@@ -2,18 +2,21 @@ package ru.protei.portal.ui.common.client.widget.selector.popup;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.logical.shared.*;
+import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.events.AddEvent;
@@ -21,30 +24,21 @@ import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
+import ru.protei.portal.ui.common.client.widget.composite.popper.PopperComposite;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
+
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 
 /**
  * Вид попапа
  */
-public class SelectorPopup
-        extends PopupPanel
-        implements HasValueChangeHandlers<String>, HasAddHandlers
-{
-
+public class SelectorPopup extends PopperComposite implements HasValueChangeHandlers<String>, HasAddHandlers {
     public SelectorPopup() {
-        setWidget( ourUiBinder.createAndBindUi( this ) );
-        setAutoHideEnabled( true );
-        setAutoHideOnHistoryEventsEnabled( true );
+        initWidget( ourUiBinder.createAndBindUi( this ) );
         ensureDefaultDebugIds();
 
-        resizeHandler = new ResizeHandler() {
-            @Override
-            public void onResize(ResizeEvent resizeEvent) {
-                if (SelectorPopup.this.isAttached()) {
-                    SelectorPopup.this.showNear(relative);
-                }
-            }
-        };
+        setAutoHide(true);
+        setAutoResize(true);
     }
 
     @Override
@@ -61,58 +55,26 @@ public class SelectorPopup
         return childContainer;
     }
 
-    public void showNear( IsWidget nearWidget ) {
-        prepareToShow(nearWidget);
-        int offsetWidth = nearWidget.asWidget().getOffsetWidth();
-        root.getElement().getStyle().setWidth( offsetWidth < 100 ? 150 : offsetWidth, Style.Unit.PX );
-        if(searchVisible && searchAutoFocus) {
-            search.setFocus(true);
-        }
-        showRelativeTo(nearWidget.asWidget());
+    public void show(IsWidget nearWidget) {
+        super.show(nearWidget.asWidget().getElement());
+        search.setFocus(searchAutoFocus);
     }
 
-    public void showNearRight( final IsWidget nearWidget ) {
-        prepareToShow(nearWidget);
-        setPopupPositionAndShow((popupWidth, popupHeight) -> {
-                int relativeLeft = nearWidget.asWidget().getAbsoluteLeft();
-                int widthDiff = popupWidth - nearWidget.asWidget().getOffsetWidth();
-                int popupLeft = relativeLeft - widthDiff;
-                int relativeTop = nearWidget.asWidget().getAbsoluteTop();
-                int popupTop = relativeTop + nearWidget.asWidget().getOffsetHeight();
-
-                setPopupPosition( popupLeft, popupTop );
-        });
-    }
-
-    public void showNearInlineRight( final IsWidget nearWidget ) {
-        prepareToShow(nearWidget);
-        root.getElement().getStyle().setWidth( 150, Style.Unit.PX );
-        search.setStyle( "input-sm" );
-        setPopupPositionAndShow((popupWidth, popupHeight) -> {
-            int relativeLeft = nearWidget.asWidget().getAbsoluteLeft();
-            int widthDiff = popupWidth - nearWidget.asWidget().getOffsetWidth();
-            int popupLeft = relativeLeft - widthDiff;
-            int popupTop = nearWidget.asWidget().getAbsoluteTop();
-            setPopupPosition(popupLeft, popupTop);
-        });
-    }
     public void setSearchVisible( boolean searchVisible ) {
-        this.searchVisible = searchVisible;
         if ( searchVisible ) {
             search.getElement().setPropertyString("placeholder", lang.search());
-            search.removeStyleName( "hide" );
+            search.removeStyleName(HIDE);
             return;
         }
 
-        search.addStyleName( "hide" );
+        search.addStyleName(HIDE);
     }
 
     public void setAddButton(boolean addVisible) {
-        this.addVisible = addVisible;
         if (addVisible) {
-            addContainer.removeClassName("hide");
+            addContainer.removeClassName(HIDE);
         } else {
-            addContainer.addClassName("hide");
+            addContainer.addClassName(HIDE);
         }
     }
 
@@ -143,28 +105,10 @@ public class SelectorPopup
         AddEvent.fire(this);
     }
 
-    @Override
-    protected void onLoad() {
-        resizeHandlerReg = Window.addResizeHandler( resizeHandler );
-    }
-
-    @Override
-    protected void onUnload() {
-        if ( resizeHandlerReg != null ) {
-            resizeHandlerReg.removeHandler();
-        }
-    }
-
     public void clearSearchField() {
         search.setValue( "" );
     }
-    private void prepareToShow(IsWidget nearWidget ) {
-        this.relative = nearWidget;
 
-        root.getElement().getStyle().setPosition(Style.Position.ABSOLUTE);
-        root.getElement().getStyle().setDisplay(Style.Display.BLOCK);
-        root.getElement().getStyle().setFloat(Style.Float.LEFT);
-    }
     private void fireChangeValueTimer() {
         searchValueChangeTimer.cancel();
         searchValueChangeTimer.schedule( 200 );
@@ -175,42 +119,37 @@ public class SelectorPopup
     }
 
     private void ensureDefaultDebugIds() {
-        setEnsureDebugIdAddEntryAction(DebugIds.SELECTOR.POPUP.ADD_NEW_ENTRY_BUTTON);
-        setEnsureDebugIdSearch(DebugIds.SELECTOR.POPUP.SEARCH_INPUT);
-        setEnsureDebugIdSearchAction(DebugIds.SELECTOR.POPUP.SEARCH_ACTION);
-        setEnsureDebugIdListContainer(DebugIds.SELECTOR.POPUP.ENTRY_LIST_CONTAINER);
+        setDebugAttributeAddEntryAction(DebugIds.SELECTOR.POPUP.ADD_NEW_ENTRY_BUTTON);
+        setDebugAttributeSearch(DebugIds.SELECTOR.POPUP.SEARCH_INPUT);
+        setDebugAttributeSearchAction(DebugIds.SELECTOR.POPUP.SEARCH_ACTION);
+        setDebugAttributeListContainer(DebugIds.SELECTOR.POPUP.ENTRY_LIST_CONTAINER);
     }
 
-    public void setEnsureDebugIdAddEntryAction(String debugId) {
-        addButton.ensureDebugId(debugId);
+    public void setDebugAttributeAddEntryAction(String attribute) {
+        addButton.getElement().setAttribute(DebugIds.DEBUG_ID_ATTRIBUTE, attribute);
     }
 
-    public void setEnsureDebugIdSearch(String debugId) {
-        search.setEnsureDebugIdTextBox(debugId);
+    public void setDebugAttributeSearch(String attribute) {
+        search.setDebugAttributeTextBox(attribute);
     }
 
-    public void setEnsureDebugIdSearchAction(String debugId) {
-        search.setEnsureDebugIdAction(debugId);
+    public void setDebugAttributeSearchAction(String attribute) {
+        search.setDebugAttributeAction(attribute);
     }
 
-    public void setEnsureDebugIdListContainer(String debugId) {
-        childContainer.ensureDebugId(debugId);
+    public void setDebugAttributeListContainer(String attribute) {
+        childContainer.getElement().setAttribute(DebugIds.DEBUG_ID_ATTRIBUTE, attribute);
     }
 
-    Timer searchValueChangeTimer = new Timer() {
+    private Timer searchValueChangeTimer = new Timer() {
         @Override
         public void run() {
             searchValueChangeTimer.cancel();
             ValueChangeEvent.fire( SelectorPopup.this, search.getValue() );
         }
     };
-    IsWidget relative;
-    ResizeHandler resizeHandler;
-    HandlerRegistration resizeHandlerReg;
 
-    boolean searchAutoFocus = true;
-    boolean searchVisible = false;
-    boolean addVisible = false;
+    private boolean searchAutoFocus = true;
 
     @UiField
     public HTMLPanel childContainer;

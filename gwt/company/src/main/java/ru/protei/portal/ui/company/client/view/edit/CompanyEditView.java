@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.company.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
@@ -13,12 +14,14 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
+import ru.protei.portal.ui.common.client.widget.tab.TabWidget;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditActivity;
@@ -39,6 +42,8 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         parentCompany.setDefaultValue(lang.selectIssueCompany());
         companyModel.showOnlyParentCompanies(true);
         parentCompany.setAsyncModel(companyModel);
+
+        ensureDebugIds();
     }
 
     @Override
@@ -79,6 +84,16 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     @Override
     public HasText comment() {
         return comment;
+    }
+
+    @Override
+    public HasText companyNameErrorLabel() {
+        return companyNameErrorLabel;
+    }
+
+    @Override
+    public HasVisibility companyNameErrorLabelVisibility() {
+        return companyNameErrorLabel;
     }
 
     @Override
@@ -136,6 +151,11 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         subscriptions.setCompanyId(companyId);
     }
 
+    @Override
+    public HasValue<Boolean> autoOpenIssues() {
+        return autoOpenIssues;
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -157,6 +177,33 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         timer.schedule( 300 );
     }
 
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+
+        companyName.ensureDebugId(DebugIds.COMPANY.NAME);
+        verifiableIcon.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY.VERIFIABLE_ICON);
+        companyCategory.setEnsureDebugId(DebugIds.COMPANY.CATEGORY);
+        parentCompany.setEnsureDebugId(DebugIds.COMPANY.PARENT);
+        comment.ensureDebugId(DebugIds.COMPANY.COMMENT);
+        autoOpenIssues.ensureDebugId(DebugIds.COMPANY.AUTO_OPEN_ISSUES);
+        subscriptions.ensureDebugId(DebugIds.COMPANY.SUBSCRIPTIONS);
+        webSite.ensureDebugId(DebugIds.COMPANY.WEB_SITE);
+        phonesContainer.ensureDebugId(DebugIds.COMPANY.PHONES);
+        emailsContainer.ensureDebugId(DebugIds.COMPANY.EMAILS);
+        actualAddress.ensureDebugId(DebugIds.COMPANY.ACTUAL_ADDRESS);
+        legalAddress.ensureDebugId(DebugIds.COMPANY.LEGAL_ADDRESS);
+        tabWidget.ensureDebugId(DebugIds.COMPANY.TABS);
+        tabWidget.setTabNameDebugId(lang.contacts(), DebugIds.COMPANY.TAB_CONTACTS);
+        tabWidget.setTabNameDebugId(lang.siteFolder(), DebugIds.COMPANY.TAB_SITE_FOLDERS);
+        contactsContainer.ensureDebugId(DebugIds.COMPANY.CONTACTS);
+        siteFolderContainer.ensureDebugId(DebugIds.COMPANY.SITE_FOLDERS);
+
+        saveButton.ensureDebugId(DebugIds.COMPANY.SAVE_BUTTON);
+        cancelButton.ensureDebugId(DebugIds.COMPANY.CANCEL_BUTTON);
+    }
+
     @UiField
     Button saveButton;
 
@@ -165,6 +212,9 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
 
     @UiField
     ValidableTextBox companyName;
+
+    @UiField
+    Label companyNameErrorLabel;
 
     @UiField
     Element verifiableIcon;
@@ -186,6 +236,9 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     CompanySelector parentCompany;
 
     @UiField
+    CheckBox autoOpenIssues;
+
+    @UiField
     HTMLPanel phonesContainer;
 
     @UiField
@@ -194,6 +247,9 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     @Inject
     @UiField ( provided = true )
     CategoryButtonSelector companyCategory;
+
+    @UiField
+    TabWidget tabWidget;
 
     @UiField
     HTMLPanel contactsContainer;

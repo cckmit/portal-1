@@ -4,15 +4,9 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel styleName="top-brass">
-        <h2 class="text-center">
-            <ui:text from="{lang.employeeTopBrassLabel}"/>
-        </h2>
         <div class="top-brass-containers">
             <g:HTMLPanel ui:field="topContainer" styleName="top-brass-top-container row"/>
             <g:HTMLPanel ui:field="bottomContainer" styleName="row"/>
-        </div>
-        <div class="top-brass-footer text-right">
-            <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.backToEmployees}"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

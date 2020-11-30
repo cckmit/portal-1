@@ -1,10 +1,9 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_BundleType;
 import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
-
-import java.io.Serializable;
 
 @JdbcEntity(table = "case_link")
 public class CaseLink extends AuditableObject {
@@ -20,8 +19,15 @@ public class CaseLink extends AuditableObject {
     @JdbcEnumerated(EnumType.STRING)
     private En_CaseLink type;
 
+    @JdbcColumn(name = "bundle_type")
+    @JdbcEnumerated(EnumType.ID)
+    private En_BundleType bundleType;
+
     @JdbcColumn(name="remote_id")
     private String remoteId;
+
+    @JdbcColumn(name="with_crosslink")
+    private Boolean withCrosslink;
 
     @JdbcJoinedObject( sqlTableAlias = "case_object", joinData = {
             @JdbcJoinData(localColumn = "link_type", value = "'CRM'"),
@@ -61,6 +67,14 @@ public class CaseLink extends AuditableObject {
         this.type = type;
     }
 
+    public En_BundleType getBundleType() {
+        return bundleType;
+    }
+
+    public void setBundleType(En_BundleType bundleType) {
+        this.bundleType = bundleType;
+    }
+
     public String getRemoteId() {
         return remoteId;
     }
@@ -83,6 +97,14 @@ public class CaseLink extends AuditableObject {
 
     public void setYouTrackIssueInfo( YouTrackIssueInfo youTrackIssueInfo ) {
         this.youTrackIssueInfo = youTrackIssueInfo;
+    }
+
+    public Boolean getWithCrosslink() {
+        return withCrosslink;
+    }
+
+    public void setWithCrosslink(Boolean withCrosslink) {
+        this.withCrosslink = withCrosslink;
     }
 
     @Override
@@ -117,11 +139,15 @@ public class CaseLink extends AuditableObject {
 
     @Override
     public String toString() {
-        return "CaseMember{" +
+        return "CaseLink{" +
                 "id=" + id +
                 ", caseId=" + caseId +
                 ", type=" + type +
-                ", remoteId=" + remoteId +
+                ", bundleType=" + bundleType +
+                ", remoteId='" + remoteId + '\'' +
+                ", withCrosslink=" + withCrosslink +
+                ", caseInfo=" + caseInfo +
+                ", youTrackIssueInfo=" + youTrackIssueInfo +
                 '}';
     }
 }

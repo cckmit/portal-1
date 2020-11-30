@@ -12,7 +12,9 @@ public interface UserLoginController extends RemoteService {
 
     Long saveUserDashboard(UserDashboard dashboard) throws RequestFailedException;
 
-    void removeUserDashboard(Long dashboardId) throws RequestFailedException;
+    Long removeUserDashboard(Long dashboardId) throws RequestFailedException;
 
     List<UserDashboard> getUserDashboards() throws RequestFailedException;
+
+    List<UserDashboard> swapUserDashboards(Long srcDashboardId, Long dstDashboardId) throws RequestFailedException;
 }

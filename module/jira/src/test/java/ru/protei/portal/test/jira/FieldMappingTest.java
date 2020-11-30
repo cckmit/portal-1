@@ -3,7 +3,7 @@ package ru.protei.portal.test.jira;
 import org.junit.Assert;
 import org.junit.Test;
 import ru.protei.portal.core.model.dao.JiraStatusMapEntryDAO;
-import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.test.jira.mock.JiraStatusMapEntryDAO_ImplMock;
 
 import java.util.HashMap;
@@ -16,17 +16,18 @@ public class FieldMappingTest {
 
     @Test
     public void testStatusMapping () {
-        Map<String, En_CaseState> expectedMapping = new HashMap<>();
-        expectedMapping.put("Authorized", En_CaseState.CREATED);
-        expectedMapping.put("Studying", En_CaseState.OPENED);
-        expectedMapping.put("Request to customer", En_CaseState.CUST_REQUEST);
-        expectedMapping.put("Postpone", En_CaseState.PAUSED);
-        expectedMapping.put("Soft Close", En_CaseState.DONE);
-        expectedMapping.put("Nothing to change", En_CaseState.VERIFIED);
+        Map<String, Long> expectedMapping = new HashMap<>();
+        expectedMapping.put("Authorized", CrmConstants.State.CREATED);
+        expectedMapping.put("Studying", CrmConstants.State.OPENED);
+        expectedMapping.put("Postpone", CrmConstants.State.PAUSED);
+        expectedMapping.put("Soft Close", CrmConstants.State.DONE);
+        expectedMapping.put("Nothing to change", CrmConstants.State.VERIFIED);
+        expectedMapping.put("Request to customer", CrmConstants.State.CUST_REQUEST);
+        expectedMapping.put("Request to NX", CrmConstants.State.NX_REQUEST);
 
-        expectedMapping.forEach((key,state) -> {
-            Assert.assertEquals(state, statusMapEntryDAO.getByJiraStatus(FIRST_MAP_ID, key));
-            Assert.assertEquals(key, statusMapEntryDAO.getJiraStatus(FIRST_MAP_ID, state));
+        expectedMapping.forEach((key,stateId) -> {
+            Assert.assertEquals(stateId, statusMapEntryDAO.getByJiraStatus(FIRST_MAP_ID, key).getLocalStatusId());
+            Assert.assertEquals(key, statusMapEntryDAO.getJiraStatus(FIRST_MAP_ID, stateId));
         });
     }
 }

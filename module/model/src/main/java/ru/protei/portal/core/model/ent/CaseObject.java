@@ -1,15 +1,21 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
+import ru.protei.portal.core.model.dict.En_WorkTrigger;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
+import static ru.protei.portal.core.model.ent.CaseObject.Columns.*;
 
 /**
  * Created by michael on 19.05.16.
@@ -20,35 +26,38 @@ public class CaseObject extends AuditableObject {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
-    @JdbcColumn(name = "case_type")
+    @JdbcColumn(name = CASE_TYPE)
     @JdbcEnumerated( EnumType.ID )
     private En_CaseType type;
 
     @JdbcColumn(name = "CASENO")
     private Long caseNumber;
 
-    @JdbcColumn(name = "CREATED")
+    @JdbcColumn(name = CREATED)
     private Date created;
 
     @JdbcColumn(name = "MODIFIED")
     private Date modified;
 
-    @JdbcColumn(name = "CASE_NAME")
+    @JdbcColumn(name = CASE_NAME)
     private String name;
 
     @JdbcColumn(name = "EXT_ID")
     private String extId;
 
-    @JdbcColumn(name = "INFO")
+    @JdbcColumn(name = INFO)
     private String info;
 
-    @JdbcColumn(name = "STATE")
+    @JdbcColumn(name = STATE)
     private long stateId;
+
+    @JdbcJoinedColumn(localColumn = STATE, table = "case_state", remoteColumn = "id", mappedColumn = "STATE")
+    private String stateName;
 
     @JdbcColumn(name = "IMPORTANCE")
     private Integer impLevel;
 
-    @JdbcColumn(name = "CREATOR")
+    @JdbcColumn(name = CREATOR)
     private Long creatorId;
 
     @JdbcJoinedObject( localColumn = "CREATOR", remoteColumn = "id", updateLocalColumn = false )
@@ -66,7 +75,7 @@ public class CaseObject extends AuditableObject {
     @JdbcColumn(name = "initiator_company")
     private Long initiatorCompanyId;
 
-    @JdbcJoinedObject( localColumn = "initiator_company", remoteColumn = "id", updateLocalColumn = false )
+    @JdbcJoinedObject( localColumn = INITIATOR_COMPANY, remoteColumn = "id", updateLocalColumn = false )
     private Company initiatorCompany;
 
     @JdbcColumn(name = "product_id")
@@ -75,17 +84,14 @@ public class CaseObject extends AuditableObject {
     @JdbcJoinedObject(localColumn = "product_id", remoteColumn = "id", updateLocalColumn = false)
     private DevUnit product;
 
-    @JdbcColumn(name = "MANAGER")
+    @JdbcColumn(name = MANAGER)
     private Long managerId;
 
-    @JdbcJoinedObject( localColumn = "MANAGER", remoteColumn = "id", updateLocalColumn = false )
-    private Person manager;
+    @JdbcJoinedObject( localColumn = MANAGER, remoteColumn = "id", updateLocalColumn = false )
+    private PersonShortView manager;
 
     @JdbcColumn(name = "KEYWORDS")
     private String keywords;
-
-    @JdbcColumn(name = "ISLOCAL")
-    private int local;
 
     @JdbcColumn(name = "EMAILS")
     private String emails;
@@ -93,7 +99,7 @@ public class CaseObject extends AuditableObject {
     @JdbcColumn(name = "creator_info")
     private String creatorInfo;
 
-    @JdbcColumn(name = "deleted")
+    @JdbcColumn(name = DELETED)
     private boolean deleted;
 
     @JdbcColumn(name = "private_flag")
@@ -111,7 +117,7 @@ public class CaseObject extends AuditableObject {
     @JdbcOneToMany( table = "case_member", localColumn = "id", remoteColumn = "CASE_ID" )
     private List<CaseMember> members;
 
-    @JdbcColumn(name = Columns.EXT_APP)
+    @JdbcColumn(name = EXT_APP)
     private String extAppType;
 
     @JdbcManyToMany(linkTable = "case_notifier", localLinkColumn = "case_id", remoteLinkColumn = "person_id")
@@ -120,29 +126,30 @@ public class CaseObject extends AuditableObject {
     @JdbcColumn(name = "time_elapsed")
     private Long timeElapsed;
 
-    @JdbcManyToMany(linkTable = "project_to_product", localLinkColumn = "project_id", remoteLinkColumn = "product_id")
-    private Set<DevUnit> products;
-
-    @JdbcColumn(name = "platform_id")
+    @JdbcColumn(name = PLATFORM_ID)
     private Long platformId;
 
-    @JdbcJoinedColumn(localColumn = "platform_id", table = "platform", remoteColumn = "id", mappedColumn = "name")
+    @JdbcJoinedColumn(localColumn = PLATFORM_ID, table = "platform", remoteColumn = "id", mappedColumn = "name")
     private String platformName;
 
-    @JdbcOneToMany(table = "project_sla", localColumn = "id", remoteColumn = "project_id")
-    private List<ProjectSla> projectSlas;
+    @JdbcColumn(name = PAUSE_DATE)
+    private Long pauseDate;
 
-    @JdbcColumn(name = "technical_support_validity")
-    private Date technicalSupportValidity;
+    @JdbcColumn(name = "manager_company_id")
+    private Long managerCompanyId;
 
-    @JdbcJoinedColumn(joinPath = {
-            @JdbcJoinPath(localColumn = "id", remoteColumn = "CASE_ID", table = "case_location", sqlTableAlias = "location"),
-            @JdbcJoinPath(localColumn = "LOCATION_ID", remoteColumn = "id", table = "location", sqlTableAlias = "region"),
-    }, mappedColumn = "name")
-    private String regionName;
+    @JdbcJoinedColumn(localColumn = "manager_company_id", remoteColumn = "id", table = "company", mappedColumn = "cname")
+    private String managerCompanyName;
 
-    // not db column
-    private List<EntityOption> contracts;
+    @JdbcManyToMany(localLinkColumn = "case_object_id", remoteLinkColumn = "plan_id", linkTable = "plan_to_case_object")
+    private List<Plan> plans;
+
+    @JdbcColumn(name = DEADLINE)
+    private Long deadline;
+
+    @JdbcColumn(name = WORK_TRIGGER)
+    @JdbcEnumerated(EnumType.ID)
+    private En_WorkTrigger workTrigger;
 
     // not db column
     private En_TimeElapsedType timeElapsedType;
@@ -152,6 +159,9 @@ public class CaseObject extends AuditableObject {
 
     // not db column
     private String jiraUrl;
+
+//    Проставляется относительно авторизованного пользователя
+    private boolean isFavorite;
 
     public CaseObject() {
 
@@ -251,6 +261,14 @@ public class CaseObject extends AuditableObject {
         this.stateId = stateId;
     }
 
+    public String getStateName() {
+        return stateName;
+    }
+
+    public void setStateName(String stateName) {
+        this.stateName = stateName;
+    }
+
     public Integer getImpLevel() {
         return impLevel;
     }
@@ -307,14 +325,6 @@ public class CaseObject extends AuditableObject {
         this.keywords = keywords;
     }
 
-    public int getLocal() {
-        return local;
-    }
-
-    public void setLocal(int local) {
-        this.local = local;
-    }
-
     public String getEmails() {
         return emails;
     }
@@ -354,7 +364,7 @@ public class CaseObject extends AuditableObject {
         this.initiatorCompanyId = company == null ? null : company.getId();
     }
 
-    public void setManager(Person person) {
+    public void setManager(PersonShortView person) {
         this.manager = person;
         this.managerId = person == null ? null : person.getId();
     }
@@ -393,7 +403,7 @@ public class CaseObject extends AuditableObject {
         return initiator;
     }
 
-    public Person getManager() {
+    public PersonShortView getManager() {
         return manager;
     }
 
@@ -433,7 +443,6 @@ public class CaseObject extends AuditableObject {
         this.members = members;
     }
 
-
     public String getExtAppType() {
         return extAppType;
     }
@@ -442,16 +451,7 @@ public class CaseObject extends AuditableObject {
         this.extAppType = extAppType;
     }
 
-    public En_CaseState getState () {
-        return En_CaseState.getById(this.stateId);
-    }
-
-    public void setState (En_CaseState state) {
-        this.stateId = state.getId();
-    }
-
-
-    public En_ImportanceLevel importanceLevel () {
+    public En_ImportanceLevel getImportanceLevel() {
         return En_ImportanceLevel.getById(this.impLevel);
     }
 
@@ -469,14 +469,6 @@ public class CaseObject extends AuditableObject {
 
     public void setTimeElapsed(Long timeElapsed) {
         this.timeElapsed = timeElapsed;
-    }
-
-    public Set<DevUnit> getProducts() {
-        return products;
-    }
-
-    public void setProducts(Set<DevUnit> products) {
-        this.products = products;
     }
 
     public En_TimeElapsedType getTimeElapsedType() {
@@ -511,14 +503,6 @@ public class CaseObject extends AuditableObject {
         this.platformName = platformName;
     }
 
-    public List<EntityOption> getContracts() {
-        return contracts;
-    }
-
-    public void setContracts(List<EntityOption> contracts) {
-        this.contracts = contracts;
-    }
-
     public String getJiraUrl() {
         return jiraUrl;
     }
@@ -527,12 +511,64 @@ public class CaseObject extends AuditableObject {
         this.jiraUrl = jiraUrl;
     }
 
-    public List<ProjectSla> getProjectSlas() {
-        return projectSlas;
+    public EntityOption toEntityOption() {
+        return new EntityOption(this.getName(), this.getId());
     }
 
-    public void setProjectSlas(List<ProjectSla> projectSlas) {
-        this.projectSlas = projectSlas;
+    public Long getPauseDate() {
+        return pauseDate;
+    }
+
+    public void setPauseDate(Long pauseDate) {
+        this.pauseDate = pauseDate;
+    }
+
+    public Long getManagerCompanyId() {
+        return managerCompanyId;
+    }
+
+    public void setManagerCompanyId(Long managerCompanyId) {
+        this.managerCompanyId = managerCompanyId;
+    }
+
+    public String getManagerCompanyName() {
+        return managerCompanyName;
+    }
+
+    public void setManagerCompanyName(String managerCompanyName) {
+        this.managerCompanyName = managerCompanyName;
+    }
+
+    public List<Plan> getPlans() {
+        return plans;
+    }
+
+    public void setPlans(List<Plan> plans) {
+        this.plans = plans;
+    }
+
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
+    }
+
+    public Long getDeadline() {
+        return deadline;
+    }
+
+    public void setDeadline(Long deadline) {
+        this.deadline = deadline;
+    }
+
+    public En_WorkTrigger getWorkTrigger() {
+        return workTrigger;
+    }
+
+    public void setWorkTrigger(En_WorkTrigger workTrigger) {
+        this.workTrigger = workTrigger;
     }
 
     @Override
@@ -542,19 +578,22 @@ public class CaseObject extends AuditableObject {
 
     public interface Columns {
         String EXT_APP = "EXT_APP";
+        String CASE_TYPE = "case_type";
+        String PAUSE_DATE = "pause_date";
+        String DELETED = "deleted";
+        String INFO = "INFO";
+        String CREATED = "CREATED";
+        String CREATOR = "CREATOR";
+        String STATE = "STATE";
+        String CASE_NAME = "CASE_NAME";
+        String MANAGER = "MANAGER";
+        String PLATFORM_ID = "platform_id";
+        String DEADLINE = "deadline";
+        String WORK_TRIGGER = "work_trigger";
+        String INITIATOR_COMPANY = "initiator_company";
     }
 
-    public EntityOption toEntityOption() {
-        return new EntityOption(this.getName(), this.getId());
-    }
-
-    public Date getTechnicalSupportValidity() {
-        return technicalSupportValidity;
-    }
-
-    public void setTechnicalSupportValidity(Date technicalSupportValidity) {
-        this.technicalSupportValidity = technicalSupportValidity;
-    }
+    public static final int NOT_DELETED = 0;
 
     @Override
     public String toString() {
@@ -568,6 +607,7 @@ public class CaseObject extends AuditableObject {
                 ", extId='" + extId + '\'' +
                 ", info='" + info + '\'' +
                 ", stateId=" + stateId +
+                ", stateName='" + stateName + '\'' +
                 ", impLevel=" + impLevel +
                 ", creatorId=" + creatorId +
                 ", creator=" + creator +
@@ -581,7 +621,6 @@ public class CaseObject extends AuditableObject {
                 ", managerId=" + managerId +
                 ", manager=" + manager +
                 ", keywords='" + keywords + '\'' +
-                ", local=" + local +
                 ", emails='" + emails + '\'' +
                 ", creatorInfo='" + creatorInfo + '\'' +
                 ", deleted=" + deleted +
@@ -593,15 +632,18 @@ public class CaseObject extends AuditableObject {
                 ", extAppType='" + extAppType + '\'' +
                 ", notifiers=" + notifiers +
                 ", timeElapsed=" + timeElapsed +
-                ", products=" + products +
                 ", platformId=" + platformId +
                 ", platformName='" + platformName + '\'' +
-                ", projectSlas=" + projectSlas +
-                ", technicalSupportValidity=" + technicalSupportValidity +
-                ", contracts=" + contracts +
+                ", pauseDate=" + pauseDate +
+                ", managerCompanyId=" + managerCompanyId +
+                ", managerCompanyName='" + managerCompanyName + '\'' +
+                ", plans=" + plans +
                 ", timeElapsedType=" + timeElapsedType +
                 ", caseObjectMetaJira=" + caseObjectMetaJira +
                 ", jiraUrl='" + jiraUrl + '\'' +
+                ", isFavorite=" + isFavorite +
+                ", deadline=" + deadline +
+                ", workTrigger=" + workTrigger +
                 '}';
     }
 }

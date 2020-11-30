@@ -26,4 +26,18 @@ public class StringUtilsTest {
         assertEquals( "expected without nulls", "A,B,C", emptyString);
     }
 
+
+    @Test
+    public void joinVarargsNotNulls(){
+        StringBuilder sb = StringUtils.join( null, "begin", null, "end", null );
+        assertNotNull("beginend", sb.toString() );
+    }
+
+    @Test
+    public void joinVarargsNotNullsWithStringBuilderProvided(){
+        StringBuilder sb = new StringBuilder();
+        StringUtils.join( sb, null, "begin", null, "end", null );
+        assertNotNull("beginend", sb.toString() );
+    }
+
 }

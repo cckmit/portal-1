@@ -6,13 +6,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.query.DistrictQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.DistrictInfo;
-import ru.protei.portal.core.model.struct.Project;
-import ru.protei.portal.core.model.struct.ProjectInfo;
-import ru.protei.portal.core.model.struct.RegionInfo;
+import ru.protei.portal.core.model.dto.Project;
+import ru.protei.portal.core.model.dto.ProjectInfo;
+import ru.protei.portal.core.model.dto.RegionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonProjectMemberView;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.LocationService;
 import ru.protei.portal.core.service.ProjectService;
 import ru.protei.portal.core.service.session.SessionService;
@@ -113,26 +116,30 @@ public class RegionControllerImpl implements RegionController {
     }
 
     @Override
-    public Project saveProject(Project project) throws RequestFailedException {
+    public UiResult<Project> saveProject(Project project) throws RequestFailedException {
         log.info("saveProject(): project={}", project);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
         Result<Project> response;
-        if (project.getId() == null) {
+        if (project.getId() != null) {
+            response = projectService.saveProject(token, project);
+        } else {
             project.setCreated(new Date());
             project.setCreatorId(token.getPersonId());
             response = projectService.createProject(token, project);
         }
-        else {
-            response = projectService.saveProject(token, project);
-        }
 
         if ( response.isError() ) {
+            log.info("saveProject(): status={}", response.getStatus());
             throw new RequestFailedException( response.getStatus() );
         }
 
-        return response.getData();
+        if (response.getMessage() != null) {
+            log.info("saveProject(): message={}", response.getMessage());
+        }
+
+        return new UiResult<>(response.getData(), response.getMessage());
     }
 
     @Override
@@ -160,12 +167,12 @@ public class RegionControllerImpl implements RegionController {
     }
 
     @Override
-    public Boolean removeProject(Long projectId) throws RequestFailedException {
+    public Long removeProject(Long projectId) throws RequestFailedException {
         log.info("removeProject(): id={}", projectId);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<Boolean> response = projectService.removeProject(token, projectId);
+        Result<Long> response = projectService.removeProject(token, projectId);
         log.info("removeProject(): id={}, result={}", projectId, response.isOk() ? "ok" : response.getStatus());
 
         if (response.isOk()) {
@@ -173,6 +180,14 @@ public class RegionControllerImpl implements RegionController {
         }
 
         throw new RequestFailedException(response.getStatus());
+    }
+
+    @Override
+    public PersonShortView getProjectLeader(Long projectId) throws RequestFailedException {
+        log.info("getProjectLeader(): projectId={}", projectId);
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(projectService.getProjectLeader(token, projectId));
     }
 
     @Autowired

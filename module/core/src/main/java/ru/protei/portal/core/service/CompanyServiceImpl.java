@@ -3,27 +3,36 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CompanyGroupQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
+import ru.protei.portal.core.model.query.ProjectQuery;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.portal.core.utils.EntityCache;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.dict.En_CompanyCategory.*;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 /**
  * Реализация сервиса управления компаниями
@@ -45,6 +54,9 @@ public class CompanyServiceImpl implements CompanyService {
     CompanySubscriptionDAO companySubscriptionDAO;
 
     @Autowired
+    ContactItemDAO contactItemDAO;
+
+    @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Autowired
@@ -53,33 +65,44 @@ public class CompanyServiceImpl implements CompanyService {
     @Autowired
     AuthService authService;
 
+    @Autowired
+    YoutrackService youtrackService;
+
+    @Autowired
+    PortalConfig portalConfig;
+
+    @Autowired
+    ProjectDAO projectDAO;
+
     @Override
     public Result<SearchResult<Company>> getCompanies( AuthToken token, CompanyQuery query) {
 
         applyFilterByScope(token, query);
 
         SearchResult<Company> sr = companyDAO.getSearchResultByQuery(query);
+        jdbcManyRelationsHelper.fill(sr.getResults(), Company.Fields.CONTACT_ITEMS);
 
         return ok(sr);
     }
 
     @Override
     public Result<List<EntityOption>> companyOptionList( AuthToken token, CompanyQuery query) {
-        List<Company> list = getCompanyList(token, query);
-
-
+        applyFilterByScope( token, query );
+        List<Company> list = companyDAO.listByQuery(query);
         if (list == null)
             return error(En_ResultStatus.GET_DATA_ERROR);
+        return ok(companyListToEntityOption(list, query));
+    }
 
-        List<EntityOption> result = list.stream()
-                .sorted(( o1, o2 ) -> placeHomeCompaniesAtBegin( query, o1, o2 ) )
-                .map(Company::toEntityOption).collect(Collectors.toList());
+    @Override
+    public Result<List<EntityOption>> companyOptionListIgnorePrivileges(CompanyQuery query) {
+        List<Company> list = companyDAO.listByQuery(query);
 
-        if(query.isReverseOrder()!=null&&query.isReverseOrder()){
-            Collections.reverse(result);
+        if (list == null) {
+            return error(En_ResultStatus.GET_DATA_ERROR);
         }
 
-        return ok(result);
+        return ok(companyListToEntityOption(list, query));
     }
 
     @Override
@@ -95,6 +118,72 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    public Result<List<EntityOption>> subcontractorOptionListByCompanyIds(Collection<Long> companyIds) {
+
+        if (CollectionUtils.isEmpty(companyIds)) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        ProjectQuery query = new ProjectQuery();
+        query.setInitiatorCompanyIds(setOf(companyIds));
+        Collection<Project> list = projectDAO.getProjects(query);
+        if (list == null) {
+            return error(En_ResultStatus.GET_DATA_ERROR);
+        }
+
+        jdbcManyRelationsHelper.fill(list, "subcontractors");
+
+        List<Company> companies = list.stream()
+                .map(Project::getSubcontractors)
+                .filter(Objects::nonNull)
+                .flatMap(Collection::stream)
+                .distinct()
+                .collect(Collectors.toList());
+
+        Company homeCompany = companyDAO.get(CrmConstants.Company.HOME_COMPANY_ID);
+        if (homeCompany == null) {
+            return error(En_ResultStatus.GET_DATA_ERROR);
+        }
+
+        companies.add(0, homeCompany);
+
+        return ok(companies.stream()
+                .map(Company::toEntityOption)
+                .collect(Collectors.toList()));
+    }
+
+    @Override
+    public Result<List<EntityOption>> companyOptionListBySubcontractorIds(Collection<Long> subcontractorIds) {
+
+        if (CollectionUtils.isEmpty(subcontractorIds)) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        ProjectQuery query = new ProjectQuery();
+        query.setSubcontractorIds(setOf(subcontractorIds));
+        Collection<Project> list = projectDAO.getProjects(query);
+        if (list == null) {
+            return error(En_ResultStatus.GET_DATA_ERROR);
+        }
+
+        List<Company> companies = list.stream()
+                .map(Project::getCustomer)
+                .distinct()
+                .collect(Collectors.toList());
+
+        Company homeCompany = companyDAO.get(CrmConstants.Company.HOME_COMPANY_ID);
+        if (homeCompany == null) {
+            return error(En_ResultStatus.GET_DATA_ERROR);
+        }
+
+        companies.add(0, homeCompany);
+
+        return ok(companies.stream()
+                .map(Company::toEntityOption)
+                .collect(Collectors.toList()));
+    }
+
+    @Override
     public Result<List<CompanySubscription>> getCompanySubscriptions( Long companyId ) {
         if ( companyId == null ) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -105,19 +194,20 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<List<CompanySubscription>> getCompanyWithParentCompanySubscriptions( AuthToken authToken, Long companyId ) {
-        if ( companyId == null ) {
+    public Result<List<CompanySubscription>> getCompanyWithParentCompanySubscriptions(AuthToken authToken, Set<Long> companyIds) {
+        if (isEmpty(companyIds)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        Company company = companyDAO.get( companyId );
-        if (company == null || company.getParentCompanyId() == null) return getCompanySubscriptions( companyId );
+        Set<Long> companyAndParentCompanyIds = new HashSet<>();
+        companyAndParentCompanyIds.addAll(companyIds);
+        companyAndParentCompanyIds.addAll(collectParentCompanyIds(companyDAO.getListByKeys(companyIds)));
 
-        List<CompanySubscription> result = companySubscriptionDAO.listByCompanyIds( new HashSet<>( Arrays.asList( companyId, company.getParentCompanyId() ) ) );
-        return ok(result );
+        return ok(companySubscriptionDAO.listByCompanyIds(companyAndParentCompanyIds));
     }
 
     @Override
+    @Transactional
     public Result<?> updateState( AuthToken makeAuthToken, Long companyId, boolean isDeprecated) {
         if (companyId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -132,6 +222,15 @@ public class CompanyServiceImpl implements CompanyService {
         company.setArchived(isDeprecated);
 
         if (companyDAO.updateState(company)) {
+            final boolean YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackCompanySyncEnabled();
+            if (YOUTRACK_INTEGRATION_ENABLED) {
+                youtrackService.getCompanyByName(company.getCname())
+                        .flatMap(companyIdByName -> youtrackService.updateCompanyArchived(companyIdByName, isDeprecated)
+                            .ifOk(youtrackCompanyId -> log.info("updateState(): updated company state in youtrack. YoutrackCompanyId = {}", youtrackCompanyId))
+                            .ifError(errorResult -> log.warn("updateState(): Can't update company state in youtrack. {}", errorResult)))
+                        .ifError(errorResult -> log.warn("getCompanyByName(): Can't get company in youtrack. {}", errorResult)
+                        );
+            }
             return ok();
         } else {
             return error(En_ResultStatus.INTERNAL_ERROR);
@@ -196,11 +295,12 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<Company> getCompanyUnsafe(AuthToken token, Long id) {
+    public Result<Company> getCompanyOmitPrivileges(AuthToken token, Long id) {
         return getCompany(token, id);
     }
 
     @Override
+    @Transactional
     public Result<Company> createCompany( AuthToken token, Company company ) {
 
         if (!isValidCompany(company)) {
@@ -209,30 +309,67 @@ public class CompanyServiceImpl implements CompanyService {
 
         company.setCreated(new Date());
         Long companyId = companyDAO.persist(company);
-
         if (companyId == null) {
             return error(En_ResultStatus.NOT_CREATED);
         }
 
+        contactItemDAO.saveOrUpdateBatch(company.getContactItems());
+        jdbcManyRelationsHelper.persist(company, Company.Fields.CONTACT_ITEMS);
+
         updateCompanySubscription(company.getId(), company.getSubscriptions());
         addCommonImportanceLevels(companyId);
+
+        final boolean YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackCompanySyncEnabled();
+
+        if(YOUTRACK_INTEGRATION_ENABLED) {
+            youtrackService.createCompany(company.getCname())
+                    .ifOk(newCompanyId ->
+                            log.info("createCompany(): added new company to youtrack. CompanyId = {}", newCompanyId))
+                    .ifError(errorResult ->
+                            log.info("createCompany(): Can't create company in youtrack. {}", errorResult)
+                    );
+        }
 
         return ok(company);
     }
 
     @Override
+    @Transactional
     public Result<Company> updateCompany( AuthToken token, Company company ) {
 
         if (!isValidCompany(company)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        Boolean result = companyDAO.merge(company);
+        final boolean YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackCompanySyncEnabled();
 
+        String oldName = null;
+        if (YOUTRACK_INTEGRATION_ENABLED && StringUtils.isNotEmpty(company.getCname())) {
+            Company oldCompany = companyDAO.get(company.getId());
+            if (oldCompany == null) {
+                return error(En_ResultStatus.NOT_FOUND);
+            }
+            oldName = oldCompany.getCname();
+        }
+
+        Boolean result = companyDAO.merge(company);
         if ( !result )
             return error(En_ResultStatus.NOT_UPDATED);
 
+        contactItemDAO.saveOrUpdateBatch(company.getContactItems());
+        jdbcManyRelationsHelper.persist(company, Company.Fields.CONTACT_ITEMS);
+
         updateCompanySubscription(company.getId(), company.getSubscriptions());
+
+        if (YOUTRACK_INTEGRATION_ENABLED && StringUtils.isNotEmpty(company.getCname()) && !company.getCname().equals(oldName)) {
+            youtrackService.getCompanyByName(oldName)
+                    .flatMap(companyIdByName -> youtrackService.updateCompanyName(companyIdByName, company.getCname())
+                            .ifOk(companyId -> log.info("updateCompany(): updated company in youtrack. YoutrackCompanyId = {}", companyId))
+                            .ifError(errorResult -> log.warn("updateCompany(): Can't update company in youtrack. {}", errorResult)))
+                    .ifError(errorResult -> log.warn("getCompanyByName(): Can't get company in youtrack. {}", errorResult)
+                    );
+        }
+
         return ok(company);
     }
 
@@ -255,14 +392,24 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<List<Long>> getAllHomeCompanyIds(AuthToken token) {
-        return ok(companyDAO.getAllHomeCompanyIds());
+    public Result<List<Company>> getAllHomeCompanies(AuthToken token) {
+        List<Company> companies = companyDAO.getAllHomeCompanies();
+        jdbcManyRelationsHelper.fill(companies, Company.Fields.CONTACT_ITEMS);
+        return ok(companies);
     }
 
     @Override
     public Result<List<CompanyImportanceItem>> getImportanceLevels(Long companyId) {
         List<CompanyImportanceItem> result = companyImportanceItemDAO.getSortedImportanceLevels(companyId);
         return ok(result);
+    }
+
+    private List<Long> collectParentCompanyIds(List<Company> companies) {
+        return emptyIfNull(companies)
+                .stream()
+                .map(Company::getParentCompanyId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     private void addCommonImportanceLevels(Long companyId) {
@@ -323,15 +470,10 @@ public class CompanyServiceImpl implements CompanyService {
     private boolean isValidCompany(Company company) {
         return company != null
                 && company.getCname() != null
+                && !company.getCname().matches(CrmConstants.Masks.COMPANY_NAME_ILLEGAL_CHARS)
                 && !company.getCname().trim().isEmpty()
                 && (company.getParentCompanyId() == null || isEmpty(company.getChildCompanies()) )
-                /*&& isValidContactInfo(company)*/
                 && !checkCompanyExists(company.getCname(), company.getId());
-    }
-
-    private List<Company> getCompanyList( AuthToken token, CompanyQuery query ) {
-        applyFilterByScope( token, query );
-        return companyDAO.listByQuery(query);
     }
 
     private boolean checkCompanyExists (String name, Long excludeId) {
@@ -377,5 +519,17 @@ public class CompanyServiceImpl implements CompanyService {
         ArrayList allowedCompanies = new ArrayList( companyIds );
         allowedCompanies.retainAll( allowedCompaniesIds );
         return allowedCompanies.isEmpty() ? new ArrayList<>( allowedCompaniesIds ) : allowedCompanies;
+    }
+
+    private List<EntityOption> companyListToEntityOption(List<Company> list, CompanyQuery query) {
+        List<EntityOption> result = list.stream()
+                .sorted(( o1, o2 ) -> placeHomeCompaniesAtBegin( query, o1, o2 ) )
+                .map(Company::toEntityOption).collect(Collectors.toList());
+
+        if(query.isReverseOrder() != null && query.isReverseOrder()){
+            Collections.reverse(result);
+        }
+
+        return result;
     }
 }

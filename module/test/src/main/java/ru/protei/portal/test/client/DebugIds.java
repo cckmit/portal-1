@@ -51,6 +51,17 @@ public class DebugIds {
             String NEW_PASSWORD = "profile-new-password-label";
             String CONFIRM_PASSWORD = "profile-confirm-password-label";
         }
+
+        interface SUBSCRIPTION {
+
+            String EMPLOYEE_SELECTOR_ADD_BUTTON = "profile-employee-selector-add-button";
+            String EMPLOYEE_SELECTOR_CLEAR_BUTTON = "profile-employee-selector-clear-button";
+            String EMPLOYEE_SELECTOR_ITEM_CONTAINER = "profile-employee-selector-item-container";
+
+            interface LABEL {
+                String EMPLOYEE_SELECTOR = "profile-employee-selector-label";
+            }
+        }
     }
 
     public interface ACTION_BAR {
@@ -68,7 +79,8 @@ public class DebugIds {
         String EQUIPMENT = "sidebar-menu-equipment";
         String ISSUE = "sidebar-menu-issue";
         String ISSUE_ASSIGNMENT = "sidebar-menu-issue-assignment";
-        String ISSUE_REPORTS = "sidebar-menu-issue-reports";
+        String REPORTS = "sidebar-menu-issue-reports";
+        @Deprecated String ISSUE_REPORTS = REPORTS;
         String OFFICIAL = "sidebar-menu-official";
         String PRODUCT = "sidebar-menu-product";
         String PROJECT = "sidebar-menu-project";
@@ -78,7 +90,36 @@ public class DebugIds {
         String EMPLOYEE_REGISTRATION = "sidebar-menu-employee-registration";
         String EMPLOYEE = "sidebar-menu-employee";
         String CONTRACT = "sidebar-menu-contract";
+        String EDUCATION = "sidebar-menu-education";
+        String IP_RESERVATION = "sidebar-menu-ip-reservation";
+        String ROOM_RESERVATION = "sidebar-menu-room-reservation";
+        String PLAN = "sidebar-menu-plan";
         String ICON_SUFFIX = "-icon";
+        String TOP_BRASS = "sidebar-menu-employee-top-brass";
+        String EMPLOYEE_LIST = "sidebar-menu-employee-list";
+        String EMPLOYEE_TABLE = "sidebar-menu-employee-table";
+        String EMPLOYEE_BIRTHDAY = "sidebar-menu-employee-birthday";
+        String ABSENCE = "sidebar-menu-employee-absence";
+        String ARCHIVE = "sidebar-menu-archive";
+        String BUG_TRACKING = "sidebar-menu-archive-bug-tracking";
+        String TODO_LIST = "sidebar-menu-archive-todo-list";
+        String FEATURE_REQUEST = "sidebar-menu-archive-feature-request";
+        String CRM = "sidebar-menu-archive-crm";
+        String ADMIN_CRM = "sidebar-menu-archive-admin-crm";
+        String TEST_ZONE = "sidebar-menu-archive-test-zone";
+        String STORE_AND_DELIVERY = "sidebar-menu-store-delivery";
+        String CARD_SEARCH = "sidebar-menu-store-delivery-card-search";
+        String DELIVERY = "sidebar-menu-store-delivery-delivery";
+        String STORE = "sidebar-menu-store-delivery-store";
+        String FLOOR_PLAN = "sidebar-menu-floor-plan";
+        String NOTIFICATION_SYSTEM = "sidebar-menu-notification-system";
+        String YOUTRACK = "sidebar-menu-youtrack";
+        String YOUTRACK_ADMIN = "sidebar-menu-youtrack-admin";
+        String RESERVED_IP = "sidebar-menu-ip-reservation-reserved-ip";
+        String SUBNET = "sidebar-menu-ip-reservation-subnet";
+        String ROOM_RESERVATION_CALENDAR = "sidebar-menu-room-reservation-calendar";
+        String ROOM_RESERVATION_TABLE = "sidebar-menu-room-reservation-table";
+        String DUTY_LOG = "sidebar-menu-duty-log";
     }
 
     public interface SELECTOR {
@@ -113,17 +154,16 @@ public class DebugIds {
         String SORT_FIELD_SELECTOR = "filter-sort-field-selector";
         String SORT_FIELD_LABEL = "filter-sort-field-label";
         String SORT_DIR_BUTTON = "filter-sort-dir-button";
-        String DATE_RANGE_SELECTOR = "filter-date-range-selector";
-        String DATE_CREATED_RANGE_INPUT = "filter-date-created-range-input";
-        String DATE_CREATED_RANGE_LABEL = "filter-date-created-range-label";
-        String DATE_MODIFIED_RANGE_INPUT = "filter-date-modified-range-input";
-        String DATE_MODIFIED_RANGE_LABEL = "filter-date-range-label";
-        String DATE_CREATED_RANGE_BUTTON = "filter-date-created-range-button";
-        String DATE_MODIFIED_RANGE_BUTTON = "filter-date-modified-range-button";
+        String DATE_CREATED_RANGE_CONTAINER = "filter-date-created-range-container";
+        String DATE_MODIFIED_RANGE_CONTAINER = "filter-date-modified-range-container";
         String COMPANY_SELECTOR_ADD_BUTTON = "filter-company-selector-add-button";
         String COMPANY_SELECTOR_CLEAR_BUTTON = "filter-company-selector-clear-button";
         String COMPANY_SELECTOR_ITEM_CONTAINER = "filter-company-selector-item-container";
         String COMPANY_SELECTOR_LABEL = "filter-company-selector-label";
+        String MANAGER_COMPANY_SELECTOR_ADD_BUTTON = "filter-manager-company-selector-add-button";
+        String MANAGER_COMPANY_SELECTOR_CLEAR_BUTTON = "filter-manager-company-selector-clear-button";
+        String MANAGER_COMPANY_SELECTOR_ITEM_CONTAINER = "filter-manager-company-selector-item-container";
+        String MANAGER_COMPANY_SELECTOR_LABEL = "filter-manager-company-selector-label";
         String PRODUCT_SELECTOR_ADD_BUTTON = "filter-product-selector-add-button";
         String PRODUCT_SELECTOR_CLEAR_BUTTON = "filter-product-selector-clear-button";
         String PRODUCT_SELECTOR_ITEM_CONTAINER = "filter-product-selector-item-container";
@@ -143,6 +183,9 @@ public class DebugIds {
         String PRIVACY_YES_BUTTON = "filter-privacy-yes-button";
         String PRIVACY_NO_BUTTON = "filter-privacy-no-button";
         String PRIVACY_NOT_DEFINED_BUTTON = "filter-privacy-not-defined-button";
+        String FAVORITE_YES_BUTTON = "filter-favorite-yes-button";
+        String FAVORITE_NO_BUTTON = "filter-favorite-no-button";
+        String FAVORITE_NOT_DEFINED_BUTTON = "filter-favorite-not-defined-button";
         String PRIVACY_LABEL = "filter-privacy-label";
         String ISSUE_IMPORTANCE_LABEL = "filter-issue-importance-label";
         String ISSUE_STATE_LABEL = "filter-issue-state-label";
@@ -150,6 +193,7 @@ public class DebugIds {
         String CREATOR_ADD_BUTTON = "filter-creator-add-button";
         String CREATOR_CLEAR_BUTTON = "filter-creator-clear-button";
         String CREATOR_ITEM_CONTAINER = "filter-creator-item-container";
+        String COMPANY_DEPRECATED = "filter-company-deprecated";
 
         String CREATE_BUTTON = "filter-create-button";
         String SAVE_BUTTON = "filter-save-button";
@@ -158,6 +202,12 @@ public class DebugIds {
 
         String COMPANY_SELECTOR = "filter-company-selector";
         String SHOW_FIRED = "filter-show-fired";
+
+        String PLAN_SELECTOR = "filter-plan-selector";
+
+        String OVERDUE_DEADLINES_YES_BUTTON = "filter-overdue-deadlines-yes-button";
+        String OVERDUE_DEADLINES_NO_BUTTON = "filter-overdue-deadlines-no-button";
+        String OVERDUE_DEADLINES_NOT_DEFINED_BUTTON = "filter-overdue-deadlines-not-defined-button";
 
         interface USER_FILTER {
             String FILTERS_BUTTON = "filter-user-filters-button";
@@ -170,6 +220,12 @@ public class DebugIds {
             String SORT_FIELD = "filter-sort-field-label";
             String COMPANY = "filter-company-label";
         }
+    }
+
+    public interface PERSON_CASE_FILTER {
+        String ITEM_CONTAINER = "person-case-filter-item-container";
+        String ITEM = "person-case-filter-item";
+        String FILTER_SELECTOR = "person-case-filter-filter-selector";
     }
 
     public interface COMPANY_CATEGORY_BUTTON {
@@ -233,6 +289,7 @@ public class DebugIds {
         String CUST_PENDING = "issue-state-cust-pending";
         String NX_REQUEST = "issue-state-nx-request";
         String CUST_REQUEST = "issue-state-cust-request";
+        String REQUEST_TO_PARTNER = "issue-state-request-to-partner";
     }
 
     public interface ISSUE {
@@ -240,6 +297,7 @@ public class DebugIds {
         String SHOW_EDIT_BUTTON = "issue-show-edit-button";
         String LINKS_BUTTON = "issue-links-button";
         String TAGS_BUTTON = "issue-tags-button";
+        String FAVORITES_BUTTON = "issue-favorites-button";
         String EDIT_NAME_AND_DESC_BUTTON = "issue-edit-name-and-desc-button";
         String PRIVACY_BUTTON = "issue-privacy-button";
         String PRIVACY_ICON = "issue-privacy-icon";
@@ -256,9 +314,11 @@ public class DebugIds {
         String ADD_TAG_BUTTON = "issue-add-tag-button";
         String TAGS_CONTAINER = "issue-tags-container";
         String STATE_SELECTOR = "issue-state-selector";
+        String PAUSE_DATE_CONTAINER = "issue-pause-date-container";
         String IMPORTANCE_SELECTOR = "issue-importance-selector";
         String PLATFORM_SELECTOR = "issue-platform-selector";
         String COMPANY_SELECTOR = "issue-company-selector";
+        String MANAGER_COMPANY_SELECTOR = "issue-manager-company-selector";
         String INITIATOR_SELECTOR = "issue-initiator-selector";
         String PRODUCT_SELECTOR = "issue-product-selector";
         String MANAGER_SELECTOR = "issue-manager-selector";
@@ -272,6 +332,7 @@ public class DebugIds {
         String NOTIFIERS_SELECTOR_LABEL = "issue-notifiers-selector-label";
         String ATTACHMENT_UPLOAD_BUTTON = "issue-attachment-upload-button";
         String ATTACHMENT_LIST_CONTAINER = "issue-attachment-list-container";
+        String ATTACHMENT_COLLAPSE_BUTTON = "issue-attachment-collapse-button";
         String SAVE_BUTTON = "issue-save-button";
         String CANCEL_BUTTON = "issue-cancel-button";
         String COPY_NUMBER_BUTTON = "issue-copy-number-button";
@@ -279,6 +340,14 @@ public class DebugIds {
         String NOTIFIERS_SELECTOR = "issue-subscriptions-selector";
         String EDIT_NAME_AND_DESC_ACCEPT = "issue-edit-name-and-desc-accept";
         String EDIT_NAME_AND_DESC_REJECT = "issue-edit-name-and-desc-reject";
+        String PLANS_SELECTOR_ADD_BUTTON = "issue-plans-selector-add-button";
+        String PLANS_SELECTOR_CLEAR_BUTTON = "issue-plans-selector-clear-button";
+        String PLANS_SELECTOR_ITEM_CONTAINER = "issue-plans-selector-item-container";
+        String PLANS_SELECTOR_LABEL = "issue-plans-selector-label";
+        String PLANS_SELECTOR = "issue-plans-selector";
+        String DEADLINE_CONTAINER = "issue-deadline-container";
+        String WORK_TRIGGER_SELECTOR = "issue-work-trigger-selector";
+        String SUBTASK_BUTTON = "issue-subtask-button";
 
         interface LABEL {
             String NAME = "issue-label-name";
@@ -287,6 +356,7 @@ public class DebugIds {
             String IMPORTANCE = "issue-label-importance";
             String PLATFORM = "issue-label-platform";
             String COMPANY = "issue-label-company";
+            String MANAGER_COMPANY = "issue-label-manager-company";
             String CONTACT = "issue-label-contact";
             String PRODUCT = "issue-label-product";
             String MANAGER = "issue-label-manager";
@@ -298,6 +368,29 @@ public class DebugIds {
             String ATTACHMENTS = "issue-label-attachments";
             String TIME_ELAPSED_TYPE = "issue-label-time-elapsed-type";
         }
+    }
+
+    public interface ISSUE_REPORT {
+        String NAME_INPUT = "issue-report-name-input";
+        String REPORT_TYPE = "issue-report-type";
+        String REPORT_SCHEDULED_TYPE = "issue-report-scheduled-type";
+        String ADDITIONAL_PARAMS = "issue-report-additional-params";
+        String ADDITIONAL_PARAMS_ADD_BUTTON = "issue-report-additional-params-add-button";
+        String ADDITIONAL_PARAMS_CLEAR_BUTTON = "issue-report-additional-params-clear-button";
+        String ADDITIONAL_PARAMS_ITEM_CONTAINER = "issue-report-additional-params-item-container";
+        String ADDITIONAL_PARAMS_LABEL = "issue-report-additional-params-label";
+        String TIME_ELAPSED_TYPES = "issue-report-time-elapsed-types";
+        String TIME_ELAPSED_TYPES_ADD_BUTTON = "issue-report-time-elapsed-types-add-button";
+        String TIME_ELAPSED_TYPES_CLEAR_BUTTON = "issue-report-time-elapsed-types-clear-button";
+        String TIME_ELAPSED_TYPES_ITEM_CONTAINER = "issue-report-time-elapsed-types-item-container";
+        String TIME_ELAPSED_TYPES_LABEL = "issue-report-time-elapsed-types-label";
+        String CREATE_BUTTON = "issue-report-create-button";
+        String CANCEL_BUTTON = "issue-report-cancel-button";
+        String WORK_TRIGGER_TYPES = "issue-report-work-trigger-types";
+        String WORK_TRIGGER_TYPES_ADD_BUTTON = "issue-report-work-trigger-types-add-button";
+        String WORK_TRIGGER_TYPES_CLEAR_BUTTON = "issue-report-work-trigger-types-clear-button";
+        String WORK_TRIGGER_TYPES_ITEM_CONTAINER = "issue-report-work-trigger-types-item-container";
+        String WORK_TRIGGER_TYPES_LABEL = "issue-report-work-trigger-types-label";
     }
 
     public interface CASE_COMMENT {
@@ -323,6 +416,18 @@ public class DebugIds {
             String TIME_ELAPSED = "issue-preview-comment-item-elapsed-time";
             String CREATE_DATE = "issue-preview-comment-item-create-date";
             String EDIT_TIME_ELAPSED_TYPE_POPUP = "issue-preview-comment-item-edit-time-elapsed-type-popup";
+        }
+    }
+
+    public interface CASE_HISTORY {
+        interface ITEM {
+            String CREATE_DATE = "issue-case-history-item-create-date";
+            String ADDED_VALUE = "issue-case-history-item-added-value";
+            String REMOVED_VALUE = "issue-case-history-item-removed-value";
+            String OLD_VALUE = "issue-case-history-item-old-value";
+            String NEW_VALUE = "issue-case-history-item-new-value";
+            String HISTORY_TYPE = "issue-case-history-item-history-type";
+            String INITIATOR = "issue-case-history-item-initiator";
         }
     }
 
@@ -365,10 +470,18 @@ public class DebugIds {
         String COMPANY_SELECTOR = "project-company-selector";
         String LINKS_BUTTON = "project-links-button";
         String TECHNICAL_SUPPORT_VALIDITY_CONTAINER = "project-technical-support-validity-container";
+        String WORK_COMPLETION_DATE = "project-work-completion-date";
+        String PURCHASE_DATE = "project-purchase-date";
         String SLA_INPUT = "project-sla-input";
 
         String SAVE_BUTTON = "project-save-button";
         String CANCEL_BUTTON = "project-cancel-button";
+
+        String SUBCONTRACTOR_SELECTOR_ADD_BUTTON = "project-subcontractor-selector-add-button";
+        String SUBCONTRACTOR_SELECTOR_CLEAR_BUTTON = "project-subcontractor-selector-clear-button";
+        String SUBCONTRACTOR_SELECTOR_ITEM_CONTAINER = "project-subcontractor-selector-item-container";
+        String SUBCONTRACTOR_SELECTOR_LABEL = "project-subcontractor-selector-label";
+
     }
 
     public interface PROJECT_PREVIEW {
@@ -389,21 +502,13 @@ public class DebugIds {
         String CONTRACTS_CONTAINER = "project-preview-contracts-container";
         String PLATFORM_LABEL = "project-preview-platform-label";
         String TECHNICAL_SUPPORT_VALIDITY_CONTAINER = "project-preview-technical-support-validity-container";
+        String WORK_COMPLETION_DATE = "project-preview-work-completion-date";
+        String PURCHASE_DATE = "project-preview-purchase-date";
         String SLA_INPUT = "project-preview-sla-input";
     }
 
     public interface COMPANY_TABLE {
         String LOCK_ICON = "company-table-lock-icon";
-    }
-
-    public interface COMPANY_PREVIEW {
-        String TAGS_CONTAINER = "company-preview-tags-container";
-        String SUBSCRIPTION = "company-preview-subscription-item";
-
-        interface LABEL {
-            String SUBSCRIPTION = "company-preview-label-subscription-label";
-            String CONTACT_INFO = "company-preview-contact-info-label";
-        }
     }
 
     public interface PRODUCT_TABLE {
@@ -416,7 +521,57 @@ public class DebugIds {
     }
 
     public interface COMPANY {
+        String NAME = "company-name";
+        String VERIFIABLE_ICON = "company-verifiable-icon";
+        String CATEGORY = "company-category";
+        String CATEGORY_IMAGE = "company-category-image";
+        String PARENT = "company-parent";
+        String LINK_MESSAGE = "company-link-message";
+        String COMMENT = "company-comment";
+        String AUTO_OPEN_ISSUES = "company-auto-open-issues";
         String SUBSCRIPTIONS = "company-subscriptions";
+        interface GROUP {
+            String ADD_BUTTON = "company-subscriptions-add-button";
+
+            String ROOT = "company-subscriptions-group-root";
+            String PLATFORM = "company-subscriptions-group-platform";
+            String PRODUCT = "company-subscriptions-group-product";
+            String COLLAPSE_BUTTON = "company-subscriptions-group-collapse-button";
+            String REMOVE_BUTTON = "company-subscriptions-group-remove-button";
+            String QUANTITY = "company-subscriptions-group-quantity";
+            String ITEMS = "company-subscriptions-group-items";
+            interface ITEM {
+                String ROOT = "company-subscriptions-group-item-root";
+                String LOCALE = "company-subscriptions-group-item-locale";
+                String EMAIL = "company-subscriptions-group-item-email";
+            }
+        }
+        String WEB_SITE = "company-web-site";
+        String PHONES = "company-phones";
+        String EMAILS = "company-emails";
+        String ACTUAL_ADDRESS = "company-actual-address";
+        String LEGAL_ADDRESS = "company-legal-address";
+        String TABS = "company-tabs";
+        String TAB_CONTACTS = "company-tab-contacts";
+        String TAB_SITE_FOLDERS = "company-tab-site-folders";
+        String CONTACTS = "company-contacts";
+        String SITE_FOLDERS = "company-site-folders";
+        String SAVE_BUTTON = "company-save-button";
+        String CANCEL_BUTTON = "company-cancel-button";
+    }
+
+    public interface CONTACT_INFO {
+        String ROOT = "contact-info-root";
+        interface ITEM {
+            String ROOT = "contact-info-item-root";
+            String TYPE = "contact-info-item-type";
+            String VALUE = "contact-info-item-value";
+        }
+    }
+
+    public interface CONCISE_TABLE {
+        String CONTACT = "contact-concise-table";
+        String PLATFORM = "platform-concise-table";
     }
 
     public interface PRODUCT {
@@ -434,6 +589,7 @@ public class DebugIds {
         String CANCEL_BUTTON = "product-cancel-button";
         String DIRECTION = "product-direction";
         String DIRECTION_LABEL = "product-direction-label";
+        String COMMON_MANAGER = "product-common-manager";
 
         interface TAB {
             String HISTORY_VERSION = "product-tab-history-version";
@@ -617,6 +773,9 @@ public class DebugIds {
             String CUSTOMER_TYPE_SELECTOR = "document-project-search-customer-type-selector";
             String PRODUCT_LABEL = "document-project-search-product-label";
             String PRODUCT_SELECTOR = "document-project-search-product-selector";
+            String PRODUCTS_CONTAINER = "document-project-search-product-container";
+            String MANAGER_SELECTOR = "document-project-search-manager-selector";
+            String MANAGERS_CONTAINER = "document-project-search-manager-container";
             String FIND_BUTTON = "document-project-search-find-button";
             String RESET_BUTTON = "document-project-search-reset-button";
             String SHOW_FIRST_RECORDS_LABEL = "document-project-search-show-first-records-label";
@@ -640,6 +799,7 @@ public class DebugIds {
             String PRODUCT_SELECTOR = "document-project-create-product-selector";
             String SAVE_BUTTON = "document-project-create-save-button";
             String RESET_BUTTON = "document-project-create-reset-button";
+            String MANAGER_SELECTOR = "document-project-manager-selector";
         }
     }
 
@@ -666,6 +826,7 @@ public class DebugIds {
     public interface TABLE {
 
         interface BUTTON {
+            String FAVORITES = "table-favorites-button";
             String EDIT = "table-edit-button";
             String DOWNLOAD = "table-download-button";
             String REMOVE = "table-remove-button";
@@ -673,6 +834,7 @@ public class DebugIds {
             String ARCHIVE = "table-archive-button";
             String ATTACHMENT = "table-attachment-button";
             String COPY = "table-copy-button";
+            String CANCEL = "table-cancel-button";
         }
 
         interface ISSUE {
@@ -714,8 +876,9 @@ public class DebugIds {
         String ORGANIZATION_SELECTOR = "contract-organization-selector";
         String CURATOR_SELECTOR = "contract-curator-selector";
         String MANAGER_SELECTOR = "contract-manager-selector";
-        String CONTRAGENT_SELECTOR = "contract-contragent-selector";
+        String CONTRACTOR_SELECTOR = "contract-contractor-selector";
         String ADD_DATES_BUTTON = "contract-add-dates-button";
+        String ADD_SPECIFICATIONS_BUTTON = "contract-add-specifications-button";
         String SAVE_BUTTON = "contract-save-button";
         String CANCEL_BUTTON = "contract-cancel-button";
 
@@ -723,6 +886,7 @@ public class DebugIds {
             String COMMON_HEADER = "contract-common-header";
             String WORKGROUP_HEADER = "contract-workgroup-header";
             String DELIVERY_AND_PAYMENTS_PERIOD_HEADER = "contract-delivery-and-payments-period-header";
+            String SPECIFICATION_HEADER = "contract-specification-header";
             String NUMBER = "contract-number-label";
             String TYPE = "contract-type-label";
             String STATE = "contract-state-label";
@@ -736,7 +900,7 @@ public class DebugIds {
             String ORGANIZATION = "contract-organization-label";
             String CURATOR = "contract-curator-label";
             String MANAGER = "contract-manager-label";
-            String CONTRAGENT = "contract-contragent-label";
+            String CONTRACTOR = "contract-contractor-label";
         }
 
         interface DATE_ITEM {
@@ -747,6 +911,23 @@ public class DebugIds {
             String NOTIFY_LABEL = "contract-date-item-notify-label";
             String NOTIFY_SWITCHER = "contract-date-item-notify-switcher";
             String REMOVE_BUTTON = "contract-date-item-remove-button";
+        }
+
+        interface SPECIFICATION_ITEM {
+            String ITEM = "contract-specification-item";
+            String CLAUSE_INPUT = "contract-specification-item-clause-input";
+            String TEXT_INPUT = "contract-specification-item-text-input";
+            String REMOVE_BUTTON = "contract-specification-item-remove-button";
+        }
+
+        interface CONTRACTOR {
+            String NAME = "contract-contractor-name";
+            String SEARCH_BUTTON = "contract-contractor-search-button";
+        }
+
+        interface PROJECT {
+            String NAME = "contract-project-name";
+            String SEARCH_BUTTON = "contract-project-search-button";
         }
     }
 
@@ -761,6 +942,7 @@ public class DebugIds {
         String REMOVE_BUTTON = "dialog-details-remove-button";
         String SAVE_BUTTON = "dialog-details-save-button";
         String CANCEL_BUTTON = "dialog-details-cancel-button";
+        String ADDITIONAL_BUTTON = "dialog-details-additional-button";
 
         interface TAG {
             String NAME_LABEL = "dialog-details-tag-name-label";
@@ -783,9 +965,140 @@ public class DebugIds {
     }
 
     public interface SITE_FOLDER {
+        interface PLATFORM {
+            String PROJECT = "site-folder-platform-project";
+            String COMPANY = "site-folder-platform-company";
+            String NAME = "site-folder-platform-name";
+            String MANAGER = "site-folder-platform-manager";
+            String PARAMETERS = "site-folder-platform-parameters";
+            String COMMENT = "site-folder-platform-comment";
+            String UPLOADER = "site-folder-platform-uploader";
+            String ATTACHMENTS = "site-folder-platform-attachment";
+            String TABS = "site-folder-platform-tabs";
+            String TAB_SERVERS = "site-folder-platform-tab-servers";
+            String TAB_COMPANY_CONTACTS = "site-folder-platform-tab-company-contacts";
+            String SERVERS = "site-folder-servers";
+            String CONTACTS = "site-folder-contacts";
+            String TECHNICAL_SUPPORT_VALIDITY = "site-folder-technical-support-validity";
 
+            String SAVE_BUTTON = "site-folder-save-button";
+            String CANCEL_BUTTON = "site-folder-cancel-button";
+        }
+        interface SERVER {
+            String OPEN_BUTTON = "site-folder-server-open-button";
+            String CREATE_BUTTON = "site-folder-server-create-button";
+            String ITEM = "site-folder-server-list-item";
+            String NAME = "site-folder-server-name";
+            String IP = "site-folder-server-ip";
+            String APPS = "site-folder-server-apps";
+            String COMMENT = "site-folder-server-comment";
+            String PARAMS = "site-folder-server-params";
+            String EDIT_BUTTON = "site-folder-server-edit-button";
+            String COPY_BUTTON = "site-folder-server-copy-button";
+            String REMOVE_BUTTON = "site-folder-server-remove-button";
+        }
         interface LINK {
             String PLATFORM = "sitefolder-link-platform";
+        }
+    }
+
+    public interface SUBNET {
+        String ADDRESS_INPUT = "subnet-address-input";
+        String MASK_INPUT = "subnet-mask-input";
+        String COMMENT_INPUT = "subnet-comment-input";
+        String ALLOW_RESERVE_CHECKBOX = "subnet-allow-reserve-checkbox";
+        String SAVE_BUTTON = "subnet-save-button";
+        String CANCEL_BUTTON = "subnet-cancel-button";
+    }
+
+    public interface RESERVED_IP {
+        String MODE_TOGGLE = "reservedip-mode-toggle";
+        String IP_ADDRESS_INPUT = "reservedip-address-input";
+        String MAC_ADDRESS_INPUT = "reservedip-mac-address-input";
+        String NUMBER_INPUT = "reservedip-number-input";
+        String FREE_IP_COUNT_LABEL = "reservedip-free-ip-count-label";
+        String SUBNET_SELECTOR = "reservedip-subnet-selector";
+        String OWNER_SELECTOR = "reservedip-owner-selector";
+        String USE_RANGE_TYPED_TOGGLE = "reservedip-use-range-typed-toggle";
+        String USE_RANGE_TYPED_INPUT = "reservedip-use-range-typed-input";
+        String USE_RANGE_TYPED_BUTTON = "reservedip-use-range-typed-button";
+        String USE_RANGE_INPUT = "reservedip-use-range-input";
+        String USE_RANGE_BUTTON = "reservedip-use-range-button";
+        String COMMENT_INPUT = "reservedip-comment-input";
+        String LAST_ACTIVE_DATE = "reservedip-last-active-date";
+        String LAST_CHECK_INFO = "reservedip-last-сheck-info";
+        String SAVE_BUTTON = "reservedip-save-button";
+        String CANCEL_BUTTON = "reservedip-cancel-button";
+    }
+
+    public interface PLAN_PREVIEW {
+        String FULL_SCREEN_BUTTON = "plan-preview-full-screen-button";
+        String TITLE_LABEL = "plan-preview-title-label";
+        String DATE_CREATED_LABEL = "plan-preview-date-created-label";
+        String NAME_LABEL = "plan-preview-name-label";
+        String PERIOD_LABEL = "plan-preview-period-label";
+    }
+
+    public interface ABSENCE {
+        String EMPLOYEE_SELECTOR_LABEL = "absence-employee-selector-label";
+        String EMPLOYEE_SELECTOR = "absence-employee-selector";
+        String DATE_RANGE_LABEL = "absence-date-range-label";
+        String DATE_RANGE_INPUT = "absence-date-range-input";
+        String DATE_RANGE_BUTTON = "absence-date-range-button";
+        String REASON_SELECTOR_LABEL = "absence-reason-selector-label";
+        String REASON_SELECTOR = "absence-reason-selector";
+        String COMMENT_LABEL = "absence-comment-label";
+        String COMMENT_INPUT = "absence-comment-input";
+        String DATE_RANGE_CONTAINER = "absence-date-range-container";
+        String DATE_RANGE_CONTAINER_ADD_DAY_BUTTON = "absence-date-range-container-add-day-button";
+        String DATE_RANGE_CONTAINER_ADD_WEEK_BUTTON = "absence-date-range-container-add-week-button";
+    }
+
+    public interface ABSENCE_REPORT {
+        String NAME_LABEL = "absence-report-name-label";
+        String NAME_INPUT = "absence-report-name-input";
+        String DATE_RANGE_INPUT = "absence-report-date-range-input";
+        String DATE_RANGE_BUTTON = "absence-report-date-range-button";
+        String DATE_RANGE_LABEL = "absence-report-date-range-label";
+        String EMPLOYEE_SELECTOR_ADD_BUTTON = "absence-report-employee-selector-add-button";
+        String EMPLOYEE_SELECTOR_CLEAR_BUTTON = "absence-report-employee-selector-clear-button";
+        String EMPLOYEE_SELECTOR_ITEM_CONTAINER = "absence-report-employee-selector-item-container";
+        String EMPLOYEE_SELECTOR_LABEL = "absence-report-employee-selector-label";
+        String REASON_SELECTOR_ADD_BUTTON = "absence-report-reason-selector-add-button";
+        String REASON_SELECTOR_CLEAR_BUTTON = "absence-report-reason-selector-clear-button";
+        String REASON_SELECTOR_ITEM_CONTAINER = "absence-report-reason-selector-item-container";
+        String REASON_SELECTOR_LABEL = "absence-report-reason-selector-label";
+        String SORT_FIELD_LABEL = "absence-report-sort-field-selector-label";
+        String SORT_FIELD_SELECTOR = "absence-report-sort-field-selector";
+        String SORT_DIR_BUTTON = "absence-report-sort-dir-button";
+    }
+
+    public interface ROOM_RESERVATION {
+        interface FILTER {
+            String DATE_RANGE_INPUT = "room-reservation-filter-date-range-input";
+            String ROOM_SELECTOR_ADD_BUTTON = "room-reservation-filter-room-selector-add-button";
+            String ROOM_SELECTOR_CLEAR_BUTTON = "room-reservation-filter-room-selector-clear-button";
+            String ROOM_SELECTOR_ITEM_CONTAINER = "room-reservation-filter-room-selector-item-container";
+            String ROOM_SELECTOR_LABEL = "room-reservation-filter-room-selector-label";
+        }
+    }
+
+    public interface DUTY_LOG {
+        interface EDIT {
+            String EMPLOYEE_SELECTOR = "duty-log-employee-selector";
+            String DATE_RANGE_INPUT = "duty-log-date-range-input";
+            String TYPE_SELECTOR = "duty-log-type-selector";
+        }
+
+        interface REPORT {
+            String NAME_LABEL = "duty-log-report-name-label";
+            String NAME_INPUT = "duty-log-report-name-input";
+        }
+
+        interface FILTER {
+            String DATE_RANGE = "duty-log-filter-date-range-input";
+            String EMPLOYEE = "duty-log-filter-employee-selector";
+            String TYPE = "duty-log-filter-type-selector";
         }
     }
 }

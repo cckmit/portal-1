@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.sitefolder.client.view.platform.preview;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -8,8 +9,11 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
+import ru.protei.portal.ui.common.client.widget.tab.TabWidget;
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.preview.AbstractPlatformPreviewActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.preview.AbstractPlatformPreviewView;
 
@@ -19,11 +23,13 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
         attachmentContainer.setHiddenControls(true);
+        ensureDebugIds();
     }
 
     @Override
     public void setActivity(AbstractPlatformPreviewActivity activity) {
         this.activity = activity;
+        attachmentContainer.setActivity(activity);
     }
 
     @Override
@@ -110,6 +116,26 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
         }
     }
 
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+        name.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.NAME);
+        openServersButton.ensureDebugId(DebugIds.SITE_FOLDER.SERVER.OPEN_BUTTON);
+        comment.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.COMMENT);
+        company.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.SITE_FOLDER.PLATFORM.COMPANY);
+        manager.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.SITE_FOLDER.PLATFORM.MANAGER);
+        parameters.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.SITE_FOLDER.PLATFORM.PARAMETERS);
+        project.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.PROJECT);
+        technicalSupportValidity.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.SITE_FOLDER.PLATFORM.TECHNICAL_SUPPORT_VALIDITY);
+        attachmentContainer.setEnsureDebugId(DebugIds.SITE_FOLDER.PLATFORM.ATTACHMENTS);
+        tabWidget.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.TABS);
+        tabWidget.setTabNameDebugId(lang.siteFolderServers(), DebugIds.SITE_FOLDER.PLATFORM.TAB_SERVERS);
+        tabWidget.setTabNameDebugId(lang.siteFolderCompanyContacts(), DebugIds.SITE_FOLDER.PLATFORM.TAB_COMPANY_CONTACTS);
+        serversContainer.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.SERVERS);
+        contactsContainer.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.CONTACTS);
+    }
+
     @UiField
     HTMLPanel preview;
     @UiField
@@ -127,6 +153,8 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     @UiField
     Label comment;
     @UiField
+    TabWidget tabWidget;
+    @UiField
     HTMLPanel contactsContainer;
     @UiField
     HTMLPanel serversContainer;
@@ -141,6 +169,8 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     HTMLPanel footerContainer;
     @UiField
     HTMLPanel previewWrapperContainer;
+    @UiField
+    Lang lang;
 
     private AbstractPlatformPreviewActivity activity;
 

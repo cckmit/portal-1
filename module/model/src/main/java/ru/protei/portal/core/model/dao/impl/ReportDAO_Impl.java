@@ -4,23 +4,32 @@ import org.apache.commons.collections4.CollectionUtils;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.ReportDAO;
 import ru.protei.portal.core.model.dict.En_ReportScheduledType;
-import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ReportQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.portal.core.model.util.sqlcondition.Condition;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcHelper;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+
+import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.condition;
 
 public class ReportDAO_Impl extends PortalBaseJdbcDAO<Report> implements ReportDAO {
 
     @Override
     public Report getReport(Long creatorId, Long reportId) {
-        return getByCondition("report.creator = ? and report.id = ?", creatorId, reportId);
+        Condition condition = condition()
+                .and(getTableName() + ".is_removed").equal(false)
+                .and(getTableName() + ".creator").equal(creatorId)
+                .and(getTableName() + ".id").equal(reportId);
+
+        return getByCondition(condition.getSqlCondition(), condition.getSqlParameters());
     }
 
     @Override
@@ -30,11 +39,21 @@ public class ReportDAO_Impl extends PortalBaseJdbcDAO<Report> implements ReportD
     }
 
     @Override
-    public List<Report> getReportsByIds(Long creatorId, Set<Long> includeIds, Set<Long> excludeIds) {
+    public List<Report> getReports(ReportQuery query) {
+        SqlCondition where = createSqlCondition(query);
+        return getList(new JdbcQueryParameters()
+                .withCondition(where.condition, where.args)
+                .withDistinct(true)
+        );
+    }
+
+    @Override
+    public List<Report> getReportsByIds(Long creatorId, Set<Long> includeIds, Set<Long> excludeIds, String systemId) {
         ReportQuery query = new ReportQuery();
         query.setCreatorId(creatorId);
         query.setIncludeIds(includeIds);
         query.setExcludeIds(excludeIds);
+        query.setSystemId(systemId);
         SqlCondition where = createSqlCondition(query);
         return getList(new JdbcQueryParameters()
                 .withCondition(where.condition, where.args)
@@ -43,35 +62,10 @@ public class ReportDAO_Impl extends PortalBaseJdbcDAO<Report> implements ReportD
     }
 
     @Override
-    public List<Report> getReportsByStatuses(List<En_ReportStatus> statuses, int limit) {
-        ReportQuery query = new ReportQuery();
-        query.setStatuses(statuses);
-        query.setLimit(limit);
-        SqlCondition where = createSqlCondition(query);
-        return getList(new JdbcQueryParameters()
-                .withCondition(where.condition, where.args)
-                .withDistinct(true)
-                .withLimit(query.getLimit())
-        );
-    }
-
-    @Override
-    public List<Report> getReportsByStatuses(List<En_ReportStatus> statuses, Date lastModifiedBefore, List<En_ReportScheduledType> scheduledTypes) {
-        ReportQuery query = new ReportQuery();
-        query.setStatuses(statuses);
-        query.setToModified(lastModifiedBefore);
-        query.setScheduledTypes(scheduledTypes);
-        SqlCondition where = createSqlCondition(query);
-        return getList(new JdbcQueryParameters()
-                .withCondition(where.condition, where.args)
-                .withDistinct(true)
-        );
-    }
-
-    @Override
-    public List<Report> getScheduledReports(En_ReportScheduledType enReportScheduledType) {
+    public List<Report> getScheduledReports(En_ReportScheduledType enReportScheduledType, String systemId) {
         ReportQuery query = new ReportQuery();
         query.setScheduledTypes(Arrays.asList(enReportScheduledType));
+        query.setSystemId(systemId);
         SqlCondition where = createSqlCondition(query);
         return getList(new JdbcQueryParameters()
                 .withCondition(where.condition, where.args)
@@ -116,6 +110,10 @@ public class ReportDAO_Impl extends PortalBaseJdbcDAO<Report> implements ReportD
                 args.add(query.getLocale());
             }
 
+            if (CollectionUtils.isNotEmpty(query.getTypes())) {
+                condition.append(" and report.type in ").append(JdbcHelper.makeSqlStringCollection(query.getTypes(), args, null));
+            }
+
             if (CollectionUtils.isNotEmpty(query.getStatuses())) {
                 condition.append(" and report.status in ").append(JdbcHelper.makeSqlStringCollection(query.getStatuses(), args, null));
             }
@@ -150,6 +148,16 @@ public class ReportDAO_Impl extends PortalBaseJdbcDAO<Report> implements ReportD
 
             if (CollectionUtils.isNotEmpty(query.getScheduledTypes())) {
                 condition.append(" and report.scheduled_type in ").append(JdbcHelper.makeSqlStringCollection(query.getScheduledTypes(), args, null));
+            }
+
+            if (query.isRemoved() != null) {
+                condition.append(" and report.is_removed = ?");
+                args.add(query.isRemoved());
+            }
+
+            if (HelperFunc.isNotEmpty(query.getSystemId())) {
+                condition.append(" and report.system_id = ?");
+                args.add(query.getSystemId());
             }
         });
     }

@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.context.ApplicationEvent;
-import ru.protei.portal.core.event.CaseObjectCreateEvent;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -111,6 +110,11 @@ public class Result<T> {
     }
 
     @JsonIgnore
+    public static <T> Result<T> ok( T data, String message ) {
+        return new Result<T>( En_ResultStatus.OK, data, message, null);
+    }
+
+    @JsonIgnore
     public static <T> Result<T> ok( T data, List<ApplicationEvent> events ) {
         return new Result<T>( En_ResultStatus.OK, data, null, events);
     }
@@ -124,7 +128,7 @@ public class Result<T> {
     }
 
     @JsonIgnore
-    public Result<T> publishEvents( List<ApplicationEvent> events ) {
+    public <E extends ApplicationEvent> Result<T> publishEvents( List<E> events ) {
         if (events == null) return this;
         if (this.events == null) this.events = new ArrayList<>();
         this.events.addAll( events );
@@ -162,7 +166,7 @@ public class Result<T> {
     }
 
     /**
-     *  Поведение подобно Optional от CoreResponse<T> на основании En_ResultStatus вместо проверки на null
+     *  Поведение подобно Optional от Result<T> на основании En_ResultStatus вместо проверки на null
      *      При получении ошибки, дальнейшие действия игнорируются
      *      ошибка продвигается к конечному результату
      *
@@ -189,10 +193,10 @@ public class Result<T> {
     }
 
     /**
-     * Когда вызваемая функция возвращает Result
+     * Когда вызываемая функция возвращает Result
      */
     @JsonIgnore
-    public <U> Result<U> flatMap( Function<? super T, Result<U>> mapper) {
+    public <U> Result<U> flatMap(Function<? super T, Result<U>> mapper) {
         if (mapper == null || !isOk())
             return error( status, message, events );
         else {
@@ -202,17 +206,31 @@ public class Result<T> {
 
     /**
      * Если результрат не успешен
-     * получить тот же результат выполнив другое действие
+     * получить тот же результат выполнив другое действие (новая Result цепочка)
+     * Обработка всех информационных потоков (данные, события, ошибки и прочее содержимое Result)
+     * должно осуществляться в перекладывающей функции (Function<Result<T>, Result<T>> mapper ),
+     * так как зависит от бизнеслогики.
      */
     @JsonIgnore
     public Result<T> orElseGet( Function<Result<T>, Result<T>> mapper ) {
         if (mapper == null) {
-            return error( status, message );
+            return this;
         }
-        if (!isOk()) {
-            return mapper.apply(this);
+        if (isOk()) {
+            return this;
         }
-        return this;
+        return mapper.apply(this);
+    }
+
+    /**
+     * Подменить результат в случае !isOK()
+     */
+    @JsonIgnore
+    public T orElse( T alternativeData ) {
+        if (isOk()) {
+            return getData();
+        }
+        return alternativeData;
     }
 
     @JsonIgnore

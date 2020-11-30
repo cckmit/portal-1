@@ -16,6 +16,7 @@ public interface CaseCommentController extends RemoteService {
      * Получение списка комментариев
      */
     List<CaseComment> getCaseComments(En_CaseType caseType, Long caseId) throws RequestFailedException;
+    CaseComment getCaseComment(Long commentId) throws RequestFailedException;
 
     /**
      * Редактирование комментария
@@ -26,8 +27,9 @@ public interface CaseCommentController extends RemoteService {
     /**
      * Удаление комментария
      * Удаляет все вложения из БД и Cloud которые привязаны к комментарию
+     * @return Идентификатор удаленного комментария
      */
-    void removeCaseComment(En_CaseType caseType, CaseComment comment) throws RequestFailedException;
+    Long removeCaseComment(En_CaseType caseType, CaseComment comment) throws RequestFailedException;
 
     /**
      * Изменение типа работ

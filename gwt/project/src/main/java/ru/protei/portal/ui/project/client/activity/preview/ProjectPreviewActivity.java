@@ -7,11 +7,12 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_ProjectAccessType;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -24,12 +25,12 @@ import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
-import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.ui.project.client.util.AccessUtil.*;
 
 /**
  * Активность превью проекта
@@ -58,8 +59,8 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 
     @Event
     public void onShow( ProjectEvents.ShowFullScreen event ) {
-        if (!policyService.hasPrivilegeFor(En_Privilege.PROJECT_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+        if (getAccessType(policyService, En_Privilege.PROJECT_VIEW) == En_ProjectAccessType.NONE) {
+            fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
 
@@ -73,7 +74,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 
     @Override
     public void onGoToProjectClicked() {
-        fireEvent(new ProjectEvents.Show());
+        fireEvent(new ProjectEvents.Show(true));
     }
 
     @Override
@@ -115,16 +116,16 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.setName( value.getName() );
         view.setCreatedBy(lang.createBy(value.getCreator().getDisplayShortName(), DateFormatter.formatDateTime(value.getCreated())));
         view.setState( value.getState().getId() );
-        view.setDirection( value.getProductDirection() == null ? "" : value.getProductDirection().getDisplayText() );
+        view.setDirection( value.getProductDirectionEntityOption() == null ? "" : value.getProductDirectionEntityOption().getDisplayText() );
         view.setDescription( value.getDescription() == null ? "" : value.getDescription() );
         view.setRegion( value.getRegion() == null ? "" : value.getRegion().getDisplayText() );
         view.setCompany(value.getCustomer() == null ? "" : value.getCustomer().getCname());
-        view.setContracts(emptyIfNull(value.getContracts()).stream().collect(Collectors.toMap(EntityOption::getDisplayText, contract -> LinkUtils.makeLink(Contract.class, contract.getId()))));
-        view.setPlatform(value.getPlatformName() == null ? "" : value.getPlatformName(), LinkUtils.makeLink(Platform.class, value.getPlatformId()));
+        view.setContracts(emptyIfNull(value.getContracts()).stream().collect(Collectors.toMap(EntityOption::getDisplayText, contract -> LinkUtils.makePreviewLink(Contract.class, contract.getId()))));
+        view.setPlatform(value.getPlatformName() == null ? "" : value.getPlatformName(), LinkUtils.makePreviewLink(Platform.class, value.getPlatformId()));
 
-        if( value.getTeam() != null ) {
+        if( isNotEmpty(value.getTeam()) ) {
             StringBuilder teamBuilder = new StringBuilder();
-            value.getTeam().stream()
+            stream(value.getTeam())
                     .collect(Collectors.groupingBy(PersonProjectMemberView::getRole,
                             Collectors.mapping(PersonProjectMemberView::getName, Collectors.joining(", "))))
                     .forEach((role, team) ->
@@ -135,6 +136,8 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
                                     .append("<br/>"));
 
             view.setTeam(teamBuilder.toString());
+        } else {
+            view.setTeam("");
         }
 
         view.setProduct(value.getSingleProduct() == null ? "" : value.getSingleProduct().getName());
@@ -142,22 +145,35 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.slaInputReadOnly().setValue(project.getProjectSlas());
         view.slaContainerVisibility().setVisible(isSlaContainerVisible(project.getProjectSlas()));
         view.setTechnicalSupportValidity(project.getTechnicalSupportValidity() == null ? null : DateTimeFormat.getFormat("dd.MM.yyyy").format(project.getTechnicalSupportValidity()));
+        view.setTechnicalSupportValidityVisible(project.getTechnicalSupportValidity() == null);
+        view.setWorkCompletionDateLabelVisible(project.getWorkCompletionDate() == null);
+        view.setPurchaseDateLabelVisible(project.getPurchaseDate() == null);
+        view.setWorkCompletionDate(project.getWorkCompletionDate() == null ? null : DateTimeFormat.getFormat("dd.MM.yyyy").format(project.getWorkCompletionDate()));
+        view.setPurchaseDate(project.getPurchaseDate() == null ? null : DateTimeFormat.getFormat("dd.MM.yyyy").format(project.getPurchaseDate()));
+        view.setPauseDateValidity(project.getPauseDate() == null ? "" : lang.projectPauseDate(DateTimeFormat.getFormat("dd.MM.yyyy").format(new Date(project.getPauseDate()))));
 
         if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_VIEW)) {
             fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
                     .withCaseId(project.getId())
                     .withCaseType(En_CaseType.PROJECT)
-                    .withPageId(lang.projects())
                     .readOnly());
         }
         else {
             view.getLinksContainer().clear();
         }
 
-        fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
-                .withCaseType(En_CaseType.PROJECT)
-                .withCaseId(value.getId())
-                .withModifyEnabled(policyService.hasPrivilegeFor(En_Privilege.PROJECT_EDIT)));
+        CaseCommentEvents.Show showComments = new CaseCommentEvents.Show(
+            view.getCommentsContainer(),
+            value.getId(),
+            En_CaseType.PROJECT,
+            canAccessProject(policyService, En_Privilege.PROJECT_EDIT, value.getTeam()),
+            value.getCreatorId()
+        );
+        showComments.isPrivateVisible = canAccessProjectPrivateElements(policyService, En_Privilege.PROJECT_VIEW, value.getTeam());
+        showComments.isPrivateCase = false;
+        showComments.isNewCommentEnabled = canAccessProject(policyService, En_Privilege.PROJECT_EDIT, value.getTeam());
+        fireEvent(showComments);
+
         fireEvent(new ProjectEvents.ShowProjectDocuments(view.getDocumentsContainer(), project.getId(), false));
     }
 

@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.service.events.EventPublisherService;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
 
@@ -22,6 +23,24 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.join;
 
 public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistrationReminderService {
+    private static final Logger log = LoggerFactory.getLogger( EmployeeRegistrationReminderServiceImpl.class );
+
+    public static final int SEND_EMPLOYEE_FEEDBACK_AFTER_PROBATION_END_DAYS = 1;
+    public static final int SEND_AGENDA_TO_PROBATION_END_DAYS = 7;
+    public static final int SEND_PROBATION_EXPIRES_TO_PROBATION_END_DAYS = 9;
+
+    @Autowired
+    EmployeeRegistrationDAO employeeRegistrationDAO;
+    @Autowired
+    CaseCommentService caseCommentService;
+    @Autowired
+    PersonDAO personDAO;
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
+    @Autowired
+    EventPublisherService publisherService;
+
+    ResourceBundle langRu = ResourceBundle.getBundle("Lang", new Locale( "ru", "RU"));
 
     @Override
     public Result<Boolean> notifyAboutEmployeeFeedback() {
@@ -30,7 +49,7 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
 
         for (EmployeeRegistration employeeRegistration : emptyIfNull( probationComplete )) {
             if (employeeRegistration.getPerson() == null) continue;
-
+            jdbcManyRelationsHelper.fill(employeeRegistration.getPerson(), Person.Fields.CONTACT_ITEMS);
             notifyEmployerAboutFeedback( employeeRegistration.getPerson() );
             addCaseComment( employeeRegistration.getId(), makeEmployeeFeedbackComment( employeeRegistration.getPerson() ) );
         }
@@ -46,7 +65,7 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
 
         for (EmployeeRegistration employeeRegistration : emptyIfNull( probationExpires )) {
             if (employeeRegistration.getPerson() == null) continue;
-
+            jdbcManyRelationsHelper.fill(employeeRegistration.getPerson(), Person.Fields.CONTACT_ITEMS);
             notifyEmployerAboutAgenda( employeeRegistration.getPerson() );
             addCaseComment( employeeRegistration.getId(), makeDevelopmentAgendaComment( employeeRegistration.getPerson() ) );
         }
@@ -103,7 +122,7 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
         comment.setOriginalAuthorName( getLangFor("reminder_system_name") );
         Result<Long> commentId = caseCommentService.addCommentOnSentReminder(comment);
 
-        if (!commentId.isOk()) {
+        if (commentId.isError()) {
             log.warn( "addCaseComment(): Can't add case comment about {} for caseId={}",  message, caseId  );
         }
     }
@@ -136,30 +155,12 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
             notifyIds.addAll( emptyIfNull( er.getCuratorsIds() ) );
         }
 
-        List<Person> persons = personDAO.partialGetListByKeys( notifyIds, "id", "displayname", "contactInfo" );
+        List<Person> persons = personDAO.partialGetListByKeys( notifyIds, "id", "displayname");
+        jdbcManyRelationsHelper.fill(persons, Person.Fields.CONTACT_ITEMS);
         return toMap( persons, Person::getId, person -> person );
     }
-
-    private static final Logger log = LoggerFactory.getLogger( EmployeeRegistrationReminderServiceImpl.class );
-
 
     private String getLangFor(String key){
         return langRu.getString( key );
     }
-
-
-    @Autowired
-    EmployeeRegistrationDAO employeeRegistrationDAO;
-    @Autowired
-    CaseCommentService caseCommentService;
-    @Autowired
-    PersonDAO personDAO;
-    @Autowired
-    EventPublisherService publisherService;
-
-    ResourceBundle langRu = ResourceBundle.getBundle("Lang", new Locale( "ru", "RU"));
-
-    public static final int SEND_EMPLOYEE_FEEDBACK_AFTER_PROBATION_END_DAYS = 1;
-    public static final int SEND_AGENDA_TO_PROBATION_END_DAYS = 7;
-    public static final int SEND_PROBATION_EXPIRES_TO_PROBATION_END_DAYS = 9;
 }

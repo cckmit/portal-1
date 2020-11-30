@@ -11,9 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Created by michael on 07.11.16.
- */
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
+
 @JsonAutoDetect
 public class ContactInfo implements Serializable, AbstractContactInfo {
 
@@ -26,6 +25,10 @@ public class ContactInfo implements Serializable, AbstractContactInfo {
 
     public ContactInfo (ContactInfo src) {
         this.itemList = new ArrayList<>(src.itemList);
+    }
+
+    public ContactInfo(List<ContactItem> itemList) {
+        this.itemList = itemList == null ? new ArrayList<>() : itemList;
     }
 
 
@@ -125,5 +128,11 @@ public class ContactInfo implements Serializable, AbstractContactInfo {
     public ContactItem replaceOthers(En_ContactItemType type) {
         itemList.removeIf(contactItem -> contactItem.isItemOf(type));
         return addItem(type);
+    }
+
+    @Override
+    public List<ContactItem> addItems(List<ContactItem> items) {
+        itemList.addAll(items);
+        return items;
     }
 }

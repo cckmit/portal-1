@@ -3,7 +3,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel>
+    <g:HTMLPanel ui:field="root">
         <span ui:field="label"/>
         <g:HTMLPanel styleName="btn-group dropdown dropdown-default">
             <g:Button ui:field="optionsButton" styleName="btn btn-default p-t-0 p-b-0 p-l-5 p-r-5 no-border bg-transparent" title="{lang.issueAssignmentMenuEdit}">

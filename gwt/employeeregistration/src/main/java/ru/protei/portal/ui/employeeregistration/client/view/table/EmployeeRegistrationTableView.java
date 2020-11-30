@@ -9,14 +9,17 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
+import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.employeeregistration.client.activity.table.AbstractEmployeeRegistrationTableActivity;
 import ru.protei.portal.ui.employeeregistration.client.activity.table.AbstractEmployeeRegistrationTableView;
 
@@ -38,12 +41,15 @@ public class EmployeeRegistrationTableView extends Composite implements Abstract
             col.setColumnProvider(columnProvider);
         });
 
+        editClickColumn.setEditHandler(activity);
+
         table.setLoadHandler(activity);
     }
 
     @Override
     public void setAnimation(TableAnimation animation) {
         animation.setContainers(tableContainer, previewContainer, filterContainer);
+        columnProvider.setChangeSelectionIfSelectedPredicate(employeeRegistration -> animation.isPreviewShow());
     }
 
     @Override
@@ -74,7 +80,14 @@ public class EmployeeRegistrationTableView extends Composite implements Abstract
 
     @Override
     public void clearSelection() {
-        columnProvider.setSelectedValue(null);
+        columnProvider.removeSelection();
+    }
+
+    @Override
+    public void updateRow(EmployeeRegistration employeeRegistration) {
+        if (employeeRegistration != null) {
+            table.updateRow(employeeRegistration);
+        }
     }
 
     private void initTable() {
@@ -87,18 +100,18 @@ public class EmployeeRegistrationTableView extends Composite implements Abstract
 
             @Override
             public void fillColumnValue(Element cell, EmployeeRegistration value) {
-                if (value.getState() == null) {
+                if (value.getStateId() == null) {
                     cell.setInnerText("");
                     return;
                 }
 
                 cell.addClassName("number");
-                cell.setInnerHTML( StringUtils.join(
+                cell.setInnerHTML(StringUtils.join(
                         "<div>",
-                        "<p class='number-size'>", String.valueOf( value.getId() ), "</p>",
-                        "<p class='label label-", value.getState().toString().toLowerCase(), "'>", caseStateLang.getStateName( value.getState() ), "</p>",
+                        "<p class='number-size'>", String.valueOf(value.getId()), "</p>",
+                        "<p class='label label-", CaseStateUtils.makeStyleName(value.getStateName()), "'>", value.getStateName(), "</p>",
                         "</div>"
-                ).toString() );
+                ).toString());
             }
         };
 
@@ -144,10 +157,13 @@ public class EmployeeRegistrationTableView extends Composite implements Abstract
             }
         };
 
+        editClickColumn.setEnabledPredicate(employeeShortView -> policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_REGISTRATION_EDIT));
+
         clickColumns.add(state);
         clickColumns.add(fullName);
         clickColumns.add(headOfDepartment);
         clickColumns.add(employmentDate);
+        clickColumns.add(editClickColumn);
 
         clickColumns.forEach(c -> table.addColumn(c.header, c.values));
     }
@@ -167,7 +183,10 @@ public class EmployeeRegistrationTableView extends Composite implements Abstract
     Lang lang;
 
     @Inject
-    En_CaseStateLang caseStateLang;
+    EditClickColumn<EmployeeRegistration> editClickColumn;
+
+    @Inject
+    PolicyService policyService;
 
     private ClickColumnProvider<EmployeeRegistration> columnProvider = new ClickColumnProvider<>();
 

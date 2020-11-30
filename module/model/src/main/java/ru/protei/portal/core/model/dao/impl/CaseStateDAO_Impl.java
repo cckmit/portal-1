@@ -16,7 +16,7 @@ public class CaseStateDAO_Impl extends PortalBaseJdbcDAO<CaseState> implements C
                 .withJoins("RIGHT JOIN case_state_matrix mtx on mtx.CASE_STATE = case_state.ID ")
                 .withCondition("mtx.CASE_TYPE=? ", caseType.getId())
                 .withSort(new JdbcSort(JdbcSort.Direction.ASC, "VIEW_ORDER"))
-         );
+        );
 
         return caseStates;
     }
@@ -29,5 +29,10 @@ public class CaseStateDAO_Impl extends PortalBaseJdbcDAO<CaseState> implements C
         );
 
         return caseStates;
+    }
+
+    @Override
+    public CaseState getCaseStateByCaseId(Long caseId) {
+        return getByCondition("id = (select STATE from case_object where id = ?)", caseId);
     }
 }

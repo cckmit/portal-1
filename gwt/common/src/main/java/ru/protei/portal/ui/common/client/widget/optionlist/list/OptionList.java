@@ -10,13 +10,15 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 
 import java.util.*;
+
+import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 
 /**
  * Список чекбоксов с заголовом
@@ -60,11 +62,10 @@ public class OptionList<T>
 
     public void setHeader( String header ) {
         this.header.setInnerText( header == null ? "" : header );
-        this.header.removeClassName("hide");
+        this.header.removeClassName(HIDE);
     }
 
-
-    public void addOption( String name, String info, String text, T value, String styleName ) {
+    public void addOption( String name, String info, String text, T value, String styleName, String title ) {
         if ( filter != null && !filter.isDisplayed( value ) ) {
             return;
         }
@@ -73,6 +74,11 @@ public class OptionList<T>
         itemView.setName( name );
         itemView.setInfo( info );
         itemView.setText( text );
+
+        if (isNotEmpty(title)) {
+            itemView.setTitle(title);
+        }
+
         itemView.addValueChangeHandler( this );
         itemView.setValue( selected.contains( value ) );
         itemView.setEnabled( isEnabled );
@@ -90,8 +96,16 @@ public class OptionList<T>
         container.add( itemView.asWidget() );
     }
 
+    public void addOption(String name, String info, String text, T value, String styleName) {
+        addOption(name, info, text, value, styleName, null);
+    }
+
     public void addOption( String name, T value ) {
         addOption( name, value, null );
+    }
+
+    public void addOption(String name, T value, String styleName, String title) {
+        addOption(name, null, null, value, styleName, title);
     }
 
     public void addOption( String name, T value, String styleName ) {
@@ -170,6 +184,18 @@ public class OptionList<T>
 
     public void setFilter(Selector.SelectorFilter filter) {
         this.filter = filter;
+    }
+
+    public void refreshValueByFilter(Selector.SelectorFilter<T> filter) {
+        this.setFilter(filter);
+        container.clear();
+        for (Map.Entry<OptionItem, T> entry : itemViewToModel.entrySet()) {
+            T t = entry.getValue();
+            OptionItem optionItem = entry.getKey();
+            if (filter == null || filter.isDisplayed(t)) {
+                container.add(optionItem);
+            }
+        }
     }
 
     public void setEnsureDebugId(T value, String debugId) {

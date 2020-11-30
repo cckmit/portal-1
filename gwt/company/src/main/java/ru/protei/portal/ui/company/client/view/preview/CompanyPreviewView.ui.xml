@@ -1,6 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:tab="urn:import:ru.protei.portal.ui.common.client.widget.tab">
+             xmlns:tab="urn:import:ru.protei.portal.ui.common.client.widget.tab"
+>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -31,7 +32,7 @@
             </div>
             <div class="small">
                 <b><ui:text from="{lang.email}: "/></b>
-                <span ui:field="email"/>
+                <g:HTMLPanel ui:field="email" tag="span"/>
             </div>
             <div class="small">
                 <b><ui:text from="{lang.companyActualAddress}: "/></b>
@@ -42,7 +43,7 @@
                 <span ui:field="addressDejure"/>
             </div>
 
-            <tab:TabWidget styleName="">
+            <tab:TabWidget styleName="" ui:field="tabWidget">
                 <tab:pane.TabWidgetPane tabName="{lang.contacts}">
                     <g:HTMLPanel ui:field="contactsContainer"/>
                 </tab:pane.TabWidgetPane>

@@ -2,6 +2,7 @@ package ru.protei.portal.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import ru.protei.portal.core.model.converter.MoneyJdbcConverter;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 
@@ -31,6 +32,23 @@ public class DaoTestsConfiguration {
         return new EmployeeSqlBuilder();
     }
 
+    @Bean
+    public PersonSqlBuilder getPersonSqlBuilder() {
+        return new PersonSqlBuilder();
+    }
+
+    @Bean
+    public ContactSqlBuilder getContactSqlBuilder() {
+        return new ContactSqlBuilder();
+    }
+
+    /* DAO converters */
+
+    @Bean
+    public MoneyJdbcConverter moneyJdbcConverter() {
+        return new MoneyJdbcConverter();
+    }
+
     /* DAO */
 
     @Bean
@@ -56,6 +74,11 @@ public class DaoTestsConfiguration {
     @Bean
     public PersonDAO getPersonDAO() {
         return new PersonDAO_Impl();
+    }
+
+    @Bean
+    public PersonShortViewDAO getPersonShortViewDAO() {
+        return new PersonShortViewDAOImpl();
     }
 
     @Bean
@@ -116,6 +139,11 @@ public class DaoTestsConfiguration {
     @Bean
     public UserLoginDAO getUserLoginDAO() {
         return new UserLoginDAO_Impl();
+    }
+
+    @Bean
+    public UserLoginShortViewDAO getUserLoginShortViewDAO() {
+        return new UserLoginShortViewDAO_Impl();
     }
 
     @Bean
@@ -292,6 +320,11 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
+    public ProjectDAO getProjectDAO() {
+        return new ProjectDAO_Impl();
+    }
+
+    @Bean
     public ContractDateDAO getContractDateDAO() {
         return new ContractDateDAO_Impl();
     }
@@ -332,10 +365,103 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
+    public EducationWalletDAO getEducationWalletDAO() {
+        return new EducationWalletDAO_Impl();
+    }
+
+    @Bean
+    public EducationEntryDAO getEducationEntryDAO() {
+        return new EducationEntryDAO_Impl();
+    }
+
+    @Bean
+    public EducationEntryAttendanceDAO getEducationEntryAttendanceDAO() {
+        return new EducationEntryAttendanceDAO_Impl();
+    }
+
+    @Bean
     public CompanyImportanceItemDAO getCompanyImportanceItemDAO() {
         return new CompanyImportanceItemDAO_Impl();
     }
 
+    @Bean
+    public SubnetDAO getSubnetDAO() { return new SubnetDAO_Impl(); }
 
+    @Bean
+    public ReservedIpDAO getReservedIpDAO() { return new ReservedIpDAO_Impl(); }
 
+    @Bean
+    public RoomReservableDAO getRoomReservableDAO() {
+        return new RoomReservableDAO_Impl();
+    }
+
+    @Bean
+    public RoomReservationDAO getRoomReservationDAO() {
+        return new RoomReservationDAO_Impl();
+    }
+
+    @Bean
+    public PersonCaseFilterDAO getPersonToCaseFilterDAO() {
+        return new PersonCaseFilterDAO_Impl();
+    }
+
+    @Bean
+    public PlanDAO getPlanDAO() {
+        return new PlanDAO_Impl();
+    }
+
+    @Bean
+    public PlanToCaseObjectDAO getPlanToCaseObjectDAO() {
+        return new PlanToCaseObjectDAO_Impl();
+    }
+
+    @Bean
+    public HistoryDAO getHistoryDAO() {
+        return new HistoryDAO_Impl();
+    }
+
+    @Bean
+    public ContractSpecificationDAO getContractSpecificationDAO() {
+        return new ContractSpecificationDAO_Impl();
+    }
+
+    @Bean
+    public ContractorDAO getContractorDAO() {
+        return new ContractorDAO_Impl();
+    }
+
+    @Bean
+    public PersonNotifierDAO getPersonNotifierDAO() {
+        return new PersonNotifierDAO_Impl();
+    }
+
+    @Bean
+    public PersonFavoriteIssuesDAO getPersonFavoritesIssuesDAO() {
+        return new PersonFavoriteIssuesDAO_Impl();
+    }
+
+    @Bean
+    public ContactItemDAO getContactItemDAO() {
+        return new ContactItemDAO_Impl();
+    }
+
+    @Bean
+    public ImportanceLevelDAO getImportanceLevelDAO() {
+        return new ImportanceLevelDAO_Impl();
+    }
+
+    @Bean
+    public BootstrapAppDAO getBootstrapAppDAO() {
+        return new BootstrapAppDAO_Impl();
+    }
+
+    @Bean
+    public DutyLogDAO getDutyLogDAO() {
+        return new DutyLogDAO_Impl();
+    }
+
+    @Bean
+    public ProjectTechnicalSupportValidityReportInfoDAO getProjectTechnicalSupportValidityReportInfoDAO() {
+        return new ProjectTechnicalSupportValidityReportInfoDAO_Impl();
+    }
 }

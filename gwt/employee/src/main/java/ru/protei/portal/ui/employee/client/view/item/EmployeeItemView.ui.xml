@@ -4,7 +4,11 @@
 
     <g:HTMLPanel tag="li" styleName="employee">
         <div class="header-block no-hover" ui:field="employeeContainer">
-            <h2 class="name border-line"><g:Anchor ui:field="name" href="#"/></h2>
+
+            <h2 class="name border-line">
+                <g:Anchor  ui:field="editIcon" styleName="fas fa-edit p-r-5" href="#" visible="false"/>
+                <g:Anchor ui:field="name" href="#"/>
+            </h2>
 
             <div class="employee-item-container">
                 <div class="photo">
@@ -27,6 +31,10 @@
                     <i class="fa fa-envelope"/>
                     <span ui:field="emails"/>
                 </g:HTMLPanel>
+                <g:HTMLPanel ui:field="companyContainer" styleName="contacts position" visible="false">
+                    <i class="fa fa-building"></i>
+                    <span ui:field="company"/>
+                </g:HTMLPanel>
                 <g:HTMLPanel ui:field="departmentParentContainer" styleName="contacts department" visible="false">
                     <i class="fa fa-sitemap"/>
                     <span ui:field="departmentParent"/>
@@ -46,6 +54,9 @@
                         <span ui:field="fireDate"/>
                     </b>
                 </g:HTMLPanel>
+            </div>
+            <div ui:field="absenceReason" class="absence-reason hide">
+                <i ui:field="absenceIcon"/>
             </div>
         </div>
     </g:HTMLPanel>

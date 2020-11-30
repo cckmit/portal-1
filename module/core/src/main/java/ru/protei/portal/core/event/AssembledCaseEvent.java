@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 import static java.lang.System.currentTimeMillis;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
-public class AssembledCaseEvent extends ApplicationEvent {
+public class AssembledCaseEvent extends ApplicationEvent implements HasCaseComments {
 
     private Long caseObjectId;
     private CaseObject lastState;
@@ -32,6 +32,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
 
     private Long initiatorId;
     private Person initiator;
+    private Person manager;
     private ServiceModule serviceModule;
     private List<CaseComment> existingComments;
     private boolean isEagerEvent;
@@ -127,7 +128,11 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public boolean isCaseStateChanged() {
-        return isUpdateEventMeta() && lastMetaState.getState() != initMetaState.getState();
+        return isUpdateEventMeta() && lastMetaState.getStateId() != initMetaState.getStateId();
+    }
+
+    public boolean isPauseDateChanged() {
+        return isUpdateEventMeta() && !Objects.equals(lastMetaState.getPauseDate(), initMetaState.getPauseDate());
     }
 
     public boolean isTimeElapsedChanged() {
@@ -136,6 +141,10 @@ public class AssembledCaseEvent extends ApplicationEvent {
 
     public boolean isCaseImportanceChanged() {
         return isUpdateEventMeta() && !lastMetaState.getImpLevel().equals(initMetaState.getImpLevel());
+    }
+
+    public boolean isManagerCompanyChanged() {
+        return isUpdateEventMeta() && !HelperFunc.equals(lastMetaState.getManagerCompanyId(), initMetaState.getManagerCompanyId());
     }
 
     public boolean isManagerChanged() {
@@ -178,6 +187,14 @@ public class AssembledCaseEvent extends ApplicationEvent {
         }
     }
 
+    public boolean isDeadlineChanged() {
+        return isUpdateEventMeta() && !Objects.equals(lastMetaState.getDeadline(), initMetaState.getDeadline());
+    }
+
+    public boolean isWorkTriggerChanged() {
+        return isUpdateEventMeta() && !Objects.equals(lastMetaState.getWorkTrigger(), initMetaState.getWorkTrigger());
+    }
+
     public void putAddedComments( List<CaseComment> commentList) {
         comments.putAddedEntries( commentList );
         lastUpdated = currentTimeMillis();
@@ -194,12 +211,12 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return comments.getAddedEntries();
     }
 
-    public List<CaseComment> getChangedComments() {
+    public List<CaseComment> getChangedCaseComments() {
         if(!comments.hasChanged()) return Collections.EMPTY_LIST;
         return comments.getChangedEntries().stream().map( dr->dr.getInitialState() ).collect( Collectors.toList());
     }
 
-    public List<CaseComment> getRemovedComments() {
+    public List<CaseComment> getRemovedCaseComments() {
         return comments.getRemovedEntries();
     }
 
@@ -278,6 +295,15 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return allEntries.stream().anyMatch(comment -> !comment.isPrivateComment());
     }
 
+    public boolean isPublicAttachmentsChanged() {
+        List<Attachment> allEntries = new ArrayList<>();
+        allEntries.addAll(emptyIfNull(attachments.getAddedEntries()));
+        allEntries.addAll(emptyIfNull(attachments.getRemovedEntries()));
+        allEntries.addAll(emptyIfNull(attachments.getChangedEntries()).stream().map(DiffResult::getNewState).collect(Collectors.toList()));
+
+        return allEntries.stream().anyMatch(attachment -> !attachment.isPrivate());
+    }
+
     public boolean isCaseObjectFilled() {
         return lastState != null;
     }
@@ -347,7 +373,11 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public Person getManager() {
-        return getCaseMeta().getManager();
+        return manager;
+    }
+
+    public void setManager( Person manager ) {
+        this.manager = manager;
     }
 
     public Long getCaseObjectId() {
@@ -362,11 +392,11 @@ public class AssembledCaseEvent extends ApplicationEvent {
         timeElapsedChanging +=
                 stream(existingComments)
                 .filter(caseComment -> emptyIfNull(getAddedCaseComments()).contains(caseComment) ||
-                        (getChangedComments().contains(caseComment) && !Objects.equals(getChangedComments().get(getChangedComments().indexOf(caseComment)).getTimeElapsed(), caseComment.getTimeElapsed())))
+                        (getChangedCaseComments().contains(caseComment) && !Objects.equals(getChangedCaseComments().get(getChangedCaseComments().indexOf(caseComment)).getTimeElapsed(), caseComment.getTimeElapsed())))
                 .mapToLong(this::getTimeElapsedFromComment)
                 .sum();
 
-        timeElapsedChanging -= CollectionUtils.emptyIfNull(getRemovedComments())
+        timeElapsedChanging -= CollectionUtils.emptyIfNull(getRemovedCaseComments())
                 .stream()
                 .mapToLong(this::getTimeElapsedFromComment)
                 .sum();

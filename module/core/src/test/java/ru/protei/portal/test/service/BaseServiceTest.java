@@ -1,17 +1,25 @@
 package ru.protei.portal.test.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.core.service.ProjectService;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.mock.AuthServiceMock;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.*;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -64,19 +72,26 @@ public class BaseServiceTest {
     public static CaseObject createNewCaseObject( En_CaseType caseType, Long caseNo, Person person ) {
         CaseObject caseObject = new CaseObject();
         caseObject.setName( "Test_Case_Name" );
-        caseObject.setCaseNumber(caseNo);
-        caseObject.setState( En_CaseState.CREATED );
+        caseObject.setCaseNumber( caseNo );
+        caseObject.setStateId( CrmConstants.State.CREATED );
+        caseObject.setStateName( "created" );
+        caseObject.setManagerCompanyId( person.getCompanyId() );
         caseObject.setType( caseType );
         caseObject.setCreator( person );
         caseObject.setCreated( new Date() );
         caseObject.setModified( new Date() );
-        caseObject.setImpLevel(En_ImportanceLevel.BASIC.getId());
+        caseObject.setImpLevel( En_ImportanceLevel.BASIC.getId() );
         return caseObject;
     }
 
     public static Person createNewPerson( Company company ) {
+        return createNewPerson(company, null);
+    }
+
+    public static Person createNewPerson(Company company, Long personId) {
         Person person = new Person();
         person.setCreated( new Date() );
+        person.setId(personId);
         person.setCreator( "TEST" );
         person.setCompanyId( company.getId() );
         person.setCompany( company );
@@ -122,6 +137,40 @@ public class BaseServiceTest {
         caseTag.setName(name);
         caseTag.setCompanyId(companyId);
         return caseTag;
+    }
+
+    protected Plan createPlan() {
+        return createPlan("");
+    }
+
+    protected Plan createPlan(String name) {
+        Plan plan = new Plan();
+        plan.setName(name + "test" + new Date().getTime());
+        plan.setStartDate(new Date());
+        plan.setFinishDate(new Date());
+        return plan;
+    }
+
+    protected PersonAbsence createAbsence(Long personId) {
+        PersonAbsence absence = new PersonAbsence();
+        absence.setCreated(new Date());
+        absence.setCreatorId(personId);
+        absence.setPersonId(personId);
+        absence.setFromTime(new Date());
+        absence.setTillTime(new Date());
+        absence.setReason(En_AbsenceReason.PERSONAL_AFFAIR);
+        return absence;
+    }
+
+    protected DutyLog createDutyLog(Long personId) {
+        DutyLog dutyLog = new DutyLog();
+        dutyLog.setCreated(new Date());
+        dutyLog.setCreatorId(personId);
+        dutyLog.setPersonId(personId);
+        dutyLog.setFrom(new Date());
+        dutyLog.setTo(new Date());
+        dutyLog.setType(En_DutyType.BG);
+        return dutyLog;
     }
 
     public static void checkResult( Result result ) {
@@ -196,7 +245,11 @@ public class BaseServiceTest {
     }
 
     protected Person makePerson( Company company ) {
-        return makePerson(createNewPerson( company ));
+        return makePerson(company, null);
+    }
+
+    protected Person makePerson(Company company, Long personId) {
+        return makePerson(createNewPerson( company, personId ));
     }
 
     protected Person makePerson( Person person ) {
@@ -242,6 +295,34 @@ public class BaseServiceTest {
         return product;
     }
 
+    protected PersonAbsence makeAbsence(Long personId) {
+        PersonAbsence absence = createAbsence(personId);
+        absence.setId(personAbsenceDAO.persist(absence));
+        return absence;
+    }
+
+    protected DutyLog makeDutyLog(Long personId) {
+        DutyLog dutyLog = createDutyLog(personId);
+        dutyLog.setId(dutyLogDAO.persist(dutyLog));
+        return dutyLog;
+    }
+
+    protected String serializeAsJson(Object object) {
+        try {
+            return objectMapper.writeValueAsString(object);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected <T> T deserializeFromJson(String json, Class<T> clazz) {
+        try {
+            return objectMapper.readValue(json, clazz);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     // Remove
 
     protected boolean removeCaseObjectAndComments(CaseObject caseObject) {
@@ -250,7 +331,7 @@ public class BaseServiceTest {
         return caseObjectDAO.remove(caseObject);
     }
 
-    private static Long generateNextCaseNumber( En_CaseType caseType ) {
+    protected static Long generateNextCaseNumber( En_CaseType caseType ) {
         return caseNumberRepo.get( caseType ).incrementAndGet();
     }
 
@@ -280,9 +361,19 @@ public class BaseServiceTest {
     @Autowired
     protected PersonDAO personDAO;
     @Autowired
+    protected ContactItemDAO contactItemDAO;
+    @Autowired
     protected DevUnitDAO devUnitDAO;
     @Autowired
     protected CaseObjectDAO caseObjectDAO;
+    @Autowired
+    protected ProjectDAO projectDAO;
+    @Autowired
+    protected CaseLinkDAO caseLinkDAO;
+    @Autowired
+    protected PlatformDAO platformDAO;
+    @Autowired
+    protected ProjectToProductDAO projectToProductDAO;
     @Autowired
     protected CaseObjectMetaDAO caseObjectMetaDAO;
     @Autowired
@@ -295,4 +386,14 @@ public class BaseServiceTest {
     protected JdbcManyRelationsHelper jdbcManyRelationsHelper;
     @Autowired
     protected UserRoleDAO userRoleDAO;
+    @Autowired
+    protected ProjectService projectService;
+    @Autowired
+    protected PersonAbsenceDAO personAbsenceDAO;
+    @Autowired
+    protected DutyLogDAO dutyLogDAO;
+    @Autowired
+    protected PortalConfig config;
+    @Autowired
+    protected ObjectMapper objectMapper;
 }

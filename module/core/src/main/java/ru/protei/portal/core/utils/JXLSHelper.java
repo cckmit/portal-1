@@ -12,26 +12,31 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public final class JXLSHelper {
 
-    // -----------
-    // Report book
-    // -----------
-
     public static class ReportBook<T> {
-
         private final SXSSFWorkbook workbook;
         private final Writer<T> writer;
         private final Lang.LocalizedLang lang;
         private final Map<Integer, SXSSFSheet> sheetMap;
         private final Map<Integer, Integer> sheetRowIndexMap;
+        private final Map<Integer, Font> fontsMap;
+        private final Map<Integer, CellStyle> cellStylesMap;
+        private Font defaultFont;
+        private CellStyle defaultHeaderCellStyle;
+        private CellStyle defaultCellStyle;
         private int sheetIndex = 0;
 
         public interface Writer<T> {
             int[] getColumnsWidth();
             String[] getColumnNames();
             Object[] getColumnValues(T object);
+            default CellStyle getCellStyle(Workbook workbook, int columnIndex) {
+                return null;
+            }
         }
 
         public ReportBook(Lang.LocalizedLang lang, Writer<T> writer) {
@@ -40,13 +45,17 @@ public final class JXLSHelper {
             this.writer = writer;
             this.sheetMap = new HashMap<>();
             this.sheetRowIndexMap = new HashMap<>();
+            this.fontsMap = new HashMap<>();
+            this.cellStylesMap = new HashMap<>();
+            this.defaultFont = getDefaultFont();
+            this.defaultHeaderCellStyle = getDefaultTableHeaderStyle(defaultFont);
+            this.defaultCellStyle = getDefaultStyle(defaultFont);
         }
 
         public int createSheet() {
             SXSSFSheet sheet = workbook.createSheet();
-            CellStyle thStyle = getTableHeaderStyle(workbook, getDefaultFont(workbook));
             setColumnsWidth(sheet, writer.getColumnsWidth());
-            makeHeader(sheet.createRow(0), thStyle, lang, writer.getColumnNames());
+            makeHeader(sheet.createRow(0), defaultHeaderCellStyle, lang, writer.getColumnNames());
             sheetMap.put(sheetIndex, sheet);
             sheetRowIndexMap.put(sheetIndex, 1);
             return sheetIndex++;
@@ -59,19 +68,16 @@ public final class JXLSHelper {
         }
 
         public void write(int sheetNumber, List<T> objects) {
-            CellStyle style = getDefaultStyle(workbook, getDefaultFont(workbook));
             for (T object : objects) {
                 Integer rowNumber = sheetRowIndexMap.get(sheetNumber);
                 Row row = sheetMap.get(sheetNumber).createRow(rowNumber++);
-                row.setRowStyle(style);
-                fillRow(row, writer.getColumnValues(object));
+                fillRow(row, writer.getColumnValues(object), this::getCellStyleForColumnIndex);
                 sheetRowIndexMap.put(sheetNumber, rowNumber);
             }
         }
 
         public void collect(OutputStream outputStream) throws IOException {
             workbook.write(outputStream);
-            close();
         }
 
         public void close() throws IOException {
@@ -81,85 +87,100 @@ public final class JXLSHelper {
             sheetRowIndexMap.clear();
             sheetIndex = 0;
         }
-    }
 
-    // --------------
-    // Core mechanism
-    // --------------
-
-    private static Font getDefaultFont(Workbook workbook) {
-        Font font = workbook.createFont();
-        font.setFontName("Calibri");
-        font.setFontHeightInPoints((short) 11);
-        return font;
-    }
-
-    private static CellStyle getTableHeaderStyle(Workbook workbook, Font font) {
-        CellStyle style = workbook.createCellStyle();
-        {
-            style.setFont(font);
-            style.setAlignment(HorizontalAlignment.CENTER);
-            style.setVerticalAlignment(VerticalAlignment.CENTER);
-            style.setFillForegroundColor(IndexedColors.GREY_40_PERCENT.index);
-            style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        public Font makeFont(int identifier, Consumer<Font> init) {
+            Font font = fontsMap.get(identifier);
+            if (font != null) {
+                return font;
+            }
+            font = workbook.createFont();
+            init.accept(font);
+            fontsMap.put(identifier, font);
+            return font;
         }
-        return style;
-    }
 
-    private static CellStyle getDefaultStyle(Workbook workbook, Font font) {
-        CellStyle style = workbook.createCellStyle();
-        {
-            style.setFont(font);
-            style.setVerticalAlignment(VerticalAlignment.CENTER);
+        public CellStyle makeCellStyle(int identifier, Consumer<CellStyle> init) {
+            CellStyle cellStyle = cellStylesMap.get(identifier);
+            if (cellStyle != null) {
+                return cellStyle;
+            }
+            cellStyle = workbook.createCellStyle();
+            init.accept(cellStyle);
+            cellStylesMap.put(identifier, cellStyle);
+            return cellStyle;
         }
-        return style;
-    }
 
-    private static CellStyle getSumStyle(Workbook workbook, Font font) {
-        CellStyle style = workbook.createCellStyle();
-        {
-            style.setFont(font);
-            style.setVerticalAlignment(VerticalAlignment.CENTER);
-            style.setBorderTop(BorderStyle.MEDIUM);
+        private CellStyle getCellStyleForColumnIndex(int columnIndex) {
+            CellStyle cellStyle = writer.getCellStyle(workbook, columnIndex);
+            if (cellStyle != null) {
+                return cellStyle;
+            }
+            return defaultCellStyle;
         }
-        return style;
-    }
 
-    private static void setColumnsWidth(Sheet sheet, int[] columnsWidth) {
-        int columnIndex = 0;
-        for (int width : columnsWidth) {
-            sheet.setColumnWidth(columnIndex++, width);
+        public Font getDefaultFont() {
+            if (defaultFont != null) {
+                return defaultFont;
+            }
+            defaultFont = workbook.createFont();
+            defaultFont.setFontName("Calibri");
+            defaultFont.setFontHeightInPoints((short) 11);
+            return defaultFont;
         }
-    }
 
-    private static void makeHeader(Row row, CellStyle style, Lang.LocalizedLang lang, String[] columnNames) {
-        int columnIndex = 0;
-        for (String name : columnNames) {
-            Cell cell = row.createCell(columnIndex++);
-            cell.setCellValue(lang.get(name));
-            cell.setCellStyle(style);
+        public CellStyle getDefaultTableHeaderStyle(Font font) {
+            if (defaultHeaderCellStyle != null) {
+                return defaultHeaderCellStyle;
+            }
+            defaultHeaderCellStyle = workbook.createCellStyle();
+            defaultHeaderCellStyle.setFont(font);
+            defaultHeaderCellStyle.setAlignment(HorizontalAlignment.CENTER);
+            defaultHeaderCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            defaultHeaderCellStyle.setFillForegroundColor(IndexedColors.GREY_40_PERCENT.index);
+            defaultHeaderCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            return defaultHeaderCellStyle;
         }
-    }
 
-    private static void fillRow(Row row, Object[] values) {
-        fillRow(row, values, null);
-    }
+        public CellStyle getDefaultStyle(Font font) {
+            if (defaultCellStyle != null) {
+                return defaultCellStyle;
+            }
+            defaultCellStyle = workbook.createCellStyle();
+            defaultCellStyle.setFont(font);
+            defaultCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            return defaultCellStyle;
+        }
 
-    private static void fillRow(Row row, Object[] values, CellStyle style) {
-        int columnIndex = 0;
-        for (Object value : values) {
-            Cell cell = row.createCell(columnIndex++);
-            if (style != null) {
+        private static void setColumnsWidth(Sheet sheet, int[] columnsWidth) {
+            int columnIndex = 0;
+            for (int width : columnsWidth) {
+                sheet.setColumnWidth(columnIndex++, width);
+            }
+        }
+
+        private static void makeHeader(Row row, CellStyle style, Lang.LocalizedLang lang, String[] columnNames) {
+            int columnIndex = 0;
+            for (String name : columnNames) {
+                Cell cell = row.createCell(columnIndex++);
+                cell.setCellValue(lang.get(name));
                 cell.setCellStyle(style);
             }
-            if (value instanceof Number) {
-                cell.setCellValue(((Number) value).doubleValue());
-            } else if (value instanceof Date) {
-                cell.setCellValue((Date) value);
-            } else if (value instanceof Boolean) {
-                cell.setCellValue((Boolean) value);
-            } else {
-                cell.setCellValue(value.toString());
+        }
+
+        private static void fillRow(Row row, Object[] values, Function<Integer, CellStyle> cellStyleProvider) {
+            for (int columnIndex = 0; columnIndex < values.length; columnIndex++) {
+                Cell cell = row.createCell(columnIndex);
+                cell.setCellStyle(cellStyleProvider.apply(columnIndex));
+                Object value = values[columnIndex];
+                if (value instanceof Number) {
+                    cell.setCellValue(((Number) value).doubleValue());
+                } else if (value instanceof Date) {
+                    cell.setCellValue((Date) value);
+                } else if (value instanceof Boolean) {
+                    cell.setCellValue((Boolean) value);
+                } else {
+                    cell.setCellValue(value.toString());
+                }
             }
         }
     }

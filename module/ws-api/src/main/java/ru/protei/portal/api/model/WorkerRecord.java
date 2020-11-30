@@ -57,9 +57,10 @@ public class WorkerRecord {
         copy (p);
     }
 
-    public WorkerRecord(WorkerEntry w, EmployeeRegistration r) {
-        copy (w);
-        setRegistrationId(r == null ? null : r.getId());
+    public WorkerRecord(Person person, WorkerEntry workerEntry, EmployeeRegistration employeeRegistration) {
+        copy(person);
+        copy(workerEntry);
+        setRegistrationId(employeeRegistration == null ? null : employeeRegistration.getId());
     }
 
     @XmlElement(name = "company-code")
@@ -313,39 +314,37 @@ public class WorkerRecord {
         this.positionName = positionName;
     }
 
-    public void copy (Person p) {
-        setId (p.getId ());
-        setFirstName (p.getFirstName ());
-        setLastName (p.getLastName ());
-        setSecondName (p.getSecondName ());
-        setSex (p.getGender() != null ? p.getGender().equals (En_Gender.MALE) ? new Integer (1) : p.getGender().equals (En_Gender.FEMALE) ? new Integer (2) : null : null);
-        setBirthday (p.getBirthday () != null ? HelperService.DATE.format (p.getBirthday ()) : null);
-        setIpAddress (p.getIpAddress ());
-        PlainContactInfoFacade contactInfoFacade = new PlainContactInfoFacade(p.getContactInfo());
+    public void copy (Person person) {
+        setId (person.getId ());
+        setFirstName (person.getFirstName ());
+        setLastName (person.getLastName ());
+        setSecondName (person.getSecondName ());
+        setSex (person.getGender() != null ? person.getGender().equals (En_Gender.MALE) ? new Integer (1) : person.getGender().equals (En_Gender.FEMALE) ? new Integer (2) : null : null);
+        setBirthday (person.getBirthday () != null ? HelperService.DATE.format (person.getBirthday ()) : null);
+        setIpAddress (person.getIpAddress ());
+        PlainContactInfoFacade contactInfoFacade = new PlainContactInfoFacade(person.getContactInfo());
         setPhoneWork (contactInfoFacade.getWorkPhone ());
         setPhoneMobile (contactInfoFacade.getMobilePhone ());
         setPhoneHome (contactInfoFacade.getHomePhone ());
-        setPassportInfo (p.getPassportInfo ());
-        setInfo (p.getInfo ());
+        setInfo (person.getInfo ());
         setAddress (contactInfoFacade.getLegalAddress());
         setAddressHome (contactInfoFacade.getHomeAddress());
         setEmail (contactInfoFacade.getEmail ());
         setEmailOwn (contactInfoFacade.getEmail_own ());
         setFax (contactInfoFacade.getFax ());
-        setFireDate(p.getFireDate() == null ? null : HelperService.DATE.format(p.getFireDate()));
-        setFired(p.isFired());
-        setDeleted (p.isDeleted ());
+        setFireDate(person.getFireDate() == null ? null : HelperService.DATE.format(person.getFireDate()));
+        setFired(person.isFired());
+        setDeleted (person.isDeleted ());
     }
 
-    public void copy (WorkerEntry w) {
-        setCompanyCode(w.getExternalCode());
-        copy(w.getPerson());
-        setWorkerId(w.getExternalId());
-        setDepartmentId(w.getDepartmentExternalId());
-        setPositionName(w.getPositionName());
-        setHireDate(w.getHireDate() == null ? null : HelperService.DATE.format (w.getHireDate()));
-        setHireOrderNo(w.getHireOrderNo());
-        setActive(w.getActiveFlag());
+    public void copy (WorkerEntry workerEntry) {
+        setCompanyCode(workerEntry.getExternalCode());
+        setWorkerId(workerEntry.getExternalId());
+        setDepartmentId(workerEntry.getDepartmentExternalId());
+        setPositionName(workerEntry.getPositionName());
+        setHireDate(workerEntry.getHireDate() == null ? null : HelperService.DATE.format (workerEntry.getHireDate()));
+        setHireOrderNo(workerEntry.getHireOrderNo());
+        setActive(workerEntry.getActiveFlag());
     }
 
     @Override

@@ -162,7 +162,7 @@ public class MigrateUtils {
         infoFacade.addItem(En_ContactItemType.ADDRESS_LEGAL, imp.getLegalAddress());
         infoFacade.addItem(En_ContactItemType.ADDRESS, imp.getAddress());
         infoFacade.addItem(En_ContactItemType.EMAIL, imp.getEmail());
-        infoFacade.addItem(En_ContactItemType.WEB_SITE, imp.getWebsite());
+//        infoFacade.addItem(En_ContactItemType.WEB_SITE, imp.getWebsite()); // deprecated
         return x;
     }
 
@@ -183,7 +183,6 @@ public class MigrateUtils {
         person.setGender(impPerson.getGender());
         person.setInfo(impPerson.getInfo());
         person.setLastName(impPerson.getLastName());
-        person.setPassportInfo(impPerson.getPassportInfo());
         person.setPosition(impPerson.getPosition());
         person.setSecondName(person.getSecondName());
         person.setCompanyId(impPerson.getCompanyId());
@@ -199,48 +198,48 @@ public class MigrateUtils {
             person.setFired(info.proteiExtension.isFired());
             person.setIpAddress(info.proteiExtension.getIpAddress());
 
-            contactInfoFacade.addEmail(info.proteiExtension.getEmail(), "Основной");
-            contactInfoFacade.addPrivateEmail(info.proteiExtension.getOtherEmail(), "Персональный");
-            contactInfoFacade.addHomePhone(info.proteiExtension.getHomeTel(), "Домашний");
-            contactInfoFacade.addWorkPhone(info.proteiExtension.getWorkTel(), "Рабочий");
-            contactInfoFacade.addMobilePhone(info.proteiExtension.getMobileTel(), "Мобильный");
+            contactInfoFacade.addEmail(info.proteiExtension.getEmail());
+            contactInfoFacade.addPrivateEmail(info.proteiExtension.getOtherEmail());
+            contactInfoFacade.addHomePhone(info.proteiExtension.getHomeTel());
+            contactInfoFacade.addWorkPhone(info.proteiExtension.getWorkTel());
+            contactInfoFacade.addMobilePhone(info.proteiExtension.getMobileTel());
 
-            contactInfoFacade.addFax(info.proteiExtension.getFax(), "");
-            contactInfoFacade.addLegalAddress(info.proteiExtension.getOfficialAddress(), "Официальный адрес");
-            contactInfoFacade.addAddress(info.proteiExtension.getActualAddress(), "Фактический адрес");
-            contactInfoFacade.addIcq(info.proteiExtension.getIcq(), "");
+//            contactInfoFacade.addFax(info.proteiExtension.getFax()); // deprecated
+//            contactInfoFacade.addLegalAddress(info.proteiExtension.getOfficialAddress()); // deprecated
+//            contactInfoFacade.addAddress(info.proteiExtension.getActualAddress()); // deprecated
+//            contactInfoFacade.addIcq(info.proteiExtension.getIcq()); // deprecated
         }
         else {
             // contact person
-            contactInfoFacade.addAddress(info.contactField("Адрес рабочий"), "Адрес рабочий");
-            contactInfoFacade.addAddress(info.contactField("Адрес без категории"), "Адрес без категории");
-            contactInfoFacade.addPrivateAddress(info.contactField("Адрес домашний"), "Адрес домашний");
+            contactInfoFacade.addAddress(info.contactField("Адрес рабочий"));
+            contactInfoFacade.addAddress(info.contactField("Адрес без категории"));
+            contactInfoFacade.addPrivateAddress(info.contactField("Адрес домашний"));
 
-            contactInfoFacade.addEmail(info.contactField("E-mail рабочий"), "рабочий");
-            contactInfoFacade.addEmail(info.contactField("E-mail без категории"), "без категории");
-            contactInfoFacade.addPrivateEmail(info.contactField("E-mail домашний"), "персональный");
+            contactInfoFacade.addEmail(info.contactField("E-mail рабочий"));
+            contactInfoFacade.addEmail(info.contactField("E-mail без категории"));
+            contactInfoFacade.addPrivateEmail(info.contactField("E-mail домашний"));
 
 
-            contactInfoFacade.addFax(info.contactField("Факс рабочий"), "Факс рабочий");
-            contactInfoFacade.addFax(info.contactField("Факс без категории"), "Факс без категории");
-            contactInfoFacade.addHomeFax(info.contactField("Факс домашний"), "Факс домашний");
+            contactInfoFacade.addFax(info.contactField("Факс рабочий"));
+            contactInfoFacade.addFax(info.contactField("Факс без категории"));
+            contactInfoFacade.addHomeFax(info.contactField("Факс домашний"));
 
-            contactInfoFacade.addWorkPhone(info.contactField("Телефон рабочий"), "рабочий");
-            contactInfoFacade.addWorkPhone(info.contactField("Телефон без категории"), "без категории");
-            contactInfoFacade.addMobilePhone(info.contactField("Телефон мобильный"), "мобильный");
-            contactInfoFacade.addHomePhone(info.contactField("Телефон домашний"), "домашний");
+            contactInfoFacade.addWorkPhone(info.contactField("Телефон рабочий"));
+            contactInfoFacade.addWorkPhone(info.contactField("Телефон без категории"));
+            contactInfoFacade.addMobilePhone(info.contactField("Телефон мобильный"));
+            contactInfoFacade.addHomePhone(info.contactField("Телефон домашний"));
 
-            contactInfoFacade.addJabber(
-                    nvlt(
-                            info.contactField("Интернет рабочий"),
-                            nvlt(info.contactField("Интернет без категории"),
-                                    info.contactField("Интернет домашний"))
-                    ), "");
-
-            contactInfoFacade.addIcq(
-                    nvlt(info.contactField("ICQ рабочий"),
-                        nvlt(info.contactField("ICQ без категории"), info.contactField("ICQ домашний"))
-            ), "");
+//            contactInfoFacade.addJabber( // deprecated
+//                    nvlt(
+//                            info.contactField("Интернет рабочий"),
+//                            nvlt(info.contactField("Интернет без категории"),
+//                                    info.contactField("Интернет домашний"))
+//                    ), "");
+//
+//            contactInfoFacade.addIcq( // deprecated
+//                    nvlt(info.contactField("ICQ рабочий"),
+//                        nvlt(info.contactField("ICQ без категории"), info.contactField("ICQ домашний"))
+//            ), "");
         }
 
         return person;

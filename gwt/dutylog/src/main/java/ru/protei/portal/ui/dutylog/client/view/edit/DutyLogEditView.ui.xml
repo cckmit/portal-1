@@ -1,0 +1,29 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
+             xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
+             xmlns:loading='urn:import:ru.protei.portal.ui.common.client.widget.loading'
+             xmlns:form="urn:import:ru.protei.portal.ui.common.client.widget.form">
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel>
+        <loading:IndeterminateCircleLoading ui:field="loading" visible="false"
+                                            styleName="p-t-20 p-b-20 p-l-20 p-r-20"/>
+        <g:HTMLPanel ui:field="content" visible="false" styleName="form-group-attached p-t-20">
+            <person:EmployeeFormSelector ui:field="employee" defaultValue="{lang.selectAbsenceEmployee}"
+                                         header="{lang.dutyLogEmployee}" mandatory="true"/>
+
+            <div class="form-group form-group-default required" aria-required="true">
+                <label ui:field="absenceDateRangeLabel" class="fade">
+                    <ui:text from="{lang.dutyLogRange}"/>
+                </label>
+                <range:RangePicker ui:field="dateRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"
+                                   mandatory="true" styleName=""/>
+            </div>
+
+            <form:FormPopupSingleSelector ui:field="type" header="{lang.dutyLogDuty}"
+                                          hasNullValue="false" addStyleNames="form-group required"/>
+
+        </g:HTMLPanel>
+    </g:HTMLPanel>
+</ui:UiBinder>

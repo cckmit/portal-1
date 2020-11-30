@@ -24,10 +24,13 @@ public class PersonButtonSelector extends ButtonPopupSingleSelector< PersonShort
 {
 
     @Inject
-    public void init(InitiatorModel model) {
-        this.model = model;
-        setModel(model);
+    public void init() {
         setItemRenderer( value -> value == null ? defaultValue : value.getName() );
+    }
+
+    public void setAsyncPersonModel( PersonModel model){
+        this.model = model;
+        setAsyncModel( model );
     }
 
     @Override
@@ -41,8 +44,6 @@ public class PersonButtonSelector extends ButtonPopupSingleSelector< PersonShort
         return item;
     }
 
-    public void setFired ( boolean value ) { this.fired = value; }
-
     @Override
     public void refresh() {
         PersonShortView value = getValue();
@@ -55,7 +56,7 @@ public class PersonButtonSelector extends ButtonPopupSingleSelector< PersonShort
     @Override
     public void onShowPopupClicked( ClickEvent event) {
 
-        if (CollectionUtils.isNotEmpty( companyIds )) {
+        if (model.isCompaniesPresent()) {
             super.onShowPopupClicked(event);
             checkNoElements();
         } else {
@@ -63,24 +64,14 @@ public class PersonButtonSelector extends ButtonPopupSingleSelector< PersonShort
             item.setName(lang.initiatorSelectACompany());
             item.getElement().addClassName(UiConstants.Styles.TEXT_CENTER);
             getPopup().getChildContainer().add(item);
-            getPopup().showNear( button );
-        }
-    }
-
-    public void updateCompanies(Set<Long> companyIds) {
-        this.companyIds = companyIds;
-        if(model!=null){
-            model.updateCompanies(this, companyIds, fired);
+            getPopup().showNear( button.getElement() );
         }
     }
 
     @Inject
     Lang lang;
 
-    private InitiatorModel model;
-
-    private boolean fired = false;
-    private Set<Long> companyIds;
+    private PersonModel model;
 
     private static final Logger log = Logger.getLogger( PersonButtonSelector.class.getName() );
 }

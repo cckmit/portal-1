@@ -10,9 +10,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
@@ -79,7 +79,7 @@ public class CaseCommentServiceTest extends BaseServiceTest {
         CaseObject caseObject = makeCaseObject(caseType, person);
 
         makeCaseComment(person, caseObject.getId(), "Test message");
-        makeCaseComment(person, caseObject.getId(), null, (long) En_CaseState.CREATED.getId());
+        makeCaseComment(person, caseObject.getId(), null, (long) CrmConstants.State.CREATED);
 
         List<CaseComment> comments = caseCommentDAO.getCaseComments(new CaseCommentQuery(caseObject.getId()));
         Assert.assertNotNull(comments);
@@ -148,7 +148,7 @@ public class CaseCommentServiceTest extends BaseServiceTest {
         log.info("Size after update = " + resultList.getData().size());
 
         // delete
-        Result<Boolean> result2 = caseCommentService.removeCaseComment(getAuthToken(), caseType, comment);
+        Result<Long> result2 = caseCommentService.removeCaseComment(getAuthToken(), caseType, comment);
         Assert.assertNotNull(result2);
         Assert.assertTrue(result2.isOk());
         log.info("{}", result2.getData());

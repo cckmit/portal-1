@@ -9,10 +9,8 @@ import protei.sql.query.IQuery;
 import protei.sql.query.IQueryCmd;
 import protei.sql.query.Tm_BaseQueryCmd;
 import protei.sql.utils.Tm_QueryExecutor;
-import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.LegacyEntity;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -22,7 +20,10 @@ import ru.protei.portal.tools.migrate.struct.*;
 import javax.annotation.PostConstruct;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -36,9 +37,6 @@ public class LegacySystemDAO {
 
     @Autowired
     private SybConnProvider connProvider;
-
-    @Autowired
-    CompanyDAO companyDAO;
 
     @Autowired
     PersonDAO personDAO;
@@ -208,6 +206,22 @@ public class LegacySystemDAO {
 
     public ExternalPerson getExternalPerson (long id) throws SQLException {
         return runAction(transaction -> transaction.dao(ExternalPerson.class).get(id));
+    }
+
+    public List<ExternalSubnet> getExternalSubnets () throws SQLException {
+        return runAction(transaction -> transaction.dao(ExternalSubnet.class).list());
+    }
+
+    public List<ExternalReservedIp> getExternalReservedIps () throws SQLException {
+        return runAction(transaction -> transaction.dao(ExternalReservedIp.class).list(""));
+    }
+
+    public List<ExternalPersonAbsence> getExternalAbsences (String date) throws SQLException {
+        return runAction(transaction -> transaction.dao(ExternalPersonAbsence.class).list("dToDate >= ? ", date));
+    }
+
+    public List<ExternalPersonLeave> getExternalLeaves (String date) throws SQLException {
+        return runAction(transaction -> transaction.dao(ExternalPersonLeave.class).list("dToDate >= ? ", date));
     }
 
     public ExternalPersonInfoCollector personCollector (List<ExternalPerson> personList) {

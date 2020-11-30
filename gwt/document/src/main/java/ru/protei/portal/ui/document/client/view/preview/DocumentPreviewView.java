@@ -16,6 +16,8 @@ import ru.protei.portal.ui.common.client.widget.document.uploader.DocumentUpload
 import ru.protei.portal.ui.document.client.activity.preview.AbstractDocumentPreviewActivity;
 import ru.protei.portal.ui.document.client.activity.preview.AbstractDocumentPreviewView;
 
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
+
 public class DocumentPreviewView extends Composite implements AbstractDocumentPreviewView {
 
     @Inject
@@ -30,8 +32,8 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     }
 
     @Override
-    public void setHeader(String header) {
-        this.header.setInnerText(header);
+    public void setDocumentNumber(String documentNumber) {
+        this.documentNumber.setText(documentNumber);
     }
 
     @Override
@@ -118,6 +120,7 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     public void setDownloadLinkApprovalSheet(String link) {
         if (StringUtils.isEmpty(link)) {
             downloadApprovalSheetButton.setVisible(false);
+            return;
         }
         downloadApprovalSheetButton.setVisible(true);
         downloadApprovalSheetButton.setHref(link);
@@ -161,17 +164,25 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     @Override
     public HasVisibility documentDocUploadContainerLoading() {
         return new HasVisibility() { // Because documentDocUploadContainerLoading has 'd-flex' class with !important display
-            public boolean isVisible() { return !documentDocUploadContainerLoading.hasClassName("hide"); }
+            public boolean isVisible() { return !documentDocUploadContainerLoading.hasClassName(HIDE); }
             public void setVisible(boolean visible) {
-                documentDocUploadContainerLoading.removeClassName("hide");
-                if (!visible) documentDocUploadContainerLoading.addClassName("hide");
+                documentDocUploadContainerLoading.removeClassName(HIDE);
+                if (!visible) documentDocUploadContainerLoading.addClassName(HIDE);
             }
         };
     }
 
     @Override
-    public HasVisibility footerVisibility() {
-        return footerContainer;
+    public void showFullScreen(boolean isShowFullScreen) {
+        footerContainer.setVisible(isShowFullScreen);
+        preview.setStyleName("card-with-fixable-footer", isShowFullScreen);
+    }
+
+    @UiHandler("documentNumber")
+    public void onDocumentNumberClicked(ClickEvent event) {
+        event.preventDefault();
+
+        activity.onFullScreenClicked();
     }
 
     @UiHandler("backButton")
@@ -199,7 +210,7 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
         uploadDocFile.ensureDebugId(DebugIds.DOCUMENT.PREVIEW.UPLOAD_DOC_FILE_BUTTON);
         backButton.ensureDebugId(DebugIds.DOCUMENT.PREVIEW.BACK_BUTTON);
 
-        header.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.HEADER_LABEL);
+        documentNumber.ensureDebugId(DebugIds.DOCUMENT.PREVIEW.HEADER_LABEL);
         createdBy.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.CREATED_BY);
         annotation.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.ANNOTATION_LABEL);
         keyWordsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.KEY_WORDS_LABEL);
@@ -231,6 +242,9 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
         documentDocUploadContainerLoading.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.DOC_UPLOAD_CONTAINER_LOADING);
     }
 
+
+    @UiField
+    HTMLPanel preview;
     @UiField
     Anchor downloadPdfButton;
     @UiField
@@ -238,7 +252,7 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     @UiField
     Anchor downloadApprovalSheetButton;
     @UiField
-    HeadingElement header;
+    Anchor documentNumber;
     @UiField
     Element version;
     @UiField
@@ -321,7 +335,7 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     @UiField
     Lang lang;
 
-    AbstractDocumentPreviewActivity activity;
+    private AbstractDocumentPreviewActivity activity;
 
     interface Binder extends UiBinder<HTMLPanel, DocumentPreviewView> {}
     private final Binder uiBinder = GWT.create(Binder.class);

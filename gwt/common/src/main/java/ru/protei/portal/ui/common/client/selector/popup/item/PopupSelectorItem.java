@@ -14,6 +14,7 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 
 /**
  * Вид одного элемента из выпадайки селектора
@@ -64,7 +65,7 @@ public class PopupSelectorItem<T>
     }
 
     public void setImage( String src ) {
-        image.removeClassName( "hide" );
+        image.removeClassName( HIDE );
         image.setSrc( src );
     }
 

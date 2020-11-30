@@ -4,8 +4,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.support.TransactionTemplate;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dao.impl.CompanyImportanceItemDAO_Impl;
-import ru.protei.portal.core.model.dao.impl.ImportanceLevelDAO_Impl;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import static org.mockito.Mockito.mock;
@@ -72,6 +70,11 @@ public class DaoMockTestConfiguration {
     }
 
     @Bean
+    public PersonShortViewDAO getPersonShortViewDAO() {
+        return  mock(PersonShortViewDAO.class);
+    }
+
+    @Bean
     public DevUnitDAO getDevUnitDAO() {
         return  mock(DevUnitDAO.class);
     }
@@ -119,6 +122,11 @@ public class DaoMockTestConfiguration {
     @Bean
     public UserLoginDAO getUserLoginDAO() {
         return  mock(UserLoginDAO.class);
+    }
+
+    @Bean
+    public UserLoginShortViewDAO getUserLoginShortViewDAO() {
+        return mock(UserLoginShortViewDAO.class);
     }
 
     @Bean
@@ -286,6 +294,11 @@ public class DaoMockTestConfiguration {
     }
 
     @Bean
+    public ProjectDAO getProjectDAO() {
+        return mock( ProjectDAO.class);
+    }
+
+    @Bean
     public ContractDateDAO getContractDateDAO() {
         return  mock(ContractDateDAO.class);
     }
@@ -326,9 +339,103 @@ public class DaoMockTestConfiguration {
     }
 
     @Bean
+    public EducationWalletDAO getEducationWalletDAO() {
+        return  mock(EducationWalletDAO.class);
+    }
+
+    @Bean
+    public EducationEntryDAO getEducationEntryDAO() {
+        return  mock(EducationEntryDAO.class);
+    }
+
+    @Bean
+    public EducationEntryAttendanceDAO getEducationEntryAttendanceDAO() {
+        return  mock(EducationEntryAttendanceDAO.class);
+    }
+
+    @Bean
     public CompanyImportanceItemDAO getCompanyImportanceItemDAO() {
         return mock(CompanyImportanceItemDAO.class);
     }
 
+    @Bean
+    public SubnetDAO getSubnetDAO() { return mock(SubnetDAO.class); }
 
+    @Bean
+    public ReservedIpDAO getReservedIpAO() { return mock(ReservedIpDAO.class); }
+
+    @Bean
+    public RoomReservableDAO getRoomReservableDAO() {
+        return mock(RoomReservableDAO.class);
+    }
+
+    @Bean
+    public RoomReservationDAO getRoomReservationDAO() {
+        return mock(RoomReservationDAO.class);
+    }
+
+    @Bean
+    public PersonCaseFilterDAO getPersonToCaseFilterDAO() {
+        return mock(PersonCaseFilterDAO.class);
+    }
+
+    @Bean
+    public PlanDAO getPlanDAO() {
+        return mock(PlanDAO.class);
+    }
+
+    @Bean
+    public PlanToCaseObjectDAO getPlanToCaseObjectDAO() {
+        return mock(PlanToCaseObjectDAO.class);
+    }
+
+    @Bean
+    public HistoryDAO getHistoryDAO() {
+        return mock(HistoryDAO.class);
+    }
+
+    @Bean
+    public ContractSpecificationDAO getContractSpecificationDAO() {
+        return mock(ContractSpecificationDAO.class);
+    }
+
+    @Bean
+    public ContractorDAO getContractorDAO() {
+        return mock(ContractorDAO.class);
+    }
+
+    @Bean
+    public PersonNotifierDAO getPersonNotifierDAO() {
+        return mock(PersonNotifierDAO.class);
+    }
+
+    @Bean
+    public PersonFavoriteIssuesDAO getPersonFavoriteIssuesDAO() {
+        return mock(PersonFavoriteIssuesDAO.class);
+    }
+
+    @Bean
+    public ContactItemDAO getContactItemDAO() {
+        return mock(ContactItemDAO.class);
+    }
+
+    @Bean
+    public ImportanceLevelDAO getImportanceLevelDAO() {
+        return  mock( ImportanceLevelDAO.class );
+    }
+
+    @Bean
+    public BootstrapAppDAO getBootstrapAppDAO() {
+        return  mock( BootstrapAppDAO.class );
+    }
+
+    @Bean
+    public DutyLogDAO getDutyLogDAO() {
+        return mock( DutyLogDAO.class );
+    }
+
+    @Bean
+    public ProjectTechnicalSupportValidityReportInfoDAO getProjectTechnicalSupportValidityReportInfoDAO() {
+        return mock( ProjectTechnicalSupportValidityReportInfoDAO.class );
+    }
 }

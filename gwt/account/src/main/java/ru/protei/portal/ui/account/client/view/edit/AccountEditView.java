@@ -11,7 +11,6 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -19,14 +18,18 @@ import ru.protei.portal.ui.account.client.activity.edit.AbstractAccountEditActiv
 import ru.protei.portal.ui.account.client.activity.edit.AbstractAccountEditView;
 import ru.protei.portal.ui.account.client.widget.role.RoleOptionList;
 import ru.protei.portal.ui.common.client.common.NameStatus;
-import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
+import ru.protei.portal.ui.common.client.events.InputEvent;
+import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 
 import java.util.Set;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
 
 /**
  * Представление создания и редактирования учетной записи
@@ -36,6 +39,7 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        person.setAsyncPersonModel( personModel );
     }
 
     @Override
@@ -66,6 +70,11 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
     @Override
     public HasText confirmPassword() {
         return confirmPassword;
+    }
+
+    @Override
+    public HasValue<String> searchPattern() {
+        return search;
     }
 
     @Override
@@ -116,15 +125,20 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
 
     @Override
     public void setCompaniesForInitiator(Set<Long> companyIds) {
-        person.updateCompanies(companyIds);
+        personModel.updateCompanies( person, companyIds );
+    }
+
+    @Override
+    public void setRolesFilter(Selector.SelectorFilter<UserRole> filter) {
+        roles.refreshValueByFilter(filter);
     }
 
     @UiHandler( "company" )
     public void onChangeCompany( ValueChangeEvent< EntityOption > event ) {
-        Company company = Company.fromEntityOption( event.getValue() );
+        Long companyId = event.getValue() == null ? null : event.getValue().getId();
 
-        person.setEnabled( company != null );
-        setCompaniesForInitiator(InitiatorModel.makeCompanyIds(company));
+        person.setEnabled( companyId != null );
+        setCompaniesForInitiator( companyId == null ? null : setOf( companyId ) );
         person.setValue( null );
     }
 
@@ -147,6 +161,13 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
         verifiableIcon.setClassName( NameStatus.UNDEFINED.getStyle());
         timer.cancel();
         timer.schedule( 300 );
+    }
+
+    @UiHandler("search")
+    public void onSearchChanged(InputEvent event) {
+        if ( activity != null ) {
+            activity.onSearchChanged();
+        }
     }
 
     @Inject
@@ -172,6 +193,9 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
     @UiField
     HTMLPanel infoPanel;
 
+    @UiField
+    CleanableSearchBox search;
+
     @Inject
     @UiField( provided = true )
     RoleOptionList roles;
@@ -183,6 +207,8 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
     Button cancelButton;
     @UiField
     CheckBox sendWelcomeEmail;
+    @Inject
+    PersonModel personModel;
 
     Timer timer = new Timer() {
         @Override

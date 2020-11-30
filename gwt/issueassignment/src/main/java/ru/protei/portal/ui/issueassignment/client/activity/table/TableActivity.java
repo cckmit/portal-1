@@ -1,14 +1,12 @@
 package ru.protei.portal.ui.issueassignment.client.activity.table;
 
-import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.UIObject;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
@@ -18,20 +16,23 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.IssueAssignmentEvents;
-import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.popup.BasePopupView;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
+import ru.protei.portal.ui.common.client.util.CaseStateUtils;
+import ru.protei.portal.ui.common.client.widget.popupselector.RemovablePopupSingleSelector;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.issueassignment.client.widget.popupselector.PopupSingleSelector;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public abstract class TableActivity implements Activity, AbstractTableActivity {
@@ -71,12 +72,14 @@ public abstract class TableActivity implements Activity, AbstractTableActivity {
 
     @Override
     public void onItemClicked(CaseShortView value) {
-        fireEvent(new IssueEvents.Edit(value.getCaseNumber()));
+        if (value != null) {
+            fireEvent(new IssueAssignmentEvents.ShowIssuePreview(value.getCaseNumber()));
+        }
     }
 
     @Override
     public void onItemActionAssign(CaseShortView value, UIObject relative) {
-        showPersonSingleSelector(relative, person -> {
+        showPersonSingleSelector(relative.getElement(), person -> {
             if (person == null) {
                 return;
             }
@@ -144,7 +147,10 @@ public abstract class TableActivity implements Activity, AbstractTableActivity {
 
     private CaseQuery makeDefaultQuery() {
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
-        query.setStates(Arrays.asList(En_CaseState.CREATED, En_CaseState.OPENED, En_CaseState.ACTIVE));
+        query.setStateIds(CaseStateUtils.getNewStateIds());
+        if (policyService.getProfile() != null) {
+            query.setManagerCompanyIds(new ArrayList<>(Collections.singletonList(policyService.getUserCompany().getId())));
+        }
         query.setManagerIds(Collections.singletonList(CrmConstants.Employee.UNDEFINED));
         return query;
     }
@@ -165,8 +171,8 @@ public abstract class TableActivity implements Activity, AbstractTableActivity {
         return Long.parseLong(value);
     }
 
-    private void showPersonSingleSelector(UIObject relative, Consumer<PersonShortView> onChanged) {
-        PopupSingleSelector<PersonShortView> popup = new PopupSingleSelector<PersonShortView>() {};
+    private void showPersonSingleSelector(Element relative, Consumer<PersonShortView> onChanged) {
+        RemovablePopupSingleSelector<PersonShortView> popup = new RemovablePopupSingleSelector<>();
         popup.setModel(index -> index >= people.size() ? null : people.get(index));
         popup.setItemRenderer(PersonShortView::getName);
         popup.setEmptyListText(lang.emptySelectorList());
@@ -174,11 +180,11 @@ public abstract class TableActivity implements Activity, AbstractTableActivity {
         popup.setRelative(relative);
         popup.addValueChangeHandler(event -> {
             onChanged.accept(popup.getValue());
-            popup.getPopup().hide();
+            popup.hidePopup();
         });
-        popup.getPopup().getChildContainer().clear();
+        popup.clearPopup();
         popup.fill();
-        popup.getPopup().showNear(relative, BasePopupView.Position.BY_RIGHT_SIDE, null);
+        popup.showPopup();
     }
 
     @Inject
@@ -193,6 +199,8 @@ public abstract class TableActivity implements Activity, AbstractTableActivity {
     DefaultErrorHandler defaultErrorHandler;
     @Inject
     LocalStorageService localStorageService;
+    @Inject
+    PolicyService policyService;
 
     private List<PersonShortView> people = new ArrayList<>();
 

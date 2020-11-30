@@ -5,6 +5,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Server;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.SiteFolderAppEvents;
 import ru.protei.portal.ui.common.client.events.SiteFolderServerEvents;
 
@@ -20,7 +21,7 @@ public abstract class ServerPreviewActivity implements Activity, AbstractServerP
         event.parent.clear();
         event.parent.add(view.asWidget());
 
-        serverId = event.server.getId();
+        server = makeEntityOption(event.server);
 
         fillView(event.server);
     }
@@ -38,13 +39,17 @@ public abstract class ServerPreviewActivity implements Activity, AbstractServerP
 
     @Override
     public void onOpenAppsClicked() {
-        if (serverId != null) {
-            fireEvent(new SiteFolderAppEvents.Show(serverId));
+        if (server != null && server.getId() != null) {
+            fireEvent(new SiteFolderAppEvents.Show(server, false));
         }
+    }
+
+    private EntityOption makeEntityOption(Server server) {
+        return server == null ? null : new EntityOption(server.getName(), server.getId());
     }
 
     @Inject
     AbstractServerPreviewView view;
 
-    private Long serverId;
+    private EntityOption server;
 }

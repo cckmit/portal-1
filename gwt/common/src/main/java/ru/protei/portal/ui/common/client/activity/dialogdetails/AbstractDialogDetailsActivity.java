@@ -10,6 +10,8 @@ public interface AbstractDialogDetailsActivity {
      * */
     default void onRemoveClicked() {}
 
+    default void onAdditionalClicked() {}
+
     /**
      * Нажата кнопка "Сохранить"
      */

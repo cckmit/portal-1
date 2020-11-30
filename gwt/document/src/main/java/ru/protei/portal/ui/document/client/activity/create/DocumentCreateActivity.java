@@ -27,13 +27,13 @@ public abstract class DocumentCreateActivity implements Activity, AbstractDocume
     @Event
     public void onShow(DocumentEvents.Create event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_CREATE)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
-        fireEvent(new ProjectEvents.Search(view.projectSearchContainer()));
+        fireEvent(new ProjectEvents.Search(view.projectSearchContainer(), true, false));
         fireEvent(new ProjectEvents.QuickCreate(view.projectCreateContainer()));
         fireEvent(new DocumentEvents.CreateFromWizard(view.documentContainer()));
         view.resetWizard();

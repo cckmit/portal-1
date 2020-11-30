@@ -9,7 +9,6 @@ import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseObjectCreateEvent;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ExtAppType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
@@ -17,6 +16,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.redmine.enums.RedmineChangeType;
 import ru.protei.portal.redmine.service.CommonService;
@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isNotBlank;
+import static ru.protei.portal.core.model.util.CrmConstants.Redmine.NO_CONTENT_TYPE;
 import static ru.protei.portal.core.model.util.CrmConstants.Time.MINUTE;
 import static ru.protei.portal.redmine.enums.RedmineChangeType.*;
 import static ru.protei.portal.redmine.utils.CachedPersonMapper.isTechUser;
@@ -209,13 +210,14 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
         publisherService.publishEvent(new CaseObjectCreateEvent(this, ServiceModule.REDMINE, contactPerson.getId(), obj));
 
         processComments(issue.getJournals(), obj, personMapper);
-        processAttachments(issue.getAttachments(), obj.getId(), endpoint, personMapper);
+        processAttachments(issue.getAttachments(), obj, endpoint, personMapper);
 
         logger.debug("Object with id {} was created, guid={}", obj.getId(), obj.defGUID());
         return obj;
     }
 
     private void updateCaseObject(Issue issue, CaseObject object, RedmineEndpoint endpoint) {
+        logger.trace( "issue(): {}", issue );
         CachedPersonMapper personMapper = commonService.getPersonMapper(endpoint);
 
         List<CaseComment> caseComments = commonService.getCaseComments( new CaseCommentQuery( object.getId() ) ).getData();
@@ -251,7 +253,7 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
         }
 
         //Synchronize attachment
-        processAttachments(issue.getAttachments(), object.getId(), endpoint, personMapper);
+        processAttachments(issue.getAttachments(), object, endpoint, personMapper);
     }
 
     private void processComments( Collection<Journal> journals, CaseObject object, CachedPersonMapper personMapper ) {
@@ -263,14 +265,14 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
                 ) );
     }
 
-    private void processAttachments( Collection<Attachment> attachments, Long caseObjId, RedmineEndpoint endpoint, CachedPersonMapper personMapper ) {
+    private void processAttachments( Collection<Attachment> attachments, CaseObject caseObject, RedmineEndpoint endpoint, CachedPersonMapper personMapper ) {
         if (isEmpty( attachments )) {
-            logger.debug("No attachments to process for case with id {}, attachment", caseObjId);
+            logger.debug("No attachments to process for case with id {}, attachment", caseObject.getId());
             return;
         }
 
-        Set<Integer> existingAttachmentsHashCodes = commonService.getExistingAttachmentsHashCodes( caseObjId ).orElseGet( ignore -> ok(new HashSet<Integer>()) ).getData();
-        logger.debug("Process attachments for case with id {}, exists {} attachment", caseObjId, existingAttachmentsHashCodes.size());
+        Set<Integer> existingAttachmentsHashCodes = commonService.getExistingAttachmentsHashCodes( caseObject.getId() ).orElseGet( ignore -> ok(new HashSet<>()) ).getData();
+        logger.debug("Process attachments for case with id {}, exists {} attachment", caseObject.getId(), existingAttachmentsHashCodes.size());
 
         for (com.taskadapter.redmineapi.bean.Attachment attachment : emptyIfNull( attachments )) {
             if (personMapper.isTechUser( endpoint.getDefaultUserId(), attachment.getAuthor() )) continue;
@@ -282,13 +284,13 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
             a.setCreatorId( author.getId() );
             a.setDataSize( attachment.getFileSize() );
             a.setFileName( attachment.getFileName() );
-            a.setMimeType( attachment.getContentType() );
+            a.setMimeType( attachment.getContentType() != null ? attachment.getContentType() : NO_CONTENT_TYPE );
             a.setLabelText( attachment.getDescription() );
 
 
             Result<Long> saveResult = commonService.saveAttachment( a, author,
                     new HttpInputSource( attachment.getContentURL(), endpoint.getApiKey() ),
-                    attachment.getFileSize(), attachment.getContentType(), caseObjId );
+                    attachment.getFileSize(), attachment.getContentType(), caseObject );
 
             publishEvents( saveResult );
         }
@@ -353,13 +355,19 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
             obj.setStateId(redmineStatusMapEntry.getLocalStatusId());
         } else {
             logger.warn("Object status was not found, setting default");
-            obj.setStateId(En_CaseState.CREATED.getId());
+            obj.setStateId(CrmConstants.State.CREATED);
         }
 
         obj.setName(issue.getSubject());
         obj.setInfo(issue.getDescription());
-        obj.setLocal(0);
         obj.setInitiatorCompanyId(companyId);
+        obj.setManagerCompanyId(CrmConstants.Company.HOME_COMPANY_ID);
+
+        List<Platform> platforms = commonService.getPlatforms(obj.getInitiatorCompanyId());
+        if (platforms != null && platforms.size() == 1) {
+            obj.setPlatformId(platforms.get(0).getId());
+        }
+
         return obj;
     }
 

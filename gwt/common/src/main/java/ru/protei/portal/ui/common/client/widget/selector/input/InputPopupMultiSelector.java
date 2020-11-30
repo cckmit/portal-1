@@ -12,25 +12,28 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.selector.AbstractPopupSelector;
-import ru.protei.portal.ui.common.client.selector.pageable.AbstractPageableSelector;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
+import ru.protei.portal.ui.common.client.selector.pageable.AbstractPageableSelector;
 import ru.protei.portal.ui.common.client.selector.pageable.MultiValuePageableSelector;
 import ru.protei.portal.ui.common.client.widget.selector.item.PopupSelectableItem;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectItemView;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.*;
+
 /**
  * Cелектор c выпадающим списком, множественный выбор
  */
 public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
-        implements HasValue<Set<T>>, HasEnabled, HasVisibility {
+        implements HasValue<Set<T>>, HasEnabled, HasVisibility, HasValidable {
 
     public InputPopupMultiSelector() {
         initWidget( bsUiBinder.createAndBindUi( this ) );
@@ -38,6 +41,7 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         setPageSize( CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE );
         setEmptyListText( lang.emptySelectorList() );
         setEmptySearchText( lang.searchNoMatchesFound() );
+        root.add(getPopup());
     }
 
     public void setHeader( String label ) {
@@ -58,6 +62,8 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         if (fireEvents) {
             ValueChangeEvent.fire(this, selectorValue);
         }
+
+        validateSelector(isValidable);
     }
 
     @Override
@@ -79,23 +85,41 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
     public void setEnabled( boolean enabled ) {
         isEnabled = enabled;
         if (isEnabled) {
-            itemContainer.removeStyleName( INACTIVE );
+            itemContainer.removeStyleName(INACTIVE);
         } else {
-            itemContainer.addStyleName( INACTIVE );
+            itemContainer.addStyleName(INACTIVE);
         }
         caretButton.setEnabled( isEnabled );
         clearButton.setEnabled( isEnabled );
         itemViews.forEach( ( v ) -> v.setEnabled( isEnabled ) );
     }
 
+    @Override
+    public boolean isValid() {
+        return true;
+    };
+
+    @Override
+    public void setValid(boolean isValid){
+        select2.setStyleName(HAS_ERROR, !isValid);
+    }
+
+    public void setValidation(boolean isValidable){
+        this.isValidable = isValidable;
+    }
+
+
     @UiHandler({"caretButton"})
     public void onShowPopupClicked( ClickEvent event ) {
         if (!isEnabled) {
             return;
         }
-        getPopup().getChildContainer().clear();
-        getSelector().fillFromBegin( this );
-        getPopup().showNear( itemContainer );
+
+        if (!getPopup().isVisible()) {
+            getPopup().getChildContainer().clear();
+            getSelector().fillFromBegin( this );
+            getPopup().showNear( select2.getElement() );
+        }
     }
 
     @UiHandler({"clearButton"})
@@ -108,6 +132,7 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         itemViews.clear();
         getSelector().getSelection().clear();
         clearButton.setVisible( false );
+        validateSelector(isValidable);
 
         ValueChangeEvent.fire( this, getValue() );
     }
@@ -116,11 +141,13 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
     protected void onSelectionChanged() {
         Set<T> value = getValue();
         showValue( value );
-        getPopup().showNear( itemContainer );
+        getPopup().showNear( select2.getElement() );
+        validateSelector(isValidable);
+
         ValueChangeEvent.fire( this, value );
     }
 
-    protected void setNullItem(Supplier<T> selectorNullItem) {
+    public void setNullItem(Supplier<T> selectorNullItem) {
         getSelector().setNullItem(selectorNullItem);
     }
 
@@ -139,6 +166,7 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         PopupSelectableItem<T> item = new PopupSelectableItem<>();
         item.setElementHtml( elementHtml );
         item.setSelected( isSelected( element ) );
+        item.setTitle(elementHtml);
         return item;
     }
 
@@ -157,6 +185,8 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         itemViews.add( itemView );
         itemView.setActivity( itemViewToRemove -> removeItem( itemViewToRemove, item ) );
         itemContainer.add( itemView );
+
+        validateSelector(isValidable);
     }
 
     private void removeItem( SelectItemView itemView, T item ) {
@@ -164,6 +194,8 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         itemViews.remove( itemView );
         getSelector().getSelection().select( item );
         clearButton.setVisible( !isEmpty() );
+        validateSelector(isValidable);
+
         ValueChangeEvent.fire( this, getValue() );
     }
 
@@ -191,7 +223,7 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         if (icon != null) {
             addIcon.setClassName( "fa " + icon );
         } else {
-            addIcon.setClassName( "hide" );
+            addIcon.setClassName( HIDE );
         }
         add.setInnerText( text );
         add.removeClassName( "caret" );
@@ -205,7 +237,7 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         if (icon != null) {
             clearIcon.setClassName( "fa " + icon );
         } else {
-            clearIcon.setClassName( "hide" );
+            clearIcon.setClassName( HIDE );
         }
         clear.setInnerText( text );
         clear.setClassName( "" );
@@ -220,6 +252,16 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         }
     }
 
+    private void validateSelector(boolean isValidable) {
+        if (isValidable) {
+            setValid(isValid());
+        }
+    }
+
+    @UiField
+    HTMLPanel root;
+    @UiField
+    protected HTMLPanel select2;
     @UiField
     Button caretButton;
     @UiField
@@ -245,8 +287,7 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
     List<SelectItemView> itemViews = new ArrayList<SelectItemView>();
 
     private boolean isEnabled = true;
-    public static final String INACTIVE = "inactive";
-    public static final String HIDE = "hide";
+    private boolean isValidable;
 
     interface BlockSelectorUiBinder extends UiBinder<HTMLPanel, InputPopupMultiSelector> {
     }

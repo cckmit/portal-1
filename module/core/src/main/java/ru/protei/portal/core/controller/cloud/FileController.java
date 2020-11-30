@@ -29,6 +29,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_FileUploadStatus;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.Base64Facade;
 import ru.protei.portal.core.model.struct.FileStream;
@@ -161,8 +162,9 @@ public class FileController {
         }
 
         if (!isEmpty( bindAttachments )) {
-            caseService.getCaseIdByNumber( authToken, caseNumber ).ifOk(caseId->
-                shareNotification(caseId, authToken.getPersonId(), bindAttachments )  );
+            En_CaseType caseType = En_CaseType.find(caseTypeId);
+            caseService.getCaseId( authToken, caseNumber, caseType ).ifOk(caseId->
+                shareNotification(caseId, caseType, authToken.getPersonId(), bindAttachments )  );
         }
 
         if (result == null) result = new UploadResult(En_FileUploadStatus.SERVER_ERROR, "UploadResult is null");
@@ -251,8 +253,8 @@ public class FileController {
         IOUtils.copy(file.getData(), response.getOutputStream());
     }
 
-    public Long saveAttachment(Attachment attachment, InputStreamSource content, long fileSize, String contentType, Long caseId) throws IOException, SQLException {
-        if (caseId == null)
+    public Long saveAttachment(Attachment attachment, InputStreamSource content, long fileSize, String contentType, CaseObject caseObject) throws IOException, SQLException {
+        if (caseObject == null || caseObject.getId() == null)
             throw new RuntimeException("Case-ID is required");
 
         if (attachmentService.saveAttachment(attachment).isError()) {
@@ -269,6 +271,7 @@ public class FileController {
                     generateCloudFileName(attachment.getId(), attachment.getFileName()),
                     fileSize, contentType);
             attachment.setExtLink(filePath);
+            attachment.setLabelText(attachment.getFileName());
         }
 
         if (attachmentService.saveAttachment(attachment).isError()) {
@@ -276,7 +279,7 @@ public class FileController {
             throw new SQLException("unable to save link to file");
         }
 
-        Result<Long> caseAttachId = caseService.attachToCaseId(attachment, caseId);
+        Result<Long> caseAttachId = caseService.attachToCaseId(attachment, caseObject.getId(), caseObject.isPrivateCase());
         if (caseAttachId.isError())
             throw new SQLException("unable to bind attachment to case");
 
@@ -289,9 +292,11 @@ public class FileController {
         }
     }
 
-    private void shareNotification( Long caseId, Long initiatorId, List<Attachment> addedAttachments) {
-        publisherService.onCaseAttachmentEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, initiatorId, caseId,
-                addedAttachments, null ));
+    private void shareNotification(Long caseId, En_CaseType caseType, Long initiatorId, List<Attachment> addedAttachments) {
+        if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
+            publisherService.onCaseAttachmentEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL, initiatorId, caseId,
+                    addedAttachments, null ));
+        }
     }
 
     private String saveFileStream(InputStream inputStream, String fileName, long fileSize, String contentType) throws IOException {
@@ -321,6 +326,7 @@ public class FileController {
         Attachment attachment = new Attachment();
         attachment.setCreatorId(creatorId);
         attachment.setFileName(fileName);
+        attachment.setLabelText(fileName);
         attachment.setDataSize(size);
         attachment.setMimeType(contentType);
 
@@ -370,9 +376,9 @@ public class FileController {
     }
 
     private String getRealFileName(String filePath, String encodedFileName) {
-        Result<String> nameResult = attachmentService.getAttachmentNameByExtLink(filePath);
-        if (nameResult.isOk() && StringUtils.isNotBlank(nameResult.getData())) {
-            return nameResult.getData();
+        Result<Attachment> result = attachmentService.getAttachmentByExtLink(filePath);
+        if (result.isOk() && result.getData() != null) {
+            return result.getData().getFileName();
         }
         return extractRealFileName(encodedFileName);
     }

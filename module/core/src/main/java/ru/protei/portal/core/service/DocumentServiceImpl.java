@@ -5,6 +5,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
 import org.tmatesoft.svn.core.SVNErrorCode;
 import org.tmatesoft.svn.core.SVNException;
@@ -13,9 +14,10 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.DocumentDocFileUpdatedByMemberEvent;
 import ru.protei.portal.core.event.DocumentMemberAddedEvent;
 import ru.protei.portal.core.index.document.DocumentStorageIndex;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
+import ru.protei.portal.core.model.dao.ContactItemDAO;
 import ru.protei.portal.core.model.dao.DocumentDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dao.ProjectDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Document;
@@ -23,9 +25,11 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.DocumentQuery;
-import ru.protei.portal.core.model.struct.Project;
-import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.dto.Project;
+import ru.protei.portal.core.model.dto.ProjectInfo;
+import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.svn.document.DocumentSvnApi;
@@ -43,6 +47,8 @@ import java.util.stream.Collectors;
 import static com.mysql.jdbc.StringUtils.isEmptyOrWhitespaceOnly;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
+import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
 
 public class DocumentServiceImpl implements DocumentService {
 
@@ -55,9 +61,11 @@ public class DocumentServiceImpl implements DocumentService {
     @Autowired
     DocumentDAO documentDAO;
     @Autowired
-    CaseObjectDAO caseObjectDAO;
+    ProjectDAO projectDAO;
     @Autowired
     PersonDAO personDAO;
+    @Autowired
+    ContactItemDAO contactItemDAO;
     @Autowired
     DocumentStorageIndex documentStorageIndex;
     @Autowired
@@ -74,6 +82,51 @@ public class DocumentServiceImpl implements DocumentService {
     ProjectService projectService;
     @Autowired
     PortalConfig config;
+
+    @Async(BACKGROUND_TASKS)
+    @Override
+    public void documentBuildFullIndex() { // Данный метод создаст индексы для всех существующих документов
+        log.info( "documentBuildFullIndex(): Begin." );
+        try {
+            if (!Objects.equals(config.data().getCommonConfig().getCrmUrlCurrent(), config.data().getCommonConfig().getCrmUrlInternal())) {
+                // disable index at non internal stand
+                log.warn("Document build full index - execution prevented. Disable index at non internal stand.");
+                return;
+            }
+            if (documentStorageIndex.isIndexExists()) {
+                log.warn("Document build full index - execution prevented. Consider to disable documentBuildFullIndex() method.");
+                return;
+            }
+        } catch (IOException e) {
+            log.warn("Document build full index - execution prevented. Consider to disable documentBuildFullIndex() method.", e);
+            return;
+        }
+
+        log.info("Document index full build has started");
+
+        List<Document> partialDocuments = documentDAO.partialGetAll("id", "project_id");
+        int size = partialDocuments.size();
+        for (int i = 0; i < size; i++) {
+            Long documentId = partialDocuments.get(i).getId();
+            Long projectId = partialDocuments.get(i).getProjectId();
+            try (final ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                documentSvnApi.getDocument(projectId, documentId, En_DocumentFormat.PDF, out);
+                final byte[] fileData = out.toByteArray();
+                if (fileData.length == 0) {
+                    log.warn("Content for document({}) not found, {}/{}", documentId, i + 1, size);
+                    continue;
+                }
+                documentStorageIndex.addPdfDocument(fileData, documentId, projectId);
+                log.info("Index created for document({}), {}/{}", documentId, i + 1, size);
+            } catch (SVNException e) {
+                log.warn("Content for document(" + documentId + ") not found, " + (i + 1) + "/" + size, e);
+            } catch (Exception e) {
+                log.warn("Failed to create index for document(" + documentId + "), " + (i + 1) + "/" + size, e);
+            }
+        }
+
+        log.info("documentBuildFullIndex(): Document index full build has ended");
+    }
 
     @Override
     public Result<SearchResult<Document>> getDocuments( AuthToken token, Long equipmentId) {
@@ -92,8 +145,6 @@ public class DocumentServiceImpl implements DocumentService {
         }
 
         SearchResult<Document> sr = documentDAO.getSearchResult(query);
-
-        sr.getResults().forEach(this::resetDocumentPrivacyInfo);
 
         return ok(sr);
     }
@@ -114,8 +165,6 @@ public class DocumentServiceImpl implements DocumentService {
             return error(En_ResultStatus.GET_DATA_ERROR);
         }
 
-        list.forEach(this::resetDocumentPrivacyInfo);
-
         return ok(list);
     }
 
@@ -129,8 +178,6 @@ public class DocumentServiceImpl implements DocumentService {
         }
 
         jdbcManyRelationsHelper.fill(document, "members");
-
-        resetDocumentPrivacyInfo(document);
 
         return ok(document);
     }
@@ -152,7 +199,7 @@ public class DocumentServiceImpl implements DocumentService {
         if (document.getProjectId() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
-        ProjectInfo projectInfo = ProjectInfo.fromCaseObject(caseObjectDAO.get(document.getProjectId()));
+        ProjectInfo projectInfo = ProjectInfo.fromProject(projectDAO.get(document.getProjectId()));
         if (!DocumentUtils.isValidNewDocument(document, projectInfo, withDoc, withPdf)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -207,7 +254,7 @@ public class DocumentServiceImpl implements DocumentService {
                 return error(En_ResultStatus.NOT_CREATED);
             }
 
-            List<Long> newMembers = CollectionUtils.stream(document.getMembers()).map(Person::getId).collect(Collectors.toList());
+            List<Long> newMembers = toList(document.getMembers(), PersonShortView::getId);
             List<Person> personList = getDocumentMemberAddedEvent( document, newMembers );
 
             return ok(document)
@@ -229,7 +276,7 @@ public class DocumentServiceImpl implements DocumentService {
         En_DocumentFormat pdfFormat = withPdf ? En_DocumentFormat.PDF : null;
         En_DocumentFormat ApprovalSheetFormat = withApprovalSheet ? En_DocumentFormat.AS : null;
 
-        ProjectInfo projectInfo = ProjectInfo.fromCaseObject(caseObjectDAO.get(document.getProjectId()));
+        ProjectInfo projectInfo = ProjectInfo.fromProject(projectDAO.get(document.getProjectId()));
         if (document.getId() == null || !DocumentUtils.isValidDocument(document, projectInfo)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -387,6 +434,7 @@ public class DocumentServiceImpl implements DocumentService {
             removeDuplicatedDocFilesFromSvn(formatsAtSvn, docFormat, documentId, projectId, commitMessageRemove);
             List<Person> personList = getDocumentDocFileUpdatedByMember( document );
             Person initiator = personDAO.get(token.getPersonId());
+            jdbcManyRelationsHelper.fill(initiator, Person.Fields.CONTACT_ITEMS);
 
             return ok(document)
                     .publishEvent( new DocumentDocFileUpdatedByMemberEvent(this, initiator, document, personList, comment));
@@ -477,8 +525,8 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     private List<Long> fetchNewMemberIds(Document oldDocument, Document newDocument) {
-        List<Long> oldMembers = CollectionUtils.stream(oldDocument.getMembers()).map(Person::getId).collect(Collectors.toList());
-        List<Long> newMembers = CollectionUtils.stream(newDocument.getMembers()).map(Person::getId).collect(Collectors.toList());
+        List<Long> oldMembers = toList( oldDocument.getMembers(), PersonShortView::getId );
+        List<Long> newMembers = toList( newDocument.getMembers(), PersonShortView::getId );
         return CollectionUtils.diffCollection(oldMembers, newMembers).getAddedEntries();
     }
 
@@ -486,24 +534,25 @@ public class DocumentServiceImpl implements DocumentService {
         if (document == null || CollectionUtils.isEmpty(personIds)) {
             return null;
         }
-        return personDAO.getListByKeys(personIds);
+        List<Person> people = personDAO.getListByKeys(personIds);
+        jdbcManyRelationsHelper.fill(people, Person.Fields.CONTACT_ITEMS);
+        return people;
     }
 
     private List<Person> getDocumentDocFileUpdatedByMember( Document document ) {
-        List<Person> personList = new ArrayList<>();
+        ArrayList<Long> peronsIds = new ArrayList<>();
         if (document.getContractor() != null) {
-            personList.add(document.getContractor());
+            peronsIds.add( document.getContractor().getId() );
         }
         if (document.getRegistrar() != null) {
-            personList.add(document.getRegistrar());
+            peronsIds.add( document.getRegistrar().getId() );
         }
         Result<PersonProjectMemberView> result = projectService.getProject(null, document.getProjectId())
                 .map(Project::getLeader);
         if (result.isOk() && result.getData() != null) {
-            Person leader = personDAO.get(result.getData().getId());
-            personList.add(leader);
+            peronsIds.add( document.getRegistrar().getId() );
         }
-        personList.addAll(document.getMembers());
+        List<Person> personList = getPersonsWithContact( peronsIds );
         return personList;
     }
 
@@ -513,14 +562,11 @@ public class DocumentServiceImpl implements DocumentService {
         }
     }
 
-    private void resetDocumentPrivacyInfo(Document document) {
-        // RESET PRIVACY INFO
-        if (document.getContractor() != null) {
-            document.getContractor().resetPrivacyInfo();
-        }
-        if (document.getRegistrar() != null) {
-            document.getRegistrar().resetPrivacyInfo();
-        }
+    public List<Person> getPersonsWithContact( ArrayList<Long> peronsIds ) {
+        List<Person> personList = personDAO.getListByKeys( peronsIds );
+        jdbcManyRelationsHelper.fill(personList, Person.Fields.CONTACT_ITEMS);
+
+        return personList;
     }
 
     private En_ResultStatus checkDocumentDesignationValid(Document oldDocument, Document document) {
@@ -585,7 +631,7 @@ public class DocumentServiceImpl implements DocumentService {
         Document document = documentDAO.partialGet(documentId, "id");
         jdbcManyRelationsHelper.fill(document, "members");
         return CollectionUtils.stream(document.getMembers())
-                .map(Person::getId)
+                .map( PersonShortView::getId)
                 .collect(Collectors.toList())
                 .contains(token.getPersonId());
     }
@@ -659,10 +705,6 @@ public class DocumentServiceImpl implements DocumentService {
             return false;
         }
         return true;
-    }
-
-    private boolean saveToSVN(byte[] bytes, Long documentId, Long projectId, En_DocumentFormat documentFormat, String commitMessage) {
-        return saveToSVN(new ByteArrayInputStream(bytes), documentId, projectId, documentFormat, commitMessage);
     }
 
     private boolean saveToSVN(InputStream inputStream, Long documentId, Long projectId, En_DocumentFormat documentFormat, String commitMessage) {

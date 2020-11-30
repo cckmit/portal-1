@@ -5,6 +5,7 @@ import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.ent.Server;
+import ru.protei.portal.core.model.view.EntityOption;
 
 /**
  * События приложений
@@ -15,11 +16,17 @@ public class SiteFolderAppEvents {
     public static class Show {
         @Name("server")
         public Long serverId;
+        @Omit
+        public Boolean preScroll;
+        @Omit
+        public EntityOption server;
         public Show() {
-            this(null);
+            this(null, false);
         }
-        public Show(Long serverId) {
-            this.serverId = serverId;
+        public Show(EntityOption server, Boolean preScroll) {
+            this.serverId = server == null ? null : server.getId();
+            this.preScroll = preScroll;
+            this.server = server;
         }
     }
 
@@ -29,6 +36,8 @@ public class SiteFolderAppEvents {
         public Long appId;
         @Omit
         public Server server;
+        @Omit
+        public Runnable backEvent;
         public Edit() {
             this(null);
         }
@@ -39,6 +48,10 @@ public class SiteFolderAppEvents {
             Edit edit = new Edit();
             edit.server = server;
             return edit;
+        }
+        public Edit withBackEvent(Runnable backEvent) {
+            this.backEvent = backEvent;
+            return this;
         }
     }
 

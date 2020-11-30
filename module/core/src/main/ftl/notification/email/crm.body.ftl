@@ -16,6 +16,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 <@set name="_product" value="${product}"/>
 <@set name="_criticality" value="${criticality}"/>
 <@set name="_state" value="${state}"/>
+<@set name="_pauseDate" value="${pauseDate}"/>
 <@set name="_customer" value="${customer}"/>
 <@set name="_manager" value="${manager}"/>
 <@set name="_notification_footer" value="${notification_footer}"/>
@@ -30,6 +31,8 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 <@set name="_privacyTypePrivateCustomers" value="${privacyTypePrivateCustomers}"/>
 <@set name="_privacyTypePrivate" value="${privacyTypePrivate}"/>
 <@set name="_platform" value="${issuePlatform}"/>
+<@set name="_deadline" value="${deadline}"/>
+<@set name="_workTrigger" value="${workTrigger}"/>
 
 <#noparse>
 <#macro changeTo old, new>
@@ -63,6 +66,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
     </style>
 </head>
 <body bgcolor="#FFFFFF" text="#000000">
+<div hidden style="display: none">===ContentBegin_crm.body.ftl===</div>
 <div>
     <div style="padding: 5px;font-size: 14px;<#if isCreated>background:#dff7e2;color:#11731d;<#else>background:#f0f0f0;color:#666666;</#if>">
         ${_createdBy}
@@ -150,17 +154,20 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                         ${_manager}
                     </td>
                     <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
+                        <#assign newManager = (manager)???then(
+                                    manager +' ('+ (managerCompany!'?') +')',
+                                    (managerCompany)!'?'
+                                )>
                         <#if managerChanged>
-                                <@changeTo
-                                    old="${(oldManager??)?then(((TranslitUtils.transliterate(oldManager, lang))!'') +' ('+ TranslitUtils.transliterate(oldManagerCompany, lang) +')', '?')}"
-                                    new="${(manager??)?then(((TranslitUtils.transliterate(manager, lang))!'') +' ('+ TranslitUtils.transliterate(managerCompany, lang) +')', '?')}"
-                                />
+                            <@changeTo
+                                old="${(oldInitiator)???then(
+                                    TranslitUtils.transliterate(oldManager, lang) +' ('+ (TranslitUtils.transliterate(oldManagerCompany, lang)!'?') +')',
+                                    (TranslitUtils.transliterate(oldManagerCompany, lang))!'?'
+                                )}"
+                                new="${TranslitUtils.transliterate(newManager, lang)}"
+                            />
                         <#else>
-                            <#if manager??>
-                                ${TranslitUtils.transliterate(manager, lang)!''} (${TranslitUtils.transliterate(managerCompany, lang)})
-                            <#else>
-                                ?
-                            </#if>
+                            ${TranslitUtils.transliterate(newManager, lang)}
                         </#if>
                     </td>
                 </tr>
@@ -176,6 +183,23 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                         </#if>
                     </td>
                 </tr>
+                <#if isPausedState>
+                    <tr>
+                        <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
+                            ${_pauseDate}
+                        </td>
+                        <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
+                            <#if pauseDateChanged>
+                                <@changeTo
+                                old="${oldPauseDate???then(oldPauseDate?date, '?')}"
+                                new="${pauseDate???then(pauseDate?date, '?')}"
+                                />
+                            <#else>
+                                ${pauseDate???then(pauseDate?date, '?')}
+                            </#if>
+                        </td>
+                    </tr>
+                </#if>
                 <#if showPrivacy>
                     <tr>
                         <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
@@ -220,6 +244,40 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                         </#if>
                     </td>
                 </tr>
+                <#if showPrivacy>
+                    <tr>
+                        <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
+                            ${_deadline}
+                        </td>
+                        <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
+                            <#if deadlineChanged>
+                            <@changeTo
+                            old="${oldDeadline???then(oldDeadline?date, '?')}"
+                            new="${deadline???then(deadline?date, '?')}"
+                            />
+                            <#else>
+                            ${deadline???then(deadline?date, '?')}
+                        </#if>
+                        </td>
+                    </tr>
+                </#if>
+                <#if showPrivacy>
+                    <tr>
+                        <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
+                            ${_workTrigger}
+                        </td>
+                        <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
+                            <#if workTriggerChanged>
+                            <@changeTo
+                            old="${EnumLangUtil.workTriggerLang(oldWorkTrigger, lang)!'?'}"
+                            new="${EnumLangUtil.workTriggerLang(workTrigger, lang)}"
+                            />
+                            <#else>
+                                ${EnumLangUtil.workTriggerLang(workTrigger, lang)}
+                            </#if>
+                        </td>
+                    </tr>
+                </#if>
                 <#if showPrivacy>
                     <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
                         ${_platform}
@@ -320,11 +378,12 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     <#elseif caseComment.caseImportance??>
                         ${_changedImportanceTo} ${caseComment.caseImportance}
                     <#elseif caseComment.caseManager??>
-                        ${_changedManagerTo} ${TranslitUtils.transliterate(caseComment.caseManager, lang)}
-                    <#else>
+                        ${_changedManagerTo} ${TranslitUtils.transliterate(caseComment.caseManagerAndCompany, lang)}
+                    <#elseif caseComment.text??>
                         <#if caseComment.oldText??>
                             <span style="color:#11731d;line-height: 17px;margin-right:10px">${_updated}</span>
-                            <div class="markdown" style="margin-top:4px;line-height:1.5em;"><@diffHTML old="${caseComment.oldText}" new="${caseComment.text}"/></div>
+                            <div class="markdown"
+                                 style="margin-top:4px;line-height:1.5em;"><@diffHTML old="${caseComment.oldText}" new="${caseComment.text}"/></div>
                         <#else>
                             <div class="markdown" style="margin-top:4px;line-height:1.5em;">${caseComment.text}</div>
                         </#if>

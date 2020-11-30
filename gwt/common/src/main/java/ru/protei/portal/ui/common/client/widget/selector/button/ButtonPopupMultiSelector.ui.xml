@@ -1,11 +1,12 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:button3="urn:import:ru.protei.portal.ui.common.client.widget.selector.button.button">
+             xmlns:button="urn:import:ru.protei.portal.ui.common.client.widget.selector.button"
+>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel ui:field="root" styleName="block-selector">
-        <button3:ValueButton ui:field="button" styleName="form-control btn btn-default btn-flat dropdown-toggle col-xs-12"/>
+        <button:ValueButton ui:field="button" styleName="form-control btn btn-default btn-flat dropdown-toggle col-xs-12"/>
     </g:HTMLPanel>
 
 </ui:UiBinder>

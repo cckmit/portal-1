@@ -59,7 +59,7 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
                 break;
             case DOCUMENT:
                 addOption( En_SortField.name );
-                addOption( En_SortField.project );
+                addOption( En_SortField.document_project );
                 addOption( En_SortField.creation_date );
                 break;
             case DOCUMENT_TYPE:
@@ -77,15 +77,40 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
                 addOption(En_SortField.creation_date);
                 break;
             case CONTRACT:
-                addOption(En_SortField.creation_date);
+                addOption(En_SortField.contract_creation_date);
+                addOption(En_SortField.contract_signing_date);
                 break;
             case PROJECT:
                 addOption( En_SortField.project_name );
-                addOption( En_SortField.issue_number );
+                addOption( En_SortField.project_number );
                 addOption( En_SortField.region_name );
                 break;
             case REGION:
                 addOption( En_SortField.name );
+                break;
+            case SUBNET:
+                addOption( En_SortField.address );
+                break;
+            case RESERVED_IP:
+                addOption( En_SortField.ip_address );
+                addOption( En_SortField.check_date);
+                break;
+            case PLAN:
+                addOption( En_SortField.name );
+                addOption( En_SortField.creation_date );
+                addOption( En_SortField.start_date );
+                addOption( En_SortField.finish_date );
+                break;
+            case ABSENCE:
+                addOption(En_SortField.absence_person);
+                addOption(En_SortField.absence_date_from);
+                addOption(En_SortField.absence_date_till);
+                addOption(En_SortField.absence_reason);
+                break;
+            case DUTY_LOG:
+                addOption(En_SortField.duty_log_date_from);
+                addOption(En_SortField.duty_log_employee);
+                addOption(En_SortField.duty_log_type);
                 break;
         }
     }

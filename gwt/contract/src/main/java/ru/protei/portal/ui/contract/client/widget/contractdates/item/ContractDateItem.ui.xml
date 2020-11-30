@@ -2,26 +2,33 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:selector="urn:import:ru.protei.portal.ui.contract.client.widget.selector"
              xmlns:single="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
-             xmlns:switcher="urn:import:ru.protei.portal.ui.common.client.widget.switcher">
+             xmlns:validatefield="urn:import:ru.protei.portal.ui.common.client.widget.validatefield"
+             xmlns:money="urn:import:ru.protei.portal.ui.common.client.widget.money">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel ui:field="root" styleName="form-group row">
         <selector:ContractDatesTypeSelector ui:field="type" addStyleNames="col-md-2"/>
-
-        <single:SinglePicker ui:field="date" formatValue="dd.MM.yyyy" styleName="col-md-2"/>
-
-        <div class="col-md-5">
+        <div class="col-md-2">
+            <single:SinglePicker ui:field="date" type="DATE" formatValue="dd.MM.yyyy" mandatory="false" styleName="form-group m-b-0"/>
+            <g:CheckBox ui:field="notify" styleName="checkbox m-t-5" text="{lang.contractDatesNotify}"/>
+        </div>
+        <div class="col-md-3">
+            <div class="input-group input-group-money">
+                <validatefield:ValidableDoubleBox ui:field="moneyPercent" styleName="form-control input-group-money-percent" placeholder="{lang.percent}"/>
+                <div class="input-group-prepend input-group-append">
+                    <span class="input-group-text"/>
+                </div>
+                <div class="form-control p-0 no-border">
+                    <money:MoneyCurrencyWidget ui:field="moneyWithCurrency" defaultCurrency="RUB"/>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
             <g:TextBox ui:field="comment" styleName="form-control"/>
         </div>
-
-        <div class="col-md-2">
-            <label ui:field="notifyLabel" class="m-r-5"><ui:text from="{lang.contractDatesNotify}"/></label>
-            <switcher:Switcher ui:field="notify"/>
-        </div>
-
         <div class="col-md-1">
-            <g:Button ui:field="remove" styleName="btn btn-danger">
+            <g:Button ui:field="remove" styleName="btn btn-danger pull-right">
                 <i class="fa fa-trash"/>
             </g:Button>
         </div>

@@ -3,14 +3,15 @@ package ru.protei.portal.ui.project.client.activity.quickcreate;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_CustomerType;
-import ru.protei.portal.core.model.query.ProductQuery;
-import ru.protei.portal.core.model.struct.ProductDirectionInfo;
+import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
-import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.ui.common.client.widget.selector.person.AsyncPersonModel;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * Представление создания проекта с минимальным набором параметров
@@ -30,5 +31,11 @@ public interface AbstractProjectCreateView extends IsWidget {
     HasValidable directionValidator();
     HasValidable customerTypeValidator();
     HasValidable companyValidator();
-//    void refreshProducts();
+
+    HasValidable headManagersValidator();
+
+    HasValue<Set<PersonShortView>> headManagers();
+
+    void setManagersModel(AsyncPersonModel model);
+
 }

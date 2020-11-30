@@ -4,14 +4,15 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpHandler;
-import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import ru.protei.portal.ui.common.client.common.ScrollWatcher;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
@@ -22,10 +23,13 @@ import ru.protei.portal.ui.common.client.widget.selector.event.SelectorChangeVal
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 
+import javax.annotation.PostConstruct;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 
 /**
  * Базовая логика селектора
@@ -43,6 +47,12 @@ public abstract class Selector<T>
 
         boolean isDisplayed( T value );
     }
+
+    @PostConstruct
+    private void onInit() {
+        noSearchResult = lang.errNoMatchesFound();
+    }
+
     public Collection<T> getValues() {
         return itemToDisplayOptionModel.keySet();
     }
@@ -110,14 +120,6 @@ public abstract class Selector<T>
         this.addButtonText = addButtonText;
     }
 
-    public void watchForScrollOf(Widget widget) {
-        scrollWatcher.watchForScrollOf(widget);
-    }
-
-    public void stopWatchForScrollOf(Widget widget) {
-        scrollWatcher.stopWatchForScrollOf(widget);
-    }
-
     @Override
     public void fillOptions( List<T> options ) {
         clearOptions();
@@ -138,6 +140,10 @@ public abstract class Selector<T>
             itemView.setImage(option.getImageSrc());
         }
         itemView.setIcon(option.getIcon());
+
+        if (isNotEmpty(option.getTitle())) {
+            itemView.setTitle(option.getTitle());
+        }
 
         itemViewToModel.put(itemView, value);
         itemToViewModel.put(value, itemView);
@@ -233,23 +239,13 @@ public abstract class Selector<T>
         }
 
         if (isEmptyResult) {
-            addEmptyListGhostOption(lang.errNoMatchesFound());
-        }
-    }
-
-    private void onScroll() {
-        if (popup.isAttached()) {
-            popup.showNear(relative);
+            addEmptyListGhostOption(noSearchResult);
         }
     }
 
     @Override
     public HandlerRegistration addSelectorChangeValHandler(SelectorChangeValHandler handler) {
         return addHandler(handler, SelectorChangeValEvent.getType());
-    }
-
-    public void addCloseHandler(CloseHandler<PopupPanel> handler) {
-        popup.addCloseHandler(handler);
     }
 
     public void setFilter( SelectorFilter<T> selectorFilter ) {
@@ -260,7 +256,6 @@ public abstract class Selector<T>
 
     @Override
     protected void onLoad() {
-        scrollWatcher.startWatchForScroll();
         if ( selectorModel != null ) {
             selectorModel.onSelectorLoad(this);
         }
@@ -268,27 +263,13 @@ public abstract class Selector<T>
 
     @Override
     protected void onUnload() {
-        scrollWatcher.stopWatchForScroll();
         if ( selectorModel != null ) {
             selectorModel.onSelectorUnload(this);
         }
     }
 
     protected void showPopup(IsWidget relative) {
-        this.relative = relative;
-        popup.showNear(relative);
-        showPopup();
-    }
-
-    protected void showPopupRight(IsWidget relative) {
-        this.relative = relative;
-        popup.showNearRight(relative);
-        showPopup();
-    }
-
-    protected void showPopupInlineRight(IsWidget relative) {
-        this.relative = relative;
-        popup.showNearInlineRight(relative);
+        popup.show(relative);
         showPopup();
     }
 
@@ -389,7 +370,6 @@ public abstract class Selector<T>
     private boolean searchAutoFocusEnabled = false;
     private boolean addButtonVisible = false;
     private String addButtonText;
-    private IsWidget relative;
     private T selectedOption = null;
     private SelectorItem nullItemView;
     protected DisplayOptionCreator<T> displayOptionCreator;
@@ -402,5 +382,5 @@ public abstract class Selector<T>
 
     protected Map<T, DisplayOption> itemToDisplayOptionModel = new HashMap<>();
     protected SelectorFilter<T> filter = null;
-    private final ScrollWatcher scrollWatcher = new ScrollWatcher(this::onScroll);
+    protected String noSearchResult;
 }

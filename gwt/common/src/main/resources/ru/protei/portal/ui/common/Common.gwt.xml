@@ -3,6 +3,8 @@
     <inherits name='com.google.gwt.user.User'/>
     <inherits name="com.google.gwt.inject.Inject" />
 
+    <!--<inherits name="de.novanic.eventservice.GWTEventService"/>-->
+
     <inherits name="ru.protei.portal.core.model.Model"/>
     <inherits name="ru.protei.portal.test.Test"/>
 
