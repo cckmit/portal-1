@@ -361,10 +361,10 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                 <div style="border-radius:5px;padding:12px;margin-bottom:5px;background:<#if caseComment.removed>#f7dede<#else><#if caseComment.added>#dff7e2<#else>#f0f0f0</#if></#if>;">
                     <span style="color:#666666;line-height: 17px;margin-right:5px">${caseComment.created?datetime}</span>
                     <#if showPrivacy>
-                        <#if caseComment.privacyType.name() == "PRIVATE">
+                        <#if caseComment.privacyType == "PRIVATE">
                             <span style="font-size:10px;margin-bottom:5px;color:red;line-height: 17px;margin-right:5px">(${_privacyTypePrivate})</span>
                         </#if>
-                        <#if caseComment.privacyType.name() == "PRIVATE_CUSTOMERS">
+                        <#if caseComment.privacyType == "PRIVATE_CUSTOMERS">
                             <span style="font-size:10px;margin-bottom:5px;color:goldenrod;line-height: 17px;margin-right:5px">(${_privacyTypePrivateCustomers})</span>
                         </#if>
                     </#if>
