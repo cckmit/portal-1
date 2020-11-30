@@ -17,7 +17,6 @@ import ru.protei.portal.core.model.dao.ExternalCaseAppDAO;
 import ru.protei.portal.core.model.dao.JiraEndpointDAO;
 import ru.protei.portal.core.model.dao.JiraPriorityMapEntryDAO;
 import ru.protei.portal.core.model.dao.JiraStatusMapEntryDAO;
-import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.util.TransliterationUtils;
@@ -128,18 +127,12 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
         });
     }
 
-    // todo смержить
     private Comment convertComment (CaseComment ourComment, Person initiator, Collection<Attachment> attachments) {
         String text = TransliterationUtils.transliterate(initiator.getLastName() + " " + initiator.getFirstName()) + "\r\n" + ourComment.getText();
         text = replaceImageLink(text, attachments);
-        return Comment.valueOf(text);
-    }
-
-    private Comment convertComment (CaseComment ourComment, Person initiator) {
-        String body = TransliterationUtils.transliterate(initiator.getLastName() + " " + initiator.getFirstName()) + "\r\n" + ourComment.getText();
         return (ourComment.getPrivacyType() == En_CaseCommentPrivacyType.PRIVATE_CUSTOMERS) ?
-                Comment.createWithRoleLevel(body, JiraUtils.PROJECT_SUPPORT_ROLE)
-                : Comment.valueOf(body);
+                Comment.createWithRoleLevel(text, JiraUtils.PROJECT_SUPPORT_ROLE)
+                : Comment.valueOf(text);
     }
 
     private String replaceImageLink(String text, Collection<Attachment> attachments) {

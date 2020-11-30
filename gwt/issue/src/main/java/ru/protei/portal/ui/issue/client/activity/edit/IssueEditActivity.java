@@ -445,6 +445,7 @@ public abstract class IssueEditActivity implements
         show.isPrivateCase = issue.isPrivateCase();
         show.isNewCommentEnabled = !isTerminalState(issue.getStateId());
         show.textMarkup =  CaseTextMarkupUtil.recognizeTextMarkup( issue );
+        show.extendedPrivacyType =  selectExtendedPrivacyType( issue );
         fireEvent( show );
 
     }

@@ -24,10 +24,6 @@ public class CaseCommentEvents {
             this.isModifyEnabled = isModifyEnabled;
             this.caseCreatorId = caseCreatorId;
         }
-        public Show withExtendedPrivacyType(boolean b) {
-            this.extendedPrivacyType = b;
-            return this;
-        }
 
         public HasWidgets parent;
         public En_CaseType caseType;

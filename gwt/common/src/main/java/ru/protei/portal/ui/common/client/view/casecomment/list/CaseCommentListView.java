@@ -350,7 +350,6 @@ public class CaseCommentListView
     @Inject
     private TimeElapsedTypeLang elapsedTimeTypeLang;
     private AbstractCaseCommentListActivity activity;
-    private boolean extendedPrivacyType;
 
     private static CaseCommentListUiBinder ourUiBinder = GWT.create(CaseCommentListUiBinder.class);
     interface CaseCommentListUiBinder extends UiBinder<HTMLPanel, CaseCommentListView> {}

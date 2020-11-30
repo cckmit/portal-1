@@ -171,7 +171,7 @@ public class CaseCommentShortView {
         return "CaseCommentShortView{" +
                 "id=" + id +
                 ", created=" + created +
-                ", isPrivateComment=" + privacyType +
+                ", privacyType=" + privacyType +
                 ", caseId=" + caseId +
                 ", authorId=" + authorId +
                 ", authorName='" + authorName + '\'' +
