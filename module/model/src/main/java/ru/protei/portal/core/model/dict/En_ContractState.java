@@ -1,5 +1,8 @@
 package ru.protei.portal.core.model.dict;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  * Состояния договоров
  */
@@ -35,6 +38,7 @@ public enum En_ContractState {
     CANCELLED(6),
     ;
 
+    @JsonCreator
     public static En_ContractState getById(Integer id) {
         if(id == null)
             return null;
@@ -50,6 +54,7 @@ public enum En_ContractState {
         this.id = id;
     }
 
+    @JsonValue
     public int getId() {
         return id;
     }

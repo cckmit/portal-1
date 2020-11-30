@@ -49,42 +49,6 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
     }
 
     @Override
-    public List<Contract> getByApiQuery(ContractApiQuery apiQuery) {
-
-        SqlCondition where = new SqlCondition().build(((condition, args) -> {
-            condition.append("1=1");
-
-            if (isNotEmpty(apiQuery.getRefKeys())) {
-                String inArg = makeInArg(apiQuery.getRefKeys(), s -> "'" + s + "'");
-                condition.append(" AND contract.ref_key IN ").append(inArg);
-            }
-
-            if (apiQuery.getOpenStateDate() != null) {
-                condition.append(" AND contract.id IN (");
-                  condition.append(" SELECT DISTINCT hww.case_object_id FROM (");
-                    condition.append(" SELECT");
-                      condition.append(" hw.*,");
-                      condition.append(" ROW_NUMBER() OVER (PARTITION BY hw.case_object_id ORDER BY hw.date DESC) AS rownumber");
-                    condition.append(" FROM history AS hw WHERE 1=1");
-                    condition.append(" AND hw.case_object_id IN (SELECT ch.id FROM contract AS ch)");
-                    condition.append(" AND hw.date <= ?");
-                  condition.append(" ) hww");
-                  condition.append(" WHERE 1=1");
-                    condition.append(" AND hww.rownumber = 1");
-                    condition.append(" AND hww.new_id IN ").append(makeInArg(getOpenedContractStates(), s -> String.valueOf(s.getId())));
-                condition.append(")");
-                args.add(apiQuery.getOpenStateDate());
-            }
-        }));
-
-        JdbcQueryParameters parameters = new JdbcQueryParameters()
-            .withCondition(where.condition, where.args)
-            .withDistinct(true);
-
-        return getList(parameters);
-    }
-
-    @Override
     public boolean mergeRefKey(Long contractId, String refKey) {
         Contract contract = new Contract();
         contract.setId(contractId);
@@ -216,6 +180,28 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
                         args.add(interval.to);
                     }
                 }
+            }
+
+            if (isNotEmpty(query.getRefKeys())) {
+                String inArg = makeInArg(query.getRefKeys(), s -> "'" + s + "'");
+                condition.append(" AND contract.ref_key IN ").append(inArg);
+            }
+
+            if (query.getOpenStateDate() != null) {
+                condition.append(" AND contract.id IN (");
+                condition.append(" SELECT DISTINCT hww.case_object_id FROM (");
+                condition.append(" SELECT");
+                condition.append(" hw.*,");
+                condition.append(" ROW_NUMBER() OVER (PARTITION BY hw.case_object_id ORDER BY hw.date DESC) AS rownumber");
+                condition.append(" FROM history AS hw WHERE 1=1");
+                condition.append(" AND hw.case_object_id IN (SELECT ch.id FROM contract AS ch)");
+                condition.append(" AND hw.date <= ?");
+                condition.append(" ) hww");
+                condition.append(" WHERE 1=1");
+                condition.append(" AND hww.rownumber = 1");
+                condition.append(" AND hww.new_id IN ").append(makeInArg(getOpenedContractStates(), s -> String.valueOf(s.getId())));
+                condition.append(")");
+                args.add(query.getOpenStateDate());
             }
         }));
     }

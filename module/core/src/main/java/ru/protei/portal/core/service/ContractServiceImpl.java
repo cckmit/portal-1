@@ -479,7 +479,15 @@ public class ContractServiceImpl implements ContractService {
         if (apiQuery == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
-        List<Contract> contracts = contractDAO.getByApiQuery(apiQuery);
+
+        ContractQuery query = new ContractQuery();
+        query.setOpenStateDate(apiQuery.getOpenStateDate());
+        query.setOpenStateDate(apiQuery.getOpenStateDate());
+        query.setOrganizationIds(apiQuery.getOrganizationIds());
+        query.setStates(apiQuery.getStates());
+        SearchResult<Contract> result = contractDAO.getSearchResult(query);
+        List<Contract> contracts = result.getResults();
+
         jdbcManyRelationsHelper.fill(contracts, "contractDates");
         return ok(contracts);
     }
