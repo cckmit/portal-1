@@ -3,7 +3,7 @@ package ru.protei.portal.core.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.exception.ResultStatusException;
+import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.CaseObjectTagDAO;
 import ru.protei.portal.core.model.dao.CaseTagDAO;
 import ru.protei.portal.core.model.dict.En_HistoryAction;
@@ -214,8 +214,8 @@ public class CaseTagServiceImpl implements CaseTagService {
         );
     }
 
-    private ResultStatusException createHistoryException(En_ResultStatus status, En_HistoryAction action, Long caseTagId) {
-        return new ResultStatusException(
+    private RollbackTransactionException createHistoryException(En_ResultStatus status, En_HistoryAction action, Long caseTagId) {
+        return new RollbackTransactionException(
                 status,
                 String.format("Failed to create history for case tag. action=%s, caseTagId=%d", action, caseTagId)
         );

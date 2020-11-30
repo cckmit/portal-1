@@ -3,7 +3,7 @@ package ru.protei.portal.core.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.exception.ResultStatusException;
+import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.model.dao.CaseStateMatrixDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -82,7 +82,7 @@ public class CaseStateServiceImpl implements CaseStateService {
         Long id = caseStateDAO.persist(state);
 
         if (id == null) {
-            throw new ResultStatusException(En_ResultStatus.NOT_CREATED, "Can't create case state. DAO return null id.");
+            throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED, "Can't create case state. DAO return null id.");
         }
 
         jdbcManyRelationsHelper.persist(state, "companies");
@@ -97,7 +97,7 @@ public class CaseStateServiceImpl implements CaseStateService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
 
         if (!caseStateDAO.merge(state)) {
-            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED, "Can't update case state. DAO return false.");
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED, "Can't update case state. DAO return false.");
         }
 
         jdbcManyRelationsHelper.persist(state, "companies");

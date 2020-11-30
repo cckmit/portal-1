@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.AbsenceNotificationEvent;
 import ru.protei.portal.core.event.EventAction;
-import ru.protei.portal.core.exception.ResultStatusException;
+import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.PersonAbsenceDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.PersonNotifierDAO;
@@ -121,7 +121,7 @@ public class AbsenceServiceImpl implements AbsenceService {
             Long absenceId = personAbsenceDAO.persist(absence);
 
             if (absenceId == null) {
-                throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+                throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
             }
 
             return absenceId;
