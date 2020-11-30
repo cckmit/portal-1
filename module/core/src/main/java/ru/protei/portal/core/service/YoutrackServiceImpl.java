@@ -228,6 +228,7 @@ public class YoutrackServiceImpl implements YoutrackService {
         caseComment.setOriginalAuthorFullName(issueComment.author != null ? issueComment.author.fullName : null);
         caseComment.setText(issueComment.text);
         caseComment.setDeleted(issueComment.deleted != null && issueComment.deleted);
+        caseComment.setPrivacyType(En_CaseCommentPrivacyType.PUBLIC);
         return ok(caseComment);
     }
 
