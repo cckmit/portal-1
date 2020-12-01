@@ -83,13 +83,13 @@ public interface CompanyController extends RemoteService {
      * Получение списка сокращенного представления компании-субподрядчика через проекты (name,id)
      * @return
      */
-    List<EntityOption> getSubcontractorOptionList(Long companyId) throws RequestFailedException;
+    List<EntityOption> getSubcontractorOptionList(Long companyId, boolean isActive) throws RequestFailedException;
 
     /**
      * Получение списка сокращенного представления компании-инициатора через проекты (name,id)
      * @return
      */
-    List<EntityOption> getInitiatorOptionList(Long subcontractorId) throws RequestFailedException;
+    List<EntityOption> getInitiatorOptionList(Long subcontractorId, boolean isActive) throws RequestFailedException;
 
     /**
      * Получение списка сокращенного представления компании (name,id) игнорируя область видимости и привилегии

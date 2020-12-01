@@ -112,8 +112,8 @@ public class PersonServiceImpl implements PersonService {
 
         Company company = companyService.getCompanyOmitPrivileges(token, token.getCompanyId()).getData();
         Result<List<EntityOption>> result = company.getCategory() == En_CompanyCategory.SUBCONTRACTOR ?
-                companyService.companyOptionListBySubcontractorIds(token.getCompanyAndChildIds()) :
-                companyService.subcontractorOptionListByCompanyIds(token.getCompanyAndChildIds());
+                companyService.companyOptionListBySubcontractorIds(token.getCompanyAndChildIds(), false) :
+                companyService.subcontractorOptionListByCompanyIds(token.getCompanyAndChildIds(), false);
         if (result.isError()) {
             log.error("fillQueryByScope(): failed to get companies with result = {}", result);
             return error(result.getStatus());

@@ -30,9 +30,9 @@ public interface CompanyService {
 
     Result<List<EntityOption>> companyOptionListByIds(List<Long> ids);
 
-    Result<List<EntityOption>> subcontractorOptionListByCompanyIds(Collection<Long> companyIds);
+    Result<List<EntityOption>> subcontractorOptionListByCompanyIds(Collection<Long> companyIds, boolean isActive);
 
-    Result<List<EntityOption>> companyOptionListBySubcontractorIds(Collection<Long> subcontractorIds);
+    Result<List<EntityOption>> companyOptionListBySubcontractorIds(Collection<Long> subcontractorIds, boolean isActive);
 
     @Privileged( En_Privilege.COMPANY_EDIT )
     @Auditable( En_AuditType.COMPANY_MODIFY )
