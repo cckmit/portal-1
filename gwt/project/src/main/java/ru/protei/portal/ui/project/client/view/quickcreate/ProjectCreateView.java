@@ -22,6 +22,7 @@ import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.AsyncPersonModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitWithImageMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.region.RegionButtonSelector;
@@ -41,8 +42,9 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugId();
-        products.setState(En_DevUnitState.ACTIVE);
-        products.setTypes(En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
+        productModel.setUnitState(En_DevUnitState.ACTIVE);
+        productModel.setUnitTypes(En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
+        products.setModel(productModel);
     }
 
     @Override
@@ -51,8 +53,8 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
     }
 
     @Override
-    public void updateProductSelector(Set<Long> directionIds) {
-        products.setDirectionIds(directionIds);
+    public void updateProductModel(Set<Long> directionIds) {
+        productModel.setDirectionIds(directionIds);
     }
 
     @Override
@@ -238,6 +240,9 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
     @Inject
     @UiField
     Lang lang;
+
+    @Inject
+    ProductModel productModel;
 
     AbstractProjectCreateActivity activity;
 

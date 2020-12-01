@@ -133,11 +133,11 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
         if (isEmpty(directions)) {
             view.productEnabled().setEnabled(false);
-            view.updateProductSelector(new HashSet<>());
+            view.updateProductModel(new HashSet<>());
             view.products().setValue(null);
         } else {
             view.productEnabled().setEnabled(true);
-            view.updateProductSelector(toSet(directions, ProductDirectionInfo::getId));
+            view.updateProductModel(toSet(directions, ProductDirectionInfo::getId));
             view.products().setValue(
                     stream(view.products().getValue()).
                             filter(productShortView -> {
@@ -208,7 +208,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
         if (isNew( project )) view.setHideNullValue(true);
         view.customerType().setValue(project.getCustomerType());
-        view.updateProductSelector( toSet(project.getProductDirectionEntityOptionList(), EntityOption::getId));
+        view.updateProductModel( toSet(project.getProductDirectionEntityOptionList(), EntityOption::getId));
         view.pauseDateContainerVisibility().setVisible( PAUSED == project.getState() );
         view.pauseDate().setValue( project.getPauseDate() == null ? null : new Date( project.getPauseDate() ) );
 

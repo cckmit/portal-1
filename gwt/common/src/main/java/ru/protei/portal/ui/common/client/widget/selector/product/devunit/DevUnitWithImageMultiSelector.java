@@ -16,9 +16,7 @@ import ru.protei.portal.ui.common.client.widget.selector.item.PopupSelectableIte
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 
 public class DevUnitWithImageMultiSelector extends DevUnitMultiSelector {
-
-    @Inject
-    public void init(ProductModel model, Lang lang) {
+    public void setModel(ProductModel model) {
         super.init(model, lang);
         setItemRenderer(makeSelectorItemRenderer());
     }
@@ -36,7 +34,7 @@ public class DevUnitWithImageMultiSelector extends DevUnitMultiSelector {
         return new SelectorItemRenderer<ProductShortView>() {
             @Override
             public String getElementName(ProductShortView productShortView) {
-                return (productShortView.getType() != null ? "[" + lang.getName(productShortView.getType()) + "] " : "")
+                return (productShortView.getType() != null ? "[" + en_devUnitTypeLang.getName(productShortView.getType()) + "] " : "")
                         + makeName(productShortView);
             }
 
@@ -59,11 +57,14 @@ public class DevUnitWithImageMultiSelector extends DevUnitMultiSelector {
 
     private Widget makeImage(En_DevUnitType type) {
         Image image = new Image(type.getImgSrc());
-        image.setAltText(lang.getName(type));
+        image.setAltText(en_devUnitTypeLang.getName(type));
         image.setStyleName("dev-unit-selector-image");
         return image;
     }
 
     @Inject
-    En_DevUnitTypeLang lang;
+    En_DevUnitTypeLang en_devUnitTypeLang;
+
+    @Inject
+    Lang lang;
 }

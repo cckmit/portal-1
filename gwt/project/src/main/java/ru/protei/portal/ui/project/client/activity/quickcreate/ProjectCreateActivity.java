@@ -87,11 +87,11 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
 
         if (isEmpty(directions)) {
             view.productEnabled().setEnabled(false);
-            view.updateProductSelector(new HashSet<>());
+            view.updateProductModel(new HashSet<>());
             view.products().setValue(null);
         } else {
             view.productEnabled().setEnabled(true);
-            view.updateProductSelector(toSet(directions, ProductDirectionInfo::getId));
+            view.updateProductModel(toSet(directions, ProductDirectionInfo::getId));
             view.products().setValue(
                     stream(view.products().getValue()).
                             filter(productShortView -> {
@@ -135,7 +135,7 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
         view.products().setValue(new HashSet<>(emptyIfNull(project.getProductShortViewList())));
         selectedComplexes = new HashSet<>();
 
-        view.updateProductSelector( toSet(project.getProductDirectionEntityOptionList(), EntityOption::getId));        selectedComplexes.addAll(stream(project.getProductShortViewList()).filter(product -> product.getType() == En_DevUnitType.COMPLEX).collect(Collectors.toSet()) );
+        view.updateProductModel( toSet(project.getProductDirectionEntityOptionList(), EntityOption::getId));        selectedComplexes.addAll(stream(project.getProductShortViewList()).filter(product -> product.getType() == En_DevUnitType.COMPLEX).collect(Collectors.toSet()) );
 
         view.headManagers().setValue(new HashSet<>(emptyIfNull(project.getTeam())));
         homeCompanyService.getAllHomeCompanies(homeCompanies -> {

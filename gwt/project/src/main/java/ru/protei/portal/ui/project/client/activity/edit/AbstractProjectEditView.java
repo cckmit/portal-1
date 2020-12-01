@@ -72,7 +72,7 @@ public interface AbstractProjectEditView extends IsWidget {
 
     HasValidable slaValidator();
 
-    void updateProductSelector(Set<Long> directionIds);
+    void updateProductModel(Set<Long> directionIds);
 
     void showComments(boolean isShow);
     void showDocuments(boolean isShow);

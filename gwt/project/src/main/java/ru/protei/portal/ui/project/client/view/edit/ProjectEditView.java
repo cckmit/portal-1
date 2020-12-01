@@ -28,6 +28,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.plan.selector.PlanMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitWithImageMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.region.RegionFormSelector;
@@ -52,8 +53,9 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
-        products.setState(En_DevUnitState.ACTIVE);
-        products.setTypes(En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
+        productModel.setUnitState(En_DevUnitState.ACTIVE);
+        productModel.setUnitTypes(En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
+        products.setModel(productModel);
         company.setDefaultValue(lang.selectIssueCompany());
 
         projectState.setDefaultValue(regionStateLang.getStateName(En_RegionState.UNKNOWN));
@@ -195,8 +197,8 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     }
 
     @Override
-    public void updateProductSelector(Set<Long> directionIds) {
-        products.setDirectionIds(directionIds);
+    public void updateProductModel(Set<Long> directionIds) {
+        productModel.setDirectionIds(directionIds);
     }
 
     @UiHandler("saveButton")
@@ -373,6 +375,9 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     Lang lang;
     @Inject
     En_RegionStateLang regionStateLang;
+
+    @Inject
+    ProductModel productModel;
 
     private AbstractProjectEditActivity activity;
 
