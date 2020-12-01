@@ -114,6 +114,7 @@ public abstract class SubtaskCreateActivity implements AbstractSubtaskCreateActi
         view.name().setValue(null);
         view.description().setValue(null);
         subcontractorCompanyModel.setCompanyId(caseObject.getInitiatorCompanyId());
+        subcontractorCompanyModel.setActive(true);
         view.managerCompany().setValue(EntityOption.fromCompany(policyService.getUserCompany()));
         view.updateManagersCompanyFilter(policyService.getUserCompany().getId());
         view.manager().setValue(null);

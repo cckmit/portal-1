@@ -51,9 +51,14 @@ public abstract class SubcontractorCompanyModel implements Activity, AsyncSelect
         this.companyId = companyId;
     }
 
+    public void setActive(boolean active) {
+        cache.clearCache();
+        this.isActive = active;
+    }
+
     private SelectorDataCacheLoadHandler<EntityOption> makeLoadHandler() {
         return (offset, limit, handler) ->
-            companyService.getSubcontractorOptionList(companyId, new FluentCallback<List<EntityOption>>()
+            companyService.getSubcontractorOptionList(companyId, isActive, new FluentCallback<List<EntityOption>>()
                     .withError(throwable -> {
                         fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
                         handler.onFailure(throwable);
@@ -75,5 +80,6 @@ public abstract class SubcontractorCompanyModel implements Activity, AsyncSelect
     Lang lang;
 
     private Long companyId;
+    private boolean isActive;
     private SelectorDataCache<EntityOption> cache = new SelectorDataCache<>();
 }

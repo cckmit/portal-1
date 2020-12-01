@@ -52,6 +52,8 @@ public class ProjectQuery extends BaseQuery {
 
     private List<Interval> technicalSupportExpiresInDays;
 
+    private boolean isActive;
+
     public ProjectQuery() {
         sortField = En_SortField.case_name;
         sortDir = En_SortDir.ASC;
@@ -230,6 +232,14 @@ public class ProjectQuery extends BaseQuery {
         this.subcontractorIds = subcontractorIds;
     }
 
+    public boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
     @Override
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
@@ -248,7 +258,8 @@ public class ProjectQuery extends BaseQuery {
                 platformIndependentProject != null ||
                 pauseDateGreaterThan != null ||
                 deleted != null ||
-                CollectionUtils.isNotEmpty(technicalSupportExpiresInDays);
+                CollectionUtils.isNotEmpty(technicalSupportExpiresInDays) ||
+                isActive;
     }
 
     @Override
@@ -273,6 +284,7 @@ public class ProjectQuery extends BaseQuery {
                 ", deleted=" + deleted +
                 ", subcontractorIds=" + subcontractorIds +
                 ", technicalSupportExpiresInDays=" + technicalSupportExpiresInDays +
+                ", isActive=" + isActive +
                 '}';
     }
 
@@ -298,7 +310,8 @@ public class ProjectQuery extends BaseQuery {
                 Objects.equals(pauseDateGreaterThan, that.pauseDateGreaterThan) &&
                 Objects.equals(deleted, that.deleted) &&
                 Objects.equals(subcontractorIds, that.subcontractorIds) &&
-                Objects.equals(technicalSupportExpiresInDays, that.technicalSupportExpiresInDays);
+                Objects.equals(technicalSupportExpiresInDays, that.technicalSupportExpiresInDays) &&
+                Objects.equals(isActive, that.isActive);
     }
 
     @Override
@@ -306,6 +319,6 @@ public class ProjectQuery extends BaseQuery {
         return Objects.hash(caseIds, states, regions, headManagers, caseMembers, directions,
                 districtIds, memberId, productIds, customerType, createdFrom, createdTo,
                 platformIndependentProject, initiatorCompanyIds, pauseDateGreaterThan, deleted,
-                subcontractorIds, technicalSupportExpiresInDays);
+                subcontractorIds, technicalSupportExpiresInDays, isActive);
     }
 }

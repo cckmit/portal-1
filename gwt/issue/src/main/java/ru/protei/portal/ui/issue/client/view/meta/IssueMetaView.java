@@ -342,6 +342,11 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
+    public void setProductBorderBottomVisible(boolean isVisible) {
+        productContainer.setStyleName("add-border-bottom", isVisible);
+    }
+
+    @Override
     public HasVisibility jiraSlaSelectorVisibility() {
         return jiraSlaSelector;
     }

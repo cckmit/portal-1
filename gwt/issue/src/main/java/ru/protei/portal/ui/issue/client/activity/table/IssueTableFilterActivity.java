@@ -395,7 +395,9 @@ public abstract class IssueTableFilterActivity
     private void updateCompanyModels(Profile profile) {
         Company userCompany = profile.getCompany();
         subcontractorCompanyModel.setCompanyId(userCompany.getId());
+        subcontractorCompanyModel.setActive(false);
         customerCompanyModel.setSubcontractorId(userCompany.getId());
+        customerCompanyModel.setActive(false);
 
         filterView.setInitiatorCompaniesModel(isSubcontractorCompany(userCompany) ? customerCompanyModel : companyModel);
         filterView.setManagerCompaniesModel(profile.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW) || isSubcontractorCompany(userCompany) ? companyModel : subcontractorCompanyModel);
