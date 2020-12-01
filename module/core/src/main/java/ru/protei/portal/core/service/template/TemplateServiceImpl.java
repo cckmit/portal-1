@@ -522,11 +522,15 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("oldCustomerType", getNullOrElse(oldProjectState, Project::getCustomerType));
         templateModel.put("newCustomerType", newProjectState.getCustomerType());
 
-        templateModel.put("productDirectionChanged", event.isProductDirectionChanged());
-        templateModel.put("productDirection", event.getProductDirectionDiffs());
+        final DiffCollectionResult<DevUnit> productDirectionDiffs = event.getProductDirectionDiffs();
+        templateModel.put("productDirectionSameEntries", productDirectionDiffs.getSameEntries());
+        templateModel.put("productDirectionAddedEntries", productDirectionDiffs.getAddedEntries());
+        templateModel.put("productDirectionRemovedEntries", productDirectionDiffs.getRemovedEntries());
 
-        templateModel.put("productChanged", event.isProductChanged());
-        templateModel.put("product", event.getProductDiffs());
+        final DiffCollectionResult<DevUnit> productDiffs = event.getProductDiffs();
+        templateModel.put("productSameEntries", productDiffs.getSameEntries());
+        templateModel.put("productAddedEntries", productDiffs.getAddedEntries());
+        templateModel.put("productRemovedEntries", productDiffs.getRemovedEntries());
 
         templateModel.put("supportValidityChanged", event.isSupportValidityChanged());
         templateModel.put("oldSupportValidity", getNullOrElse(oldProjectState, Project::getTechnicalSupportValidity));

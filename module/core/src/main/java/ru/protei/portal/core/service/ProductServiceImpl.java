@@ -54,7 +54,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Result<SearchResult<DevUnit>> getProducts( AuthToken token, ProductQuery query) {
-        if ( isNotEmpty(query.getDirectionIds()) && !checkIfDirection(query.getDirectionIds()) ) {
+        if ( isNotEmpty(query.getDirectionIds()) && !checkIfAllDirections(query.getDirectionIds()) ) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -65,7 +65,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Result<List<ProductShortView>> shortViewList( AuthToken token, ProductQuery query ) {
-        if ( isNotEmpty(query.getDirectionIds()) && !checkIfDirection(query.getDirectionIds()) ) {
+        if ( isNotEmpty(query.getDirectionIds()) && !checkIfAllDirections(query.getDirectionIds()) ) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -77,7 +77,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Result<List<ProductShortView>> productsShortViewListWithChildren(AuthToken token, ProductQuery query) {
-        if ( isNotEmpty(query.getDirectionIds()) && !checkIfDirection(query.getDirectionIds()) ) {
+        if ( isNotEmpty(query.getDirectionIds()) && !checkIfAllDirections(query.getDirectionIds()) ) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -265,7 +265,7 @@ public class ProductServiceImpl implements ProductService {
                 .collect(Collectors.toList());
     }
 
-    private boolean checkIfDirection(Set<Long> directionId) {
+    private boolean checkIfAllDirections(Set<Long> directionId) {
         List<DevUnit> directions = devUnitDAO.getListByKeys(directionId);
         if (isEmpty(directions)) {
             return false;

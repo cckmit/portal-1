@@ -151,11 +151,10 @@
                                                                         hasNullValue="false"
                                                                         mandatory="true"
                         />
-                        <devunit:DevUnitMultiSelector ui:field="products" styleName="form-group"
+                        <devunit:DevUnitWithImageMultiSelector ui:field="products" styleName="form-group"
                                                       header="{lang.projectProducts}"
                                                       hasNullValue="false"
                                                       validation="false"
-                                                      imageVisible="true"
                         />
                         <plan:PlanMultiSelector ui:field="plans" styleName="form-group"
                                                 header="{lang.plans}"

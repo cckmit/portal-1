@@ -210,7 +210,7 @@ public class ProjectServiceImpl implements ProjectService {
         jdbcManyRelationsHelper.fillAll( project );
         final Set<DevUnit> products = project.getProducts();
         if (isNotEmpty(products)) {
-            products.forEach(product -> product.setProductDirections(new HashSet<>(devUnitDAO.getProductDirections(product.getId()))));
+            products.forEach(product -> product.setProductDirections(new HashSet<>(emptyIfNull(devUnitDAO.getProductDirections(product.getId())))));
         }
 
         List<Contract> contracts = contractDAO.getByProjectId(id);
@@ -219,8 +219,6 @@ public class ProjectServiceImpl implements ProjectService {
 
             project.setContracts(contracts.stream().map(contract -> new EntityOption(contract.getNumber(), contract.getId())).collect(toList()));
         }
-
-        jdbcManyRelationsHelper.fill(project, Project.Fields.PROJECT_PLANS);
 
         if (!canAccessProject(policyService, token, En_Privilege.PROJECT_VIEW, project.getTeam())) {
             return error(En_ResultStatus.PERMISSION_DENIED);

@@ -28,7 +28,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.plan.selector.PlanMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitWithImageMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.region.RegionFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateFormSelector;
@@ -324,7 +324,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     CompanyFormSelector company;
     @Inject
     @UiField(provided = true)
-    DevUnitMultiSelector products;
+    DevUnitWithImageMultiSelector products;
     @Inject
     @UiField(provided = true)
     CustomerFormSelector customerType;

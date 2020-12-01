@@ -106,20 +106,20 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
 
     @Override
     public void onProductChanged() {
-        final Set<ProductShortView> currentComplex = stream(view.products().getValue())
+        final Set<ProductShortView> currentComplexes = stream(view.products().getValue())
                 .filter(info -> info.getType() == En_DevUnitType.COMPLEX && info.getProductDirection() != null)
                 .collect(Collectors.toSet());
-        Set<ProductShortView> addedComplex = new HashSet<>(currentComplex);
-        addedComplex.removeAll(selectedComplex);
+        Set<ProductShortView> addedComplex = new HashSet<>(currentComplexes);
+        addedComplex.removeAll(selectedComplexes);
         if (isNotEmpty(addedComplex)) {
             final Set<ProductDirectionInfo> directions = view.directions().getValue();
-            directions.addAll(stream(currentComplex)
+            directions.addAll(stream(currentComplexes)
                     .flatMap(productShortView -> stream(productShortView.getProductDirection()))
                     .collect(Collectors.toSet()));
             view.directions().setValue(directions);
             onDirectionChanged();
         }
-        selectedComplex = currentComplex;
+        selectedComplexes = currentComplexes;
     }
 
     private void initialView(Project project) {
@@ -132,10 +132,10 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
         view.productEnabled().setEnabled(false);
         view.company().setValue(EntityOption.fromCompany(project.getCustomer()));
 
-        view.products().setValue(new HashSet<>(emptyIfNull(project.getProductShortView())));
-        selectedComplex = new HashSet<>();
+        view.products().setValue(new HashSet<>(emptyIfNull(project.getProductShortViewList())));
+        selectedComplexes = new HashSet<>();
 
-        view.updateProductSelector( toSet(project.getProductDirectionEntityOptionList(), EntityOption::getId));        selectedComplex.addAll(stream(project.getProductShortView()).filter(product -> product.getType() == En_DevUnitType.COMPLEX).collect(Collectors.toSet()) );
+        view.updateProductSelector( toSet(project.getProductDirectionEntityOptionList(), EntityOption::getId));        selectedComplexes.addAll(stream(project.getProductShortViewList()).filter(product -> product.getType() == En_DevUnitType.COMPLEX).collect(Collectors.toSet()) );
 
         view.headManagers().setValue(new HashSet<>(emptyIfNull(project.getTeam())));
         homeCompanyService.getAllHomeCompanies(homeCompanies -> {
@@ -186,5 +186,5 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
     Lang lang;
 
     private Project project;
-    private Set<ProductShortView> selectedComplex;
+    private Set<ProductShortView> selectedComplexes;
 }

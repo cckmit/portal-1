@@ -22,7 +22,7 @@ import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.AsyncPersonModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitWithImageMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.region.RegionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -205,7 +205,7 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
 
     @Inject
     @UiField(provided = true)
-    DevUnitMultiSelector products;
+    DevUnitWithImageMultiSelector products;
 
     @Inject
     @UiField(provided = true)

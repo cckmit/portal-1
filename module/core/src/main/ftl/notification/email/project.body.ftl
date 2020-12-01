@@ -224,19 +224,19 @@
                 ${_projectProductDirection}
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                <#if productDirection.getSameEntries()??>
-                    <#list productDirection.getSameEntries() as same>
+                <#if productDirectionSameEntries??>
+                    <#list productDirectionSameEntries as same>
                         <span style="display:inline-block;padding:1px 4px 1px 0px;white-space:nowrap;text-decoration:none"> ${same.name}
                         </span>
                     </#list>
                 </#if>
-                <#if productDirection.getAddedEntries()??>
-                    <#list productDirection.getAddedEntries() as added>
+                <#if productDirectionAddedEntries??>
+                    <#list productDirectionAddedEntries as added>
                         <span style="display:inline-block;padding:1px 5px;white-space:nowrap;text-decoration:none;color:#11731d;background:#dff7e2;"> ${added.name}</span>
                     </#list>
                 </#if>
-                <#if productDirection.getRemovedEntries()??>
-                    <#list productDirection.getRemovedEntries() as removed>
+                <#if productDirectionRemovedEntries??>
+                    <#list productDirectionRemovedEntries as removed>
                         <span style="display:inline-block;padding:1px 5px;white-space:nowrap;text-decoration:line-through;color:#bd1313;">${removed.name}</span>
                     </#list>
                 </#if>
@@ -247,18 +247,18 @@
                 ${_projectProduct}
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                <#if product.getSameEntries()??>
-                    <#list product.getSameEntries() as same>
+                <#if productSameEntries??>
+                    <#list productSameEntries as same>
                         <span style="display:inline-block;padding:1px 4px 1px 0px;white-space:nowrap;text-decoration:none"> ${same.name}</span>
                     </#list>
                 </#if>
-                <#if product.getAddedEntries()??>
-                    <#list product.getAddedEntries() as added>
+                <#if productAddedEntries??>
+                    <#list productAddedEntries as added>
                         <span style="display:inline-block;padding:1px 5px;white-space:nowrap;text-decoration:none;color:#11731d;background:#dff7e2;"> ${added.name}</span>
                     </#list>
                 </#if>
-                <#if product.getRemovedEntries()??>
-                    <#list product.getRemovedEntries() as removed>
+                <#if productRemovedEntries??>
+                    <#list productRemovedEntries as removed>
                         <span style="display:inline-block;padding:1px 5px;white-space:nowrap;text-decoration:line-through;color:#bd1313;">${removed.name}</span>
                     </#list>
                 </#if>

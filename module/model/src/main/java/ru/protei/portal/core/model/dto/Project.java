@@ -322,7 +322,7 @@ public class Project extends AuditableObject {
         this.deleted = deleted;
     }
 
-    public List<ProductShortView> getProductShortView() {
+    public List<ProductShortView> getProductShortViewList() {
         return products == null ? null : toList(products, ProductShortView::fromProduct);
     }
 
