@@ -2,13 +2,12 @@ package ru.protei.portal.ui.sitefolder.client.activity.plaform.preview;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.inject.Inject;
-import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.dto.ProjectInfo;
+import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -89,7 +88,7 @@ public abstract class PlatformPreviewActivity implements AbstractPlatformPreview
     private void fillProjectSpecificFields (ProjectInfo project){
         view.setCompany(project.getContragent() == null ? "" : project.getContragent().getDisplayText());
         view.setManager(project.getManager() == null ? null : project.getManager().getDisplayText());
-        view.setProject(project.getName(), LinkUtils.makePreviewLink(Project.class, project.getId()));
+        view.setProject(project.getName(), LinkUtils.makePreviewLink(Project.class.getSimpleName(), project.getId()));
         view.setTechnicalSupportValidity(formatTechnicalSupportValidityOrErrorMsg(project));
         showContacts(project.getContragent() == null ? null : project.getContragent().getId());
     }

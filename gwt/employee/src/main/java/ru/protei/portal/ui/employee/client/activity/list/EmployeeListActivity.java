@@ -146,9 +146,9 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         AbstractEmployeeItemView itemView = factory.get();
         itemView.setActivity( this );
 
-        itemView.setName( employee.getDisplayName(), LinkUtils.makePreviewLink(EmployeeShortView.class, employee.getId()) );
+        itemView.setName( employee.getDisplayName(), LinkUtils.makePreviewLink(EmployeeShortView.class.getSimpleName(), employee.getId()) );
         if (policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_EDIT)) {
-            itemView.setEditIcon(LinkUtils.makeEditLink(EmployeeShortView.class, employee.getId()));
+            itemView.setEditIcon(LinkUtils.makeEditLink(EmployeeShortView.class.getSimpleName(), employee.getId()));
         }
 
         itemView.setBirthday( DateFormatter.formatDateMonth( employee.getBirthday() ) );

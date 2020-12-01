@@ -55,16 +55,20 @@ public abstract class CaseHistoryListActivity implements AbstractCaseHistoryList
     private void addHistoryItem(History history) {
         if (policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW)) {
             if (En_HistoryType.PLAN.equals(history.getType())) {
-                view.root().add(makeHistoryItem(history, lang.plan(), Plan.class));
+                view.root().add(makeHistoryItem(history, lang.plan(), Plan.class.getSimpleName()));
             }
 
             if (En_HistoryType.TAG.equals(history.getType())) {
-                view.root().add(makeHistoryItem(history, lang.tag(), CaseTag.class));
+                view.root().add(makeHistoryItem(history, lang.tag(), CaseTag.class.getSimpleName()));
+            }
+
+            if (En_HistoryType.CASE_STATE.equals(history.getType())) {
+                view.root().add(makeHistoryItem(history, lang.issueState(), "Case_State"));
             }
         }
     }
 
-    private AbstractCaseHistoryItemView makeHistoryItem(History history, String historyType, Class<?> clazz) {
+    private AbstractCaseHistoryItemView makeHistoryItem(History history, String historyType, String classSimpleName) {
         AbstractCaseHistoryItemView historyItem = caseHistoryItemProvider.get();
 
         historyItem.setActivity(this);
@@ -77,25 +81,25 @@ public abstract class CaseHistoryListActivity implements AbstractCaseHistoryList
 
         if (En_HistoryAction.ADD.equals(history.getAction())) {
             historyItem.setAddedValue(
-                    makeLink(clazz, history.getNewId(), history.getNewValue()),
+                    makeLink(classSimpleName, history.getNewId(), history.getNewValue()),
                     history.getNewValue()
             );
         }
 
         if (En_HistoryAction.REMOVE.equals(history.getAction())) {
             historyItem.setRemovedValue(
-                    makeLink(clazz, history.getOldId(), history.getOldValue()),
+                    makeLink(classSimpleName, history.getOldId(), history.getOldValue()),
                     history.getOldValue()
             );
         }
 
         if (En_HistoryAction.CHANGE.equals(history.getAction())) {
             historyItem.setOldValue(
-                    makeLink(clazz, history.getOldId(), history.getOldValue()),
+                    makeLink(classSimpleName, history.getOldId(), history.getOldValue()),
                     history.getOldValue()
             );
             historyItem.setNewValue(
-                    makeLink(clazz, history.getNewId(), history.getNewValue()),
+                    makeLink(classSimpleName, history.getNewId(), history.getNewValue()),
                     history.getNewValue()
             );
         }
@@ -105,9 +109,9 @@ public abstract class CaseHistoryListActivity implements AbstractCaseHistoryList
         return historyItem;
     }
 
-    private String makeLink(Class<?> clazz, Long id, String value) {
-        if (LinkUtils.isLinkNeeded(clazz)) {
-            return (new Anchor( "#" + id + " " + value, LinkUtils.makePreviewLink(clazz, id), "_blank"))
+    private String makeLink(String classSimpleName, Long id, String value) {
+        if (LinkUtils.isLinkNeeded(classSimpleName)) {
+            return (new Anchor( "#" + id + " " + value, LinkUtils.makePreviewLink(classSimpleName, id), "_blank"))
                     .toString();
         } else {
             return (new InlineLabel( "#" + id + " " + value)

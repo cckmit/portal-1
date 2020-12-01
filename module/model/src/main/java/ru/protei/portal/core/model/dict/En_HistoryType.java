@@ -5,7 +5,8 @@ import ru.protei.winter.core.utils.enums.HasId;
 public enum En_HistoryType implements HasId {
     PLAN(0),
     TAG(1),
-    STATE(2),
+    CONTRACT_STATE(2),
+    CASE_STATE(3),
     ;
 
     En_HistoryType(int id) {

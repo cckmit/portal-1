@@ -187,7 +187,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         }
 
         if (head != null && !head.getId().equals(employee.getId())) {
-            itemView.setDepartmentHead(head.getDisplayName(), LinkUtils.makePreviewLink(EmployeeShortView.class, head.getId()));
+            itemView.setDepartmentHead(head.getDisplayName(), LinkUtils.makePreviewLink(EmployeeShortView.class.getSimpleName(), head.getId()));
             itemView.departmentHeadContainerVisibility().setVisible(true);
         }
 
