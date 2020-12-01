@@ -804,6 +804,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     private void setCustomerVisibility(AbstractIssueMetaView issueMetaView, boolean isVisible) {
         issueMetaView.deadlineContainerVisibility().setVisible(isVisible);
         issueMetaView.workTriggerVisibility().setVisible(isVisible);
+        issueMetaView.setProductBorderBottomVisible(!isVisible);
     }
 
     private void fillPlatformValueAndUpdateProductsFilter(final Company company) {

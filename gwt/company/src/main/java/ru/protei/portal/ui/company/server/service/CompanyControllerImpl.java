@@ -192,7 +192,7 @@ public class CompanyControllerImpl implements CompanyController {
 
     @Override
     public List<EntityOption> getInitiatorOptionList(Long subcontractorId, boolean isActive) throws RequestFailedException {
-        log.info("getInitiatorOptionList(): subcontractorId={}, isActive={}", subcontractorId);
+        log.info("getInitiatorOptionList(): subcontractorId={}, isActive={}", subcontractorId, isActive);
 
         Result<List<EntityOption>> result = companyService.companyOptionListBySubcontractorIds(setOf(subcontractorId), isActive);
 

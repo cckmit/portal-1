@@ -899,6 +899,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     private void setCustomerVisibility(AbstractIssueMetaView issueMetaView, boolean isVisible) {
         issueMetaView.deadlineContainerVisibility().setVisible(isVisible);
         issueMetaView.workTriggerVisibility().setVisible(isVisible);
+        issueMetaView.setProductBorderBottomVisible(!isVisible);
     }
 
     private void updateProductsFilter(final AbstractIssueMetaView issueMetaView, Long companyId, Long platformId) {
