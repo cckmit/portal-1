@@ -6,11 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
+import ru.protei.portal.core.model.dao.DevUnitDAO;
 import ru.protei.portal.core.model.dao.ProjectDAO;
 import ru.protei.portal.core.model.dao.ReportDAO;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.Report;
-import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.ReportProjectWithLastComment;
 import ru.protei.portal.core.report.ReportWriter;
@@ -19,10 +20,7 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -37,6 +35,8 @@ public class ReportProjectImpl implements ReportProject {
     PortalConfig config;
     @Autowired
     ProjectDAO projectDAO;
+    @Autowired
+    DevUnitDAO devUnitDAO;
     @Autowired
     CaseCommentDAO caseCommentDAO;
     @Autowired
@@ -117,6 +117,7 @@ public class ReportProjectImpl implements ReportProject {
         }
 
         jdbcManyRelationsHelper.fill(projects, "locations");
+        projects.forEach(project -> project.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(project.getId()))));
 
         List<Long> ids = projects.stream().map(Project::getId).collect(Collectors.toList());
         List<CaseComment> lastNotNullTextCommentsForReport = caseCommentDAO

@@ -68,12 +68,6 @@ public class Project extends AuditableObject {
     private Company customer;
 
     /**
-     * Продуктовые направления
-     */
-    @JdbcManyToMany(linkTable = "project_to_direction", localLinkColumn = "project_id", remoteLinkColumn = "direction_id")
-    private Set<DevUnit> productDirections;
-
-    /**
      * Дата создания
      */
     @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Columns.CREATED, table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
@@ -90,9 +84,6 @@ public class Project extends AuditableObject {
 
     @JdbcOneToMany(table = "case_location", localColumn = "id", remoteColumn = "CASE_ID" )
     private List<CaseLocation> locations;
-
-    @JdbcManyToMany(linkTable = "project_to_product", localLinkColumn = "project_id", remoteLinkColumn = "product_id")
-    private Set<DevUnit> products;
 
     @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Columns.DELETED, table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
     private boolean deleted;
@@ -153,6 +144,10 @@ public class Project extends AuditableObject {
     private List<CaseLink> links;
 
     private List<EntityOption> contracts;
+
+    private Set<DevUnit> productDirections;
+
+    private Set<DevUnit> products;
 
     public Long getId() {
         return id;

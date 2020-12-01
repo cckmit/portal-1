@@ -58,6 +58,22 @@ public class DevUnitDAO_Impl extends PortalBaseJdbcDAO<DevUnit> implements DevUn
     }
 
     @Override
+    public List<DevUnit> getProjectDirections(Long projectId) {
+        return getListByCondition("dev_unit.ID IN (SELECT product_id FROM project_to_product WHERE project_id = ?) AND UTYPE_ID = ?",
+                projectId,
+                En_DevUnitType.DIRECTION.getId()
+        );
+    }
+
+    @Override
+    public List<DevUnit> getProjectProducts(Long projectId) {
+        return getListByCondition("dev_unit.ID IN (SELECT product_id FROM project_to_product WHERE project_id = ?) AND UTYPE_ID != ?",
+                projectId,
+                En_DevUnitType.DIRECTION.getId()
+        );
+    }
+
+    @Override
     public Map<Long, Long> getProductOldToNewMap() {
         Map<Long,Long> result = new HashMap<>();
         getListByCondition("UTYPE_ID=? and old_id is not null", En_DevUnitType.PRODUCT.getId())

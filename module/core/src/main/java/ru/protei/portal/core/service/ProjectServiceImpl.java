@@ -77,8 +77,6 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     ProjectToProductDAO projectToProductDAO;
     @Autowired
-    ProjectToDirectionDAO projectToDirectionDAO;
-    @Autowired
     DevUnitDAO devUnitDAO;
     @Autowired
     AuthService authService;
@@ -208,10 +206,9 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         jdbcManyRelationsHelper.fillAll( project );
-        final Set<DevUnit> products = project.getProducts();
-        if (isNotEmpty(products)) {
-            products.forEach(product -> product.setProductDirections(new HashSet<>(emptyIfNull(devUnitDAO.getProductDirections(product.getId())))));
-        }
+        project.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(project.getId())));
+        project.setProducts(new HashSet<>(devUnitDAO.getProjectProducts(project.getId())));
+        project.getProducts().forEach(product -> product.setProductDirections(new HashSet<>(devUnitDAO.getProductDirections(product.getId()))));
 
         List<Contract> contracts = contractDAO.getByProjectId(id);
 
@@ -237,8 +234,8 @@ public class ProjectServiceImpl implements ProjectService {
 
         jdbcManyRelationsHelper.fill(projectFromDb, "locations");
         jdbcManyRelationsHelper.fill(projectFromDb, "members");
-        jdbcManyRelationsHelper.fill(projectFromDb, "products");
-        jdbcManyRelationsHelper.fill(projectFromDb, "productDirections");
+        projectFromDb.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(projectFromDb.getId())));
+        projectFromDb.setProducts(new HashSet<>(devUnitDAO.getProjectProducts(projectFromDb.getId())));
 
         final Set<DevUnit> products = projectFromDb.getProducts();
         if (isNotEmpty(products)) {
@@ -261,9 +258,13 @@ public class ProjectServiceImpl implements ProjectService {
 
         Project projectFormDB = projectDAO.get( project.getId() );
         jdbcManyRelationsHelper.fillAll( projectFormDB );
+        projectFormDB.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(project.getId())));
+        projectFormDB.setProducts(new HashSet<>(devUnitDAO.getProjectProducts(project.getId())));
 
         Project oldStateProject = projectDAO.get( project.getId() );
         jdbcManyRelationsHelper.fillAll( oldStateProject );
+        oldStateProject.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(project.getId())));
+        oldStateProject.setProducts(new HashSet<>(devUnitDAO.getProjectProducts(project.getId())));
 
         if (!canAccessProject(policyService, token, En_Privilege.PROJECT_EDIT, oldStateProject.getTeam())) {
             return error(En_ResultStatus.PERMISSION_DENIED);
@@ -290,8 +291,8 @@ public class ProjectServiceImpl implements ProjectService {
         try {
             updateTeam( caseObject, project.getTeam() );
             updateLocations( caseObject, project.getRegion() );
-            updateProducts( projectFormDB, emptyIfNull(projectFormDB.getProducts()),  emptyIfNull(project.getProducts()) );
-            updateDirections( projectFormDB, emptyIfNull(projectFormDB.getProductDirections()), emptyIfNull(project.getProductDirections()) );
+            updateDevUnits( projectFormDB, emptyIfNull(projectFormDB.getProducts()),  emptyIfNull(project.getProducts()) );
+            updateDevUnits( projectFormDB, emptyIfNull(projectFormDB.getProductDirections()), emptyIfNull(project.getProductDirections()) );
         } catch (Throwable e) {
             log.error("saveProject(): error during save project when update one of following parameters: team, location, or products;", e);
             throw new ResultStatusException(En_ResultStatus.INTERNAL_ERROR);
@@ -313,6 +314,8 @@ public class ProjectServiceImpl implements ProjectService {
 
         Project newStateProject = projectDAO.get(project.getId());
         jdbcManyRelationsHelper.fillAll(newStateProject);
+        newStateProject.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(project.getId())));
+        newStateProject.setProducts(new HashSet<>(devUnitDAO.getProjectProducts(project.getId())));
 
         return ok(project).publishEvent(new ProjectUpdateEvent(this, oldStateProject, newStateProject, token.getPersonId()));
     }
@@ -351,8 +354,8 @@ public class ProjectServiceImpl implements ProjectService {
         try {
             updateTeam(caseObject, project.getTeam());
             updateLocations(caseObject,  project.getRegion());
-            updateProducts( project, new HashSet<>(),  emptyIfNull(project.getProducts()) );
-            updateDirections( project, new HashSet<>(), emptyIfNull(project.getProductDirections()) );
+            updateDevUnits( project, new HashSet<>(), emptyIfNull(project.getProducts()) );
+            updateDevUnits( project, new HashSet<>(), emptyIfNull(project.getProductDirections()) );
         } catch (Throwable e) {
             log.error("createProject(): error during create project when set one of following parameters: team, location, or products; {}", e.getMessage());
             throw new ResultStatusException(En_ResultStatus.INTERNAL_ERROR);
@@ -411,9 +414,12 @@ public class ProjectServiceImpl implements ProjectService {
         SearchResult<Project> projects = projectDAO.getSearchResult(query);
 
         jdbcManyRelationsHelper.fill(projects.getResults(), "members");
-        jdbcManyRelationsHelper.fill(projects.getResults(), "products");
         jdbcManyRelationsHelper.fill(projects.getResults(), "locations");
-        jdbcManyRelationsHelper.fill(projects.getResults(), "productDirections");
+        projects.forEach(project -> {
+                    project.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(project.getId())));
+                    project.setProducts(new HashSet<>(devUnitDAO.getProjectProducts(project.getId())));
+                }
+        );
 
         return ok(projects);
     }
@@ -644,52 +650,28 @@ public class ProjectServiceImpl implements ProjectService {
         caseLocationDAO.persist( CaseLocation.makeLocationOf( caseObject, location ) );
     }
 
-    private void updateProducts(Project project, Set<DevUnit> oldProducts ,Set<DevUnit> newProducts) {
-        if (isEmpty(newProducts)) {
+    private void updateDevUnits(Project project, Set<DevUnit> oldDevUnits , Set<DevUnit> newDevUnits) {
+        if (isEmpty(newDevUnits)) {
             return;
         }
 
-        Set<DevUnit> toDelete = new HashSet<>(oldProducts);
-        Set<DevUnit> toCreate = new HashSet<>(newProducts);
-        toCreate.removeAll(oldProducts);
-        toDelete.removeAll(newProducts);
+        Set<DevUnit> toDelete = new HashSet<>(oldDevUnits);
+        Set<DevUnit> toCreate = new HashSet<>(newDevUnits);
+        toCreate.removeAll(oldDevUnits);
+        toDelete.removeAll(newDevUnits);
 
-        ProjectToProduct projectToProduct = new ProjectToProduct(project.getId(), null);
-
-        toDelete.forEach(du -> {
-            projectToProduct.setProductId(du.getId());
-            projectToProductDAO.removeByKey(projectToProduct);
-        });
-        toCreate.forEach(du -> {
-            projectToProduct.setProductId(du.getId());
-            projectToProductDAO.persist(projectToProduct);
-        });
-
-        project.setProducts(newProducts);
-    }
-
-    private void updateDirections(Project project, Set<DevUnit> oldDirections ,Set<DevUnit> newDirections) {
-        if (isEmpty(newDirections)) {
-            return;
-        }
-
-        Set<DevUnit> toDelete = new HashSet<>(oldDirections);
-        Set<DevUnit> toCreate = new HashSet<>(newDirections);
-        toCreate.removeAll(oldDirections);
-        toDelete.removeAll(newDirections);
-
-        ProjectToDirection projectToDirection = new ProjectToDirection(project.getId(), null);
+        ProjectToProduct projectToDevUnit = new ProjectToProduct(project.getId(), null);
 
         toDelete.forEach(du -> {
-            projectToDirection.setDirectionId(du.getId());
-            projectToDirectionDAO.removeByKey(projectToDirection);
+            projectToDevUnit.setProductId(du.getId());
+            projectToProductDAO.removeByKey(projectToDevUnit);
         });
         toCreate.forEach(du -> {
-            projectToDirection.setDirectionId(du.getId());
-            projectToDirectionDAO.persist(projectToDirection);
+            projectToDevUnit.setProductId(du.getId());
+            projectToProductDAO.persist(projectToDevUnit);
         });
 
-        project.setProductDirections(newDirections);
+        project.setProducts(newDevUnits);
     }
 
     private void iterateAllLocations( Project project, Consumer< Location > handler ) {

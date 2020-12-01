@@ -244,11 +244,6 @@ public class DaoMockTestConfiguration {
     }
 
     @Bean
-    public ProjectToDirectionDAO getProjectToDirectionDAO() {
-        return mock(ProjectToDirectionDAO.class);
-    }
-
-    @Bean
     public PlatformDAO getPlatformDAO() {
         return  mock(PlatformDAO.class);
     }
