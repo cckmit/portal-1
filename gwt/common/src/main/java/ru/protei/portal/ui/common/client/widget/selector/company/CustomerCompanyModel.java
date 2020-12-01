@@ -51,9 +51,14 @@ public abstract class CustomerCompanyModel implements Activity, AsyncSelectorMod
         this.subcontractorId = subcontractorId;
     }
 
+    public void setActive(boolean active) {
+        cache.clearCache();
+        this.isActive = active;
+    }
+
     private SelectorDataCacheLoadHandler<EntityOption> makeLoadHandler() {
         return (offset, limit, handler) ->
-                companyService.getInitiatorOptionList(subcontractorId, new FluentCallback<List<EntityOption>>()
+                companyService.getInitiatorOptionList(subcontractorId, isActive, new FluentCallback<List<EntityOption>>()
                         .withError(throwable -> {
                             fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
                             handler.onFailure(throwable);
@@ -75,5 +80,6 @@ public abstract class CustomerCompanyModel implements Activity, AsyncSelectorMod
     Lang lang;
 
     private Long subcontractorId;
+    private boolean isActive;
     private SelectorDataCache<EntityOption> cache = new SelectorDataCache<>();
 }

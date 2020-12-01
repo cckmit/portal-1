@@ -20,6 +20,7 @@ import ru.protei.winter.jdbc.JdbcHelper;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -246,6 +247,11 @@ public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements Proje
                             args.add(interval.getTo());
                             return "(project.technical_support_validity >= ? and project.technical_support_validity < ?)";
                         }).collect(Collectors.joining(" or ", " and( ", " ) ")));
+            }
+            if (query.getActive()) {
+                condition.append(" and (project.technical_support_validity >= ? or project.work_completion_date >= ?)");
+                args.add(new Date());
+                args.add(new Date());
             }
         }));
     }

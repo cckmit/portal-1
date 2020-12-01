@@ -62,7 +62,9 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     public void onAuthSuccess(AuthEvents.Success event) {
         Company userCompany = event.profile.getCompany();
         customerCompanyModel.setSubcontractorId(userCompany.getId());
+        customerCompanyModel.setActive(true);
         subcontractorCompanyModel.setCompanyId(userCompany.getId());
+        subcontractorCompanyModel.setActive(true);
         metaView.setCompanyModel(isSubcontractorCompany(userCompany) ? customerCompanyModel : companyModel);
         metaView.setManagerCompanyModel(event.profile.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT) ? subcontractorCompanyModel : companyModel);
     }
@@ -802,6 +804,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     private void setCustomerVisibility(AbstractIssueMetaView issueMetaView, boolean isVisible) {
         issueMetaView.deadlineContainerVisibility().setVisible(isVisible);
         issueMetaView.workTriggerVisibility().setVisible(isVisible);
+        issueMetaView.setProductBorderBottomVisible(!isVisible);
     }
 
     private void fillPlatformValueAndUpdateProductsFilter(final Company company) {

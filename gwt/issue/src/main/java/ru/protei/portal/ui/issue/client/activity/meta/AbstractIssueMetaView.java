@@ -81,6 +81,7 @@ public interface AbstractIssueMetaView extends IsWidget {
     HasVisibility jiraSlaSelectorVisibility();
 
     void setInitiatorBorderBottomVisible(boolean isVisible);
+    void setProductBorderBottomVisible(boolean isVisible);
 
     HasValue<En_TimeElapsedType> timeElapsedType();
     HasValue<CaseState> state();

@@ -90,7 +90,9 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     public void onAuthSuccess(AuthEvents.Success event) {
         Company userCompany = event.profile.getCompany();
         customerCompanyModel.setSubcontractorId(userCompany.getId());
+        customerCompanyModel.setActive(true);
         subcontractorCompanyModel.setCompanyId(userCompany.getId());
+        subcontractorCompanyModel.setActive(true);
         issueMetaView.setCompanyModel(isSubcontractorCompany(userCompany) ? customerCompanyModel : companyModel);
         issueMetaView.setManagerCompanyModel(event.profile.hasSystemScopeForPrivilege(En_Privilege.ISSUE_CREATE) ? subcontractorCompanyModel : companyModel);
     }
@@ -897,6 +899,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     private void setCustomerVisibility(AbstractIssueMetaView issueMetaView, boolean isVisible) {
         issueMetaView.deadlineContainerVisibility().setVisible(isVisible);
         issueMetaView.workTriggerVisibility().setVisible(isVisible);
+        issueMetaView.setProductBorderBottomVisible(!isVisible);
     }
 
     private void updateProductsFilter(final AbstractIssueMetaView issueMetaView, Long companyId, Long platformId) {

@@ -114,7 +114,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<List<EntityOption>> subcontractorOptionListByCompanyIds(Collection<Long> companyIds) {
+    public Result<List<EntityOption>> subcontractorOptionListByCompanyIds(Collection<Long> companyIds, boolean isActive) {
 
         if (CollectionUtils.isEmpty(companyIds)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -122,6 +122,8 @@ public class CompanyServiceImpl implements CompanyService {
 
         ProjectQuery query = new ProjectQuery();
         query.setInitiatorCompanyIds(setOf(companyIds));
+        query.setDeleted(CaseObject.NOT_DELETED);
+        query.setActive(isActive);
         Collection<Project> list = projectDAO.getProjects(query);
         if (list == null) {
             return error(En_ResultStatus.GET_DATA_ERROR);
@@ -149,7 +151,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<List<EntityOption>> companyOptionListBySubcontractorIds(Collection<Long> subcontractorIds) {
+    public Result<List<EntityOption>> companyOptionListBySubcontractorIds(Collection<Long> subcontractorIds, boolean isActive) {
 
         if (CollectionUtils.isEmpty(subcontractorIds)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -157,6 +159,8 @@ public class CompanyServiceImpl implements CompanyService {
 
         ProjectQuery query = new ProjectQuery();
         query.setSubcontractorIds(setOf(subcontractorIds));
+        query.setDeleted(CaseObject.NOT_DELETED);
+        query.setActive(isActive);
         Collection<Project> list = projectDAO.getProjects(query);
         if (list == null) {
             return error(En_ResultStatus.GET_DATA_ERROR);

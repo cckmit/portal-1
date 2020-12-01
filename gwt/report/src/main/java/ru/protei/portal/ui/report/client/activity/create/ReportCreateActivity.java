@@ -414,7 +414,9 @@ public abstract class ReportCreateActivity implements Activity,
     private void updateCompanyModels(Profile profile) {
         Company userCompany = profile.getCompany();
         subcontractorCompanyModel.setCompanyId(userCompany.getId());
+        subcontractorCompanyModel.setActive(false);
         customerCompanyModel.setSubcontractorId(userCompany.getId());
+        customerCompanyModel.setActive(false);
 
         issueFilterWidget.setInitiatorCompaniesModel(isSubcontractorCompany(userCompany) ? customerCompanyModel : companyModel);
         issueFilterWidget.setManagerCompaniesModel(profile.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW) || isSubcontractorCompany(userCompany) ? companyModel : subcontractorCompanyModel);

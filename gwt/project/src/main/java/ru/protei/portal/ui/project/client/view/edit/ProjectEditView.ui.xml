@@ -63,14 +63,14 @@
                         <sla:SlaInput ui:field="slaInput"/>
                     </div>
 
-                    <div class="form-group form-group-default col-md-12">
-                        <label class="fade">
+                    <div class="form-group col-md-12 p-r-0 p-l-0">
+                        <label>
                             <ui:text from="{lang.projectSubcontractor}"/>
                         </label>
-                        <company:CompanyMultiSelector ui:field="subcontractors" styleName="multi-selector-without-border" buttonStyle="btn-info btn-xs"/>
+                        <company:CompanyMultiSelector ui:field="subcontractors"/>
                     </div>
 
-                    <div class="form-group col-md-12" ui:field="documents">
+                    <div class="form-group col-md-12 p-r-0 p-l-0" ui:field="documents">
                         <label>
                             <ui:text from="{lang.equipmentDocuments}"/>
                         </label>
@@ -78,7 +78,7 @@
                                      styleName="form-group col-md-12 main-content-padding-0 project-document-preview"/>
                     </div>
 
-                    <div class="form-group col-md-12" ui:field="comments">
+                    <div class="form-group col-md-12 p-r-0 p-l-0" ui:field="comments">
                         <label>
                             <ui:text from="{lang.comments}"/>
                         </label>
