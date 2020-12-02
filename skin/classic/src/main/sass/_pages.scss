@@ -148,11 +148,19 @@ body.sidebar-visible .page-sidebar .menu-items .icon-thumbnail {
   padding-bottom: 7px;
 }
 
+.profile-dropdown.dropdown-menu > .dropdown-item:first-child,
+.profile-dropdown.dropdown-menu > .dropdown-item:last-child,
+.profile-dropdown.dropdown-menu > .dropdown-item
+{
+  padding-bottom: 3px;
+  padding-top: 7px;
+}
+
 .profile-dropdown > a {
   opacity: unset !important;
 }
 
-.dropdown-menu > li:hover, .dropdown-menu > .dropdown-item:hover, .dropdown-menu > li:focus, .dropdown-menu > .dropdown-item:focus, .dropdown-menu > li:active, .dropdown-menu > .dropdown-item:active {
+.dropdown-menu > li:hover, .dropdown-menu > a.dropdown-item:hover, .dropdown-menu > li:focus, .dropdown-menu > a.dropdown-item:focus, .dropdown-menu > li:active, .dropdown-menu > a.dropdown-item:active {
   background-color: #f0f0f0;
 }
 
@@ -236,4 +244,8 @@ body.sidebar-visible .page-sidebar .menu-items .icon-thumbnail {
   .row [class*=col-]:last-child {
     padding-right: 0
   }
+}
+
+.profile-dropdown-toggle {
+  cursor: pointer;
 }

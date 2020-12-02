@@ -32,8 +32,6 @@
                 <div class="clearfix"/>
             </div>
 
-            <g:Label styleName="app-version" ui:field="appVersion"/>
-
         </g:HTMLPanel>
 
         <div class="header" ui:field="headerDiv">
@@ -59,17 +57,17 @@
                     </g:Button>
                     <g:FocusPanel ui:field="menuBarFocus">
                         <g:HTMLPanel ui:field="menuBar" styleName="dropdown-menu dropdown-menu-right profile-dropdown">
-                            <g:Anchor ui:field="settings" styleName="dropdown-item" href="#">
+                            <g:Anchor ui:field="settings" styleName="clearfix dropdown-item" href="#">
                                 <span class="pull-left m-r-10">
                                     <i class="fas fa-user-cog"/></span>
                                 <ui:text from="{lang.buttonSettings}"/>
                             </g:Anchor>
-
                             <g:Anchor ui:field="logout" styleName="clearfix dropdown-item" title="{lang.logoutHotKey}" href="#">
                                 <span class="pull-left"><ui:text from="{lang.buttonLogout}"/></span>
                                 <span class="pull-right">
                                     <i class="fas fa-power-off"/></span>
                             </g:Anchor>
+                            <g:Label styleName="dropdown-item text-center" ui:field="appVersion"/>
                         </g:HTMLPanel>
                     </g:FocusPanel>
                 </div>
