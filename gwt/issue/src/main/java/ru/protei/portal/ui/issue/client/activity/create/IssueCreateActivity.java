@@ -709,6 +709,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         caseObject.setInfo(view.description().getValue());
         caseObject.setPrivateCase(view.isPrivate().getValue());
         caseObject.setStateId(issueMetaView.state().getValue().getId());
+        caseObject.setStateName(issueMetaView.state().getValue().getState());
         caseObject.setImpLevel(issueMetaView.importance().getValue().getId());
         caseObject.setPauseDate(issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime());
 

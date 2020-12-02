@@ -131,6 +131,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         }
 
         meta.setStateId(metaView.state().getValue().getId());
+        meta.setStateName(metaView.state().getValue().getState());
         meta.setPauseDate((CrmConstants.State.PAUSED != meta.getStateId() || metaView.pauseDate().getValue() == null) ? null : metaView.pauseDate().getValue().getTime());
 
         metaView.pauseDateContainerVisibility().setVisible(CrmConstants.State.PAUSED == meta.getStateId());

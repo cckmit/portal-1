@@ -223,6 +223,7 @@ public class CaseServiceImpl implements CaseService {
             }
         } else {
             caseObject.setStateId(CrmConstants.State.CREATED);
+            caseObject.setStateName(CrmConstants.State.CREATED_NAME);
             caseObject.setTimeElapsed(null);
         }
 
@@ -235,7 +236,7 @@ public class CaseServiceImpl implements CaseService {
         else
             caseObject.setId(caseId);
 
-        Result<Long> result = addStateHistory(token, caseId, caseObject.getStateId());
+        Result<Long> result = addStateHistory(token, caseId, caseObject.getStateId(), caseObject.getStateName());
         if (result.isError()) {
             log.error("State message for the issue {} not saved!", caseId);
         }
@@ -462,7 +463,9 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if (oldCaseMeta.getStateId() != caseMeta.getStateId()) {
-            Result<Long> result = changeStateHistory(token, caseMeta.getId(), oldCaseMeta.getStateId(), caseMeta.getStateId());
+            Result<Long> result = changeStateHistory(token, caseMeta.getId(),
+                    oldCaseMeta.getStateId(), oldCaseMeta.getStateName() != null ?  oldCaseMeta.getStateName() : caseStateDAO.get(oldCaseMeta.getStateId()).getState(),
+                    caseMeta.getStateId(), caseMeta.getStateName() != null ? caseMeta.getStateName() : caseStateDAO.get(caseMeta.getStateId()).getState());
             if (result.isError()) {
                 log.error("State message for the issue {} isn't saved!", caseMeta.getId());
             }
@@ -943,14 +946,6 @@ public class CaseServiceImpl implements CaseService {
         return caseCommentDAO.persist(stateChangeMessage);
     }
 
-    private Result<Long> addStateHistory(AuthToken authToken, long caseId, long stateId) {
-        return createStateHistory(authToken, caseId, En_HistoryAction.ADD, null, stateId);
-    }
-
-    private Result<Long> changeStateHistory(AuthToken authToken, long caseId, long odlStateId, long newStateId) {
-        return createStateHistory(authToken, caseId, En_HistoryAction.CHANGE, odlStateId, newStateId);
-    }
-
     private Long createAndPersistImportanceMessage(Long authorId, Long caseId, Integer importance) {//int -> Integer т.к. падает unit test с NPE, неясно почему
         CaseComment stateChangeMessage = new CaseComment();
         stateChangeMessage.setAuthorId(authorId);
@@ -1406,17 +1401,25 @@ public class CaseServiceImpl implements CaseService {
         }
         return true;
     }
-    
-    private Result<Long> createStateHistory(AuthToken token, Long caseObjectId, En_HistoryAction action, Long oldState, Long newState) {
+
+    private Result<Long> addStateHistory(AuthToken authToken, long caseId, long stateId, String stateName) {
+        return createStateHistory(authToken, caseId, En_HistoryAction.ADD, null, null, stateId, stateName);
+    }
+
+    private Result<Long> changeStateHistory(AuthToken authToken, long caseId, long oldStateId, String oldStateName, long newStateId, String newStateName) {
+        return createStateHistory(authToken, caseId, En_HistoryAction.CHANGE, oldStateId, oldStateName, newStateId, newStateName);
+    }
+
+    private Result<Long> createStateHistory(AuthToken token, Long caseObjectId, En_HistoryAction action, Long oldState, String odlStateName, Long newState, String newStateName) {
         return historyService.createHistory(
                 token,
                 caseObjectId,
                 action,
                 En_HistoryType.CASE_STATE,
                 oldState,
-                "",
+                odlStateName,
                 newState,
-                ""
+                newStateName
         );
     }
 }
