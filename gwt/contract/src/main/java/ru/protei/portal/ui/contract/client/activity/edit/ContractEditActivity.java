@@ -188,12 +188,17 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
             return;
         }
         view.direction().setValue(project.getProductDirection() == null ? null : new ProductDirectionInfo(project.getProductDirection()));
-        view.manager().setValue(project.getManager() == null ? null : new PersonShortView(project.getManager()));
+
+        PersonShortView manager = project.getManager() == null ? null : new PersonShortView(project.getManager());
+        view.projectManager().setValue(manager);
+        if ( view.contractSignManager().getValue() == null ) {
+            view.contractSignManager().setValue(manager);
+        }
     }
 
     private void clearProjectSpecificFields() {
         view.direction().setValue(null);
-        view.manager().setValue(null);
+        view.projectManager().setValue(null);
     }
 
     private void fillView(Contract value) {
@@ -224,6 +229,9 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.setOrganization(contract.getOrganizationName());
         view.contractor().setValue(contract.getContractor());
         view.contractorEnabled().setEnabled(contract.getOrganizationId() != null);
+        view.contractSignManager().setValue(contract.getContractSignManagerId() == null
+                ? null
+                : new PersonShortView(contract.getContractSignManagerShortName(), contract.getContractSignManagerId()));
 
         En_ContractKind kind = getContractKind(view.contractParent().getValue());
         view.setKind(kind);
@@ -287,12 +295,11 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
         contract.setProjectId(view.project().getValue() == null ? null : view.project().getValue().getId());
         contract.setContractor(view.contractor().getValue());
+        contract.setContractSignManagerId(getPersonIdOrNull(view.contractSignManager().getValue()));
 
         if (contract.getProjectId() == null) {
-            contract.setCaseManagerId(getPersonIdOrNull(view.manager().getValue()));
             contract.setCaseDirectionId(getProductIdOrNull(view.direction().getValue()));
         } else {
-            contract.setCaseManagerId(null);
             contract.setCaseDirectionId(null);
         }
 

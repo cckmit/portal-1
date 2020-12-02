@@ -16,7 +16,7 @@ public class EmployeeButtonSelector extends ButtonPopupSingleSelector<PersonShor
     public void init(EmployeeModel employeeModel) {
         setAsyncModel(employeeModel);
         setFilter(personView -> !personView.isFired());
-        setItemRenderer( value -> value == null ? defaultValue : value.getDisplayName() );
+        setItemRenderer( value -> value == null ? defaultValue : value.getName() );
     }
 
     @Override

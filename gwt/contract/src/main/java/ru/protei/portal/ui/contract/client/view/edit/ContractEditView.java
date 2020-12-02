@@ -168,8 +168,13 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
-    public HasValue<PersonShortView> manager() {
-        return manager;
+    public HasValue<PersonShortView> projectManager() {
+        return projectManager;
+    }
+
+    @Override
+    public HasValue<PersonShortView> contractSignManager() {
+        return contractSignManager;
     }
 
     @Override
@@ -397,8 +402,11 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         curatorLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.CURATOR);
         curator.setEnsureDebugId(DebugIds.CONTRACT.CURATOR_SELECTOR);
 
-        managerLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.MANAGER);
-        manager.setEnsureDebugId(DebugIds.CONTRACT.MANAGER_SELECTOR);
+        projectManagerLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.MANAGER);
+        projectManager.setEnsureDebugId(DebugIds.CONTRACT.MANAGER_SELECTOR);
+
+        contractSignManagerLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.CONTRACT_SIGN_MANAGER);
+        contractSignManager.setEnsureDebugId(DebugIds.CONTRACT.CONTRACT_SIGN_MANAGER_SELECTOR);
 
         contractorLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.CONTRACTOR);
         contractorWidget.setEnsureDebugId(DebugIds.CONTRACT.CONTRACTOR_SELECTOR);
@@ -472,7 +480,10 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     ProductDirectionButtonSelector direction;
     @Inject
     @UiField(provided = true)
-    EmployeeButtonSelector manager;
+    EmployeeButtonSelector projectManager;
+    @Inject
+    @UiField(provided = true)
+    EmployeeButtonSelector contractSignManager;
     @Inject
     @UiField(provided = true)
     ContractorWidget contractorWidget;
@@ -507,7 +518,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @UiField
     LabelElement curatorLabel;
     @UiField
-    LabelElement managerLabel;
+    LabelElement projectManagerLabel;
     @UiField
     LabelElement contractorLabel;
     @UiField
@@ -536,6 +547,8 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     Button backButton;
     @UiField
     Button addTagButton;
+    @UiField
+    LabelElement contractSignManagerLabel;
 
     private AbstractContractEditActivity activity;
 

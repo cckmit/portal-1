@@ -115,7 +115,8 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
         view.setDescription(sanitizeHtml(value.getDescription()));
         view.setContractor(value.getContractor() == null ? "" : sanitizeHtml(value.getContractor().getName()));
         view.setOrganization(sanitizeHtml(value.getOrganizationName()));
-        view.setManager(value.getProjectId() == null ? sanitizeHtml(value.getCaseManagerShortName()) : sanitizeHtml(value.getManagerShortName()));
+        view.setProjectManager(sanitizeHtml(value.getProjectManagerShortName()));
+        view.setContractSignManager(sanitizeHtml(value.getContractSignManagerShortName()));
         view.setCurator(sanitizeHtml(value.getCuratorShortName()));
         view.setDirection(value.getProjectId() == null ? sanitizeHtml(value.getCaseDirectionName()) : sanitizeHtml(value.getDirectionName()));
         view.setDates(getAllDatesAsWidget(value.getContractDates()));

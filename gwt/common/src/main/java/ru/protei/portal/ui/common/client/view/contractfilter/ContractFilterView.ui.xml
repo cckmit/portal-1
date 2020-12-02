@@ -69,7 +69,7 @@
                                                                  addStyleNames="form-group col-md-4 resize-md-12"/>
 
                 <person:EmployeeMultiSelector ui:field="managers"
-                                              header="{lang.contractManager}"
+                                              header="{lang.contractProjectManager}"
                                               addStyleNames="form-group col-md-4 resize-md-12"
                                               firedEmployeesVisible="true"/>
 

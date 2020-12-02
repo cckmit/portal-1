@@ -170,8 +170,12 @@
                                 <person:EmployeeCustomButtonSelector hasNullValue="false" ui:field="curator" defaultValue="{lang.selectAccountPerson}"/>
                             </div>
                             <div class="form-group col-md-3">
-                                <label ui:field="managerLabel"><ui:text from="{lang.contractManager}"/></label>
-                                <person:EmployeeButtonSelector ui:field="manager" enabled="false" defaultValue="{lang.selectAccountPerson}"/>
+                                <label ui:field="projectManagerLabel"><ui:text from="{lang.contractProjectManager}"/></label>
+                                <person:EmployeeButtonSelector ui:field="projectManager" enabled="false" defaultValue="{lang.selectAccountPerson}"/>
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label ui:field="contractSignManagerLabel"><ui:text from="{lang.contractContractSignManager}"/></label>
+                                <person:EmployeeButtonSelector ui:field="contractSignManager" defaultValue="{lang.selectAccountPerson}"/>
                             </div>
                         </div>
                     </div>

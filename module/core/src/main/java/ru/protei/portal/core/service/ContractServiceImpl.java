@@ -528,7 +528,7 @@ public class ContractServiceImpl implements ContractService {
         caseObject.setInfo(contract.getDescription());
         caseObject.setName(contract.getNumber());
         caseObject.setStateId(contract.getState().getId());
-        caseObject.setManagerId(contract.getCaseManagerId());
+        caseObject.setManagerId(contract.getContractSignManagerId());
         caseObject.setInitiatorId(contract.getCuratorId());
         caseObject.setProductId(contract.getCaseDirectionId());
 

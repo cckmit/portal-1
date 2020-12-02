@@ -867,6 +867,7 @@ public class DebugIds {
         String ADD_SPECIFICATIONS_BUTTON = "contract-add-specifications-button";
         String SAVE_BUTTON = "contract-save-button";
         String CANCEL_BUTTON = "contract-cancel-button";
+        String CONTRACT_SIGN_MANAGER_SELECTOR = "contract-contract-sign-manager-selector";
 
         interface LABEL {
             String COMMON_HEADER = "contract-common-header";
@@ -887,6 +888,7 @@ public class DebugIds {
             String CURATOR = "contract-curator-label";
             String MANAGER = "contract-manager-label";
             String CONTRACTOR = "contract-contractor-label";
+            String CONTRACT_SIGN_MANAGER = "contract-contract-sign-manager-label";
         }
 
         interface DATE_ITEM {

@@ -60,11 +60,13 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasValue<ProjectInfo> project();
 
+    HasValue<PersonShortView> contractSignManager();
+
     HasValue<Contractor> contractor();
 
     HasEnabled contractorEnabled();
 
-    HasValue<PersonShortView> manager();
+    HasValue<PersonShortView> projectManager();
 
     HasValue<ProductDirectionInfo> direction();
 

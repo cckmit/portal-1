@@ -2108,7 +2108,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractProjectNotDefined();
 
-    String contractManager();
+    String contractProjectManager();
 
     String contractCost();
 
@@ -3203,4 +3203,6 @@ public interface Lang extends Messages, ContactItemLang {
     String fileNotFoundError();
 
     String contractTypeAdditionalAgreement();
+
+    String contractContractSignManager();
 }
