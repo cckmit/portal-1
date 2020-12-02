@@ -34,7 +34,7 @@ public class DevUnitWithImageMultiSelector extends DevUnitMultiSelector {
         return new SelectorItemRenderer<ProductShortView>() {
             @Override
             public String getElementName(ProductShortView productShortView) {
-                return (productShortView.getType() != null ? "[" + en_devUnitTypeLang.getName(productShortView.getType()) + "] " : "")
+                return (productShortView.getType() != null ? en_devUnitTypeLang.getName(productShortView.getType()) + ": " : "")
                         + makeName(productShortView);
             }
 
