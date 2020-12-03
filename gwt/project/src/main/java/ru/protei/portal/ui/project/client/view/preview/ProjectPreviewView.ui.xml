@@ -60,7 +60,7 @@
                     <div class="col-md-4">
                         <div class="form-group form-group-default">
                             <label>
-                                <ui:text from="{lang.projectDirection}"/>
+                                <ui:text from="{lang.projectDirections}"/>
                             </label>
                             <span ui:field="projectDirections"/>
                         </div>

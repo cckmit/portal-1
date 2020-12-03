@@ -154,7 +154,7 @@
                             </div>
                         </div>
                         <div class="form-group m-t-10 m-b-0">
-                            <label><ui:text from="{lang.projectDirection}"/></label>
+                            <label><ui:text from="{lang.projectDirections}"/></label>
                         </div>
                         <div class="row form-group">
                             <div class="col-md-12">

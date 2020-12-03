@@ -125,7 +125,7 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
                 value -> "<i class='"+ regionStateLang.getStateIcon( value.getState() )+" fa-2x"+"'></i>");
         columns.add(statusColumn);
 
-        DynamicColumn<Project> numberColumn = new DynamicColumn<>(lang.projectDirection(), "number",
+        DynamicColumn<Project> numberColumn = new DynamicColumn<>(lang.projectDirections(), "number",
                 value -> {
                     StringBuilder content = new StringBuilder();
                     content.append("<b>").append(value.getId()).append("</b>").append("<br/>");
