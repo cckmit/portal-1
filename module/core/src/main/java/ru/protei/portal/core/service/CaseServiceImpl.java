@@ -904,7 +904,7 @@ public class CaseServiceImpl implements CaseService {
             Long parentId = NumberUtils.parseLong(caseLink.getRemoteId());
             boolean isAllLinksInTerminalState = isAllLinksInTerminalState(parentId);
             if (isAllLinksInTerminalState) {
-                CaseObjectMeta caseObjectMeta = caseObjectMetaDAO.get(caseObjectId);
+                CaseObjectMeta caseObjectMeta = caseObjectMetaDAO.get(parentId);
                 caseObjectMeta.setStateId(CrmConstants.State.OPENED);
                 Result<CaseObjectMeta> openedIssueResult = updateCaseObjectMeta(token, caseObjectMeta);
                 if (openedIssueResult.isError()) {
