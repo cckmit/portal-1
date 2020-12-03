@@ -131,7 +131,7 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
         String text = TransliterationUtils.transliterate(initiator.getLastName() + " " + initiator.getFirstName()) + "\r\n" + ourComment.getText();
         text = replaceImageLink(text, attachments);
         return (ourComment.getPrivacyType() == En_CaseCommentPrivacyType.PRIVATE_CUSTOMERS) ?
-                Comment.createWithRoleLevel(text, JiraUtils.PROJECT_TECH_USER_ROLE)
+                Comment.createWithRoleLevel(text, JiraUtils.PROJECT_SUPPORT_ROLE)
                 : Comment.valueOf(text);
     }
 
