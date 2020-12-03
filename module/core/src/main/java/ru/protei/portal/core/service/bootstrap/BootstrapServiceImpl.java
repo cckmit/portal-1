@@ -841,7 +841,8 @@ public class BootstrapServiceImpl implements BootstrapService {
         caseCommentQuery.addCommentType(CASE_STATE);
         for(int i = 0; i < caseCommentsCaseIds.size(); i++) {
             caseIds.clear();
-            for(int j = i; j < Math.min(i+10, caseCommentsCaseIds.size()); j++) {
+            int upperBorder = i + 1000;
+            for(int j = i; j < Math.min(upperBorder, caseCommentsCaseIds.size()); j++) {
                 caseIds.add(caseCommentsCaseIds.get(i++));
             }
             caseCommentQuery.setCaseObjectIds(caseIds);
@@ -855,7 +856,7 @@ public class BootstrapServiceImpl implements BootstrapService {
     }
 
     private void maybePersistHistory(List<History> histories) {
-        if (histories.size() > 200) {
+        if (histories.size() > 1000) {
             historyDAO.persistBatch(histories);
             histories.clear();
         }
@@ -864,25 +865,25 @@ public class BootstrapServiceImpl implements BootstrapService {
     private void addToHistory(List<History> histories, List<CaseComment> comments, Consumer<List<History>> persist) {
         CaseComment comment = comments.get(0);
         histories.add(createHistory(comment.getAuthorId(), comment.getCaseId(), En_HistoryAction.ADD, comment.getCreated(),
-                En_HistoryType.CASE_STATE, null, null, comment.getCaseStateId(), comment.getCaseStateName()));
+                    null, null, comment.getCaseStateId(), comment.getCaseStateName()));
 
         for (int i = 1; i < comments.size(); i++) {
             CaseComment firstComment = comments.get(i - 1);
             CaseComment secondComment = comments.get(i);
             histories.add(createHistory(secondComment.getAuthorId(), secondComment.getCaseId(), En_HistoryAction.CHANGE, secondComment.getCreated(),
-                    En_HistoryType.CASE_STATE, firstComment.getCaseStateId(), firstComment.getCaseStateName(), secondComment.getCaseStateId(), secondComment.getCaseStateName()));
+                    firstComment.getCaseStateId(), firstComment.getCaseStateName(), secondComment.getCaseStateId(), secondComment.getCaseStateName()));
         }
         persist.accept(histories);
     }
 
     private History createHistory(Long personId, Long caseObjectId, En_HistoryAction action, Date date,
-                               En_HistoryType type, Long oldId, String oldValue, Long newId, String newValue) {
+                                        Long oldId, String oldValue, Long newId, String newValue) {
         History history = new History();
         history.setInitiatorId(personId);
         history.setDate(date);
         history.setCaseObjectId(caseObjectId);
         history.setAction(action);
-        history.setType(type);
+        history.setType(En_HistoryType.CASE_STATE);
         history.setOldId(oldId);
         history.setOldValue(oldValue);
         history.setNewId(newId);
