@@ -615,7 +615,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     private static En_CaseCommentPrivacyType makePrivacyType(Comment comment) {
         Visibility visibility = comment.getVisibility();
         if (visibility != null &&
-                (visibility.getType() == ROLE && !visibility.getValue().equals(JiraUtils.PROJECT_CUSTOMER_ROLE))) {
+                (visibility.getType() == ROLE && !visibility.getValue().equals(JiraUtils.PROJECT_TECH_USER_ROLE))) {
             return En_CaseCommentPrivacyType.PRIVATE_CUSTOMERS;
         }
         return En_CaseCommentPrivacyType.PUBLIC;
