@@ -37,6 +37,7 @@ import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeDateWithOffset;
+import static ru.protei.portal.core.model.view.EmployeeShortView.Fields.*;
 
 
 /**
@@ -121,7 +122,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public Result<SearchResult<EmployeeShortView>> employeeList(AuthToken token, EmployeeQuery query) {
 
         SearchResult<EmployeeShortView> sr = employeeShortViewDAO.getSearchResult(query);
-        jdbcManyRelationsHelper.fill(sr.getResults(), EmployeeShortView.Fields.CONTACT_ITEMS);
+        jdbcManyRelationsHelper.fill(sr.getResults(), CONTACT_ITEMS);
         sr.setResults(stream(sr.getResults())
                 .map(this::removeSensitiveInformation)
                 .collect(Collectors.toList()));
@@ -182,8 +183,8 @@ public class EmployeeServiceImpl implements EmployeeService {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
-        jdbcManyRelationsHelper.fill(employeeShortView, EmployeeShortView.Fields.CONTACT_ITEMS);
-        jdbcManyRelationsHelper.fill(employeeShortView, "workerEntries");
+        jdbcManyRelationsHelper.fill(employeeShortView, CONTACT_ITEMS);
+        jdbcManyRelationsHelper.fill(employeeShortView, WORKER_ENTRIES);
         employeeShortView = removeSensitiveInformation(employeeShortView);
 
         return ok(employeeShortView);
@@ -211,8 +212,12 @@ public class EmployeeServiceImpl implements EmployeeService {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
-        jdbcManyRelationsHelper.fill(employeeShortView, EmployeeShortView.Fields.CONTACT_ITEMS);
-        jdbcManyRelationsHelper.fill(employeeShortView, "workerEntries");
+        jdbcManyRelationsHelper.fill(employeeShortView, CONTACT_ITEMS);
+        jdbcManyRelationsHelper.fill(employeeShortView, WORKER_ENTRIES);
+        employeeShortView.setLogins(
+                stream(userLoginDAO.findByPersonId(employeeShortView.getId()))
+                        .map(UserLogin::getUlogin).collect(Collectors.toList()));
+
         employeeShortView = removeSensitiveInformation(employeeShortView);
 
         employeeShortView.setWorkerEntries(changeCompanyNameIfHidden(employeeShortView.getWorkerEntries()));
