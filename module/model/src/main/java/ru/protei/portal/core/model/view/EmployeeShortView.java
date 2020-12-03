@@ -60,8 +60,7 @@ public class EmployeeShortView implements Serializable {
     @JdbcOneToMany(table = "worker_entry", localColumn = "id", remoteColumn = "personId")
     private List<WorkerEntryShortView> workerEntries;
 
-    @JdbcJoinedColumn(mappedColumn = "ulogin", table = "user_login", localColumn = "id", remoteColumn = "personId")
-    private String login;
+    private List<String> logins;
 
     private PersonAbsence currentAbsence;
 
@@ -188,12 +187,12 @@ public class EmployeeShortView implements Serializable {
         this.currentAbsence = absence;
     }
 
-    public String getLogin() {
-        return login;
+    public List<String> getLogins() {
+        return logins;
     }
 
-    public void setLogin(String login) {
-        this.login = login;
+    public void setLogins(List<String> logins) {
+        this.logins = logins;
     }
 
     @Override
@@ -211,5 +210,7 @@ public class EmployeeShortView implements Serializable {
 
     public interface Fields {
         String CONTACT_ITEMS = "contactItems";
+        String WORKER_ENTRIES = "workerEntries";
+        String LOGINS = "logins";
     }
 }

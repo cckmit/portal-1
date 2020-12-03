@@ -150,7 +150,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         ));
         view.setID(employee.getId().toString());
         view.setIP(employee.getIpAddress());
-        view.setLogin(employee.getLogin());
+        view.setLogin(String.join(", ", employee.getLogins()));
 
         showAbsences(employee.getId());
     }
