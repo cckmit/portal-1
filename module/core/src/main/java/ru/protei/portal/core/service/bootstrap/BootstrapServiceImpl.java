@@ -46,11 +46,14 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.query.CaseCommentQuery.CommentType.CASE_STATE;
 import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
 
 /**
@@ -137,6 +140,17 @@ public class BootstrapServiceImpl implements BootstrapService {
 
         /**
          *  end Спринт 62 */
+
+        /**
+         *  begin Спринт 63 */
+
+        if(!bootstrapAppDAO.isActionExists( "migrateStateToHistory" )) {
+            this.migrateStateToHistory();
+            bootstrapAppDAO.createAction("migrateStateToHistory");
+        }
+
+        /**
+         *  end Спринт */
 
         log.info( "bootstrapApplication(): BootstrapService complete."  );
     }
@@ -813,6 +827,70 @@ public class BootstrapServiceImpl implements BootstrapService {
         log.info("addContractEmployee ended");
     }
 
+    private void migrateStateToHistory() {
+        log.info("migrateStateToHistory started");
+
+        CaseCommentQuery query = new CaseCommentQuery();
+        query.addCommentType(CASE_STATE);
+
+        final List<Long> caseCommentsCaseIds = caseCommentDAO.getCaseCommentsCaseIds(query);
+
+        List<History> histories = new ArrayList<>();
+        List<Long> caseIds = new ArrayList<>();
+        CaseCommentQuery caseCommentQuery = new CaseCommentQuery();
+        caseCommentQuery.addCommentType(CASE_STATE);
+        for(int i = 0; i < caseCommentsCaseIds.size(); i++) {
+            caseIds.clear();
+            for(int j = i; j < Math.min(i+10, caseCommentsCaseIds.size()); j++) {
+                caseIds.add(caseCommentsCaseIds.get(i++));
+            }
+            caseCommentQuery.setCaseObjectIds(caseIds);
+            caseCommentDAO.getCaseComments(caseCommentQuery).stream().collect(groupingBy(CaseComment::getCaseId))
+                    .values().forEach(caseComments -> addToHistory(histories, caseComments, this::maybePersistHistory));
+        }
+        if (!histories.isEmpty()) {
+            historyDAO.persistBatch(histories);
+        }
+        log.info("migrateStateToHistory ended");
+    }
+
+    private void maybePersistHistory(List<History> histories) {
+        if (histories.size() > 200) {
+            historyDAO.persistBatch(histories);
+            histories.clear();
+        }
+    }
+
+    private void addToHistory(List<History> histories, List<CaseComment> comments, Consumer<List<History>> persist) {
+        CaseComment comment = comments.get(0);
+        histories.add(createHistory(comment.getAuthorId(), comment.getCaseId(), En_HistoryAction.ADD, comment.getCreated(),
+                En_HistoryType.CASE_STATE, null, null, comment.getCaseStateId(), comment.getCaseStateName()));
+
+        for (int i = 1; i < comments.size(); i++) {
+            CaseComment firstComment = comments.get(i - 1);
+            CaseComment secondComment = comments.get(i);
+            histories.add(createHistory(secondComment.getAuthorId(), secondComment.getCaseId(), En_HistoryAction.CHANGE, secondComment.getCreated(),
+                    En_HistoryType.CASE_STATE, firstComment.getCaseStateId(), firstComment.getCaseStateName(), secondComment.getCaseStateId(), secondComment.getCaseStateName()));
+        }
+        persist.accept(histories);
+    }
+
+    private History createHistory(Long personId, Long caseObjectId, En_HistoryAction action, Date date,
+                               En_HistoryType type, Long oldId, String oldValue, Long newId, String newValue) {
+        History history = new History();
+        history.setInitiatorId(personId);
+        history.setDate(date);
+        history.setCaseObjectId(caseObjectId);
+        history.setAction(action);
+        history.setType(type);
+        history.setOldId(oldId);
+        history.setOldValue(oldValue);
+        history.setNewId(newId);
+        history.setNewValue(newValue);
+
+        return history;
+    }
+
     private static class ContactInfoPersonMigration {
 
         public static void migrate(ApplicationContext applicationContext) {
@@ -1056,6 +1134,8 @@ public class BootstrapServiceImpl implements BootstrapService {
     ApplicationContext applicationContext;
     @Autowired
     ContactItemDAO contactItemDAO;
+    @Autowired
+    CaseCommentDAO caseCommentDAO;
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
