@@ -32,6 +32,9 @@
                 <div class="clearfix"/>
             </div>
 
+            <div class="support">
+                Поддержка <a href="mailto:portal.support@protei.ru">portal.support@protei.ru</a> и <a href="https://mattermost.protei.ru/protei/channels/portal">PORTAL</a>
+            </div>
         </g:HTMLPanel>
 
         <div class="header" ui:field="headerDiv">
