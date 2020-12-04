@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.dao.ContractorDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.enterprise1c.dto.Contract1C;
+import ru.protei.portal.core.model.enterprise1c.dto.ContractAdditionalProperty1C;
 import ru.protei.portal.core.model.enterprise1c.dto.Contractor1C;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -695,6 +696,11 @@ public class ContractServiceImpl implements ContractService {
         contract1C.setContractorKey(contract.getContractor().getRefKey());
         contract1C.setDateSigning(saveDateFormat.format(contract.getDateSigning()));
         contract1C.setName(contract.getNumber().trim()+ " от " + showDateFormat.format(contract.getDateSigning()));
+
+        List<ContractAdditionalProperty1C> additionalProperty1CS = new ArrayList<>();
+        ContractAdditionalProperty1C dirProperty = new ContractAdditionalProperty1C(contract.getDirectionName());
+        additionalProperty1CS.add(dirProperty);
+        contract1C.setAdditionalProperties(additionalProperty1CS);
 
         return contract1C;
     }

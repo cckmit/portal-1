@@ -7,6 +7,8 @@ import ru.protei.portal.core.model.dict.lang.En_1CParamType;
 import ru.protei.portal.core.model.enterprise1c.annotation.SpecialParam1C;
 import ru.protei.portal.core.model.enterprise1c.annotation.UrlName1C;
 
+import java.util.List;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @UrlName1C("Catalog_ДоговорыКонтрагентов")
@@ -32,6 +34,9 @@ public class Contract1C {
     @JsonProperty("DeletionMark")
     private Boolean deletionMark;
 
+    @JsonProperty("ДополнительныеРеквизиты")
+    private List<ContractAdditionalProperty1C> additionalProperties;
+
     public String getRefKey() { return refKey; }
 
     public void setRefKey(String refKey) { this.refKey = refKey; }
@@ -56,6 +61,14 @@ public class Contract1C {
 
     public void setDeletionMark(Boolean deletionMark) { this.deletionMark = deletionMark; }
 
+    public List<ContractAdditionalProperty1C> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    public void setAdditionalProperties(List<ContractAdditionalProperty1C> additionalProperties) {
+        this.additionalProperties = additionalProperties;
+    }
+
     @Override
     public String toString() {
         return "Contract1C{" +
@@ -65,6 +78,7 @@ public class Contract1C {
                 ", contractorKey='" + contractorKey + '\'' +
                 ", dateSigning='" + dateSigning + '\'' +
                 ", deletionMark=" + deletionMark +
+                ", additionalProperties=" + additionalProperties +
                 '}';
     }
 }
