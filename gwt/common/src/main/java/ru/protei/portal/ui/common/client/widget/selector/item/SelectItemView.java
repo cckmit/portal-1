@@ -42,9 +42,13 @@ public class SelectItemView extends Composite implements HasEnabled {
     }
 
     public void setValue( String value ) {
+        setValue(value, value);
+    }
+
+    public void setValue( String value, String name ) {
         curValue = value;
-        text.setInnerText(  value );
-        text.setTitle(value);
+        text.setInnerHTML(value);
+        text.setTitle(name);
     }
 
     public String getValue() {

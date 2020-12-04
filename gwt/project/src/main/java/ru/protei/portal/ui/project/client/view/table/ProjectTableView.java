@@ -12,6 +12,7 @@ import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dto.Project;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
@@ -25,6 +26,8 @@ import ru.protei.portal.ui.project.client.activity.table.AbstractProjectTableVie
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 
 /**
@@ -122,13 +125,13 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
                 value -> "<i class='"+ regionStateLang.getStateIcon( value.getState() )+" fa-2x"+"'></i>");
         columns.add(statusColumn);
 
-        DynamicColumn<Project> numberColumn = new DynamicColumn<>(lang.projectDirection(), "number",
+        DynamicColumn<Project> numberColumn = new DynamicColumn<>(lang.projectDirections(), "number",
                 value -> {
                     StringBuilder content = new StringBuilder();
                     content.append("<b>").append(value.getId()).append("</b>").append("<br/>");
 
-                    if (value.getProductDirectionEntityOption() != null) {
-                        content.append(value.getProductDirectionEntityOption().getDisplayText());
+                    if (isNotEmpty(value.getProductDirectionEntityOptionList())) {
+                        content.append(joining(value.getProductDirectionEntityOptionList(), ", ", EntityOption::getDisplayText));
                     }
                     return content.toString();
                 });
@@ -157,7 +160,7 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
 
         DynamicColumn<Project> managerColumn = new DynamicColumn<>(lang.projectTeam(), "managers",
                 value -> {
-                    if (value.getTeam() == null) return null;
+                    if (isEmpty(value.getTeam())) return null;
 
                     Optional<PersonProjectMemberView> leader = value.getTeam().stream()
                             .filter(ppm -> En_DevUnitPersonRoleType.HEAD_MANAGER.equals(ppm.getRole()))

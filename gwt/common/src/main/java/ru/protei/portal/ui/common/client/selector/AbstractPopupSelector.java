@@ -67,8 +67,8 @@ public abstract class AbstractPopupSelector<T> extends Composite
     }
 
     @Override
-    public void fill( T element, String elementHtml) {
-        SelectorItem<T> itemView = makeItemView(element, elementHtml);
+    public void fill( T element, String elementHtml, String name) {
+        SelectorItem<T> itemView = makeItemView(element, elementHtml, name);
         getPopup().getChildContainer().add(itemView.asWidget());
     }
 
@@ -189,7 +189,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
     /**
      * Основной метод рендеринга элемента
      */
-    protected abstract SelectorItem<T> makeSelectorItem( T element, String elementHtml );
+    protected abstract SelectorItem<T> makeSelectorItem( T element, String elementHtml, String name );
 
     /**
      * Логинка селектора
@@ -210,8 +210,8 @@ public abstract class AbstractPopupSelector<T> extends Composite
         getPopup().getChildContainer().clear();
     }
 
-    private SelectorItem<T> makeItemView(T t, String elementHtml) {
-        SelectorItem<T> itemView = makeSelectorItem(t, elementHtml);
+    private SelectorItem<T> makeItemView(T t, String elementHtml, String name) {
+        SelectorItem<T> itemView = makeSelectorItem(t, elementHtml, name);
         itemView.setValue(t);
         itemView.addSelectorHandler(this);
         return itemView;

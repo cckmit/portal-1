@@ -12,8 +12,8 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
+import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PlanOption;
@@ -27,8 +27,9 @@ import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.plan.selector.PlanMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitFormSelector;
-import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
+import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitWithImageMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.region.RegionFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateFormSelector;
 import ru.protei.portal.ui.common.client.widget.sla.SlaInput;
@@ -39,8 +40,8 @@ import ru.protei.portal.ui.project.client.activity.edit.AbstractProjectEditView;
 import ru.protei.portal.ui.project.client.view.widget.team.TeamSelector;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -52,14 +53,13 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
-        product.setState(En_DevUnitState.ACTIVE);
-        product.setTypes(En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
+        productModel.setUnitState(En_DevUnitState.ACTIVE);
+        productModel.setUnitTypes(En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
+        products.setModel(productModel);
         company.setDefaultValue(lang.selectIssueCompany());
 
-        product.setDefaultValue(lang.selectIssueProduct());
         projectState.setDefaultValue(regionStateLang.getStateName(En_RegionState.UNKNOWN));
         projectRegion.setDefaultValue(lang.selectOfficialRegion());
-        productDirection.setDefaultValue(lang.contractSelectDirection());
         customerType.setDefaultValue(lang.selectCustomerType());
 
         companyModel.setCategories(Arrays.asList(En_CompanyCategory.SUBCONTRACTOR));
@@ -78,9 +78,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
 
     @Override
     public void setHideNullValue(boolean isHideNullValue) {
-        productDirection.setHideNullValue(isHideNullValue);
         customerType.setHideNullValue(isHideNullValue);
-//        company.setHideNullValue(isHideNullValue);
     }
 
     @Override
@@ -93,7 +91,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     public HasValue<En_RegionState> state() { return projectState; }
 
     @Override
-    public HasValue<ProductDirectionInfo> direction() { return productDirection; }
+    public HasValue<Set<ProductDirectionInfo>> directions() { return productDirection; }
 
     @Override
     public HasValidable nameValidator() {
@@ -107,8 +105,8 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     public HasValue< EntityOption > region() { return projectRegion; }
 
     @Override
-    public HasValue<ProductShortView> product() {
-        return product;
+    public HasValue<Set<ProductShortView>> products() {
+        return products;
     }
 
     @Override
@@ -147,7 +145,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
 
     @Override
     public HasEnabled productEnabled() {
-        return product;
+        return products;
     }
 
 
@@ -202,8 +200,8 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     }
 
     @Override
-    public void updateProductDirection(Long directionId) {
-        product.setDirectionId(directionId);
+    public void updateProductModel(Set<Long> directionIds) {
+        productModel.setDirectionIds(directionIds);
     }
 
     @UiHandler("saveButton")
@@ -276,9 +274,16 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     }
 
     @UiHandler("productDirection")
-    public void onDirectionChanged(ValueChangeEvent<ProductDirectionInfo> event) {
+    public void onDirectionChanged(ValueChangeEvent<Set<ProductDirectionInfo>> event) {
         if (activity != null) {
             activity.onDirectionChanged();
+        }
+    }
+
+    @UiHandler("products")
+    public void onProductChanged(ValueChangeEvent<Set<ProductShortView>> event) {
+        if (activity != null) {
+            activity.onProductChanged();
         }
     }
 
@@ -291,7 +296,8 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         description.ensureDebugId(DebugIds.PROJECT.DESCRIPTION_INPUT);
         projectState.setEnsureDebugId(DebugIds.PROJECT.STATE_SELECTOR);
         projectRegion.setEnsureDebugId(DebugIds.PROJECT.REGION_SELECTOR);
-        productDirection.setEnsureDebugId(DebugIds.PROJECT.DIRECTION_SELECTOR);
+        productDirection.ensureDebugId(DebugIds.PROJECT.DIRECTION_SELECTOR);
+        products.ensureDebugId(DebugIds.PROJECT.PRODUCT_SELECTOR);
         company.setEnsureDebugId(DebugIds.PROJECT.COMPANY_SELECTOR);
         customerType.setEnsureDebugId(DebugIds.PROJECT.CUSTOMER_TYPE_SELECTOR);
         saveButton.ensureDebugId(DebugIds.PROJECT.SAVE_BUTTON);
@@ -320,7 +326,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     TeamSelector team;
     @Inject
     @UiField( provided = true )
-    ProductDirectionFormSelector productDirection;
+    ProductDirectionMultiSelector productDirection;
     @Inject
     @UiField( provided = true )
     RegionStateFormSelector projectState;
@@ -332,7 +338,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     CompanyFormSelector company;
     @Inject
     @UiField(provided = true)
-    DevUnitFormSelector product;
+    DevUnitWithImageMultiSelector products;
     @Inject
     @UiField(provided = true)
     CustomerFormSelector customerType;
@@ -385,6 +391,9 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     Lang lang;
     @Inject
     En_RegionStateLang regionStateLang;
+
+    @Inject
+    ProductModel productModel;
 
     @Inject
     CompanyModel companyModel;

@@ -8,7 +8,6 @@ import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.DevUnit;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -23,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 /**
  * Активность карточки просмотра продукта
@@ -79,9 +78,9 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
 
     private void fillView(DevUnit product) {
         this.productId = product.getId();
-        view.setName(product.getName() + (CollectionUtils.isEmpty(product.getAliases()) ? "" : " (" + String.join(", ", product.getAliases()) + ")"));
+        view.setName(product.getName() + (isEmpty(product.getAliases()) ? "" : " (" + joining(product.getAliases(), ", ") + ")"));
         view.setTypeImage(product.getType() == null ? null : product.getType().getImgSrc());
-        view.setDirection(product.getProductDirection() == null ? "" : product.getProductDirection().getName());
+        view.setDirection(product.getProductDirections() == null ? "" : joining(product.getProductDirections(), ", ", DevUnit::getName));
         view.setWikiLink(StringUtils.emptyIfNull(product.getWikiLink()));
 
         view.setParents(emptyIfNull(product.getParents()).stream().collect(Collectors.toMap(DevUnit::getName, devUnit -> LinkUtils.makePreviewLink(DevUnit.class, devUnit.getId()))));

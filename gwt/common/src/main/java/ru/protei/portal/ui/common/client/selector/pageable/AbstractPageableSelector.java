@@ -29,7 +29,7 @@ public abstract class AbstractPageableSelector<T> implements Selector<T> {
         fromIndex = 0;
         if (hasNullValue) {
             if (!(hideSelectedFromChose && getSelection().isEmpty())) {
-                itemsContainer.fill(selectorNullItem.get(), makeElementHtml(selectorNullItem.get()));
+                itemsContainer.fill(selectorNullItem.get(), makeElementHtml(selectorNullItem.get()), makeElementName(selectorNullItem.get()));
             }
         }
         fromIndex = fillElements(itemsContainer, fromIndex, pageSize);
@@ -108,7 +108,7 @@ public abstract class AbstractPageableSelector<T> implements Selector<T> {
                 continue;
             }
 
-            container.fill(element, makeElementHtml(element));
+            container.fill(element, makeElementHtml(element), makeElementName(element));
 
             i++;
         }

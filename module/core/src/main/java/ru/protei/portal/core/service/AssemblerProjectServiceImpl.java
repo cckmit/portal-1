@@ -20,6 +20,7 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import static ru.protei.portal.api.struct.Result.ok;
@@ -38,6 +39,8 @@ public class AssemblerProjectServiceImpl implements AssemblerProjectService {
     CaseLinkDAO caseLinkDAO;
     @Autowired
     ProjectDAO projectDAO;
+    @Autowired
+    DevUnitDAO devUnitDAO;
     @Autowired
     AttachmentDAO attachmentDAO;
     @Autowired
@@ -107,6 +110,8 @@ public class AssemblerProjectServiceImpl implements AssemblerProjectService {
 
         Project project = projectDAO.get(event.getProjectId());
         jdbcManyRelationsHelper.fillAll(project);
+        project.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(project.getId())));
+        project.setProducts(new HashSet<>(devUnitDAO.getProjectProducts(project.getId())));
 
         event.setNewProjectState(project);
 

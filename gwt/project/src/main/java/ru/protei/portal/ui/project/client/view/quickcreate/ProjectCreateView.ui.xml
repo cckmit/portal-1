@@ -33,14 +33,6 @@
                                              hasNullValue="true"/>
             </div>
             <div class="form-group col-md-3">
-                <label ui:field="directionLabel">
-                    <ui:text from="{lang.projectDirection}"/>
-                </label>
-                <productdirection:ProductDirectionButtonSelector ui:field="direction"
-                                                                 defaultValue="{lang.contractSelectDirection}"
-                                                                 validation="true" hideNullValue="true"/>
-            </div>
-            <div class="form-group col-md-3">
                 <label ui:field="customerTypeLabel">
                     <ui:text from="{lang.projectCustomerType}"/>
                 </label>
@@ -54,20 +46,29 @@
                 <company:CompanySelector ui:field="company" defaultValue="{lang.selectAccountCompany}"
                                          validation="true" hasNullValue="false"/>
             </div>
-
             <person:PersonMultiSelector ui:field="headManagers"
                                         header="{lang.projectHeadManager}"
                                         selectCompanyMessage="{lang.managerSelectACompany}"
-                                        addStyleNames="form-group col-md-6"
+                                        addStyleNames="form-group col-md-3"
                                         validation="true"
                                         firedVisible="false"
                                         hasNullValue="false"/>
-
             <div class="form-group col-md-6">
-                <label ui:field="productLabel">
-                    <ui:text from="{lang.projectProducts}"/>
+                <label ui:field="directionLabel">
+                    <ui:text from="{lang.projectDirections}"/>
                 </label>
-                <productselector:devunit.DevUnitButtonSelector ui:field="product" defaultValue="{lang.selectProduct}"/>
+                <productdirection:ProductDirectionMultiSelector ui:field="directions"
+                                                                validation="true"
+                                                                hasNullValue="false"
+                                                                mandatory="true"
+                />
+            </div>
+            <div class="form-group col-md-6">
+                <productselector:devunit.DevUnitWithImageMultiSelector ui:field="products"
+                                                              header="{lang.projectProducts}"
+                                                              hasNullValue="false"
+                                                              validation="false"
+                />
             </div>
         </div>
         <div class="text-right p-t-10">

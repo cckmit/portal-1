@@ -9,10 +9,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasEnabled;
-import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.HasVisibility;
+import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -161,10 +158,10 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
         this.button.setValue(selector.makeElementName(value));
     }
 
-    protected SelectorItem<T> makeSelectorItem( T element, String elementHtml ) {
+    protected SelectorItem<T> makeSelectorItem( T element, String elementHtml, String name ) {
         PopupSelectorItem<T> item = new PopupSelectorItem<>();
         item.setName(elementHtml);
-        item.setTitle(elementHtml);
+        item.setTitle(name);
         return item;
     }
 

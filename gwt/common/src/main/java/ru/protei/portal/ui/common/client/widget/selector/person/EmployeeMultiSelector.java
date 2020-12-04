@@ -26,7 +26,7 @@ public class EmployeeMultiSelector
     }
 
     @Override
-    protected SelectorItem<PersonShortView> makeSelectorItem(PersonShortView value, String elementHtml) {
+    protected SelectorItem<PersonShortView> makeSelectorItem(PersonShortView value, String elementHtml, String name) {
         return PersonSelectorItemRenderer.makeMultipleSelectorItem(value, elementHtml, isSelected(value));
     }
 
