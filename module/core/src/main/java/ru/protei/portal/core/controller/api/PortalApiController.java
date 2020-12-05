@@ -76,6 +76,8 @@ public class PortalApiController {
     @Autowired
     private ContractService contractService;
     @Autowired
+    private CompanyService companyService;
+    @Autowired
     PortalConfig config;
 
 
@@ -490,6 +492,23 @@ public class PortalApiController {
                         .collect(Collectors.toList()))
                 .ifOk(id -> log.info("getContracts1cGet(): OK"))
                 .ifError(result -> log.warn("getContracts1cGet(): Can't get contracts by contractApiQuery={}. {}", contractApiQuery, result));
+    }
+
+    @PostMapping(value = "/companies/create")
+    public Result<Company> createCompany(HttpServletRequest request, HttpServletResponse response, @RequestBody Company company) {
+        log.info("API | createCompany(): company={}", company);
+
+        Result<AuthToken> authenticate = authenticate(request, response, authService, sidGen, log);
+
+        if (authenticate.isError()) {
+            return error(authenticate.getStatus(), authenticate.getMessage());
+        }
+
+        AuthToken authToken = authenticate.getData();
+
+        return companyService.createCompany(authToken, company)
+                .ifOk(result -> log.info("createCompany(): OK"))
+                .ifError(result -> log.warn("createCompany(): Can't create company={}. {}", company, result));
     }
 
     private CaseQuery makeCaseQuery(CaseApiQuery apiQuery) {

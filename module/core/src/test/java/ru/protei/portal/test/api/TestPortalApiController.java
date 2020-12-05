@@ -20,15 +20,13 @@ import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoObjectMapperProvider;
 import ru.protei.portal.core.controller.api.PortalApiController;
-import ru.protei.portal.core.model.dict.En_CaseLink;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_CompanyCategory;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.CaseTagInfo;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.*;
+import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.youtrack.YtFieldDescriptor;
@@ -1163,6 +1161,50 @@ public class TestPortalApiController extends BaseServiceTest {
 
         caseTagDAO.removeByKey(persistedTagId);
         personDAO.removeByKey(person.getId());
+    }
+
+    @Test
+    @Transactional
+    public void createCompany() throws Exception {
+        Company company = new Company();
+        company.setCname("Gazprom");
+        company.setCategory(En_CompanyCategory.CUSTOMER);
+
+        company.setGroupId(null);
+
+        CompanyGroup companyGroup = new CompanyGroup();
+        companyGroup.setId(1L);
+        companyGroup.setName("main");
+        company.setCompanyGroup(companyGroup);
+
+        company.setParentCompanyId(1L);
+        company.setParentCompanyName("НТЦ Протей");
+
+        List<ContactItem> contactItems = new ArrayList<>();
+        contactItems.add(new ContactItem("protei@protei.ru", En_ContactItemType.EMAIL));
+        contactItems.add(new ContactItem("+7(812)553-12-12", En_ContactItemType.FAX));
+        company.setContactInfo(new ContactInfo(contactItems));
+
+        company.setInfo("Company information");
+        company.setHidden(true);
+
+        company.setArchived(false);
+        company.setAutoOpenIssue(true);
+
+        createPostResultAction("/api/companies/create", company)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data.cname", is(company.getCname())))
+                .andExpect(jsonPath("$.data.category", is(En_CompanyCategory.CUSTOMER.toString())))
+                .andExpect(jsonPath("$.data.groupId", is(company.getGroupId())))
+                .andExpect(jsonPath("$.data.companyGroup".toString(), is(company.getCompanyGroup().toString())))
+                .andExpect(jsonPath("$.data.parentCompanyId", is(company.getParentCompanyId().intValue())))
+                .andExpect(jsonPath("$.data.parentCompanyName", is(company.getParentCompanyName())))
+                .andExpect(jsonPath("$.data.contactInfo", is(company.getContactInfo())))
+                .andExpect(jsonPath("$.data.info", is(company.getInfo())))
+                .andExpect(jsonPath("$.data.hidden", is(company.getHidden())))
+                .andExpect(jsonPath("$.data.archived", is(company.isArchived())))
+                .andExpect(jsonPath("$.data.autoOpenIssue", is(company.getAutoOpenIssue())));
     }
 
     private boolean compareLists (List<Long> list1, List<Long> list2){
