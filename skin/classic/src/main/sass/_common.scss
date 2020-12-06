@@ -1292,12 +1292,20 @@ td.info {
   color: #ffa726 !important;
 }
 
+.medium {
+  color: #c9d600 !important;
+}
+
 .basic {
   color: $info_color !important;
 }
 
 .cosmetic {
   color: #607D8B !important;
+}
+
+.emergency {
+  color: #ee1414 !important;
 }
 
 /****************/
@@ -2007,6 +2015,30 @@ a {
     background-color: #eeff00 !important;
   }
 
+  &.emergency {
+    &:before {
+      content: "E";
+      color: #ffffff;
+    }
+    background-color: #960000 !important;
+  }
+
+  &.high {
+    &:before {
+      content: "H";
+      color: #333333;
+    }
+    background-color: #fcd64a !important;
+  }
+
+  &.low {
+    &:before {
+      content: "L";
+      color: #333333;
+    }
+    background-color: #e5e5e5 !important;
+  }
+
   &.center {
     display: block;
     margin: 0 auto;
@@ -2031,8 +2063,6 @@ a {
 }
 
 .importance-btn-group {
-  width: 200px;
-
   .btn {
     padding: .375rem .75rem;
   }
@@ -2060,6 +2090,21 @@ a {
 
 .case-importance-medium {
   color: #c9d600;
+  font-weight: bold;
+}
+
+.case-importance-emergency {
+  color: #960000;
+  font-weight: bold;
+}
+
+.case-importance-high {
+  color: #e9b90c;
+  font-weight: bold;
+}
+
+.case-importance-low {
+  color: #686868;
   font-weight: bold;
 }
 
