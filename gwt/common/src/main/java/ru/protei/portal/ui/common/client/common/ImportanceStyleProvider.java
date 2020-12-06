@@ -17,6 +17,9 @@ public class ImportanceStyleProvider {
             case CRITICAL: return "importance-level critical";
             case COSMETIC: return "importance-level cosmetic";
             case MEDIUM: return "importance-level medium";
+            case EMERGENCY: return "importance-level emergency";
+            case HIGH: return "importance-level high";
+            case LOW: return "importance-level low";
             default: return "importance-level";
         }
     }

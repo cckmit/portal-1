@@ -13,7 +13,10 @@ public enum En_ImportanceLevel  {
     IMPORTANT (2, "important"),
     BASIC (3, "basic"),
     COSMETIC (4, "cosmetic"),
-    MEDIUM (5, "medium");
+    MEDIUM (5, "medium"),
+    EMERGENCY (6, "emergency"),
+    HIGH (7, "high"),
+    LOW (8, "low");
 
     private final int id;
     private final String code;
