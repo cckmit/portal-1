@@ -116,12 +116,6 @@ body.sidebar-visible .page-sidebar .menu-items .icon-thumbnail {
   padding-left: 270px;
 }
 
-.page-sidebar .sidebar-menu {
-  height: calc(100% - 90px);
-  position: relative;
-  width: 100%
-}
-
 .header .toggle-sidebar{
   cursor: pointer;
 }
@@ -139,20 +133,23 @@ body.sidebar-visible .page-sidebar .menu-items .icon-thumbnail {
   display: none;
 }
 
-.profile-dropdown > a:last-child {
-  margin: 0 !important;
-  padding-top: 7px !important;
-
-}
 .dropdown-menu > li:first-child, .dropdown-menu > .dropdown-item:first-child {
   padding-bottom: 7px;
+}
+
+.profile-dropdown.dropdown-menu > .dropdown-item:first-child {
+  padding-bottom: 0;
+}
+
+.profile-dropdown.dropdown-menu > .dropdown-item {
+  color: #505050 !important;
 }
 
 .profile-dropdown > a {
   opacity: unset !important;
 }
 
-.dropdown-menu > li:hover, .dropdown-menu > .dropdown-item:hover, .dropdown-menu > li:focus, .dropdown-menu > .dropdown-item:focus, .dropdown-menu > li:active, .dropdown-menu > .dropdown-item:active {
+.dropdown-menu > li:hover, .dropdown-menu > a.dropdown-item:hover, .dropdown-menu > li:focus, .dropdown-menu > a.dropdown-item:focus, .dropdown-menu > li:active, .dropdown-menu > a.dropdown-item:active {
   background-color: #f0f0f0;
 }
 
@@ -236,4 +233,8 @@ body.sidebar-visible .page-sidebar .menu-items .icon-thumbnail {
   .row [class*=col-]:last-child {
     padding-right: 0
   }
+}
+
+.profile-dropdown-toggle {
+  cursor: pointer;
 }
