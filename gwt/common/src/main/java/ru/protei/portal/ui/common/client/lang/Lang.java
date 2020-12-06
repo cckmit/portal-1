@@ -820,6 +820,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String mediumImportance();
 
+    String emergencyImportance();
+
     String dataPageNumber( String p0 );
 
     String dashboard();
