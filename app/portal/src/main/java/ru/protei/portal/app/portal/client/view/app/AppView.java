@@ -114,6 +114,17 @@ public class AppView extends Composite
         removeExternalSections(menuContainer.getElement());
     }
 
+    @Override
+    public void showHelp(boolean isShow) {
+        if (isShow) {
+            help.removeClassName("hide");
+            helpDivider.removeClassName("hide");
+        } else {
+            help.addClassName("hide");
+            helpDivider.addClassName("hide");
+        }
+    }
+
     @UiHandler( "logout" )
     public void onLogoutClicked( ClickEvent event ) {
         event.preventDefault();
@@ -376,7 +387,10 @@ public class AppView extends Composite
     ImageElement logoImgWhite;
     @UiField
     ImageElement logoImgBlue;
-
+    @UiField
+    DivElement helpDivider;
+    @UiField
+    DivElement help;
 
     AbstractAppActivity activity;
 
