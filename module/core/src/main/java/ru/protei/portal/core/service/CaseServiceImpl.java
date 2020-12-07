@@ -86,6 +86,9 @@ public class CaseServiceImpl implements CaseService {
     PersonDAO personDAO;
 
     @Autowired
+    PersonShortViewDAO personShortViewDAO;
+
+    @Autowired
     CaseAttachmentDAO caseAttachmentDAO;
 
     @Autowired
@@ -236,8 +239,9 @@ public class CaseServiceImpl implements CaseService {
         else
             caseObject.setId(caseId);
 
-        Result<Long> result = addStateHistory(token, caseId, caseObject.getStateId(), caseObject.getStateName());
-        if (result.isError()) {
+        Result<Long> resultState = addStateHistory(token, caseId, caseObject.getStateId(),
+                caseObject.getStateName() != null ? caseObject.getStateName() : caseStateDAO.get(caseObject.getStateId()).getState());
+        if (resultState.isError()) {
             log.error("State message for the issue {} not saved!", caseId);
         }
 
@@ -247,8 +251,9 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if (caseObject.getManager() != null && caseObject.getManager().getId() != null) {
-            Long messageId = createAndPersistManagerMessage(token.getPersonId(), caseObject.getId(), caseObject.getManager().getId());
-            if (messageId == null) {
+            Result<Long> resultManager = addManagerHistory(token, caseObject.getId(), caseObject.getManager().getId(),
+                    caseObject.getManager().getDisplayShortName() != null ? caseObject.getManager().getDisplayShortName() : personShortViewDAO.get(caseObject.getManagerId()).getDisplayShortName());
+            if (resultManager.isError()) {
                 log.error("Manager message for the issue {} not saved!", caseObject.getId());
             }
         }
@@ -463,10 +468,10 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if (oldCaseMeta.getStateId() != caseMeta.getStateId()) {
-            Result<Long> result = changeStateHistory(token, caseMeta.getId(),
+            Result<Long> resultState = changeStateHistory(token, caseMeta.getId(),
                     oldCaseMeta.getStateId(), oldCaseMeta.getStateName() != null ?  oldCaseMeta.getStateName() : caseStateDAO.get(oldCaseMeta.getStateId()).getState(),
                     caseMeta.getStateId(), caseMeta.getStateName() != null ? caseMeta.getStateName() : caseStateDAO.get(caseMeta.getStateId()).getState());
-            if (result.isError()) {
+            if (resultState.isError()) {
                 log.error("State message for the issue {} isn't saved!", caseMeta.getId());
             }
         }
@@ -479,8 +484,20 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if (!Objects.equals(oldCaseMeta.getManagerId(), caseMeta.getManagerId())) {
-            Long messageId = createAndPersistManagerMessage(token.getPersonId(), caseMeta.getId(), caseMeta.getManagerId());
-            if (messageId == null) {
+            Result<Long> resultManager = ok();
+            if (oldCaseMeta.getManagerId() == null && caseMeta.getManagerId() != null) {
+                resultManager = addManagerHistory(token, caseMeta.getId(),
+                        caseMeta.getManagerId(), makeManagerName(caseMeta));
+            } else if (oldCaseMeta.getManagerId() != null && caseMeta.getManagerId() != null) {
+                resultManager = changeManagerHistory(token, caseMeta.getId(),
+                        oldCaseMeta.getManagerId(), makeManagerName(oldCaseMeta),
+                        caseMeta.getManagerId(), makeManagerName(caseMeta));
+            } else if (oldCaseMeta.getManagerId() != null && caseMeta.getManagerId() == null) {
+                resultManager = removeManagerHistory(token, caseMeta.getId(),
+                        oldCaseMeta.getManagerId(), makeManagerName(oldCaseMeta));
+            }
+
+            if (resultManager.isError()) {
                 log.error("Manager message for the issue {} isn't saved!", caseMeta.getId());
             }
         }
@@ -955,15 +972,6 @@ public class CaseServiceImpl implements CaseService {
         return caseCommentDAO.persist(stateChangeMessage);
     }
 
-    private Long createAndPersistManagerMessage(Long authorId, Long caseId, Long managerId) {
-        CaseComment managerChangeMessage = new CaseComment();
-        managerChangeMessage.setAuthorId(authorId);
-        managerChangeMessage.setCreated(new Date());
-        managerChangeMessage.setCaseId(caseId);
-        managerChangeMessage.setCaseManagerId(managerId);
-        return caseCommentDAO.persist(managerChangeMessage);
-    }
-
     private CaseQuery applyFilterByScope(AuthToken token, CaseQuery caseQuery) {
         Set<UserRole> roles = token.getRoles();
         if (policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
@@ -1403,23 +1411,26 @@ public class CaseServiceImpl implements CaseService {
     }
 
     private Result<Long> addStateHistory(AuthToken authToken, long caseId, long stateId, String stateName) {
-        return createStateHistory(authToken, caseId, En_HistoryAction.ADD, null, null, stateId, stateName);
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.ADD, En_HistoryType.CASE_STATE, null, null, stateId, stateName);
     }
 
     private Result<Long> changeStateHistory(AuthToken authToken, long caseId, long oldStateId, String oldStateName, long newStateId, String newStateName) {
-        return createStateHistory(authToken, caseId, En_HistoryAction.CHANGE, oldStateId, oldStateName, newStateId, newStateName);
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_STATE, oldStateId, oldStateName, newStateId, newStateName);
     }
 
-    private Result<Long> createStateHistory(AuthToken token, Long caseObjectId, En_HistoryAction action, Long oldState, String odlStateName, Long newState, String newStateName) {
-        return historyService.createHistory(
-                token,
-                caseObjectId,
-                action,
-                En_HistoryType.CASE_STATE,
-                oldState,
-                odlStateName,
-                newState,
-                newStateName
-        );
+    private Result<Long> addManagerHistory(AuthToken authToken, long caseId, long managerId, String ManagerName) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.ADD, En_HistoryType.CASE_MANAGER,null, null, managerId, ManagerName);
+    }
+
+    private Result<Long> changeManagerHistory(AuthToken authToken, long caseId, long oldManagerId, String oldManagerName, long newManagerId, String newManagerName) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_MANAGER, oldManagerId, oldManagerName, newManagerId, newManagerName);
+    }
+
+    private Result<Long> removeManagerHistory(AuthToken authToken, long caseId, long oldManagerId, String oldManagerName) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.REMOVE, En_HistoryType.CASE_MANAGER, oldManagerId, oldManagerName, null, null);
+    }
+
+    private String makeManagerName(CaseObjectMeta caseObjectMeta) {
+        return (caseObjectMeta.getManager() != null ? caseObjectMeta.getManager() : personShortViewDAO.get(caseObjectMeta.getManagerId())).getDisplayShortName();
     }
 }

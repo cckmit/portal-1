@@ -7,6 +7,7 @@ public enum En_HistoryType implements HasId {
     TAG(1),
     CONTRACT_STATE(2),
     CASE_STATE(3),
+    CASE_MANAGER(4),
     ;
 
     En_HistoryType(int id) {
