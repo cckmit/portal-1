@@ -46,7 +46,7 @@
             <div class="d-flex align-items-center">
                 <locale:LocaleSelector ui:field="locale" addStyleNames="m-r-20"/>
                 <div class="pull-left p-r-10 fs-14 d-lg-block d-none">
-                    <span class="semi-bold" ui:field="username"/>
+                    <g:Label styleName="username semi-bold" ui:field="username"/>
                 </div>
                 <div class="dropdown pull-right">
                     <g:Button ui:field="profile" styleName="profile-dropdown-toggle">
@@ -56,6 +56,13 @@
                     </g:Button>
                     <g:FocusPanel ui:field="menuBarFocus">
                         <g:HTMLPanel ui:field="menuBar" styleName="dropdown-menu dropdown-menu-right profile-dropdown">
+                            <g:Anchor ui:field="settings" styleName="clearfix dropdown-item" href="#">
+                                <ui:text from="{lang.buttonSettings}"/>
+                            </g:Anchor>
+                            <g:Anchor ui:field="logout" styleName="clearfix dropdown-item" title="{lang.logoutHotKey}" href="#">
+                                <ui:text from="{lang.buttonLogout}"/>
+                            </g:Anchor>
+                            <div class="dropdown-divider"/>
                             <div ui:field="help" class="dropdown-item">
                                 <span class="p-r-10"><ui:text from="{lang.help}"/></span>
                                 <span>
@@ -67,15 +74,7 @@
                                     </a>
                                 </span>
                             </div>
-                            <div ui:field="helpDivider" class="dropdown-divider"></div>
-                            <g:Anchor ui:field="settings" styleName="clearfix dropdown-item" href="#">
-                                <ui:text from="{lang.buttonSettings}"/>
-                            </g:Anchor>
-                            <g:Anchor ui:field="logout" styleName="clearfix dropdown-item" title="{lang.logoutHotKey}" href="#">
-                                <ui:text from="{lang.buttonLogout}"/>
-                            </g:Anchor>
-                            <div class="dropdown-divider"></div>
-                            <div ui:field="appVersion" class="dropdown-item hint-text"/>
+                            <div ui:field="appVersion" class="dropdown-item"/>
                         </g:HTMLPanel>
                     </g:FocusPanel>
                 </div>
