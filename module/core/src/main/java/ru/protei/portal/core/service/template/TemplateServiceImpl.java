@@ -929,10 +929,9 @@ public class TemplateServiceImpl implements TemplateService {
                     Map< String, Object > mailComment = new HashMap<>();
                     mailComment.put( "created", comment.getCreated() );
                     mailComment.put( "author", comment.getAuthor() );
-                    mailComment.put("text", escapeTextAndRenderHTML(comment.getText(), textMarkup));
-                    mailComment.put( "caseImportance", comment.getCaseImportance() == null ? null : comment.getCaseImportance().getCode() );
+                    mailComment.put( "text", escapeTextAndRenderHTML(comment.getText(), textMarkup) );
                     mailComment.put( "isPrivateComment", comment.isPrivateComment() );
-                    mailComment.put( "added", isNew);
+                    mailComment.put( "added", isNew );
                     if (isChanged) {
                         CaseComment oldComment = changed.get( changed.indexOf( comment ) );
                         mailComment.put( "oldText", escapeTextAndRenderHTML( oldComment.getText(), textMarkup ) );
