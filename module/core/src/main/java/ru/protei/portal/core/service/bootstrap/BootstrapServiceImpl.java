@@ -47,6 +47,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
@@ -54,6 +55,7 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.query.CaseCommentQuery.CommentType.CASE_STATE;
+import static ru.protei.portal.core.model.query.CaseCommentQuery.CommentType.MANAGER;
 import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
 
 /**
@@ -147,6 +149,11 @@ public class BootstrapServiceImpl implements BootstrapService {
         if(!bootstrapAppDAO.isActionExists( "migrateStateToHistory" )) {
             this.migrateStateToHistory();
             bootstrapAppDAO.createAction("migrateStateToHistory");
+        }
+
+        if(!bootstrapAppDAO.isActionExists( "migrateManagerToHistory" )) {
+            this.migrateManagerToHistory();
+            bootstrapAppDAO.createAction("migrateManagerToHistory");
         }
 
         /**
@@ -829,16 +836,27 @@ public class BootstrapServiceImpl implements BootstrapService {
 
     private void migrateStateToHistory() {
         log.info("migrateStateToHistory started");
+        migrateToHistory(CASE_STATE, En_HistoryType.CASE_STATE, CaseComment::getCaseStateId, CaseComment::getCaseStateName);
+        log.info("migrateStateToHistory ended");
+    }
 
+    private void migrateManagerToHistory() {
+        log.info("migrateManagerToHistory started");
+        migrateToHistory(MANAGER, En_HistoryType.CASE_MANAGER, CaseComment::getCaseManagerId, CaseComment::getCaseManagerShortName);
+        log.info("migrateManagerToHistory ended");
+    }
+
+    private void migrateToHistory(CaseCommentQuery.CommentType commentType, En_HistoryType historyType,
+                                  Function<CaseComment, Long> historyValue, Function<CaseComment, String> historyName) {
         CaseCommentQuery query = new CaseCommentQuery();
-        query.addCommentType(CASE_STATE);
+        query.addCommentType(commentType);
 
         final List<Long> caseCommentsCaseIds = caseCommentDAO.getCaseCommentsCaseIds(query);
 
         List<History> histories = new ArrayList<>();
         List<Long> caseIds = new ArrayList<>();
         CaseCommentQuery caseCommentQuery = new CaseCommentQuery();
-        caseCommentQuery.addCommentType(CASE_STATE);
+        caseCommentQuery.addCommentType(commentType);
         for(int i = 0; i < caseCommentsCaseIds.size(); i++) {
             caseIds.clear();
             int upperBorder = i + 1000;
@@ -846,44 +864,60 @@ public class BootstrapServiceImpl implements BootstrapService {
                 caseIds.add(caseCommentsCaseIds.get(i++));
             }
             caseCommentQuery.setCaseObjectIds(caseIds);
-            caseCommentDAO.getCaseComments(caseCommentQuery).stream().collect(groupingBy(CaseComment::getCaseId))
-                    .values().forEach(caseComments -> addToHistory(histories, caseComments, this::maybePersistHistory));
+            caseCommentDAO.getCaseComments(caseCommentQuery).stream()
+                    .collect(groupingBy(CaseComment::getCaseId)).values().forEach(caseComments -> {
+                        caseComments.sort(Comparator.comparing(CaseComment::getId));
+                        addToHistory(histories, caseComments, historyType, historyValue, historyName, this::maybePersistHistory);
+            });
         }
         if (!histories.isEmpty()) {
             historyDAO.persistBatch(histories);
         }
-        log.info("migrateStateToHistory ended");
     }
 
     private void maybePersistHistory(List<History> histories) {
         if (histories.size() > 1000) {
-            historyDAO.persistBatch(histories);
+            histories.forEach(historyDAO::persist);
             histories.clear();
         }
     }
 
-    private void addToHistory(List<History> histories, List<CaseComment> comments, Consumer<List<History>> persist) {
+    private void addToHistory(List<History> histories, List<CaseComment> comments, En_HistoryType historyType,
+                              Function<CaseComment, Long> historyValue, Function<CaseComment, String> historyName,
+                              Consumer<List<History>> persist) {
         CaseComment comment = comments.get(0);
-        histories.add(createHistory(comment.getAuthorId(), comment.getCaseId(), En_HistoryAction.ADD, comment.getCreated(),
-                    null, null, comment.getCaseStateId(), comment.getCaseStateName()));
+        histories.add(createHistory(comment.getAuthorId(), comment.getCaseId(), En_HistoryAction.ADD, historyType,
+                comment.getCreated(), null, null,  historyValue.apply(comment), historyName.apply(comment)));
 
         for (int i = 1; i < comments.size(); i++) {
             CaseComment firstComment = comments.get(i - 1);
             CaseComment secondComment = comments.get(i);
-            histories.add(createHistory(secondComment.getAuthorId(), secondComment.getCaseId(), En_HistoryAction.CHANGE, secondComment.getCreated(),
-                    firstComment.getCaseStateId(), firstComment.getCaseStateName(), secondComment.getCaseStateId(), secondComment.getCaseStateName()));
+
+            Long firstValue = historyValue.apply(firstComment);
+            Long secondValue = historyValue.apply(secondComment);
+
+            if (firstValue == null && secondValue != null) {
+                histories.add(createHistory(secondComment.getAuthorId(), secondComment.getCaseId(), En_HistoryAction.ADD, historyType,
+                        secondComment.getCreated(), null, null, secondValue, historyName.apply(secondComment)));
+            } else if (firstValue != null && secondValue != null) {
+                histories.add(createHistory(secondComment.getAuthorId(), secondComment.getCaseId(), En_HistoryAction.CHANGE, historyType,
+                        secondComment.getCreated(),firstValue, historyName.apply(firstComment), secondValue, historyName.apply(secondComment)));
+            } else if (firstValue != null && secondValue == null) {
+                histories.add(createHistory(secondComment.getAuthorId(), secondComment.getCaseId(), En_HistoryAction.REMOVE, historyType,
+                        secondComment.getCreated(), firstValue, historyName.apply(firstComment), null, null));
+            }
         }
         persist.accept(histories);
     }
 
-    private History createHistory(Long personId, Long caseObjectId, En_HistoryAction action, Date date,
-                                        Long oldId, String oldValue, Long newId, String newValue) {
+    private History createHistory(Long personId, Long caseObjectId, En_HistoryAction action, En_HistoryType historyType,
+                                  Date date, Long oldId, String oldValue, Long newId, String newValue) {
         History history = new History();
         history.setInitiatorId(personId);
         history.setDate(date);
         history.setCaseObjectId(caseObjectId);
         history.setAction(action);
-        history.setType(En_HistoryType.CASE_STATE);
+        history.setType(historyType);
         history.setOldId(oldId);
         history.setOldValue(oldValue);
         history.setNewId(newId);
