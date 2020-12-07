@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.query;
 import ru.protei.portal.core.model.dict.En_HistoryAction;
 import ru.protei.portal.core.model.dict.En_HistoryType;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -13,8 +14,8 @@ public class HistoryQuery extends BaseQuery {
     private Date dateTo;
     private Long caseObjectId;
     private Long caseNumber;
-    private En_HistoryType valueType;
-    private List<En_HistoryAction> historyAction;
+    private List<En_HistoryType> valueTypes = new ArrayList<>();
+    private List<En_HistoryAction> historyActions;
     private Long oldId;
     private Long newId;
 
@@ -64,20 +65,20 @@ public class HistoryQuery extends BaseQuery {
         this.caseNumber = caseNumber;
     }
 
-    public En_HistoryType getValueType() {
-        return valueType;
+    public List<En_HistoryType> getValueTypes() {
+        return valueTypes;
     }
 
-    public void setValueType(En_HistoryType valueType) {
-        this.valueType = valueType;
+    public void addValueType(En_HistoryType valueType) {
+        this.valueTypes.add(valueType);
     }
 
-    public List<En_HistoryAction> getHistoryAction() {
-        return historyAction;
+    public List<En_HistoryAction> getHistoryActions() {
+        return historyActions;
     }
 
-    public void setHistoryAction(List<En_HistoryAction> historyAction) {
-        this.historyAction = historyAction;
+    public void setHistoryActions(List<En_HistoryAction> historyActions) {
+        this.historyActions = historyActions;
     }
 
     public Long getOldId() {
@@ -104,8 +105,8 @@ public class HistoryQuery extends BaseQuery {
                 ", dateTo=" + dateTo +
                 ", caseObjectId=" + caseObjectId +
                 ", caseNumber=" + caseNumber +
-                ", valueType=" + valueType +
-                ", historyAction=" + historyAction +
+                ", valueTypes=" + valueTypes +
+                ", historyActions=" + historyActions +
                 ", oldId=" + oldId +
                 ", newId=" + newId +
                 ", searchString='" + searchString + '\'' +

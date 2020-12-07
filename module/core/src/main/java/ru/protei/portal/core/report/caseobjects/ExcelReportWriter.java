@@ -5,6 +5,7 @@ import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.jetbrains.annotations.NotNull;
 import ru.protei.portal.core.Lang;
+import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -124,8 +125,7 @@ public class ExcelReportWriter implements
     public Object[] getColumnValues(CaseObjectReportRequest object) {
 
         CaseObject issue = object.getCaseObject();
-        List<CaseComment> comments = object.getCaseComments();
-        List<History> stateHistories = object.getStateHistories();
+        List<History> histories = object.getHistories();
 
         Date    created = null,
                 opened = null,
@@ -136,19 +136,23 @@ public class ExcelReportWriter implements
                 critical = null,
                 important = null;
 
-        for (CaseComment comment : comments) {
-            if (En_ImportanceLevel.IMPORTANT.equals( comment.getCaseImportance() )) important = comment.getCreated();
-            if (En_ImportanceLevel.CRITICAL.equals( comment.getCaseImportance() )) critical = comment.getCreated();
-        }
 
-        for (History stateHistory : stateHistories) {
-            Long stateId = stateHistory.getNewId();
-            if (stateId == CrmConstants.State.CREATED) created = stateHistory.getDate();
-            if (stateId == CrmConstants.State.OPENED) opened = stateHistory.getDate();
-            if (stateId == CrmConstants.State.WORKAROUND) workaround = stateHistory.getDate();
-            if (stateId == CrmConstants.State.TEST_CUST) customerTest = stateHistory.getDate();
-            if (stateId == CrmConstants.State.DONE) done = stateHistory.getDate();
-            if (stateId == CrmConstants.State.VERIFIED) verified = stateHistory.getDate();
+        for (History history : histories) {
+            if (history.getType() == En_HistoryType.CASE_IMPORTANCE) {
+                if (Objects.equals(En_ImportanceLevel.IMPORTANT.getId(), history.getNewId().intValue() )) important = history.getDate();
+                if (Objects.equals(En_ImportanceLevel.CRITICAL.getId(), history.getNewId().intValue() )) critical = history.getDate();
+            }
+
+            if (history.getType() == En_HistoryType.CASE_STATE) {
+                Long stateId = history.getNewId();
+
+                if (Objects.equals(stateId, CrmConstants.State.CREATED)) created = history.getDate();
+                if (Objects.equals(stateId, CrmConstants.State.OPENED)) opened = history.getDate();
+                if (Objects.equals(stateId, CrmConstants.State.WORKAROUND)) workaround = history.getDate();
+                if (Objects.equals(stateId, CrmConstants.State.TEST_CUST)) customerTest = history.getDate();
+                if (Objects.equals(stateId, CrmConstants.State.DONE)) done = history.getDate();
+                if (Objects.equals(stateId, CrmConstants.State.VERIFIED)) verified = history.getDate();
+            }
         }
 
         if (created == null) {

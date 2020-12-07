@@ -1432,7 +1432,7 @@ public class CaseServiceImpl implements CaseService {
     }
 
     private Result<Long> changeImportanceHistory(AuthToken authToken, long caseId, long oldImportanceId, String oldImportanceName, long newImportanceId, String newImportanceName) {
-        return historyService.createHistory(authToken, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_STATE, oldImportanceId, oldImportanceName, newImportanceId, newImportanceName);
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_IMPORTANCE, oldImportanceId, oldImportanceName, newImportanceId, newImportanceName);
     }
 
 }

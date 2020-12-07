@@ -130,6 +130,11 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public PersonShortViewDAO getPersonShortViewDAO() {
+        return new PersonShortViewDAOImpl();
+    }
+
+    @Bean
     public CompanyGroupHomeDAO getCompanyGroupHomeDAO() {
         return new CompanyGroupHomeDAO_Impl();
     }

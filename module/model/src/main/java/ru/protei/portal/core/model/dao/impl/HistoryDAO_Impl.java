@@ -62,13 +62,12 @@ public class HistoryDAO_Impl extends PortalBaseJdbcDAO<History> implements Histo
                 args.add(query.getCaseNumber());
             }
 
-            if (query.getValueType() != null) {
-                condition.append(" and history.value_type = ?");
-                args.add(query.getValueType().getId());
+            if (isNotEmpty(query.getValueTypes())) {
+                condition.append(" and history.value_type in ").append(makeInArg(query.getValueTypes()));
             }
 
-            if (isNotEmpty(query.getHistoryAction())) {
-                condition.append(" and history.action_type in " + makeInArg(query.getHistoryAction()));
+            if (isNotEmpty(query.getHistoryActions())) {
+                condition.append(" and history.action_type in ").append(makeInArg(query.getHistoryActions()));
             }
 
             if (query.getOldId() != null) {

@@ -88,26 +88,22 @@ public class ReportCaseImpl implements ReportCase {
         for (CaseObject caseObject : emptyIfNull(cases)) {
             CaseCommentQuery commentQuery = new CaseCommentQuery();
             commentQuery.addCaseObjectId( caseObject.getId() );
-
-            if (Boolean.TRUE.equals(query.isCheckImportanceHistory())) {
-                commentQuery.addCommentType(CaseCommentQuery.CommentType.IMPORTANCE);
-            }
-
-            commentQuery.addCommentType(CaseCommentQuery.CommentType.CASE_STATE);
             commentQuery.addCommentType(CaseCommentQuery.CommentType.TIME_ELAPSED);
-
             List<CaseComment> caseComments = caseCommentDAO.getCaseComments( commentQuery );
 
             HistoryQuery historyQuery = new HistoryQuery();
+            if (Boolean.TRUE.equals(query.isCheckImportanceHistory())) {
+                historyQuery.addValueType(En_HistoryType.CASE_IMPORTANCE);
+            }
             historyQuery.setCaseObjectId(caseObject.getId());
-            historyQuery.setValueType(En_HistoryType.CASE_STATE);
-            historyQuery.setHistoryAction(Arrays.asList(En_HistoryAction.ADD, En_HistoryAction.CHANGE));
-            List<History> stateHistories = historyDAO.getListByQuery(historyQuery);
+            historyQuery.addValueType(En_HistoryType.CASE_STATE);
+            historyQuery.setHistoryActions(Arrays.asList(En_HistoryAction.ADD, En_HistoryAction.CHANGE));
+            List<History> histories = historyDAO.getListByQuery(historyQuery);
 
             List<CaseTag> caseTags = report.isWithTags() ? caseTagDAO.getListByQuery(new CaseTagQuery(caseObject.getId())) : Collections.emptyList();
             List<CaseLink> caseLinks = report.isWithLinkedIssues() ? caseLinkDAO.getListByQuery(new CaseLinkQuery(caseObject.getId(), report.isRestricted())) : Collections.emptyList();
 
-            data.add( new CaseObjectReportRequest( caseObject, caseComments, stateHistories, caseTags, caseLinks, query.getCreatedRange(), query.getModifiedRange() ) );
+            data.add( new CaseObjectReportRequest( caseObject, caseComments, histories, caseTags, caseLinks, query.getCreatedRange(), query.getModifiedRange() ) );
         }
         return data;
     }

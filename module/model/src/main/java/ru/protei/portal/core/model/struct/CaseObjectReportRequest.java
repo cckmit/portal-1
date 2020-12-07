@@ -8,7 +8,7 @@ public class CaseObjectReportRequest {
 
     private CaseObject caseObject;
     private List<CaseComment> caseComments;
-    private List<History> stateHistories;
+    private List<History> histories;
     private List<CaseTag> caseTags;
     private List<CaseLink> caseLinks;
     private DateRange createdRange;
@@ -16,11 +16,11 @@ public class CaseObjectReportRequest {
 
     public CaseObjectReportRequest() {}
 
-    public CaseObjectReportRequest(CaseObject caseObject, List<CaseComment> caseComments, List<History> stateHistories,
+    public CaseObjectReportRequest(CaseObject caseObject, List<CaseComment> caseComments, List<History> histories,
                                    List<CaseTag> caseTags, List<CaseLink> caseLinks, DateRange createdRange, DateRange modifiedRange) {
         this.caseObject = caseObject;
         this.caseComments = caseComments;
-        this.stateHistories = stateHistories;
+        this.histories = histories;
         this.caseTags = caseTags;
         this.caseLinks = caseLinks;
         this.createdRange = createdRange;
@@ -43,12 +43,12 @@ public class CaseObjectReportRequest {
         this.caseComments = caseComments;
     }
 
-    public List<History> getStateHistories() {
-        return stateHistories;
+    public List<History> getHistories() {
+        return histories;
     }
 
-    public void setStateHistories(List<History> stateHistories) {
-        this.stateHistories = stateHistories;
+    public void setHistories(List<History> histories) {
+        this.histories = histories;
     }
 
     public List<CaseTag> getCaseTags() {
@@ -72,7 +72,7 @@ public class CaseObjectReportRequest {
         return "CaseObjectReportRequest{" +
                 "caseObject=" + caseObject +
                 ", caseComments=" + caseComments +
-                ", stateHistory=" + stateHistories +
+                ", histories=" + histories +
                 ", caseTags=" + caseTags +
                 ", caseLinks=" + caseLinks +
                 ", createdRange=" + createdRange +
