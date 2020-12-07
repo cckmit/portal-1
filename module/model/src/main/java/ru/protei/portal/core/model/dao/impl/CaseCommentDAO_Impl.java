@@ -109,17 +109,17 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
 
         // Активные задачи на момент начала интервала запроса
         String activeCasesAtIntervalStart =
-                "SELECT case_id, cc.created, CSTATE_ID" +
-                        " FROM case_comment cc" +
-                        "        LEFT OUTER JOIN case_object ob on ob.id = cc.CASE_ID" +
-                        " WHERE cc.created = (" +
-                        "   SELECT max(created) last" +
-                        "   FROM case_comment" +
-                        "   WHERE case_id = cc.CASE_ID" +
+                "SELECT case_object_id, h.date, new_id" +
+                        " FROM history h" +
+                        "        LEFT OUTER JOIN case_object ob on ob.id = h.case_object_id" +
+                        " WHERE h.date = (" +
+                        "   SELECT max(date) last" +
+                        "   FROM history" +
+                        "   WHERE case_object_id = h.case_object_id" +
                         "     and created < '" + fromTime + "'" +  // # левая граница
-                        "     and CSTATE_ID is not null" +
+                        "     and new_id is not null" +
                         " )" +
-                        "   and CSTATE_ID in " + acceptableStates
+                        "   and new_id in " + acceptableStates
                         + products
                         + companies
                         + managers
@@ -129,12 +129,12 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
 
         // Задачи переходящие в активное состояние в интервале запроса
         String activeCasesInInterval =
-                "SELECT case_id, cc.created, CSTATE_ID" +
-                        " FROM case_comment cc" +
-                        "        LEFT OUTER JOIN case_object ob on ob.id = cc.CASE_ID" +
-                        " WHERE cc.created > '" + fromTime + "'" +  // # левая граница
-                        "   and cc.created < '" + toTime + "' " +  //# правая граница
-                        "   and CSTATE_ID in " + acceptableStates
+                "SELECT case_object_id, h.date, new_id" +
+                        " FROM history h" +
+                        "        LEFT OUTER JOIN case_object ob on ob.id = h.case_object_id" +
+                        " WHERE h.date > '" + fromTime + "'" +  // # левая граница
+                        "   and h.date < '" + toTime + "' " +  //# правая граница
+                        "   and new_id in " + acceptableStates
                         + products
                         + companies
                         + managers
@@ -143,18 +143,18 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
                 ;
 
         String query =
-                "SELECT case_id, outerComment.created as commentCreated, CSTATE_ID, ob.CASENO as caseObjectNumber" +
-                        " FROM case_comment outerComment LEFT JOIN case_object ob on ob.id = outerComment.CASE_ID" +
-                        " WHERE outerComment.case_id in (" +
-                        "   SELECT DISTINCT case_id" +
+                "SELECT case_object_id, outerH.date as commentCreated, new_id, ob.CASENO as caseObjectNumber" +
+                        " FROM history outerH LEFT JOIN case_object ob on ob.id = outerH.case_object_id" +
+                        " WHERE outerH.case_object_id in (" +
+                        "   SELECT DISTINCT case_object_id" +
                         "   from (" +
                         activeCasesAtIntervalStart +
                         " union " +
                         activeCasesInInterval +
                         "        ) as beforeAndInInterval " +
                         " )" +
-                        " and outerComment.created < '" + toTime + "' " + //# правая граница
-                        "  ORDER BY outerComment.created ASC;";
+                        " and outerH.date < '" + toTime + "' " + //# правая граница
+                        "  ORDER BY outerH.date ASC;";
 
         try {
             return jdbcTemplate.query( query, rm );
@@ -168,9 +168,9 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
         public CaseResolutionTimeReportDto mapRow( ResultSet r, int i ) throws SQLException {
             CaseResolutionTimeReportDto comment = new CaseResolutionTimeReportDto();
 
-            comment.setCaseId( r.getLong( "case_id" ) );
+            comment.setCaseId( r.getLong( "case_object_id" ) );
             comment.setCaseNumber(r.getLong( "caseObjectNumber" ));
-            Long cstateId = r.getLong( "CSTATE_ID" );
+            Long cstateId = r.getLong( "new_id" );
             comment.setCaseStateId( r.wasNull() ? null : cstateId );
             comment.setCreated( new Date( r.getTimestamp( "commentCreated" ).getTime() ) );
 

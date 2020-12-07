@@ -5,15 +5,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.Lang;
-import ru.protei.portal.core.model.dao.CaseCommentDAO;
-import ru.protei.portal.core.model.dao.CaseLinkDAO;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
-import ru.protei.portal.core.model.dao.CaseTagDAO;
+import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dict.En_HistoryAction;
+import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.query.CaseCommentQuery;
-import ru.protei.portal.core.model.query.CaseLinkQuery;
-import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.query.CaseTagQuery;
+import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.CaseObjectReportRequest;
 import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.TimeFormatter;
@@ -21,10 +17,7 @@ import ru.protei.portal.core.utils.TimeFormatter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.function.Predicate;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
@@ -42,6 +35,8 @@ public class ReportCaseImpl implements ReportCase {
     CaseObjectDAO caseObjectDAO;
     @Autowired
     CaseCommentDAO caseCommentDAO;
+    @Autowired
+    HistoryDAO historyDAO;
     @Autowired
     CaseTagDAO caseTagDAO;
     @Autowired
@@ -103,10 +98,16 @@ public class ReportCaseImpl implements ReportCase {
 
             List<CaseComment> caseComments = caseCommentDAO.getCaseComments( commentQuery );
 
+            HistoryQuery historyQuery = new HistoryQuery();
+            historyQuery.setCaseObjectId(caseObject.getId());
+            historyQuery.setValueType(En_HistoryType.CASE_STATE);
+            historyQuery.setHistoryAction(Arrays.asList(En_HistoryAction.ADD, En_HistoryAction.CHANGE));
+            List<History> stateHistories = historyDAO.getListByQuery(historyQuery);
+
             List<CaseTag> caseTags = report.isWithTags() ? caseTagDAO.getListByQuery(new CaseTagQuery(caseObject.getId())) : Collections.emptyList();
             List<CaseLink> caseLinks = report.isWithLinkedIssues() ? caseLinkDAO.getListByQuery(new CaseLinkQuery(caseObject.getId(), report.isRestricted())) : Collections.emptyList();
 
-            data.add( new CaseObjectReportRequest( caseObject, caseComments, caseTags, caseLinks, query.getCreatedRange(), query.getModifiedRange() ) );
+            data.add( new CaseObjectReportRequest( caseObject, caseComments, stateHistories, caseTags, caseLinks, query.getCreatedRange(), query.getModifiedRange() ) );
         }
         return data;
     }

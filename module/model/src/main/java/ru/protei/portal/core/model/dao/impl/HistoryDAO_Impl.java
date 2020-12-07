@@ -12,6 +12,9 @@ import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.util.List;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
+import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
+
 public class HistoryDAO_Impl extends PortalBaseJdbcDAO<History> implements HistoryDAO {
 
     @Override
@@ -62,6 +65,10 @@ public class HistoryDAO_Impl extends PortalBaseJdbcDAO<History> implements Histo
             if (query.getValueType() != null) {
                 condition.append(" and history.value_type = ?");
                 args.add(query.getValueType().getId());
+            }
+
+            if (isNotEmpty(query.getHistoryAction())) {
+                condition.append(" and history.action_type in " + makeInArg(query.getHistoryAction()));
             }
 
             if (query.getOldId() != null) {

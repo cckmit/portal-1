@@ -17,6 +17,7 @@ import ru.protei.portal.mock.AuthServiceMock;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
@@ -128,6 +129,17 @@ public class BaseServiceTest {
         if (caseStateId != null) comment.setCaseStateId( caseStateId );
         comment.setCaseAttachments( Collections.emptyList() );
         return comment;
+    }
+
+    protected static History createNewStateHistory(Person person, Long caseObjectId, Long caseStateId, Date date ) {
+        History history = new History();
+        history.setDate( date );
+        history.setAction( En_HistoryAction.ADD );
+        history.setType( En_HistoryType.CASE_STATE );
+        history.setCaseObjectId( caseObjectId );
+        history.setInitiatorId( person.getId() );
+        if (caseStateId != null) history.setNewId( caseStateId );
+        return history;
     }
 
     protected CaseTag createCaseTag (String name, En_CaseType type, Long companyId){
@@ -329,6 +341,10 @@ public class BaseServiceTest {
         return caseObjectDAO.remove(caseObject);
     }
 
+    protected boolean removeHistoryCaseObject(CaseObject caseObject) {
+        return 0 < historyDAO.removeByCondition("case_object_id = ?", Arrays.asList(caseObject.getId()));
+    }
+
     protected static Long generateNextCaseNumber( En_CaseType caseType ) {
         return caseNumberRepo.get( caseType ).incrementAndGet();
     }
@@ -390,6 +406,8 @@ public class BaseServiceTest {
     protected PersonAbsenceDAO personAbsenceDAO;
     @Autowired
     protected DutyLogDAO dutyLogDAO;
+    @Autowired
+    protected HistoryDAO historyDAO;
     @Autowired
     protected PortalConfig config;
     @Autowired

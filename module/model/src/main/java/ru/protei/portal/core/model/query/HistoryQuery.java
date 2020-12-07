@@ -1,8 +1,10 @@
 package ru.protei.portal.core.model.query;
 
+import ru.protei.portal.core.model.dict.En_HistoryAction;
 import ru.protei.portal.core.model.dict.En_HistoryType;
 
 import java.util.Date;
+import java.util.List;
 
 public class HistoryQuery extends BaseQuery {
 
@@ -12,6 +14,7 @@ public class HistoryQuery extends BaseQuery {
     private Long caseObjectId;
     private Long caseNumber;
     private En_HistoryType valueType;
+    private List<En_HistoryAction> historyAction;
     private Long oldId;
     private Long newId;
 
@@ -69,6 +72,14 @@ public class HistoryQuery extends BaseQuery {
         this.valueType = valueType;
     }
 
+    public List<En_HistoryAction> getHistoryAction() {
+        return historyAction;
+    }
+
+    public void setHistoryAction(List<En_HistoryAction> historyAction) {
+        this.historyAction = historyAction;
+    }
+
     public Long getOldId() {
         return oldId;
     }
@@ -94,6 +105,7 @@ public class HistoryQuery extends BaseQuery {
                 ", caseObjectId=" + caseObjectId +
                 ", caseNumber=" + caseNumber +
                 ", valueType=" + valueType +
+                ", historyAction=" + historyAction +
                 ", oldId=" + oldId +
                 ", newId=" + newId +
                 ", searchString='" + searchString + '\'' +
