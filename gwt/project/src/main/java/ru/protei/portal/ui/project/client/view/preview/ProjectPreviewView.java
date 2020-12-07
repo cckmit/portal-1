@@ -179,6 +179,8 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         }
     }
 
+    @Override
+    public void setSubcontractors(String value) { this.subcontractors.setInnerHTML(value); }
 
     @UiHandler( "header" )
     public void onFullScreenClicked ( ClickEvent event) {
@@ -308,6 +310,8 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     HeadingElement name;
     @UiField
     HTMLPanel backButtonContainer;
+    @UiField
+    DivElement subcontractors;
     @Inject
     En_RegionStateLang regionStateLang;
 
