@@ -24,7 +24,6 @@ import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.utils.DateUtils;
 import ru.protei.portal.core.utils.EnumLangUtil;
@@ -523,13 +522,15 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("oldCustomerType", getNullOrElse(oldProjectState, Project::getCustomerType));
         templateModel.put("newCustomerType", newProjectState.getCustomerType());
 
-        templateModel.put("productDirectionChanged", event.isProductDirectionChanged());
-        templateModel.put("oldProductDirection", getNullOrElse(getNullOrElse(oldProjectState, Project::getProductDirectionEntityOption), EntityOption::getDisplayText));
-        templateModel.put("newProductDirection", newProjectState.getProductDirectionEntityOption().getDisplayText());
+        final DiffCollectionResult<DevUnit> productDirectionDiffs = event.getProductDirectionDiffs();
+        templateModel.put("productDirectionSameEntries", productDirectionDiffs.getSameEntries());
+        templateModel.put("productDirectionAddedEntries", productDirectionDiffs.getAddedEntries());
+        templateModel.put("productDirectionRemovedEntries", productDirectionDiffs.getRemovedEntries());
 
-        templateModel.put("productChanged", event.isProductChanged());
-        templateModel.put("oldProduct", getNullOrElse(getNullOrElse(oldProjectState, Project::getSingleProduct), ProductShortView::getName));
-        templateModel.put("newProduct", getNullOrElse(newProjectState.getSingleProduct(), ProductShortView::getName));
+        final DiffCollectionResult<DevUnit> productDiffs = event.getProductDiffs();
+        templateModel.put("productSameEntries", productDiffs.getSameEntries());
+        templateModel.put("productAddedEntries", productDiffs.getAddedEntries());
+        templateModel.put("productRemovedEntries", productDiffs.getRemovedEntries());
 
         templateModel.put("supportValidityChanged", event.isSupportValidityChanged());
         templateModel.put("oldSupportValidity", getNullOrElse(oldProjectState, Project::getTechnicalSupportValidity));

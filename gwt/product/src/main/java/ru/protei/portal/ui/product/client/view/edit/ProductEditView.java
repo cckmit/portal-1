@@ -17,6 +17,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
+import ru.protei.portal.core.model.struct.Pair;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.test.client.DebugIds;
@@ -28,6 +29,7 @@ import ru.protei.portal.ui.common.client.widget.selector.person.PersonButtonSele
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionMultiSelector;
 import ru.protei.portal.ui.common.client.widget.stringselect.input.StringSelectInput;
 import ru.protei.portal.ui.common.client.widget.subscription.list.SubscriptionList;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
@@ -38,8 +40,12 @@ import ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditActiv
 import ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditView;
 import ru.protei.portal.ui.product.client.widget.type.ProductTypeBtnGroup;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.getFirst;
 import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 
@@ -82,8 +88,31 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     public HasValue<String> name() { return name; }
 
     @Override
-    public HasValue<En_DevUnitType> type() {
-        return type;
+    public void setTypeAndDirections(En_DevUnitType type, Set<ProductDirectionInfo> directions) {
+        this.type.setValue(type);
+
+        productDirection.setValue(null);
+        productMultiDirections.setValue(null);
+
+        if (this.type.getValue() == En_DevUnitType.COMPLEX) {
+            productMultiDirections.setValue(directions);
+        } else {
+            productDirection.setValue(directions == null ? null : getFirst(directions));
+        }
+    }
+
+    @Override
+    public Pair<En_DevUnitType, Set<ProductDirectionInfo>> getTypeAndDirections() {
+        Set<ProductDirectionInfo> directions;
+        if (this.type.getValue() == En_DevUnitType.COMPLEX) {
+            directions = productMultiDirections.getValue();
+        } else {
+            directions = new HashSet<>();
+            if (productDirection.getValue() != null) {
+                directions.add(productDirection.getValue());
+            }
+        }
+        return new Pair<>(type.getValue(), directions);
     }
 
     @Override
@@ -110,8 +139,14 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     }
 
     @Override
-    public HasVisibility directionVisibility() {
+    public HasVisibility directionContainerVisibility() {
         return directionContainer;
+    }
+
+    @Override
+    public void directionSelectorVisibility(boolean isMulti) {
+        productDirection.setVisible(!isMulti);
+        productMultiDirections.setVisible(isMulti);
     }
 
     @Override
@@ -186,11 +221,6 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @Override
     public HasVisibility typeVisibility() {
         return type;
-    }
-
-    @Override
-    public HasValue<ProductDirectionInfo> direction() {
-        return direction;
     }
 
     @Override
@@ -314,8 +344,8 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
         tabWidget.setTabNameDebugId(lang.productCDRDescription(), DebugIds.PRODUCT.TAB.CDR_DESCRIPTION);
         cdrDescription.getElement().setId(DebugIds.PRODUCT.CDR_DESCRIPTION);
 
-        direction.ensureDebugId(DebugIds.PRODUCT.DIRECTION);
-        directionLabel.setId(DEBUG_ID_PREFIX + DebugIds.PRODUCT.DIRECTION_LABEL);
+        productDirection.ensureDebugId(DebugIds.PRODUCT.DIRECTION);
+        productMultiDirections.ensureDebugId(DebugIds.PRODUCT.DIRECTIONS);
 
         saveBtn.ensureDebugId(DebugIds.PRODUCT.SAVE_BUTTON);
         cancelBtn.ensureDebugId(DebugIds.PRODUCT.CANCEL_BUTTON);
@@ -338,11 +368,12 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     DevUnitMultiSelector children;
     @Inject
     @UiField(provided = true)
-    ProductDirectionButtonSelector direction;
+    ProductDirectionButtonSelector productDirection;
+    @Inject
+    @UiField( provided = true )
+    ProductDirectionMultiSelector productMultiDirections;
     @UiField
     HTMLPanel directionContainer;
-    @UiField
-    LabelElement directionLabel;
     @UiField
     Element verifiableIcon;
     @UiField

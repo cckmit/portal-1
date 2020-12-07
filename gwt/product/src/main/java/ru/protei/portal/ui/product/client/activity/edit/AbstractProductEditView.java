@@ -5,6 +5,7 @@ import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
+import ru.protei.portal.core.model.struct.Pair;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.common.NameStatus;
@@ -24,7 +25,9 @@ public interface AbstractProductEditView extends IsWidget {
 
     HasValue<String> name();
 
-    HasValue<En_DevUnitType> type();
+    void setTypeAndDirections(En_DevUnitType type, Set<ProductDirectionInfo> directions);
+
+    Pair<En_DevUnitType, Set<ProductDirectionInfo>> getTypeAndDirections();
 
     HasVisibility typeVisibility();
 
@@ -54,7 +57,9 @@ public interface AbstractProductEditView extends IsWidget {
 
     HasValue<List<Subscription>> productSubscriptions();
 
-    HasVisibility directionVisibility();
+    HasVisibility directionContainerVisibility();
+
+    void directionSelectorVisibility(boolean isMulti);
 
     void setHistoryVersionPreviewAllowing(boolean isPreviewAllowed);
 
@@ -65,8 +70,6 @@ public interface AbstractProductEditView extends IsWidget {
     HasValue<List<String>> aliases();
 
     HasVisibility aliasesVisibility();
-
-    HasValue<ProductDirectionInfo> direction();
 
     void setCommonManagerCompanyId(Long id);
 

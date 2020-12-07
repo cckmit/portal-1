@@ -23,7 +23,6 @@ public class DevUnitMultiSelector extends InputPopupMultiSelector<ProductShortVi
         setAddName(lang.buttonAdd());
         setClearName(lang.buttonClear());
         model.setUnitState( En_DevUnitState.ACTIVE );
-
         setItemRenderer(option -> (option.getName() + (HelperFunc.isEmpty(option.getAliases()) ? "" : " (" + option.getAliases() + ")")));
         setNullItem(() -> new ProductShortView( CrmConstants.Product.UNDEFINED, lang.productWithout(), 0 ));
     }

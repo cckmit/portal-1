@@ -35,7 +35,7 @@ public class UserLoginSelector extends PopupSingleSelector<UserLoginShortView> i
     }
 
     @Override
-    protected SelectorItem<UserLoginShortView> makeSelectorItem(UserLoginShortView element, String elementHtml) {
+    protected SelectorItem<UserLoginShortView> makeSelectorItem(UserLoginShortView element, String elementHtml, String name) {
         PopupUserLoginSelectorItem<UserLoginShortView> popupSelectorItem = new PopupUserLoginSelectorItem<>();
         popupSelectorItem.setLogin(element.getUlogin());
         popupSelectorItem.setUserName(element.getLastName() + " " + element.getFirstName());

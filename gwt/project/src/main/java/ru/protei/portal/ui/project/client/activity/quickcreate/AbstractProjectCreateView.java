@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.project.client.activity.quickcreate;
 
+import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_CustomerType;
@@ -11,21 +12,21 @@ import ru.protei.portal.ui.common.client.widget.selector.person.AsyncPersonModel
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.Set;
-import java.util.function.Supplier;
 
 /**
  * Представление создания проекта с минимальным набором параметров
  */
 public interface AbstractProjectCreateView extends IsWidget {
     void setActivity(AbstractProjectCreateActivity activity);
-    void updateProductDirection(Long directionId);
+    void updateProductModel(Set<Long> directionIds);
     HasValue<String> name();
     HasValue<String> description();
     HasValue<EntityOption> region();
-    HasValue<ProductDirectionInfo> direction();
+    HasValue<Set<ProductDirectionInfo>> directions();
+    HasValue<Set<ProductShortView>> products();
+    HasEnabled productEnabled();
     HasValue<En_CustomerType> customerType();
     HasValue<EntityOption> company();
-    HasValue<ProductShortView> product();
     HasValidable nameValidator();
     HasValidable regionValidator();
     HasValidable directionValidator();

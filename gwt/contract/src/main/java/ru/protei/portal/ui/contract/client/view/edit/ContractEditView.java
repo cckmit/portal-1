@@ -14,7 +14,6 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.ent.ContractSpecification;
@@ -36,7 +35,6 @@ import ru.protei.portal.ui.common.client.widget.selector.contract.state.Contract
 import ru.protei.portal.ui.common.client.widget.selector.contract.type.ContractTypeSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeCustomButtonSelector;
-import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.tab.TabWidget;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableLongBox;
@@ -183,8 +181,8 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
-    public HasValue<ProductDirectionInfo> direction() {
-        return direction;
+    public HasValue<String> directions() {
+        return directions;
     }
 
     @Override
@@ -389,7 +387,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         projectWidget.setEnsureDebugId(DebugIds.CONTRACT.PROJECT_SELECTOR);
 
         directionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.DIRECTION);
-        direction.setEnsureDebugId(DebugIds.CONTRACT.DIRECTION_SELECTOR);
+        directions.ensureDebugId(DebugIds.CONTRACT.DIRECTION_INPUT);
 
         organizationLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.ORGANIZATION);
         organization.setEnsureDebugId(DebugIds.CONTRACT.ORGANIZATION_SELECTOR);
@@ -467,9 +465,8 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Inject
     @UiField(provided = true)
     ProjectWidget projectWidget;
-    @Inject
-    @UiField(provided = true)
-    ProductDirectionButtonSelector direction;
+    @UiField
+    TextBox directions;
     @Inject
     @UiField(provided = true)
     EmployeeButtonSelector manager;

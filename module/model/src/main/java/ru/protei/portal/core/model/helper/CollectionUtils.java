@@ -404,4 +404,14 @@ public class CollectionUtils {
 
         return result;
     }
+
+    public static String joining(Iterable<String> iterable, String delimiter) {
+        return String.join(delimiter, iterable);
+    }
+
+    public static <T> String joining(Iterable<T> iterable, String delimiter, Function<? super T, ? extends String> mapper) {
+        List<String> result = new ArrayList<>();
+        transform( iterable, result, mapper );
+        return joining(result, delimiter);
+    }
 }

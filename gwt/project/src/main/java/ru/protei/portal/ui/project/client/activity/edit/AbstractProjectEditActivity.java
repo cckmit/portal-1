@@ -10,5 +10,6 @@ public interface AbstractProjectEditActivity{
     void onCancelClicked();
     void onAddLinkClicked(IsWidget anchor);
     void onDirectionChanged();
+    void onProductChanged();
     void onStateChanged();
 }

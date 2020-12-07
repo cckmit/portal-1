@@ -103,6 +103,7 @@ public class ContractServiceImpl implements ContractService {
         jdbcManyRelationsHelper.fill(contract, "childContracts");
         jdbcManyRelationsHelper.fill(contract, "contractDates");
         jdbcManyRelationsHelper.fill(contract, "contractSpecifications");
+        jdbcManyRelationsHelper.fill(contract, "productDirections");
         Collections.sort(contract.getContractSpecifications());
 
         return ok(contract);
@@ -521,7 +522,6 @@ public class ContractServiceImpl implements ContractService {
         caseObject.setStateId(contract.getState().getId());
         caseObject.setManagerId(contract.getCaseManagerId());
         caseObject.setInitiatorId(contract.getCuratorId());
-        caseObject.setProductId(contract.getCaseDirectionId());
 
         return caseObject;
     }

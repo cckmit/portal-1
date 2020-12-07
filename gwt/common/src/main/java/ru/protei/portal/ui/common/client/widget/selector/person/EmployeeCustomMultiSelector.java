@@ -2,12 +2,10 @@ package ru.protei.portal.ui.common.client.widget.selector.person;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.query.EmployeeQuery;
-import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.selector.input.InputPopupMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.item.PopupSelectableItem;
 
 /**
  * Селектор сотрудников домашней компании
@@ -28,7 +26,7 @@ public class EmployeeCustomMultiSelector
     }
 
     @Override
-    protected SelectorItem<PersonShortView> makeSelectorItem(PersonShortView value, String elementHtml) {
+    protected SelectorItem<PersonShortView> makeSelectorItem(PersonShortView value, String elementHtml, String name) {
         return PersonSelectorItemRenderer.makeMultipleSelectorItem(value, elementHtml, isSelected(value));
     }
 

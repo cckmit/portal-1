@@ -63,7 +63,7 @@ public class AppView extends Composite
 
     @Override
     public void setAppVersion(String appVersion) {
-        this.appVersion.setText(appVersion);
+        this.appVersion.setInnerText(appVersion);
     }
 
     @Override
@@ -112,6 +112,17 @@ public class AppView extends Composite
     @Override
     public void clearExternalLinks() {
         removeExternalSections(menuContainer.getElement());
+    }
+
+    @Override
+    public void showHelp(boolean isShow) {
+        if (isShow) {
+            help.removeClassName("hide");
+            helpDivider.removeClassName("hide");
+        } else {
+            help.addClassName("hide");
+            helpDivider.addClassName("hide");
+        }
     }
 
     @UiHandler( "logout" )
@@ -338,8 +349,6 @@ public class AppView extends Composite
     @UiField
     Anchor logo;
     @UiField
-    Label appVersion;
-    @UiField
     HTMLPanel globalContainer;
     @UiField
     SpanElement username;
@@ -376,7 +385,12 @@ public class AppView extends Composite
     ImageElement logoImgWhite;
     @UiField
     ImageElement logoImgBlue;
-
+    @UiField
+    DivElement helpDivider;
+    @UiField
+    DivElement help;
+    @UiField
+    DivElement appVersion;
 
     AbstractAppActivity activity;
 

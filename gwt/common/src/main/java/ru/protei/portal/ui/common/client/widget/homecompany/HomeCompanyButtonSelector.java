@@ -7,9 +7,6 @@ import ru.protei.portal.ui.common.client.selector.SelectorItem;
 import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonPopupSingleSelector;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class HomeCompanyButtonSelector extends ButtonPopupSingleSelector<EntityOption> {
 
     @Inject
@@ -21,7 +18,7 @@ public class HomeCompanyButtonSelector extends ButtonPopupSingleSelector<EntityO
     }
 
     @Override
-    protected SelectorItem makeSelectorItem(EntityOption value, String elementHtml) {
+    protected SelectorItem makeSelectorItem(EntityOption value, String elementHtml, String name) {
         PopupSelectorItem item = new PopupSelectorItem();
         item.setName(elementHtml);
         return item;

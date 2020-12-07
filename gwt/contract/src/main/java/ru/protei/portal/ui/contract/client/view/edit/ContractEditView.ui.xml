@@ -149,7 +149,7 @@
                             </div>
                             <div class="form-group col-md-4">
                                 <label ui:field="directionLabel"><ui:text from="{lang.contractDirection}"/></label>
-                                <productdirection:ProductDirectionButtonSelector ui:field="direction" hideNullValue="true" enabled="false" defaultValue="{lang.contractSelectDirection}"/>
+                                <g:TextBox ui:field="directions" styleName="form-control" enabled="false"/>
                             </div>
                         </div>
                     </div>

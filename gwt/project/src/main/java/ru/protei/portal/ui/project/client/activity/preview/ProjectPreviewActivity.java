@@ -9,7 +9,9 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ProjectAccessType;
 import ru.protei.portal.core.model.dto.Project;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Contract;
+import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -84,10 +86,8 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
     }
 
     @Override
-    public void onProductLinkClicked() {
-        if (project.getSingleProduct() != null) {
-            fireEvent(new ProductEvents.ShowFullScreen(project.getSingleProduct().getId()));
-        }
+    public void onProductLinkClicked(Long id) {
+        fireEvent(new ProductEvents.ShowFullScreen(id));
     }
 
     private void fillView( Long id ) {
@@ -116,12 +116,13 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.setName( value.getName() );
         view.setCreatedBy(lang.createBy(value.getCreator().getDisplayShortName(), DateFormatter.formatDateTime(value.getCreated())));
         view.setState( value.getState().getId() );
-        view.setDirection( value.getProductDirectionEntityOption() == null ? "" : value.getProductDirectionEntityOption().getDisplayText() );
+        view.setDirections(joining(value.getProductDirectionEntityOptionList(), ", ", EntityOption::getDisplayText));
         view.setDescription( value.getDescription() == null ? "" : value.getDescription() );
         view.setRegion( value.getRegion() == null ? "" : value.getRegion().getDisplayText() );
         view.setCompany(value.getCustomer() == null ? "" : value.getCustomer().getCname());
         view.setContracts(emptyIfNull(value.getContracts()).stream().collect(Collectors.toMap(EntityOption::getDisplayText, contract -> LinkUtils.makePreviewLink(Contract.class, contract.getId()))));
         view.setPlatform(value.getPlatformName() == null ? "" : value.getPlatformName(), LinkUtils.makePreviewLink(Platform.class, value.getPlatformId()));
+        view.setSubcontractors(stream(value.getSubcontractors()).map(Company::getCname).collect(Collectors.joining(", ")));
 
         if( isNotEmpty(value.getTeam()) ) {
             StringBuilder teamBuilder = new StringBuilder();
@@ -140,7 +141,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
             view.setTeam("");
         }
 
-        view.setProduct(value.getSingleProduct() == null ? "" : value.getSingleProduct().getName());
+        view.setProducts( stream(value.getProducts()).collect(Collectors.toMap(DevUnit::getId, DevUnit::getName, (n1, n2) -> n1 + ", " + n2)));
         view.setCustomerType(customerTypeLang.getName(value.getCustomerType()));
         view.slaInputReadOnly().setValue(project.getProjectSlas());
         view.slaContainerVisibility().setVisible(isSlaContainerVisible(project.getProjectSlas()));

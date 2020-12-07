@@ -820,6 +820,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String mediumImportance();
 
+    String emergencyImportance();
+
     String dataPageNumber( String p0 );
 
     String dashboard();
@@ -914,6 +916,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String projectDirection();
 
+    String projectDirections();
+
     String projectInfo();
 
     String projectManagers();
@@ -935,6 +939,8 @@ public interface Lang extends Messages, ContactItemLang {
     String projectCustomerCompany();
 
     String projectDescription();
+
+    String projectProduct();
 
     String projectProducts();
 
@@ -3204,7 +3210,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String fileNotFoundError();
 
-    String projectSubcontractor();
+    String projectSubcontractors();
 
     String subtaskCreate();
 
@@ -3223,4 +3229,6 @@ public interface Lang extends Messages, ContactItemLang {
     String errInvalidCaseUpdateSubtaskNotClosed();
 
     String errNotAllowedIntegrationIssue();
+
+    String help();
 }

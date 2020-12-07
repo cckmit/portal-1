@@ -60,9 +60,9 @@
                     <div class="col-md-4">
                         <div class="form-group form-group-default">
                             <label>
-                                <ui:text from="{lang.projectDirection}"/>
+                                <ui:text from="{lang.projectDirections}"/>
                             </label>
-                            <span ui:field="projectDirection"/>
+                            <span ui:field="projectDirections"/>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -70,7 +70,7 @@
                             <label>
                                 <ui:text from="{lang.projectProducts}"/>
                             </label>
-                            <g:Anchor href="#" ui:field="product"/>
+                            <g:HTMLPanel ui:field="products"/>
                         </div>
                     </div>
                 </div>
@@ -127,6 +127,15 @@
                     </h5>
                     <sla:SlaInputReadOnly ui:field="slaInputReadOnly"/>
                 </g:HTMLPanel>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-md-12">
+                    <h5>
+                        <ui:text from="{lang.projectSubcontractors}"/>
+                    </h5>
+                    <div ui:field="subcontractors"/>
+                </div>
             </div>
 
             <div class="row form-group">

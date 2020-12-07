@@ -51,15 +51,6 @@ p {
       }
     }
   }
-  .app-version {
-    color: #788195 !important;
-    width: 270px !important;
-    position: fixed;
-    bottom: 0px;
-    line-height: 30px;
-    text-align: center;
-    font-size: 13px !important;
-  }
 }
 
 .header {
@@ -271,3 +262,15 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
   }
 }
 
+.dev-unit-selector-image {
+  max-height: 20px;
+  max-width: 20px;
+  margin-right: 6px;
+}
+
+.project-preview-product-links::after {
+  content: ", ";
+}
+.project-preview-product-links:last-child::after {
+  content: none;
+}

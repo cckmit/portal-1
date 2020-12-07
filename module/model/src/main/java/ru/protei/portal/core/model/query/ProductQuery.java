@@ -5,7 +5,6 @@ import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -15,7 +14,7 @@ public class ProductQuery extends BaseQuery {
 
     private En_DevUnitState state;
     private Set<En_DevUnitType> types;
-    private Long directionId;
+    private Set<Long> directionIds;
     private Set<Long> platformIds;
 
     public ProductQuery() {
@@ -39,12 +38,12 @@ public class ProductQuery extends BaseQuery {
         this.types = types;
     }
 
-    public Long getDirectionId() {
-        return directionId;
+    public Set<Long> getDirectionIds() {
+        return directionIds;
     }
 
-    public void setDirectionId(Long productDirectionId) {
-        this.directionId = productDirectionId;
+    public void setDirectionIds(Set<Long> productDirectionId) {
+        this.directionIds = productDirectionId;
     }
 
     public Set<Long> getPlatformIds() {
@@ -60,7 +59,7 @@ public class ProductQuery extends BaseQuery {
         return "ProductQuery{" +
                 "state=" + state +
                 ", types=" + types +
-                ", directionId=" + directionId +
+                ", directionIds=" + directionIds +
                 ", platformIds=" + platformIds +
                 ", searchString='" + searchString + '\'' +
                 ", sortField=" + sortField +
