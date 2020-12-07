@@ -3206,7 +3206,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String fileNotFoundError();
 
-    String projectSubcontractor();
+    String projectSubcontractors();
 
     String subtaskCreate();
 

@@ -75,7 +75,7 @@
                                 <ui:text from="{lang.buttonLogout}"/>
                             </g:Anchor>
                             <div class="dropdown-divider"></div>
-                            <g:Label styleName="dropdown-item hint-text" ui:field="appVersion"/>
+                            <div ui:field="appVersion" class="dropdown-item hint-text"/>
                         </g:HTMLPanel>
                     </g:FocusPanel>
                 </div>
