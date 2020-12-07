@@ -63,7 +63,7 @@ public class AppView extends Composite
 
     @Override
     public void setAppVersion(String appVersion) {
-        this.appVersion.setText(appVersion);
+        this.appVersion.setInnerText(appVersion);
     }
 
     @Override
@@ -349,8 +349,6 @@ public class AppView extends Composite
     @UiField
     Anchor logo;
     @UiField
-    Label appVersion;
-    @UiField
     HTMLPanel globalContainer;
     @UiField
     SpanElement username;
@@ -391,6 +389,8 @@ public class AppView extends Composite
     DivElement helpDivider;
     @UiField
     DivElement help;
+    @UiField
+    DivElement appVersion;
 
     AbstractAppActivity activity;
 

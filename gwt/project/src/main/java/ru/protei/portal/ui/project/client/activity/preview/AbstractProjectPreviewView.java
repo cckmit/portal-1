@@ -67,4 +67,6 @@ public interface AbstractProjectPreviewView extends IsWidget {
     void setWorkCompletionDateLabelVisible(boolean isVisible);
 
     void setPurchaseDateLabelVisible(boolean isVisible);
+
+    void setSubcontractors(String value);
 }

@@ -353,6 +353,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         jdbcManyRelationsHelper.persist(project, "projectSlas");
         jdbcManyRelationsHelper.persist(project, Project.Fields.PROJECT_PLANS);
+        jdbcManyRelationsHelper.persist(project, Project.Fields.PROJECT_SUBCONTRACTORS);
 
         try {
             updateTeam(caseObject, project.getTeam());
