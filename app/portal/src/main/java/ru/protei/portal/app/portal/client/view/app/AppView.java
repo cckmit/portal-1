@@ -63,7 +63,7 @@ public class AppView extends Composite
 
     @Override
     public void setAppVersion(String appVersion) {
-        this.appVersion.setInnerHTML(appVersion);
+        this.appVersion.setInnerText(appVersion);
     }
 
     @Override

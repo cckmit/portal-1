@@ -180,7 +180,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     }
 
     @Override
-    public void setSubcontractors(String value) { this.subcontractors.setInnerHTML(value); }
+    public void setSubcontractors(String value) { this.subcontractors.setInnerText(value); }
 
     @UiHandler( "header" )
     public void onFullScreenClicked ( ClickEvent event) {
