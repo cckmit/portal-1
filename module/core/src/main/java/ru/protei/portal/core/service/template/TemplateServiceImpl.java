@@ -930,10 +930,7 @@ public class TemplateServiceImpl implements TemplateService {
                     mailComment.put( "created", comment.getCreated() );
                     mailComment.put( "author", comment.getAuthor() );
                     mailComment.put("text", escapeTextAndRenderHTML(comment.getText(), textMarkup));
-                    mailComment.put( "caseState", comment.getCaseStateName() );
                     mailComment.put( "caseImportance", comment.getCaseImportance() == null ? null : comment.getCaseImportance().getCode() );
-                    mailComment.put( "caseManager", comment.getCaseManagerId());
-                    mailComment.put( "caseManagerAndCompany", comment.getCaseManagerShortName() + " (" + comment.getManagerCompanyName() + ")");
                     mailComment.put( "isPrivateComment", comment.isPrivateComment() );
                     mailComment.put( "added", isNew);
                     if (isChanged) {
