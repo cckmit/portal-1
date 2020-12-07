@@ -245,8 +245,8 @@ public class CaseServiceImpl implements CaseService {
             log.error("State message for the issue {} not saved!", caseId);
         }
 
-        Long impMessageId = createAndPersistImportanceMessage(token.getPersonId(), caseId, caseObject.getImpLevel());
-        if (impMessageId == null) {
+        Result<Long> importanceResult = addImportanceHistory(token, caseId, caseObject.getImpLevel(), En_ImportanceLevel.getById(caseObject.getImpLevel()).getCode());
+        if (importanceResult.isError()) {
             log.error("Importance level message for the issue {} not saved!", caseId);
         }
 
@@ -477,8 +477,10 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if (!Objects.equals(oldCaseMeta.getImpLevel(), caseMeta.getImpLevel())) {
-            Long messageId = createAndPersistImportanceMessage(token.getPersonId(), caseMeta.getId(), caseMeta.getImpLevel());
-            if (messageId == null) {
+            Result<Long> resultImportance = changeImportanceHistory(token, caseMeta.getId(),
+                    oldCaseMeta.getImpLevel(), En_ImportanceLevel.getById(oldCaseMeta.getImpLevel()).getCode(),
+                    caseMeta.getImpLevel(), En_ImportanceLevel.getById(caseMeta.getImpLevel()).getCode());
+            if (resultImportance.isError()) {
                 log.error("Importance level message for the issue {} isn't saved!", caseMeta.getId());
             }
         }
@@ -963,15 +965,6 @@ public class CaseServiceImpl implements CaseService {
         return caseCommentDAO.persist(stateChangeMessage);
     }
 
-    private Long createAndPersistImportanceMessage(Long authorId, Long caseId, Integer importance) {//int -> Integer т.к. падает unit test с NPE, неясно почему
-        CaseComment stateChangeMessage = new CaseComment();
-        stateChangeMessage.setAuthorId(authorId);
-        stateChangeMessage.setCreated(new Date());
-        stateChangeMessage.setCaseId(caseId);
-        stateChangeMessage.setCaseImpLevel(importance);
-        return caseCommentDAO.persist(stateChangeMessage);
-    }
-
     private CaseQuery applyFilterByScope(AuthToken token, CaseQuery caseQuery) {
         Set<UserRole> roles = token.getRoles();
         if (policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
@@ -1433,4 +1426,13 @@ public class CaseServiceImpl implements CaseService {
     private String makeManagerName(CaseObjectMeta caseObjectMeta) {
         return (caseObjectMeta.getManager() != null ? caseObjectMeta.getManager() : personShortViewDAO.get(caseObjectMeta.getManagerId())).getDisplayShortName();
     }
+
+    private Result<Long> addImportanceHistory(AuthToken authToken, long caseId, long importanceId, String importanceName) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.ADD, En_HistoryType.CASE_IMPORTANCE, null, null, importanceId, importanceName);
+    }
+
+    private Result<Long> changeImportanceHistory(AuthToken authToken, long caseId, long oldImportanceId, String oldImportanceName, long newImportanceId, String newImportanceName) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_STATE, oldImportanceId, oldImportanceName, newImportanceId, newImportanceName);
+    }
+
 }

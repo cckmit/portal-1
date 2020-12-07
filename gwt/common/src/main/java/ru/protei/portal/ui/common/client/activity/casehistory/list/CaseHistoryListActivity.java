@@ -69,6 +69,10 @@ public abstract class CaseHistoryListActivity implements AbstractCaseHistoryList
             if (En_HistoryType.CASE_MANAGER.equals(history.getType())) {
                 view.root().add(makeHistoryItem(history, lang.issueManager(), "CaseManager"));
             }
+
+            if (En_HistoryType.CASE_IMPORTANCE.equals(history.getType())) {
+                view.root().add(makeHistoryItem(history, lang.issueImportance(), "CaseImportance"));
+            }
         }
     }
 
