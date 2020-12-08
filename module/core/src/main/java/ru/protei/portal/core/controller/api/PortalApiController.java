@@ -237,6 +237,40 @@ public class PortalApiController {
                         product, result ) );
     }
 
+    @PostMapping(value = "/products/updateState/{productId}/{productState}")
+    public Result<?> updateProductState(HttpServletRequest request, HttpServletResponse response,
+                                        @PathVariable("productId") String productId,
+                                        @PathVariable("productState") String productState) {
+
+        log.info("API | updateProductState(): productId={}, productState={}", productId, productState);
+
+        final String INCORRECT_ID = "Некорректный id продукта";
+        final String INCORRECT_STATE = "Некорректный статус продукта. Допустимые значения: 1/2";
+
+        Result<AuthToken> authenticate = authenticate(request, response, authService, sidGen, log);
+
+        if (authenticate.isError()) {
+            return error(authenticate.getStatus(), authenticate.getMessage());
+        }
+
+        AuthToken authToken = authenticate.getData();
+
+        En_DevUnitState state;
+        try {
+            state = En_DevUnitState.forId(Integer.parseInt(productState));
+        } catch (NumberFormatException e) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, INCORRECT_STATE);
+        }
+
+        try {
+            return productService.updateState(authToken, Long.valueOf(productId), state)
+                    .ifOk(result -> log.info("updateProductState(): OK"))
+                    .ifError(result -> log.warn("updateProductState(): Can't update product state with id={}. {}", productId, result));
+        } catch (NumberFormatException e) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, INCORRECT_ID);
+        }
+    }
+
     @PostMapping(value = "/updateYoutrackCrmNumbers/{youtrackId}", produces = "text/plain;charset=UTF-8")
     public String updateYoutrackCrmNumbers( HttpServletRequest request, HttpServletResponse response,
                                                  @RequestBody (required = false) String crmNumbers,
@@ -511,7 +545,7 @@ public class PortalApiController {
                 .ifError(result -> log.warn("createCompany(): Can't create company={}. {}", company, result));
     }
 
-    @PostMapping(value = "/companies/archive/{companyId}/{isArchived}")
+    @PostMapping(value = "/companies/updateState/{companyId}/{isArchived}")
     public Result<?> updateCompanyState(HttpServletRequest request, HttpServletResponse response,
                                         @PathVariable("companyId") String companyId,
                                         @PathVariable("isArchived") String isArchived) {

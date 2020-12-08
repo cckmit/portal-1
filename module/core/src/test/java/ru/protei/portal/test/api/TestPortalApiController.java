@@ -368,6 +368,37 @@ public class TestPortalApiController extends BaseServiceTest {
     }
 
     @Test
+    @Transactional
+    public void updateProductState() throws Exception {
+        DevUnit product = createProduct("TestPortalApiController#updateProductState");
+        Long productId = devUnitDAO.persist(product);
+
+        Assert.assertEquals(updateProductState(productId, 1), 1);
+        Assert.assertEquals(updateProductState(productId, 2), 2);
+
+        final String INCORRECT_ID = "Некорректный id продукта";
+        updateProductWithIncorrectParam("/incorrect_id/1", INCORRECT_ID);
+
+        final String INCORRECT_STATE = "Некорректный статус продукта. Допустимые значения: 1/2";
+        updateProductWithIncorrectParam(productId + "/incorrect_state", INCORRECT_STATE);
+    }
+
+    private int updateProductState(Long productId, int state) throws Exception {
+        createPostResultAction("/api/products/updateState/" + productId + "/" + state, null)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())));
+
+        return devUnitDAO.get(productId).getState().getId();
+    }
+
+    private void updateProductWithIncorrectParam(String params, String exceptedErrorMsg) throws Exception {
+        createPostResultAction("/api/products/updateState/" + params, null)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.INCORRECT_PARAMS.toString())))
+                .andExpect(jsonPath("$.message", is(exceptedErrorMsg)));
+    }
+
+    @Test
     public void getCaseListByCompanyIdEmptyResult() throws Exception {
         CaseApiQuery caseApiQuery = new CaseApiQuery();
         caseApiQuery.setCompanyIds(Collections.singletonList(companyDAO.getMaxId() + 1));
@@ -1227,26 +1258,26 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
                 .andExpect(jsonPath("$.data.id", is(company.getId().intValue())));
 
-        Assert.assertTrue(setCompanyArchived(companyId, true));
-        Assert.assertFalse(setCompanyArchived(companyId, false));
+        Assert.assertTrue(updateCompanyState(companyId, true));
+        Assert.assertFalse(updateCompanyState(companyId, false));
 
         final String INCORRECT_ID = "Некорректный id компании";
-        sendRequestWithIncorrectParam("/incorrect_id/false", INCORRECT_ID);
+        updateCompanyWithIncorrectParam("/incorrect_id/false", INCORRECT_ID);
 
         final String INCORRECT_STATE = "Некорректный статус компании. Допустимые значения: true/false";
-        sendRequestWithIncorrectParam(companyId + "/incorrect_state", INCORRECT_STATE);
+        updateCompanyWithIncorrectParam(companyId + "/incorrect_state", INCORRECT_STATE);
     }
 
-    private boolean setCompanyArchived(Long companyId, boolean isArchived) throws Exception {
-        createPostResultAction("/api/companies/archive/" + companyId + "/" + isArchived, null)
+    private boolean updateCompanyState(Long companyId, boolean isArchived) throws Exception {
+        createPostResultAction("/api/companies/updateState/" + companyId + "/" + isArchived, null)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())));
 
         return companyDAO.get(companyId).isArchived();
     }
 
-    private void sendRequestWithIncorrectParam(String params, String exceptedErrorMsg) throws Exception {
-        createPostResultAction("/api/companies/archive/" + params, null)
+    private void updateCompanyWithIncorrectParam(String params, String exceptedErrorMsg) throws Exception {
+        createPostResultAction("/api/companies/updateState/" + params, null)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.INCORRECT_PARAMS.toString())))
                 .andExpect(jsonPath("$.message", is(exceptedErrorMsg)));
