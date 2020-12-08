@@ -13,7 +13,6 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.ProjectSla;
-import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.timefield.WorkTimeFormatter;
 
@@ -27,7 +26,7 @@ public class SlaRowItemReadOnly extends Composite implements HasValue<ProjectSla
 
     @Override
     public ProjectSla getValue() {
-        return sla;
+        return projectSla;
     }
 
     @Override
@@ -37,17 +36,16 @@ public class SlaRowItemReadOnly extends Composite implements HasValue<ProjectSla
 
     @Override
     public void setValue(ProjectSla value, boolean fireEvents) {
-        sla = value;
-        if (sla != null) {
-            reactionTime.setInnerText(format(value.getReactionTime()));
-            temporarySolutionTime.setInnerText(format(value.getTemporarySolutionTime()));
-            fullSolutionTime.setInnerText(format(value.getFullSolutionTime()));
+        this.projectSla = value;
 
-            this.importance.setInnerText(importanceLang.getImportanceName(value.getImportanceLevel()));
-        }
+        reactionTime.setInnerText(format(value.getReactionTime()));
+        temporarySolutionTime.setInnerText(format(value.getTemporarySolutionTime()));
+        fullSolutionTime.setInnerText(format(value.getFullSolutionTime()));
+
+        this.importance.setInnerText(value.getImportanceName());
 
         if (fireEvents) {
-            ValueChangeEvent.fire(this, sla);
+            ValueChangeEvent.fire(this, projectSla);
         }
     }
 
@@ -78,10 +76,7 @@ public class SlaRowItemReadOnly extends Composite implements HasValue<ProjectSla
     @UiField
     SpanElement fullSolutionTime;
 
-    @Inject
-    private En_CaseImportanceLang importanceLang;
-
-    private ProjectSla sla;
+    private ProjectSla projectSla;
     private final WorkTimeFormatter workTimeFormatter;
 
     interface SlaRowItemReadOnlyUiBinder extends UiBinder<HTMLPanel, SlaRowItemReadOnly> {}

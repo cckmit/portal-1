@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.CompanyImportanceItem;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -219,8 +220,12 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.pauseDateContainerVisibility().setVisible( PAUSED == project.getState() );
         view.pauseDate().setValue( project.getPauseDate() == null ? null : new Date( project.getPauseDate() ) );
 
-        if (isNotEmpty(project.getProjectSlas())) {
-            changeSlaContainerState(project.getProjectSlas(), true);
+        if (customer != null && isNotEmpty(project.getProjectSlas())) {
+            synchronizeProjectSla(
+                    project.getProjectSlas(),
+                    customer.getId(),
+                    projectSlaList -> changeSlaContainerState(projectSlaList, true)
+            );
         } else {
             fillSlaContainerByDefault(customer == null ? null : customer.getId());
         }
@@ -279,7 +284,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
             return;
         }
 
-        companyService.getImportanceLevels(companyId, new FluentCallback<List<En_ImportanceLevel>>()
+        companyService.getCompanyImportanceItems(companyId, new FluentCallback<List<CompanyImportanceItem>>()
                 .withSuccess(importanceLevels -> {
                     if (isEmpty(importanceLevels)) {
                         return;
@@ -295,8 +300,26 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.slaVisibility().setVisible(isVisible);
     }
 
-    private List<ProjectSla> createProjectSlaList(List<En_ImportanceLevel> importanceLevels) {
-        return toList(importanceLevels, ProjectSla::new);
+    private List<ProjectSla> createProjectSlaList(List<CompanyImportanceItem> companyImportanceItems) {
+        return toList(companyImportanceItems, companyImportanceItem ->
+                new ProjectSla(companyImportanceItem.getImportanceLevelId(), companyImportanceItem.getImportanceName())
+        );
+    }
+
+    private void synchronizeProjectSla(List<ProjectSla> currentProjectSlaList, Long companyId, Consumer<List<ProjectSla>> projectSlaListConsumer) {
+        companyService.getCompanyImportanceItems(companyId, new FluentCallback<List<CompanyImportanceItem>>()
+                .withSuccess(companyImportanceItems ->
+                        projectSlaListConsumer.accept(toList(companyImportanceItems, companyImportanceItem -> getProjectSla(currentProjectSlaList, companyImportanceItem))
+                )
+        ));
+    }
+
+    private ProjectSla getProjectSla(List<ProjectSla> projectSlaList, CompanyImportanceItem companyImportanceItem) {
+        return projectSlaList
+                .stream()
+                .filter(projectSla -> companyImportanceItem.getImportanceLevelId().equals(projectSla.getImportanceLevelId()))
+                .findAny()
+                .orElse(new ProjectSla(companyImportanceItem.getImportanceLevelId(), companyImportanceItem.getImportanceName()));
     }
 
     private Project fillProject(Project project) {

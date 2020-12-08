@@ -98,6 +98,8 @@ public class ProjectServiceImpl implements ProjectService {
     EventPublisherService publisherService;
     @Autowired
     PortalConfig config;
+    @Autowired
+    CompanyImportanceItemDAO companyImportanceItemDAO;
 
     @EventListener
     @Async(BACKGROUND_TASKS)
@@ -261,8 +263,12 @@ public class ProjectServiceImpl implements ProjectService {
         projectFormDB.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(project.getId())));
         projectFormDB.setProducts(new HashSet<>(devUnitDAO.getProjectProducts(project.getId())));
 
+        List<CompanyImportanceItem> sortedImportanceLevels
+                = companyImportanceItemDAO.getSortedImportanceLevels(project.getCustomerId());
+
         Project oldStateProject = projectDAO.get( project.getId() );
         jdbcManyRelationsHelper.fillAll( oldStateProject );
+        oldStateProject.setProjectSlas(getSortedSla(oldStateProject.getProjectSlas(), sortedImportanceLevels));
         oldStateProject.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(project.getId())));
         oldStateProject.setProducts(new HashSet<>(devUnitDAO.getProjectProducts(project.getId())));
 
@@ -317,6 +323,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         Project newStateProject = projectDAO.get(project.getId());
         jdbcManyRelationsHelper.fillAll(newStateProject);
+        newStateProject.setProjectSlas(getSortedSla(newStateProject.getProjectSlas(), sortedImportanceLevels));
         newStateProject.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(project.getId())));
         newStateProject.setProducts(new HashSet<>(devUnitDAO.getProjectProducts(project.getId())));
 
@@ -490,6 +497,22 @@ public class ProjectServiceImpl implements ProjectService {
 
         log.info("notifyExpiringProjectTechnicalSupportValidity(): done");
         return ok(true);
+    }
+
+    private List<ProjectSla> getSortedSla(List<ProjectSla> unsortedSla, List<CompanyImportanceItem> companyImportanceItems) {
+        return unsortedSla
+                .stream()
+                .sorted(Comparator.comparingInt(projectSla -> getProjectSlaOrderNumber(projectSla, companyImportanceItems)))
+                .collect(toList());
+    }
+
+    private Integer getProjectSlaOrderNumber(ProjectSla projectSla, List<CompanyImportanceItem> companyImportanceItems) {
+        return companyImportanceItems
+                .stream()
+                .filter(companyImportanceItem -> companyImportanceItem.getImportanceLevelId().equals(projectSla.getImportanceLevelId()))
+                .map(CompanyImportanceItem::getOrderNumber)
+                .findAny()
+                .orElse(0);
     }
 
     private Map<En_ExpiringProjectTSVPeriod, Interval> makeProjectTSVIntervals(LocalDate now) {

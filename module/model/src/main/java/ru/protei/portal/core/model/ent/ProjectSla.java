@@ -1,12 +1,9 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.winter.jdbc.annotations.IdInsertMode;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
-import ru.protei.winter.jdbc.annotations.JdbcEntity;
-import ru.protei.winter.jdbc.annotations.JdbcId;
+import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 @JdbcEntity(table = "project_sla")
 public class ProjectSla implements Serializable {
@@ -28,10 +25,14 @@ public class ProjectSla implements Serializable {
     @JdbcColumn(name = "project_id")
     private Long projectId;
 
+    @JdbcJoinedColumn(localColumn = "importance_level_id", remoteColumn = "id", table = "importance_level", mappedColumn = "code")
+    private String importanceName;
+
     public ProjectSla() {}
 
-    public ProjectSla(En_ImportanceLevel importanceLevel) {
-        this.importanceLevelId = importanceLevel.getId();
+    public ProjectSla(Integer importanceLevel, String importanceName) {
+        this.importanceLevelId = importanceLevel;
+        this.importanceName = importanceName;
     }
 
     public ProjectSla(Integer importanceLevelId, Long reactionTime, Long temporarySolutionTime, Long fullSolutionTime) {
@@ -55,10 +56,6 @@ public class ProjectSla implements Serializable {
 
     public void setImportanceLevelId(Integer importanceLevelId) {
         this.importanceLevelId = importanceLevelId;
-    }
-
-    public En_ImportanceLevel getImportanceLevel() {
-        return importanceLevelId == null ? null : En_ImportanceLevel.getById(importanceLevelId);
     }
 
     public Long getReactionTime() {
@@ -93,6 +90,10 @@ public class ProjectSla implements Serializable {
         this.projectId = projectId;
     }
 
+    public String getImportanceName() {
+        return importanceName;
+    }
+
     public boolean isEmpty() {
         if (reactionTime != null) {
             return false;
@@ -107,6 +108,19 @@ public class ProjectSla implements Serializable {
         }
 
         return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProjectSla that = (ProjectSla) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     @Override

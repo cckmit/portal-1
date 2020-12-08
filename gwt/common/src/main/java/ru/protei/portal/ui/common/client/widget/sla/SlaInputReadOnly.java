@@ -11,13 +11,11 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.ui.common.client.widget.sla.items.SlaRowItemReadOnly;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
@@ -40,15 +38,13 @@ public class SlaInputReadOnly extends Composite implements HasValue<List<Project
 
     @Override
     public void setValue(List<ProjectSla> value, boolean fireEvents) {
-        importanceToItemMap.clear();
+        slaRowItems.clear();
         itemsContainer.clear();
 
         emptyIfNull(value).forEach(projectSla -> {
-            En_ImportanceLevel importanceLevel = projectSla.getImportanceLevel();
-
             SlaRowItemReadOnly item = slaRowItemReadOnlyProvider.get();
             item.setValue(projectSla);
-            importanceToItemMap.put(importanceLevel, item);
+            slaRowItems.add(item);
             itemsContainer.add(item.asWidget());
         });
 
@@ -63,7 +59,7 @@ public class SlaInputReadOnly extends Composite implements HasValue<List<Project
     }
 
     private List<ProjectSla> collectSla() {
-        return importanceToItemMap.values()
+        return slaRowItems
                 .stream()
                 .map(SlaRowItemReadOnly::getValue)
                 .collect(Collectors.toList());
@@ -75,7 +71,7 @@ public class SlaInputReadOnly extends Composite implements HasValue<List<Project
     @Inject
     private Provider<SlaRowItemReadOnly> slaRowItemReadOnlyProvider;
 
-    private final Map<En_ImportanceLevel, SlaRowItemReadOnly> importanceToItemMap = new HashMap<>();
+    private final List<SlaRowItemReadOnly> slaRowItems = new ArrayList<>();
 
     interface SlaInputReadOnlyUiBinder extends UiBinder<HTMLPanel, SlaInputReadOnly> {}
     private static SlaInputReadOnlyUiBinder ourUiBinder = GWT.create(SlaInputReadOnlyUiBinder.class);

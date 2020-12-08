@@ -229,15 +229,15 @@ public class AssembledProjectEvent extends ApplicationEvent implements HasCaseCo
         return teamDiffs;
     }
 
-    public Map<En_ImportanceLevel, DiffResult<ProjectSla>> getSlaDiffs() {
-        Map<En_ImportanceLevel, DiffResult<ProjectSla>> slaDiffs = new LinkedHashMap<>();
+    public Map<String, DiffResult<ProjectSla>> getSlaDiffs() {
+        Map<String, DiffResult<ProjectSla>> slaDiffs = new LinkedHashMap<>();
         List<ProjectSla> newSlaList = emptyIfNull(newProjectState.getProjectSlas());
 
         boolean isNewSlaListEmpty = isSlaListEmpty(newSlaList);
 
         if (!isEditEvent()) {
             newSlaList.forEach(sla -> slaDiffs.put(
-                    En_ImportanceLevel.find(sla.getImportanceLevelId()),
+                    sla.getImportanceName(),
                     new DiffResult<>(sla, sla))
             );
 
@@ -252,15 +252,19 @@ public class AssembledProjectEvent extends ApplicationEvent implements HasCaseCo
             return slaDiffs;
         }
 
-        for (En_ImportanceLevel level : toList(newProjectState.getProjectSlas(), ProjectSla::getImportanceLevel)) {
-            ProjectSla oldSla = getSlaByImportance(oldSlaList, level.getId());
-            ProjectSla newSla = getSlaByImportance(newSlaList, level.getId());
+        Set<ProjectSla> allProjectSla = new LinkedHashSet<>();
+        allProjectSla.addAll(newSlaList);
+        allProjectSla.addAll(oldSlaList);
+
+        for (ProjectSla nextSla : allProjectSla) {
+            ProjectSla oldSla = getSlaByImportance(oldSlaList, nextSla.getImportanceLevelId());
+            ProjectSla newSla = getSlaByImportance(newSlaList, nextSla.getImportanceLevelId());
 
             if (oldSla == null && newSla == null) {
                 continue;
             }
 
-            slaDiffs.put(level, new DiffResult<>(oldSla == null ? new ProjectSla() : oldSla, newSla == null ? new ProjectSla() : newSla));
+            slaDiffs.put(nextSla.getImportanceName(), new DiffResult<>(oldSla == null ? new ProjectSla() : oldSla, newSla == null ? new ProjectSla() : newSla));
         }
 
         return slaDiffs;
