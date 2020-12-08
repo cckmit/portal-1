@@ -443,6 +443,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.setCompany(caseObjectMeta.getInitiatorCompany());
 
         setCurrentCompany(caseObjectMeta.getInitiatorCompany());
+        subcontractorCompanyModel.setCompanyId(caseObjectMeta.getInitiatorCompanyId());
 
         issueMetaView.setInitiator(caseObjectMeta.getInitiator());
 
