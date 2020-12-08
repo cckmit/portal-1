@@ -453,6 +453,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     private void checkImportanceSelectedValue(List<En_ImportanceLevel> importanceLevels) {
         if (!importanceLevels.contains(metaView.importance().getValue())){
             metaView.importance().setValue(null);
+            meta.setImpLevel(null);
         }
     }
 
@@ -660,12 +661,15 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.managerValidator().setValid(managerIsValid);
 
         boolean productIsValid = isProductValid(caseMeta);
-
         metaView.productValidator().setValid(productIsValid);
+
+        boolean importanceLevelIsValid = caseMeta.getImpLevel() != null;
+        metaView.importanceValidator().setValid(importanceLevelIsValid);
 
         boolean isFieldsValid =
                         productIsValid &&
                         managerIsValid &&
+                        importanceLevelIsValid &&
                         companyIsValid;
 
         return isFieldsValid;
