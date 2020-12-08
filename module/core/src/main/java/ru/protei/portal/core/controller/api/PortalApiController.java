@@ -511,6 +511,37 @@ public class PortalApiController {
                 .ifError(result -> log.warn("createCompany(): Can't create company={}. {}", company, result));
     }
 
+    @PostMapping(value = "/companies/archive/{companyId}/{isArchived}")
+    public Result<?> updateCompanyState(HttpServletRequest request, HttpServletResponse response,
+                                        @PathVariable("companyId") String companyId,
+                                        @PathVariable("isArchived") String isArchived) {
+
+        log.info("API | updateCompanyState(): companyId={}, isArchived={}" , companyId, isArchived);
+
+        final String INCORRECT_ID = "Некорректный id компании";
+        final String INCORRECT_STATE = "Некорректный статус компании. Допустимые значения: true/false";
+
+        Result<AuthToken> authenticate = authenticate(request, response, authService, sidGen, log);
+
+        if (authenticate.isError()) {
+            return error(authenticate.getStatus(), authenticate.getMessage());
+        }
+
+        AuthToken authToken = authenticate.getData();
+
+        if (!isArchived.equalsIgnoreCase("true") && !isArchived.equalsIgnoreCase("false")) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, INCORRECT_STATE);
+        }
+
+        try {
+            return companyService.updateState(authToken, Long.valueOf(companyId), Boolean.parseBoolean(isArchived))
+                    .ifOk(result -> log.info("updateCompanyState(): OK"))
+                    .ifError(result -> log.warn("updateCompanyState(): Can't update company state with id={}. {}", companyId, result));
+        } catch (NumberFormatException e) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, INCORRECT_ID);
+        }
+    }
+
     private CaseQuery makeCaseQuery(CaseApiQuery apiQuery) {
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, apiQuery.getSearchString(), apiQuery.getSortField(), apiQuery.getSortDir());
         query.setLimit(apiQuery.getLimit());

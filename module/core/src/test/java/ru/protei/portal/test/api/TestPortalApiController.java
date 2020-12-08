@@ -53,8 +53,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -1175,15 +1174,16 @@ public class TestPortalApiController extends BaseServiceTest {
         CompanyGroup companyGroup = new CompanyGroup();
         companyGroup.setId(1L);
         companyGroup.setName("main");
+        companyGroup.setInfo("test");
         company.setCompanyGroup(companyGroup);
 
         company.setParentCompanyId(1L);
         company.setParentCompanyName("НТЦ Протей");
 
-        List<ContactItem> contactItems = new ArrayList<>();
-        contactItems.add(new ContactItem("protei@protei.ru", En_ContactItemType.EMAIL));
-        contactItems.add(new ContactItem("+7(812)553-12-12", En_ContactItemType.FAX));
-        company.setContactInfo(new ContactInfo(contactItems));
+        List<ContactItem> contactInfo = new ArrayList<>();
+        contactInfo.add(new ContactItem("protei@protei.ru", En_ContactItemType.EMAIL));
+        contactInfo.add(new ContactItem("+7(812)553-12-12", En_ContactItemType.FAX));
+        company.setContactInfo(new ContactInfo(contactInfo));
 
         company.setInfo("Company information");
         company.setHidden(true);
@@ -1197,14 +1197,59 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect(jsonPath("$.data.cname", is(company.getCname())))
                 .andExpect(jsonPath("$.data.category", is(En_CompanyCategory.CUSTOMER.toString())))
                 .andExpect(jsonPath("$.data.groupId", is(company.getGroupId())))
-                .andExpect(jsonPath("$.data.companyGroup".toString(), is(company.getCompanyGroup().toString())))
+
+                .andExpect(jsonPath("$.data.companyGroup.id", is(companyGroup.getId().intValue())))
+                .andExpect(jsonPath("$.data.companyGroup.name", is(companyGroup.getName())))
+                .andExpect(jsonPath("$.data.companyGroup.info", is(companyGroup.getInfo())))
+
                 .andExpect(jsonPath("$.data.parentCompanyId", is(company.getParentCompanyId().intValue())))
                 .andExpect(jsonPath("$.data.parentCompanyName", is(company.getParentCompanyName())))
-                .andExpect(jsonPath("$.data.contactInfo", is(company.getContactInfo())))
+
+                .andExpect(jsonPath("$.data.contactItems[0].v", is(company.getContactInfo().getItems().get(0).value())))
+                .andExpect(jsonPath("$.data.contactItems[1].v", is(company.getContactInfo().getItems().get(1).value())))
+
                 .andExpect(jsonPath("$.data.info", is(company.getInfo())))
                 .andExpect(jsonPath("$.data.hidden", is(company.getHidden())))
                 .andExpect(jsonPath("$.data.archived", is(company.isArchived())))
                 .andExpect(jsonPath("$.data.autoOpenIssue", is(company.getAutoOpenIssue())));
+    }
+
+    @Test
+    @Transactional
+    public void updateCompanyState() throws Exception {
+        Company company = new Company();
+        Long companyId = 12345L;
+        company.setCname("Protei");
+        company.setId(companyId);
+
+        createPostResultAction("/api/companies/create", company)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data.id", is(company.getId().intValue())));
+
+        Assert.assertTrue(setCompanyArchived(companyId, true));
+        Assert.assertFalse(setCompanyArchived(companyId, false));
+
+        final String INCORRECT_ID = "Некорректный id компании";
+        sendRequestWithIncorrectParam("/incorrect_id/false", INCORRECT_ID);
+
+        final String INCORRECT_STATE = "Некорректный статус компании. Допустимые значения: true/false";
+        sendRequestWithIncorrectParam(companyId + "/incorrect_state", INCORRECT_STATE);
+    }
+
+    private boolean setCompanyArchived(Long companyId, boolean isArchived) throws Exception {
+        createPostResultAction("/api/companies/archive/" + companyId + "/" + isArchived, null)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())));
+
+        return companyDAO.get(companyId).isArchived();
+    }
+
+    private void sendRequestWithIncorrectParam(String params, String exceptedErrorMsg) throws Exception {
+        createPostResultAction("/api/companies/archive/" + params, null)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.INCORRECT_PARAMS.toString())))
+                .andExpect(jsonPath("$.message", is(exceptedErrorMsg)));
     }
 
     private boolean compareLists (List<Long> list1, List<Long> list2){
