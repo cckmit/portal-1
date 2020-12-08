@@ -46,7 +46,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -54,8 +53,7 @@ import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
-import static ru.protei.portal.core.model.query.CaseCommentQuery.CommentType.CASE_STATE;
-import static ru.protei.portal.core.model.query.CaseCommentQuery.CommentType.MANAGER;
+import static ru.protei.portal.core.model.query.CaseCommentQuery.CommentType.*;
 import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
 
 /**
@@ -146,14 +144,9 @@ public class BootstrapServiceImpl implements BootstrapService {
         /**
          *  begin Спринт 63 */
 
-        if(!bootstrapAppDAO.isActionExists( "migrateStateToHistory" )) {
-            this.migrateStateToHistory();
-            bootstrapAppDAO.createAction("migrateStateToHistory");
-        }
-
-        if(!bootstrapAppDAO.isActionExists( "migrateManagerToHistory" )) {
-            this.migrateManagerToHistory();
-            bootstrapAppDAO.createAction("migrateManagerToHistory");
+        if(!bootstrapAppDAO.isActionExists( "migrateToHistory" )) {
+            this.migrateToHistory();
+            bootstrapAppDAO.createAction("migrateToHistory");
         }
 
         /**
@@ -834,29 +827,67 @@ public class BootstrapServiceImpl implements BootstrapService {
         log.info("addContractEmployee ended");
     }
 
-    private void migrateStateToHistory() {
-        log.info("migrateStateToHistory started");
-        migrateToHistory(CASE_STATE, En_HistoryType.CASE_STATE, CaseComment::getCaseStateId, CaseComment::getCaseStateName);
-        log.info("migrateStateToHistory ended");
+    private static class CommentToHistoryMigration {
+        CaseCommentQuery.CommentType commentType;
+        En_HistoryType enHistoryType;
+        Function<CaseComment, Long> getHistoryValue;
+        Function<CaseComment, String> getHistoryName;
+
+        CaseComment prevComment;
+
+        public CommentToHistoryMigration(CaseCommentQuery.CommentType commentType, En_HistoryType enHistoryType,
+                                         Function<CaseComment, Long> getHistoryValue, Function<CaseComment, String> getHistoryName) {
+            this.commentType = commentType;
+            this.enHistoryType = enHistoryType;
+            this.getHistoryValue = getHistoryValue;
+            this.getHistoryName = getHistoryName;
+        }
+
+        static CaseCommentQuery.CommentType commentType(CaseComment comment) {
+            if (comment.getCaseStateId() != null) {
+                return CASE_STATE;
+            }
+            if (comment.getCaseImpLevel() != null) {
+                return IMPORTANCE;
+            }
+            return MANAGER;
+        }
+
+        public void prepare() {
+            this.prevComment = null;
+        }
+
+        public void setPrevComment(CaseComment prevComment) {
+            this.prevComment = prevComment;
+        }
     }
 
-    private void migrateManagerToHistory() {
-        log.info("migrateManagerToHistory started");
-        migrateToHistory(MANAGER, En_HistoryType.CASE_MANAGER, CaseComment::getCaseManagerId, CaseComment::getCaseManagerShortName);
-        log.info("migrateManagerToHistory ended");
-    }
+    private void migrateToHistory() {
+        log.info("migrateToHistory started");
 
-    private void migrateToHistory(CaseCommentQuery.CommentType commentType, En_HistoryType historyType,
-                                  Function<CaseComment, Long> historyValue, Function<CaseComment, String> historyName) {
         CaseCommentQuery query = new CaseCommentQuery();
-        query.addCommentType(commentType);
+        query.addCommentType(CASE_STATE);
+        query.addCommentType(IMPORTANCE);
+        query.addCommentType(MANAGER);
+        List<Long> caseCommentsCaseIds = caseCommentDAO.getCaseCommentsCaseIds(query).stream().distinct().collect(toList());
 
-        final List<Long> caseCommentsCaseIds = caseCommentDAO.getCaseCommentsCaseIds(query);
+        CaseCommentQuery caseCommentQuery = new CaseCommentQuery();
+        caseCommentQuery.addCommentType(CASE_STATE);
+        caseCommentQuery.addCommentType(IMPORTANCE);
+        caseCommentQuery.addCommentType(MANAGER);
 
         List<History> histories = new ArrayList<>();
         List<Long> caseIds = new ArrayList<>();
-        CaseCommentQuery caseCommentQuery = new CaseCommentQuery();
-        caseCommentQuery.addCommentType(commentType);
+        Map<CaseCommentQuery.CommentType, CommentToHistoryMigration> commentToHistoryMigrationMap = new HashMap<>();
+
+        commentToHistoryMigrationMap.put(CASE_STATE, new CommentToHistoryMigration(CASE_STATE, En_HistoryType.CASE_STATE,
+                CaseComment::getCaseStateId, CaseComment::getCaseStateName));
+        commentToHistoryMigrationMap.put(IMPORTANCE, new CommentToHistoryMigration(IMPORTANCE, En_HistoryType.CASE_IMPORTANCE,
+                caseComment -> (long) caseComment.getCaseImpLevel(),
+                caseComment -> caseComment.getCaseImportance().getCode()));
+        commentToHistoryMigrationMap.put(MANAGER, new CommentToHistoryMigration(MANAGER, En_HistoryType.CASE_MANAGER,
+                CaseComment::getCaseManagerId, CaseComment::getCaseManagerShortName));
+
         for(int i = 0; i < caseCommentsCaseIds.size(); i++) {
             caseIds.clear();
             int upperBorder = i + 1000;
@@ -864,50 +895,48 @@ public class BootstrapServiceImpl implements BootstrapService {
                 caseIds.add(caseCommentsCaseIds.get(i++));
             }
             caseCommentQuery.setCaseObjectIds(caseIds);
-            caseCommentDAO.getCaseComments(caseCommentQuery).stream()
-                    .collect(groupingBy(CaseComment::getCaseId)).values().forEach(caseComments -> {
-                        caseComments.sort(Comparator.comparing(CaseComment::getId));
-                        addToHistory(histories, caseComments, historyType, historyValue, historyName, this::maybePersistHistory);
-            });
+            histories.addAll(convertCaseCommentToHistory(caseCommentDAO.getCaseComments(caseCommentQuery), commentToHistoryMigrationMap));
+            persistHistory(histories, false);
         }
         if (!histories.isEmpty()) {
-            historyDAO.persistBatch(histories);
+            persistHistory(histories, true);
         }
+
+        log.info("migrateToHistory ended");
     }
 
-    private void maybePersistHistory(List<History> histories) {
-        if (histories.size() > 1000) {
-            histories.forEach(historyDAO::persist);
-            histories.clear();
-        }
+    public List<History> convertCaseCommentToHistory(List<CaseComment> caseComments,  Map<CaseCommentQuery.CommentType, CommentToHistoryMigration> commentToHistoryMigrationMap) {
+        List<History> histories = new ArrayList<>();
+        caseComments.stream().collect(groupingBy(CaseComment::getCaseId)).values().forEach(
+                comments -> {
+                    commentToHistoryMigrationMap.values().forEach(CommentToHistoryMigration::prepare);
+                    comments.stream().sorted(Comparator.comparing(CaseComment::getId))
+                        .forEach(comment -> {
+                            CommentToHistoryMigration commentToHistoryMigration = commentToHistoryMigrationMap.get(CommentToHistoryMigration.commentType(comment));
+                            histories.add(makeHistory(commentToHistoryMigration.prevComment, comment, commentToHistoryMigration.enHistoryType,
+                                    commentToHistoryMigration.getHistoryValue, commentToHistoryMigration.getHistoryName));
+                            commentToHistoryMigration.setPrevComment(comment);
+                    });
+                });
+        return histories;
     }
 
-    private void addToHistory(List<History> histories, List<CaseComment> comments, En_HistoryType historyType,
-                              Function<CaseComment, Long> historyValue, Function<CaseComment, String> historyName,
-                              Consumer<List<History>> persist) {
-        CaseComment comment = comments.get(0);
-        histories.add(createHistory(comment.getAuthorId(), comment.getCaseId(), En_HistoryAction.ADD, historyType,
-                comment.getCreated(), null, null,  historyValue.apply(comment), historyName.apply(comment)));
+    private History makeHistory(CaseComment firstComment, CaseComment secondComment, En_HistoryType historyType,
+                                Function<CaseComment, Long> historyValue, Function<CaseComment, String> historyName) {
+        Long firstValue = firstComment != null ? historyValue.apply(firstComment) : null;
+        Long secondValue = historyValue.apply(secondComment);
 
-        for (int i = 1; i < comments.size(); i++) {
-            CaseComment firstComment = comments.get(i - 1);
-            CaseComment secondComment = comments.get(i);
-
-            Long firstValue = historyValue.apply(firstComment);
-            Long secondValue = historyValue.apply(secondComment);
-
-            if (firstValue == null && secondValue != null) {
-                histories.add(createHistory(secondComment.getAuthorId(), secondComment.getCaseId(), En_HistoryAction.ADD, historyType,
-                        secondComment.getCreated(), null, null, secondValue, historyName.apply(secondComment)));
-            } else if (firstValue != null && secondValue != null) {
-                histories.add(createHistory(secondComment.getAuthorId(), secondComment.getCaseId(), En_HistoryAction.CHANGE, historyType,
-                        secondComment.getCreated(),firstValue, historyName.apply(firstComment), secondValue, historyName.apply(secondComment)));
-            } else if (firstValue != null && secondValue == null) {
-                histories.add(createHistory(secondComment.getAuthorId(), secondComment.getCaseId(), En_HistoryAction.REMOVE, historyType,
-                        secondComment.getCreated(), firstValue, historyName.apply(firstComment), null, null));
-            }
+        if (firstValue == null && secondValue != null) {
+            return createHistory(secondComment.getAuthorId(), secondComment.getCaseId(), En_HistoryAction.ADD, historyType,
+                    secondComment.getCreated(), null, null, secondValue, historyName.apply(secondComment));
+        } else if (firstValue != null && secondValue != null) {
+            return createHistory(secondComment.getAuthorId(), secondComment.getCaseId(), En_HistoryAction.CHANGE, historyType,
+                    secondComment.getCreated(),firstValue, historyName.apply(firstComment), secondValue, historyName.apply(secondComment));
+        } else if (firstValue != null && secondValue == null) {
+            return createHistory(secondComment.getAuthorId(), secondComment.getCaseId(), En_HistoryAction.REMOVE, historyType,
+                    secondComment.getCreated(), firstValue, historyName.apply(firstComment), null, null);
         }
-        persist.accept(histories);
+        throw new RuntimeException("NO En_HistoryAction");
     }
 
     private History createHistory(Long personId, Long caseObjectId, En_HistoryAction action, En_HistoryType historyType,
@@ -924,6 +953,13 @@ public class BootstrapServiceImpl implements BootstrapService {
         history.setNewValue(newValue);
 
         return history;
+    }
+
+    private void persistHistory(List<History> histories, boolean force) {
+        if (force || histories.size() > 1000) {
+            histories.forEach(historyDAO::persist);
+            histories.clear();
+        }
     }
 
     private static class ContactInfoPersonMigration {
