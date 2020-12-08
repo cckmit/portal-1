@@ -827,7 +827,7 @@ public class BootstrapServiceImpl implements BootstrapService {
         log.info("addContractEmployee ended");
     }
 
-    private static class CommentToHistoryMigration {
+    public static class CommentToHistoryMigration {
         CaseCommentQuery.CommentType commentType;
         En_HistoryType enHistoryType;
         Function<CaseComment, Long> getHistoryValue;
