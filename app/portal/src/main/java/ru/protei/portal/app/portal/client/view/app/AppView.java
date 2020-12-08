@@ -51,7 +51,7 @@ public class AppView extends Composite
 
     @Override
     public void setUser(String name, String company, String photoSrc) {
-        username.setInnerText(name);
+        username.setText(name);
         photo.setSrc(photoSrc);
     }
 
@@ -63,7 +63,7 @@ public class AppView extends Composite
 
     @Override
     public void setAppVersion(String appVersion) {
-        this.appVersion.setText(appVersion);
+        this.appVersion.setInnerText(appVersion);
     }
 
     @Override
@@ -114,6 +114,15 @@ public class AppView extends Composite
         removeExternalSections(menuContainer.getElement());
     }
 
+    @Override
+    public void showHelp(boolean isShow) {
+        if (isShow) {
+            help.removeClassName("hide");
+        } else {
+            help.addClassName("hide");
+        }
+    }
+
     @UiHandler( "logout" )
     public void onLogoutClicked( ClickEvent event ) {
         event.preventDefault();
@@ -153,7 +162,7 @@ public class AppView extends Composite
         }
     }
 
-    @UiHandler({"profile", "menuBarFocus"})
+    @UiHandler({"profile", "username", "menuBarFocus"})
     public void profileClick(ClickEvent event) {
         if (menuBar.getStyleName().contains("show")) {
             menuBar.removeStyleName( "show" );
@@ -166,7 +175,6 @@ public class AppView extends Composite
     public void profileClick(MouseOutEvent event) {
         menuBar.removeStyleName("show");
     }
-
 
     @UiHandler("locale")
     public void onLocaleChanged(ValueChangeEvent<LocaleImage> event) {
@@ -208,7 +216,7 @@ public class AppView extends Composite
         notifyContainer.ensureDebugId(DebugIds.APP_VIEW.NOTIFICATION_CONTAINER);
         locale.ensureDebugId(DebugIds.APP_VIEW.LOCALE_SELECTOR);
         settings.ensureDebugId(DebugIds.APP_VIEW.SETTING_BUTTON);
-        username.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.APP_VIEW.USER_NAME_LABEL);
+        username.ensureDebugId(DebugIds.APP_VIEW.USER_NAME_LABEL);
         navbar.ensureDebugId(DebugIds.APP_VIEW.SIDEBAR);
         logo.ensureDebugId(DebugIds.APP_VIEW.DASHBOARD_BUTTON);
         fixClosedSidebarButton.ensureDebugId(DebugIds.APP_VIEW.FIX_CLOSED_SIDEBAR_BUTTON);
@@ -338,11 +346,9 @@ public class AppView extends Composite
     @UiField
     Anchor logo;
     @UiField
-    Label appVersion;
-    @UiField
     HTMLPanel globalContainer;
     @UiField
-    SpanElement username;
+    Label username;
     @UiField
     HTMLPanel navbar;
     @UiField
@@ -376,7 +382,10 @@ public class AppView extends Composite
     ImageElement logoImgWhite;
     @UiField
     ImageElement logoImgBlue;
-
+    @UiField
+    DivElement help;
+    @UiField
+    DivElement appVersion;
 
     AbstractAppActivity activity;
 

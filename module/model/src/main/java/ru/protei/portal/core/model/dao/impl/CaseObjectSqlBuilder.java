@@ -1,6 +1,5 @@
 package ru.protei.portal.core.model.dao.impl;
 
-import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.dict.En_WorkTrigger;
@@ -17,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static ru.protei.portal.core.model.dao.impl.CaseShortViewDAO_Impl.isFilterByTagNames;
 import static ru.protei.portal.core.model.dao.impl.CaseShortViewDAO_Impl.isSearchAtComments;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
@@ -51,6 +51,10 @@ public class CaseObjectSqlBuilder {
                 }
             }
 
+            if (isFilterByTagNames(query)) {
+                condition.append(" and case_tag.name in" + makeInArg(query.getCaseTagsNames(), true));
+            }
+
             if ( !query.isAllowViewPrivate() ) {
                 condition.append( " and case_object.private_flag=?" );
                 args.add( 0 );
@@ -60,7 +64,7 @@ public class CaseObjectSqlBuilder {
             }
 
             if ( query.getType() != null ) {
-                condition.append( " and case_type=?" );
+                condition.append( " and case_object.case_type=?" );
                 args.add( query.getType().getId() );
             }
 
@@ -68,43 +72,37 @@ public class CaseObjectSqlBuilder {
                 condition.append(" and caseno in " + makeInArg(query.getCaseNumbers(), false));
             }
 
-            boolean isInitiatorCompaniesNotEmpty = isNotEmpty(query.getCompanyIds());
+            if (isNotEmpty(query.getCompanyIds())) {
+                condition.append(" and initiator_company in " + makeInArg(query.getCompanyIds(), false));
+            }
 
-            if (isInitiatorCompaniesNotEmpty) {
-                condition.append(" and (initiator_company in " + makeInArg(query.getCompanyIds(), false));
-
-                if (isNotEmpty(query.getInitiatorIds())) {
-                    condition.append(" and initiator in " + makeInArg(query.getInitiatorIds(), false));
-                }
+            if (isNotEmpty(query.getInitiatorIds())) {
+                condition.append(" and initiator in " + makeInArg(query.getInitiatorIds(), false));
             }
 
             if (isNotEmpty(query.getManagerCompanyIds())) {
-                String logicOperator = isInitiatorCompaniesNotEmpty && Boolean.TRUE.equals(query.getManagerOrInitiatorCondition()) ? " or " : " and ";
-
-                condition.append(logicOperator + "manager_company_id in " + makeInArg(query.getManagerCompanyIds(), false));
-
-                if (isNotEmpty(query.getManagerIds())) {
-                    List<Long> managerIds = new ArrayList<>(query.getManagerIds());
-                    boolean isWithoutManager = managerIds.remove(CrmConstants.Employee.UNDEFINED);
-
-                    if (!isWithoutManager) {
-                        condition
-                                .append(" and manager IN ")
-                                .append(makeInArg(managerIds, false));
-                    } else if (managerIds.isEmpty()) {
-                        condition.append(" and (manager IS NULL or (SELECT person.sex FROM person WHERE person.id = manager) = ?)");
-                        args.add(En_Gender.UNDEFINED.getCode());
-                    } else {
-                        condition
-                                .append(" and (manager IN ")
-                                .append(makeInArg(managerIds, false))
-                                .append(" or manager IS NULL or (SELECT person.sex FROM person WHERE person.id = manager) = ?)");
-                        args.add(En_Gender.UNDEFINED.getCode());
-                    }
-                }
+                condition.append(" and manager_company_id in " + makeInArg(query.getManagerCompanyIds(), false));
             }
 
-            condition.append(isInitiatorCompaniesNotEmpty ? ")" : "");
+            if (isNotEmpty(query.getManagerIds())) {
+                List<Long> managerIds = new ArrayList<>(query.getManagerIds());
+                boolean isWithoutManager = managerIds.remove(CrmConstants.Employee.UNDEFINED);
+
+                if (!isWithoutManager) {
+                    condition
+                            .append(" and manager IN ")
+                            .append(makeInArg(managerIds, false));
+                } else if (managerIds.isEmpty()) {
+                    condition.append(" and (manager IS NULL or (SELECT person.sex FROM person WHERE person.id = manager) = ?)");
+                    args.add(En_Gender.UNDEFINED.getCode());
+                } else {
+                    condition
+                            .append(" and (manager IN ")
+                            .append(makeInArg(managerIds, false))
+                            .append(" or manager IS NULL or (SELECT person.sex FROM person WHERE person.id = manager) = ?)");
+                    args.add(En_Gender.UNDEFINED.getCode());
+                }
+            }
 
             if (isNotEmpty(query.getProductIds())) {
                 if (query.getProductIds().remove(CrmConstants.Product.UNDEFINED)) {
@@ -215,20 +213,6 @@ public class CaseObjectSqlBuilder {
                 condition.append(")");
             }
 
-            if ( isNotEmpty(query.getProductDirectionIds()) ) {
-                if (query.getProductDirectionIds().remove(null)) {
-                    condition.append(" and (product_id is null");
-                    if (!query.getProductDirectionIds().isEmpty()) {
-                        condition.append(" or product_id in ")
-                                .append(makeInArg(query.getProductDirectionIds(), false));
-                    }
-                    condition.append(")");
-                } else {
-                    condition.append(" and product_id in ")
-                            .append(makeInArg(query.getProductDirectionIds(), false));
-                }
-            }
-
             if (isNotEmpty(query.getCreatorIds())) {
                 condition
                         .append(" and case_object.CREATOR in ")
@@ -239,57 +223,6 @@ public class CaseObjectSqlBuilder {
                 condition
                         .append(" and case_object.id in ")
                         .append(makeInArg(query.getCaseIds(), false));
-            }
-
-            if ( isNotEmpty(query.getRegionIds()) ) {
-                if (query.getRegionIds().remove(null)) {
-                    condition.append(" and (case_object.id not in (SELECT CASE_ID FROM case_location)");
-                    if (!query.getRegionIds().isEmpty()) {
-                        condition.append(" or case_object.id in (SELECT CASE_ID FROM case_location WHERE LOCATION_ID IN ")
-                                .append(makeInArg(query.getRegionIds(), false))
-                                .append(")");
-                    }
-                    condition.append(")");
-                } else {
-                    condition.append(" and case_object.id in (SELECT CASE_ID FROM case_location WHERE LOCATION_ID IN ")
-                            .append(makeInArg(query.getRegionIds(), false))
-                            .append(")");
-                }
-            }
-
-            if ( isNotEmpty(query.getHeadManagerIds()) ) {
-                if (query.getHeadManagerIds().remove(null)) {
-                    condition.append(" and (case_object.id not in (SELECT CASE_ID FROM case_member WHERE MEMBER_ROLE_ID = ?)");
-                    args.add(En_DevUnitPersonRoleType.HEAD_MANAGER.getId());
-                    if (!query.getHeadManagerIds().isEmpty()) {
-                        condition.append(" or case_object.id in (SELECT CASE_ID FROM case_member WHERE MEMBER_ROLE_ID = ? and MEMBER_ID IN ")
-                                .append(makeInArg(query.getHeadManagerIds(), false))
-                                .append(")");
-                        args.add(En_DevUnitPersonRoleType.HEAD_MANAGER.getId());
-                    }
-                    condition.append(")");
-                } else {
-                    condition.append(" and case_object.id in (SELECT CASE_ID FROM case_member WHERE MEMBER_ROLE_ID = ? and MEMBER_ID IN ")
-                            .append(makeInArg(query.getHeadManagerIds(), false))
-                            .append(")");
-                    args.add(En_DevUnitPersonRoleType.HEAD_MANAGER.getId());
-                }
-            }
-
-            if ( isNotEmpty(query.getCaseMemberIds()) ) {
-                if (query.getCaseMemberIds().remove(null)) {
-                    condition.append(" and (case_object.id not in (SELECT CASE_ID FROM case_member)");
-                    if (!query.getCaseMemberIds().isEmpty()) {
-                        condition.append(" or case_object.id in (SELECT CASE_ID FROM case_member WHERE MEMBER_ID IN ")
-                                .append(makeInArg(query.getCaseMemberIds(), false))
-                                .append(")");
-                    }
-                    condition.append(")");
-                } else {
-                    condition.append(" and case_object.id in (SELECT CASE_ID FROM case_member WHERE MEMBER_ID IN ")
-                            .append(makeInArg(query.getCaseMemberIds(), false))
-                            .append(")");
-                }
             }
 
             if (query.getPlanId() != null) {

@@ -6,7 +6,6 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.selector.input.InputPopupMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.item.PopupSelectableItem;
 
 /**
  * Селектор сотрудников

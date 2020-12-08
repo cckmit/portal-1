@@ -20,6 +20,7 @@ import ru.protei.winter.jdbc.JdbcHelper;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -190,8 +191,8 @@ public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements Proje
             }
 
             if (query.getMemberId() != null) {
-                condition.append(" and (CO.id in (select case_id from case_member where member_id = ").append(query.getMemberId()).append(")");
-                condition.append(" or CO.creator = ").append(query.getMemberId()).append(")");
+                condition.append(" and CO.id in (select case_id from case_member where member_id = ?)");
+                args.add(query.getMemberId());
             }
 
             if (isNotEmpty(query.getProductIds())) {
@@ -235,6 +236,10 @@ public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements Proje
                 condition.append(" and CO.deleted = ").append(query.getDeleted());
             }
 
+            if (isNotEmpty(query.getSubcontractorIds())) {
+                condition.append(" and project.id in (select project_to_company.project_id from project_to_company where project_to_company.company_id in")
+                        .append(makeInArg(query.getSubcontractorIds(), false)).append(")");
+            }
             if (!isEmpty(query.getTechnicalSupportExpiresInDays())) {
                 condition.append(
                         query.getTechnicalSupportExpiresInDays().stream().map(interval -> {
@@ -243,8 +248,11 @@ public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements Proje
                             return "(project.technical_support_validity >= ? and project.technical_support_validity < ?)";
                         }).collect(Collectors.joining(" or ", " and( ", " ) ")));
             }
+            if (query.getActive()) {
+                condition.append(" and (project.technical_support_validity >= ? or project.work_completion_date >= ?)");
+                args.add(new Date());
+                args.add(new Date());
+            }
         }));
     }
-
-
 }

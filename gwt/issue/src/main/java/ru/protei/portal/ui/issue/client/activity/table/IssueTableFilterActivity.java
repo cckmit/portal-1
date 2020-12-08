@@ -11,6 +11,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseFilter;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -31,7 +32,11 @@ import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.widget.attachment.popup.AttachPopup;
 import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidget;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
+import ru.protei.portal.ui.common.client.widget.selector.company.CustomerCompanyModel;
+import ru.protei.portal.ui.common.client.widget.selector.company.SubcontractorCompanyModel;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
+import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -70,7 +75,7 @@ public abstract class IssueTableFilterActivity
 
     @Event
     public void onAuthSuccess (AuthEvents.Success event) {
-        if (!policyService.hasPrivilegeFor( En_Privilege.ISSUE_VIEW )) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.ISSUE_VIEW)) {
             return;
         }
 
@@ -78,6 +83,7 @@ public abstract class IssueTableFilterActivity
         filterView.presetFilterType();
         updateCaseStatesFilter();
         updateImportanceLevelButtons();
+        updateCompanyModels(event.profile);
     }
 
     @Event(Type.FILL_CONTENT)
@@ -95,9 +101,12 @@ public abstract class IssueTableFilterActivity
                 new ActionBarEvents.Clear()
         );
 
-        if(!policyService.hasSystemScopeForPrivilege( En_Privilege.COMPANY_VIEW ) ){
-            filterView.getIssueFilterParams().presetCompany(policyService.getProfile().getCompany());
-            filterView.getIssueFilterParams().presetManagerCompany(policyService.getProfile().getCompany());
+        if(!policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW)){
+            if (policyService.isSubcontractorCompany()) {
+                filterView.getIssueFilterParams().presetManagerCompany(policyService.getProfile().getCompany());
+            } else {
+                filterView.getIssueFilterParams().presetCompany(policyService.getProfile().getCompany());
+            }
         } else {
             homeCompanyService.getHomeCompany(CrmConstants.Company.HOME_COMPANY_ID, company -> {
                 Set<EntityOption> value = new HashSet<>();
@@ -350,7 +359,9 @@ public abstract class IssueTableFilterActivity
         filterView.getIssueFilterParams().productsVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_PRODUCT_VIEW ) );
         filterView.getIssueFilterParams().searchPrivateVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) );
         filterView.getIssueFilterParams().planVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PLAN_VIEW));
-        filterView.getIssueFilterParams().creatorsVisibility().setVisible( policyService.personBelongsToHomeCompany());
+        filterView.getIssueFilterParams().creatorsVisibility().setVisible(policyService.personBelongsToHomeCompany());
+        filterView.getIssueFilterParams().initiatorsVisibility().setVisible(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW) || !policyService.isSubcontractorCompany());
+        filterView.getIssueFilterParams().managersVisibility().setVisible(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW) || policyService.isSubcontractorCompany());
     }
 
     private void updateCaseStatesFilter() {
@@ -379,6 +390,21 @@ public abstract class IssueTableFilterActivity
         } else {
             animation.filterRestore();
         }
+    }
+
+    private void updateCompanyModels(Profile profile) {
+        Company userCompany = profile.getCompany();
+        subcontractorCompanyModel.setCompanyId(userCompany.getId());
+        subcontractorCompanyModel.setActive(false);
+        customerCompanyModel.setSubcontractorId(userCompany.getId());
+        customerCompanyModel.setActive(false);
+
+        filterView.setInitiatorCompaniesModel(isSubcontractorCompany(userCompany) ? customerCompanyModel : companyModel);
+        filterView.setManagerCompaniesModel(profile.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW) || isSubcontractorCompany(userCompany) ? companyModel : subcontractorCompanyModel);
+    }
+
+    private boolean isSubcontractorCompany(Company userCompany) {
+        return userCompany.getCategory() == En_CompanyCategory.SUBCONTRACTOR;
     }
 
     @Inject
@@ -425,6 +451,15 @@ public abstract class IssueTableFilterActivity
 
     @Inject
     HomeCompanyService homeCompanyService;
+
+    @Inject
+    CompanyModel companyModel;
+
+    @Inject
+    CustomerCompanyModel customerCompanyModel;
+
+    @Inject
+    SubcontractorCompanyModel subcontractorCompanyModel;
 
     private CaseQuery query = null;
 

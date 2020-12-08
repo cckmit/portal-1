@@ -11,8 +11,10 @@ import ru.protei.portal.core.model.dao.UserLoginDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.winter.core.utils.net.AddressMask;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
@@ -20,6 +22,8 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 
 /**
@@ -105,6 +109,15 @@ public class AuthServiceImpl implements AuthService {
         }
         if (loginStatus != En_ResultStatus.OK) {
             return error(loginStatus);
+        }
+
+        if (isNotEmpty(userLogin.getIpMaskAllow())) {
+            if (!AddressMask.isInRange(
+                    new InetSocketAddress(ip, 0),
+                    stream(userLogin.getIpMaskAllow()).map(AddressMask::new).collect(Collectors.toList()))) {
+                log.debug("login [{}] access denied by ip mask allow = {}", login, ip);
+                return error(En_ResultStatus.PERMISSION_DENIED);
+            }
         }
 
         Person person = personDAO.get(userLogin.getPersonId());

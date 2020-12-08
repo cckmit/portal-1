@@ -23,4 +23,6 @@ public interface CaseStateController extends RemoteService {
     CaseState getCaseStateWithoutCompaniesOmitPrivileges(Long id) throws RequestFailedException;
 
     CaseState saveCaseState(CaseState state) throws RequestFailedException;
+
+    CaseState getCaseStateByCaseId(Long caseId) throws RequestFailedException;
 }

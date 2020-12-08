@@ -63,7 +63,15 @@
                         <sla:SlaInput ui:field="slaInput"/>
                     </div>
 
-                    <div class="form-group col-md-12" ui:field="documents">
+                    <div class="form-group col-md-12 card card-default project-team">
+                        <label class="fade">
+                            <ui:text from="{lang.projectTeam}"/>
+                        </label>
+
+                        <team:TeamSelector ui:field="team"/>
+                    </div>
+
+                    <div class="form-group col-md-12 p-r-0 p-l-0" ui:field="documents">
                         <label>
                             <ui:text from="{lang.equipmentDocuments}"/>
                         </label>
@@ -71,7 +79,7 @@
                                      styleName="form-group col-md-12 main-content-padding-0 project-document-preview"/>
                     </div>
 
-                    <div class="form-group col-md-12" ui:field="comments">
+                    <div class="form-group col-md-12 p-r-0 p-l-0" ui:field="comments">
                         <label>
                             <ui:text from="{lang.comments}"/>
                         </label>
@@ -165,29 +173,26 @@
 
                         </div>
 
-                        <div class="form-group m-t-20 m-b-0">
+                        <div class="form-group m-t-10 m-b-0">
+                            <label><ui:text from="{lang.projectSubcontractors}"/></label>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col-md-12">
+                                <company:CompanyMultiSelector ui:field="subcontractors"
+                                                              buttonStyle="btn-info btn-xs"
+                                                              styleName="case-subscribers"/>
+                            </div>
+                        </div>
+
+                        <div class="form-group m-t-10 m-b-0">
                             <label ui:field="plansLabel"><ui:text from="{lang.plans}"/></label>
                         </div>
-                        <g:HTMLPanel ui:field="ownerPlansContainer" styleName="form-group">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <plan:PlanMultiSelector ui:field="plans"
-                                                            buttonStyle="btn-info btn-xs"
-                                                            styleName="case-plans"
-                                                            hasNullValue="false"/>
-                                </div>
-                            </div>
-                        </g:HTMLPanel>
-
-                        <div class="form-group m-t-20 m-b-0">
-                            <label>
-                                <ui:text from="{lang.projectTeam}"/>
-                            </label>
-                        </div>
-
-                        <div class="form-group row clearfix">
+                        <div class="row form-group">
                             <div class="col-md-12">
-                                <team:TeamSelector ui:field="team" styleName="project-team-selector"/>
+                                <plan:PlanMultiSelector ui:field="plans"
+                                                        buttonStyle="btn-info btn-xs"
+                                                        styleName="case-plans"
+                                                        hasNullValue="false"/>
                             </div>
                         </div>
                     </div>

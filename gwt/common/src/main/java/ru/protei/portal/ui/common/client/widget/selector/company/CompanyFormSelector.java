@@ -14,6 +14,4 @@ public class CompanyFormSelector extends FormPopupSingleSelector<EntityOption> {
         setAsyncModel( companyModel );
         setItemRenderer( option -> option == null ? defaultValue : option.getDisplayText() );
     }
-
-
 }

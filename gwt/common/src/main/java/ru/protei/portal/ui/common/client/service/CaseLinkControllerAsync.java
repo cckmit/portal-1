@@ -19,5 +19,5 @@ public interface CaseLinkControllerAsync {
 
     void createLinkWithPublish(CaseLink value, En_CaseType caseType, AsyncCallback<CaseLink> async);
 
-    void deleteLinkWithPublish(Long id, En_CaseType caseType, AsyncCallback<Void> async);
+    void deleteLinkWithPublish(Long id, En_CaseType caseType, AsyncCallback<CaseLink> async);
 }

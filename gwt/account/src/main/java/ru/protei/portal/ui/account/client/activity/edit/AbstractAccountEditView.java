@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.NameStatus;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.Set;
@@ -29,6 +30,8 @@ public interface AbstractAccountEditView extends IsWidget {
 
     HasText confirmPassword();
 
+    HasValue<String> searchPattern();
+
     HasValue< Set< UserRole > > roles();
 
     HasValue<Boolean> sendWelcomeEmail();
@@ -48,4 +51,6 @@ public interface AbstractAccountEditView extends IsWidget {
     void setLoginStatus( NameStatus status );
 
     void setCompaniesForInitiator(Set<Long> companyIds);
+
+    void setRolesFilter(Selector.SelectorFilter<UserRole> filter);
 }

@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
 import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
 import static ru.protei.portal.ui.common.server.ServiceUtils.getAuthToken;
@@ -146,12 +147,12 @@ public class CompanyControllerImpl implements CompanyController {
     }
 
     @Override
-    public Company getCompanyUnsafe(long id) throws RequestFailedException {
+    public Company getCompanyOmitPrivileges(long id) throws RequestFailedException {
         log.info("getCompanyUnsafe(): id={}", id);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<Company> response = companyService.getCompanyUnsafe(token, id);
+        Result<Company> response = companyService.getCompanyOmitPrivileges(token, id);
 
         log.info("getCompanyUnsafe(): response.isOk()={} | response.getData() = {}", response.isOk(), response.getData());
 
@@ -176,11 +177,39 @@ public class CompanyControllerImpl implements CompanyController {
     }
 
     @Override
+    public List<EntityOption> getSubcontractorOptionList(Long companyId, boolean isActive) throws RequestFailedException {
+        log.info("getSubcontractorOptionList(): companyId={}, isActive={}", companyId, isActive);
+
+        Result<List<EntityOption>> result = companyService.subcontractorOptionListByCompanyIds(setOf(companyId), isActive);
+
+        log.info("getSubcontractorOptionList(): {}", result.isOk() ? "ok" : result.getStatus());
+
+        if (result.isError())
+            throw new RequestFailedException(result.getStatus());
+
+        return result.getData();
+    }
+
+    @Override
+    public List<EntityOption> getInitiatorOptionList(Long subcontractorId, boolean isActive) throws RequestFailedException {
+        log.info("getInitiatorOptionList(): subcontractorId={}, isActive={}", subcontractorId, isActive);
+
+        Result<List<EntityOption>> result = companyService.companyOptionListBySubcontractorIds(setOf(subcontractorId), isActive);
+
+        log.info("getInitiatorOptionList(): {}", result.isOk() ? "ok" : result.getStatus());
+
+        if (result.isError())
+            throw new RequestFailedException(result.getStatus());
+
+        return result.getData();
+    }
+
+    @Override
     public List< EntityOption > getCompanyOptionListIgnorePrivileges(CompanyQuery query) throws RequestFailedException {
         log.info( "getCompanyOptionListIgnorePrivileges(): query={}", query );
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result< List< EntityOption > > result = companyService.companyOptionListIgnorePrivileges(token, query);
+        Result< List< EntityOption > > result = companyService.companyOptionListIgnorePrivileges(query);
 
         log.info( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 

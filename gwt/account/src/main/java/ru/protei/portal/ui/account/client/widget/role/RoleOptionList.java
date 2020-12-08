@@ -22,6 +22,12 @@ public class RoleOptionList extends OptionList< UserRole > implements ModelList<
     }
 
     @Override
+    protected void onUnload() {
+        super.onUnload();
+        filter = null;
+    }
+
+    @Override
     public void fillOptions( List< UserRole > userRoles ) {
         clearOptions();
         userRoles.forEach( option -> {

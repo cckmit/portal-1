@@ -506,6 +506,8 @@ public class PortalApiController {
                                             parseDate(apiQuery.getCreatedTo()))
                              );
         query.setManagerCompanyIds(apiQuery.getManagerCompanyIds());
+        query.setProductIds(apiQuery.getProductIds());
+        query.setCaseTagsNames(apiQuery.getCaseTagsNames());
         return query;
     }
 

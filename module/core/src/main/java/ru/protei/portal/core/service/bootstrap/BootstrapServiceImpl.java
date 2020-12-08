@@ -15,6 +15,7 @@ import ru.protei.portal.core.index.document.DocumentStorageIndex;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.PortalBaseJdbcDAO;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dto.ReportCaseQuery;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -46,7 +47,6 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
@@ -89,7 +89,7 @@ public class BootstrapServiceImpl implements BootstrapService {
         updateManagerFiltersWithoutManagerCompany();
         //fillWithCrossLinkColumn();
         //transferYoutrackLinks();
-        addCommonManager();
+        //addCommonManager();
         updateHistoryTable();
         updateIssueFiltersDateRanges();
         updateIssueReportDateRanges();
@@ -115,9 +115,28 @@ public class BootstrapServiceImpl implements BootstrapService {
             normalizeEmails();
             bootstrapAppDAO.createAction("normalizeEmails");
         }
+        if(!bootstrapAppDAO.isActionExists("updateIssueFiltersCompanyManager")) {
+            updateIssueFiltersManager();
+            bootstrapAppDAO.createAction("updateIssueFiltersCompanyManager");
+        }
+        if(!bootstrapAppDAO.isActionExists("updateIssueReportsCompanyManager")) {
+            updateIssueReportsManager();
+            bootstrapAppDAO.createAction("updateIssueReportsCompanyManager");
+        }
 
         /**
          *  end Спринт 58 */
+
+        /**
+         *  begin Спринт 62 */
+
+        if(!bootstrapAppDAO.isActionExists( "AddContractEmployee" )) {
+            this.addContractEmployee();
+            bootstrapAppDAO.createAction("AddContractEmployee");
+        }
+
+        /**
+         *  end Спринт 62 */
 
         log.info( "bootstrapApplication(): BootstrapService complete."  );
     }
@@ -167,6 +186,68 @@ public class BootstrapServiceImpl implements BootstrapService {
                 .collect(Collectors.toList()));
 
         log.debug("normalizeEmails(): stop");
+    }
+
+    private void updateIssueFiltersManager() {
+
+        log.debug("updateIssueFiltersManager(): start");
+
+        List<CaseFilter> filterList = caseFilterDAO.getListByCondition("type=?", En_CaseFilterType.CASE_OBJECTS.name());
+        filterList.forEach(filter ->  {
+
+            UserLogin userLogin = userLoginDAO.get(filter.getLoginId());
+
+            if (userLogin.getCompanyId() != CrmConstants.Company.HOME_COMPANY_ID) {
+                boolean isManagerCompanyIdsNeedToUpdate = CollectionUtils.isNotEmpty(filter.getParams().getManagerCompanyIds());
+                boolean isManagerIdsNeedToUpdate = CollectionUtils.isNotEmpty(filter.getParams().getManagerIds());
+                if (isManagerCompanyIdsNeedToUpdate) {
+                    filter.getParams().getManagerCompanyIds().remove(userLogin.getCompanyId());
+                }
+                if (isManagerIdsNeedToUpdate) {
+                    filter.getParams().getManagerIds().clear();
+                }
+                if (isManagerCompanyIdsNeedToUpdate || isManagerIdsNeedToUpdate) {
+                    caseFilterDAO.partialMerge(filter, "params");
+                }
+            }
+        });
+
+        log.debug("updateIssueFiltersManager(): stop");
+    }
+
+    private void updateIssueReportsManager() {
+
+        log.debug("updateIssueReportsManager(): start");
+
+        List<Report> reportList = reportDAO.getListByCondition("type=? and is_removed=?", En_ReportType.CASE_OBJECTS.name(), false);
+        reportList.forEach(report ->  {
+            try {
+                if (report.getCreator().getCompanyId() != CrmConstants.Company.HOME_COMPANY_ID) {
+
+                    CaseQuery caseQuery = new ReportCaseQuery(
+                            report,
+                            objectMapper.readValue(report.getQuery(), CaseQuery.class)
+                    ).getQuery();
+
+                    boolean isManagerCompanyIdsNeedToUpdate = CollectionUtils.isNotEmpty(caseQuery.getManagerCompanyIds());
+                    boolean isManagerIdsNeedToUpdate = CollectionUtils.isNotEmpty(caseQuery.getManagerIds());
+                    if (isManagerCompanyIdsNeedToUpdate) {
+                        caseQuery.getManagerCompanyIds().remove(report.getCreator().getCompanyId());
+                    }
+                    if (isManagerIdsNeedToUpdate) {
+                        caseQuery.getManagerIds().clear();
+                    }
+                    if (isManagerCompanyIdsNeedToUpdate || isManagerIdsNeedToUpdate) {
+                        report.setQuery(objectMapper.writeValueAsString(caseQuery));
+                        reportDAO.partialMerge(report, "case_query");
+                    }
+                }
+            } catch (Exception e) {
+                log.error("updateIssueReportsManager(): failed to update issue report with id = " + report.getId(), e);
+            }
+        });
+
+        log.debug("updateIssueReportsManager(): stop");
     }
 
     private void updateUserDashboardOrders() {
@@ -448,37 +529,6 @@ public class BootstrapServiceImpl implements BootstrapService {
         }
     }
 
-    private void addCommonManager() {
-        if (personDAO.getByCondition("displayname = 'Тех. поддержка NGN/ВКС'") != null) {
-            return;
-        }
-        log.info("Add Common Manager started");
-
-        Date created = java.sql.Timestamp.valueOf(LocalDateTime.now());
-        Stream.of(
-                "Тех. поддержка NGN/ВКС",
-                "Тех. поддержка ИП",
-                "Тех. поддержка Mobile",
-                "Тех. поддержка Top Connect",
-                "Тех. поддержка Billing",
-                "Тех. поддержка ЦОВ",
-                "Тех. поддержка 112",
-                "Тех. поддержка DPI"
-        ).map(name -> {
-            Person manager = new Person();
-            manager.setCreated(created);
-            manager.setCreator("DBA");
-            manager.setCompanyId(CrmConstants.Company.HOME_COMPANY_ID);
-            manager.setLastName(name);
-            manager.setDisplayName(name);
-            manager.setDisplayShortName(name);
-            manager.setGender(En_Gender.UNDEFINED);
-            manager.setLocale(CrmConstants.LocaleTags.RU);
-            return manager;
-        }).forEach(personDAO::persist);
-        log.info("Add Common Manager ended");
-    }
-
     private void updateHistoryTable() {
         List<History> histories = historyDAO.getListByCondition("old_value is null and new_value is null");
         for (History history : histories) {
@@ -720,6 +770,49 @@ public class BootstrapServiceImpl implements BootstrapService {
                 .collect(Collectors.toList());
     }
 
+    private void addContractEmployee() {
+        log.info("addContractEmployee started");
+        final Date now = java.sql.Timestamp.valueOf(LocalDateTime.now());
+
+        final Person person = new Person();
+        person.setCreated(now);
+        person.setCreator("BootstrapService");
+        person.setCompanyId(companyGroupHomeDAO.mainCompanyId());
+        person.setPosition("Не определена");
+        person.setDepartment("не определено");
+        person.setFirstName("Сотрудник");
+        person.setLastName("по");
+        person.setSecondName("контракту");
+        person.setDisplayName("Сотрудник по контракту");
+        person.setDisplayShortName("Сотрудник по контракту");
+        person.setGender(En_Gender.UNDEFINED);
+        person.setInfo("Сотрудник по контракту - PORTAL-1538");
+        person.setLocale(CrmConstants.LocaleTags.RU);
+        personDAO.persist(person);
+
+        final UserLogin login = new UserLogin();
+        login.setUlogin("contractemployee@protei.ru");
+        login.setCreated(now);
+        login.setAdminStateId(En_AdminState.UNLOCKED.getId());
+        login.setPersonId(person.getId());
+        login.setInfo("Сотрудник по контракту - PORTAL-1538");
+        login.setRoles(userRoleDAO.getDefaultEmployeeRoles());
+
+        // для тестирования
+        login.setUpass("e4b48fd541b3dcb99cababc87c2ee88f");
+        login.setAuthType(En_AuthType.LOCAL);
+        login.setIpMaskAllow(Arrays.asList("172.18.240.0/22", // vpn
+                                           "172.18.249.0/24",
+                                           "172.16.202.0/24", // НЕОС
+                                           "172.16.201.0/24", // СИГУРД
+                                           "192.168.0.0/17",  // local
+                                           "127.0.0.1",       // host
+                                           "0.0.0.0"));
+
+        userLoginDAO.persist(login);
+        log.info("addContractEmployee ended");
+    }
+
     private static class ContactInfoPersonMigration {
 
         public static void migrate(ApplicationContext applicationContext) {
@@ -870,8 +963,6 @@ public class BootstrapServiceImpl implements BootstrapService {
         private static class ContactItemCompanyDAO extends PortalBaseJdbcDAO<ContactItemCompany> {}
     }
 
-
-
     private static <T> void registerBeanDefinition(ApplicationContext context, Class<T> clazz) {
         String beanName = clazz.getName();
         String beanAlias = clazz.getSimpleName();
@@ -896,8 +987,6 @@ public class BootstrapServiceImpl implements BootstrapService {
 
     @Inject
     UserRoleDAO userRoleDAO;
-    @Inject
-    DecimalNumberDAO decimalNumberDAO;
 
     @Autowired
     CaseObjectDAO caseObjectDAO;
@@ -925,9 +1014,6 @@ public class BootstrapServiceImpl implements BootstrapService {
     CaseMemberDAO caseMemberDAO;
     @Autowired
     CaseTypeDAO caseTypeDAO;
-    @Autowired
-    JdbcManyRelationsHelper jdbcManyRelationsHelper;
-
     @Autowired
     CompanyDAO companyDAO;
     @Autowired
@@ -963,11 +1049,15 @@ public class BootstrapServiceImpl implements BootstrapService {
     @Autowired
     UserDashboardDAO userDashboardDAO;
     @Autowired
+    UserLoginDAO userLoginDAO;
+    @Autowired
     ObjectMapper objectMapper;
     @Autowired
     ApplicationContext applicationContext;
     @Autowired
     ContactItemDAO contactItemDAO;
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd");
 

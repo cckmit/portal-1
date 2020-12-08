@@ -20,6 +20,9 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
+import ru.protei.portal.ui.common.client.widget.selector.company.CustomerCompanyModel;
+import ru.protei.portal.ui.common.client.widget.selector.company.SubcontractorCompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductWithChildrenModel;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -28,6 +31,7 @@ import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 
 import java.util.*;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -50,10 +54,23 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         productModel.setUnitTypes(En_DevUnitType.PRODUCT);
         productWithChildrenModel.setUnitTypes(En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
+
+        companyModel.showDeprecated(false);
     }
 
     @Event
-    public void onShow( IssueEvents.EditMeta event ) {
+    public void onAuthSuccess(AuthEvents.Success event) {
+        Company userCompany = event.profile.getCompany();
+        customerCompanyModel.setSubcontractorId(userCompany.getId());
+        customerCompanyModel.setActive(true);
+        subcontractorCompanyModel.setCompanyId(userCompany.getId());
+        subcontractorCompanyModel.setActive(true);
+        metaView.setCompanyModel(isSubcontractorCompany(userCompany) ? customerCompanyModel : companyModel);
+        metaView.setManagerCompanyModel(event.profile.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT) ? subcontractorCompanyModel : companyModel);
+    }
+
+    @Event
+    public void onShow(IssueEvents.EditMeta event) {
         event.parent.clear();
         event.parent.add(metaView.asWidget());
 
@@ -85,6 +102,28 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         }
     }
 
+    @Event
+    public void onUpdateIssueState(IssueEvents.IssueStateUpdated event) {
+        caseStateController.getCaseStateByCaseId(event.issueId, new FluentCallback<CaseState>()
+                .withSuccess(caseState -> {
+                    if (!Objects.equals(caseState, metaView.state().getValue())) {
+                        metaView.state().setValue(caseState);
+                        meta.setStateId(caseState.getId());
+                        meta.setStateName(caseState.getState());
+                        fireEvent(new IssueEvents.IssueStateChanged(event.issueId, caseState.getId()));
+                    }}));
+    }
+
+    @Event
+    public void onUpdateIssueNotifiers(IssueEvents.IssueNotifiersUpdated event) {
+        issueController.getIssueMetaNotifiers(event.issueId, new FluentCallback<CaseObjectMetaNotifiers>()
+                .withSuccess(caseObjectMetaNotifiers -> {
+                    metaView.setCaseMetaNotifiers(caseObjectMetaNotifiers.getNotifiers());
+                    metaNotifiers.setNotifiers(caseObjectMetaNotifiers.getNotifiers());
+                }));
+
+    }
+
     @Override
     public void onStateChange() {
         if (CrmConstants.State.CREATED == metaView.state().getValue().getId() && meta.getManager() != null){
@@ -96,7 +135,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         meta.setStateId(metaView.state().getValue().getId());
         meta.setPauseDate((CrmConstants.State.PAUSED != meta.getStateId() || metaView.pauseDate().getValue() == null) ? null : metaView.pauseDate().getValue().getTime());
 
-        setManagerCompanyEnabled(metaView, metaView.state().getValue().getId());
         metaView.pauseDateContainerVisibility().setVisible(CrmConstants.State.PAUSED == meta.getStateId());
         metaView.pauseDate().setValue(CrmConstants.State.PAUSED != meta.getStateId() ? null : metaView.pauseDate().getValue());
 
@@ -110,6 +148,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         onCaseMetaChanged(meta, () -> {
             fireEvent(new IssueEvents.IssueStateChanged(meta.getId(), meta.getStateId()));
             fireEvent(new IssueEvents.IssueMetaChanged(meta));
+            onParentIssueChanged(meta.getId());
         });
     }
 
@@ -132,15 +171,17 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         onCaseMetaChanged( meta, () -> {
             fireEvent(new IssueEvents.IssueProductChanged(meta.getId()));
             fireEvent(new IssueEvents.IssueMetaChanged(meta));
+            onParentIssueChanged(meta.getId());
         });
     }
 
     @Override
     public void onManagerChanged() {
         meta.setManager(metaView.getManager());
-        onCaseMetaChanged( meta, () -> {
+        onCaseMetaChanged(meta, () -> {
             fireEvent(new IssueEvents.IssueManagerChanged(meta.getId()));
             fireEvent(new IssueEvents.IssueMetaChanged(meta));
+            onParentIssueChanged(meta.getId());
         } );
     }
 
@@ -211,7 +252,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         metaNotifiers.setNotifiers( caseMetaNotifiers );
 
-        issueService.updateIssueMetaNotifiers(metaNotifiers, new FluentCallback<CaseObjectMetaNotifiers>()
+        issueController.updateIssueMetaNotifiers(metaNotifiers, new FluentCallback<CaseObjectMetaNotifiers>()
                 .withSuccess(caseMetaNotifiersUpdated -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fillNotifiersView( caseMetaNotifiersUpdated );
@@ -231,7 +272,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         caseMetaJira.setSeverity(metaJira.getSeverity());
         caseMetaJira.setIssueType(metaJira.getIssueType());
 
-        issueService.updateIssueMetaJira(caseMetaJira, new FluentCallback<CaseObjectMetaJira>()
+        issueController.updateIssueMetaJira(caseMetaJira, new FluentCallback<CaseObjectMetaJira>()
                 .withSuccess(caseMetaJiraUpdated -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     caseMetaJira = caseMetaJiraUpdated;
@@ -259,7 +300,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         updateSubscriptions(selectedCompanyId, meta.getManagerCompanyId());
 
-        companyService.getCompanyCaseStates(
+        companyController.getCompanyCaseStates(
                 selectedCompanyId,
                 new ShortRequestCallback<List<CaseState>>()
                         .setOnSuccess(caseStates -> {
@@ -281,12 +322,14 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         fireEvent(new CaseStateEvents.UpdateSelectorOptions());
 
-        companyService.getCompanyUnsafe(selectedCompanyId, new FluentCallback<Company>()
+        companyController.getCompanyOmitPrivileges(selectedCompanyId, new FluentCallback<Company>()
                 .withSuccess(resultCompany -> {
                     setCurrentCompany(resultCompany);
                     fillPlatformValueAndUpdateProductsFilter(resultCompany);
                 })
         );
+
+        subcontractorCompanyModel.setCompanyId(company.getId());
 
         fireEvent(new IssueEvents.IssueMetaChanged(meta));
     }
@@ -322,7 +365,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             return;
         }
 
-        issueService.updatePlans(metaView.ownerPlans().getValue(), meta.getId(), new FluentCallback<Set<PlanOption>>()
+        issueController.updatePlans(metaView.ownerPlans().getValue(), meta.getId(), new FluentCallback<Set<PlanOption>>()
                 .withSuccess(updatedPlans -> {
                     metaView.ownerPlans().setValue(updatedPlans);
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
@@ -360,7 +403,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     }
 
     private void updateSubscriptions(Long... companyIds) {
-        companyService.getCompanyWithParentCompanySubscriptions(
+        companyController.getCompanyWithParentCompanySubscriptions(
                 new HashSet<>(Arrays.asList(companyIds)),
                 new ShortRequestCallback<List<CompanySubscription>>()
                         .setOnSuccess(subscriptions -> {
@@ -376,10 +419,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         );
     }
 
-    private void onCaseMetaChanged(CaseObjectMeta caseMeta) {
-        onCaseMetaChanged(caseMeta, null);
-    }
-
     private void onCaseMetaChanged(CaseObjectMeta caseMeta, Runnable runAfterUpdate) {
 
         if (readOnly) {
@@ -391,7 +430,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             return;
         }
 
-        issueService.updateIssueMeta(caseMeta, new FluentCallback<CaseObjectMeta>()
+        issueController.updateIssueMeta(caseMeta, new FluentCallback<CaseObjectMeta>()
                 .withSuccess(caseMetaUpdated -> {
                     meta.setStateId(caseMetaUpdated.getStateId());
                     meta.setStateName(caseMetaUpdated.getStateName());
@@ -404,7 +443,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     private void fillImportanceSelector(Long id) {
         metaView.fillImportanceOptions(new ArrayList<>());
-        companyService.getImportanceLevels(id, new FluentCallback<List<En_ImportanceLevel>>()
+        companyController.getImportanceLevels(id, new FluentCallback<List<En_ImportanceLevel>>()
                 .withSuccess(importanceLevelList -> {
                     metaView.fillImportanceOptions(importanceLevelList);
                     checkImportanceSelectedValue(importanceLevelList);
@@ -414,6 +453,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     private void checkImportanceSelectedValue(List<En_ImportanceLevel> importanceLevels) {
         if (!importanceLevels.contains(metaView.importance().getValue())){
             metaView.importance().setValue(null);
+            meta.setImpLevel(null);
         }
     }
 
@@ -481,8 +521,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     private void fillView(CaseObjectMeta meta) {
         metaView.stateEnabled().setEnabled(!readOnly);
         metaView.importanceEnabled().setEnabled(!readOnly);
-        metaView.productEnabled().setEnabled(isProductEnabled(readOnly, meta.getInitiatorCompany()) );
-        metaView.companyEnabled().setEnabled(!readOnly && isCompanyChangeAllowed(meta.isPrivateCase()) );
+        metaView.productEnabled().setEnabled(isProductEnabled(readOnly, meta.getInitiatorCompany()));
+        metaView.companyEnabled().setEnabled(!readOnly && isCompanyChangeAllowed(meta.isPrivateCase()));
         metaView.initiatorEnabled().setEnabled(!readOnly && isInitiatorChangeAllowed(meta.getInitiatorCompanyId()));
         metaView.platformEnabled().setEnabled(!readOnly);
 
@@ -506,6 +546,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.setTimeElapsed(meta.getTimeElapsed());
 
         setCurrentCompany(meta.getInitiatorCompany());
+        subcontractorCompanyModel.setCompanyId(meta.getInitiatorCompanyId());
 
         metaView.setCompany(meta.getInitiatorCompany());
         metaView.setInitiatorFilter(meta.getInitiatorCompany()==null?null:meta.getInitiatorCompany().getId());
@@ -516,7 +557,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         updateSubscriptions(meta.getInitiatorCompanyId(), meta.getManagerCompanyId());
 
-        companyService.getCompanyCaseStates(
+        companyController.getCompanyCaseStates(
                 meta.getInitiatorCompanyId(),
                 new ShortRequestCallback<List<CaseState>>()
                         .setOnSuccess(caseStates -> {
@@ -565,8 +606,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         issueMetaView.setManager(caseObjectMeta.getManager());
 
-        setManagerCompanyEnabled(issueMetaView, caseObjectMeta.getStateId());
-        issueMetaView.managerEnabled().setEnabled(!isReadOnly && (policyService.hasPrivilegeFor(En_Privilege.ISSUE_MANAGER_EDIT) ||
+        metaView.managerCompanyEnabled().setEnabled(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT));
+        issueMetaView.managerEnabled().setEnabled(!isReadOnly && (policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT) ||
                 Objects.equals(issueMetaView.getManagerCompany().getId(), policyService.getProfile().getCompany().getId())));
     }
 
@@ -587,7 +628,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             return;
         }
 
-        slaService.getSlaByPlatformId(platformId, new FluentCallback<List<ProjectSla>>()
+        slaController.getSlaByPlatformId(platformId, new FluentCallback<List<ProjectSla>>()
                 .withSuccess(result -> {
                     slaList = result.isEmpty() ? DefaultSlaValues.getList() : result;
                     metaView.setValuesContainerWarning(result.isEmpty());
@@ -620,12 +661,15 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.managerValidator().setValid(managerIsValid);
 
         boolean productIsValid = isProductValid(caseMeta);
-
         metaView.productValidator().setValid(productIsValid);
+
+        boolean importanceLevelIsValid = caseMeta.getImpLevel() != null;
+        metaView.importanceValidator().setValid(importanceLevelIsValid);
 
         boolean isFieldsValid =
                         productIsValid &&
                         managerIsValid &&
+                        importanceLevelIsValid &&
                         companyIsValid;
 
         return isFieldsValid;
@@ -706,7 +750,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     private void setSubscriptionEmails(String value) {
         metaView.setSubscriptionEmails(value);
-        metaView.companyEnabled().setEnabled(!readOnly && isCompanyChangeAllowed( meta.isPrivateCase()));
+        metaView.companyEnabled().setEnabled(!readOnly && isCompanyChangeAllowed(meta.isPrivateCase()));
     }
 
     private boolean isStateWithRestrictions(long caseStateId) {
@@ -766,10 +810,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     private void setCustomerVisibility(AbstractIssueMetaView issueMetaView, boolean isVisible) {
         issueMetaView.deadlineContainerVisibility().setVisible(isVisible);
         issueMetaView.workTriggerVisibility().setVisible(isVisible);
-    }
-
-    private void setManagerCompanyEnabled(AbstractIssueMetaView issueMetaView, Long stateId) {
-        issueMetaView.managerCompanyEnabled().setEnabled(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT) && stateId == CrmConstants.State.REQUEST_TO_PARTNER);
+        issueMetaView.setProductBorderBottomVisible(!isVisible);
     }
 
     private void fillPlatformValueAndUpdateProductsFilter(final Company company) {
@@ -840,6 +881,10 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             return true;
         }
 
+        if (policyService.isSubcontractorCompany()) {
+            return true;
+        }
+
         return false;
     }
 
@@ -861,30 +906,58 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.setProductMandatory(isCompanyWithAutoOpenIssues);
     }
 
+    private boolean isSubcontractorCompany(Company userCompany) {
+        return userCompany.getCategory() == En_CompanyCategory.SUBCONTRACTOR;
+    }
+
+    private void onParentIssueChanged(Long caseId) {
+        caseLinkController.getCaseLinks(caseId, new FluentCallback<List<CaseLink>>()
+                .withSuccess(links ->
+                        links.stream()
+                                .filter(caseLink -> Objects.equals(caseLink.getBundleType(), En_BundleType.SUBTASK))
+                                .forEach(
+                                        caseLink -> fireEvent(new IssueEvents.ChangeIssue(caseLink.getCaseInfo().getId()))
+                                )));
+    }
+
     @Inject
     AbstractIssueMetaView metaView;
 
     @Inject
-    IssueControllerAsync issueService;
+    CaseStateFilterProvider caseStateFilter;
 
     @Inject
     Lang lang;
+
     @Inject
     PolicyService policyService;
     @Inject
-    CompanyControllerAsync companyService;
+    HomeCompanyService homeCompanyService;
+
     @Inject
-    CaseStateFilterProvider caseStateFilter;
+    IssueControllerAsync issueController;
     @Inject
-    SLAControllerAsync slaService;
+    CompanyControllerAsync companyController;
+    @Inject
+    SLAControllerAsync slaController;
     @Inject
     SiteFolderControllerAsync siteFolderController;
     @Inject
-    HomeCompanyService homeCompanyService;
+    CaseLinkControllerAsync caseLinkController;
+    @Inject
+    CaseStateControllerAsync caseStateController;
+
     @Inject
     ProductModel productModel;
     @Inject
     ProductWithChildrenModel productWithChildrenModel;
+
+    @Inject
+    CompanyModel companyModel;
+    @Inject
+    SubcontractorCompanyModel subcontractorCompanyModel;
+    @Inject
+    CustomerCompanyModel customerCompanyModel;
 
     @ContextAware
     CaseObjectMeta meta;
@@ -899,6 +972,5 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     private List<ProjectSla> slaList;
     private Company currentCompany;
 
-    private static final Logger log = Logger.getLogger( IssueMetaActivity.class.getName());
-
+    private static final Logger log = Logger.getLogger(IssueMetaActivity.class.getName());
 }

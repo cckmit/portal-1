@@ -820,6 +820,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String mediumImportance();
 
+    String emergencyImportance();
+
     String dataPageNumber( String p0 );
 
     String dashboard();
@@ -3184,6 +3186,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errDeadlineError();
 
+    String errRemoteAccessParametersLengthExceeded(int maxLength);
+
     String workTriggerNone();
 
     String workTriggerPSGO();
@@ -3201,4 +3205,26 @@ public interface Lang extends Messages, ContactItemLang {
     String overdueDeadlines();
 
     String fileNotFoundError();
+
+    String projectSubcontractors();
+
+    String subtaskCreate();
+
+    String errNotAllowedCompanyWithAutoOpenIssue();
+
+    String errSaveSubtaskFieldsInvalid();
+
+    String errNotFoundParent();
+
+    String errNotAllowedParentState();
+
+    String parentFor();
+
+    String subtask();
+
+    String errInvalidCaseUpdateSubtaskNotClosed();
+
+    String errNotAllowedIntegrationIssue();
+
+    String help();
 }

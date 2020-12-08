@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.*;
+import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
@@ -80,6 +81,7 @@ public interface AbstractIssueMetaView extends IsWidget {
     HasVisibility jiraSlaSelectorVisibility();
 
     void setInitiatorBorderBottomVisible(boolean isVisible);
+    void setProductBorderBottomVisible(boolean isVisible);
 
     HasValue<En_TimeElapsedType> timeElapsedType();
     HasValue<CaseState> state();
@@ -143,4 +145,7 @@ public interface AbstractIssueMetaView extends IsWidget {
 
     HasVisibility workTriggerVisibility();
     HasValue<En_WorkTrigger> workTrigger();
+
+    void setCompanyModel(AsyncSelectorModel companyModel);
+    void setManagerCompanyModel(AsyncSelectorModel companyModel);
 }

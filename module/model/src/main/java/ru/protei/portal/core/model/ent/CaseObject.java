@@ -75,7 +75,7 @@ public class CaseObject extends AuditableObject {
     @JdbcColumn(name = "initiator_company")
     private Long initiatorCompanyId;
 
-    @JdbcJoinedObject( localColumn = "initiator_company", remoteColumn = "id", updateLocalColumn = false )
+    @JdbcJoinedObject( localColumn = INITIATOR_COMPANY, remoteColumn = "id", updateLocalColumn = false )
     private Company initiatorCompany;
 
     @JdbcColumn(name = "product_id")
@@ -590,6 +590,7 @@ public class CaseObject extends AuditableObject {
         String PLATFORM_ID = "platform_id";
         String DEADLINE = "deadline";
         String WORK_TRIGGER = "work_trigger";
+        String INITIATOR_COMPANY = "initiator_company";
     }
 
     public static final int NOT_DELETED = 0;

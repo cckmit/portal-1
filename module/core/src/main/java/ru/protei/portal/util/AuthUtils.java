@@ -37,7 +37,10 @@ public class AuthUtils {
             return error( En_ResultStatus.AUTH_FAILURE );
         }
 
-        String ip = request.getRemoteAddr();
+        String ip = request.getHeader("X-Real-IP");
+        if (ip == null) {
+            ip = request.getRemoteAddr();
+        }
         String userAgent = request.getHeader(CrmConstants.Header.USER_AGENT);
 
         logger.debug( "API | Authentication: ip={}, user={}", ip, cr.login );

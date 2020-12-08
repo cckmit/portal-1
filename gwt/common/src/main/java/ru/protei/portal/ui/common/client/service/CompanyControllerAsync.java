@@ -67,6 +67,18 @@ public interface CompanyControllerAsync {
     void getCompanyOptionList(CompanyQuery query, AsyncCallback<List<EntityOption>> callback);
 
     /**
+     * Получение списка сокращенного представления компании-субподрядчика через проекты (name,id)
+     * @param callback
+     */
+    void getSubcontractorOptionList(Long companyId, boolean isActive, AsyncCallback<List<EntityOption>> callback);
+
+    /**
+     * Получение списка сокращенного представления компании-инициатора через проекты (name,id)
+     * @param callback
+     */
+    void getInitiatorOptionList(Long subcontractorId, boolean isActive, AsyncCallback<List<EntityOption>> callback);
+
+    /**
      * Получение списка сокращенного представления компании (name,id) игнорируя область видимости и привилегии
      * @param callback
      */
@@ -103,5 +115,5 @@ public interface CompanyControllerAsync {
 
     void getAllHomeCompanies(AsyncCallback<List<EntityOption>> async);
 
-    void getCompanyUnsafe(long id, AsyncCallback<Company> async);
+    void getCompanyOmitPrivileges(long id, AsyncCallback<Company> async);
 }

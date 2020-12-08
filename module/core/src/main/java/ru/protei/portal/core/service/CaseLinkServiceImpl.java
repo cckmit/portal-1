@@ -13,9 +13,7 @@ import ru.protei.portal.core.event.CaseLinkEvent;
 import ru.protei.portal.core.event.ProjectLinkEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.exception.RollbackTransactionException;
-import ru.protei.portal.core.model.dao.AuditObjectDAO;
-import ru.protei.portal.core.model.dao.CaseLinkDAO;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -24,8 +22,11 @@ import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.AuditObject;
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.services.lock.LockService;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -35,7 +36,9 @@ import static java.util.stream.Collectors.toList;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.util.CaseStateUtil.isTerminalState;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
+import static ru.protei.portal.core.model.helper.CollectionUtils.find;
 
 public class CaseLinkServiceImpl implements CaseLinkService {
 
@@ -57,6 +60,14 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     private TransactionTemplate transactionTemplate;
     @Autowired
     private AuditObjectDAO auditObjectDAO;
+    @Autowired
+    private CaseShortViewDAO caseShortViewDAO;
+    @Autowired
+    private CaseService caseService;
+    @Autowired
+    CaseObjectMetaDAO caseObjectMetaDAO;
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Override
     public Result<Map<En_CaseLink, String>> getLinkMap() {
@@ -67,8 +78,8 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     }
 
     @Override
-    public Result<List<CaseLink>> getLinks( AuthToken token, Long caseId) {
-        if ( caseId == null ) {
+    public Result<List<CaseLink>> getLinks(AuthToken token, Long caseId) {
+        if (caseId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -77,28 +88,43 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     }
 
     @Override
-    public Result<YouTrackIssueInfo> getYoutrackIssueInfo(AuthToken authToken, String ytId ) {
+    public Result<YouTrackIssueInfo> getYoutrackIssueInfo(AuthToken authToken, String ytId) {
         boolean isShowOnlyPublic = isShowOnlyPublicLinks(authToken);
         if (isShowOnlyPublic && En_CaseLink.YT.isForcePrivacy()) {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
-        return youtrackService.getIssueInfo( ytId );
+        return youtrackService.getIssueInfo(ytId);
     }
 
     @Override
     @Transactional
     public Result<List<CaseLink>> createLinks(AuthToken authToken, List<CaseLink> linksToCreate, En_CaseType caseType) {
+
         if (isEmpty(linksToCreate)) {
             return ok();
         }
 
         List<CaseLink> successfullyCreatedLinks = new ArrayList<>();
 
-        linksToCreate.forEach(link -> {
-            Result<CaseLink> createdLinkResult = createLink(link, caseType, authToken);
+        linksToCreate.forEach(caseLink -> {
 
+            Result<CaseLink> createdLinkResult = createLink(caseLink, caseType, authToken);
             if (createdLinkResult.isOk()) {
-                successfullyCreatedLinks.add(createdLinkResult.getData());
+
+                CaseLink createdLink = createdLinkResult.getData();
+
+                Result<CaseObjectMeta> blockedParentIssue = blockParentIssue(authToken, createdLink);
+                if (blockedParentIssue.isError()) {
+                    throw new RollbackTransactionException("failed to block parent issue with result  = " + blockedParentIssue + " | link = " + createdLink);
+                }
+
+                Result<CaseObjectMetaNotifiers> addedNotifierResult = addNotifierToSubtask(authToken, createdLink);
+                if (addedNotifierResult.isError()) {
+                    throw new RollbackTransactionException("failed to add subtask notifier with result = " + addedNotifierResult + " | link = " + createdLink);
+                }
+
+                CaseLink newState = caseLinkDAO.get(createdLink.getId());
+                successfullyCreatedLinks.add(newState);
             }
         });
 
@@ -112,16 +138,32 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     @Override
     @Transactional
-    public Result<CaseLink> createLinkWithPublish(AuthToken authToken, CaseLink link, En_CaseType caseType) {
-        Result<CaseLink> addedLinkResult = createLink(link, caseType, authToken);
+        public Result<CaseLink> createLinkWithPublish(AuthToken authToken, CaseLink link, En_CaseType caseType) {
 
-        if (addedLinkResult.isError()) {
-            return error(addedLinkResult.getStatus());
+        Result<CaseLink> createdLinkResult = createLink(link, caseType, authToken);
+        if (createdLinkResult.isError()) {
+            return error(createdLinkResult.getStatus());
+        }
+
+        CaseLink createdLink = createdLinkResult.getData();
+
+        Result<CaseObjectMeta> blockedParentIssueResult = blockParentIssue(authToken, createdLink);
+        if (blockedParentIssueResult.isError()) {
+            log.error("createLinkWithPublish(): failed to block parent issue with result = {} | link = {}", blockedParentIssueResult, link);
+            throw new ResultStatusException(blockedParentIssueResult.getStatus());
+        }
+
+        Result<CaseObjectMetaNotifiers> addedNotifierResult = addNotifierToSubtask(authToken, createdLink);
+        if (addedNotifierResult.isError()) {
+            log.error("createLinkWithPublish(): failed to add subtask notifier with result = {} | link = {}", addedNotifierResult, link);
+            throw new ResultStatusException(addedNotifierResult.getStatus());
         }
 
         synchronizeYouTrackLinks(Collections.singletonList(link), caseType);
 
-        return sendNotificationLinkAdded(authToken, link.getCaseId(), link, caseType);
+        CaseLink newState = caseLinkDAO.get(createdLink.getId());
+        return sendNotificationLinkAdded(authToken, link.getCaseId(), newState, caseType)
+                .publishEvents(blockedParentIssueResult.getEvents());
     }
 
     @Override
@@ -131,7 +173,18 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             return ok();
         }
 
-        links.forEach(link -> deleteLink(link.getId()));
+        links.forEach(link -> {
+
+            Result<CaseLink> deletedLinkResult = deleteLink(link.getId());
+            if (deletedLinkResult.isOk()) {
+
+                Result<CaseObjectMeta> openedIssueResult = openParentIssueIfAllLinksInTerminalState(token, deletedLinkResult.getData());
+                if (openedIssueResult.isError()) {
+                    log.error("deleteLinks(): linkId = {} | failed to open parent issue with result = {}", link.getId(), openedIssueResult);
+                    throw new ResultStatusException(openedIssueResult.getStatus());
+                }
+            }
+        });
 
         synchronizeYouTrackLinks(links);
 
@@ -141,19 +194,90 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     @Override
     @Transactional
     public Result deleteLinkWithPublish (AuthToken authToken, Long id, En_CaseType caseType) {
-        Result<CaseLink> deletedLinkResult = deleteLink(id);
 
+        Result<CaseLink> deletedLinkResult = deleteLink(id);
         if (deletedLinkResult.isError()) {
             return error(deletedLinkResult.getStatus());
         }
 
         CaseLink deletedLink = deletedLinkResult.getData();
 
+        Result<CaseObjectMeta> openedIssueResult = openParentIssueIfAllLinksInTerminalState(authToken, deletedLink);
+        if (openedIssueResult.isError()) {
+            log.error("deleteLinkWithPublish(): linkId = {} | failed to open parent issue with result = {}", id, openedIssueResult);
+            throw new ResultStatusException(openedIssueResult.getStatus());
+        }
+
         synchronizeYouTrackLinks(Collections.singletonList(deletedLink), caseType);
 
-        return sendNotificationLinkRemoved(authToken, deletedLink.getCaseId(), deletedLink, caseType);
+        return sendNotificationLinkRemoved(authToken, deletedLink.getCaseId(), deletedLink, caseType)
+                .publishEvents(openedIssueResult.getEvents());
     }
 
+    private Result<CaseObjectMeta> blockParentIssue(AuthToken authToken, CaseLink caseLink) {
+
+        if (!En_CaseLink.CRM.equals(caseLink.getType())) return ok();
+
+        boolean isParentFor = En_BundleType.PARENT_FOR.equals(caseLink.getBundleType());
+        boolean isSubtask = En_BundleType.SUBTASK.equals(caseLink.getBundleType());
+
+        if (isParentFor || isSubtask) {
+            Long parentId = isParentFor ? caseLink.getCaseId() : NumberUtils.createLong(caseLink.getRemoteId());
+            CaseObjectMeta caseObjectMeta = caseObjectMetaDAO.get(parentId);
+            caseObjectMeta.setStateId(CrmConstants.State.BLOCKED);
+            return caseService.updateCaseObjectMeta(authToken, caseObjectMeta);
+        }
+
+        return ok();
+    }
+
+    private Result<CaseObjectMeta> openParentIssueIfAllLinksInTerminalState(AuthToken authToken, CaseLink caseLink) {
+
+        if (!En_CaseLink.CRM.equals(caseLink.getType())) return ok();
+
+        boolean isParentFor = En_BundleType.PARENT_FOR.equals(caseLink.getBundleType());
+        boolean isSubtask = En_BundleType.SUBTASK.equals(caseLink.getBundleType());
+
+        if (isParentFor || isSubtask) {
+            Long parentId = isParentFor ? caseLink.getCaseId() : NumberUtils.createLong(caseLink.getRemoteId());
+            boolean isAllLinksInTerminalState = isAllLinksInTerminalState(parentId);
+            if (isAllLinksInTerminalState) {
+                CaseObjectMeta caseObjectMeta = caseObjectMetaDAO.get(parentId);
+                caseObjectMeta.setStateId(CrmConstants.State.OPENED);
+                return caseService.updateCaseObjectMeta(authToken, caseObjectMeta);
+            }
+        }
+
+        return ok();
+    }
+
+    private boolean isAllLinksInTerminalState(Long caseObjectId) {
+        List<CaseLink> caseLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(caseObjectId, En_BundleType.PARENT_FOR));
+
+        if (CollectionUtils.isNotEmpty(caseLinks) &&
+                caseLinks.stream()
+                        .allMatch(caseLink -> isTerminalState(caseLink.getCaseInfo().getState().getId()))) {
+            return true;
+        }
+        return false;
+    }
+
+    private Result<CaseObjectMetaNotifiers> addNotifierToSubtask(AuthToken authToken, CaseLink caseLink) {
+
+        if (!En_CaseLink.CRM.equals(caseLink.getType())) return ok();
+
+        boolean isParentFor = En_BundleType.PARENT_FOR.equals(caseLink.getBundleType());
+        boolean isSubtask = En_BundleType.SUBTASK.equals(caseLink.getBundleType());
+
+        if (isParentFor || isSubtask) {
+            Long subtaskId = isSubtask ? caseLink.getCaseId() : NumberUtils.createLong(caseLink.getRemoteId());
+            Long parentId = isParentFor ? caseLink.getCaseId() : NumberUtils.createLong(caseLink.getRemoteId());
+            CaseObject parent = caseObjectDAO.get(parentId);
+            return caseService.addNotifierToCaseObject(authToken, subtaskId, parent.getManager());
+        }
+
+        return ok();
+    }
 
     @Override
     @Transactional
@@ -242,7 +366,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                 return error(addResult.getStatus(), addResult.getMessage());
             }
 
-            addResult.getEvents().forEach(event -> result.publishEvent(event));
+            addResult.getEvents().forEach(result::publishEvent);
             makeAudit(caseId, youtrackId, En_AuditType.LINK_CREATE, token);
         }
 
@@ -255,7 +379,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                 return error(removeResult.getStatus(), removeResult.getMessage());
             }
 
-            removeResult.getEvents().forEach(event -> result.publishEvent(event));
+            removeResult.getEvents().forEach(result::publishEvent);
         }
 
         return result;
@@ -396,18 +520,58 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         if (link == null || !isValidLink(link)) {
             return En_ResultStatus.INCORRECT_PARAMS;
         }
+
         if (Objects.equals(link.getRemoteId(), String.valueOf(link.getCaseId()))) {
             return En_ResultStatus.NOT_ALLOWED_LINK_ISSUE_TO_ITSELF;
         }
-        boolean isShowOnlyPublic = isShowOnlyPublicLinks(authToken);
+
+        CaseShortView caseObject = caseShortViewDAO.get(link.getCaseId());
+        if (caseObject == null) {
+            return En_ResultStatus.NOT_FOUND;
+        }
+
+        if (En_CaseLink.CRM.equals(link.getType())) {
+
+            CaseShortView remoteObject = caseShortViewDAO.get(NumberUtils.createLong(link.getRemoteId()));
+            if (remoteObject == null) {
+                return En_ResultStatus.NOT_FOUND;
+            }
+
+            boolean isParentFor = En_BundleType.PARENT_FOR.equals(link.getBundleType());
+            boolean isSubtask = En_BundleType.SUBTASK.equals(link.getBundleType());
+            if (isParentFor || isSubtask) {
+                CaseShortView parent = isParentFor ? caseObject : remoteObject;
+                CaseShortView subtask = isParentFor ? remoteObject : caseObject;
+
+                // запрещено создание ссылок для задач с автооткрытием
+                if (parent.getAutoOpenIssue()) {
+                    return En_ResultStatus.NOT_ALLOWED_AUTOOPEN_ISSUE;
+                }
+                if (subtask.getAutoOpenIssue()) {
+                    return En_ResultStatus.NOT_ALLOWED_AUTOOPEN_ISSUE;
+                }
+                // запрещено создание ссылок, если родитель - интеграционная задача
+                if (isIntegrationIssue(parent.getExtAppType())) {
+                    return En_ResultStatus.NOT_ALLOWED_INTEGRATION_ISSUE;
+                }
+                // запрещено создание ссылок, если родитель в статусе "created" или "verified"
+                if (isParentStateNotAllowed(parent.getStateId())) {
+                    return En_ResultStatus.NOT_ALLOWED_PARENT_STATE;
+                }
+            }
+        }
+
         // запрещено изменение ссылок вне зоны видимости
+        boolean isShowOnlyPublic = isShowOnlyPublicLinks(authToken);
         if (isShowOnlyPublic && link.isPrivate()) {
             return En_ResultStatus.PERMISSION_DENIED;
         }
+
         boolean isAlreadyExist = caseLinkDAO.checkExistLink(link.getType(), link.getCaseId(), link.getRemoteId());
         if (isAlreadyExist) {
             return En_ResultStatus.THIS_LINK_ALREADY_ADDED;
         }
+
         return En_ResultStatus.OK;
     }
 
@@ -437,6 +601,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                             crossCrmLink.setCaseId(remoteId);
                             crossCrmLink.setRemoteId(link.getCaseId().toString());
                             crossCrmLink.setType(En_CaseLink.CRM);
+                            crossCrmLink.setBundleType(makeCrossBundleType(link.getBundleType()));
                             caseLinkDAO.persist(crossCrmLink);
                         }
                     }
@@ -460,10 +625,21 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         });
 
         if (addedLinkResult.isOk()) {
-            return ok(caseLinkDAO.get(addedLinkResult.getData()));
+            return ok(link);
         }
 
         return error(addedLinkResult.getStatus(), "Link was not created");
+    }
+
+    private En_BundleType makeCrossBundleType(En_BundleType type) {
+        switch (type) {
+            case SUBTASK:
+                return En_BundleType.PARENT_FOR;
+            case PARENT_FOR:
+                return En_BundleType.SUBTASK;
+            default:
+                return En_BundleType.LINKED_WITH;
+        }
     }
 
     private Result<List<CaseLink>> getYoutrackLinks( Long caseId ) {
@@ -528,7 +704,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         return getYoutrackLinks(caseId)
                 .flatMap( caseLinks -> findCaseLinkByRemoteId( caseLinks, youtrackId ) )
                 .flatMap(caseLink -> removeYoutrackCaseLink( caseLink )
-                        .flatMap( removedLink -> sendNotificationLinkRemoved( authToken, caseId, removedLink, caseType ))
+                        .flatMap( removedLink -> sendNotificationLinkRemoved( authToken, caseId, removedLink, caseType))
         );
     }
 
@@ -626,20 +802,21 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                 .collect(Collectors.toList());
     }
 
-    private Result<CaseLink> addYoutrackCaseLink(Long caseId, String youtrackId ) {
+    private Result<CaseLink> addYoutrackCaseLink(Long caseId, String youtrackId) {
         log.debug("addYoutrackCaseLink(): caseId={}, youtrackId={}", caseId, youtrackId);
         CaseLink newLink = new CaseLink();
-        newLink.setCaseId( caseId );
-        newLink.setType( En_CaseLink.YT );
-        newLink.setRemoteId( youtrackId );
+        newLink.setCaseId(caseId);
+        newLink.setType(En_CaseLink.YT);
+        newLink.setBundleType(En_BundleType.LINKED_WITH);
+        newLink.setRemoteId(youtrackId);
         newLink.setWithCrosslink(true);
-        Long id = caseLinkDAO.persist( newLink );
+        Long id = caseLinkDAO.persist(newLink);
         if (id == null) {
-            log.error( "addYoutrackCaseLink(): Can`t add link on to youtrack into case, persistence error" );
-            throw new RollbackTransactionException( "addYoutrackCaseLink(): rollback transaction" );
+            log.error("addYoutrackCaseLink(): Can`t add link on to youtrack into case, persistence error");
+            throw new RollbackTransactionException("addYoutrackCaseLink(): rollback transaction");
         }
-        newLink.setId( id );
-        return ok( newLink );
+        newLink.setId(id);
+        return ok(newLink);
     }
 
     private Result<CaseLink> removeYoutrackCaseLink(CaseLink caseLink ) {
@@ -652,21 +829,21 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         return ok(caseLink);
     }
 
-    private Result<CaseLink> sendNotificationLinkAdded(AuthToken token, Long caseId, CaseLink added, En_CaseType caseType ) {
+    private Result<CaseLink> sendNotificationLinkAdded(AuthToken token, Long caseId, CaseLink added, En_CaseType caseType) {
         switch (caseType) {
             case PROJECT:
                 return ok(added)
                         .publishEvent(new ProjectLinkEvent(this, added.getCaseId(), token.getPersonId(), added, null));
             case CRM_SUPPORT:
                 return ok(added)
-                        .publishEvent( new CaseLinkEvent(this, ServiceModule.GENERAL, token.getPersonId(), caseId, added, null ));
+                        .publishEvent(new CaseLinkEvent(this, ServiceModule.GENERAL, token.getPersonId(), caseId, added, null));
             default:
-                log.error( "sendNotificationLinkRemoved(): Notification was not sent, caseType={}", caseType );
+                log.error("sendNotificationLinkRemoved(): Notification was not sent, caseType={}", caseType);
                 return ok(added);
         }
     }
 
-    private Result<CaseLink> sendNotificationLinkRemoved(AuthToken token, Long caseId, CaseLink removed, En_CaseType caseType ) {
+    private Result<CaseLink> sendNotificationLinkRemoved(AuthToken token, Long caseId, CaseLink removed, En_CaseType caseType) {
         switch (caseType) {
             case PROJECT:
                 return ok(removed)
@@ -696,5 +873,17 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         return stream(links)
                 .filter(caseLink -> En_CaseLink.YT.equals(caseLink.getType()))
                 .collect(toList());
+    }
+
+    private boolean isParentStateNotAllowed(Long stateId) {
+        return isTerminalState(stateId) || CrmConstants.State.CREATED == stateId;
+    }
+
+    private boolean isIntegrationIssue(String extAppType) {
+        En_ExtAppType type = En_ExtAppType.forCode(extAppType);
+        if (type == null) {
+            return false;
+        }
+        return true;
     }
 }

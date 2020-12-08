@@ -271,6 +271,9 @@ public class ProjectServiceImpl implements ProjectService {
         projectFormDB.setProjectSlas(project.getProjectSlas());
         jdbcManyRelationsHelper.persist(projectFormDB, "projectSlas");
 
+        projectFormDB.setSubcontractors(project.getSubcontractors());
+        jdbcManyRelationsHelper.persist(projectFormDB, Project.Fields.PROJECT_SUBCONTRACTORS);
+
         jdbcManyRelationsHelper.persist(project, Project.Fields.PROJECT_PLANS);
 
         try {
@@ -332,6 +335,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         jdbcManyRelationsHelper.persist(project, "projectSlas");
         jdbcManyRelationsHelper.persist(project, Project.Fields.PROJECT_PLANS);
+        jdbcManyRelationsHelper.persist(project, Project.Fields.PROJECT_SUBCONTRACTORS);
 
         try {
             updateTeam(caseObject, project.getTeam());

@@ -23,6 +23,7 @@ public class ImportanceBtnGroupMulti extends ToggleBtnGroupMulti<En_ImportanceLe
     public void fillButtons() {
 
         List<En_ImportanceLevel> orderedImportanceLevelList = new ArrayList<>();
+        orderedImportanceLevelList.add(En_ImportanceLevel.EMERGENCY);
         orderedImportanceLevelList.add(En_ImportanceLevel.CRITICAL);
         orderedImportanceLevelList.add(En_ImportanceLevel.IMPORTANT);
         orderedImportanceLevelList.add(En_ImportanceLevel.MEDIUM);
@@ -36,10 +37,10 @@ public class ImportanceBtnGroupMulti extends ToggleBtnGroupMulti<En_ImportanceLe
         clear();
 
         for (En_ImportanceLevel level : importanceLevelList) {
-            addBtnWithIcon(
+            addBtnWithIconAndTooltip(
                     ImportanceStyleProvider.getImportanceIcon(level) + " center",
                     "btn btn-default no-border " + level.toString().toLowerCase(),
-                    null,
+                    lang.getImportanceName(level),
                     level
             );
             setEnsureDebugId(level, DebugIdsHelper.IMPORTANCE_BUTTON.byId(level.getId()));

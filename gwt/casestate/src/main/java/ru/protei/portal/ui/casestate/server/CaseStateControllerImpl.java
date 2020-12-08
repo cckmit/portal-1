@@ -68,4 +68,9 @@ public class CaseStateControllerImpl implements CaseStateController {
         }
         return state;
     }
+
+    @Override
+    public CaseState getCaseStateByCaseId(Long caseId) throws RequestFailedException {
+        return checkResultAndGetData(caseStateService.getCaseStateByCaseIdOmitPrivileges(caseId));
+    }
 }

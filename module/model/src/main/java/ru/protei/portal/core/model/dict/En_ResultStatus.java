@@ -321,6 +321,31 @@ public enum En_ResultStatus {
     /**
      * Пользователь не найдем
      */
-    USER_NOT_FOUND
+    USER_NOT_FOUND,
+
+    /**
+     * Родительский объект не найден
+     */
+    NOT_FOUND_PARENT,
+
+    /**
+     * Запрещено менять статус обращения на verified, когда не все подзадачи в verified
+     */
+    INVALID_CASE_UPDATE_SUBTASK_NOT_CLOSED,
+
+    /**
+     * Родительская задача не может быть в статусе created или verified
+     */
+    NOT_ALLOWED_PARENT_STATE,
+
+    /**
+     * Родительская задача или подзадача не может быть с автоматическим открытием
+     */
+    NOT_ALLOWED_AUTOOPEN_ISSUE,
+
+    /**
+     * Родительская задача не может быть интеграционной
+     */
+    NOT_ALLOWED_INTEGRATION_ISSUE
     ;
 }

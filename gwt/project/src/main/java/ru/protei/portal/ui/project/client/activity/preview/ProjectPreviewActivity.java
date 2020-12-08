@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ProjectAccessType;
 import ru.protei.portal.core.model.dto.Project;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.ent.ProjectSla;
@@ -29,7 +30,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.ui.project.client.util.AccessUtil.*;
 
 /**
@@ -122,10 +123,11 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.setCompany(value.getCustomer() == null ? "" : value.getCustomer().getCname());
         view.setContracts(emptyIfNull(value.getContracts()).stream().collect(Collectors.toMap(EntityOption::getDisplayText, contract -> LinkUtils.makePreviewLink(Contract.class, contract.getId()))));
         view.setPlatform(value.getPlatformName() == null ? "" : value.getPlatformName(), LinkUtils.makePreviewLink(Platform.class, value.getPlatformId()));
+        view.setSubcontractors(stream(value.getSubcontractors()).map(Company::getCname).collect(Collectors.joining(", ")));
 
-        if( value.getTeam() != null ) {
+        if( isNotEmpty(value.getTeam()) ) {
             StringBuilder teamBuilder = new StringBuilder();
-            value.getTeam().stream()
+            stream(value.getTeam())
                     .collect(Collectors.groupingBy(PersonProjectMemberView::getRole,
                             Collectors.mapping(PersonProjectMemberView::getName, Collectors.joining(", "))))
                     .forEach((role, team) ->
@@ -136,6 +138,8 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
                                     .append("<br/>"));
 
             view.setTeam(teamBuilder.toString());
+        } else {
+            view.setTeam("");
         }
 
         view.setProduct(value.getSingleProduct() == null ? "" : value.getSingleProduct().getName());

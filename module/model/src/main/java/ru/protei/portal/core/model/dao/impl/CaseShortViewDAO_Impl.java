@@ -15,6 +15,7 @@ import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.util.List;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.StringUtils.length;
 import static ru.protei.portal.core.model.helper.StringUtils.trim;
 import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
@@ -25,6 +26,8 @@ import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.quer
 public class CaseShortViewDAO_Impl extends PortalBaseJdbcDAO<CaseShortView> implements CaseShortViewDAO {
 
     public static final String LEFT_JOIN_CASE_COMMENT = " LEFT JOIN case_comment ON case_object.id = case_comment.CASE_ID";
+    public static final String LEFT_JOIN_CASE_TAG =
+            " LEFT JOIN case_object_tag on case_object.ID = case_object_tag.case_id join case_tag on case_tag.id = case_object_tag.tag_id";
 
     @Autowired
     private CaseObjectSqlBuilder caseObjectSqlBuilder;
@@ -64,6 +67,10 @@ public class CaseShortViewDAO_Impl extends PortalBaseJdbcDAO<CaseShortView> impl
                 && length(trim( query.getSearchString() )) >= CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS;
     }
 
+    public static boolean isFilterByTagNames(CaseQuery query) {
+        return isNotEmpty(query.getCaseTagsNames());
+    }
+
     private JdbcQueryParameters buildJdbcQueryParameters(CaseQuery query) {
 
         JdbcQueryParameters parameters = new JdbcQueryParameters();
@@ -79,6 +86,11 @@ public class CaseShortViewDAO_Impl extends PortalBaseJdbcDAO<CaseShortView> impl
         if (isSearchAtComments(query)) {
             parameters.withDistinct(true);
             parameters.withJoins(LEFT_JOIN_CASE_COMMENT);
+        }
+
+        if (isFilterByTagNames(query)) {
+            parameters.withDistinct(true);
+            parameters.withJoins(LEFT_JOIN_CASE_TAG);
         }
 
         return parameters;

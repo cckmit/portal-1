@@ -132,6 +132,15 @@
             <div class="row form-group">
                 <div class="col-md-12">
                     <h5>
+                        <ui:text from="{lang.projectSubcontractors}"/>
+                    </h5>
+                    <div ui:field="subcontractors"/>
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-md-12">
+                    <h5>
                         <ui:text from="{lang.contracts}"/>
                     </h5>
                     <g:HTMLPanel styleName="links-list-column-formatter" ui:field="contracts"/>

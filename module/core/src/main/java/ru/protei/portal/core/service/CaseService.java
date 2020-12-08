@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -34,7 +35,7 @@ public interface CaseService {
 
     @Privileged({ En_Privilege.ISSUE_CREATE })
     @Auditable( En_AuditType.ISSUE_CREATE )
-    Result<CaseObject> createCaseObject( AuthToken token, CaseObjectCreateRequest request);
+    Result<CaseObject> createCaseObject(AuthToken token, CaseObjectCreateRequest request);
 
     @Privileged({ En_Privilege.ISSUE_EDIT })
     @Auditable( En_AuditType.ISSUE_MODIFY )
@@ -46,6 +47,9 @@ public interface CaseService {
 
     @Privileged({ En_Privilege.ISSUE_VIEW })
     Result<CaseObjectMeta> getIssueMeta( AuthToken token, Long issueId );
+
+    @Privileged({ En_Privilege.ISSUE_VIEW })
+    Result<CaseObjectMetaNotifiers> getCaseObjectMetaNotifiers( AuthToken token, Long issueId );
 
     @Privileged({ En_Privilege.ISSUE_EDIT })
     @Auditable( En_AuditType.ISSUE_MODIFY )
@@ -92,4 +96,11 @@ public interface CaseService {
 
     @Privileged({En_Privilege.ISSUE_VIEW})
     Result<Long> addFavoriteState(AuthToken token, Long personId, Long issueId);
+
+    @Privileged({ En_Privilege.ISSUE_CREATE })
+    @Auditable( En_AuditType.ISSUE_CREATE )
+    Result<CaseObject> createSubtask(AuthToken token, CaseObjectCreateRequest caseObjectCreateRequest, Long parentCaseObjectId);
+
+    @Privileged(En_Privilege.ISSUE_EDIT)
+    Result<CaseObjectMetaNotifiers> addNotifierToCaseObject(AuthToken authToken, Long caseId, PersonShortView personShortView);
 }

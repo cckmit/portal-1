@@ -144,13 +144,14 @@ public class Project extends AuditableObject {
     @JdbcManyToMany(linkTable = "plan_to_project", localLinkColumn = "project_id", remoteLinkColumn = "plan_id")
     private List<Plan> projectPlans;
 
-
     @JdbcJoinedColumn(joinPath = {
             @JdbcJoinPath(localColumn = "id", remoteColumn = "CASE_ID", table = "case_location", sqlTableAlias = "location"),
             @JdbcJoinPath(localColumn = "LOCATION_ID", remoteColumn = "id", table = "location", sqlTableAlias = "region"),
     }, mappedColumn = "name")
     private String regionName;
 
+    @JdbcManyToMany(linkTable = "project_to_company", localLinkColumn = "project_id", remoteLinkColumn = "company_id")
+    private List<Company> subcontractors;
     /**
      * Команда проекта
      */
@@ -421,6 +422,14 @@ public class Project extends AuditableObject {
         this.projectPlans = projectPlans;
     }
 
+    public List<Company> getSubcontractors() {
+        return subcontractors;
+    }
+
+    public void setSubcontractors(List<Company> subcontractors) {
+        this.subcontractors = subcontractors;
+    }
+
     public EntityOption toEntityOption() {
         return new EntityOption(this.getName(), this.getId());
     }
@@ -504,8 +513,10 @@ public class Project extends AuditableObject {
         String NAME = CaseObject.Columns.CASE_NAME;
         String MANAGER = CaseObject.Columns.MANAGER;
         String PLATFORM_ID = CaseObject.Columns.PLATFORM_ID;
+        String COMPANY = CaseObject.Columns.INITIATOR_COMPANY;
     }
     public interface Fields {
         String PROJECT_PLANS = "projectPlans";
+        String PROJECT_SUBCONTRACTORS = "subcontractors";
     }
 }

@@ -11,7 +11,6 @@ import ru.protei.portal.core.model.dict.En_FileUploadStatus;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Attachment;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.dto.ProjectInfo;
@@ -31,6 +30,8 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
 import java.util.function.Consumer;
+
+import static ru.protei.portal.core.model.util.CrmConstants.Platform.PARAMETERS_MAX_LENGTH;
 
 public abstract class PlatformEditActivity implements AbstractPlatformEditActivity {
 
@@ -101,8 +102,10 @@ public abstract class PlatformEditActivity implements AbstractPlatformEditActivi
 
     @Override
     public void onSaveClicked() {
-        if (!isValid()) {
-            fireEvent(new NotifyEvents.Show(lang.errFieldsRequired(), NotifyEvents.NotifyType.ERROR));
+
+        String validationErrorMsg = validate();
+        if (validationErrorMsg != null) {
+            fireEvent(new NotifyEvents.Show(validationErrorMsg, NotifyEvents.NotifyType.ERROR));
             return;
         }
 
@@ -284,11 +287,19 @@ public abstract class PlatformEditActivity implements AbstractPlatformEditActivi
         }
     }
 
-    private boolean isValid() {
-        if (view.project().getValue() != null)
-            return view.nameValidator().isValid();
-        else
-            return view.nameValidator().isValid() && view.companyValidator().isValid();
+    private String validate() {
+        boolean isValid = view.project().getValue() != null
+                            ? view.nameValidator().isValid()
+                            : view.nameValidator().isValid() && view.companyValidator().isValid();
+        if (!isValid) {
+            return lang.errFieldsRequired();
+        }
+
+        if (view.parameters().getValue().length() > PARAMETERS_MAX_LENGTH) {
+            return lang.errRemoteAccessParametersLengthExceeded(PARAMETERS_MAX_LENGTH);
+        }
+
+        return null;
     }
 
     private void addAttachmentsToCase(Collection<Attachment> attachments) {

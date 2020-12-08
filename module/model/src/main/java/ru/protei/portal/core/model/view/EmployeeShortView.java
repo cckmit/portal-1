@@ -60,6 +60,8 @@ public class EmployeeShortView implements Serializable {
     @JdbcOneToMany(table = "worker_entry", localColumn = "id", remoteColumn = "personId")
     private List<WorkerEntryShortView> workerEntries;
 
+    private List<String> logins;
+
     private PersonAbsence currentAbsence;
 
     public Long getId() {
@@ -185,6 +187,14 @@ public class EmployeeShortView implements Serializable {
         this.currentAbsence = absence;
     }
 
+    public List<String> getLogins() {
+        return logins;
+    }
+
+    public void setLogins(List<String> logins) {
+        this.logins = logins;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -200,5 +210,7 @@ public class EmployeeShortView implements Serializable {
 
     public interface Fields {
         String CONTACT_ITEMS = "contactItems";
+        String WORKER_ENTRIES = "workerEntries";
+        String LOGINS = "logins";
     }
 }

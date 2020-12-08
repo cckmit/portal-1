@@ -7,7 +7,9 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.UserLogin;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -18,14 +20,13 @@ import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
-import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.Collections;
 import java.util.function.Consumer;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
-import static ru.protei.portal.core.model.helper.CollectionUtils.toSet;
 
 /**
  * Активность создания и редактирования учетной записи
@@ -138,6 +139,18 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
         } );
     }
 
+    @Override
+    public void onSearchChanged() {
+        final String searchPattern = view.searchPattern().getValue().trim();
+        view.setRolesFilter(StringUtils.isEmpty(searchPattern) ? null : makerRolesFilter(searchPattern));
+    }
+
+    private Selector.SelectorFilter<UserRole> makerRolesFilter(String searchPattern) {
+        String upperCaseSearchPattern = searchPattern.toUpperCase();
+        return userRole -> userRole != null &&
+                (userRole.getCode().toUpperCase().contains(upperCaseSearchPattern) || userRole.getInfo().contains(upperCaseSearchPattern));
+    }
+
     private void resetValidationStatus(){
         view.setLoginStatus( NameStatus.NONE );
     }
@@ -178,6 +191,7 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
         view.showInfo( userLogin.getId() != null && !userLogin.isLDAP_Auth() );
         view.sendWelcomeEmailVisibility().setVisible(userLogin.getId() == null);
         view.sendWelcomeEmail().setValue(false);
+        view.searchPattern().setValue(null);
     }
 
     private boolean validate() {

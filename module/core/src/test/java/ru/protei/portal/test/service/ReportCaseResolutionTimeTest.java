@@ -165,7 +165,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         assertEquals( 1 * DAY, intervals.get( 1 ).minTime );
         assertEquals( 1 * DAY, intervals.get( 1 ).maxTime );
 
-        assertEquals( 2, size( intervals.get( 2 ).caseNumbers ));
+        assertEquals( 2, intervals.get( 2 ).casesCount );
         assertEquals( 3 * DAY, intervals.get( 2 ).summTime );
         assertEquals( 1 * DAY, intervals.get( 2 ).minTime );
         assertEquals( 2 * DAY, intervals.get( 2 ).maxTime );
@@ -190,7 +190,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         assertEquals( 3 * DAY, intervals.get( 7 ).minTime );
         assertEquals( 3 * DAY, intervals.get( 7 ).maxTime );
 
-        assertEquals( 2, size( intervals.get( 8 ).caseNumbers ));
+        assertEquals( 2,  intervals.get( 8 ).casesCount);
         assertEquals( 9 * DAY, intervals.get( 8 ).summTime );
         assertEquals( 4 * DAY, intervals.get( 8 ).minTime );
         assertEquals( 5 * DAY, intervals.get( 8 ).maxTime );
@@ -368,39 +368,39 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
 
         assertEquals( numberOfDays, intervals.size() );
 
-        assertEquals( 1, size( intervals.get( 0 ).caseNumbers ));
+        assertEquals( 1,  intervals.get( 0 ).casesCount );
         assertEquals( 2 * DAY, intervals.get( 0 ).minTime );
         assertEquals( 2 * DAY, intervals.get( 0 ).maxTime );
         assertEquals( 2 * DAY, intervals.get( 0 ).summTime );
 
-        assertEquals( 2, size( intervals.get( 1 ).caseNumbers ));
+        assertEquals( 2, intervals.get( 1 ).casesCount );
         assertEquals( 6 * HOUR, intervals.get( 1 ).minTime );
         assertEquals( 3 * DAY, intervals.get( 1 ).maxTime );
         assertEquals( 3 * DAY + 6 * HOUR, intervals.get( 1 ).summTime );
 
-        assertEquals( 1, size( intervals.get( 2 ).caseNumbers ));
+        assertEquals( 1, intervals.get( 2 ).casesCount );
         assertEquals( 4 * DAY, intervals.get( 2 ).minTime );
         assertEquals( 4 * DAY, intervals.get( 2 ).maxTime );
         assertEquals( 4 * DAY, intervals.get( 2 ).summTime );
 
-        assertEquals( 2, size( intervals.get( 3 ).caseNumbers ));
+        assertEquals( 2, intervals.get( 3 ).casesCount );
         assertEquals( 1 * DAY, intervals.get( 3 ).minTime );
         assertEquals( 5 * DAY, intervals.get( 3 ).maxTime );
         assertEquals( 6 * DAY, intervals.get( 3 ).summTime );
 
-        assertEquals( 1, size( intervals.get( 6 ).caseNumbers ));
+        assertEquals( 1, intervals.get( 6 ).casesCount );
         assertEquals( 4 * DAY, intervals.get( 6 ).minTime );
         assertEquals( 4 * DAY, intervals.get( 6 ).maxTime );
         assertEquals( 4 * DAY, intervals.get( 6 ).summTime );
 
-        assertEquals( 2, size( intervals.get( 7 ).caseNumbers ));
+        assertEquals( 2, intervals.get( 7 ).casesCount );
         long case3Time = 5 * DAY;
         assertEquals( case3Time, intervals.get( 7 ).minTime );
         long case2Time = 6 * DAY + 5 * HOUR + DAY - 11 * HOUR;
         assertEquals( case2Time, intervals.get( 7 ).maxTime );
         assertEquals( case2Time + case3Time, intervals.get( 7 ).summTime );
 
-        assertEquals( 2, size( intervals.get( 11 ).caseNumbers ));
+        assertEquals( 2, intervals.get( 11 ).casesCount );
         long case11minTime = 9 * DAY;
         assertEquals( case11minTime, intervals.get( 11 ).minTime );
         long case11maxTime = 7 * DAY + 5 * HOUR + 4 * DAY - 11 * HOUR;

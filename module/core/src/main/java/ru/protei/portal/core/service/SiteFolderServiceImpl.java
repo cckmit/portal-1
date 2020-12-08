@@ -190,6 +190,11 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     @Transactional
     public Result<Platform> createPlatform( AuthToken token, Platform platform) {
 
+        String params = platform.getParams();
+        if (params != null && !isValid(params)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
         Long id = platformDAO.persist(platform);
 
         if (id == null) {
@@ -268,6 +273,12 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     @Override
     @Transactional
     public Result<Platform> updatePlatform(AuthToken token, Platform platform) {
+
+        String params = platform.getParams();
+        if (params != null && !isValid(params)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
         Platform platformFromDb = platformDAO.get(platform.getId());
 
         if (platformFromDb == null) {
@@ -409,5 +420,9 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         caseObject.setName(name);
         caseObject.setStateId(CrmConstants.State.CREATED);
         return caseObject;
+    }
+
+    private boolean isValid(String params) {
+        return params.length() <= CrmConstants.Platform.PARAMETERS_MAX_LENGTH;
     }
 }
