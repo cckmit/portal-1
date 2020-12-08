@@ -54,8 +54,8 @@
                             <img ui:field="photo" src="#" alt="" width="32" height="32" class="thumbnail-photo"/>
                         </span>
                     </g:Button>
-                    <g:FocusPanel ui:field="menuBarFocus">
-                        <g:HTMLPanel ui:field="menuBar" styleName="dropdown-menu dropdown-menu-right profile-dropdown">
+                    <g:PopupPanel ui:field="menuBarPopup" autoHideEnabled="true" visible="false">
+                        <g:HTMLPanel ui:field="menuBar" styleName="dropdown-menu dropdown-menu-right profile-dropdown show m-t-10">
                             <div ui:field="help" class="dropdown-item">
                                 <span class="p-r-10"><ui:text from="{lang.help}"/></span>
                                 <span>
@@ -77,7 +77,7 @@
                             <div class="dropdown-divider"></div>
                             <div ui:field="appVersion" class="dropdown-item hint-text"/>
                         </g:HTMLPanel>
-                    </g:FocusPanel>
+                    </g:PopupPanel>
                 </div>
             </div>
         </div>

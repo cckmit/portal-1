@@ -164,20 +164,26 @@ public class AppView extends Composite
         }
     }
 
-    @UiHandler({"profile", "menuBarFocus"})
+    @UiHandler({"profile"})
     public void profileClick(ClickEvent event) {
+        menuBarPopup.setPopupPositionAndShow((i, i1) -> {
+            int relativeLeft = profile.getAbsoluteLeft();
+            int widthDiff = i - profile.getOffsetWidth();
+            int popupLeft = relativeLeft - widthDiff;
+            int relativeTop = profile.getAbsoluteTop();
+            int popupTop = relativeTop + profile.getOffsetHeight();
+
+            menuBarPopup.setPopupPosition(popupLeft, popupTop);
+        });
+
+/*
         if (menuBar.getStyleName().contains("show")) {
             menuBar.removeStyleName( "show" );
         } else {
             menuBar.addStyleName( "show" );
         }
+*/
     }
-
-    @UiHandler("menuBarFocus")
-    public void profileClick(MouseOutEvent event) {
-        menuBar.removeStyleName("show");
-    }
-
 
     @UiHandler("locale")
     public void onLocaleChanged(ValueChangeEvent<LocaleImage> event) {
@@ -359,8 +365,6 @@ public class AppView extends Composite
     @UiField
     Anchor settings;
     @UiField
-    FocusPanel menuBarFocus;
-    @UiField
     HTMLPanel menuBar;
     @UiField
     Button profile;
@@ -391,6 +395,8 @@ public class AppView extends Composite
     DivElement help;
     @UiField
     DivElement appVersion;
+    @UiField
+    PopupPanel menuBarPopup;
 
     AbstractAppActivity activity;
 
