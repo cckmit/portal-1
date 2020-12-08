@@ -15,9 +15,13 @@ public interface CommonService {
 
     CachedPersonMapper getPersonMapper( RedmineEndpoint endpoint );
 
-    Result<Long> createAndStoreStateComment( Date created, Long authorId, Long stateId, Long caseObjectId);
+    Result<Long> createAndStoreStateHistory(Date created, Long authorId, Long stateId, Long caseObjectId);
 
-    Result<Long> createAndStoreImportanceComment( Date created, Long authorId, Integer importance, Long caseId);
+    Result<Long> updateAndStoreStateHistory(Date updated, Long authorId, Long oldStateId, Long caseObjectId, Long newStateId);
+
+    Result<Long> createAndStoreImportanceHistory(Date created, Long authorId, Integer importance, Long caseId);
+
+    Result<Long> updateAndStoreImportanceHistory(Date updated, Long authorId, Integer oldImportance, Long caseId, Integer newImportance);
 
     Result<Long> updateCaseStatus( CaseObject object, Long statusMapId, Date creationOn, String value, Person author );
 
