@@ -144,10 +144,10 @@ public class BootstrapServiceImpl implements BootstrapService {
         /**
          *  begin Спринт 63 */
 
-        if(!bootstrapAppDAO.isActionExists( "migrateToHistory" )) {
-            this.migrateToHistory();
-            bootstrapAppDAO.createAction("migrateToHistory");
-        }
+//        if(!bootstrapAppDAO.isActionExists( "migrateToHistory" )) {
+//            this.migrateToHistory();
+//            bootstrapAppDAO.createAction("migrateToHistory");
+//        }
 
         /**
          *  end Спринт */
