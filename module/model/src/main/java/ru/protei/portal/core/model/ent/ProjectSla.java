@@ -1,6 +1,10 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.winter.jdbc.annotations.*;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.winter.jdbc.annotations.IdInsertMode;
+import ru.protei.winter.jdbc.annotations.JdbcColumn;
+import ru.protei.winter.jdbc.annotations.JdbcEntity;
+import ru.protei.winter.jdbc.annotations.JdbcId;
 
 import java.io.Serializable;
 
@@ -26,6 +30,10 @@ public class ProjectSla implements Serializable {
 
     public ProjectSla() {}
 
+    public ProjectSla(En_ImportanceLevel importanceLevel) {
+        this.importanceLevelId = importanceLevel.getId();
+    }
+
     public ProjectSla(Integer importanceLevelId, Long reactionTime, Long temporarySolutionTime, Long fullSolutionTime) {
         this.importanceLevelId = importanceLevelId;
         this.reactionTime = reactionTime;
@@ -47,6 +55,10 @@ public class ProjectSla implements Serializable {
 
     public void setImportanceLevelId(Integer importanceLevelId) {
         this.importanceLevelId = importanceLevelId;
+    }
+
+    public En_ImportanceLevel getImportanceLevel() {
+        return importanceLevelId == null ? null : En_ImportanceLevel.getById(importanceLevelId);
     }
 
     public Long getReactionTime() {
@@ -99,7 +111,7 @@ public class ProjectSla implements Serializable {
 
     @Override
     public String toString() {
-        return "ContractSLA{" +
+        return "ProjectSla{" +
                 "id=" + id +
                 ", importanceLevelId=" + importanceLevelId +
                 ", reactionTime=" + reactionTime +

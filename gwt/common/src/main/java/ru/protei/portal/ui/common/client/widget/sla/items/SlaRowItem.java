@@ -45,6 +45,9 @@ public class SlaRowItem extends Composite implements HasValue<ProjectSla>, HasVa
             reactionTime.setTime(value.getReactionTime());
             temporarySolutionTime.setTime(value.getTemporarySolutionTime());
             fullSolutionTime.setTime(value.getFullSolutionTime());
+
+            this.importanceLevel = value.getImportanceLevel();
+            this.importance.setInnerText(importanceLang.getImportanceName(importanceLevel));
         }
 
         if (fireEvents) {
@@ -81,17 +84,6 @@ public class SlaRowItem extends Composite implements HasValue<ProjectSla>, HasVa
         return true;
     }
 
-    public void setImportance(En_ImportanceLevel importance) {
-        this.importanceLevel = importance;
-        this.importance.setInnerText(importanceLang.getImportanceName(importanceLevel));
-    }
-
-    public void clear() {
-        reactionTime.setTime(null);
-        temporarySolutionTime.setTime(null);
-        fullSolutionTime.setTime(null);
-    }
-
     public void setEnsureDebugId(String debugId) {
         String importanceName = importanceLang.getImportanceName(importanceLevel);
 
@@ -120,8 +112,6 @@ public class SlaRowItem extends Composite implements HasValue<ProjectSla>, HasVa
     @Inject
     private En_CaseImportanceLang importanceLang;
 
-    interface SlaRowItemUiBinder extends UiBinder<HTMLPanel, SlaRowItem> {
-    }
-
+    interface SlaRowItemUiBinder extends UiBinder<HTMLPanel, SlaRowItem> {}
     private static SlaRowItemUiBinder ourUiBinder = GWT.create(SlaRowItemUiBinder.class);
 }

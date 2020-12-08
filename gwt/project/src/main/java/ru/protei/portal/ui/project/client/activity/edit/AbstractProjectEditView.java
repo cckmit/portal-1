@@ -56,6 +56,8 @@ public interface AbstractProjectEditView extends IsWidget {
 
     HasVisibility addLinkButtonVisibility();
 
+    HasVisibility slaVisibility();
+
     HasValue<Date> technicalSupportValidity();
 
     HasValue<List<ProjectSla>> slaInput();
