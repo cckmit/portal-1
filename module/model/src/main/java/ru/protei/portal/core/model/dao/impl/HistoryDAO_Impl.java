@@ -36,7 +36,7 @@ public class HistoryDAO_Impl extends PortalBaseJdbcDAO<History> implements Histo
 
     @Override
     public void removeByCaseId(Long caseId) {
-        final Condition condition = condition().and("case_object_id").equal(caseId);
+        Condition condition = condition().and("case_object_id").equal(caseId);
         removeByCondition(condition.getSqlCondition(), condition.getSqlParameters());
     }
 
@@ -71,11 +71,11 @@ public class HistoryDAO_Impl extends PortalBaseJdbcDAO<History> implements Histo
             }
 
             if (isNotEmpty(query.getValueTypes())) {
-                condition.append(" and history.value_type in ").append(makeInArg(query.getValueTypes()));
+                condition.append(" and history.value_type in ").append(makeInArg(query.getValueTypes(), false));
             }
 
             if (isNotEmpty(query.getHistoryActions())) {
-                condition.append(" and history.action_type in ").append(makeInArg(query.getHistoryActions()));
+                condition.append(" and history.action_type in ").append(makeInArg(query.getHistoryActions(), false));
             }
 
             if (query.getOldId() != null) {

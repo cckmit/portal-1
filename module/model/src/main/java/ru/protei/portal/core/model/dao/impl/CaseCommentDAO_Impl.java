@@ -152,7 +152,7 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
                 ;
 
         String query =
-                "SELECT case_object_id, outerH.date as commentCreated, new_id, ob.CASENO as caseObjectNumber" +
+                "SELECT case_object_id, outerH.date as historyCreated, new_id, ob.CASENO as caseObjectNumber" +
                         " FROM history outerH LEFT JOIN case_object ob on ob.id = outerH.case_object_id" +
                         " WHERE outerH.case_object_id in (" +
                         "   SELECT DISTINCT case_object_id" +
@@ -181,7 +181,7 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
             comment.setCaseNumber(r.getLong( "caseObjectNumber" ));
             Long cstateId = r.getLong( "new_id" );
             comment.setCaseStateId( r.wasNull() ? null : cstateId );
-            comment.setCreated( new Date( r.getTimestamp( "commentCreated" ).getTime() ) );
+            comment.setCreated( new Date( r.getTimestamp( "historyCreated" ).getTime() ) );
 
             return comment;
         }

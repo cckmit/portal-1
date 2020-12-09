@@ -17,7 +17,6 @@ import ru.protei.portal.mock.AuthServiceMock;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
@@ -138,7 +137,7 @@ public class BaseServiceTest {
         history.setType( En_HistoryType.CASE_STATE );
         history.setCaseObjectId( caseObjectId );
         history.setInitiatorId( person.getId() );
-        if (caseStateId != null) history.setNewId( caseStateId );
+        history.setNewId( caseStateId );
         return history;
     }
 
@@ -342,7 +341,8 @@ public class BaseServiceTest {
     }
 
     protected boolean removeHistoryCaseObject(CaseObject caseObject) {
-        return 0 < historyDAO.removeByCondition("case_object_id = ?", Arrays.asList(caseObject.getId()));
+        historyDAO.removeByCaseId(caseObject.getId());
+        return true;
     }
 
     protected static Long generateNextCaseNumber( En_CaseType caseType ) {
