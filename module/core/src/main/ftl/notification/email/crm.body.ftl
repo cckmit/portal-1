@@ -374,7 +374,9 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                         <div class="markdown"
                              style="margin-top:4px;line-height:1.5em;"><@diffHTML old="${caseComment.oldText}" new="${caseComment.text}"/></div>
                     <#else>
-                        <div class="markdown" style="margin-top:4px;line-height:1.5em;">${caseComment.text}</div>
+                        <#if caseComment.text??>
+                            <div class="markdown" style="margin-top:4px;line-height:1.5em;">${caseComment.text}</div>
+                        </#if>
                     </#if>
                 </div>
             </#list>

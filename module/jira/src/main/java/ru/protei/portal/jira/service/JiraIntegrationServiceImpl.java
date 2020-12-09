@@ -210,8 +210,8 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         if (caseObj.getStateId() != oldStateId) {
             changeStateHistory(new Date(), authorId, caseObj.getId(),
-                    caseObj.getStateId(), caseStateDAO.get(caseObj.getStateId()).getState(),
-                    oldStateId, caseStateDAO.get(oldStateId).getState());
+                    oldStateId, caseStateDAO.get(oldStateId).getState(),
+                    caseObj.getStateId(), caseStateDAO.get(caseObj.getStateId()).getState());
         }
 
         if (!newImportance.equals(oldImportance)) {
