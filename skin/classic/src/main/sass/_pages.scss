@@ -220,27 +220,11 @@ body.sidebar-visible .page-sidebar .menu-items .icon-thumbnail {
   line-height: 30px;
 }
 
-.modal .modal-body {
-  .row {
-    margin-left: 0;
-    margin-right: 0
-  }
-
-  .row [class*=col-]:not(:first-child), .row [class*=col-]:not(:last-child) {
-    padding-right: 7px;
-    padding-left: 7px
-  }
-
-  .row [class*=col-]:first-child {
-    padding-left: 0
-  }
-
-  .row [class*=col-]:last-child {
-    padding-right: 0
-  }
-}
-
 .username,
 .profile-dropdown-toggle {
   cursor: pointer;
+}
+
+.page-sidebar .sidebar-menu .menu-items {
+  height: calc(100% - 20px);
 }
