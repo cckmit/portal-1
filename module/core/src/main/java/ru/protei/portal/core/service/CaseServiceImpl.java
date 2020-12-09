@@ -1330,6 +1330,7 @@ public class CaseServiceImpl implements CaseService {
                 endpoint.getSlaMapId()
             ));
             caseObject.setJiraUrl(portalConfig.data().jiraConfig().getJiraUrl());
+            caseObject.setJiraProjects(portalConfig.data().jiraConfig().getJiraProjects());
         } catch (Exception e) {
             log.warn("Failed to fill jira SLA information", e);
             caseObject.setCaseObjectMetaJira(new CaseObjectMetaJira());
