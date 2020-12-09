@@ -5,6 +5,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
+import ru.protei.portal.core.model.dict.En_HistoryAction;
+import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.portal.core.model.dto.CaseResolutionTimeReportDto;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
@@ -14,6 +16,7 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -87,25 +90,25 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
                                                                       List<Long> tagsIds) {
         String fromTime = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format( from );
         String toTime = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format( to );
-        String acceptableStates = makeInArg( terminatedStates);
+        String acceptableStates = makeInArg( terminatedStates, false);
 
         String products = "";
         if ( productIds != null && !productIds.isEmpty() ) {
             if (productIds.remove(CrmConstants.Product.UNDEFINED)) {
                 products += " and (ob.product_id is null";
                 if (!productIds.isEmpty()) {
-                    products += " or ob.product_id in " + makeInArg(productIds);
+                    products += " or ob.product_id in " + makeInArg(productIds, false);
                 }
                 products += ")";
             } else {
-                products += " and ob.product_id in " + makeInArg(productIds);
+                products += " and ob.product_id in " + makeInArg(productIds, false);
             }
         }
 
         String companies = makeAndPartFromListIds(companiesIds, "ob.initiator_company");
         String managers = makeAndPartFromListIds(managersIds, "ob.manager");
         String importance = makeAndPartFromListIds(importanceIds, "ob.importance");
-        String tags = tagsIds == null ? "" : " and ob.ID in (SELECT cot.case_id FROM case_object_tag cot WHERE cot.tag_id in " + makeInArg(tagsIds) + ")";
+        String tags = tagsIds == null ? "" : " and ob.ID in (SELECT cot.case_id FROM case_object_tag cot WHERE cot.tag_id in " + makeInArg(tagsIds, false) + ")";
 
         // Активные задачи на момент начала интервала запроса
         String activeCasesAtIntervalStart =
@@ -116,7 +119,10 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
                         "   SELECT max(date) last" +
                         "   FROM history" +
                         "   WHERE case_object_id = h.case_object_id" +
-                        "     and created < '" + fromTime + "'" +  // # левая граница
+                        "     and date < '" + fromTime + "'" +  // # левая граница
+                        "     and value_type = " + En_HistoryType.CASE_STATE.getId() +
+                        "     and action_type in " +
+                                    makeInArg(Arrays.asList(En_HistoryAction.ADD.getId(), En_HistoryAction.CHANGE.getId()), false) +
                         "     and new_id is not null" +
                         " )" +
                         "   and new_id in " + acceptableStates
@@ -134,6 +140,9 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
                         "        LEFT OUTER JOIN case_object ob on ob.id = h.case_object_id" +
                         " WHERE h.date > '" + fromTime + "'" +  // # левая граница
                         "   and h.date < '" + toTime + "' " +  //# правая граница
+                        "   and h.value_type = " + En_HistoryType.CASE_STATE.getId() +
+                        "   and h.action_type in " +
+                                makeInArg(Arrays.asList(En_HistoryAction.ADD.getId(), En_HistoryAction.CHANGE.getId()), false) +
                         "   and new_id in " + acceptableStates
                         + products
                         + companies
@@ -179,6 +188,6 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
     };
 
     private String makeAndPartFromListIds(final List<?> list, final String field){
-        return list == null ? "" : " and " + field + " in " + makeInArg(list);
+        return list == null ? "" : " and " + field + " in " + makeInArg(list, false);
     }
 }
