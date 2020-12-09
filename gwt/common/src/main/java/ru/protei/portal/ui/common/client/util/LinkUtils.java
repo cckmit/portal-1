@@ -5,12 +5,12 @@ import ru.protei.portal.core.model.util.CrmConstants;
 
 public class LinkUtils {
 
-    public static String makePreviewLink(String classSimpleName, Long id) {
+    public static String makePreviewLink(Class<?> clazz, Long id) {
         String href = Window.Location.getHref();
 
         if (id == null) return "";
 
-        switch (classSimpleName) {
+        switch (clazz.getSimpleName()) {
             case ("Contract"):
                 return href.substring(0, href.indexOf("#") + 1) + "contract_preview:id=" + id;
             case ("Project"):
@@ -28,12 +28,12 @@ public class LinkUtils {
         }
     }
 
-    public static String makeEditLink(String classSimpleName, Long id){
+    public static String makeEditLink(Class<?> clazz, Long id){
         String href = Window.Location.getHref();
 
         if (id == null) return "";
 
-        switch (classSimpleName) {
+        switch (clazz.getSimpleName()) {
             case ("EmployeeShortView"):
                 return href + "/employee:id=" + id;
             default:
@@ -47,10 +47,10 @@ public class LinkUtils {
         return href.substring(0, href.indexOf("#") + 1) + CrmConstants.Jira.INFO_LINK;
     }
 
-    public static boolean isLinkNeeded(String claSimpleName) {
-        if (claSimpleName == null) return false;
+    public static boolean isLinkNeeded(Class<?> clazz) {
+        if (clazz == null) return false;
 
-        switch (claSimpleName) {
+        switch (clazz.getSimpleName()) {
             case ("Contract"):
             case ("Project"):
             case ("Platform"):

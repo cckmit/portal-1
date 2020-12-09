@@ -136,7 +136,6 @@ public class ExcelReportWriter implements
                 critical = null,
                 important = null;
 
-
         for (History history : histories) {
             if (history.getType() == En_HistoryType.CASE_IMPORTANCE) {
                 if (Objects.equals(En_ImportanceLevel.IMPORTANT.getId(), history.getNewId().intValue() )) important = history.getDate();

@@ -114,18 +114,18 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
     public void casesGroupingTest() {
         Person person = new Person( 1L );
 
-        List<History> stateChanges = new ArrayList<>();
-        stateChanges.add( createNewStateHistory( person, 1L, CREATED, new Date()) );
-        stateChanges.add( createNewStateHistory( person, 1L, OPENED, new Date()) );
-        stateChanges.add( createNewStateHistory( person, 1L, DONE, new Date()) );
-        stateChanges.add( createNewStateHistory( person, 2L, CREATED, new Date()) );
-        stateChanges.add( createNewStateHistory( person, 2L, OPENED, new Date()) );
-        stateChanges.add( createNewStateHistory( person, 2L, DONE, new Date()) );
-        stateChanges.add( createNewStateHistory( person, 3L, CREATED, new Date()) );
-        stateChanges.add( createNewStateHistory( person, 3L, OPENED, new Date()) );
-        stateChanges.add( createNewStateHistory( person, 3L, DONE, new Date()) );
+        List<History> stateHistories = new ArrayList<>();
+        stateHistories.add( createNewStateHistory( person, 1L, CREATED, new Date()) );
+        stateHistories.add( createNewStateHistory( person, 1L, OPENED, new Date()) );
+        stateHistories.add( createNewStateHistory( person, 1L, DONE, new Date()) );
+        stateHistories.add( createNewStateHistory( person, 2L, CREATED, new Date()) );
+        stateHistories.add( createNewStateHistory( person, 2L, OPENED, new Date()) );
+        stateHistories.add( createNewStateHistory( person, 2L, DONE, new Date()) );
+        stateHistories.add( createNewStateHistory( person, 3L, CREATED, new Date()) );
+        stateHistories.add( createNewStateHistory( person, 3L, OPENED, new Date()) );
+        stateHistories.add( createNewStateHistory( person, 3L, DONE, new Date()) );
 
-        List<Case> cases = groupBayIssues( convert( stateChanges ) );
+        List<Case> cases = groupBayIssues( convert( stateHistories ) );
 
         assertEquals( 3, cases.size() );
     }
@@ -135,24 +135,24 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         Person person = new Person( 1L );
         List<Interval> intervals = makeIntervals( dateRange(), DAY );
 
-        List<History> stateChanges = new ArrayList<>();
+        List<History> stateHistories = new ArrayList<>();
         //                         | 0| 1| 2| 3| 4| 5| 6| 7| 8| 9|10|11|
         //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
         //                            ^--^--x           ^--------x
         //                               ^-----^-----x     ^--x
-        stateChanges.add( createNewStateHistory(person, 1L, CREATED, day( 10 ) ) );
-        stateChanges.add( createNewStateHistory( person, 1L, OPENED, day( 11 ) ) );
-        stateChanges.add( createNewStateHistory( person, 1L, DONE, day( 12 ) ) );
-        stateChanges.add( createNewStateHistory( person, 1L, REOPENED, day( 16 ) ) );
-        stateChanges.add( createNewStateHistory( person, 1L, VERIFIED, day( 19 ) ) );
+        stateHistories.add( createNewStateHistory( person, 1L, CREATED, day( 10 ) ) );
+        stateHistories.add( createNewStateHistory( person, 1L, OPENED, day( 11 ) ) );
+        stateHistories.add( createNewStateHistory( person, 1L, DONE, day( 12 ) ) );
+        stateHistories.add( createNewStateHistory( person, 1L, REOPENED, day( 16 ) ) );
+        stateHistories.add( createNewStateHistory( person, 1L, VERIFIED, day( 19 ) ) );
 
-        stateChanges.add( createNewStateHistory( person, 2L, CREATED, day( 11 ) ) );
-        stateChanges.add( createNewStateHistory( person, 2L, OPENED, day( 13 ) ) );
-        stateChanges.add( createNewStateHistory( person, 2L, DONE, day( 15 ) ) );
-        stateChanges.add( createNewStateHistory( person, 2L, REOPENED, day( 17 ) ) );
-        stateChanges.add( createNewStateHistory( person, 2L, VERIFIED, day( 18 ) ) );
+        stateHistories.add( createNewStateHistory( person, 2L, CREATED, day( 11 ) ) );
+        stateHistories.add( createNewStateHistory( person, 2L, OPENED, day( 13 ) ) );
+        stateHistories.add( createNewStateHistory( person, 2L, DONE, day( 15 ) ) );
+        stateHistories.add( createNewStateHistory( person, 2L, REOPENED, day( 17 ) ) );
+        stateHistories.add( createNewStateHistory( person, 2L, VERIFIED, day( 18 ) ) );
 
-        List<Case> cases = groupBayIssues( convert( stateChanges ) );
+        List<Case> cases = groupBayIssues( convert( stateHistories ) );
 
         for (Interval interval : intervals) {
             log.info( "\n" );
@@ -251,25 +251,25 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         Person person = new Person( 1L );
         List<Interval> intervals = makeIntervals( dateRange(), DAY );
 
-        List<History> stateChanges = new ArrayList<>();
+        List<History> stateHistories = new ArrayList<>();
         //                         | 0| 1| 2| 3| 4| 5| 6| 7| 8| 9|10|11|
         //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
         //                            ^--^--x           ^--------x
         //                               ^-----^-----x     ^--x
-        stateChanges.add( createNewStateHistory( person, 1L, CREATED, day( 10 ) ) );
-        stateChanges.add( createNewStateHistory( person, 1L, OPENED, day( 11 ) ) );
-        stateChanges.add( createNewStateHistory( person, 1L, DONE, day( 12 ) ) );
-        stateChanges.add( createNewStateHistory( person, 1L, REOPENED, day( 16 ) ) );
-        stateChanges.add( createNewStateHistory( person, 1L, VERIFIED, day( 19 ) ) );
+        stateHistories.add( createNewStateHistory( person, 1L, CREATED, day( 10 ) ) );
+        stateHistories.add( createNewStateHistory( person, 1L, OPENED, day( 11 ) ) );
+        stateHistories.add( createNewStateHistory( person, 1L, DONE, day( 12 ) ) );
+        stateHistories.add( createNewStateHistory( person, 1L, REOPENED, day( 16 ) ) );
+        stateHistories.add( createNewStateHistory( person, 1L, VERIFIED, day( 19 ) ) );
 
-        stateChanges.add( createNewStateHistory( person, 2L, CREATED, day( 11 ) ) );
-        stateChanges.add( createNewStateHistory( person, 2L, OPENED, day( 13 ) ) );
-        stateChanges.add( createNewStateHistory( person, 2L, DONE, day( 15 ) ) );
-        stateChanges.add( createNewStateHistory( person, 2L, REOPENED, day( 17 ) ) );
-        stateChanges.add( createNewStateHistory( person, 2L, VERIFIED, day( 18 ) ) );
+        stateHistories.add( createNewStateHistory( person, 2L, CREATED, day( 11 ) ) );
+        stateHistories.add( createNewStateHistory( person, 2L, OPENED, day( 13 ) ) );
+        stateHistories.add( createNewStateHistory( person, 2L, DONE, day( 15 ) ) );
+        stateHistories.add( createNewStateHistory( person, 2L, REOPENED, day( 17 ) ) );
+        stateHistories.add( createNewStateHistory( person, 2L, VERIFIED, day( 18 ) ) );
 
 
-        List<Case> cases = groupBayIssues( convert(stateChanges) );
+        List<Case> cases = groupBayIssues( convert(stateHistories) );
 
         for (Interval interval : intervals) {
             interval.fill( cases, new HashSet<>( activeStatesShort ) );
@@ -283,12 +283,12 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         assertEquals( numberOfDays, workBook.getSheetAt( 0 ).getLastRowNum() ); // учтена строка с заголовком
     }
 
-    private List<CaseResolutionTimeReportDto> convert( List<History> stateChanges ) {
-        return toList( stateChanges, stateChange -> {
+    private List<CaseResolutionTimeReportDto> convert( List<History> stateHistories ) {
+        return toList( stateHistories, stateHistory -> {
             CaseResolutionTimeReportDto reportDto = new CaseResolutionTimeReportDto();
-            reportDto.setCaseId( stateChange.getCaseObjectId() );
-            reportDto.setCaseStateId( stateChange.getNewId() );
-            reportDto.setCreated( stateChange.getDate() );
+            reportDto.setCaseId( stateHistory.getCaseObjectId() );
+            reportDto.setCaseStateId( stateHistory.getNewId() );
+            reportDto.setCreated( stateHistory.getDate() );
             return reportDto;
         } );
     }

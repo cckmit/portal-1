@@ -23,7 +23,7 @@ public class SubnetButtonSelector extends ButtonPopupSingleSelector<SubnetOption
         String name = subnetOption == null ? defaultValue : subnetOption.getDisplayText();
         if(subnetOption != null
                 && policyService.hasPrivilegeFor( En_Privilege.SUBNET_VIEW)){
-            name = name + " <a class=\"full-screen-link\" href=\"" + LinkUtils.makePreviewLink( Subnet.class.getSimpleName(), subnetOption.getId() ) + "\" target=\"_blank\" id=\"" + DebugIds.RESERVED_IP.SUBNET_SELECTOR + "\"></a>";
+            name = name + " <a class=\"full-screen-link\" href=\"" + LinkUtils.makePreviewLink( Subnet.class, subnetOption.getId() ) + "\" target=\"_blank\" id=\"" + DebugIds.RESERVED_IP.SUBNET_SELECTOR + "\"></a>";
         }
         return name;
     }

@@ -124,14 +124,15 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     @Override
     public void onStateChange() {
-        if (CrmConstants.State.CREATED == metaView.state().getValue().getId() && meta.getManager() != null){
+        CaseState caseState = metaView.state().getValue();
+        if (CrmConstants.State.CREATED == caseState.getId() && meta.getManager() != null){
             fireEvent(new NotifyEvents.Show(lang.errSaveIssueNeedUnselectManager(), NotifyEvents.NotifyType.ERROR));
             metaView.state().setValue(new CaseState(meta.getStateId(), meta.getStateName()));
             return;
         }
 
-        meta.setStateId(metaView.state().getValue().getId());
-        meta.setStateName(metaView.state().getValue().getState());
+        meta.setStateId(caseState.getId());
+        meta.setStateName(caseState.getState());
         meta.setPauseDate((CrmConstants.State.PAUSED != meta.getStateId() || metaView.pauseDate().getValue() == null) ? null : metaView.pauseDate().getValue().getTime());
 
         metaView.pauseDateContainerVisibility().setVisible(CrmConstants.State.PAUSED == meta.getStateId());

@@ -88,7 +88,7 @@ public abstract class PlatformPreviewActivity implements AbstractPlatformPreview
     private void fillProjectSpecificFields (ProjectInfo project){
         view.setCompany(project.getContragent() == null ? "" : project.getContragent().getDisplayText());
         view.setManager(project.getManager() == null ? null : project.getManager().getDisplayText());
-        view.setProject(project.getName(), LinkUtils.makePreviewLink(Project.class.getSimpleName(), project.getId()));
+        view.setProject(project.getName(), LinkUtils.makePreviewLink(Project.class, project.getId()));
         view.setTechnicalSupportValidity(formatTechnicalSupportValidityOrErrorMsg(project));
         showContacts(project.getContragent() == null ? null : project.getContragent().getId());
     }

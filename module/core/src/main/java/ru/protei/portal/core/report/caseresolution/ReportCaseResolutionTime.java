@@ -50,7 +50,7 @@ public class ReportCaseResolutionTime {
         ru.protei.portal.core.model.struct.Interval createInterval = DateRangeUtils.makeInterval(caseQuery.getCreatedRange());
 
         long startQuery = System.currentTimeMillis();
-        List<CaseResolutionTimeReportDto> stateChanges = caseCommentDAO.reportCaseResolutionTime(
+        List<CaseResolutionTimeReportDto> histories = caseCommentDAO.reportCaseResolutionTime(
                 (createInterval == null ? null : createInterval.from),
                 (createInterval == null ? null : createInterval.to),
                 caseQuery.getStateIds(),
@@ -63,7 +63,7 @@ public class ReportCaseResolutionTime {
         log.info( "run(): Case comments request time: {} ms", System.currentTimeMillis() - startQuery );
         long startProcessing = System.currentTimeMillis();
 
-        cases = groupBayIssues( stateChanges );
+        cases = groupBayIssues( histories );
 
         Set<Long> acceptableStates = new HashSet<>( caseQuery.getStateIds() );
         for (Interval interval : intervals) {

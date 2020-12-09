@@ -120,8 +120,8 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.setDescription( value.getDescription() == null ? "" : value.getDescription() );
         view.setRegion( value.getRegion() == null ? "" : value.getRegion().getDisplayText() );
         view.setCompany(value.getCustomer() == null ? "" : value.getCustomer().getCname());
-        view.setContracts(emptyIfNull(value.getContracts()).stream().collect(Collectors.toMap(EntityOption::getDisplayText, contract -> LinkUtils.makePreviewLink(Contract.class.getSimpleName(), contract.getId()))));
-        view.setPlatform(value.getPlatformName() == null ? "" : value.getPlatformName(), LinkUtils.makePreviewLink(Platform.class.getSimpleName(), value.getPlatformId()));
+        view.setContracts(emptyIfNull(value.getContracts()).stream().collect(Collectors.toMap(EntityOption::getDisplayText, contract -> LinkUtils.makePreviewLink(Contract.class, contract.getId()))));
+        view.setPlatform(value.getPlatformName() == null ? "" : value.getPlatformName(), LinkUtils.makePreviewLink(Platform.class, value.getPlatformId()));
 
         if( isNotEmpty(value.getTeam()) ) {
             StringBuilder teamBuilder = new StringBuilder();

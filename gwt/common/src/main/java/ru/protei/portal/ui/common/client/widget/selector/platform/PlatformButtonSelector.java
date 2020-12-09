@@ -23,7 +23,7 @@ public class PlatformButtonSelector extends ButtonPopupSingleSelector<PlatformOp
         String name = platformOption == null ? defaultValue : platformOption.getDisplayText();
         if(platformOption != null
                 && policyService.hasPrivilegeFor( En_Privilege.ISSUE_PLATFORM_VIEW)){
-            name = name + " <a class=\"full-screen-link\" href=\"" + LinkUtils.makePreviewLink( Platform.class.getSimpleName(), platformOption.getId() ) + "\" target=\"_blank\" id=\"" + DebugIds.SITE_FOLDER.LINK.PLATFORM + "\"></a>";
+            name = name + " <a class=\"full-screen-link\" href=\"" + LinkUtils.makePreviewLink( Platform.class, platformOption.getId() ) + "\" target=\"_blank\" id=\"" + DebugIds.SITE_FOLDER.LINK.PLATFORM + "\"></a>";
         }
         return name;
     }
