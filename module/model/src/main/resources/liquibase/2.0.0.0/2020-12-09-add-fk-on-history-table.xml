@@ -15,4 +15,10 @@
                                  onUpdate="CASCADE" onDelete="NO ACTION"/>
     </changeSet>
 
+    <changeSet id="add-index-value_type-on-history-table" author="porubov">
+        <createIndex tableName="history" indexName="idx_history_value_type">
+            <column name="value_type"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>

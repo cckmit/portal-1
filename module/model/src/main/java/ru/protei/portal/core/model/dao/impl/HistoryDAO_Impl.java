@@ -9,9 +9,11 @@ import ru.protei.portal.core.model.query.HistoryQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.sqlcondition.Condition;
 import ru.protei.portal.core.utils.TypeConverters;
+import ru.protei.winter.core.utils.enums.HasId;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
@@ -71,11 +73,11 @@ public class HistoryDAO_Impl extends PortalBaseJdbcDAO<History> implements Histo
             }
 
             if (isNotEmpty(query.getValueTypes())) {
-                condition.append(" and history.value_type in ").append(makeInArg(query.getValueTypes(), false));
+                condition.append(" and history.value_type in ").append(makeInArg(makeListIds(query.getValueTypes()), false));
             }
 
             if (isNotEmpty(query.getHistoryActions())) {
-                condition.append(" and history.action_type in ").append(makeInArg(query.getHistoryActions(), false));
+                condition.append(" and history.action_type in ").append(makeInArg(makeListIds(query.getHistoryActions()), false));
             }
 
             if (query.getOldId() != null) {
@@ -89,5 +91,9 @@ public class HistoryDAO_Impl extends PortalBaseJdbcDAO<History> implements Histo
             }
 
         }));
+    }
+
+    private <T extends HasId> List<Integer> makeListIds(List<T> list) {
+        return list.stream().map(HasId::getId).collect(Collectors.toList());
     }
 }
