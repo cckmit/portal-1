@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.History;
 import ru.protei.portal.core.model.query.HistoryQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.portal.core.model.util.sqlcondition.Condition;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
@@ -14,6 +15,7 @@ import java.util.List;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
+import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.condition;
 
 public class HistoryDAO_Impl extends PortalBaseJdbcDAO<History> implements HistoryDAO {
 
@@ -30,6 +32,12 @@ public class HistoryDAO_Impl extends PortalBaseJdbcDAO<History> implements Histo
                 .withDistinct(true)
                 .withSort(TypeConverters.createSort(query))
         );
+    }
+
+    @Override
+    public void removeByCaseId(Long caseId) {
+        final Condition condition = condition().and("case_object_id").equal(caseId);
+        removeByCondition(condition.getSqlCondition(), condition.getSqlParameters());
     }
 
     @SqlConditionBuilder

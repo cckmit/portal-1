@@ -97,8 +97,8 @@ public class CaseCommentServiceTest extends BaseServiceTest {
             log.info("----------------------");
         }
 
-        Assert.assertTrue(removeCaseObjectAndComments(caseObject));
         Assert.assertTrue(removeHistoryCaseObject(caseObject));
+        Assert.assertTrue(removeCaseObjectAndComments(caseObject));
         Assert.assertTrue(personDAO.remove(person));
         Assert.assertTrue(companyDAO.remove(company));
     }
@@ -156,8 +156,8 @@ public class CaseCommentServiceTest extends BaseServiceTest {
         log.info("Size after remove = " + resultList.getData().size());
 
         // cleanup
-        Assert.assertTrue(removeCaseObjectAndComments(caseObject));
         Assert.assertTrue(removeHistoryCaseObject(caseObject));
+        Assert.assertTrue(removeCaseObjectAndComments(caseObject));
         Assert.assertTrue(personDAO.remove(person));
         Assert.assertTrue(companyDAO.remove(company));
     }

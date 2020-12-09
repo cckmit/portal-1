@@ -1203,6 +1203,7 @@ public class TestPortalApiController extends BaseServiceTest {
                     .forEach(caseComment -> caseCommentDAO.remove(caseComment));
             caseLinkDAO.getListByQuery(query)
                     .forEach(caseLink -> caseLinkDAO.remove(caseLink));
+            historyDAO.removeByCaseId(caseId);
             caseObjectDAO.removeByKey(caseId);
         });
     }
