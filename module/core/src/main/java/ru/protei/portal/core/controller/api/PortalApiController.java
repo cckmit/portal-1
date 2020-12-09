@@ -78,6 +78,8 @@ public class PortalApiController {
     @Autowired
     private CompanyService companyService;
     @Autowired
+    private SiteFolderService siteFolderService;
+    @Autowired
     PortalConfig config;
 
 
@@ -571,6 +573,48 @@ public class PortalApiController {
             return companyService.updateState(authToken, Long.valueOf(companyId), Boolean.parseBoolean(isArchived))
                     .ifOk(result -> log.info("updateCompanyState(): OK"))
                     .ifError(result -> log.warn("updateCompanyState(): Can't update company state with id={}. {}", companyId, result));
+        } catch (NumberFormatException e) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, INCORRECT_ID);
+        }
+    }
+
+    @PostMapping(value = "/platforms/create")
+    public Result<Platform> createPlatform(HttpServletRequest request, HttpServletResponse response, @RequestBody Platform platform) {
+        log.info("API | createPlatform(): platform={}", platform);
+
+        Result<AuthToken> authenticate = authenticate(request, response, authService, sidGen, log);
+
+        if (authenticate.isError()) {
+            return error(authenticate.getStatus(), authenticate.getMessage());
+        }
+
+        AuthToken authToken = authenticate.getData();
+
+        return siteFolderService.createPlatform(authToken, platform)
+                .ifOk(result -> log.info("createPlatform(): OK"))
+                .ifError(result -> log.warn("createPlatform(): Can't create platform={}. {}", platform, result));
+    }
+
+    @PostMapping(value = "/platforms/delete/{platformId}")
+    public Result<?> deletePlatform(HttpServletRequest request, HttpServletResponse response,
+                                           @PathVariable("platformId") String platformId) {
+
+        log.info("API | deletePlatform(): platformId={}", platformId);
+
+        final String INCORRECT_ID = "Некорректный id платформы";
+
+        Result<AuthToken> authenticate = authenticate(request, response, authService, sidGen, log);
+
+        if (authenticate.isError()) {
+            return error(authenticate.getStatus(), authenticate.getMessage());
+        }
+
+        AuthToken authToken = authenticate.getData();
+
+        try {
+            return siteFolderService.removePlatform(authToken, Long.parseLong(platformId))
+                    .ifOk(result -> log.info("deletePlatform(): OK"))
+                    .ifError(result -> log.warn("deletePlatform(): Can't delete platform with id={}. {}", platformId, result));
         } catch (NumberFormatException e) {
             return error(En_ResultStatus.INCORRECT_PARAMS, INCORRECT_ID);
         }

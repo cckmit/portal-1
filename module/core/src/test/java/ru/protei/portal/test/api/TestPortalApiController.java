@@ -1283,6 +1283,60 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect(jsonPath("$.message", is(exceptedErrorMsg)));
     }
 
+    @Test
+    @Transactional
+    public void createPlatform() throws Exception {
+        Platform platform = new Platform();
+        platform.setName("name");
+        platform.setParams("params");
+
+        Long companyId = 1L;
+        platform.setCompanyId(companyId);
+        platform.setCompany(companyDAO.get(companyId));
+
+        platform.setComment("Some comments");
+
+        createPostResultAction("/api/platforms/create", platform)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data.name", is(platform.getName())))
+                .andExpect(jsonPath("$.data.params", is(platform.getParams())))
+                .andExpect(jsonPath("$.data.company.id", is(platform.getCompany().getId().intValue())))
+                .andExpect(jsonPath("$.data.company.cname", is(platform.getCompany().getCname())))
+                .andExpect(jsonPath("$.data.company.category", is(platform.getCompany().getCategory().toString())))
+                .andExpect(jsonPath("$.data.comment", is(platform.getComment())));
+    }
+
+    @Test
+    @Transactional
+    public void deletePlatform() throws Exception {
+        Platform platform = new Platform();
+        platform.setName("Platform to delete");
+
+        ResultActions result = createPostResultAction("/api/platforms/create", platform)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data.id", notNullValue()));
+
+        String platformId = getPlatformId(result.andReturn().getResponse().getContentAsString());
+
+        doDelete(platformId, En_ResultStatus.OK);
+        doDelete("incorrect_id", En_ResultStatus.INCORRECT_PARAMS);
+        doDelete("12345", En_ResultStatus.NOT_FOUND);
+    }
+
+    private void doDelete(String platformId, En_ResultStatus expectedResultStatus) throws Exception {
+        createPostResultAction("/api/platforms/delete/" + platformId, null)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(expectedResultStatus.toString())));
+    }
+
+    private String getPlatformId (String strResult) {
+        int idIndex = strResult.indexOf("id");
+        strResult = strResult.substring(idIndex);
+        return strResult.substring(strResult.indexOf(":") + 1, strResult.indexOf(","));
+    }
+
     private boolean compareLists (List<Long> list1, List<Long> list2){
         Collections.sort(list1);
         Collections.sort(list2);
