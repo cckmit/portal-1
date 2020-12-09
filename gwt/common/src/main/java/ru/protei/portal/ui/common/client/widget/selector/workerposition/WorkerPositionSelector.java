@@ -30,6 +30,7 @@ public class WorkerPositionSelector extends ButtonPopupSingleSelector<EntityOpti
         PopupSelectorItemWithEdit<EntityOption> item = new PopupSelectorItemWithEdit<>();
 
         item.setName(elementHtml);
+        item.setTitle( elementHtml );
         item.setId(value.getId());
         item.setEditable(isEditable);
         item.addEditHandler(editHandler);

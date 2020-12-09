@@ -35,6 +35,7 @@ public class PersonButtonSelector extends ButtonPopupSingleSelector< PersonShort
     protected SelectorItem makeSelectorItem( PersonShortView value, String elementHtml ) {
         PopupSelectorItem item = new PopupSelectorItem();
         item.setName(elementHtml);
+        item.setTitle( elementHtml );
         if(value!=null){
             item.setIcon( value.isFired() ? "not-active" : "" );
             item.setIcon( value.isFired() ? "fa fa-ban ban" : "" );

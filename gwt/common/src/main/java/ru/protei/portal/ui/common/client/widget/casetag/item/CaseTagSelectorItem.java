@@ -58,7 +58,9 @@ public class CaseTagSelectorItem extends Composite implements HasValue<CaseTag>,
         icon.setText(ColorUtils.makeSingleCharName(caseTag.getName()));
         icon.getElement().getStyle().setProperty("backgroundColor", backgroundColor);
         icon.getElement().getStyle().setProperty("color", textColor);
-        getElement().setAttribute("title", caseTag.getPersonName());
+        if (caseTag.getPersonName() != null) {
+            getElement().setAttribute( "title", caseTag.getPersonName() );
+        }
 
         if (fireEvents) {
             ValueChangeEvent.fire(this, value);
