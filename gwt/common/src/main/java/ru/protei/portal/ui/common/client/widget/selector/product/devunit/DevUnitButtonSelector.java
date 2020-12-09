@@ -27,9 +27,10 @@ public class DevUnitButtonSelector extends ButtonPopupSingleSelector<ProductShor
     }
 
     @Override
-    protected SelectorItem makeSelectorItem( ProductShortView value, String elementHtml, String name) {
+    protected SelectorItem makeSelectorItem( ProductShortView value, String elementHtml ) {
         PopupSelectorItem item = new PopupSelectorItem();
         item.setName(elementHtml);
+        item.setTitle( elementHtml );
         if(value!=null){
             item.setIcon( En_DevUnitState.DEPRECATED.getId() == value.getStateId() ? "not-active" : "" );
             item.setIcon( En_DevUnitState.DEPRECATED.getId() == value.getStateId() ? "fa fa-ban ban" : "" );
