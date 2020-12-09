@@ -46,7 +46,7 @@
                                     </div>
                                 </div>
 
-                                <div class="row form-group">
+                                <div class="row">
                                     <g:Button styleName="btn btn-complete" ui:field="send" text="{lang.commentSendMessage}"/>
 
                                     <timeElapsed:ElapsedTimeTypeSelector ui:field="timeElapsedType" addStyleNames="col-md-3"/>

@@ -227,7 +227,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
                     projectSlaList -> changeSlaContainerState(projectSlaList, true)
             );
         } else {
-            fillSlaContainerByDefault(customer == null ? null : customer.getId());
+            fillSlaContainerByDefault(project.getCustomerId());
         }
 
         view.numberVisibility().setVisible( !isNew( project ) );
@@ -295,9 +295,12 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         );
     }
 
-    private void changeSlaContainerState(List<ProjectSla> projectSlaList, boolean isVisible) {
-        view.slaInput().setValue(projectSlaList);
-        view.slaVisibility().setVisible(isVisible);
+    private void synchronizeProjectSla(List<ProjectSla> currentProjectSlaList, Long companyId, Consumer<List<ProjectSla>> projectSlaListConsumer) {
+        companyService.getCompanyImportanceItems(companyId, new FluentCallback<List<CompanyImportanceItem>>()
+                .withSuccess(companyImportanceItems ->
+                        projectSlaListConsumer.accept(toList(companyImportanceItems, companyImportanceItem -> getProjectSla(currentProjectSlaList, companyImportanceItem))
+                )
+        ));
     }
 
     private List<ProjectSla> createProjectSlaList(List<CompanyImportanceItem> companyImportanceItems) {
@@ -306,12 +309,9 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         );
     }
 
-    private void synchronizeProjectSla(List<ProjectSla> currentProjectSlaList, Long companyId, Consumer<List<ProjectSla>> projectSlaListConsumer) {
-        companyService.getCompanyImportanceItems(companyId, new FluentCallback<List<CompanyImportanceItem>>()
-                .withSuccess(companyImportanceItems ->
-                        projectSlaListConsumer.accept(toList(companyImportanceItems, companyImportanceItem -> getProjectSla(currentProjectSlaList, companyImportanceItem))
-                )
-        ));
+    private void changeSlaContainerState(List<ProjectSla> projectSlaList, boolean isVisible) {
+        view.slaInput().setValue(projectSlaList);
+        view.slaVisibility().setVisible(isVisible);
     }
 
     private ProjectSla getProjectSla(List<ProjectSla> projectSlaList, CompanyImportanceItem companyImportanceItem) {
