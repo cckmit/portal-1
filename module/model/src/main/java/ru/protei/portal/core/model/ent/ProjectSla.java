@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -25,14 +26,10 @@ public class ProjectSla implements Serializable {
     @JdbcColumn(name = "project_id")
     private Long projectId;
 
-    @JdbcJoinedColumn(localColumn = "importance_level_id", remoteColumn = "id", table = "importance_level", mappedColumn = "code")
-    private String importanceName;
-
     public ProjectSla() {}
 
-    public ProjectSla(Integer importanceLevel, String importanceName) {
+    public ProjectSla(Integer importanceLevel) {
         this.importanceLevelId = importanceLevel;
-        this.importanceName = importanceName;
     }
 
     public ProjectSla(Integer importanceLevelId, Long reactionTime, Long temporarySolutionTime, Long fullSolutionTime) {
@@ -90,8 +87,8 @@ public class ProjectSla implements Serializable {
         this.projectId = projectId;
     }
 
-    public String getImportanceName() {
-        return importanceName;
+    public En_ImportanceLevel getImportanceLevel() {
+        return En_ImportanceLevel.getById(importanceLevelId);
     }
 
     public boolean isEmpty() {

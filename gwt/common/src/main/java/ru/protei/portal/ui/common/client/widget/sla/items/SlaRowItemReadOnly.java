@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.ProjectSla;
+import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.timefield.WorkTimeFormatter;
 
@@ -42,7 +43,7 @@ public class SlaRowItemReadOnly extends Composite implements HasValue<ProjectSla
         temporarySolutionTime.setInnerText(format(value.getTemporarySolutionTime()));
         fullSolutionTime.setInnerText(format(value.getFullSolutionTime()));
 
-        this.importance.setInnerText(value.getImportanceName());
+        this.importance.setInnerText(importanceLang.getImportanceName(value.getImportanceLevel()));
 
         if (fireEvents) {
             ValueChangeEvent.fire(this, projectSla);
@@ -75,6 +76,9 @@ public class SlaRowItemReadOnly extends Composite implements HasValue<ProjectSla
 
     @UiField
     SpanElement fullSolutionTime;
+
+    @Inject
+    private En_CaseImportanceLang importanceLang;
 
     private ProjectSla projectSla;
     private final WorkTimeFormatter workTimeFormatter;

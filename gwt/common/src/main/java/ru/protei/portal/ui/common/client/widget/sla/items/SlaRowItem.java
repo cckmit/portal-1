@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.ProjectSla;
+import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeTextBox;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
@@ -42,7 +43,7 @@ public class SlaRowItem extends Composite implements HasValue<ProjectSla>, HasVa
         reactionTime.setTime(value.getReactionTime());
         temporarySolutionTime.setTime(value.getTemporarySolutionTime());
         fullSolutionTime.setTime(value.getFullSolutionTime());
-        importance.setInnerText(projectSla.getImportanceName());
+        importance.setInnerText(importanceLang.getImportanceName(projectSla.getImportanceLevel()));
 
         if (fireEvents) {
             ValueChangeEvent.fire(this, value);
@@ -79,7 +80,7 @@ public class SlaRowItem extends Composite implements HasValue<ProjectSla>, HasVa
     }
 
     public void setEnsureDebugId(String debugId) {
-        String importanceName = projectSla.getImportanceName();
+        String importanceName = importanceLang.getImportanceName(projectSla.getImportanceLevel());
 
         reactionTime.ensureDebugId(debugId + "-" + importanceName + "-reaction-time");
         temporarySolutionTime.ensureDebugId(debugId + "-" + importanceName + "-temporary-solution-time");
@@ -100,6 +101,9 @@ public class SlaRowItem extends Composite implements HasValue<ProjectSla>, HasVa
     @Inject
     @UiField(provided = true)
     TimeTextBox fullSolutionTime;
+
+    @Inject
+    private En_CaseImportanceLang importanceLang;
 
     private ProjectSla projectSla;
 

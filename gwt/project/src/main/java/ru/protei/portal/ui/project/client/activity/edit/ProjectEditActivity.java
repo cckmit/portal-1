@@ -21,6 +21,7 @@ import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
@@ -305,7 +306,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
     private List<ProjectSla> createProjectSlaList(List<CompanyImportanceItem> companyImportanceItems) {
         return toList(companyImportanceItems, companyImportanceItem ->
-                new ProjectSla(companyImportanceItem.getImportanceLevelId(), companyImportanceItem.getImportanceName())
+                new ProjectSla(companyImportanceItem.getImportanceLevelId())
         );
     }
 
@@ -319,7 +320,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
                 .stream()
                 .filter(projectSla -> companyImportanceItem.getImportanceLevelId().equals(projectSla.getImportanceLevelId()))
                 .findAny()
-                .orElse(new ProjectSla(companyImportanceItem.getImportanceLevelId(), companyImportanceItem.getImportanceName()));
+                .orElse(new ProjectSla(companyImportanceItem.getImportanceLevelId()));
     }
 
     private Project fillProject(Project project) {
@@ -425,6 +426,8 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     DefaultErrorHandler defaultErrorHandler;
     @Inject
     CompanyControllerAsync companyService;
+    @Inject
+    En_CaseImportanceLang importanceLang;
 
     private Project project;
     private Set<ProductShortView> selectedComplexes = new HashSet<>();

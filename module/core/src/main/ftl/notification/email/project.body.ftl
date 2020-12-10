@@ -408,7 +408,7 @@
 
                             <tr>
                                 <td>
-                                    ${importanceLevel}
+                                    ${importanceLevel.getCode()}
                                 </td>
                                 <td>
                                     <@changeToIfDiff
