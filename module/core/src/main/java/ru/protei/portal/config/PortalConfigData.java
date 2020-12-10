@@ -750,10 +750,17 @@ public class PortalConfigData {
 
         private final String jiraUrl;
         private final int queueLimit;
+        private final List<String> jiraProjects;
 
         public JiraConfig(PropertiesWrapper properties) throws ConfigException {
             jiraUrl = properties.getProperty("jira.url",  "");
             queueLimit = properties.getProperty("integration.jira.queue.limit", Integer.class, 0);
+            String temp = properties.getProperty("jira.projects", "");
+            if (isNotEmpty(temp)) {
+                jiraProjects = Arrays.stream(temp.split(",")).collect(Collectors.toList());
+            } else {
+                jiraProjects = new ArrayList<>();
+            }
         }
 
         public String getJiraUrl() {
@@ -762,6 +769,10 @@ public class PortalConfigData {
 
         public int getQueueLimit() {
             return queueLimit;
+        }
+
+        public List<String> getJiraProjects() {
+            return jiraProjects;
         }
     }
 

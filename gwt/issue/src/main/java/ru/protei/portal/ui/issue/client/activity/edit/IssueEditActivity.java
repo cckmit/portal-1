@@ -13,6 +13,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.NumberUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
@@ -33,15 +34,11 @@ import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.issue.client.view.edit.IssueInfoWidget;
 import ru.protei.portal.ui.issue.client.view.edit.IssueNameDescriptionEditWidget;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Objects;
+import java.util.*;
 import java.util.logging.Logger;
 
 import static ru.protei.portal.core.model.helper.CaseCommentUtils.addImageInMessage;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.core.model.helper.CollectionUtils.size;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.util.CaseStateUtil.isTerminalState;
 
@@ -485,7 +482,7 @@ public abstract class IssueEditActivity implements
 
         view.setCreatedBy(lang.createBy(transliteration(issue.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(issue.getCreated())));
         view.nameVisibility().setVisible(true);
-        view.setName(makeName(issue.getName(), issue.getJiraUrl(), issue.getExtAppType()));
+        view.setName(makeName(issue.getName(), issue.getJiraUrl(), issue.getExtAppType(), issue.getJiraProjects()));
         view.setIntegration(makeIntegrationName(issue));
 
         view.setCaseNumber( issue.getCaseNumber() );
@@ -521,18 +518,19 @@ public abstract class IssueEditActivity implements
         view.setPreviewStyles(isPreviewMode);
     }
 
-    private String makeName( String issueName, String jiraUrl, String extAppType ) {
-        issueName = (issueName == null ? "" : issueName);
-        jiraUrl = En_ExtAppType.JIRA.getCode().equals( extAppType ) ? jiraUrl : "";
+    private String makeName( String issueName, String jiraUrl, String extAppType, List<String> jiraProjects ) {
 
-        if (jiraUrl.isEmpty() || !issueName.startsWith( "CLM" )) {
+        if (issueName == null) return "";
+
+        jiraUrl = En_ExtAppType.JIRA.getCode().equals( extAppType ) ? jiraUrl : "";
+        if (StringUtils.isEmpty(jiraUrl) || stream(jiraProjects).noneMatch(issueName::startsWith)) {
             return SimpleHtmlSanitizer.sanitizeHtml(issueName).asString();
         } else {
-            String idCLM = issueName.split( " " )[0];
-            String remainingName = "&nbsp;" + issueName.substring( idCLM.length() );
+            String idJiraProject = issueName.split( " " )[0];
+            String remainingName = "&nbsp;" + issueName.substring( idJiraProject.length() );
 
-            return "<a href='"+ jiraUrl + idCLM +"' target='_blank'>"+idCLM+"</a>"
-                    + "<label>"+ SimpleHtmlSanitizer.sanitizeHtml(remainingName).asString() +"</label>";
+            return "<a href='"+ jiraUrl + idJiraProject +"' target='_blank'>" + idJiraProject + "</a>"
+                    + "<label>" + SimpleHtmlSanitizer.sanitizeHtml(remainingName).asString() + "</label>";
         }
     }
 
