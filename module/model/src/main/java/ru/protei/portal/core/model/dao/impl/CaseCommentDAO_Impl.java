@@ -5,7 +5,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
-import ru.protei.portal.core.model.dict.En_HistoryAction;
 import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.portal.core.model.dto.CaseResolutionTimeReportDto;
 import ru.protei.portal.core.model.ent.CaseComment;
@@ -16,7 +15,6 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -121,11 +119,10 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
                         "   WHERE case_object_id = h.case_object_id" +
                         "     and date < '" + fromTime + "'" +  // # левая граница
                         "     and value_type = " + En_HistoryType.CASE_STATE.getId() +
-                        "     and action_type in " +
-                                    makeInArg(Arrays.asList(En_HistoryAction.ADD.getId(), En_HistoryAction.CHANGE.getId()), false) +
                         "     and new_id is not null" +
                         " )" +
-                        "   and new_id in " + acceptableStates
+                        "   and new_id in " + acceptableStates +
+                        "   and value_type = " + En_HistoryType.CASE_STATE.getId()
                         + products
                         + companies
                         + managers
@@ -141,9 +138,7 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
                         " WHERE h.date > '" + fromTime + "'" +  // # левая граница
                         "   and h.date < '" + toTime + "' " +  //# правая граница
                         "   and h.value_type = " + En_HistoryType.CASE_STATE.getId() +
-                        "   and h.action_type in " +
-                                makeInArg(Arrays.asList(En_HistoryAction.ADD.getId(), En_HistoryAction.CHANGE.getId()), false) +
-                        "   and new_id in " + acceptableStates
+                        "   and h.new_id in " + acceptableStates
                         + products
                         + companies
                         + managers
@@ -163,7 +158,9 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
                         "        ) as beforeAndInInterval " +
                         " )" +
                         " and outerH.date < '" + toTime + "' " + //# правая граница
-                        "  ORDER BY outerH.date ASC;";
+                        " and outerH.value_type = " + En_HistoryType.CASE_STATE.getId() +
+                        " and outerH.new_id in " + acceptableStates +
+                        "ORDER BY outerH.date ASC;";
 
         try {
             return jdbcTemplate.query( query, rm );
