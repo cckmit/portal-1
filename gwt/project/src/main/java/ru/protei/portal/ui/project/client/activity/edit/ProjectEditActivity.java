@@ -10,7 +10,9 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.CompanyImportanceItem;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -19,7 +21,9 @@ import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -173,6 +177,11 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.pauseDateContainerVisibility().setVisible( PAUSED == view.state().getValue() );
     }
 
+    @Override
+    public void onCompanyChanged() {
+        fillSlaContainerByDefault(view.company().getValue() == null ? null : view.company().getValue().getId());
+    }
+
     private boolean isNew(Project project) {
         return project.getId() == null;
     }
@@ -212,7 +221,16 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.pauseDateContainerVisibility().setVisible( PAUSED == project.getState() );
         view.pauseDate().setValue( project.getPauseDate() == null ? null : new Date( project.getPauseDate() ) );
 
-        view.slaInput().setValue(project.getProjectSlas());
+        if (customer != null && isNotEmpty(project.getProjectSlas())) {
+            synchronizeProjectSla(
+                    project.getProjectSlas(),
+                    customer.getId(),
+                    projectSlaList -> changeSlaContainerState(projectSlaList, true)
+            );
+        } else {
+            fillSlaContainerByDefault(project.getCustomerId());
+        }
+
         view.numberVisibility().setVisible( !isNew( project ) );
 
         view.getCommentsContainer().clear();
@@ -259,6 +277,50 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.setTechnicalSupportDateValid(true);
         view.setWorkCompletionDateValid(true);
         view.setPurchaseDateValid(true);
+    }
+
+    private void fillSlaContainerByDefault(Long companyId) {
+        if (companyId == null) {
+            changeSlaContainerState(null, false);
+            return;
+        }
+
+        companyService.getCompanyImportanceItems(companyId, new FluentCallback<List<CompanyImportanceItem>>()
+                .withSuccess(importanceLevels -> {
+                    if (isEmpty(importanceLevels)) {
+                        return;
+                    }
+
+                    changeSlaContainerState(createProjectSlaList(importanceLevels), true);
+                })
+        );
+    }
+
+    private void synchronizeProjectSla(List<ProjectSla> currentProjectSlaList, Long companyId, Consumer<List<ProjectSla>> projectSlaListConsumer) {
+        companyService.getCompanyImportanceItems(companyId, new FluentCallback<List<CompanyImportanceItem>>()
+                .withSuccess(companyImportanceItems ->
+                        projectSlaListConsumer.accept(toList(companyImportanceItems, companyImportanceItem -> getProjectSla(currentProjectSlaList, companyImportanceItem))
+                )
+        ));
+    }
+
+    private List<ProjectSla> createProjectSlaList(List<CompanyImportanceItem> companyImportanceItems) {
+        return toList(companyImportanceItems, companyImportanceItem ->
+                new ProjectSla(companyImportanceItem.getImportanceLevelId())
+        );
+    }
+
+    private void changeSlaContainerState(List<ProjectSla> projectSlaList, boolean isVisible) {
+        view.slaInput().setValue(projectSlaList);
+        view.slaVisibility().setVisible(isVisible);
+    }
+
+    private ProjectSla getProjectSla(List<ProjectSla> projectSlaList, CompanyImportanceItem companyImportanceItem) {
+        return projectSlaList
+                .stream()
+                .filter(projectSla -> companyImportanceItem.getImportanceLevelId().equals(projectSla.getImportanceLevelId()))
+                .findAny()
+                .orElse(new ProjectSla(companyImportanceItem.getImportanceLevelId()));
     }
 
     private Project fillProject(Project project) {
@@ -362,6 +424,10 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     PolicyService policyService;
     @Inject
     DefaultErrorHandler defaultErrorHandler;
+    @Inject
+    CompanyControllerAsync companyService;
+    @Inject
+    En_CaseImportanceLang importanceLang;
 
     private Project project;
     private Set<ProductShortView> selectedComplexes = new HashSet<>();

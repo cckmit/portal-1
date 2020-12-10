@@ -12,4 +12,5 @@ public interface AbstractProjectEditActivity{
     void onDirectionChanged();
     void onProductChanged();
     void onStateChanged();
+    void onCompanyChanged();
 }
