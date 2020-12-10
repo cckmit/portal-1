@@ -4,11 +4,14 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.*;
 import com.google.gwt.event.dom.client.*;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.app.portal.client.activity.app.AbstractAppActivity;
@@ -42,6 +45,17 @@ public class AppView extends Composite
         if (isFixedClosed) {
             fixClosedSidebar(true);
         }
+
+        resizeHandler = event -> {
+            if (menuBarPopup.isAttached()) {
+                showPopupMenu();
+            }
+        };
+        windowScrollHandler = event -> {
+            if (menuBarPopup.isAttached()) {
+                showPopupMenu();
+            }
+        };
     }
 
     @Override
@@ -128,7 +142,6 @@ public class AppView extends Composite
     @UiHandler( "logout" )
     public void onLogoutClicked( ClickEvent event ) {
         event.preventDefault();
-        menuBar.removeStyleName("show");
 
         if ( activity != null ) {
             activity.onLogoutClicked();
@@ -157,7 +170,6 @@ public class AppView extends Composite
     @UiHandler("settings")
     public void settingsClick(ClickEvent event) {
         event.preventDefault();
-        menuBar.removeStyleName("show");
 
         if (activity != null) {
             activity.onSettingsClicked();
@@ -166,23 +178,7 @@ public class AppView extends Composite
 
     @UiHandler({"profile"})
     public void profileClick(ClickEvent event) {
-        menuBarPopup.setPopupPositionAndShow((i, i1) -> {
-            int relativeLeft = profile.getAbsoluteLeft();
-            int widthDiff = i - profile.getOffsetWidth();
-            int popupLeft = relativeLeft - widthDiff;
-            int relativeTop = profile.getAbsoluteTop();
-            int popupTop = relativeTop + profile.getOffsetHeight();
-
-            menuBarPopup.setPopupPosition(popupLeft, popupTop);
-        });
-
-/*
-        if (menuBar.getStyleName().contains("show")) {
-            menuBar.removeStyleName( "show" );
-        } else {
-            menuBar.addStyleName( "show" );
-        }
-*/
+        showPopupMenu();
     }
 
     @UiHandler("locale")
@@ -209,9 +205,29 @@ public class AppView extends Composite
     }
 
     @Override
-    protected void onDetach() {
-        super.onDetach();
-        menuBar.removeStyleName("show");
+    protected void onLoad() {
+        resizeHandlerReg = Window.addResizeHandler(resizeHandler);
+        scrollHandlerReg = Window.addWindowScrollHandler(windowScrollHandler);
+    }
+
+    @Override
+    protected void onUnload() {
+        if (resizeHandlerReg != null) {
+            resizeHandlerReg.removeHandler();
+            scrollHandlerReg.removeHandler();
+        }
+    }
+
+    private void showPopupMenu() {
+        menuBarPopup.setPopupPositionAndShow((i, i1) -> {
+            int relativeLeft = profile.getAbsoluteLeft();
+            int widthDiff = i - profile.getOffsetWidth();
+            int popupLeft = relativeLeft - widthDiff;
+            int relativeTop = profile.getAbsoluteTop();
+            int popupTop = relativeTop + profile.getOffsetHeight() + 10;
+
+            menuBarPopup.setPopupPosition(popupLeft, popupTop);
+        });
     }
 
     private void ensureDebugIds() {
@@ -404,6 +420,11 @@ public class AppView extends Composite
 
     private boolean isFixedOpened = false;
     private boolean isFixedClosed = false;
+
+    private ResizeHandler resizeHandler;
+    private Window.ScrollHandler windowScrollHandler;
+    private HandlerRegistration resizeHandlerReg;
+    private HandlerRegistration scrollHandlerReg;
 
     private static AppViewUiBinder ourUiBinder = GWT.create( AppViewUiBinder.class );
 }

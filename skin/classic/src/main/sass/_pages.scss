@@ -141,7 +141,8 @@ body.sidebar-visible .page-sidebar .menu-items .icon-thumbnail {
   padding-bottom: 0;
 }
 
-.profile-dropdown.dropdown-menu > .dropdown-item {
+.profile-dropdown.dropdown-menu > .dropdown-item,
+.profile-dropdown.dropdown-menu > .dropdown-item > span > a.help {
   color: #505050 !important;
 }
 
