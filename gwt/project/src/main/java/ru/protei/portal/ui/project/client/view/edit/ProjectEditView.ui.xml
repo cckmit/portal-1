@@ -56,12 +56,12 @@
                                                                maxRows="10"/>
                     </div>
 
-                    <div class="form-group form-group-default col-md-12">
+                    <g:HTMLPanel ui:field="slaContainer" styleName="form-group form-group-default col-md-12">
                         <label class="fade">
                             <ui:text from="{lang.projectSla}"/>
                         </label>
                         <sla:SlaInput ui:field="slaInput"/>
-                    </div>
+                    </g:HTMLPanel>
 
                     <div class="form-group col-md-12 card card-default project-team">
                         <label class="fade">

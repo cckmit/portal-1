@@ -236,10 +236,6 @@ public class AssembledProjectEvent extends ApplicationEvent implements HasCaseCo
         boolean isNewSlaListEmpty = isSlaListEmpty(newSlaList);
 
         if (!isEditEvent()) {
-            if (isNewSlaListEmpty) {
-                return slaDiffs;
-            }
-
             newSlaList.forEach(sla -> slaDiffs.put(
                     En_ImportanceLevel.find(sla.getImportanceLevelId()),
                     new DiffResult<>(sla, sla))
@@ -256,7 +252,7 @@ public class AssembledProjectEvent extends ApplicationEvent implements HasCaseCo
             return slaDiffs;
         }
 
-        for (En_ImportanceLevel level : En_ImportanceLevel.values()) {
+        for (En_ImportanceLevel level : toList(newProjectState.getProjectSlas(), ProjectSla::getImportanceLevel)) {
             ProjectSla oldSla = getSlaByImportance(oldSlaList, level.getId());
             ProjectSla newSla = getSlaByImportance(newSlaList, level.getId());
 

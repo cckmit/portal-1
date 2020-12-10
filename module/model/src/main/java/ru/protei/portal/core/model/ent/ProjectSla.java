@@ -1,8 +1,10 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 @JdbcEntity(table = "project_sla")
 public class ProjectSla implements Serializable {
@@ -25,6 +27,10 @@ public class ProjectSla implements Serializable {
     private Long projectId;
 
     public ProjectSla() {}
+
+    public ProjectSla(Integer importanceLevel) {
+        this.importanceLevelId = importanceLevel;
+    }
 
     public ProjectSla(Integer importanceLevelId, Long reactionTime, Long temporarySolutionTime, Long fullSolutionTime) {
         this.importanceLevelId = importanceLevelId;
@@ -81,6 +87,10 @@ public class ProjectSla implements Serializable {
         this.projectId = projectId;
     }
 
+    public En_ImportanceLevel getImportanceLevel() {
+        return En_ImportanceLevel.getById(importanceLevelId);
+    }
+
     public boolean isEmpty() {
         if (reactionTime != null) {
             return false;
@@ -98,8 +108,21 @@ public class ProjectSla implements Serializable {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProjectSla that = (ProjectSla) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
     public String toString() {
-        return "ContractSLA{" +
+        return "ProjectSla{" +
                 "id=" + id +
                 ", importanceLevelId=" + importanceLevelId +
                 ", reactionTime=" + reactionTime +

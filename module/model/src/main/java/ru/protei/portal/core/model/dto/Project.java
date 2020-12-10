@@ -250,6 +250,10 @@ public class Project extends AuditableObject {
         this.customer = customer;
     }
 
+    public Long getCustomerId() {
+        return customer == null ? null : customer.getId();
+    }
+
     public Set<DevUnit> getProducts() {
         return products;
     }

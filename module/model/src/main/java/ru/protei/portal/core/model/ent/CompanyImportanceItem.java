@@ -9,7 +9,6 @@ import java.io.Serializable;
 
 @JdbcEntity(table = "company_importance_item")
 public class CompanyImportanceItem implements Serializable {
-
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 

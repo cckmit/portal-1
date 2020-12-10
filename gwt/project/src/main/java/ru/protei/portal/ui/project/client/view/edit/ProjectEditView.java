@@ -165,6 +165,11 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     }
 
     @Override
+    public HasVisibility slaVisibility() {
+        return slaContainer;
+    }
+
+    @Override
     public HasValue<Date> technicalSupportValidity() {
         return technicalSupportValidity;
     }
@@ -287,6 +292,11 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         }
     }
 
+    @UiHandler("company")
+    public void onCompanyChanged(ValueChangeEvent<EntityOption> event) {
+        activity.onCompanyChanged();
+    }
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
@@ -345,6 +355,8 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     @Inject
     @UiField(provided = true)
     SlaInput slaInput;
+    @UiField
+    HTMLPanel slaContainer;
     @Inject
     @UiField(provided = true)
     SinglePicker technicalSupportValidity;
