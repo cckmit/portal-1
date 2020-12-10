@@ -822,10 +822,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String emergencyImportance();
 
-    String highImportance();
-
-    String lowImportance();
-
     String dataPageNumber( String p0 );
 
     String dashboard();
