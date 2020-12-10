@@ -13,6 +13,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.NumberUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
@@ -522,7 +523,7 @@ public abstract class IssueEditActivity implements
         if (issueName == null) return "";
 
         jiraUrl = En_ExtAppType.JIRA.getCode().equals( extAppType ) ? jiraUrl : "";
-        if (jiraUrl.isEmpty() || stream(jiraProjects).noneMatch(issueName::startsWith)) {
+        if (StringUtils.isEmpty(jiraUrl) || stream(jiraProjects).noneMatch(issueName::startsWith)) {
             return SimpleHtmlSanitizer.sanitizeHtml(issueName).asString();
         } else {
             String idJiraProject = issueName.split( " " )[0];
