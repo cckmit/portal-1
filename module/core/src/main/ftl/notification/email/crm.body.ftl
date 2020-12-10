@@ -234,6 +234,12 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                                   <#case "basic">
                                      background: #42a5f5;
                                      <#break>
+                                  <#case "medium">
+                                     background: #c9d600;
+                                     <#break>
+                                  <#case "emergency">
+                                     background: #ee1414;
+                                     <#break>
                                   <#default>
                                      background: #607D8B;
                                 </#switch>
