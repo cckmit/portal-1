@@ -888,7 +888,7 @@ public class BootstrapServiceImpl implements BootstrapService {
         commentToHistoryMigrationMap.put(MANAGER, new CommentToHistoryMigration(MANAGER, En_HistoryType.CASE_MANAGER,
                 CaseComment::getCaseManagerId, CaseComment::getCaseManagerShortName));
 
-        for(int i = 0; i < caseCommentsCaseIds.size(); i++) {
+        for(int i = 0; i < caseCommentsCaseIds.size();) {
             caseIds.clear();
             int upperBorder = i + 1000;
             for(int j = i; j < Math.min(upperBorder, caseCommentsCaseIds.size()); j++) {
