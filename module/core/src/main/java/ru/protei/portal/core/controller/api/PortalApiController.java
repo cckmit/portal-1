@@ -241,12 +241,11 @@ public class PortalApiController {
 
     @PostMapping(value = "/products/updateState/{productId}/{productState}")
     public Result<?> updateProductState(HttpServletRequest request, HttpServletResponse response,
-                                        @PathVariable("productId") String productId,
-                                        @PathVariable("productState") String productState) {
+                                        @PathVariable("productId") Long productId,
+                                        @PathVariable("productState") Integer productState) {
 
         log.info("API | updateProductState(): productId={}, productState={}", productId, productState);
 
-        final String INCORRECT_ID = "Некорректный id продукта";
         final String INCORRECT_STATE = "Некорректный статус продукта. Допустимые значения: 1/2";
 
         Result<AuthToken> authenticate = authenticate(request, response, authService, sidGen, log);
@@ -257,20 +256,14 @@ public class PortalApiController {
 
         AuthToken authToken = authenticate.getData();
 
-        En_DevUnitState state;
-        try {
-            state = En_DevUnitState.forId(Integer.parseInt(productState));
-        } catch (NumberFormatException e) {
+        En_DevUnitState state = En_DevUnitState.forId(productState);
+        if (state == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS, INCORRECT_STATE);
         }
 
-        try {
-            return productService.updateState(authToken, Long.valueOf(productId), state)
-                    .ifOk(result -> log.info("updateProductState(): OK"))
-                    .ifError(result -> log.warn("updateProductState(): Can't update product state with id={}. {}", productId, result));
-        } catch (NumberFormatException e) {
-            return error(En_ResultStatus.INCORRECT_PARAMS, INCORRECT_ID);
-        }
+        return productService.updateState(authToken, productId, state)
+                .ifOk(result -> log.info("updateProductState(): OK"))
+                .ifError(result -> log.warn("updateProductState(): Can't update product state with id={}. {}", productId, result));
     }
 
     @PostMapping(value = "/updateYoutrackCrmNumbers/{youtrackId}", produces = "text/plain;charset=UTF-8")
@@ -549,13 +542,10 @@ public class PortalApiController {
 
     @PostMapping(value = "/companies/updateState/{companyId}/{isArchived}")
     public Result<?> updateCompanyState(HttpServletRequest request, HttpServletResponse response,
-                                        @PathVariable("companyId") String companyId,
-                                        @PathVariable("isArchived") String isArchived) {
+                                        @PathVariable("companyId") Long companyId,
+                                        @PathVariable("isArchived") Boolean isArchived) {
 
         log.info("API | updateCompanyState(): companyId={}, isArchived={}" , companyId, isArchived);
-
-        final String INCORRECT_ID = "Некорректный id компании";
-        final String INCORRECT_STATE = "Некорректный статус компании. Допустимые значения: true/false";
 
         Result<AuthToken> authenticate = authenticate(request, response, authService, sidGen, log);
 
@@ -565,17 +555,9 @@ public class PortalApiController {
 
         AuthToken authToken = authenticate.getData();
 
-        if (!isArchived.equalsIgnoreCase("true") && !isArchived.equalsIgnoreCase("false")) {
-            return error(En_ResultStatus.INCORRECT_PARAMS, INCORRECT_STATE);
-        }
-
-        try {
-            return companyService.updateState(authToken, Long.valueOf(companyId), Boolean.parseBoolean(isArchived))
-                    .ifOk(result -> log.info("updateCompanyState(): OK"))
-                    .ifError(result -> log.warn("updateCompanyState(): Can't update company state with id={}. {}", companyId, result));
-        } catch (NumberFormatException e) {
-            return error(En_ResultStatus.INCORRECT_PARAMS, INCORRECT_ID);
-        }
+        return companyService.updateState(authToken, companyId, isArchived)
+                .ifOk(result -> log.info("updateCompanyState(): OK"))
+                .ifError(result -> log.warn("updateCompanyState(): Can't update company state with id={}. {}", companyId, result));
     }
 
     @PostMapping(value = "/platforms/create")
@@ -597,11 +579,9 @@ public class PortalApiController {
 
     @PostMapping(value = "/platforms/delete/{platformId}")
     public Result<?> deletePlatform(HttpServletRequest request, HttpServletResponse response,
-                                           @PathVariable("platformId") String platformId) {
+                                    @PathVariable("platformId") Long platformId) {
 
         log.info("API | deletePlatform(): platformId={}", platformId);
-
-        final String INCORRECT_ID = "Некорректный id платформы";
 
         Result<AuthToken> authenticate = authenticate(request, response, authService, sidGen, log);
 
@@ -611,13 +591,9 @@ public class PortalApiController {
 
         AuthToken authToken = authenticate.getData();
 
-        try {
-            return siteFolderService.removePlatform(authToken, Long.parseLong(platformId))
-                    .ifOk(result -> log.info("deletePlatform(): OK"))
-                    .ifError(result -> log.warn("deletePlatform(): Can't delete platform with id={}. {}", platformId, result));
-        } catch (NumberFormatException e) {
-            return error(En_ResultStatus.INCORRECT_PARAMS, INCORRECT_ID);
-        }
+        return siteFolderService.removePlatform(authToken, platformId)
+                .ifOk(result -> log.info("deletePlatform(): OK"))
+                .ifError(result -> log.warn("deletePlatform(): Can't delete platform with id={}. {}", platformId, result));
     }
 
     private CaseQuery makeCaseQuery(CaseApiQuery apiQuery) {
