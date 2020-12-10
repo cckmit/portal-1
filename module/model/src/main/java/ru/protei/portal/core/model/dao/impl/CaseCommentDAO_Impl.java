@@ -159,8 +159,7 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
                         " )" +
                         " and outerH.date < '" + toTime + "' " + //# правая граница
                         " and outerH.value_type = " + En_HistoryType.CASE_STATE.getId() +
-                        " and outerH.new_id in " + acceptableStates +
-                        "ORDER BY outerH.date ASC;";
+                        " ORDER BY outerH.date ASC;";
 
         try {
             return jdbcTemplate.query( query, rm );
