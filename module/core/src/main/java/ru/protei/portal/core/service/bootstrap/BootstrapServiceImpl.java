@@ -913,9 +913,12 @@ public class BootstrapServiceImpl implements BootstrapService {
                     comments.stream().sorted(Comparator.comparing(CaseComment::getId))
                         .forEach(comment -> {
                             CommentToHistoryMigration commentToHistoryMigration = commentToHistoryMigrationMap.get(CommentToHistoryMigration.commentType(comment));
-                            histories.add(makeHistory(commentToHistoryMigration.prevComment, comment, commentToHistoryMigration.enHistoryType,
-                                    commentToHistoryMigration.getHistoryValue, commentToHistoryMigration.getHistoryName));
-                            commentToHistoryMigration.setPrevComment(comment);
+                            History history = makeHistory(commentToHistoryMigration.prevComment, comment, commentToHistoryMigration.enHistoryType,
+                                    commentToHistoryMigration.getHistoryValue, commentToHistoryMigration.getHistoryName);
+                            if (history != null) {
+                                histories.add(history);
+                                commentToHistoryMigration.setPrevComment(comment);
+                            }
                     });
                 });
         return histories;
@@ -936,7 +939,10 @@ public class BootstrapServiceImpl implements BootstrapService {
             return createHistory(secondComment.getAuthorId(), secondComment.getCaseId(), En_HistoryAction.REMOVE, historyType,
                     secondComment.getCreated(), firstValue, historyName.apply(firstComment), null, null);
         }
-        throw new RuntimeException("NO En_HistoryAction");
+
+        log.error("makeHistory : \nfirst = {}, \nsecond = {}", firstComment, secondComment);
+
+        return null;
     }
 
     private History createHistory(Long personId, Long caseObjectId, En_HistoryAction action, En_HistoryType historyType,
@@ -957,7 +963,7 @@ public class BootstrapServiceImpl implements BootstrapService {
 
     private void persistHistory(List<History> histories, boolean force) {
         if (force || histories.size() > 1000) {
-            histories.forEach(historyDAO::persist);
+            histories.stream().filter(Objects::nonNull).forEach(historyDAO::persist);
             histories.clear();
         }
     }
