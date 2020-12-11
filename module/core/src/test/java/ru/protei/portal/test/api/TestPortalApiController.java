@@ -1310,16 +1310,15 @@ public class TestPortalApiController extends BaseServiceTest {
 
         String platformId = getPlatformId(result.andReturn().getResponse().getContentAsString());
 
+        createPostResultAction("/api/platforms/delete/" + platformId, null)
+                .andExpect(status().isOk());
+
         createPostResultAction("/api/platforms/delete/12345" + platformId, null)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.NOT_FOUND.toString())));
 
-        doDelete(platformId);
-        doDelete("incorrect_id");
-    }
-
-    private void doDelete(String platformId) throws Exception {
-
+        createPostResultAction("/api/platforms/delete/incorrect_id", null)
+                .andExpect(status().isBadRequest());
     }
 
     private String getPlatformId (String strResult) {
