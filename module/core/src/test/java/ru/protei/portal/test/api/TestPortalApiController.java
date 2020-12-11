@@ -511,7 +511,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         Assert.assertTrue("Case numbers list must be empty", caseNumbersFromDB.isEmpty());
 
-        removeAllCaseObjectsAndLinksAndComments();
+        removeAllCaseObjectsAndLinksAndCommentsAndHistory();
     }
 
     @Test
@@ -565,7 +565,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         Assert.assertTrue("Invalid list of case numbers", compareLists(caseNumbersFromDB, caseNumbersCreated));
 
-        removeAllCaseObjectsAndLinksAndComments();
+        removeAllCaseObjectsAndLinksAndCommentsAndHistory();
     }
 
     @Test
@@ -592,7 +592,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         Assert.assertTrue("Case link must be removed!", caseNumbersFromDB.isEmpty());
 
-        removeAllCaseObjectsAndLinksAndComments();
+        removeAllCaseObjectsAndLinksAndCommentsAndHistory();
     }
 
     @Test
@@ -618,7 +618,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         Assert.assertTrue("List must contain only unique numbers", compareLists(caseNumbersCreated, caseNumbersFromDB));
 
-        removeAllCaseObjectsAndLinksAndComments();
+        removeAllCaseObjectsAndLinksAndCommentsAndHistory();
     }
 
 
@@ -648,7 +648,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         Assert.assertTrue("Case numbers list must be empty", caseNumbersFromDB.isEmpty());
 
-        removeAllCaseObjectsAndLinksAndComments();
+        removeAllCaseObjectsAndLinksAndCommentsAndHistory();
     }
 
     @Test
@@ -702,7 +702,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         Assert.assertTrue("Invalid list of project numbers", compareLists(projectNumbersFromDB, projectNumbersCreated));
 
-        removeAllCaseObjectsAndLinksAndComments();
+        removeAllCaseObjectsAndLinksAndCommentsAndHistory();
     }
 
     @Test
@@ -729,7 +729,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         Assert.assertTrue("Case link must be removed!", projectNumbersFromDB.isEmpty());
 
-        removeAllCaseObjectsAndLinksAndComments();
+        removeAllCaseObjectsAndLinksAndCommentsAndHistory();
     }
 
     @Test
@@ -754,7 +754,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         Assert.assertTrue("List must contain only unique numbers", compareLists(projectNumbersCreated, projectNumbersFromDB));
 
-        removeAllCaseObjectsAndLinksAndComments();
+        removeAllCaseObjectsAndLinksAndCommentsAndHistory();
     }
 
 
@@ -820,7 +820,7 @@ public class TestPortalApiController extends BaseServiceTest {
         Assert.assertTrue("DB List must contain crm numbers. crmNumbersCreatedAfterRemove = " + crmNumbersCreatedAfterRemove + " and crmAndProjectNumbersFromDB = " + crmAndProjectNumbersFromDB, crmAndProjectNumbersFromDB.containsAll(crmNumbersCreatedAfterRemove));
         Assert.assertEquals("DB List must contain 4 numbers. crmAndProjectNumbersFromDB = " + crmAndProjectNumbersFromDB, 4, crmAndProjectIdsFromDB.size());
 
-        removeAllCaseObjectsAndLinksAndComments();
+        removeAllCaseObjectsAndLinksAndCommentsAndHistory();
     }
 
     @Test
@@ -852,7 +852,7 @@ public class TestPortalApiController extends BaseServiceTest {
         caseNumbersFromDB = findAllCaseNumbersByYoutrackId(NEW_YOUTRACK_ID);
         Assert.assertEquals("Wrong quantity of numbers with new link", CASE_COUNT, caseNumbersFromDB.size());
 
-        removeAllCaseObjectsAndLinksAndComments();
+        removeAllCaseObjectsAndLinksAndCommentsAndHistory();
     }
 
     @Test
@@ -877,7 +877,7 @@ public class TestPortalApiController extends BaseServiceTest {
         caseNumbersFromDB = findAllCaseNumbersByYoutrackId(NEW_YOUTRACK_ID);
         Assert.assertEquals("Wrong quantity of numbers with old link", 0, caseNumbersFromDB.size());
 
-        removeAllCaseObjectsAndLinksAndComments();
+        removeAllCaseObjectsAndLinksAndCommentsAndHistory();
     }
 
     @Test
@@ -905,7 +905,7 @@ public class TestPortalApiController extends BaseServiceTest {
             Assert.assertTrue("Project must contain new comment", isListContainCommentByRemoteId(caseCommentList.getData(), ytIssueComment.id));
         }
 
-        removeAllCaseObjectsAndLinksAndComments();
+        removeAllCaseObjectsAndLinksAndCommentsAndHistory();
     }
 
     @Test
@@ -939,7 +939,7 @@ public class TestPortalApiController extends BaseServiceTest {
             Assert.assertTrue("Project must contain new comment", updatedTextWithoutTag.equals(findCaseCommentByRemoteId(caseCommentList.getData(), ytIssueComment.id).getText()));
         }
 
-        removeAllCaseObjectsAndLinksAndComments();
+        removeAllCaseObjectsAndLinksAndCommentsAndHistory();
     }
 
     @Test
@@ -970,7 +970,7 @@ public class TestPortalApiController extends BaseServiceTest {
             Assert.assertFalse("Project must not contain comment", isListContainCommentByRemoteId(caseCommentList.getData(), ytIssueComment.id));
         }
 
-        removeAllCaseObjectsAndLinksAndComments();
+        removeAllCaseObjectsAndLinksAndCommentsAndHistory();
     }
 
     @Test
@@ -1194,7 +1194,7 @@ public class TestPortalApiController extends BaseServiceTest {
                 .collect(Collectors.toList());
     }
 
-    private void removeAllCaseObjectsAndLinksAndComments() {
+    private void removeAllCaseObjectsAndLinksAndCommentsAndHistory() {
         List<Long> caseIds = caseObjectDAO.getAll().stream().map(CaseObject::getId).collect(Collectors.toList());
 
         caseIds.forEach(caseId -> {

@@ -211,7 +211,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         if (caseObj.getStateId() != oldStateId) {
             changeStateHistory(new Date(), authorId, caseObj.getId(),
                     oldStateId, caseStateDAO.get(oldStateId).getState(),
-                    caseObj.getStateId(), caseStateDAO.get(caseObj.getStateId()).getState());
+                    caseObj.getStateId(), caseObj.getStateName());
         }
 
         if (!newImportance.equals(oldImportance)) {
@@ -270,7 +270,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         caseObjectDAO.merge(caseObj);
 
         addStateHistory(caseObj.getCreated(), authorId, caseObj.getId(), caseObj.getStateId(), caseStateDAO.get(caseObj.getStateId()).getState());
-        addImportanceHistory(caseObj.getCreated(), authorId, caseObj.getId(), caseObj.getImpLevel());
+        addImportanceHistory(caseObj.getCreated(), authorId, caseObj.getId(), caseObj.getImpLevel().longValue());
 
         List<CaseComment> caseComments = processComments( endpoint.getServerLogin(), issue.getComments(), caseObj,
                 personMapper, jiraExtAppData, addedAttachments, caseToAttachments );
@@ -532,20 +532,20 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         return En_ImportanceLevel.getById(jiraPriorityEntry.getLocalPriorityId());
     }
 
-    private Long addStateHistory(Date date, Long personId, long caseId, long stateId, String stateName) {
+    private Long addStateHistory(Date date, Long personId, Long caseId, Long stateId, String stateName) {
         return createHistory(date, personId, caseId, En_HistoryAction.ADD, En_HistoryType.CASE_STATE, null, null, stateId, stateName);
     }
 
-    private Long changeStateHistory(Date date, Long personId, long caseId, long oldStateId, String oldStateName, long newStateId, String newStateName) {
+    private Long changeStateHistory(Date date, Long personId, Long caseId, Long oldStateId, String oldStateName, Long newStateId, String newStateName) {
         return createHistory(date, personId, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_STATE, oldStateId, oldStateName, newStateId, newStateName);
     }
 
-    private Long addImportanceHistory(Date date, Long personId, long caseId, int importanceId) {
+    private Long addImportanceHistory(Date date, Long personId, Long caseId, Long importanceId) {
         return createHistory(date, personId, caseId, En_HistoryAction.ADD, En_HistoryType.CASE_IMPORTANCE, null, null,
-                (long)importanceId, En_ImportanceLevel.getById(importanceId).getCode());
+                importanceId, En_ImportanceLevel.getById(importanceId.intValue()).getCode());
     }
 
-    private Long changeImportanceHistory(Date date, Long personId, long caseId, En_ImportanceLevel oldImportance, En_ImportanceLevel newImportance) {
+    private Long changeImportanceHistory(Date date, Long personId, Long caseId, En_ImportanceLevel oldImportance, En_ImportanceLevel newImportance) {
         return createHistory(date, personId, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_IMPORTANCE,
                 (long)oldImportance.getId(), oldImportance.getCode(), (long)newImportance.getId(), newImportance.getCode());
     }

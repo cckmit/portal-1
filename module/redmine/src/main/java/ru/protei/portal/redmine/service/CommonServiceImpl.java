@@ -169,14 +169,14 @@ public final class CommonServiceImpl implements CommonService {
 
     @Override
     public Result<Long> createAndStoreImportanceHistory(Date created, Long authorId, Integer importance, Long caseId) {
-        Long id = addImportanceHistory(created, authorId, caseId, importance);
+        Long id = addImportanceHistory(created, authorId, caseId, importance.longValue());
         if(id == null) return error( En_ResultStatus.NOT_CREATED, "Importance comment do not created." );
         return ok(id);
     }
 
     @Override
     public Result<Long> updateAndStoreImportanceHistory(Date updated, Long authorId, Integer oldImportance, Long caseId, Integer newImportance) {
-        Long id = changeImportanceHistory(updated, authorId, caseId, oldImportance, newImportance);
+        Long id = changeImportanceHistory(updated, authorId, caseId, oldImportance.longValue(), newImportance.longValue());
         if(id == null) return error( En_ResultStatus.NOT_UPDATED, "Importance comment do not updated." );
         return ok(id);
     }
@@ -354,22 +354,22 @@ public final class CommonServiceImpl implements CommonService {
         return platformDAO.listByQuery(query);
     }
 
-    private Long addStateHistory(Date date, Long personId, long caseId, long stateId, String stateName) {
+    private Long addStateHistory(Date date, Long personId, Long caseId, Long stateId, String stateName) {
         return createHistory(date, personId, caseId, En_HistoryAction.ADD, En_HistoryType.CASE_STATE, null, null, stateId, stateName);
     }
 
-    private Long changeStateHistory(Date date, Long personId, long caseId, long oldStateId, String oldStateName, long newStateId, String newStateName) {
+    private Long changeStateHistory(Date date, Long personId, Long caseId, Long oldStateId, String oldStateName, Long newStateId, String newStateName) {
         return createHistory(date, personId, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_STATE, oldStateId, oldStateName, newStateId, newStateName);
     }
 
-    private Long addImportanceHistory(Date date, Long personId, long caseId, int importanceId) {
+    private Long addImportanceHistory(Date date, Long personId, Long caseId, Long importanceId) {
         return createHistory(date, personId, caseId, En_HistoryAction.ADD, En_HistoryType.CASE_IMPORTANCE, null, null,
-                (long)importanceId, En_ImportanceLevel.getById(importanceId).getCode());
+                importanceId, En_ImportanceLevel.getById(importanceId.intValue()).getCode());
     }
 
-    private Long changeImportanceHistory(Date date, Long personId, long caseId, int oldImportanceId, int newImportanceId) {
+    private Long changeImportanceHistory(Date date, Long personId, Long caseId, Long oldImportanceId, Long newImportanceId) {
         return createHistory(date, personId, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_IMPORTANCE,
-                (long)oldImportanceId, En_ImportanceLevel.getById(oldImportanceId).getCode(), (long)newImportanceId, En_ImportanceLevel.getById(newImportanceId).getCode());
+                oldImportanceId, En_ImportanceLevel.getById(oldImportanceId.intValue()).getCode(), newImportanceId, En_ImportanceLevel.getById(newImportanceId.intValue()).getCode());
     }
 
     private Long createHistory(Date date, Long personId, Long caseObjectId, En_HistoryAction action,

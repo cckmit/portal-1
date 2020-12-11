@@ -245,7 +245,7 @@ public class CaseServiceImpl implements CaseService {
             log.error("State message for the issue {} not saved!", caseId);
         }
 
-        Result<Long> importanceResult = addImportanceHistory(token, caseId, caseObject.getImpLevel(), En_ImportanceLevel.getById(caseObject.getImpLevel()).getCode());
+        Result<Long> importanceResult = addImportanceHistory(token, caseId, caseObject.getImpLevel().longValue(), En_ImportanceLevel.getById(caseObject.getImpLevel()).getCode());
         if (importanceResult.isError()) {
             log.error("Importance level message for the issue {} not saved!", caseId);
         }
@@ -478,8 +478,8 @@ public class CaseServiceImpl implements CaseService {
 
         if (!Objects.equals(oldCaseMeta.getImpLevel(), caseMeta.getImpLevel())) {
             Result<Long> resultImportance = changeImportanceHistory(token, caseMeta.getId(),
-                    oldCaseMeta.getImpLevel(), En_ImportanceLevel.getById(oldCaseMeta.getImpLevel()).getCode(),
-                    caseMeta.getImpLevel(), En_ImportanceLevel.getById(caseMeta.getImpLevel()).getCode());
+                    oldCaseMeta.getImpLevel().longValue(), En_ImportanceLevel.getById(oldCaseMeta.getImpLevel()).getCode(),
+                    caseMeta.getImpLevel().longValue(), En_ImportanceLevel.getById(caseMeta.getImpLevel()).getCode());
             if (resultImportance.isError()) {
                 log.error("Importance level message for the issue {} isn't saved!", caseMeta.getId());
             }
@@ -1403,23 +1403,23 @@ public class CaseServiceImpl implements CaseService {
         return true;
     }
 
-    private Result<Long> addStateHistory(AuthToken authToken, long caseId, long stateId, String stateName) {
+    private Result<Long> addStateHistory(AuthToken authToken, Long caseId, Long stateId, String stateName) {
         return historyService.createHistory(authToken, caseId, En_HistoryAction.ADD, En_HistoryType.CASE_STATE, null, null, stateId, stateName);
     }
 
-    private Result<Long> changeStateHistory(AuthToken authToken, long caseId, long oldStateId, String oldStateName, long newStateId, String newStateName) {
+    private Result<Long> changeStateHistory(AuthToken authToken, Long caseId, Long oldStateId, String oldStateName, Long newStateId, String newStateName) {
         return historyService.createHistory(authToken, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_STATE, oldStateId, oldStateName, newStateId, newStateName);
     }
 
-    private Result<Long> addManagerHistory(AuthToken authToken, long caseId, long managerId, String ManagerName) {
+    private Result<Long> addManagerHistory(AuthToken authToken, Long caseId, Long managerId, String ManagerName) {
         return historyService.createHistory(authToken, caseId, En_HistoryAction.ADD, En_HistoryType.CASE_MANAGER,null, null, managerId, ManagerName);
     }
 
-    private Result<Long> changeManagerHistory(AuthToken authToken, long caseId, long oldManagerId, String oldManagerName, long newManagerId, String newManagerName) {
+    private Result<Long> changeManagerHistory(AuthToken authToken, Long caseId, Long oldManagerId, String oldManagerName, Long newManagerId, String newManagerName) {
         return historyService.createHistory(authToken, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_MANAGER, oldManagerId, oldManagerName, newManagerId, newManagerName);
     }
 
-    private Result<Long> removeManagerHistory(AuthToken authToken, long caseId, long oldManagerId, String oldManagerName) {
+    private Result<Long> removeManagerHistory(AuthToken authToken, Long caseId, Long oldManagerId, String oldManagerName) {
         return historyService.createHistory(authToken, caseId, En_HistoryAction.REMOVE, En_HistoryType.CASE_MANAGER, oldManagerId, oldManagerName, null, null);
     }
 
@@ -1427,11 +1427,11 @@ public class CaseServiceImpl implements CaseService {
         return (caseObjectMeta.getManager() != null ? caseObjectMeta.getManager() : personShortViewDAO.get(caseObjectMeta.getManagerId())).getDisplayShortName();
     }
 
-    private Result<Long> addImportanceHistory(AuthToken authToken, long caseId, long importanceId, String importanceName) {
+    private Result<Long> addImportanceHistory(AuthToken authToken, Long caseId, Long importanceId, String importanceName) {
         return historyService.createHistory(authToken, caseId, En_HistoryAction.ADD, En_HistoryType.CASE_IMPORTANCE, null, null, importanceId, importanceName);
     }
 
-    private Result<Long> changeImportanceHistory(AuthToken authToken, long caseId, long oldImportanceId, String oldImportanceName, long newImportanceId, String newImportanceName) {
+    private Result<Long> changeImportanceHistory(AuthToken authToken, Long caseId, Long oldImportanceId, String oldImportanceName, Long newImportanceId, String newImportanceName) {
         return historyService.createHistory(authToken, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_IMPORTANCE, oldImportanceId, oldImportanceName, newImportanceId, newImportanceName);
     }
 

@@ -340,8 +340,8 @@ public class BaseServiceTest {
         return caseObjectDAO.remove(caseObject);
     }
 
-    protected boolean removeHistoryCaseObject(CaseObject caseObject) {
-        historyDAO.removeByCaseId(caseObject.getId());
+    protected boolean removeHistoryCaseObject(Long caseObjectId) {
+        historyDAO.removeByCaseId(caseObjectId);
         return true;
     }
 

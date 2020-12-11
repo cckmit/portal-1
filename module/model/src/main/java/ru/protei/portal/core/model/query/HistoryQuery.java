@@ -14,7 +14,7 @@ public class HistoryQuery extends BaseQuery {
     private Date dateTo;
     private Long caseObjectId;
     private Long caseNumber;
-    private List<En_HistoryType> valueTypes = new ArrayList<>();
+    private List<En_HistoryType> valueTypes;
     private List<En_HistoryAction> historyActions;
     private Long oldId;
     private Long newId;
@@ -70,6 +70,9 @@ public class HistoryQuery extends BaseQuery {
     }
 
     public void addValueType(En_HistoryType valueType) {
+        if (this.valueTypes == null) {
+            this.valueTypes = new ArrayList<>();
+        }
         this.valueTypes.add(valueType);
     }
 

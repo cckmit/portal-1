@@ -42,7 +42,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
             CaseQuery caseQuery = createCaseQuery( date10, addHours( date10, model.numberOfDays * H_DAY ) );
             caseQuery.setProductIds( model.productIncludedIds );
 
-            ReportCaseResolutionTime report = new ReportCaseResolutionTime( caseQuery, caseCommentDAO );
+            ReportCaseResolutionTime report = new ReportCaseResolutionTime( caseQuery, historyDAO );
             report.run();
 
             checkCases( report.getCases(), model.caseObjectIncludedIds );
@@ -64,7 +64,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
             CaseQuery caseQuery = createCaseQuery( date10, addHours( date10, model.numberOfDays * H_DAY ) );
             caseQuery.setCaseTagsIds( model.caseTagIncludedIds );
 
-            ReportCaseResolutionTime report = new ReportCaseResolutionTime( caseQuery, caseCommentDAO );
+            ReportCaseResolutionTime report = new ReportCaseResolutionTime( caseQuery, historyDAO );
             report.run();
 
             checkCases( report.getCases(), model.caseObjectIncludedIds );
@@ -86,7 +86,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
             CaseQuery caseQuery = createCaseQuery( date10, addHours( date10, model.numberOfDays * H_DAY ) );
             caseQuery.setCompanyIds( model.companysIncludedIds );
 
-            ReportCaseResolutionTime report = new ReportCaseResolutionTime( caseQuery , caseCommentDAO );
+            ReportCaseResolutionTime report = new ReportCaseResolutionTime( caseQuery , historyDAO );
             report.run();
 
             checkCases( report.getCases(), model.caseObjectIncludedIds );
