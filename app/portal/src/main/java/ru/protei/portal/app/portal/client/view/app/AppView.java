@@ -4,11 +4,14 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.*;
 import com.google.gwt.event.dom.client.*;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.app.portal.client.activity.app.AbstractAppActivity;
@@ -42,6 +45,17 @@ public class AppView extends Composite
         if (isFixedClosed) {
             fixClosedSidebar(true);
         }
+
+        resizeHandler = event -> {
+            if (menuBarPopup.isAttached()) {
+                showPopupMenu();
+            }
+        };
+        windowScrollHandler = event -> {
+            if (menuBarPopup.isAttached()) {
+                showPopupMenu();
+            }
+        };
     }
 
     @Override
@@ -126,7 +140,6 @@ public class AppView extends Composite
     @UiHandler( "logout" )
     public void onLogoutClicked( ClickEvent event ) {
         event.preventDefault();
-        menuBar.removeStyleName("show");
 
         if ( activity != null ) {
             activity.onLogoutClicked();
@@ -155,25 +168,15 @@ public class AppView extends Composite
     @UiHandler("settings")
     public void settingsClick(ClickEvent event) {
         event.preventDefault();
-        menuBar.removeStyleName("show");
 
         if (activity != null) {
             activity.onSettingsClicked();
         }
     }
 
-    @UiHandler({"profile", "username", "menuBarFocus"})
+    @UiHandler({"profile", "username"})
     public void profileClick(ClickEvent event) {
-        if (menuBar.getStyleName().contains("show")) {
-            menuBar.removeStyleName( "show" );
-        } else {
-            menuBar.addStyleName( "show" );
-        }
-    }
-
-    @UiHandler("menuBarFocus")
-    public void profileClick(MouseOutEvent event) {
-        menuBar.removeStyleName("show");
+        showPopupMenu();
     }
 
     @UiHandler("locale")
@@ -200,9 +203,29 @@ public class AppView extends Composite
     }
 
     @Override
-    protected void onDetach() {
-        super.onDetach();
-        menuBar.removeStyleName("show");
+    protected void onLoad() {
+        resizeHandlerReg = Window.addResizeHandler(resizeHandler);
+        scrollHandlerReg = Window.addWindowScrollHandler(windowScrollHandler);
+    }
+
+    @Override
+    protected void onUnload() {
+        if (resizeHandlerReg != null) {
+            resizeHandlerReg.removeHandler();
+            scrollHandlerReg.removeHandler();
+        }
+    }
+
+    private void showPopupMenu() {
+        menuBarPopup.setPopupPositionAndShow((popupWidth, popupHeight) -> {
+            int relativeLeft = profile.getAbsoluteLeft();
+            int widthDiff = popupWidth - profile.getOffsetWidth();
+            int popupLeft = relativeLeft - widthDiff;
+            int relativeTop = profile.getAbsoluteTop();
+            int popupTop = relativeTop + profile.getOffsetHeight() + POPUP_PADDING_TOP;
+
+            menuBarPopup.setPopupPosition(popupLeft, popupTop);
+        });
     }
 
     private void ensureDebugIds() {
@@ -356,10 +379,6 @@ public class AppView extends Composite
     @UiField
     Anchor settings;
     @UiField
-    FocusPanel menuBarFocus;
-    @UiField
-    HTMLPanel menuBar;
-    @UiField
     Button profile;
     @UiField
     Button fixOpenedSidebarButton;
@@ -386,6 +405,8 @@ public class AppView extends Composite
     DivElement help;
     @UiField
     DivElement appVersion;
+    @UiField
+    PopupPanel menuBarPopup;
 
     AbstractAppActivity activity;
 
@@ -394,5 +415,11 @@ public class AppView extends Composite
     private boolean isFixedOpened = false;
     private boolean isFixedClosed = false;
 
+    private ResizeHandler resizeHandler;
+    private Window.ScrollHandler windowScrollHandler;
+    private HandlerRegistration resizeHandlerReg;
+    private HandlerRegistration scrollHandlerReg;
+
+    private final int POPUP_PADDING_TOP = 10;
     private static AppViewUiBinder ourUiBinder = GWT.create( AppViewUiBinder.class );
 }

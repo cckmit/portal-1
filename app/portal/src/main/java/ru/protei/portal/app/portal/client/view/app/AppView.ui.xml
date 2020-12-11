@@ -54,8 +54,8 @@
                             <img ui:field="photo" src="#" alt="" width="32" height="32" class="thumbnail-photo"/>
                         </span>
                     </g:Button>
-                    <g:FocusPanel ui:field="menuBarFocus">
-                        <g:HTMLPanel ui:field="menuBar" styleName="dropdown-menu dropdown-menu-right profile-dropdown">
+                    <g:PopupPanel ui:field="menuBarPopup" autoHideEnabled="true" visible="false">
+                        <g:HTMLPanel styleName="dropdown-menu dropdown-menu-right profile-dropdown show">
                             <g:Anchor ui:field="settings" styleName="clearfix dropdown-item" href="#">
                                 <ui:text from="{lang.buttonSettings}"/>
                             </g:Anchor>
@@ -66,17 +66,17 @@
                             <div ui:field="help" class="dropdown-item">
                                 <span class="p-r-10"><ui:text from="{lang.help}"/></span>
                                 <span>
-                                    <a href="mailto:portal.support@protei.ru" target="_blank" class="d-inline p-r-10" title="portal.support@protei.ru">
+                                    <a href="mailto:portal.support@protei.ru" target="_blank" class="help d-inline p-r-10" title="portal.support@protei.ru">
                                         <i class="far fa-envelope" style="font-size: 1.2em"/>
                                     </a>
-                                    <a href="https://mattermost.protei.ru/protei/channels/portal" target="_blank" class="d-inline" title="https://mattermost.protei.ru/protei/channels/portal">
+                                    <a href="https://mattermost.protei.ru/protei/channels/portal" target="_blank" class="help d-inline" title="https://mattermost.protei.ru/protei/channels/portal">
                                         <img src="./images/mattermost.png" width="14px" class="p-b-5"/>
                                     </a>
                                 </span>
                             </div>
                             <div ui:field="appVersion" class="dropdown-item"/>
                         </g:HTMLPanel>
-                    </g:FocusPanel>
+                    </g:PopupPanel>
                 </div>
             </div>
         </div>
