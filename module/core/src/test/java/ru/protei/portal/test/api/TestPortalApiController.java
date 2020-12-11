@@ -20,15 +20,13 @@ import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoObjectMapperProvider;
 import ru.protei.portal.core.controller.api.PortalApiController;
-import ru.protei.portal.core.model.dict.En_CaseLink;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_CompanyCategory;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.CaseTagInfo;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.*;
+import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.youtrack.YtFieldDescriptor;
@@ -55,8 +53,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -368,6 +365,32 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect( jsonPath( "$.status", is( En_ResultStatus.OK.toString() ) ) )
                 .andExpect( jsonPath( "$.data").value(  product.getId().intValue() ) )
         ;
+    }
+
+    @Test
+    @Transactional
+    public void updateProductState() throws Exception {
+        DevUnit product = createProduct("TestPortalApiController#updateProductState");
+        Long productId = devUnitDAO.persist(product);
+
+        Assert.assertEquals(updateProductState(productId, 1), 1);
+        Assert.assertEquals(updateProductState(productId, 2), 2);
+
+        updateProductWithIncorrectParam("/incorrect_id/1");
+        updateProductWithIncorrectParam(productId + "/incorrect_state");
+    }
+
+    private int updateProductState(Long productId, int state) throws Exception {
+        createPostResultAction("/api/products/updateState/" + productId + "/" + state, null)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())));
+
+        return devUnitDAO.get(productId).getState().getId();
+    }
+
+    private void updateProductWithIncorrectParam(String params) throws Exception {
+        createPostResultAction("/api/products/updateState/" + params, null)
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -1163,6 +1186,145 @@ public class TestPortalApiController extends BaseServiceTest {
 
         caseTagDAO.removeByKey(persistedTagId);
         personDAO.removeByKey(person.getId());
+    }
+
+    @Test
+    @Transactional
+    public void createCompany() throws Exception {
+        Company company = new Company();
+        company.setCname("Gazprom");
+        company.setCategory(En_CompanyCategory.CUSTOMER);
+
+        company.setGroupId(null);
+
+        CompanyGroup companyGroup = new CompanyGroup();
+        companyGroup.setId(1L);
+        companyGroup.setName("main");
+        companyGroup.setInfo("test");
+        company.setCompanyGroup(companyGroup);
+
+        company.setParentCompanyId(1L);
+        company.setParentCompanyName("НТЦ Протей");
+
+        List<ContactItem> contactInfo = new ArrayList<>();
+        contactInfo.add(new ContactItem("protei@protei.ru", En_ContactItemType.EMAIL));
+        contactInfo.add(new ContactItem("+7(812)553-12-12", En_ContactItemType.FAX));
+        company.setContactInfo(new ContactInfo(contactInfo));
+
+        company.setInfo("Company information");
+        company.setHidden(true);
+
+        company.setArchived(false);
+        company.setAutoOpenIssue(true);
+
+        createPostResultAction("/api/companies/create", company)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data.cname", is(company.getCname())))
+                .andExpect(jsonPath("$.data.category", is(En_CompanyCategory.CUSTOMER.toString())))
+                .andExpect(jsonPath("$.data.groupId", is(company.getGroupId())))
+
+                .andExpect(jsonPath("$.data.companyGroup.id", is(companyGroup.getId().intValue())))
+                .andExpect(jsonPath("$.data.companyGroup.name", is(companyGroup.getName())))
+                .andExpect(jsonPath("$.data.companyGroup.info", is(companyGroup.getInfo())))
+
+                .andExpect(jsonPath("$.data.parentCompanyId", is(company.getParentCompanyId().intValue())))
+                .andExpect(jsonPath("$.data.parentCompanyName", is(company.getParentCompanyName())))
+
+                .andExpect(jsonPath("$.data.contactItems[0].v", is(company.getContactInfo().getItems().get(0).value())))
+                .andExpect(jsonPath("$.data.contactItems[1].v", is(company.getContactInfo().getItems().get(1).value())))
+
+                .andExpect(jsonPath("$.data.info", is(company.getInfo())))
+                .andExpect(jsonPath("$.data.hidden", is(company.getHidden())))
+                .andExpect(jsonPath("$.data.archived", is(company.isArchived())))
+                .andExpect(jsonPath("$.data.autoOpenIssue", is(company.getAutoOpenIssue())));
+    }
+
+    @Test
+    @Transactional
+    public void updateCompanyState() throws Exception {
+        Company company = new Company();
+        Long companyId = 12345L;
+        company.setCname("Protei");
+        company.setId(companyId);
+
+        createPostResultAction("/api/companies/create", company)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data.id", is(company.getId().intValue())));
+
+        Assert.assertTrue(updateCompanyState(companyId, true));
+        Assert.assertFalse(updateCompanyState(companyId, false));
+
+        updateCompanyWithIncorrectParam("/incorrect_id/false");
+        updateCompanyWithIncorrectParam(companyId + "/incorrect_state");
+    }
+
+    private boolean updateCompanyState(Long companyId, boolean isArchived) throws Exception {
+        createPostResultAction("/api/companies/updateState/" + companyId + "/" + isArchived, null)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())));
+
+        return companyDAO.get(companyId).isArchived();
+    }
+
+    private void updateCompanyWithIncorrectParam(String params) throws Exception {
+        createPostResultAction("/api/companies/updateState/" + params, null)
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Transactional
+    public void createPlatform() throws Exception {
+        Platform platform = new Platform();
+        platform.setName("name");
+        platform.setParams("params");
+
+        Long companyId = 1L;
+        platform.setCompanyId(companyId);
+        platform.setCompany(companyDAO.get(companyId));
+
+        platform.setComment("Some comments");
+
+        createPostResultAction("/api/platforms/create", platform)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data.name", is(platform.getName())))
+                .andExpect(jsonPath("$.data.params", is(platform.getParams())))
+                .andExpect(jsonPath("$.data.company.id", is(platform.getCompany().getId().intValue())))
+                .andExpect(jsonPath("$.data.company.cname", is(platform.getCompany().getCname())))
+                .andExpect(jsonPath("$.data.company.category", is(platform.getCompany().getCategory().toString())))
+                .andExpect(jsonPath("$.data.comment", is(platform.getComment())));
+    }
+
+    @Test
+    @Transactional
+    public void deletePlatform() throws Exception {
+        Platform platform = new Platform();
+        platform.setName("Platform to delete");
+
+        ResultActions result = createPostResultAction("/api/platforms/create", platform)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data.id", notNullValue()));
+
+        String platformId = getPlatformId(result.andReturn().getResponse().getContentAsString());
+
+        createPostResultAction("/api/platforms/delete/" + platformId, null)
+                .andExpect(status().isOk());
+
+        createPostResultAction("/api/platforms/delete/12345", null)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.NOT_FOUND.toString())));
+
+        createPostResultAction("/api/platforms/delete/incorrect_id", null)
+                .andExpect(status().isBadRequest());
+    }
+
+    private String getPlatformId (String strResult) {
+        int idIndex = strResult.indexOf("id");
+        strResult = strResult.substring(idIndex);
+        return strResult.substring(strResult.indexOf(":") + 1, strResult.indexOf(","));
     }
 
     private boolean compareLists (List<Long> list1, List<Long> list2){
