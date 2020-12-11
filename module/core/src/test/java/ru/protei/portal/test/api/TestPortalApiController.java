@@ -1313,7 +1313,7 @@ public class TestPortalApiController extends BaseServiceTest {
         createPostResultAction("/api/platforms/delete/" + platformId, null)
                 .andExpect(status().isOk());
 
-        createPostResultAction("/api/platforms/delete/12345" + platformId, null)
+        createPostResultAction("/api/platforms/delete/12345", null)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.NOT_FOUND.toString())));
 
