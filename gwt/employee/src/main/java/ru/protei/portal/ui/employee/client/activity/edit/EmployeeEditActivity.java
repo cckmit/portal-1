@@ -20,6 +20,7 @@ import ru.protei.portal.core.model.ent.CompanyDepartment;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.WorkerEntry;
 import ru.protei.portal.core.model.ent.WorkerPosition;
+import ru.protei.portal.core.model.helper.PhoneUtils;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.struct.UploadResult;
@@ -371,8 +372,8 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(employee.getContactInfo());
 
-        infoFacade.setWorkPhone(view.workPhone().getText());
-        infoFacade.setMobilePhone(view.mobilePhone().getText());
+        infoFacade.setWorkPhone(PhoneUtils.normalizePhoneNumber(view.workPhone().getText()));
+        infoFacade.setMobilePhone(PhoneUtils.normalizePhoneNumber(view.mobilePhone().getText()));
 
         infoFacade.setEmail(view.workEmail().getValue());
         employee.setIpAddress(view.ipAddress().getValue());

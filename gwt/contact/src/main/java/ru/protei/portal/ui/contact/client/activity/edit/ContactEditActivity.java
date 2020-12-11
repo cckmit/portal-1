@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.PhoneUtils;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.GenerationPasswordUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -256,9 +257,9 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(contact.getContactInfo());
 
-        infoFacade.setWorkPhone(view.workPhone().getText());
-        infoFacade.setHomePhone(view.homePhone().getText());
-        infoFacade.setMobilePhone(view.mobilePhone().getText());
+        infoFacade.setWorkPhone(PhoneUtils.normalizePhoneNumber(view.workPhone().getText()));
+        infoFacade.setHomePhone(PhoneUtils.normalizePhoneNumber(view.homePhone().getText()));
+        infoFacade.setMobilePhone(PhoneUtils.normalizePhoneNumber(view.mobilePhone().getText()));
 
         infoFacade.setEmail(view.workEmail().getText());
         infoFacade.setEmail_own(view.personalEmail().getText());
