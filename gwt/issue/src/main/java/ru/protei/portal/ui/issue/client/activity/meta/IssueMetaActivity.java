@@ -154,7 +154,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     @Override
     public void onImportanceChanged() {
-        meta.setImpLevel(metaView.importance().getValue().getId());
+        meta.setImpLevel(metaView.importance().getValue().getId().intValue());
         onCaseMetaChanged(meta, () -> {
             fireEvent(new IssueEvents.IssueImportanceChanged(meta.getId()));
             fireEvent(new IssueEvents.IssueMetaChanged(meta));
@@ -443,17 +443,18 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     private void fillImportanceSelector(Long id) {
         metaView.fillImportanceOptions(new ArrayList<>());
-        companyController.getImportanceLevels(id, new FluentCallback<List<En_ImportanceLevel>>()
+        companyController.getImportanceLevels(id, new FluentCallback<List<ImportanceLevel>>()
                 .withSuccess(importanceLevelList -> {
                     metaView.fillImportanceOptions(importanceLevelList);
                     checkImportanceSelectedValue(importanceLevelList);
                 }));
     }
 
-    private void checkImportanceSelectedValue(List<En_ImportanceLevel> importanceLevels) {
-        if (!importanceLevels.contains(metaView.importance().getValue())){
+    private void checkImportanceSelectedValue(List<ImportanceLevel> importanceLevels) {
+        if (!importanceLevels.contains(metaView.importance().getValue())) {
             metaView.importance().setValue(null);
             meta.setImpLevel(null);
+            meta.setImportanceCode(null);
         }
     }
 
@@ -534,7 +535,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             metaView.caseSubscriptionContainer().setVisible(false);
         }
 
-        metaView.importance().setValue( meta.getImportance() );
+        metaView.importance().setValue( new ImportanceLevel(meta.getImpLevel().longValue(), meta.getImportanceCode()) );
         metaView.setStateWorkflow(recognizeWorkflow(meta.getExtAppType()));//Обязательно сетить до установки значения!
         metaView.state().setValue(new CaseState(meta.getStateId(), meta.getStateName()));
         metaView.pauseDate().setValue(meta.getPauseDate() == null ? null : new Date(meta.getPauseDate()));

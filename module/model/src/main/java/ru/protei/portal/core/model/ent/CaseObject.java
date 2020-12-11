@@ -1,7 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.dict.En_WorkTrigger;
 import ru.protei.portal.core.model.struct.AuditableObject;
@@ -56,6 +55,9 @@ public class CaseObject extends AuditableObject {
 
     @JdbcColumn(name = "IMPORTANCE")
     private Integer impLevel;
+
+    @JdbcJoinedColumn(localColumn = "IMPORTANCE", remoteColumn = "id", table = "importance_level", mappedColumn = "code")
+    private String importanceCode;
 
     @JdbcColumn(name = CREATOR)
     private Long creatorId;
@@ -454,10 +456,6 @@ public class CaseObject extends AuditableObject {
         this.extAppType = extAppType;
     }
 
-    public En_ImportanceLevel getImportanceLevel() {
-        return En_ImportanceLevel.getById(this.impLevel);
-    }
-
     public Set<Person> getNotifiers() {
         return notifiers;
     }
@@ -580,6 +578,10 @@ public class CaseObject extends AuditableObject {
 
     public void setWorkTrigger(En_WorkTrigger workTrigger) {
         this.workTrigger = workTrigger;
+    }
+
+    public String getImportanceCode() {
+        return importanceCode;
     }
 
     @Override

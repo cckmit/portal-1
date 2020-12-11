@@ -43,7 +43,7 @@ public class SlaRowItemReadOnly extends Composite implements HasValue<ProjectSla
         temporarySolutionTime.setInnerText(format(value.getTemporarySolutionTime()));
         fullSolutionTime.setInnerText(format(value.getFullSolutionTime()));
 
-        this.importance.setInnerText(importanceLang.getImportanceName(value.getImportanceLevel()));
+        this.importance.setInnerText(projectSla.getImportanceCode());
 
         if (fireEvents) {
             ValueChangeEvent.fire(this, projectSla);
@@ -76,9 +76,6 @@ public class SlaRowItemReadOnly extends Composite implements HasValue<ProjectSla
 
     @UiField
     SpanElement fullSolutionTime;
-
-    @Inject
-    private En_CaseImportanceLang importanceLang;
 
     private ProjectSla projectSla;
     private final WorkTimeFormatter workTimeFormatter;

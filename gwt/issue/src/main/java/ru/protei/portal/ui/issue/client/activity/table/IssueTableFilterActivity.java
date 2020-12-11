@@ -9,10 +9,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.ent.Attachment;
-import ru.protei.portal.core.model.ent.CaseFilter;
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.SelectorsParams;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseShortView;
@@ -31,6 +28,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.widget.attachment.popup.AttachPopup;
 import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidget;
+import ru.protei.portal.ui.common.client.widget.issueimportance.ImportanceFormSelector;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CustomerCompanyModel;
@@ -373,7 +371,7 @@ public abstract class IssueTableFilterActivity
     private void updateImportanceLevelButtons() {
         if (!policyService.hasSystemScopeForPrivilege(En_Privilege.COMPANY_VIEW)) {
             filterView.getIssueFilterParams().fillImportanceButtons(Collections.emptyList());
-            companyService.getImportanceLevels(policyService.getUserCompany().getId(), new FluentCallback<List<En_ImportanceLevel>>()
+            companyService.getImportanceLevels(policyService.getUserCompany().getId(), new FluentCallback<List<ImportanceLevel>>()
                     .withSuccess(importanceLevelList -> {
                         filterView.getIssueFilterParams().fillImportanceButtons(importanceLevelList);
                     }));

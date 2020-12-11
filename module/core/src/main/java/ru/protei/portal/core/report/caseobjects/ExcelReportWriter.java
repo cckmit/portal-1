@@ -5,7 +5,6 @@ import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.jetbrains.annotations.NotNull;
 import ru.protei.portal.core.Lang;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseObject;
@@ -140,8 +139,8 @@ public class ExcelReportWriter implements
 
         for (CaseComment comment : comments) {
 
-            if (En_ImportanceLevel.IMPORTANT.equals( comment.getCaseImportance() )) important = comment.getCreated();
-            if (En_ImportanceLevel.CRITICAL.equals( comment.getCaseImportance() )) critical = comment.getCreated();
+            if (CrmConstants.ImportanceLevel.IMPORTANT.equals(comment.getCaseImpLevel())) important = comment.getCreated();
+            if (CrmConstants.ImportanceLevel.CRITICAL.equals(comment.getCaseImpLevel())) critical = comment.getCreated();
 
             Long stateId = comment.getCaseStateId();
             if (stateId == null) {
@@ -183,7 +182,7 @@ public class ExcelReportWriter implements
         values.add(issue.getManager() != null && HelperFunc.isNotEmpty(issue.getManager().getDisplayShortName()) ? transliterate(issue.getManager().getDisplayShortName(), locale) : "");
         values.add(issue.getManagerCompanyName() != null ? transliterate(issue.getManagerCompanyName(), locale) : "");
         values.add(issue.getProduct() != null && HelperFunc.isNotEmpty(issue.getProduct().getName()) ? issue.getProduct().getName() : "");
-        values.add(issue.getImportanceLevel() != null ? issue.getImportanceLevel().getCode() : "");
+        values.add(issue.getImportanceCode() != null ? issue.getImportanceCode() : "");
         values.add(HelperFunc.isNotEmpty(issue.getStateName()) ? issue.getStateName() : "");
         if (withTags) values.add(String.join(",", toList(emptyIfNull(object.getCaseTags()), CaseTag::getName)));
         if (withLinkedIssues) values.add(getCaseNumbersAsString(object.getCaseLinks(), lang));

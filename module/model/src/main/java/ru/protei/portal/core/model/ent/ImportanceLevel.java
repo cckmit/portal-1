@@ -5,12 +5,15 @@ import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
 import ru.protei.winter.jdbc.annotations.JdbcId;
 
+import java.io.Serializable;
+import java.util.Objects;
+
 /**
  * @author michael
  */
 
 @JdbcEntity(table = "importance_level")
-public class ImportanceLevel {
+public class ImportanceLevel implements Serializable {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -21,7 +24,15 @@ public class ImportanceLevel {
     @JdbcColumn(name="info")
     private String info;
 
-    public ImportanceLevel() {
+    public ImportanceLevel() {}
+
+    public ImportanceLevel(Long id) {
+        this.id = id;
+    }
+
+    public ImportanceLevel(Long id, String code) {
+        this.id = id;
+        this.code = code;
     }
 
     public ImportanceLevel(Long id, String code, String info) {
@@ -52,5 +63,18 @@ public class ImportanceLevel {
 
     public void setInfo(String info) {
         this.info = info;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ImportanceLevel that = (ImportanceLevel) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

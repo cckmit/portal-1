@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.service.CaseStateService;
 import ru.protei.portal.core.service.CompanyService;
+import ru.protei.portal.core.service.ImportanceLevelService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.ui.common.client.service.CompanyController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
@@ -290,20 +291,13 @@ public class CompanyControllerImpl implements CompanyController {
     @Override
     public List<CompanyImportanceItem> getCompanyImportanceItems(Long companyId) throws RequestFailedException {
         log.info("getCompanyImportanceItems() companyId={}", companyId);
-        return checkResultAndGetData(companyService.getImportanceLevels(companyId));
+        return checkResultAndGetData(companyService.getCompanyImportanceItems(companyId));
     }
 
     @Override
-    public List<En_ImportanceLevel> getImportanceLevels(Long companyId) throws RequestFailedException {
+    public List<ImportanceLevel> getImportanceLevels(Long companyId) throws RequestFailedException {
         log.info("getImportanceLevels() companyId={}", companyId);
-        List<CompanyImportanceItem> importanceItems = checkResultAndGetData(companyService.getImportanceLevels(companyId));
-        List<En_ImportanceLevel> importanceLevels = importanceItems.stream()
-                .map(CompanyImportanceItem::getImportanceLevelId)
-                .map(En_ImportanceLevel::getById)
-                .collect(Collectors.toList());
-        log.info("getImportanceLevels() importanceLevels={}", importanceLevels);
-
-        return importanceLevels;
+        return checkResultAndGetData(importanceLevelService.getImportanceLevelsByCompanyId(companyId));
     }
 
     @Autowired
@@ -317,6 +311,9 @@ public class CompanyControllerImpl implements CompanyController {
 
     @Autowired
     PolicyService policyService;
+
+    @Autowired
+    ImportanceLevelService importanceLevelService;
 
     @Autowired
     HttpServletRequest httpServletRequest;

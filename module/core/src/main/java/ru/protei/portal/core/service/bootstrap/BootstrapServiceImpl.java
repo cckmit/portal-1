@@ -198,8 +198,8 @@ public class BootstrapServiceImpl implements BootstrapService {
             UserLogin userLogin = userLoginDAO.get(filter.getLoginId());
 
             if (userLogin.getCompanyId() != CrmConstants.Company.HOME_COMPANY_ID) {
-                boolean isManagerCompanyIdsNeedToUpdate = CollectionUtils.isNotEmpty(filter.getParams().getManagerCompanyIds());
-                boolean isManagerIdsNeedToUpdate = CollectionUtils.isNotEmpty(filter.getParams().getManagerIds());
+                boolean isManagerCompanyIdsNeedToUpdate = isNotEmpty(filter.getParams().getManagerCompanyIds());
+                boolean isManagerIdsNeedToUpdate = isNotEmpty(filter.getParams().getManagerIds());
                 if (isManagerCompanyIdsNeedToUpdate) {
                     filter.getParams().getManagerCompanyIds().remove(userLogin.getCompanyId());
                 }
@@ -229,8 +229,8 @@ public class BootstrapServiceImpl implements BootstrapService {
                             objectMapper.readValue(report.getQuery(), CaseQuery.class)
                     ).getQuery();
 
-                    boolean isManagerCompanyIdsNeedToUpdate = CollectionUtils.isNotEmpty(caseQuery.getManagerCompanyIds());
-                    boolean isManagerIdsNeedToUpdate = CollectionUtils.isNotEmpty(caseQuery.getManagerIds());
+                    boolean isManagerCompanyIdsNeedToUpdate = isNotEmpty(caseQuery.getManagerCompanyIds());
+                    boolean isManagerIdsNeedToUpdate = isNotEmpty(caseQuery.getManagerIds());
                     if (isManagerCompanyIdsNeedToUpdate) {
                         caseQuery.getManagerCompanyIds().remove(report.getCreator().getCompanyId());
                     }
@@ -444,7 +444,7 @@ public class BootstrapServiceImpl implements BootstrapService {
         try {
             List<Subnet> subnets = subnetDAO.listByQuery(
                     new ReservedIpQuery(null, En_SortField.address, En_SortDir.ASC));
-            if (CollectionUtils.isNotEmpty(subnets)) {
+            if (isNotEmpty(subnets)) {
                 log.info("Need no to migrate IP reservation data cause some data is already exist");
                 return;
             }
@@ -507,7 +507,7 @@ public class BootstrapServiceImpl implements BootstrapService {
             EmployeeQuery query = new EmployeeQuery();
             query.setLastName(fio.substring(0, fio.indexOf(" ")));
             List<PersonShortView> employees = personShortViewDAO.getEmployees(query);
-            if (CollectionUtils.isNotEmpty(employees)) {
+            if (isNotEmpty(employees)) {
                 return employees.get(0).getId();
             }
         } catch (Exception e ) {}
@@ -520,7 +520,7 @@ public class BootstrapServiceImpl implements BootstrapService {
         for (CaseFilter nextFilter : emptyIfNull(allFilters)) {
             CaseQuery params = nextFilter.getParams();
 
-            if (CollectionUtils.isEmpty(params.getManagerIds()) || CollectionUtils.isNotEmpty(params.getManagerCompanyIds())) {
+            if (CollectionUtils.isEmpty(params.getManagerIds()) || isNotEmpty(params.getManagerCompanyIds())) {
                 continue;
             }
 
@@ -629,7 +629,7 @@ public class BootstrapServiceImpl implements BootstrapService {
 
         try {
             List<PersonAbsence> absences = personAbsenceDAO.getAll();
-            if (CollectionUtils.isNotEmpty(absences)) {
+            if (isNotEmpty(absences)) {
                 log.info("Need no to migrate absences data cause some data is already exist");
                 return;
             }

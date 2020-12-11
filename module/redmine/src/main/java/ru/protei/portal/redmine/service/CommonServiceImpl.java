@@ -14,7 +14,6 @@ import ru.protei.portal.core.event.CaseNameAndDescriptionEvent;
 import ru.protei.portal.core.event.CaseObjectMetaEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_ExtAppType;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
@@ -223,7 +222,7 @@ public final class CommonServiceImpl implements CommonService {
 
         object.setImpLevel( priorityMapEntry.getLocalPriorityId() );
         caseObjectDAO.merge( object );
-        logger.debug( "Updated case priority for case with id {}, old={}, new={}", object.getId(), En_ImportanceLevel.find( oldMeta.getImpLevel() ), En_ImportanceLevel.find( object.getImpLevel() ) );
+        logger.debug( "Updated case priority for case with id {}, old={}, new={}", object.getId(), oldMeta.getImportanceCode(), object.getImportanceCode() );
 
         Result<Long> importanceCommentId = createAndStoreImportanceComment( journal.getCreatedOn(), author.getId(), priorityMapEntry.getLocalPriorityId(), object.getId() );
         if (importanceCommentId.isError()) {

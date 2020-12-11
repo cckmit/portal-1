@@ -1,6 +1,5 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
 
@@ -70,11 +69,6 @@ public final class JiraPriorityMapEntry {
     public void setLocalPriorityName(String localPriorityName) {
         this.localPriorityName = localPriorityName;
     }
-
-    public En_ImportanceLevel importanceLevel () {
-        return En_ImportanceLevel.find(this.localPriorityId);
-    }
-
 
     public String getJiraPriorityName() {
         return jiraPriorityName;

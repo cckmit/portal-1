@@ -243,7 +243,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         logger.info("issue {}, case-state new={}", issue.getKey(), caseObj.getStateId());
 
         En_ImportanceLevel newImportance = getNewImportanceLevel(endpoint.getPriorityMapId(), getIssueSeverity(issue));
-        logger.debug("issue {}, case-priority old={}, new={}", issue.getKey(), caseObj.getImportanceLevel(), newImportance);
+        logger.debug("issue {}, case-priority old={}, new={}", issue.getKey(), caseObj.getImportanceCode(), newImportance);
         caseObj.setImpLevel(newImportance == null ? En_ImportanceLevel.BASIC.getId() : newImportance.getId());
 
         IssueField clmId = getClmId(issue);

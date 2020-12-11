@@ -1,11 +1,11 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.winter.jdbc.annotations.*;
+import ru.protei.winter.jdbc.annotations.JdbcColumn;
+import ru.protei.winter.jdbc.annotations.JdbcEntity;
+import ru.protei.winter.jdbc.annotations.PermType;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 @JdbcEntity(table = "case_comment", selectSql = "" +
         "case_comment.case_id case_id, case_comment.author_id author_id, " +
@@ -30,6 +30,7 @@ import java.util.List;
         "from case_comment " +
         "left outer join person author on case_comment.author_id = author.id " +
         "left outer join case_object case_object on case_comment.case_id = case_object.id " +
+        "left outer join importance_level importance_level on importance = importance_level.id " +
         "join case_state on case_object.STATE = case_state.id " +
         "left outer join company company on case_object.initiator_company = company.id " +
         "left outer join person manager on case_object.manager = manager.id " +
@@ -97,6 +98,9 @@ public class CaseCommentTimeElapsedSum implements Serializable {
 
     @JdbcColumn(name = "importance", permType = PermType.READ_ONLY)
     private Integer caseImpLevel;
+
+    @JdbcColumn(name = "code", permType = PermType.READ_ONLY)
+    private String importanceCode;
 
     @JdbcColumn(name = "state_name", permType = PermType.READ_ONLY)
     private String caseStateName;
@@ -200,16 +204,16 @@ public class CaseCommentTimeElapsedSum implements Serializable {
         return caseStateName;
     }
 
-    public En_ImportanceLevel getImportanceLevel() {
-        return En_ImportanceLevel.getById(this.caseImpLevel);
-    }
-
     public Date getCaseCreated() {
         return caseCreated;
     }
 
     public void setTimeElapsedSum(Long timeElapsedSum) {
         this.timeElapsedSum = timeElapsedSum;
+    }
+
+    public String getImportanceCode() {
+        return importanceCode;
     }
 
     @Override

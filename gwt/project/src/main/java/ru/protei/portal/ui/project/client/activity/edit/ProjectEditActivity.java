@@ -306,7 +306,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
     private List<ProjectSla> createProjectSlaList(List<CompanyImportanceItem> companyImportanceItems) {
         return toList(companyImportanceItems, companyImportanceItem ->
-                new ProjectSla(companyImportanceItem.getImportanceLevelId())
+                new ProjectSla(companyImportanceItem.getImportanceLevelId(), companyImportanceItem.getImportanceCode())
         );
     }
 
@@ -320,7 +320,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
                 .stream()
                 .filter(projectSla -> companyImportanceItem.getImportanceLevelId().equals(projectSla.getImportanceLevelId()))
                 .findAny()
-                .orElse(new ProjectSla(companyImportanceItem.getImportanceLevelId()));
+                .orElse(new ProjectSla(companyImportanceItem.getImportanceLevelId(), companyImportanceItem.getImportanceCode()));
     }
 
     private Project fillProject(Project project) {

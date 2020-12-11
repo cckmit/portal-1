@@ -107,7 +107,7 @@ public class ExcelReportWriter implements
                 .add(HelperFunc.isNotEmpty(object.getProductName()) ? object.getProductName() : "")
                 .add(HelperFunc.isNotEmpty(object.getAuthorDisplayName()) ? transliterate(object.getAuthorDisplayName(), locale) : "")
                 .add(HelperFunc.isNotEmpty(object.getCaseManagerDisplayName()) ? transliterate(object.getCaseManagerDisplayName(), locale) : "")
-                .add(object.getImportanceLevel() != null ? object.getImportanceLevel().getCode() : "")
+                .add(object.getImportanceCode() != null ? object.getImportanceCode() : "")
                 .add(HelperFunc.isNotEmpty(object.getCaseStateName()) ? object.getCaseStateName() : "")
                 .add(object.getCaseCreated() != null ? object.getCaseCreated() : "")
                 .addIf(toExcelTimeFormat(object.getTimeElapsedNone()), timeElapsedTypes.contains(En_TimeElapsedType.NONE))

@@ -11,7 +11,6 @@ import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseObjectCreateEvent;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ExtAppType;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -348,7 +347,7 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
             obj.setImpLevel(redminePriorityMapEntry.getLocalPriorityId());
         } else {
             logger.warn( "Priority level not found, setting default" );
-            obj.setImpLevel(En_ImportanceLevel.BASIC.getId());
+            obj.setImpLevel(CrmConstants.ImportanceLevel.BASIC);
         }
 
         logger.debug("Trying to get portal status id matching with redmine {}", issue.getStatusId());

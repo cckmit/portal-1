@@ -49,6 +49,9 @@ public class CaseShortView implements Serializable, Identifiable {
     @JdbcColumn(name = "IMPORTANCE")
     private Integer impLevel;
 
+    @JdbcJoinedColumn(localColumn = "IMPORTANCE", remoteColumn = "id", table = "importance_level", mappedColumn = "code")
+    private String importanceCode;
+
     @JdbcColumn(name = "private_flag")
     private boolean privateCase;
 
@@ -177,8 +180,8 @@ public class CaseShortView implements Serializable, Identifiable {
         return impLevel;
     }
 
-    public void setImpLevel( Integer impLevel ) {
-        this.impLevel = impLevel;
+    public String getImportanceCode() {
+        return importanceCode;
     }
 
     public Long getInitiatorId() {

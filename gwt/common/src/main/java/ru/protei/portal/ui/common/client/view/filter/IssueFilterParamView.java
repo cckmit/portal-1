@@ -12,10 +12,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.ent.CaseState;
-import ru.protei.portal.core.model.ent.CaseTag;
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.SelectorsParams;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.Pair;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -280,7 +277,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         sortField.setValue(caseQuery.getSortField() == null ? En_SortField.creation_date : caseQuery.getSortField());
         dateCreatedRange.setValue(fromDateRange(caseQuery.getCreatedRange()));
         dateModifiedRange.setValue(fromDateRange(caseQuery.getModifiedRange()));
-        importance.setValue(caseQuery.getImportances());
+        importance.setValue(toSet(caseQuery.getImportanceIds(), importanceLevel -> new ImportanceLevel((long) importanceLevel)));
         state.setValue(toSet(caseQuery.getStateIds(), id -> new CaseState(id)));
 
         Set<EntityOption> initiatorsCompanies = applyCompanies( filter.getCompanyEntityOptions(), caseQuery.getCompanyIds() );
@@ -341,7 +338,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 query.setProductIds(getProductsIdList(products.getValue()));
                 query.setManagerIds(getManagersIdList(managers.getValue()));
                 query.setInitiatorIds(getManagersIdList(initiators.getValue()));
-                query.setImportances(nullIfEmpty(importance.getValue()));
+                query.setImportanceLevels(nullIfEmpty(importance.getValue()));
                 query.setStateIds(nullIfEmpty(toList(states().getValue(), state -> state.getId())));
                 query.setCommentAuthorIds(getManagersIdList(commentAuthors.getValue()));
                 query.setCaseTagsIds(nullIfEmpty(toList(tags.getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId())));
@@ -368,7 +365,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 query.setCompanyIds(getCompaniesIdList(companies.getValue()));
                 query.setProductIds(getProductsIdList(products.getValue()));
                 query.setCaseTagsIds(nullIfEmpty(toList(tags.getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId())));
-                query.setImportances(nullIfEmpty(importance.getValue()));
+                query.setImportanceLevels(nullIfEmpty(importance.getValue()));
                 query.setStateIds(nullIfEmpty(toList(state.getValue(), state -> state.getId())));
                 query.setCreatedRange(toDateRange(dateCreatedRange.getValue()));
                 break;
@@ -384,7 +381,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public void fillImportanceButtons(List<En_ImportanceLevel> importanceLevelList) {
+    public void fillImportanceButtons(List<ImportanceLevel> importanceLevelList) {
         importance.fillButtons(importanceLevelList);
     }
 
@@ -465,7 +462,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @UiHandler("importance")
-    public void onImportanceSelected(ValueChangeEvent<Set<En_ImportanceLevel>> event) {
+    public void onImportanceSelected(ValueChangeEvent<Set<ImportanceLevel>> event) {
         onFilterChanged();
     }
 

@@ -9,10 +9,14 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.CaseObjectMeta;
+import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.CaseObjectReportRequest;
 import ru.protei.portal.core.model.struct.DateRange;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.report.caseobjects.ReportCase;
 import ru.protei.portal.core.report.caseobjects.ReportCaseImpl;
 import ru.protei.portal.core.service.auth.AuthService;
@@ -61,10 +65,10 @@ public class ReportCaseTest extends BaseServiceTest {
 
     @Test
     public void withoutImportanceHistory() throws Exception {
-        List<En_ImportanceLevel> importances = listOf( BASIC, IMPORTANT, CRITICAL );
+        List<Integer> importances = listOf(CrmConstants.ImportanceLevel.BASIC, CrmConstants.ImportanceLevel.IMPORTANT, CrmConstants.ImportanceLevel.CRITICAL );
 
         List<CaseObject> initCases = initData();
-        List<CaseObject> cases = filterToList( initCases, caseObject -> importances.contains( caseObject.getImportanceLevel() ));
+        List<CaseObject> cases = filterToList( initCases, caseObject -> importances.contains( caseObject.getImpLevel() ));
 
         CaseQuery caseQuery = makeCaseQuery();
         caseQuery.setCheckImportanceHistory(false);

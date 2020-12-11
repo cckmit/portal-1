@@ -1,9 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.winter.jdbc.annotations.IdInsertMode;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
-import ru.protei.winter.jdbc.annotations.JdbcEntity;
-import ru.protei.winter.jdbc.annotations.JdbcId;
+import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 
@@ -21,10 +18,10 @@ public class CompanyImportanceItem implements Serializable {
     @JdbcColumn(name = "order_number")
     private Integer orderNumber;
 
+    @JdbcJoinedColumn(localColumn = "importance_level_id", remoteColumn = "id", table = "importance_level", mappedColumn = "code")
+    private String importanceCode;
 
-    public CompanyImportanceItem() {
-
-    }
+    public CompanyImportanceItem() {}
 
     public CompanyImportanceItem(Long companyId, Integer importanceLevelId, Integer orderNumber) {
         this.companyId = companyId;
@@ -62,5 +59,20 @@ public class CompanyImportanceItem implements Serializable {
 
     public void setCompanyId(Long companyId) {
         this.companyId = companyId;
+    }
+
+    public String getImportanceCode() {
+        return importanceCode;
+    }
+
+    @Override
+    public String toString() {
+        return "CompanyImportanceItem{" +
+                "id=" + id +
+                ", companyId=" + companyId +
+                ", importanceLevelId=" + importanceLevelId +
+                ", orderNumber=" + orderNumber +
+                ", importanceCode='" + importanceCode + '\'' +
+                '}';
     }
 }

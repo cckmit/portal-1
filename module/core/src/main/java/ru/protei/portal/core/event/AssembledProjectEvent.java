@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
@@ -229,15 +228,15 @@ public class AssembledProjectEvent extends ApplicationEvent implements HasCaseCo
         return teamDiffs;
     }
 
-    public Map<En_ImportanceLevel, DiffResult<ProjectSla>> getSlaDiffs() {
-        Map<En_ImportanceLevel, DiffResult<ProjectSla>> slaDiffs = new LinkedHashMap<>();
+    public Map<String, DiffResult<ProjectSla>> getSlaDiffs() {
+        Map<String, DiffResult<ProjectSla>> slaDiffs = new LinkedHashMap<>();
         List<ProjectSla> newSlaList = emptyIfNull(newProjectState.getProjectSlas());
 
         boolean isNewSlaListEmpty = isSlaListEmpty(newSlaList);
 
         if (!isEditEvent()) {
             newSlaList.forEach(sla -> slaDiffs.put(
-                    En_ImportanceLevel.find(sla.getImportanceLevelId()),
+                    sla.getImportanceCode(),
                     new DiffResult<>(sla, sla))
             );
 
@@ -252,15 +251,19 @@ public class AssembledProjectEvent extends ApplicationEvent implements HasCaseCo
             return slaDiffs;
         }
 
-        for (En_ImportanceLevel level : toList(newProjectState.getProjectSlas(), ProjectSla::getImportanceLevel)) {
-            ProjectSla oldSla = getSlaByImportance(oldSlaList, level.getId());
-            ProjectSla newSla = getSlaByImportance(newSlaList, level.getId());
+        Set<ProjectSla> allSla = new LinkedHashSet<>();
+        allSla.addAll(newSlaList);
+        allSla.addAll(oldSlaList);
+
+        for (ProjectSla nextProjectSla : allSla) {
+            ProjectSla oldSla = getSlaByImportance(oldSlaList, nextProjectSla.getImportanceLevelId());
+            ProjectSla newSla = getSlaByImportance(newSlaList, nextProjectSla.getImportanceLevelId());
 
             if (oldSla == null && newSla == null) {
                 continue;
             }
 
-            slaDiffs.put(level, new DiffResult<>(oldSla == null ? new ProjectSla() : oldSla, newSla == null ? new ProjectSla() : newSla));
+            slaDiffs.put(nextProjectSla.getImportanceCode(), new DiffResult<>(oldSla == null ? new ProjectSla() : oldSla, newSla == null ? new ProjectSla() : newSla));
         }
 
         return slaDiffs;
@@ -308,14 +311,17 @@ public class AssembledProjectEvent extends ApplicationEvent implements HasCaseCo
     }
 
     private boolean isSameSlaLists(List<ProjectSla> oldSlaList, List<ProjectSla> newSlaList) {
-        return Arrays
-                .stream(En_ImportanceLevel.values())
-                .allMatch(
-                    importanceLevel -> isSameSla(
-                            getSlaByImportance(oldSlaList, importanceLevel.getId()),
-                            getSlaByImportance(newSlaList, importanceLevel.getId())
-                    )
-                );
+        if (oldSlaList == null || newSlaList == null) {
+            return oldSlaList == null && newSlaList == null;
+        }
+
+        if (oldSlaList.size() != newSlaList.size()) {
+            return false;
+        }
+
+        return oldSlaList
+                .stream()
+                .allMatch(oldSla -> isSameSla(oldSla, getSlaByImportance(newSlaList, oldSla.getImportanceLevelId())));
     }
 
     private boolean isSameSla(ProjectSla oldSla, ProjectSla newSla) {

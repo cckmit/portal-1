@@ -243,7 +243,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
                                 requestSla(
                                         issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId(),
-                                        slaList -> fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue().getId()))
+                                        slaList -> fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue().getId().intValue()))
                                 );
 
                                 updateSubscriptions(issueMetaView.getManagerCompany().getId(), companyOption.getId());
@@ -289,7 +289,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Override
     public void onImportanceChanged() {
-        fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue().getId()));
+        fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue().getId().intValue()));
     }
 
     @Override
@@ -321,7 +321,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     public void onPlatformChanged() {
         requestSla(
                 issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId(),
-                slaList -> fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue().getId()))
+                slaList -> fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue().getId().intValue()))
         );
 
         if (isCompanyWithAutoOpenIssues(currentCompany)) {
@@ -434,7 +434,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         issueMetaView.setCaseMetaNotifiers(notifiers);
 
-        issueMetaView.importance().setValue(caseObjectMeta.getImportance());
+        issueMetaView.importance().setValue(new ImportanceLevel(CrmConstants.ImportanceLevel.BASIC.longValue(), CrmConstants.ImportanceLevel.BASIC_NAME));
         fillImportanceSelector(caseObjectMeta.getInitiatorCompanyId());
         fillStateSelector(caseObjectMeta.getStateId());
         issueMetaView.pauseDate().setValue(caseObjectMeta.getPauseDate() == null ? null : new Date(caseObjectMeta.getPauseDate()));
@@ -489,7 +489,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
                                 requestSla(
                                         issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId(),
-                                        slaList -> fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue().getId()))
+                                        slaList -> fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue().getId().intValue()))
                                 );
 
                                 updateSubscriptions(caseObjectMeta.getManagerCompanyId(), caseObjectMeta.getInitiatorCompanyId());
@@ -672,7 +672,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     private CaseObject initCaseObject() {
         CaseObject caseObject = new CaseObject();
         caseObject.setStateId(CrmConstants.State.CREATED);
-        caseObject.setImpLevel(En_ImportanceLevel.BASIC.getId());
+        caseObject.setImpLevel(CrmConstants.ImportanceLevel.BASIC);
         caseObject.setPrivateCase(true);
         if (policyService.isSubcontractorCompany()) {
             homeCompanyService.getHomeCompany(CrmConstants.Company.HOME_COMPANY_ID, company -> caseObject.setInitiatorCompany(Company.fromEntityOption(company)));
@@ -686,15 +686,15 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     private void fillImportanceSelector(Long id) {
         issueMetaView.fillImportanceOptions(new ArrayList<>());
-        companyController.getImportanceLevels(id, new FluentCallback<List<En_ImportanceLevel>>()
+        companyController.getImportanceLevels(id, new FluentCallback<List<ImportanceLevel>>()
                 .withSuccess(importanceLevelList -> {
                     issueMetaView.fillImportanceOptions(importanceLevelList);
                     checkImportanceSelectedValue(importanceLevelList);
                 }));
     }
 
-    private void checkImportanceSelectedValue(List<En_ImportanceLevel> importanceLevels) {
-        if (!importanceLevels.contains(issueMetaView.importance().getValue())){
+    private void checkImportanceSelectedValue(List<ImportanceLevel> importanceLevels) {
+        if (!importanceLevels.contains(issueMetaView.importance().getValue())) {
             issueMetaView.importance().setValue(null);
         }
     }
@@ -712,7 +712,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         caseObject.setInfo(view.description().getValue());
         caseObject.setPrivateCase(view.isPrivate().getValue());
         caseObject.setStateId(issueMetaView.state().getValue().getId());
-        caseObject.setImpLevel(issueMetaView.importance().getValue().getId());
+        caseObject.setImpLevel(issueMetaView.importance().getValue().getId().intValue());
         caseObject.setPauseDate(issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime());
 
         caseObject.setInitiatorCompany(issueMetaView.getCompany());
