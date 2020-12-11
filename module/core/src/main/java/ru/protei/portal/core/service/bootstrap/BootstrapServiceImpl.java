@@ -913,9 +913,12 @@ public class BootstrapServiceImpl implements BootstrapService {
                     comments.stream().sorted(Comparator.comparing(CaseComment::getId))
                         .forEach(comment -> {
                             CommentToHistoryMigration commentToHistoryMigration = commentToHistoryMigrationMap.get(CommentToHistoryMigration.commentType(comment));
-                            histories.add(makeHistory(commentToHistoryMigration.prevComment, comment, commentToHistoryMigration.enHistoryType,
-                                    commentToHistoryMigration.getHistoryValue, commentToHistoryMigration.getHistoryName));
-                            commentToHistoryMigration.setPrevComment(comment);
+                            History history = makeHistory(commentToHistoryMigration.prevComment, comment, commentToHistoryMigration.enHistoryType,
+                                    commentToHistoryMigration.getHistoryValue, commentToHistoryMigration.getHistoryName);
+                            if (history != null) {
+                                histories.add(history);
+                                commentToHistoryMigration.setPrevComment(comment);
+                            }
                     });
                 });
         return histories;
