@@ -219,12 +219,12 @@ public class AppView extends Composite
     }
 
     private void showPopupMenu() {
-        menuBarPopup.setPopupPositionAndShow((i, i1) -> {
+        menuBarPopup.setPopupPositionAndShow((popupWidth, popupHeight) -> {
             int relativeLeft = profile.getAbsoluteLeft();
-            int widthDiff = i - profile.getOffsetWidth();
+            int widthDiff = popupWidth - profile.getOffsetWidth();
             int popupLeft = relativeLeft - widthDiff;
             int relativeTop = profile.getAbsoluteTop();
-            int popupTop = relativeTop + profile.getOffsetHeight() + 10;
+            int popupTop = relativeTop + profile.getOffsetHeight() + POPUP_PADDING_TOP;
 
             menuBarPopup.setPopupPosition(popupLeft, popupTop);
         });
@@ -426,5 +426,6 @@ public class AppView extends Composite
     private HandlerRegistration resizeHandlerReg;
     private HandlerRegistration scrollHandlerReg;
 
+    private final int POPUP_PADDING_TOP = 10;
     private static AppViewUiBinder ourUiBinder = GWT.create( AppViewUiBinder.class );
 }
