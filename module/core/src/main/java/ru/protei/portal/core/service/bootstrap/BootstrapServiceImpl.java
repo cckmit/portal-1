@@ -19,6 +19,8 @@ import ru.protei.portal.core.model.dto.ReportCaseQuery;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.PhoneUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.ContactItem;
@@ -149,6 +151,12 @@ public class BootstrapServiceImpl implements BootstrapService {
             bootstrapAppDAO.createAction("migrateToHistory");
         }
 
+        /**
+         *  end Спринт */
+
+        /**
+         *  begin Спринт 63 */
+        normalizePhoneNumbers();
         /**
          *  end Спринт */
 
@@ -959,6 +967,60 @@ public class BootstrapServiceImpl implements BootstrapService {
         if (force || histories.size() > 1000) {
             histories.forEach(historyDAO::persist);
             histories.clear();
+        }
+    }
+
+    private void normalizePhoneNumbers() {
+        log.info("normalizePhoneNumbers started");
+
+        ContactItemQuery query = new ContactItemQuery();
+        query.setItemTypes(Arrays.asList(En_ContactItemType.MOBILE_PHONE, En_ContactItemType.GENERAL_PHONE));
+        List<Long> contactItemsIds = contactItemDAO.listColumnValue("id", Long.class,
+                "item_type in (5, 6) and (value is not null or TRIM(value) <> '')")
+                                .stream().distinct().collect(toList());
+
+        List<ContactItem> contactItems = new ArrayList<>();
+        List<Long> ids = new ArrayList<>();
+        for(int i = 0; i < contactItemsIds.size();) {
+            ids.clear();
+            int upperBorder = i + 1000;
+            for(int j = i; j < Math.min(upperBorder, contactItemsIds.size()); j++) {
+                ids.add(contactItemsIds.get(i++));
+            }
+            contactItems.addAll(normalizePhone(contactItemDAO.getListByKeys(ids)));
+            persistContactItems(contactItems, false);
+        }
+        if (!contactItems.isEmpty()) {
+            persistContactItems(contactItems, true);
+        }
+
+        log.info("normalizePhoneNumbers ended");
+    }
+
+    private List<ContactItem> normalizePhone(List<ContactItem> phones) {
+        List<ContactItem> list = new ArrayList<>();
+        phones.forEach(phone -> {
+            list.add(phone);
+            String value = phone.value();
+            if (StringUtils.isNotEmpty(value) && value.length() > 1 && value.trim().substring(1).contains("\\+")) {    // несколько номером "+7911+7912"
+                String[] v = value.split("\\+");
+                phone.modify(PhoneUtils.normalizePhoneNumber(v[0]));
+                for(int i = 1; i < v.length; i++) {
+                    ContactItem contactItem = new ContactItem(phone.type(), phone.accessType());
+                    contactItem.modify(PhoneUtils.normalizePhoneNumber(v[i]));
+                    list.add(contactItem);
+                }
+            } else {
+                phone.modify(PhoneUtils.normalizePhoneNumber(value));
+            }
+        });
+        return list;
+    }
+
+    private void persistContactItems(List<ContactItem> contactItems, boolean force) {
+        if (force || contactItems.size() > 1000) {
+            contactItemDAO.saveOrUpdateBatch(contactItems);
+            contactItems.clear();
         }
     }
 
