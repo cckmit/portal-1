@@ -11,7 +11,6 @@ import ru.protei.portal.core.model.dao.PersonShortViewDAO;
 import ru.protei.portal.core.model.dao.UserRoleDAO;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseObjectMeta;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonShortView;

@@ -490,7 +490,7 @@ public class ContractServiceImpl implements ContractService {
             token,
             contractId,
             action,
-            En_HistoryType.STATE,
+            En_HistoryType.CONTRACT_STATE,
             oldState == null ? null : (long) oldState.getId(),
             oldState == null ? null : oldState.name(),
             newState == null ? null : (long) newState.getId(),

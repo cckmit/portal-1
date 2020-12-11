@@ -130,6 +130,17 @@ public class BaseServiceTest {
         return comment;
     }
 
+    protected static History createNewStateHistory(Person person, Long caseObjectId, Long caseStateId, Date date ) {
+        History history = new History();
+        history.setDate( date );
+        history.setAction( En_HistoryAction.ADD );
+        history.setType( En_HistoryType.CASE_STATE );
+        history.setCaseObjectId( caseObjectId );
+        history.setInitiatorId( person.getId() );
+        history.setNewId( caseStateId );
+        return history;
+    }
+
     protected CaseTag createCaseTag (String name, En_CaseType type, Long companyId){
         CaseTag caseTag = new CaseTag();
         caseTag.setCaseType(type);
@@ -329,6 +340,11 @@ public class BaseServiceTest {
         return caseObjectDAO.remove(caseObject);
     }
 
+    protected boolean removeHistoryCaseObject(Long caseObjectId) {
+        historyDAO.removeByCaseId(caseObjectId);
+        return true;
+    }
+
     protected static Long generateNextCaseNumber( En_CaseType caseType ) {
         return caseNumberRepo.get( caseType ).incrementAndGet();
     }
@@ -390,6 +406,8 @@ public class BaseServiceTest {
     protected PersonAbsenceDAO personAbsenceDAO;
     @Autowired
     protected DutyLogDAO dutyLogDAO;
+    @Autowired
+    protected HistoryDAO historyDAO;
     @Autowired
     protected PortalConfig config;
     @Autowired
