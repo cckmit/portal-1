@@ -936,7 +936,10 @@ public class BootstrapServiceImpl implements BootstrapService {
             return createHistory(secondComment.getAuthorId(), secondComment.getCaseId(), En_HistoryAction.REMOVE, historyType,
                     secondComment.getCreated(), firstValue, historyName.apply(firstComment), null, null);
         }
-        throw new RuntimeException("NO En_HistoryAction");
+
+        log.error("makeHistory : \nfirst = {}, \nsecond = {}", firstComment, secondComment);
+
+        return null;
     }
 
     private History createHistory(Long personId, Long caseObjectId, En_HistoryAction action, En_HistoryType historyType,
@@ -957,7 +960,7 @@ public class BootstrapServiceImpl implements BootstrapService {
 
     private void persistHistory(List<History> histories, boolean force) {
         if (force || histories.size() > 1000) {
-            histories.forEach(historyDAO::persist);
+            histories.stream().filter(Objects::nonNull).forEach(historyDAO::persist);
             histories.clear();
         }
     }
