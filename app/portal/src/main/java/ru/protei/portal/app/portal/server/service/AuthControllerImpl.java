@@ -49,11 +49,15 @@ public class AuthControllerImpl implements AuthController {
 
         String ip = httpRequest.getHeader(X_REAL_IP);
 
+        if (ip == null) {
+            ip = httpRequest.getRemoteAddr();
+        }
+
         token = ServiceUtils.checkResultAndGetData(authService.login(
                 httpRequest.getSession().getId(),
                 login,
                 password,
-                ip != null? ip : httpRequest.getRemoteAddr(),
+                ip,
                 httpRequest.getHeader(CrmConstants.Header.USER_AGENT)
         ));
 
