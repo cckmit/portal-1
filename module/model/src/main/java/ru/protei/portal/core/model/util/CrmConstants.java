@@ -29,6 +29,7 @@ public class CrmConstants {
 
     public interface Header {
         String USER_AGENT = "User-Agent";
+        String X_REAL_IP = "X-Real-IP";
     }
 
     public interface Product {
