@@ -14,9 +14,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.core.model.util.CrmConstants.Header.X_REAL_IP;
 
 public class AuthUtils {
-
     public static Result<AuthToken> authenticate(HttpServletRequest request, HttpServletResponse response, AuthService authService, SessionIdGen sidGen, Logger logger) {
         Credentials cr = null;
         try {
@@ -37,7 +37,7 @@ public class AuthUtils {
             return error( En_ResultStatus.AUTH_FAILURE );
         }
 
-        String ip = request.getHeader("X-Real-IP");
+        String ip = request.getHeader(X_REAL_IP);
         if (ip == null) {
             ip = request.getRemoteAddr();
         }
