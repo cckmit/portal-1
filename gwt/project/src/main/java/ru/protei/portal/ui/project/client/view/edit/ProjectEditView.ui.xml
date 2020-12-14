@@ -133,21 +133,21 @@
                                 </div>
                             </div>
                             <div class="row clearfix reset-no-padding">
-                                <div class="form-group form-group-default date-picker">
+                                <div class="form-group form-group-default date-picker calendar-position">
                                     <label class="fade"><ui:text from="{lang.technicalSupportValidity}"/></label>
                                     <datepicker:SinglePicker ui:field="technicalSupportValidity" type="DATE" formatValue="dd.MM.yyyy" mandatory="false"/>
                                 </div>
                             </div>
 
                             <div class="row clearfix reset-no-padding">
-                                <div class="form-group form-group-default date-picker">
+                                <div class="form-group form-group-default date-picker calendar-position">
                                     <label class="fade"><ui:text from="{lang.workCompletionDate}"/></label>
                                     <datepicker:SinglePicker ui:field="workCompletionDate" type="DATE" formatValue="dd.MM.yyyy" mandatory="false"/>
                                 </div>
                             </div>
 
                             <div class="row clearfix reset-no-padding">
-                                <div class="form-group form-group-default date-picker">
+                                <div class="form-group form-group-default date-picker calendar-position">
                                     <label class="fade"><ui:text from="{lang.purchaseDate}"/></label>
                                     <datepicker:SinglePicker ui:field="purchaseDate" type="DATE" formatValue="dd.MM.yyyy" mandatory="false"/>
                                 </div>

@@ -5318,3 +5318,13 @@ table {
     padding: 3px 10px;
   }
 }
+
+.form-group.form-group-default.date-picker {
+  height: 100% !important;
+}
+
+.calendar-position .fa-calendar {
+  top: 0;
+  right: 17px;
+  position: absolute;
+}
