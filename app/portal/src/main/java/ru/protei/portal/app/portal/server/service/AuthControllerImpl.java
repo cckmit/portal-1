@@ -22,6 +22,8 @@ import ru.protei.portal.ui.common.shared.model.Profile;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
+import static ru.protei.portal.core.model.util.CrmConstants.Header.X_REAL_IP;
+
 /**
  * Сервис авторизации
  */
@@ -45,7 +47,7 @@ public class AuthControllerImpl implements AuthController {
 
         log.info( "authentificate: login={}", login );
 
-        String ip = httpRequest.getHeader("X-Real-IP");
+        String ip = httpRequest.getHeader(X_REAL_IP);
 
         token = ServiceUtils.checkResultAndGetData(authService.login(
                 httpRequest.getSession().getId(),
@@ -64,9 +66,15 @@ public class AuthControllerImpl implements AuthController {
     public void logout() throws RequestFailedException {
         AuthToken token = sessionService.getAuthToken(httpRequest);
         if (token != null) {
+            String ip = httpRequest.getHeader(X_REAL_IP);
+
+            if (ip == null) {
+                ip = httpRequest.getRemoteAddr();
+            }
+
             ServiceUtils.checkResult(authService.logout(
                     token,
-                    httpRequest.getRemoteAddr(),
+                    ip,
                     httpRequest.getHeader(CrmConstants.Header.USER_AGENT)
             ));
             sessionService.setAuthToken(httpRequest, null);
