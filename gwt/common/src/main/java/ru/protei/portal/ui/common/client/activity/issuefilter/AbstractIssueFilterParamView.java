@@ -72,8 +72,6 @@ public interface AbstractIssueFilterParamView extends IsWidget {
 
     void setStateFilter(Selector.SelectorFilter<CaseState> caseStateFilter);
 
-    void fillImportanceButtons(List<ImportanceLevel> importanceLevelList);
-
     String validateMultiSelectorsTotalCount();
 
     boolean isSearchFieldCorrect();

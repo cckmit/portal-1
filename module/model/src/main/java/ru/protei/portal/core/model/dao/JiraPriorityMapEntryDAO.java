@@ -6,10 +6,4 @@ public interface JiraPriorityMapEntryDAO extends PortalBaseDAO<JiraPriorityMapEn
     JiraPriorityMapEntry getByPortalPriorityId(long mapId, Integer importanceId);
 
     JiraPriorityMapEntry getByJiraPriorityName(long mapId, String name);
-
-//    JiraPriorityMapEntry getByPortalPriorityName(String name, long endpointId);
-//
-//    JiraPriorityMapEntry getByJiraPriorityName(String rmName, long mapId);
-//
-//    List<JiraPriorityMapEntry> getListByMapId(long endpointId);
 }

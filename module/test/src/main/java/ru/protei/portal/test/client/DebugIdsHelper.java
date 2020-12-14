@@ -3,7 +3,7 @@ package ru.protei.portal.test.client;
 public class DebugIdsHelper {
     public static final class IMPORTANCE_BUTTON {
         public static String byCode(String importanceCode) {
-            return DebugIds.IMPORTANCE_BUTTON.DEFAULT + importanceCode;
+            return DebugIds.IMPORTANCE_BUTTON.PREFIX + importanceCode;
         }
     }
 

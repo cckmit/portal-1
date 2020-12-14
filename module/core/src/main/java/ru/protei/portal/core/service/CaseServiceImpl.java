@@ -154,6 +154,9 @@ public class CaseServiceImpl implements CaseService {
     @Autowired
     private CaseLinkDAO caseLinkDAO;
 
+    @Autowired
+    private ImportanceLevelDAO importanceLevelDAO;
+
     @Override
     public Result<SearchResult<CaseShortView>> getCaseObjects(AuthToken token, CaseQuery query) {
 
@@ -1158,7 +1161,7 @@ public class CaseServiceImpl implements CaseService {
             log.warn("Importance level must be specified. caseId={}", caseMeta.getId());
             return false;
         }
-        if (En_ImportanceLevel.find(caseMeta.getImpLevel()) == null) {
+        if (!isImportanceLevelExist(caseMeta.getImpLevel())) {
             log.warn("Unknown importance level. caseId={}, importance={}", caseMeta.getId(), caseMeta.getImpLevel());
             return false;
         }
@@ -1202,6 +1205,13 @@ public class CaseServiceImpl implements CaseService {
             return false;
         }
         return true;
+    }
+
+    private boolean isImportanceLevelExist(Integer caseImportanceLevel) {
+        return importanceLevelDAO.getAll()
+                .stream()
+                .map(ImportanceLevel::getId)
+                .anyMatch(importanceLevelId -> importanceLevelId.equals(caseImportanceLevel));
     }
 
     private boolean isProductValid(AuthToken token, Long productId, Long platformId, Long companyId) {

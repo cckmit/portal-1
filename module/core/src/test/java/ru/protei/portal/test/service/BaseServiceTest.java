@@ -80,7 +80,7 @@ public class BaseServiceTest {
         caseObject.setCreator( person );
         caseObject.setCreated( new Date() );
         caseObject.setModified( new Date() );
-        caseObject.setImpLevel( En_ImportanceLevel.BASIC.getId() );
+        caseObject.setImpLevel( CrmConstants.ImportanceLevel.BASIC );
         return caseObject;
     }
 

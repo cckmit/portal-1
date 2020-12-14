@@ -23,4 +23,14 @@ public class ImportanceLevelServiceImpl implements ImportanceLevelService {
 
         return ok(importanceLevelDAO.getImportanceLevelsByCompanyId(companyId));
     }
+
+    @Override
+    public Result<List<ImportanceLevel>> getImportanceLevels() {
+        return ok(importanceLevelDAO.getAll());
+    }
+
+    @Override
+    public Result<ImportanceLevel> getImportanceLevel(Integer importanceLevelId) {
+        return ok(importanceLevelDAO.get(importanceLevelId));
+    }
 }

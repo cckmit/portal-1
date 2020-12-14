@@ -21,7 +21,6 @@ import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
-import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
@@ -426,8 +425,6 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     DefaultErrorHandler defaultErrorHandler;
     @Inject
     CompanyControllerAsync companyService;
-    @Inject
-    En_CaseImportanceLang importanceLang;
 
     private Project project;
     private Set<ProductShortView> selectedComplexes = new HashSet<>();

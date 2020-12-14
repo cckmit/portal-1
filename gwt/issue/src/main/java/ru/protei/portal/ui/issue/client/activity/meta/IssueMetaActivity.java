@@ -15,7 +15,6 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.*;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.common.DefaultSlaValues;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
@@ -31,7 +30,6 @@ import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 
 import java.util.*;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -154,14 +152,14 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     @Override
     public void onImportanceChanged() {
-        meta.setImpLevel(metaView.importance().getValue().getId().intValue());
+        meta.setImpLevel(metaView.importance().getValue().getId());
         onCaseMetaChanged(meta, () -> {
             fireEvent(new IssueEvents.IssueImportanceChanged(meta.getId()));
             fireEvent(new IssueEvents.IssueMetaChanged(meta));
         });
 
         if (!isJiraIssue()) {
-            fillSla(getSlaByImportanceLevel(slaList, meta.getImpLevel()));
+            fillSla(getSlaByImportanceLevel(slaList, metaView.importance().getValue()));
         }
     }
 
@@ -213,7 +211,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         }
 
         onCaseMetaChanged(meta, onChanged);
-        requestSla(meta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, meta.getImpLevel())));
+        requestSla(meta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, metaView.importance().getValue())));
     }
 
     @Override
@@ -443,7 +441,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     private void fillImportanceSelector(Long id) {
         metaView.fillImportanceOptions(new ArrayList<>());
-        companyController.getImportanceLevels(id, new FluentCallback<List<ImportanceLevel>>()
+        importanceService.getImportanceLevels(id, new FluentCallback<List<ImportanceLevel>>()
                 .withSuccess(importanceLevelList -> {
                     metaView.fillImportanceOptions(importanceLevelList);
                     checkImportanceSelectedValue(importanceLevelList);
@@ -535,7 +533,13 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             metaView.caseSubscriptionContainer().setVisible(false);
         }
 
-        metaView.importance().setValue( new ImportanceLevel(meta.getImpLevel().longValue(), meta.getImportanceCode()) );
+        importanceService.getImportanceLevel(meta.getImpLevel(), new FluentCallback<ImportanceLevel>()
+                .withSuccess(importanceLevel -> {
+                    metaView.importance().setValue(importanceLevel);
+                    requestSla(meta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, importanceLevel)));
+                })
+        );
+
         metaView.setStateWorkflow(recognizeWorkflow(meta.getExtAppType()));//Обязательно сетить до установки значения!
         metaView.state().setValue(new CaseState(meta.getStateId(), meta.getStateName()));
         metaView.pauseDate().setValue(meta.getPauseDate() == null ? null : new Date(meta.getPauseDate()));
@@ -584,7 +588,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.setJiraInfoLink(LinkUtils.makeJiraInfoLink());
 
         metaView.slaContainerVisibility().setVisible(!isJiraIssue() && isSystemScope());
-        requestSla(meta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, meta.getImpLevel())));
 
         metaView.deadline().setValue(meta.getDeadline() == null ? null : new Date(meta.getDeadline()));
         metaView.setDeadlineValid(isDeadlineValid(meta.getDeadline()));
@@ -622,7 +625,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         }
 
         if (platformId == null) {
-            slaList = DefaultSlaValues.getList();
+            slaList.clear();
             metaView.setValuesContainerWarning(true);
             metaView.setSlaTimesContainerTitle(lang.projectSlaDefaultValues());
             slaConsumer.accept(slaList);
@@ -631,7 +634,12 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         slaController.getSlaByPlatformId(platformId, new FluentCallback<List<ProjectSla>>()
                 .withSuccess(result -> {
-                    slaList = result.isEmpty() ? DefaultSlaValues.getList() : result;
+                    if (result.isEmpty()) {
+                        slaList.clear();
+                    } else {
+                        slaList = result;
+                    }
+
                     metaView.setValuesContainerWarning(result.isEmpty());
                     metaView.setSlaTimesContainerTitle(result.isEmpty() ? lang.projectSlaDefaultValues() : lang.projectSlaSetValuesByManager());
                     slaConsumer.accept(slaList);
@@ -639,10 +647,14 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         );
     }
 
-    private ProjectSla getSlaByImportanceLevel(List<ProjectSla> slaList, final int importanceLevelId) {
+    private ProjectSla getSlaByImportanceLevel(List<ProjectSla> slaList, final ImportanceLevel importanceLevel) {
+        if (slaList.isEmpty()) {
+            return makeDefaultProjectSla(importanceLevel);
+        }
+
         return slaList
                 .stream()
-                .filter(sla -> Objects.equals(importanceLevelId, sla.getImportanceLevelId()))
+                .filter(sla -> Objects.equals(importanceLevel.getId(), sla.getImportanceLevelId()))
                 .findAny()
                 .orElse(new ProjectSla());
     }
@@ -837,7 +849,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
                                 new HashSet<>(Collections.singleton(meta.getPlatformId())));
             }
 
-            requestSla(meta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, meta.getImpLevel())));
+            requestSla(meta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, metaView.importance().getValue())));
             onCaseMetaChanged(meta, () -> fireEvent(new IssueEvents.ChangeIssue(meta.getId())));
         });
     }
@@ -921,6 +933,11 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
                                 )));
     }
 
+    private ProjectSla makeDefaultProjectSla(ImportanceLevel importanceLevel) {
+        return new ProjectSla(importanceLevel.getId(), importanceLevel.getReactionTime(),
+                importanceLevel.getTemporarySolutionTime(), importanceLevel.getFullSolutionTime());
+    }
+
     @Inject
     AbstractIssueMetaView metaView;
 
@@ -959,6 +976,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     SubcontractorCompanyModel subcontractorCompanyModel;
     @Inject
     CustomerCompanyModel customerCompanyModel;
+    @Inject
+    ImportanceLevelControllerAsync importanceService;
 
     @ContextAware
     CaseObjectMeta meta;

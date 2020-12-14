@@ -19,11 +19,6 @@ public class ImportanceFormSelector extends FormSelector<ImportanceLevel> {
         ));
     }
 
-    @Override
-    public void setValue(ImportanceLevel value) {
-        super.setValue(value);
-    }
-
     public void setDefaultValue(String value ) {
         this.defaultValue = value;
     }

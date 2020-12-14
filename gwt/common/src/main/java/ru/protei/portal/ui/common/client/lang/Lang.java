@@ -810,18 +810,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueCopiedToClipboard();
 
-    String criticalImportance();
-
-    String importantImportance();
-
-    String basicImportance();
-
-    String cosmeticImportance();
-
-    String mediumImportance();
-
-    String emergencyImportance();
-
     String dataPageNumber( String p0 );
 
     String dashboard();

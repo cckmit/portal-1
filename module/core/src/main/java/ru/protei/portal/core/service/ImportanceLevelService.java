@@ -7,4 +7,8 @@ import java.util.List;
 
 public interface ImportanceLevelService {
     Result<List<ImportanceLevel>> getImportanceLevelsByCompanyId(Long companyId);
+
+    Result<List<ImportanceLevel>> getImportanceLevels();
+
+    Result<ImportanceLevel> getImportanceLevel(Integer importanceLevelId);
 }

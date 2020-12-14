@@ -12,11 +12,10 @@ import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.service.CaseStateService;
 import ru.protei.portal.core.service.CompanyService;
-import ru.protei.portal.core.service.ImportanceLevelService;
 import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.CompanyController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
-import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -294,12 +293,6 @@ public class CompanyControllerImpl implements CompanyController {
         return checkResultAndGetData(companyService.getCompanyImportanceItems(companyId));
     }
 
-    @Override
-    public List<ImportanceLevel> getImportanceLevels(Long companyId) throws RequestFailedException {
-        log.info("getImportanceLevels() companyId={}", companyId);
-        return checkResultAndGetData(importanceLevelService.getImportanceLevelsByCompanyId(companyId));
-    }
-
     @Autowired
     private CompanyService companyService;
 
@@ -311,9 +304,6 @@ public class CompanyControllerImpl implements CompanyController {
 
     @Autowired
     PolicyService policyService;
-
-    @Autowired
-    ImportanceLevelService importanceLevelService;
 
     @Autowired
     HttpServletRequest httpServletRequest;

@@ -11,6 +11,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.dto.ReportDto;
+import ru.protei.portal.core.model.ent.ImportanceLevel;
 import ru.protei.portal.core.model.query.ReportQuery;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
@@ -18,6 +19,7 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.ImportanceLevelControllerAsync;
 import ru.protei.portal.ui.common.client.service.ReportControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -50,6 +52,11 @@ public abstract class ReportTableActivity implements
             fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
+
+        importanceLevelService.getImportanceLevels(new FluentCallback<List<ImportanceLevel>>()
+                .withSuccess(view::setImportanceLevels)
+        );
+
         showActionBarButtons();
         showView();
         loadTable();
@@ -172,6 +179,8 @@ public abstract class ReportTableActivity implements
     AbstractPagerView pagerView;
     @Inject
     PolicyService policyService;
+    @Inject
+    ImportanceLevelControllerAsync importanceLevelService;
     @Inject
     protected DefaultErrorHandler defaultErrorHandler;
 

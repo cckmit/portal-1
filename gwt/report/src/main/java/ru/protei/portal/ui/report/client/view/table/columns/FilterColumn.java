@@ -5,6 +5,7 @@ import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ReportDto;
+import ru.protei.portal.core.model.ent.ImportanceLevel;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
@@ -15,6 +16,7 @@ import ru.protei.portal.ui.common.client.lang.*;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -25,13 +27,12 @@ public class FilterColumn extends StaticColumn<ReportDto> {
 
     @Inject
     public FilterColumn(Lang lang, En_SortFieldLang sortFieldLang, En_SortDirLang sortDirLang,
-                        En_CaseImportanceLang caseImportanceLang, En_RegionStateLang regionStateLang,
-                        En_DateIntervalLang intervalTypeLang, En_ContractKindLang contractKindLang,
-                        En_ContractTypeLang contractTypeLang, En_ContractStateLang contractStateLang) {
+                        En_RegionStateLang regionStateLang, En_DateIntervalLang intervalTypeLang,
+                        En_ContractKindLang contractKindLang, En_ContractTypeLang contractTypeLang,
+                        En_ContractStateLang contractStateLang) {
         this.lang = lang;
         this.sortFieldLang = sortFieldLang;
         this.sortDirLang = sortDirLang;
-        this.caseImportanceLang = caseImportanceLang;
         this.regionStateLang = regionStateLang;
         this.intervalTypeLang = intervalTypeLang;
         this.contractKindLang = contractKindLang;
@@ -74,6 +75,10 @@ public class FilterColumn extends StaticColumn<ReportDto> {
         }
 
         cell.appendChild(divElement);
+    }
+
+    public void setImportanceLevels(List<ImportanceLevel> importanceLevels) {
+        this.importanceLevels = importanceLevels;
     }
 
     private void appendCaseQueryInfo(Element element, CaseQuery caseQuery) {
@@ -131,8 +136,7 @@ public class FilterColumn extends StaticColumn<ReportDto> {
             managerElement.setInnerText(lang.issueImportance() + ": " +
                     caseQuery.getImportanceIds()
                             .stream()
-                            .map(En_ImportanceLevel::getById)
-                            .map(caseImportanceLang::getImportanceName)
+                            .map(this::getImportanceName)
                             .collect(Collectors.joining(", "))
             );
             element.appendChild(managerElement);
@@ -358,13 +362,21 @@ public class FilterColumn extends StaticColumn<ReportDto> {
         return element;
     }
 
+    private String getImportanceName(Integer importanceLevelId) {
+        return stream(importanceLevels)
+                .filter(importanceLevel -> importanceLevel.getId().equals(importanceLevelId))
+                .map(ImportanceLevel::getCode)
+                .findAny()
+                .orElse("");
+    }
+
     private Lang lang;
     private En_SortFieldLang sortFieldLang;
     private En_SortDirLang sortDirLang;
-    private En_CaseImportanceLang caseImportanceLang;
     private En_RegionStateLang regionStateLang;
     private En_DateIntervalLang intervalTypeLang;
     private En_ContractKindLang contractKindLang;
     private En_ContractTypeLang contractTypeLang;
     private En_ContractStateLang contractStateLang;
+    private List<ImportanceLevel> importanceLevels;
 }

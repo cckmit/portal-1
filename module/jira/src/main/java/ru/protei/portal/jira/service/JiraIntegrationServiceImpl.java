@@ -17,7 +17,10 @@ import ru.protei.portal.core.event.CaseNameAndDescriptionEvent;
 import ru.protei.portal.core.event.CaseObjectCreateEvent;
 import ru.protei.portal.core.event.CaseObjectMetaEvent;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_ExtAppType;
+import ru.protei.portal.core.model.dict.En_JiraSLAIssueType;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.PlatformQuery;
@@ -184,10 +187,10 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
             caseObj.setStateName(newState.getLocalStatusName());
         }
 
-        En_ImportanceLevel oldImportance = En_ImportanceLevel.getById(caseObj.getImpLevel());
-        En_ImportanceLevel newImportance = getNewImportanceLevel(endpoint.getPriorityMapId(), getIssueSeverity(issue));
-        newImportance = newImportance == null ? En_ImportanceLevel.getById(caseObj.getImpLevel()) : newImportance;
-        caseObj.setImpLevel(newImportance.getId());
+        Integer oldImportanceId = caseObj.getImpLevel();
+        Integer newImportanceId = getNewImportanceLevel(endpoint.getPriorityMapId(), getIssueSeverity(issue));
+        newImportanceId = newImportanceId == null ? oldImportanceId : newImportanceId;
+        caseObj.setImpLevel(newImportanceId);
 
         caseObj.setName(getNewName(issue, caseObj.getCaseNumber(), getClmId(issue)));
 
@@ -208,8 +211,8 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
             persistStateComment(authorId, caseObj.getId(), caseObj.getStateId());
         }
 
-        if (!newImportance.equals(oldImportance)) {
-            persistImportanceComment(authorId, caseObj.getId(), newImportance.getId());
+        if (!newImportanceId.equals(oldImportanceId)) {
+            persistImportanceComment(authorId, caseObj.getId(), newImportanceId);
         }
 
         AssembledCaseEvent caseEvent = generateUpdateEvent(oldCase, caseObj, authorId);
@@ -242,9 +245,9 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         }
         logger.info("issue {}, case-state new={}", issue.getKey(), caseObj.getStateId());
 
-        En_ImportanceLevel newImportance = getNewImportanceLevel(endpoint.getPriorityMapId(), getIssueSeverity(issue));
+        Integer newImportance = getNewImportanceLevel(endpoint.getPriorityMapId(), getIssueSeverity(issue));
         logger.debug("issue {}, case-priority old={}, new={}", issue.getKey(), caseObj.getImportanceCode(), newImportance);
-        caseObj.setImpLevel(newImportance == null ? En_ImportanceLevel.BASIC.getId() : newImportance.getId());
+        caseObj.setImpLevel(newImportance == null ? CrmConstants.ImportanceLevel.BASIC : newImportance);
 
         IssueField clmId = getClmId(issue);
         caseObj.setName(getNewName(issue, caseObj.getCaseNumber(), clmId));
@@ -515,7 +518,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         return issue.getFieldByName(CustomJiraIssueParser.CUSTOM_FIELD_CLM);
     }
 
-    private En_ImportanceLevel getNewImportanceLevel(Long priorityMapId, String severityName) {
+    private Integer getNewImportanceLevel(Long priorityMapId, String severityName) {
         JiraPriorityMapEntry jiraPriorityEntry = severityName != null ? jiraPriorityMapEntryDAO.getByJiraPriorityName(priorityMapId, severityName) : null;
 
         if (jiraPriorityEntry == null) {
@@ -523,7 +526,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
             return null;
         }
 
-        return En_ImportanceLevel.getById(jiraPriorityEntry.getLocalPriorityId());
+        return jiraPriorityEntry.getLocalPriorityId();
     }
 
     private Long persistStateComment(Long authorId, Long caseId, long stateId){

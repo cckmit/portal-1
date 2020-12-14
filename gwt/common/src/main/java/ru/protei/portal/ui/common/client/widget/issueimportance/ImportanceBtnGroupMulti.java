@@ -1,8 +1,10 @@
 package ru.protei.portal.ui.common.client.widget.issueimportance;
 
+import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.ImportanceLevel;
 import ru.protei.portal.test.client.DebugIdsHelper;
 import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.togglebtn.group.ToggleBtnGroupMulti;
 
 import java.util.List;
@@ -10,8 +12,13 @@ import java.util.List;
 /**
  * Селектор критичности обращения
  */
-public class ImportanceBtnGroupMulti extends ToggleBtnGroupMulti<ImportanceLevel> {
-    public void fillButtons(List<ImportanceLevel> importanceLevelList) {
+public class ImportanceBtnGroupMulti extends ToggleBtnGroupMulti<ImportanceLevel> implements SelectorWithModel<ImportanceLevel> {
+    @Inject
+    public void init(ImportanceModel importanceModel) {
+        importanceModel.subscribe(this);
+    }
+
+    public void fillOptions(List<ImportanceLevel> importanceLevelList) {
         clear();
 
         for (ImportanceLevel level : importanceLevelList) {

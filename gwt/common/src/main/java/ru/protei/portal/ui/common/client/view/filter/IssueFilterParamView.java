@@ -46,6 +46,7 @@ import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWit
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedSelectorRangePicker;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
@@ -277,7 +278,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         sortField.setValue(caseQuery.getSortField() == null ? En_SortField.creation_date : caseQuery.getSortField());
         dateCreatedRange.setValue(fromDateRange(caseQuery.getCreatedRange()));
         dateModifiedRange.setValue(fromDateRange(caseQuery.getModifiedRange()));
-        importance.setValue(toSet(caseQuery.getImportanceIds(), importanceLevel -> new ImportanceLevel((long) importanceLevel)));
+        importance.setValue(toSet(caseQuery.getImportanceIds(), (Function<Integer, ImportanceLevel>) ImportanceLevel::new));
         state.setValue(toSet(caseQuery.getStateIds(), id -> new CaseState(id)));
 
         Set<EntityOption> initiatorsCompanies = applyCompanies( filter.getCompanyEntityOptions(), caseQuery.getCompanyIds() );
@@ -339,7 +340,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 query.setManagerIds(getManagersIdList(managers.getValue()));
                 query.setInitiatorIds(getManagersIdList(initiators.getValue()));
                 query.setImportanceLevels(nullIfEmpty(importance.getValue()));
-                query.setStateIds(nullIfEmpty(toList(states().getValue(), state -> state.getId())));
+                query.setStateIds(nullIfEmpty(toList(states().getValue(), CaseState::getId)));
                 query.setCommentAuthorIds(getManagersIdList(commentAuthors.getValue()));
                 query.setCaseTagsIds(nullIfEmpty(toList(tags.getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId())));
                 query.setCreatorIds(nullIfEmpty(toList(creators.getValue(), personShortView -> personShortView == null ? null : personShortView.getId())));
@@ -357,7 +358,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 query.setCompanyIds(getCompaniesIdList(companies.getValue()));
                 query.setProductIds(getProductsIdList(products.getValue()));
                 query.setCommentAuthorIds(getManagersIdList(commentAuthors.getValue()));
-                query.setTimeElapsedTypeIds(toList(timeElapsedTypes.getValue(), en_timeElapsedType -> en_timeElapsedType.getId()));
+                query.setTimeElapsedTypeIds(toList(timeElapsedTypes.getValue(), En_TimeElapsedType::getId));
                 query.setCreatedRange(toDateRange(dateCreatedRange.getValue()));
                 break;
             }
@@ -366,7 +367,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 query.setProductIds(getProductsIdList(products.getValue()));
                 query.setCaseTagsIds(nullIfEmpty(toList(tags.getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId())));
                 query.setImportanceLevels(nullIfEmpty(importance.getValue()));
-                query.setStateIds(nullIfEmpty(toList(state.getValue(), state -> state.getId())));
+                query.setStateIds(nullIfEmpty(toList(state.getValue(), CaseState::getId)));
                 query.setCreatedRange(toDateRange(dateCreatedRange.getValue()));
                 break;
             case PROJECT:
@@ -378,11 +379,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @Override
     public void setStateFilter(Selector.SelectorFilter<CaseState> caseStateFilter) {
         state.setFilter(caseStateFilter);
-    }
-
-    @Override
-    public void fillImportanceButtons(List<ImportanceLevel> importanceLevelList) {
-        importance.fillButtons(importanceLevelList);
     }
 
     private void fillDateRanges (TypedSelectorRangePicker rangePicker) {

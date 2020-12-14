@@ -25,7 +25,7 @@ import java.util.Date;
         "sum(IF(case_comment.time_elapsed_type = 11, case_comment.time_elapsed, 0)) time_elapsed_SolveProblems, " +
         "case_object.caseno case_no, case_object.private_flag private_flag, case_object.case_name case_name, " +
         "company.cname case_company_name, manager.displayshortname manager_display_name, " +
-        "case_object.importance importance, case_state.state state_name, case_object.created created, " +
+        "case_object.importance importance, case_state.state state_name, importance_level.code code, case_object.created created, " +
         "product.UNIT_NAME product_name " +
         "from case_comment " +
         "left outer join person author on case_comment.author_id = author.id " +

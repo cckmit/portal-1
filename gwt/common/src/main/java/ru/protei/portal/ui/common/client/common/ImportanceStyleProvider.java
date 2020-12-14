@@ -1,14 +1,16 @@
 package ru.protei.portal.ui.common.client.common;
 
+import static ru.protei.portal.core.model.util.CrmConstants.ImportanceLevel.IMPORTANCE_LEVEL;
+
 /**
  * Провайдер css-класса для иконки критичности
  */
 public class ImportanceStyleProvider {
     public static String getImportanceIcon(String importanceCode) {
         if (importanceCode == null) {
-            return "importance-level";
+            return IMPORTANCE_LEVEL;
         }
 
-        return "importance-level " + importanceCode.toLowerCase();
+        return IMPORTANCE_LEVEL + " " + importanceCode.toLowerCase();
     }
 }
