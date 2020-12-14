@@ -9,6 +9,7 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.ApplicationContext;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.index.document.DocumentStorageIndex;
@@ -36,6 +37,7 @@ import ru.protei.portal.tools.migrate.struct.ExternalReservedIp;
 import ru.protei.portal.tools.migrate.struct.ExternalSubnet;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.winter.core.utils.beans.SearchResult;
+import ru.protei.winter.jdbc.JdbcDAO;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import ru.protei.winter.jdbc.JdbcObjectMapperRegistrator;
 import ru.protei.winter.jdbc.annotations.ConverterType;
@@ -56,6 +58,7 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.query.CaseCommentQuery.CommentType.*;
+import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.condition;
 import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
 
 /**
@@ -973,13 +976,18 @@ public class BootstrapServiceImpl implements BootstrapService {
     private void normalizePhoneNumbers() {
         log.info("normalizePhoneNumbers started");
 
+        applicationContext.getBean(JdbcObjectMapperRegistrator.class).registerMapper(ContactItemPerson.class);
+        registerBeanDefinition(applicationContext, ContactItemPerson.ContactItemPersonDAO.class);
+
+        ContactItemPerson.ContactItemPersonDAO dao = applicationContext.getBean(ContactItemPerson.ContactItemPersonDAO.class);
+
         ContactItemQuery query = new ContactItemQuery();
         query.setItemTypes(Arrays.asList(En_ContactItemType.MOBILE_PHONE, En_ContactItemType.GENERAL_PHONE));
         List<Long> contactItemsIds = contactItemDAO.listColumnValue("id", Long.class,
                 "item_type in (5, 6) and (value is not null or TRIM(value) <> '')")
                                 .stream().distinct().collect(toList());
 
-        List<ContactItem> contactItems = new ArrayList<>();
+        ContactItemMigrationPair contactItemMigrationPair = new ContactItemMigrationPair();
         List<Long> ids = new ArrayList<>();
         for(int i = 0; i < contactItemsIds.size();) {
             ids.clear();
@@ -987,40 +995,83 @@ public class BootstrapServiceImpl implements BootstrapService {
             for(int j = i; j < Math.min(upperBorder, contactItemsIds.size()); j++) {
                 ids.add(contactItemsIds.get(i++));
             }
-            contactItems.addAll(normalizePhone(contactItemDAO.getListByKeys(ids)));
-            persistContactItems(contactItems, false);
+            contactItemMigrationPair.addAll(normalizePhone(contactItemDAO.getListByKeys(ids), contactItemId -> getContactItemPersonId(dao, contactItemId)));
+            persistContactItems(dao, contactItemMigrationPair, false);
         }
-        if (!contactItems.isEmpty()) {
-            persistContactItems(contactItems, true);
+        if (!contactItemMigrationPair.contactItems.isEmpty()) {
+            persistContactItems(dao, contactItemMigrationPair, true);
         }
+
+        removeBeanDefinition(applicationContext, ContactItemPerson.ContactItemPersonDAO.class);
+        removeBeanDefinition(applicationContext, ContactItemPerson.class);
 
         log.info("normalizePhoneNumbers ended");
     }
 
-    private List<ContactItem> normalizePhone(List<ContactItem> phones) {
-        List<ContactItem> list = new ArrayList<>();
+    private ContactItemMigrationPair normalizePhone(List<ContactItem> phones, Function<Long, Long> getContactItemPersonId) {
+        ContactItemMigrationPair result = new ContactItemMigrationPair();
         phones.forEach(phone -> {
-            list.add(phone);
+            result.contactItems.add(phone);
             String value = phone.value();
-            if (StringUtils.isNotEmpty(value) && value.length() > 1 && value.trim().substring(1).contains("\\+")) {    // несколько номером "+7911+7912"
-                String[] v = value.split("\\+");
+            if (StringUtils.isNotEmpty(value) && value.length() > 1 && value.trim().substring(1).contains("+")) {    // несколько номером "+7911+7912"
+                String[] v = value.trim().substring(1).split("\\+");
                 phone.modify(PhoneUtils.normalizePhoneNumber(v[0]));
                 for(int i = 1; i < v.length; i++) {
                     ContactItem contactItem = new ContactItem(phone.type(), phone.accessType());
                     contactItem.modify(PhoneUtils.normalizePhoneNumber(v[i]));
-                    list.add(contactItem);
+
+                    result.contactItems.add(contactItem);
+                    result.contactItemPersons.add(new ContactItemPerson( getContactItemPersonId.apply(phone.id()), phone.id()));
                 }
             } else {
                 phone.modify(PhoneUtils.normalizePhoneNumber(value));
             }
         });
-        return list;
+        return result;
     }
 
-    private void persistContactItems(List<ContactItem> contactItems, boolean force) {
-        if (force || contactItems.size() > 1000) {
-            contactItemDAO.saveOrUpdateBatch(contactItems);
-            contactItems.clear();
+    private Long getContactItemPersonId(ContactItemPerson.ContactItemPersonDAO dao, Long contactItemId) {
+        return dao.getByCondition(
+                    condition().and("contact_item_id").equal(contactItemId).getSqlCondition(),
+                    contactItemId)
+                .person_id;
+    }
+
+    @JdbcEntity(table = "contact_item_person")
+    private static class ContactItemPerson{
+        @JdbcColumn(name = "person_id")
+        Long person_id;
+        @JdbcColumn(name = "contact_item_id")
+        Long contact_item_id;
+
+        public ContactItemPerson(Long person_id, Long contact_item_id) {
+            this.person_id = person_id;
+            this.contact_item_id = contact_item_id;
+        }
+
+        private static interface ContactItemPersonDAO extends JdbcDAO<ContactItemPerson, ContactItemPerson>{}
+    }
+
+    private static class ContactItemMigrationPair {
+        List<ContactItem> contactItems = new ArrayList<>();
+        List<ContactItemPerson> contactItemPersons = new ArrayList<>();
+
+        public void addAll(ContactItemMigrationPair other) {
+            this.contactItems.addAll(other.contactItems);
+            this.contactItemPersons.addAll(other.contactItemPersons);
+        }
+
+        public void clear() {
+            this.contactItems.clear();
+            this.contactItemPersons.clear();
+        }
+    }
+
+    private void persistContactItems(ContactItemPerson.ContactItemPersonDAO dao, ContactItemMigrationPair contactItemMigrationPair, boolean force) {
+        if (force || contactItemMigrationPair.contactItems.size() >= 1000) {
+            contactItemDAO.saveOrUpdateBatch(contactItemMigrationPair.contactItems);
+            dao.persistBatch(contactItemMigrationPair.contactItemPersons);
+            contactItemMigrationPair.clear();
         }
     }
 
@@ -1271,6 +1322,8 @@ public class BootstrapServiceImpl implements BootstrapService {
     CaseCommentDAO caseCommentDAO;
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
+    @Autowired
+    JdbcTemplate jdbcTemplate;
 
     SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
