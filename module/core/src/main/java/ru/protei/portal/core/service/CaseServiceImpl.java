@@ -428,7 +428,7 @@ public class CaseServiceImpl implements CaseService {
 
         applyStateBasedOnManager(caseMeta);
 
-        if (!validateMetaFields(token, caseMeta)) {
+        if (!validateMetaFields(token, oldCaseMeta, caseMeta)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -1148,6 +1148,10 @@ public class CaseServiceImpl implements CaseService {
     }
 
     private boolean validateMetaFields(AuthToken token, CaseObjectMeta caseMeta) {
+        return validateMetaFields(token, null, caseMeta);
+    }
+
+    private boolean validateMetaFields(AuthToken token, CaseObjectMeta oldCaseMeta, CaseObjectMeta caseMeta) {
         if (caseMeta == null) {
             log.warn("Case meta cannot be null");
             return false;
@@ -1195,7 +1199,10 @@ public class CaseServiceImpl implements CaseService {
             log.warn("Product is not valid. caseId={}", caseMeta.getId());
             return false;
         }
-        if (!isDeadlineValid(caseMeta.getDeadline())) {
+
+        Long oldDeadline = oldCaseMeta == null ? null : oldCaseMeta.getDeadline();
+
+        if (!Objects.equals(oldDeadline, caseMeta.getDeadline()) && !isDeadlineValid(caseMeta.getDeadline())) {
             log.warn("Deadline has passed. caseId={}", caseMeta.getId());
             return false;
         }
