@@ -31,6 +31,7 @@ public class AutoOpenCaseServiceImpl implements AutoOpenCaseService {
         log.info("Schedule case open at startup");
         if (!portalConfig.data().getAutoOpenConfig().getEnable()) {
             log.debug("Case open is disabled in config");
+            return;
         }
         caseObjectDAO.getCaseIdToAutoOpen()
                 .forEach(caseId -> createTask(caseId, makeDelay(true)));
@@ -40,6 +41,7 @@ public class AutoOpenCaseServiceImpl implements AutoOpenCaseService {
     public void processNewCreatedCaseToAutoOpen(Long caseId, Long companyId) {
         if (!portalConfig.data().getAutoOpenConfig().getEnable()) {
             log.debug("Case open is disabled in config");
+            return;
         }
         Company company = companyDAO.get(companyId);
         if (company.getAutoOpenIssue() != null && company.getAutoOpenIssue()) {

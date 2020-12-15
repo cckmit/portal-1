@@ -930,8 +930,8 @@ public class PortalConfigData {
         final Integer delayRandom;
 
         public AutoOpenConfig(PropertiesWrapper properties) {
-            this.enable = properties.getProperty("autoopen.en", Boolean.class, true);
-            this.enableDelay = properties.getProperty("autoopen.delay.en", Boolean.class, true);
+            this.enable = properties.getProperty("autoopen.enable", Boolean.class, true);
+            this.enableDelay = properties.getProperty("autoopen.delay.enable", Boolean.class, true);
             this.delayStartup = properties.getProperty("autoopen.delay.startup", Integer.class, 60);
             this.delayRuntime = properties.getProperty("autoopen.delay.runtime", Integer.class, 180);
             this.delayRandom = properties.getProperty("autoopen.delay.random", Integer.class, 120);
