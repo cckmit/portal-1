@@ -47,6 +47,7 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
         equipment.setVisibleTypes(new HashSet<>(Arrays.asList(En_EquipmentType.values())));
+        approvedBy.getElement().getFirstChildElement().addClassName("h-100");
     }
 
     @Override

@@ -37,7 +37,7 @@
                 <div class="col-md-12">
                     <div class="form-group form-group-default date-picker" ui:field="approvalDateContainer">
                         <label class="fade" ui:field="approvalDateLabel"><ui:text from="{lang.issuePauseDateValidity}"/></label>
-                        <datepicker:SinglePicker ui:field="pauseDate" type="DATE" formatValue="dd-MM-yyyy" mandatory="true"/>
+                        <datepicker:SinglePicker ui:field="pauseDate" type="DATE" formatValue="dd-MM-yyyy" mandatory="true" styleName="clearfix"/>
                     </div>
                 </div>
             </g:HTMLPanel>
@@ -54,7 +54,7 @@
                 <div class="col-md-12">
                     <div class="form-group form-group-default date-picker">
                         <label class="fade"><ui:text from="{lang.issueDeadline}"/></label>
-                        <datepicker:SinglePicker ui:field="deadline" type="DATE" formatValue="dd-MM-yyyy"/>
+                        <datepicker:SinglePicker ui:field="deadline" type="DATE" formatValue="dd-MM-yyyy" styleName="clearfix"/>
                     </div>
                 </div>
             </g:HTMLPanel>
