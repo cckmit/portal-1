@@ -20,4 +20,10 @@
             UPDATE importance_level SET reaction_time=1440, temporary_solution_time=20160, full_solution_time=129600 where id=4;
         </sql>
     </changeSet>
+
+    <changeSet id="replace-case-filter-importance-enum-values-with-ids" author="fomin">
+        <sql>
+            UPDATE case_filter SET params = REGEXP_REPLACE(params, 'importances', 'importanceIds') where params like "%importances%";
+        </sql>
+    </changeSet>
 </databaseChangeLog>
