@@ -7,6 +7,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.Label;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
@@ -128,10 +129,12 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
         DynamicColumn<Project> numberColumn = new DynamicColumn<>(lang.projectDirections(), "number",
                 value -> {
                     StringBuilder content = new StringBuilder();
-                    content.append("<b>").append(value.getId()).append("</b>").append("<br/>");
+                    content.append("<b>").append(value.getId()).append("</b>");
 
                     if (isNotEmpty(value.getProductDirectionEntityOptionList())) {
-                        content.append(joining(value.getProductDirectionEntityOptionList(), ", ", EntityOption::getDisplayText));
+                        Label directions = new Label(joining(value.getProductDirectionEntityOptionList(), ", ", EntityOption::getDisplayText));
+                        directions.setStyleName("directions-label");
+                        content.append(directions.toString());
                     }
                     return content.toString();
                 });

@@ -2342,6 +2342,13 @@ a {
             font-size: 0.9em;
             cursor: pointer;
           }
+
+          .directions-label {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+          }
         }
       }
     }
