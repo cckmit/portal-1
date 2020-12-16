@@ -300,7 +300,7 @@ public class ProductServiceImpl implements ProductService {
             return;
         }
 
-        product.getProductDirections().forEach(direction ->
+        product.getProductDirections().stream().filter(Objects::nonNull).forEach(direction ->
                 devUnitChildRefDAO.persist(new DevUnitChildRef(direction.getId(), product.getId()))
         );
     }

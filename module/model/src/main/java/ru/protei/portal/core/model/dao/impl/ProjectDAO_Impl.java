@@ -31,6 +31,7 @@ import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
 
 public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements ProjectDAO {
 
+    public static final String LEFT_OUTER_JOIN_PROJECT_TO_PRODUCT = " left outer join project_to_product ptp on ptp.project_id = CO.id";
 
     @Override
     public Collection<Project> selectScheduledPauseTime( long greaterThanTime ) {
@@ -68,6 +69,12 @@ public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements Proje
                 .withDistinct(true)
                 .withSort(TypeConverters.createSort(query))
                 .withOffset(query.getOffset());
+
+        if (isNotEmpty(query.getDirections())) {
+            parameters.withDistinct(true);
+            parameters.withJoins(LEFT_OUTER_JOIN_PROJECT_TO_PRODUCT);
+        }
+
         if (query.limit > 0) {
             parameters = parameters.withLimit(query.getLimit());
         }
@@ -172,14 +179,14 @@ public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements Proje
                         .collect(toList());
 
                 if (productDirectionIds.remove(null)) {
-                    condition.append(" and (product_id is null");
+                    condition.append(" and (ptp.product_id is null");
                     if (!productDirectionIds.isEmpty()) {
-                        condition.append(" or product_id in ")
+                        condition.append(" or ptp.product_id in ")
                                 .append(makeInArg(productDirectionIds, false));
                     }
                     condition.append(")");
                 } else {
-                    condition.append(" and product_id in ")
+                    condition.append(" and ptp.product_id in ")
                             .append(makeInArg(productDirectionIds, false));
                 }
             }

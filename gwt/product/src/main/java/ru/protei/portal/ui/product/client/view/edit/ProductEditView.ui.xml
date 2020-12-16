@@ -62,7 +62,7 @@
                                 />
                                 <productdirection:ProductDirectionMultiSelector ui:field="productMultiDirections"
                                                                                 header="{lang.projectDirection}"
-                                                                                hasNullValue="true"/>
+                                                                                hasNullValue="false"/>
                             </g:HTMLPanel>
 
                             <g:HTMLPanel ui:field="commonManagerContainer" styleName="form-group col-md-6">
