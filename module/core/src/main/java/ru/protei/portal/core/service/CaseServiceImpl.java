@@ -157,6 +157,9 @@ public class CaseServiceImpl implements CaseService {
     @Autowired
     private ImportanceLevelDAO importanceLevelDAO;
 
+    @Autowired
+    private CompanyImportanceItemDAO companyImportanceItemDAO;
+
     @Override
     public Result<SearchResult<CaseShortView>> getCaseObjects(AuthToken token, CaseQuery query) {
 
@@ -1161,10 +1164,6 @@ public class CaseServiceImpl implements CaseService {
             log.warn("Importance level must be specified. caseId={}", caseMeta.getId());
             return false;
         }
-        if (!isImportanceLevelExist(caseMeta.getImpLevel())) {
-            log.warn("Unknown importance level. caseId={}, importance={}", caseMeta.getId(), caseMeta.getImpLevel());
-            return false;
-        }
         if (!isStateValid(caseMeta.getStateId(), caseMeta.getManagerId(), caseMeta.getPauseDate())) {
             log.warn("State is not valid. caseId={}", caseMeta.getId());
             return false;
@@ -1184,6 +1183,10 @@ public class CaseServiceImpl implements CaseService {
         }
         if (caseMeta.getInitiatorCompanyId() == null) {
             log.warn("Initiator company must be specified. caseId={}", caseMeta.getId());
+            return false;
+        }
+        if (!importanceBelongsToCompany(caseMeta.getImpLevel(), caseMeta.getInitiatorCompanyId())) {
+            log.warn("Importance level doesn't belong to company. caseId={}, importance={}, companyId={}", caseMeta.getId(), caseMeta.getImpLevel(), caseMeta.getInitiatorCompanyId());
             return false;
         }
         if (caseMeta.getInitiatorId() != null && !personBelongsToCompany( caseMeta.getInitiatorId(), caseMeta.getInitiatorCompanyId() )) {
@@ -1207,11 +1210,9 @@ public class CaseServiceImpl implements CaseService {
         return true;
     }
 
-    private boolean isImportanceLevelExist(Integer caseImportanceLevel) {
-        return importanceLevelDAO.getAll()
-                .stream()
-                .map(ImportanceLevel::getId)
-                .anyMatch(importanceLevelId -> importanceLevelId.equals(caseImportanceLevel));
+    private boolean importanceBelongsToCompany(Integer importanceLevelId, Long companyId) {
+        return stream(companyImportanceItemDAO.getSortedImportanceLevels(companyId))
+                .anyMatch(companyImportanceItem -> importanceLevelId.equals(companyImportanceItem.getImportanceLevelId()));
     }
 
     private boolean isProductValid(AuthToken token, Long productId, Long platformId, Long companyId) {

@@ -3,9 +3,10 @@ package ru.protei.portal.ui.report.client.view.table.columns;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dict.En_DateIntervalType;
+import ru.protei.portal.core.model.dict.En_ReportType;
+import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.dto.ReportDto;
-import ru.protei.portal.core.model.ent.ImportanceLevel;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
@@ -16,7 +17,6 @@ import ru.protei.portal.ui.common.client.lang.*;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -77,10 +77,6 @@ public class FilterColumn extends StaticColumn<ReportDto> {
         cell.appendChild(divElement);
     }
 
-    public void setImportanceLevels(List<ImportanceLevel> importanceLevels) {
-        this.importanceLevels = importanceLevels;
-    }
-
     private void appendCaseQueryInfo(Element element, CaseQuery caseQuery) {
 
         // search string
@@ -132,14 +128,7 @@ public class FilterColumn extends StaticColumn<ReportDto> {
 
         // importance
         if (isNotEmpty(caseQuery.getImportanceIds())) {
-            Element managerElement = DOM.createElement("p");
-            managerElement.setInnerText(lang.issueImportance() + ": " +
-                    caseQuery.getImportanceIds()
-                            .stream()
-                            .map(this::getImportanceName)
-                            .collect(Collectors.joining(", "))
-            );
-            element.appendChild(managerElement);
+            element.appendChild(makeArraySelectedElement(lang.issueImportance(), caseQuery.getImportanceIds()));
         }
 
         // states
@@ -362,14 +351,6 @@ public class FilterColumn extends StaticColumn<ReportDto> {
         return element;
     }
 
-    private String getImportanceName(Integer importanceLevelId) {
-        return stream(importanceLevels)
-                .filter(importanceLevel -> importanceLevel.getId().equals(importanceLevelId))
-                .map(ImportanceLevel::getCode)
-                .findAny()
-                .orElse("");
-    }
-
     private Lang lang;
     private En_SortFieldLang sortFieldLang;
     private En_SortDirLang sortDirLang;
@@ -378,5 +359,4 @@ public class FilterColumn extends StaticColumn<ReportDto> {
     private En_ContractKindLang contractKindLang;
     private En_ContractTypeLang contractTypeLang;
     private En_ContractStateLang contractStateLang;
-    private List<ImportanceLevel> importanceLevels;
 }

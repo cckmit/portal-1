@@ -10,7 +10,6 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.dto.ReportDto;
-import ru.protei.portal.core.model.ent.ImportanceLevel;
 import ru.protei.portal.ui.common.client.columns.CancelClickColumn;
 import ru.protei.portal.ui.common.client.columns.DownloadClickColumn;
 import ru.protei.portal.ui.common.client.columns.RefreshClickColumn;
@@ -21,8 +20,6 @@ import ru.protei.portal.ui.report.client.activity.table.AbstractReportTableView;
 import ru.protei.portal.ui.report.client.view.table.columns.FilterColumn;
 import ru.protei.portal.ui.report.client.view.table.columns.InfoColumn;
 import ru.protei.portal.ui.report.client.view.table.columns.NumberColumn;
-
-import java.util.List;
 
 public class ReportTableView extends Composite implements AbstractReportTableView {
 
@@ -73,11 +70,6 @@ public class ReportTableView extends Composite implements AbstractReportTableVie
     @Override
     public HasWidgets getPagerContainer() {
         return pagerContainer;
-    }
-
-    @Override
-    public void setImportanceLevels(List<ImportanceLevel> importanceLevels) {
-        filterColumn.setImportanceLevels(importanceLevels);
     }
 
     private void initTable() {
