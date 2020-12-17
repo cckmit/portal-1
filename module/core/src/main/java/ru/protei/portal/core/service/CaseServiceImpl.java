@@ -155,9 +155,6 @@ public class CaseServiceImpl implements CaseService {
     private CaseLinkDAO caseLinkDAO;
 
     @Autowired
-    private ImportanceLevelDAO importanceLevelDAO;
-
-    @Autowired
     private CompanyImportanceItemDAO companyImportanceItemDAO;
 
     @Override
@@ -1164,10 +1161,6 @@ public class CaseServiceImpl implements CaseService {
             log.warn("Importance level must be specified. caseId={}", caseMeta.getId());
             return false;
         }
-        if (!isStateValid(caseMeta.getStateId(), caseMeta.getManagerId(), caseMeta.getPauseDate())) {
-            log.warn("State is not valid. caseId={}", caseMeta.getId());
-            return false;
-        }
         if (caseMeta.getManagerCompanyId() == null) {
             log.warn("Manager company must be specified. caseId={}", caseMeta.getId());
             return false;
@@ -1183,6 +1176,10 @@ public class CaseServiceImpl implements CaseService {
         }
         if (caseMeta.getInitiatorCompanyId() == null) {
             log.warn("Initiator company must be specified. caseId={}", caseMeta.getId());
+            return false;
+        }
+        if (!isStateValid(caseMeta.getStateId(), caseMeta.getManagerId(), caseMeta.getInitiatorCompanyId(), caseMeta.getPauseDate())) {
+            log.warn("State is not valid. caseId={}", caseMeta.getId());
             return false;
         }
         if (!importanceBelongsToCompany(caseMeta.getImpLevel(), caseMeta.getInitiatorCompanyId())) {
@@ -1289,11 +1286,32 @@ public class CaseServiceImpl implements CaseService {
         return persons.stream().anyMatch( person -> personId.equals( person.getId() ) );
     }
 
-    private boolean isStateValid(long caseStateId, Long managerId, Long pauseDate) {
+    private boolean isStateValid(long caseStateId, Long managerId, Long initiatorCompanyId, Long pauseDate) {
+        List<CaseState> crmSupportStates = caseStateDAO.getAllByCaseType(CRM_SUPPORT);
+
+        if (stream(crmSupportStates).noneMatch(caseState -> caseState.getId().equals(caseStateId))) {
+            log.warn("Not crm state");
+            return false;
+        }
+
+        CaseState caseState = caseStateDAO.get(caseStateId);
+        jdbcManyRelationsHelper.fillAll(caseState);
+
+        if (caseState.getUsageInCompanies().equals(En_CaseStateUsageInCompanies.NONE)) {
+            log.warn("The state must be used for some companies");
+            return false;
+        }
+
+        if (caseState.getUsageInCompanies().equals(En_CaseStateUsageInCompanies.SELECTED) &&
+                caseState.getCompanies().stream().noneMatch(company -> company.getId().equals(initiatorCompanyId))) {
+            log.warn("The state can't be used with specified company. companyId={}", initiatorCompanyId);
+            return false;
+        }
+
         if (!(listOf(CrmConstants.State.CREATED, CrmConstants.State.CANCELED)
                 .contains(caseStateId)) && managerId == null) {
 
-            log.warn("State must be CREATED or CANCELED without manager");
+            log.warn("The state must be CREATED or CANCELED without manager");
             return false;
         }
 
