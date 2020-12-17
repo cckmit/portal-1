@@ -106,7 +106,8 @@
                                         </label>
                                         <phonegroup:TextGroupWithValidation ui:field="workPhones" styleName="form-group"
                                                                             itemStyleName="form-control group-item"
-                                                                            placeHolder="{lang.employeeWorkPhonePlaceHolder}"/>
+                                                                            placeHolder="{lang.employeeWorkPhonePlaceHolder}"
+                                        />
 
                                     </div>
                                     <div class="form-group col-md-6">

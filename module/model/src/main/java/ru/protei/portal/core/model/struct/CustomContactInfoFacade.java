@@ -37,6 +37,10 @@ public class CustomContactInfoFacade {
         return contactInfo.getItems(En_ContactItemType.MOBILE_PHONE);
     }
 
+    public List<ContactItem> getWorkPhoneList () {
+        return contactInfo.getItems(En_ContactItemType.GENERAL_PHONE);
+    }
+
     public List<ContactItem> getGeneralPhoneList () {
         return contactInfo.getItems(En_ContactItemType.GENERAL_PHONE);
     }

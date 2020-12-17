@@ -9,7 +9,6 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.ApplicationContext;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.index.document.DocumentStorageIndex;
@@ -1322,8 +1321,6 @@ public class BootstrapServiceImpl implements BootstrapService {
     CaseCommentDAO caseCommentDAO;
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
-    @Autowired
-    JdbcTemplate jdbcTemplate;
 
     SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd");
 

@@ -31,6 +31,7 @@ import ru.protei.portal.ui.employee.client.activity.edit.AbstractEmployeeEditAct
 import ru.protei.portal.ui.employee.client.activity.edit.AbstractEmployeeEditView;
 
 import java.util.Date;
+import java.util.List;
 
 import static ru.protei.portal.core.model.util.CrmConstants.ContactConstants.*;
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.MOBILE_PHONE;
@@ -150,15 +151,13 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     }
 
     @Override
-    public HasText workPhone() {
-        /*return workPhones;*/
-        return workEmail;
+    public HasValue<List<String>> workPhones() {
+        return workPhones;
     }
 
     @Override
-    public HasText mobilePhone() {
-        /*return mobilePhones;*/
-        return workEmail;
+    public HasValue<List<String>> mobilePhones() {
+        return mobilePhones;
     }
 
     @Override
@@ -204,6 +203,16 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @Override
     public HasValidable workEmailValidator(){
         return workEmail;
+    }
+
+    @Override
+    public HasValidable workPhonesValidator() {
+        return workPhones;
+    }
+
+    @Override
+    public HasValidable mobilePhonesValidator() {
+        return mobilePhones;
     }
 
     @Override

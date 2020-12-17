@@ -4,7 +4,6 @@ import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.logical.shared.HasCloseHandlers;
 import com.google.gwt.event.shared.HandlerRegistration;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
@@ -12,7 +11,10 @@ import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 
 import java.util.Objects;
 
-public class TextWithValidationItem extends ValidableTextBox implements HasCloseHandlers<TextWithValidationItem>, HasAddHandlers {
+import static ru.protei.portal.core.model.helper.StringUtils.*;
+
+public class TextWithValidationItem extends ValidableTextBox
+        implements HasCloseHandlers<TextWithValidationItem>, HasAddHandlers {
 
     public TextWithValidationItem() {
         super();
@@ -21,7 +23,7 @@ public class TextWithValidationItem extends ValidableTextBox implements HasClose
                 CloseEvent.fire( this, this );
             }
 
-            if ( StringUtils.isEmpty(oldValue) && StringUtils.isNotEmpty(event.getValue())) {
+            if ( isEmpty(oldValue) && isNotEmpty(event.getValue())) {
                 AddEvent.fire( this );
             }
 
@@ -46,7 +48,7 @@ public class TextWithValidationItem extends ValidableTextBox implements HasClose
 
     @Override
     public void setValue(String value, boolean fireEvents) {
-        if ( value.isEmpty() ) {
+        if ( isEmpty(value) ) {
             CloseEvent.fire( this, this );
         }
 

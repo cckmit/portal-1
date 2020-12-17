@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
 public class TextGroupWithValidation extends Composite
@@ -47,8 +48,8 @@ public class TextGroupWithValidation extends Composite
         clear();
         this.items = values == null ? new ArrayList<>() : values;
 
-        items.forEach( this :: makeItemAndFillValue );
-        addEmptyItem();
+        items.forEach(value -> makeItemAndFillValue(value, false));
+        addEmptyItem(false);
 
         if(fireEvents) {
             ValueChangeEvent.fire( this, this.items);
@@ -79,8 +80,23 @@ public class TextGroupWithValidation extends Composite
     @Override
     public void setEnabled(boolean isEnabled) {
         itemContainer.setStyleName("disabled", !isEnabled);
-        for (TextWithValidationItem item : modelToView.keySet()) {
-            item.setEnabled(isEnabled);
+
+        if (!isEnabled) {
+            for (TextWithValidationItem item : modelToView.keySet()) {
+                if (isEmpty(item.getValue())) {
+                    item.removeFromParent();
+                } else {
+                    item.setEnabled(false);
+                }
+            }
+        } else {
+            for (TextWithValidationItem item : modelToView.keySet()) {
+                item.setEnabled(true);
+            }
+            boolean isHasEmptyItem = modelToView.values().stream().anyMatch(StringUtils::isEmpty);
+            if(!isHasEmptyItem) {
+                addEmptyItem(false);
+            }
         }
     }
 
@@ -101,12 +117,13 @@ public class TextGroupWithValidation extends Composite
         this.itemStyleName = itemStyle;
     }
 
-    private void makeItemAndFillValue(String value) {
+    private void makeItemAndFillValue(String value, boolean setFocus) {
         TextWithValidationItem textWithValidationItem = new TextWithValidationItem();
-        textWithValidationItem.setValue( value == null ? "" : value );
+        textWithValidationItem.setValue( value );
         textWithValidationItem.setPlaceholder(placeHolder);
         textWithValidationItem.setRegexp(regexp);
         textWithValidationItem.setStyleName(itemStyleName);
+        textWithValidationItem.setNotNull(false);
         textWithValidationItem.getElement().setAttribute(DEBUG_ID_ATTRIBUTE ,DebugIds.GROUP.ITEM);
         textWithValidationItem.addCloseHandler(event -> {
             if ( itemContainer.getWidgetCount() == 1 ) {
@@ -115,23 +132,26 @@ public class TextGroupWithValidation extends Composite
             itemContainer.remove( event.getTarget() );
             String remove = modelToView.remove( event.getTarget() );
             items.remove( remove );
-            boolean isHasEmptyItem = modelToView.values().stream().anyMatch(StringUtils::isNotEmpty);
+            boolean isHasEmptyItem = modelToView.values().stream().anyMatch(StringUtils::isEmpty);
             if(!isHasEmptyItem) {
-                addEmptyItem();
+                addEmptyItem(false);
             }
         } );
 
         textWithValidationItem.addAddHandler(event -> {
-            addEmptyItem();
+            addEmptyItem(true);
             items.add( textWithValidationItem.getValue() );
         } );
-
         modelToView.put(textWithValidationItem, value );
         itemContainer.add(textWithValidationItem);
+
+        if (setFocus) {
+            textWithValidationItem.setFocus(true);
+        }
     }
 
-    private void addEmptyItem() {
-        makeItemAndFillValue( null );
+    private void addEmptyItem(boolean setFocus) {
+        makeItemAndFillValue( null, setFocus );
     }
 
     private void setTestAttributes() {

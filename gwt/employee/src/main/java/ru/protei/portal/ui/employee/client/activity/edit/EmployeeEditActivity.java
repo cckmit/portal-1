@@ -20,8 +20,8 @@ import ru.protei.portal.core.model.ent.CompanyDepartment;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.WorkerEntry;
 import ru.protei.portal.core.model.ent.WorkerPosition;
-import ru.protei.portal.core.model.helper.PhoneUtils;
 import ru.protei.portal.core.model.query.CompanyQuery;
+import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.struct.UploadResult;
 import ru.protei.portal.core.model.struct.WorkerEntryFacade;
@@ -41,6 +41,7 @@ import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionEditIte
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionEditItemView;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.util.CrmConstants.ContactConstants.*;
 
@@ -372,8 +373,8 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(employee.getContactInfo());
 
-        infoFacade.setWorkPhone(PhoneUtils.normalizePhoneNumber(view.workPhone().getText()));
-        infoFacade.setMobilePhone(PhoneUtils.normalizePhoneNumber(view.mobilePhone().getText()));
+        infoFacade.addWorkPhones(view.workPhones().getValue());
+        infoFacade.addMobilePhones(view.mobilePhones().getValue());
 
         infoFacade.setEmail(view.workEmail().getValue());
         employee.setIpAddress(view.ipAddress().getValue());
@@ -420,6 +421,14 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
             return lang.errEmployeePositionEmpty();
         }
 
+        if (!view.workPhonesValidator().isValid()) {
+            return lang.errorFieldHasInvalidValue(lang.workPhone());
+        }
+
+        if (!view.mobilePhonesValidator().isValid()) {
+            return lang.errorFieldHasInvalidValue(lang.mobilePhone());
+        }
+
         return null;
     }
 
@@ -455,8 +464,8 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         view.ipAddress().setValue(employee.getIpAddress());
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(employee.getContactInfo());
-        view.workPhone().setText(employee.getContactInfo() == null ? null : infoFacade.getWorkPhone());
-        view.mobilePhone().setText(employee.getContactInfo() == null ? null : infoFacade.getMobilePhone());
+        view.workPhones().setValue(employee.getContactInfo() == null ? null : infoFacade.getWorkPhoneList().stream().map(ContactItem::value).collect(Collectors.toList()));
+        view.mobilePhones().setValue(employee.getContactInfo() == null ? null : infoFacade.getMobilePhoneList().stream().map(ContactItem::value).collect(Collectors.toList()));
         view.workEmail().setValue(employee.getContactInfo() == null ? null : infoFacade.getEmail());
 
         view.firedMsgVisibility().setVisible(employee.isFired());

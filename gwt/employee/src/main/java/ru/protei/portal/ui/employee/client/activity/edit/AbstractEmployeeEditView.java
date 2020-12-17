@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.Date;
+import java.util.List;
 
 public interface AbstractEmployeeEditView extends IsWidget {
 
@@ -44,9 +45,9 @@ public interface AbstractEmployeeEditView extends IsWidget {
 
     void setBirthDayTimeZone (TimeZone timeZone);
 
-    HasText workPhone ();
+    HasValue<List<String>> workPhones();
 
-    HasText mobilePhone();
+    HasValue<List<String>> mobilePhones();
 
     HasValue<String> workEmail();
 
@@ -75,6 +76,10 @@ public interface AbstractEmployeeEditView extends IsWidget {
     HasVisibility firedMsgVisibility();
 
     HasValidable workEmailValidator();
+
+    HasValidable workPhonesValidator();
+
+    HasValidable mobilePhonesValidator();
 
     HasValidable ipAddressValidator();
 

@@ -29,6 +29,7 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -105,6 +106,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     EventPublisherService publisherService;
     @Autowired
     CompanyService companyService;
+
+    private Pattern workPhone = Pattern.compile(CrmConstants.Masks.WORK_PHONE);
+    private Pattern mobilePhone = Pattern.compile(CrmConstants.Masks.MOBILE_PHONE);
 
     @Override
     public Result<List<PersonShortView>> shortViewList( EmployeeQuery query) {
@@ -826,6 +830,14 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         PlainContactInfoFacade facade = new PlainContactInfoFacade(person.getContactInfo());
         if (StringUtils.isBlank(facade.getEmail())) {
+            return false;
+        }
+
+        if (!stream(facade.getWorkPhoneList()).allMatch(phone -> workPhone.matcher(phone.value()).matches())) {
+            return false;
+        }
+
+        if (!stream(facade.getMobilePhoneList()).allMatch(phone -> mobilePhone.matcher(phone.value()).matches())) {
             return false;
         }
 
