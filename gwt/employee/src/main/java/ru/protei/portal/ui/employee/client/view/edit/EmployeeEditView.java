@@ -11,7 +11,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
@@ -21,6 +20,7 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.InputEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.group.TextGroupWithValidation;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.companydepartment.CompanyDepartmentSelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.GenderButtonSelector;
@@ -33,6 +33,8 @@ import ru.protei.portal.ui.employee.client.activity.edit.AbstractEmployeeEditVie
 import java.util.Date;
 
 import static ru.protei.portal.core.model.util.CrmConstants.ContactConstants.*;
+import static ru.protei.portal.core.model.util.CrmConstants.Masks.MOBILE_PHONE;
+import static ru.protei.portal.core.model.util.CrmConstants.Masks.WORK_PHONE;
 
 public class EmployeeEditView extends Composite implements AbstractEmployeeEditView {
 
@@ -62,6 +64,9 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         lastNameErrorLabel.setText(lang.promptFieldLengthExceed(lastNameLabel(), LAST_NAME_SIZE));
 
         company.setSynchronizeWith1C(false);
+
+        workPhones.setRegexp(WORK_PHONE);
+        mobilePhones.setRegexp(MOBILE_PHONE);
     }
 
     @Override
@@ -101,12 +106,12 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
 
     @Override
     public HasEnabled mobilePhoneEnabled() {
-        return mobilePhone;
+        return mobilePhones;
     }
 
     @Override
     public HasEnabled workPhoneEnabled() {
-        return workPhone;
+        return workPhones;
     }
 
     @Override
@@ -146,12 +151,14 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
 
     @Override
     public HasText workPhone() {
-        return workPhone;
+        /*return workPhones;*/
+        return workEmail;
     }
 
     @Override
     public HasText mobilePhone() {
-        return mobilePhone;
+        /*return mobilePhones;*/
+        return workEmail;
     }
 
     @Override
@@ -453,10 +460,10 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     SinglePicker birthDay;
 
     @UiField
-    TextBox workPhone;
+    TextGroupWithValidation workPhones;
 
     @UiField
-    TextBox mobilePhone;
+    TextGroupWithValidation mobilePhones;
 
     @UiField
     ValidableTextBox workEmail;

@@ -6,7 +6,9 @@
              xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
              xmlns:companydepartment='urn:import:ru.protei.portal.ui.common.client.widget.selector.companydepartment'
              xmlns:workerposition='urn:import:ru.protei.portal.ui.common.client.widget.selector.workerposition'
-             xmlns:validatefield="urn:import:ru.protei.portal.ui.common.client.widget.validatefield">
+             xmlns:validatefield="urn:import:ru.protei.portal.ui.common.client.widget.validatefield"
+             xmlns:phonegroup='urn:import:ru.protei.portal.ui.common.client.widget.group'
+>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -102,13 +104,18 @@
                                         <label>
                                             <ui:text from="{lang.workPhone}"/>
                                         </label>
-                                        <g:TextBox ui:field="workPhone" styleName="form-control"/>
+                                        <phonegroup:TextGroupWithValidation ui:field="workPhones" styleName="form-group"
+                                                                            itemStyleName="form-control group-item"
+                                                                            placeHolder="{lang.employeeWorkPhonePlaceHolder}"/>
+
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label class="">
                                             <ui:text from="{lang.mobilePhone}"/>
                                         </label>
-                                        <g:TextBox ui:field="mobilePhone" styleName="form-control"/>
+                                        <phonegroup:TextGroupWithValidation ui:field="mobilePhones" styleName="form-group"
+                                                                            itemStyleName="form-control group-item"
+                                                                            placeHolder="{lang.employeeMobilePhonePlaceHolder}"/>
                                     </div>
 
                                 </div>

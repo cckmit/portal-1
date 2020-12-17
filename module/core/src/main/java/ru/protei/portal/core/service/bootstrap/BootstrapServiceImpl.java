@@ -159,7 +159,7 @@ public class BootstrapServiceImpl implements BootstrapService {
 
         /**
          *  begin Спринт 63 */
-        normalizePhoneNumbers();
+//        normalizePhoneNumbers();
         /**
          *  end Спринт */
 
