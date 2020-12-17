@@ -104,9 +104,9 @@
                                         <label>
                                             <ui:text from="{lang.workPhone}"/>
                                         </label>
-                                        <phonegroup:TextGroupWithValidation ui:field="workPhones" styleName="form-group"
-                                                                            itemStyleName="form-control group-item"
-                                                                            placeHolder="{lang.employeeWorkPhonePlaceHolder}"
+                                        <phonegroup:ContactItemGroupWithValidation ui:field="workPhones" styleName="form-group"
+                                                                                   itemStyleName="form-control group-item"
+                                                                                   placeHolder="{lang.employeeWorkPhonePlaceHolder}"
                                         />
 
                                     </div>
@@ -114,9 +114,9 @@
                                         <label class="">
                                             <ui:text from="{lang.mobilePhone}"/>
                                         </label>
-                                        <phonegroup:TextGroupWithValidation ui:field="mobilePhones" styleName="form-group"
-                                                                            itemStyleName="form-control group-item"
-                                                                            placeHolder="{lang.employeeMobilePhonePlaceHolder}"/>
+                                        <phonegroup:ContactItemGroupWithValidation ui:field="mobilePhones" styleName="form-group"
+                                                                                   itemStyleName="form-control group-item"
+                                                                                   placeHolder="{lang.employeeMobilePhonePlaceHolder}"/>
                                     </div>
 
                                 </div>

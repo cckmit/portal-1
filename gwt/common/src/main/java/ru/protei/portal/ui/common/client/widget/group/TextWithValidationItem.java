@@ -11,7 +11,8 @@ import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 
 import java.util.Objects;
 
-import static ru.protei.portal.core.model.helper.StringUtils.*;
+import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 
 public class TextWithValidationItem extends ValidableTextBox
         implements HasCloseHandlers<TextWithValidationItem>, HasAddHandlers {

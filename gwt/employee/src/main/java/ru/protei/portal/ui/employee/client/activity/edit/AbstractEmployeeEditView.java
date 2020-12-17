@@ -5,6 +5,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.TimeZone;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
@@ -45,9 +46,9 @@ public interface AbstractEmployeeEditView extends IsWidget {
 
     void setBirthDayTimeZone (TimeZone timeZone);
 
-    HasValue<List<String>> workPhones();
+    HasValue<List<ContactItem>> workPhones();
 
-    HasValue<List<String>> mobilePhones();
+    HasValue<List<ContactItem>> mobilePhones();
 
     HasValue<String> workEmail();
 

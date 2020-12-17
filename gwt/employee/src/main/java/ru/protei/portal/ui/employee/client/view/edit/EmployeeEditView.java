@@ -15,12 +15,15 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.AttachmentType;
+import ru.protei.portal.core.model.dict.En_ContactDataAccess;
+import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.InputEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.group.TextGroupWithValidation;
+import ru.protei.portal.ui.common.client.widget.group.ContactItemGroupWithValidation;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.companydepartment.CompanyDepartmentSelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.GenderButtonSelector;
@@ -68,6 +71,9 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
 
         workPhones.setRegexp(WORK_PHONE);
         mobilePhones.setRegexp(MOBILE_PHONE);
+
+        workPhones.setNewContactItem(() -> new ContactItem(En_ContactItemType.GENERAL_PHONE, En_ContactDataAccess.PUBLIC));
+        mobilePhones.setNewContactItem(() -> new ContactItem(En_ContactItemType.MOBILE_PHONE, En_ContactDataAccess.PUBLIC));
     }
 
     @Override
@@ -151,12 +157,12 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     }
 
     @Override
-    public HasValue<List<String>> workPhones() {
+    public HasValue<List<ContactItem>> workPhones() {
         return workPhones;
     }
 
     @Override
-    public HasValue<List<String>> mobilePhones() {
+    public HasValue<List<ContactItem>> mobilePhones() {
         return mobilePhones;
     }
 
@@ -469,10 +475,10 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     SinglePicker birthDay;
 
     @UiField
-    TextGroupWithValidation workPhones;
+    ContactItemGroupWithValidation workPhones;
 
     @UiField
-    TextGroupWithValidation mobilePhones;
+    ContactItemGroupWithValidation mobilePhones;
 
     @UiField
     ValidableTextBox workEmail;

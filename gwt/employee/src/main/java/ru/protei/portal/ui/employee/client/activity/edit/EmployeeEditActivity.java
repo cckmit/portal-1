@@ -21,7 +21,6 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.WorkerEntry;
 import ru.protei.portal.core.model.ent.WorkerPosition;
 import ru.protei.portal.core.model.query.CompanyQuery;
-import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.struct.UploadResult;
 import ru.protei.portal.core.model.struct.WorkerEntryFacade;
@@ -41,7 +40,6 @@ import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionEditIte
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionEditItemView;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.util.CrmConstants.ContactConstants.*;
 
@@ -371,12 +369,12 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         employee.setSecondName(view.secondName().getText());
         employee.setBirthday(view.birthDay().getValue());
 
+        employee.getContactItems().clear();
+        employee.getContactItems().addAll(view.workPhones().getValue());
+        employee.getContactItems().addAll(view.mobilePhones().getValue());
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(employee.getContactInfo());
-
-        infoFacade.addWorkPhones(view.workPhones().getValue());
-        infoFacade.addMobilePhones(view.mobilePhones().getValue());
-
         infoFacade.setEmail(view.workEmail().getValue());
+
         employee.setIpAddress(view.ipAddress().getValue());
 
         employee.setFired(false, null);
@@ -464,8 +462,8 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         view.ipAddress().setValue(employee.getIpAddress());
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(employee.getContactInfo());
-        view.workPhones().setValue(employee.getContactInfo() == null ? null : infoFacade.getWorkPhoneList().stream().map(ContactItem::value).collect(Collectors.toList()));
-        view.mobilePhones().setValue(employee.getContactInfo() == null ? null : infoFacade.getMobilePhoneList().stream().map(ContactItem::value).collect(Collectors.toList()));
+        view.workPhones().setValue(employee.getContactInfo() == null ? null : infoFacade.getWorkPhoneList());
+        view.mobilePhones().setValue(employee.getContactInfo() == null ? null : infoFacade.getMobilePhoneList());
         view.workEmail().setValue(employee.getContactInfo() == null ? null : infoFacade.getEmail());
 
         view.firedMsgVisibility().setVisible(employee.isFired());

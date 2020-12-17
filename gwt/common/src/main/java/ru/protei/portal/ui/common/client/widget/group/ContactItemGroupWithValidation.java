@@ -12,39 +12,37 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Supplier;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
-public class TextGroupWithValidation extends Composite
-        implements HasValue<List<String>>, HasValidable, HasEnabled {
+public class ContactItemGroupWithValidation extends Composite
+        implements HasValue<List<ContactItem>>, HasValidable, HasEnabled {
 
-    public TextGroupWithValidation() {
+    public ContactItemGroupWithValidation() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         setTestAttributes();
     }
 
     @Override
-    public List<String> getValue() {
+    public List<ContactItem> getValue() {
         return new ArrayList<>(items);
     }
 
     @Override
-    public void setValue( List<String> value ) {
+    public void setValue( List<ContactItem> value ) {
         setValue( value, false );
     }
 
     @Override
-    public void setValue(List<String> values, boolean fireEvents ) {
+    public void setValue(List<ContactItem> values, boolean fireEvents ) {
         clear();
         this.items = values == null ? new ArrayList<>() : values;
 
@@ -93,7 +91,7 @@ public class TextGroupWithValidation extends Composite
             for (TextWithValidationItem item : modelToView.keySet()) {
                 item.setEnabled(true);
             }
-            boolean isHasEmptyItem = modelToView.values().stream().anyMatch(StringUtils::isEmpty);
+            boolean isHasEmptyItem = modelToView.values().stream().anyMatch(item -> item == null || isEmpty(item.value()));
             if(!isHasEmptyItem) {
                 addEmptyItem(false);
             }
@@ -101,7 +99,7 @@ public class TextGroupWithValidation extends Composite
     }
 
     @Override
-    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<List<String>> handler ) {
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<List<ContactItem>> handler ) {
         return addHandler( handler, ValueChangeEvent.getType() );
     }
 
@@ -117,9 +115,13 @@ public class TextGroupWithValidation extends Composite
         this.itemStyleName = itemStyle;
     }
 
-    private void makeItemAndFillValue(String value, boolean setFocus) {
+    public void setNewContactItem(Supplier<ContactItem> newContactItem) {
+        this.newContactItem = newContactItem;
+    }
+
+    private void makeItemAndFillValue(ContactItem value, boolean setFocus) {
         TextWithValidationItem textWithValidationItem = new TextWithValidationItem();
-        textWithValidationItem.setValue( value );
+        textWithValidationItem.setValue( value == null? null : value.value() );
         textWithValidationItem.setPlaceholder(placeHolder);
         textWithValidationItem.setRegexp(regexp);
         textWithValidationItem.setStyleName(itemStyleName);
@@ -130,9 +132,9 @@ public class TextGroupWithValidation extends Composite
                 return;
             }
             itemContainer.remove( event.getTarget() );
-            String remove = modelToView.remove( event.getTarget() );
+            ContactItem remove = modelToView.remove( event.getTarget() );
             items.remove( remove );
-            boolean isHasEmptyItem = modelToView.values().stream().anyMatch(StringUtils::isEmpty);
+            boolean isHasEmptyItem = modelToView.values().stream().anyMatch(item -> item == null || isEmpty(item.value()));
             if(!isHasEmptyItem) {
                 addEmptyItem(false);
             }
@@ -140,7 +142,7 @@ public class TextGroupWithValidation extends Composite
 
         textWithValidationItem.addAddHandler(event -> {
             addEmptyItem(true);
-            items.add( textWithValidationItem.getValue() );
+            items.add( newContactItem.get().modify(textWithValidationItem.getValue()) );
         } );
         modelToView.put(textWithValidationItem, value );
         itemContainer.add(textWithValidationItem);
@@ -173,10 +175,11 @@ public class TextGroupWithValidation extends Composite
     private String placeHolder;
     private String regexp;
     private String itemStyleName;
+    private Supplier<ContactItem> newContactItem;
 
-    private List<String> items = new ArrayList<>();
-    private final Map<TextWithValidationItem, String> modelToView = new HashMap<>();
+    private List<ContactItem> items = new ArrayList<>();
+    private final Map<TextWithValidationItem, ContactItem> modelToView = new HashMap<>();
 
-    interface PhoneGroupUiBinder extends UiBinder<HTMLPanel, TextGroupWithValidation> {}
+    interface PhoneGroupUiBinder extends UiBinder<HTMLPanel, ContactItemGroupWithValidation> {}
     private static final PhoneGroupUiBinder ourUiBinder = GWT.create(PhoneGroupUiBinder.class);
 }
