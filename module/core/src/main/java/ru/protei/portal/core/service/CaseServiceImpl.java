@@ -793,6 +793,7 @@ public class CaseServiceImpl implements CaseService {
         log.info("CaseServiceImpl#updatePlans : plans={}, caseId={}", plans, caseId);
 
         CaseObject caseObject = caseObjectDAO.partialGet(caseId, "MODIFIED");
+        caseObject.setId(caseId);
         caseObject.setModified(new Date());
 
         if (!caseObjectDAO.partialMerge(caseObject, "MODIFIED")) {
