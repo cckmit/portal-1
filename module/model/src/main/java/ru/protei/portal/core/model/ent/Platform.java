@@ -27,9 +27,10 @@ public class Platform extends AuditableObject {
     @JdbcColumn(name="comment")
     private String comment;
 
-    @JdbcJoinedObject(localColumn = "manager_id", remoteColumn = "id", updateLocalColumn = true)
+    @JdbcJoinedObject(localColumn = "manager_id", remoteColumn = "id")
     private PersonShortView manager;
 
+    @JdbcColumn(name="manager_id")
     private Long managerId;
 
     @JdbcJoinedColumn(joinPath = {
@@ -114,6 +115,7 @@ public class Platform extends AuditableObject {
 
     public void setManager(PersonShortView manager) {
         this.manager = manager;
+        this.managerId = manager != null ? manager.getId() : null;
     }
 
     public Long getManagerId() {

@@ -198,16 +198,6 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
-        Long managerId = platform.getManagerId();
-        if (managerId != null) {
-            Person manager = personDAO.get(managerId);
-            if (manager == null) {
-                return error(En_ResultStatus.INCORRECT_PARAMS, "The manager not found by specified ID");
-            }
-
-            platform.setManager(new PersonShortView(manager));
-        }
-
         Long id = platformDAO.persist(platform);
 
         if (id == null) {
