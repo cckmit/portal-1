@@ -110,6 +110,14 @@ public class Company extends AuditableObject implements EntityOptionSupport {
         this.category = category;
     }
 
+    public Integer getCategoryId() {
+        return category != null ? category.getId() : null;
+    }
+
+    public void setCategoryId(Integer categoryId) {
+        this.category = En_CompanyCategory.findById(categoryId);
+    }
+
     public void setCname( String cname) {
         this.cname = cname;
     }
