@@ -13,7 +13,10 @@ import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseNameAndDescriptionEvent;
 import ru.protei.portal.core.event.CaseObjectMetaEvent;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dict.En_ExtAppType;
+import ru.protei.portal.core.model.dict.En_HistoryAction;
+import ru.protei.portal.core.model.dict.En_HistoryType;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
@@ -77,6 +80,9 @@ public final class CommonServiceImpl implements CommonService {
 
     @Autowired
     CaseStateDAO caseStateDAO;
+
+    @Autowired
+    ImportanceLevelDAO importanceLevelDAO;
 
     @Override
     public Result<Long> saveAttachment( Attachment attachment, Person author, HttpInputSource httpInputSource, Long fileSize, String contentType, CaseObject caseObject ) {
@@ -169,14 +175,14 @@ public final class CommonServiceImpl implements CommonService {
 
     @Override
     public Result<Long> createAndStoreImportanceHistory(Date created, Long authorId, Integer importance, Long caseId) {
-        Long id = addImportanceHistory(created, authorId, caseId, importance.longValue());
+        Long id = addImportanceHistory(created, authorId, caseId, importanceLevelDAO.get(importance));
         if(id == null) return error( En_ResultStatus.NOT_CREATED, "Importance comment do not created." );
         return ok(id);
     }
 
     @Override
     public Result<Long> updateAndStoreImportanceHistory(Date updated, Long authorId, Integer oldImportance, Long caseId, Integer newImportance) {
-        Long id = changeImportanceHistory(updated, authorId, caseId, oldImportance.longValue(), newImportance.longValue());
+        Long id = changeImportanceHistory(updated, authorId, caseId, importanceLevelDAO.get(oldImportance), importanceLevelDAO.get(newImportance));
         if(id == null) return error( En_ResultStatus.NOT_UPDATED, "Importance comment do not updated." );
         return ok(id);
     }
@@ -233,7 +239,7 @@ public final class CommonServiceImpl implements CommonService {
 
         object.setImpLevel( priorityMapEntry.getLocalPriorityId() );
         caseObjectDAO.merge( object );
-        logger.debug( "Updated case priority for case with id {}, old={}, new={}", object.getId(), En_ImportanceLevel.find( oldMeta.getImpLevel() ), En_ImportanceLevel.find( object.getImpLevel() ) );
+        logger.debug( "Updated case priority for case with id {}, old={}, new={}", object.getId(), oldMeta.getImportanceCode(), object.getImportanceCode() );
 
         Result<Long> importanceCommentId = updateAndStoreImportanceHistory( journal.getCreatedOn(), author.getId(),
                 oldMeta.getImpLevel(), object.getId(), priorityMapEntry.getLocalPriorityId());
@@ -362,14 +368,14 @@ public final class CommonServiceImpl implements CommonService {
         return createHistory(date, personId, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_STATE, oldStateId, oldStateName, newStateId, newStateName);
     }
 
-    private Long addImportanceHistory(Date date, Long personId, Long caseId, Long importanceId) {
+    private Long addImportanceHistory(Date date, Long personId, Long caseId, ImportanceLevel importanceLevel) {
         return createHistory(date, personId, caseId, En_HistoryAction.ADD, En_HistoryType.CASE_IMPORTANCE, null, null,
-                importanceId, En_ImportanceLevel.getById(importanceId.intValue()).getCode());
+                importanceLevel.getId().longValue(), importanceLevel.getCode());
     }
 
-    private Long changeImportanceHistory(Date date, Long personId, Long caseId, Long oldImportanceId, Long newImportanceId) {
+    private Long changeImportanceHistory(Date date, Long personId, Long caseId, ImportanceLevel oldImportanceLevel, ImportanceLevel newImportanceLevel) {
         return createHistory(date, personId, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_IMPORTANCE,
-                oldImportanceId, En_ImportanceLevel.getById(oldImportanceId.intValue()).getCode(), newImportanceId, En_ImportanceLevel.getById(newImportanceId.intValue()).getCode());
+                oldImportanceLevel.getId().longValue(), oldImportanceLevel.getCode(), newImportanceLevel.getId().longValue(), newImportanceLevel.getCode());
     }
 
     private Long createHistory(Date date, Long personId, Long caseObjectId, En_HistoryAction action,

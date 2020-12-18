@@ -50,6 +50,7 @@ public abstract class ReportTableActivity implements
             fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
+
         showActionBarButtons();
         showView();
         loadTable();

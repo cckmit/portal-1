@@ -6,7 +6,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.jetbrains.annotations.NotNull;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dict.En_HistoryType;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -138,8 +137,8 @@ public class ExcelReportWriter implements
 
         for (History history : histories) {
             if (history.getType() == En_HistoryType.CASE_IMPORTANCE) {
-                if (Objects.equals(En_ImportanceLevel.IMPORTANT.getId(), history.getNewId().intValue() )) important = history.getDate();
-                if (Objects.equals(En_ImportanceLevel.CRITICAL.getId(), history.getNewId().intValue() )) critical = history.getDate();
+                if (Objects.equals(CrmConstants.ImportanceLevel.IMPORTANT, history.getNewId().intValue() )) important = history.getDate();
+                if (Objects.equals(CrmConstants.ImportanceLevel.CRITICAL, history.getNewId().intValue() )) critical = history.getDate();
             }
 
             if (history.getType() == En_HistoryType.CASE_STATE) {
@@ -182,7 +181,7 @@ public class ExcelReportWriter implements
         values.add(issue.getManager() != null && HelperFunc.isNotEmpty(issue.getManager().getDisplayShortName()) ? transliterate(issue.getManager().getDisplayShortName(), locale) : "");
         values.add(issue.getManagerCompanyName() != null ? transliterate(issue.getManagerCompanyName(), locale) : "");
         values.add(issue.getProduct() != null && HelperFunc.isNotEmpty(issue.getProduct().getName()) ? issue.getProduct().getName() : "");
-        values.add(issue.getImportanceLevel() != null ? issue.getImportanceLevel().getCode() : "");
+        values.add(issue.getImportanceCode() != null ? issue.getImportanceCode() : "");
         values.add(HelperFunc.isNotEmpty(issue.getStateName()) ? issue.getStateName() : "");
         if (withTags) values.add(String.join(",", toList(emptyIfNull(object.getCaseTags()), CaseTag::getName)));
         if (withLinkedIssues) values.add(getCaseNumbersAsString(object.getCaseLinks(), lang));

@@ -4,7 +4,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import ru.protei.portal.core.model.dict.En_HistoryAction;
 import ru.protei.portal.core.model.dict.En_HistoryType;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.History;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
@@ -16,6 +15,7 @@ import static ru.protei.portal.core.model.dict.En_HistoryAction.*;
 import static ru.protei.portal.core.model.dict.En_HistoryType.CASE_IMPORTANCE;
 import static ru.protei.portal.core.model.dict.En_HistoryType.CASE_MANAGER;
 import static ru.protei.portal.core.model.query.CaseCommentQuery.CommentType.*;
+import static ru.protei.portal.core.model.util.CrmConstants.ImportanceLevel.*;
 import static ru.protei.portal.core.model.util.CrmConstants.State.*;
 
 public class BootstrapTest {
@@ -24,20 +24,20 @@ public class BootstrapTest {
         long id = 1;
         List<CaseComment> caseComments = new ArrayList<>();
         caseComments.add(fillStateComment(createComment(id++, 1L), CREATED, "created"));
-        caseComments.add(fillImportanceComment(createComment(id++, 1L), En_ImportanceLevel.BASIC));
+        caseComments.add(fillImportanceComment(createComment(id++, 1L), BASIC));
 
 
-        caseComments.add(fillImportanceComment(createComment(id++, 2L), En_ImportanceLevel.BASIC));
+        caseComments.add(fillImportanceComment(createComment(id++, 2L), BASIC));
         caseComments.add(fillStateComment(createComment(id++, 2L), CREATED, "created"));
         caseComments.add(fillManagerComment(createComment(id++, 2L), 1L, "manager1"));
 
 
-        caseComments.add(fillImportanceComment(createComment(id++, 1L), En_ImportanceLevel.COSMETIC));
+        caseComments.add(fillImportanceComment(createComment(id++, 1L), COSMETIC));
         caseComments.add(fillManagerComment(createComment(id++, 1L), 2L, "manager2"));
 
         caseComments.add(fillManagerComment(createComment(id++, 1L), null, null));
 
-        caseComments.add(fillImportanceComment(createComment(id++, 1L), En_ImportanceLevel.CRITICAL));
+        caseComments.add(fillImportanceComment(createComment(id++, 1L), CRITICAL));
         caseComments.add(fillStateComment(createComment(id++, 1L), ACTIVE, "active"));
         caseComments.add(fillManagerComment(createComment(id++, 1L), 1L, "manager1"));
 
@@ -50,7 +50,7 @@ public class BootstrapTest {
                 CaseComment::getCaseStateId, CaseComment::getCaseStateName));
         commentToHistoryMigrationMap.put(IMPORTANCE, new BootstrapServiceImpl.CommentToHistoryMigration(IMPORTANCE, CASE_IMPORTANCE,
                 caseComment -> (long) caseComment.getCaseImpLevel(),
-                caseComment -> caseComment.getCaseImportance().getCode()));
+                CaseComment::getImportanceCode));
         commentToHistoryMigrationMap.put(MANAGER, new BootstrapServiceImpl.CommentToHistoryMigration(MANAGER, CASE_MANAGER,
                 CaseComment::getCaseManagerId, CaseComment::getCaseManagerShortName));
 
@@ -88,9 +88,8 @@ public class BootstrapTest {
         return comment;
     }
 
-    private CaseComment fillImportanceComment(CaseComment comment, En_ImportanceLevel enImportanceLevel) {
-        comment.setCaseImportance(enImportanceLevel);
-        comment.setCaseImpLevel(enImportanceLevel.getId());
+    private CaseComment fillImportanceComment(CaseComment comment, Integer importanceLevelId) {
+        comment.setCaseImpLevel(importanceLevelId);
         return comment;
     }
 

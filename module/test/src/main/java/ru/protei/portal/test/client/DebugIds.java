@@ -238,12 +238,7 @@ public class DebugIds {
     }
 
     public interface IMPORTANCE_BUTTON {
-        String DEFAULT = "importance-button-";
-        String CRITICAL = "importance-button-critical";
-        String IMPORTANT = "importance-button-important";
-        String BASIC = "importance-button-basic";
-        String COSMETIC = "importance-button-cosmetic";
-        String MEDIUM = "importance-button-medium";
+        String PREFIX = "importance-button-";
     }
 
     public interface PRODUCT_TYPES_BUTTON {

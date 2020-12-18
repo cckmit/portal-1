@@ -1,6 +1,5 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_WorkTrigger;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -33,6 +32,9 @@ public class CaseObjectMeta extends AuditableObject {
 
     @JdbcColumn(name = "IMPORTANCE")
     private Integer impLevel;
+
+    @JdbcJoinedColumn(localColumn = "IMPORTANCE", remoteColumn = "id", table = "importance_level", mappedColumn = "code")
+    private String importanceCode;
 
     @JdbcColumn(name = "INITIATOR")
     private Long initiatorId;
@@ -119,35 +121,8 @@ public class CaseObjectMeta extends AuditableObject {
         if (co.getPlans() != null) setPlans(co.getPlans());
         if (co.getDeadline() != null) setDeadline(co.getDeadline());
         if (co.getWorkTrigger() != null) setWorkTrigger(co.getWorkTrigger());
+        if (co.getImportanceCode() != null) setImportanceCode(co.getImportanceCode());
         setPrivateCase(co.isPrivateCase());
-    }
-
-    public CaseObject collectToCaseObject(CaseObject co) {
-        if (co == null) return null;
-        if (getId() != null) co.setId(getId());
-        if (getModified() != null) co.setModified(getModified());
-        if (getStateId() != 0) co.setStateId(getStateId());
-        if (getStateName() != null) co.setStateName(getStateName());
-        if (getPauseDate() != null) co.setPauseDate(getPauseDate());
-        if (getImpLevel() != null) co.setImpLevel(getImpLevel());
-        if (getInitiator() != null) co.setInitiator(getInitiator());
-        if (getInitiatorId() != null) co.setInitiatorId(getInitiatorId());
-        if (getInitiatorCompany() != null) co.setInitiatorCompany(getInitiatorCompany());
-        if (getInitiatorCompanyId() != null) co.setInitiatorCompanyId(getInitiatorCompanyId());
-        if (getProduct() != null) co.setProduct(getProduct());
-        if (getProductId() != null) co.setProductId(getProductId());
-        if (getManager() != null) co.setManager(getManager());
-        if (getManagerId() != null) co.setManagerId(getManagerId());
-        if (getPlatformId() != null) co.setPlatformId(getPlatformId());
-        if (getPlatformName() != null) co.setPlatformName(getPlatformName());
-        if (getTimeElapsed() != null) co.setTimeElapsed(getTimeElapsed());
-        if (getExtAppType() != null) co.setExtAppType(getExtAppType());
-        if (getManagerCompanyId() != null) co.setManagerCompanyId(getManagerCompanyId());
-        if (getPlans() != null) co.setPlans(getPlans());
-        if (co.getDeadline() != null) setDeadline(co.getDeadline());
-        if (co.getWorkTrigger() != null) setWorkTrigger(co.getWorkTrigger());
-        co.setPrivateCase(isPrivateCase());
-        return co;
     }
 
     @Override
@@ -195,12 +170,12 @@ public class CaseObjectMeta extends AuditableObject {
         this.impLevel = impLevel;
     }
 
-    public En_ImportanceLevel getImportance() {
-        return En_ImportanceLevel.getById(getImpLevel());
+    public String getImportanceCode() {
+        return importanceCode;
     }
 
-    public void setImportance(En_ImportanceLevel importance) {
-        setImpLevel(importance.getId());
+    public void setImportanceCode(String importanceCode) {
+        this.importanceCode = importanceCode;
     }
 
     public Long getInitiatorId() {

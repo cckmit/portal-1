@@ -193,7 +193,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
                 .stream()
                 .filter(projectSla -> companyImportanceItem.getImportanceLevelId().equals(projectSla.getImportanceLevelId()))
                 .findAny()
-                .orElse(new ProjectSla(companyImportanceItem.getImportanceLevelId()));
+                .orElse(new ProjectSla(companyImportanceItem.getImportanceLevelId(), companyImportanceItem.getImportanceCode()));
     }
 
     private boolean isSlaContainerVisible(List<ProjectSla> projectSlas) {

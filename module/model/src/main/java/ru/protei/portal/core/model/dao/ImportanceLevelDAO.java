@@ -1,7 +1,10 @@
 package ru.protei.portal.core.model.dao;
 
 import ru.protei.portal.core.model.ent.ImportanceLevel;
+import ru.protei.winter.jdbc.JdbcDAO;
 
-public interface ImportanceLevelDAO extends PortalBaseDAO<ImportanceLevel> {
+import java.util.List;
 
+public interface ImportanceLevelDAO extends JdbcDAO<Integer, ImportanceLevel> {
+    List<ImportanceLevel> getImportanceLevelsByCompanyId(Long companyId);
 }

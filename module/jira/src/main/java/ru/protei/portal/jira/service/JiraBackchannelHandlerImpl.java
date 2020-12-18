@@ -173,17 +173,17 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
 
         if (event.isCaseImportanceChanged()) {
             logger.debug("case priority is changed, try find jira-value");
-            JiraPriorityMapEntry priorityMapEntry = priorityMapEntryDAO.getByPortalPriorityId(endpoint.getPriorityMapId(), object.getImportanceLevel());
+            JiraPriorityMapEntry priorityMapEntry = priorityMapEntryDAO.getByPortalPriorityId(endpoint.getPriorityMapId(), object.getImpLevel());
 
             if (priorityMapEntry != null) {
-                logger.debug("ok, found jira-severity field value {} for our {}, send changes", priorityMapEntry.getJiraPriorityName(), object.getImportanceLevel());
+                logger.debug("ok, found jira-severity field value {} for our {}, send changes", priorityMapEntry.getJiraPriorityName(), object.getImportanceCode());
 
                 IssueInputBuilder builder = new IssueInputBuilder();
                 builder.setFieldValue(CustomJiraIssueParser.CUSTOM_FIELD_SEVERITY, ComplexIssueInputFieldValue.with("value", priorityMapEntry.getJiraPriorityName()));
                 issueClient.updateIssue(issue.getKey(), builder.build()).claim();
             }
             else {
-                logger.debug("unable to find jira-severity value for our level {}", object.getImportanceLevel());
+                logger.debug("unable to find jira-severity value for our level {}", object.getImportanceCode());
             }
         }
     }

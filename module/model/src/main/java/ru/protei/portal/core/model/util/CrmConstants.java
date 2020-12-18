@@ -122,7 +122,15 @@ public class CrmConstants {
     }
 
     public interface ImportanceLevel {
-        List<Integer> commonImportanceLevelIds = Arrays.asList(1,2,3,4);
+        String IMPORTANCE_LEVEL = "importance-level";
+        String BASIC_NAME = "basic";
+
+        Integer CRITICAL = 1;
+        Integer IMPORTANT = 2;
+        Integer BASIC = 3;
+        Integer COSMETIC = 4;
+
+        List<Integer> commonImportanceLevelIds = Arrays.asList(CRITICAL,IMPORTANT,BASIC,COSMETIC);
     }
 
     public interface Company {

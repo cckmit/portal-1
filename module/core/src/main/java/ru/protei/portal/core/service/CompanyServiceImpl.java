@@ -399,7 +399,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<List<CompanyImportanceItem>> getImportanceLevels(Long companyId) {
+    public Result<List<CompanyImportanceItem>> getCompanyImportanceItems(Long companyId) {
         List<CompanyImportanceItem> result = companyImportanceItemDAO.getSortedImportanceLevels(companyId);
         return ok(result);
     }
@@ -417,8 +417,8 @@ public class CompanyServiceImpl implements CompanyService {
 
         List<CompanyImportanceItem> importanceItems = new ArrayList<>();
 
-        for (En_ImportanceLevel level : En_ImportanceLevel.values(true)) {
-            importanceItems.add(new CompanyImportanceItem(companyId, level.getId(), level.getId()));
+        for (Integer nextDefaultImportanceId : CrmConstants.ImportanceLevel.commonImportanceLevelIds) {
+            importanceItems.add(new CompanyImportanceItem(companyId, nextDefaultImportanceId, nextDefaultImportanceId));
         }
         companyImportanceItemDAO.persistBatch(importanceItems);
     }

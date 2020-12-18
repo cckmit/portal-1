@@ -25,6 +25,7 @@ import ru.protei.winter.jdbc.JdbcConfigurationContext;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
 import static ru.protei.portal.core.model.util.CrmConstants.AutoOpen.NO_DELAY;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -50,6 +51,11 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
         Company customerCompany = createNewCustomerCompany();
         customerCompany.setAutoOpenIssue(true);
         companyDAO.persist(customerCompany);
+
+        companyImportanceItemDAO.persistBatch(
+                toList(CrmConstants.ImportanceLevel.commonImportanceLevelIds, importanceLevelId ->
+                        new CompanyImportanceItem(customerCompany.getId(), importanceLevelId, 0))
+        );
 
         Person customerPerson = createNewPerson(customerCompany);
         personDAO.persist(customerPerson);
@@ -137,6 +143,11 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
         customerCompanyAutoOpen.setAutoOpenIssue(true);
         companyDAO.persist(customerCompanyAutoOpen);
 
+        companyImportanceItemDAO.persistBatch(
+                toList(CrmConstants.ImportanceLevel.commonImportanceLevelIds, importanceLevelId ->
+                        new CompanyImportanceItem(customerCompanyAutoOpen.getId(), importanceLevelId, 0))
+        );
+
         Person customerPerson = createNewPerson(customerCompanyAutoOpen);
         personDAO.persist(customerPerson);
 
@@ -187,6 +198,12 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
         Company customerCompanyAutoOpen = createNewCustomerCompany();
         customerCompanyAutoOpen.setAutoOpenIssue(true);
         companyDAO.persist(customerCompanyAutoOpen);
+
+        companyImportanceItemDAO.persistBatch(
+                toList(CrmConstants.ImportanceLevel.commonImportanceLevelIds, importanceLevelId ->
+                        new CompanyImportanceItem(customerCompanyAutoOpen.getId(), importanceLevelId, 0))
+        );
+
         Person customerPersonAutoOpen = createNewPerson(customerCompanyAutoOpen);
         personDAO.persist(customerPersonAutoOpen);
 

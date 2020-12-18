@@ -143,8 +143,8 @@ public class TemplateServiceImpl implements TemplateService {
         CaseObjectMeta oldMetaState = event.getInitCaseMeta() == null ? null : newMetaState.equals(event.getInitCaseMeta()) ? null : event.getInitCaseMeta();
 
         templateModel.put("importanceChanged", event.isCaseImportanceChanged());
-        templateModel.put("importanceLevel", newMetaState.getImportance() == null ? null : newMetaState.getImportance().getCode());
-        templateModel.put("oldImportanceLevel", oldMetaState == null || oldMetaState.getImportance() == null ? null : oldMetaState.getImportance().getCode());
+        templateModel.put("importanceLevel", newMetaState.getImportanceCode());
+        templateModel.put("oldImportanceLevel", oldMetaState == null || oldMetaState.getImportanceCode() == null ? null : oldMetaState.getImportanceCode());
 
         templateModel.put("caseChanged", event.isCaseStateChanged());
         templateModel.put("caseState", newMetaState.getStateName());
@@ -200,7 +200,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put( "author", currentPerson );
         templateModel.put( "caseNumber", caseObject.getCaseNumber() );
         templateModel.put( "caseState", caseMeta.getStateName());
-        templateModel.put( "importanceLevel", caseMeta.getImportance() == null ? null : caseMeta.getImportance().getCode() );
+        templateModel.put( "importanceLevel", caseMeta.getImportanceCode() );
         templateModel.put( "productName", caseMeta.getProduct() == null ? null : caseMeta.getProduct().getName() );
 
         PreparedTemplate template = new PreparedTemplate( "notification/email/crm.subject.%s.ftl" );

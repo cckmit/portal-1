@@ -390,6 +390,11 @@ public class RedmineTestConfigurationMockDao {
     }
 
     @Bean
+    public ImportanceLevelDAO getImportanceLevelDAO() {
+        return mock(ImportanceLevelDAO.class);
+    }
+
+    @Bean
     public ProjectTechnicalSupportValidityReportInfoDAO getProjectTechnicalSupportValidityReportInfoDAO() {
         return mock( ProjectTechnicalSupportValidityReportInfoDAO.class);
     }
