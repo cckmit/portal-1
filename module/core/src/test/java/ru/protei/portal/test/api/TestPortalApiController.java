@@ -1193,22 +1193,21 @@ public class TestPortalApiController extends BaseServiceTest {
     public void createCompany() throws Exception {
         Company company = new Company();
         company.setCname("Gazprom");
-        company.setCategory(En_CompanyCategory.CUSTOMER);
+        company.setCategoryId(1);
 
         company.setGroupId(null);
-
-        CompanyGroup companyGroup = new CompanyGroup();
-        companyGroup.setId(1L);
-        companyGroup.setName("main");
-        companyGroup.setInfo("test");
-        company.setCompanyGroup(companyGroup);
 
         company.setParentCompanyId(1L);
         company.setParentCompanyName("НТЦ Протей");
 
         List<ContactItem> contactInfo = new ArrayList<>();
-        contactInfo.add(new ContactItem("protei@protei.ru", En_ContactItemType.EMAIL));
-        contactInfo.add(new ContactItem("+7(812)553-12-12", En_ContactItemType.FAX));
+        contactInfo.add(new ContactItem("data", En_ContactItemType.EMAIL));
+        contactInfo.add(new ContactItem("data", En_ContactItemType.ADDRESS));
+        contactInfo.add(new ContactItem("data", En_ContactItemType.ADDRESS_LEGAL));
+        contactInfo.add(new ContactItem("data", En_ContactItemType.FAX));
+        contactInfo.add(new ContactItem("data", En_ContactItemType.MOBILE_PHONE));
+        contactInfo.add(new ContactItem("data", En_ContactItemType.GENERAL_PHONE));
+        contactInfo.add(new ContactItem("data", En_ContactItemType.WEB_SITE));
         company.setContactInfo(new ContactInfo(contactInfo));
 
         company.setInfo("Company information");
@@ -1221,18 +1220,19 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
                 .andExpect(jsonPath("$.data.cname", is(company.getCname())))
-                .andExpect(jsonPath("$.data.category", is(En_CompanyCategory.CUSTOMER.toString())))
+                .andExpect(jsonPath("$.data.categoryId", is(company.getCategoryId())))
                 .andExpect(jsonPath("$.data.groupId", is(company.getGroupId())))
-
-                .andExpect(jsonPath("$.data.companyGroup.id", is(companyGroup.getId().intValue())))
-                .andExpect(jsonPath("$.data.companyGroup.name", is(companyGroup.getName())))
-                .andExpect(jsonPath("$.data.companyGroup.info", is(companyGroup.getInfo())))
 
                 .andExpect(jsonPath("$.data.parentCompanyId", is(company.getParentCompanyId().intValue())))
                 .andExpect(jsonPath("$.data.parentCompanyName", is(company.getParentCompanyName())))
 
                 .andExpect(jsonPath("$.data.contactItems[0].v", is(company.getContactInfo().getItems().get(0).value())))
                 .andExpect(jsonPath("$.data.contactItems[1].v", is(company.getContactInfo().getItems().get(1).value())))
+                .andExpect(jsonPath("$.data.contactItems[2].v", is(company.getContactInfo().getItems().get(2).value())))
+                .andExpect(jsonPath("$.data.contactItems[3].v", is(company.getContactInfo().getItems().get(3).value())))
+                .andExpect(jsonPath("$.data.contactItems[4].v", is(company.getContactInfo().getItems().get(4).value())))
+                .andExpect(jsonPath("$.data.contactItems[5].v", is(company.getContactInfo().getItems().get(5).value())))
+                .andExpect(jsonPath("$.data.contactItems[6].v", is(company.getContactInfo().getItems().get(6).value())))
 
                 .andExpect(jsonPath("$.data.info", is(company.getInfo())))
                 .andExpect(jsonPath("$.data.hidden", is(company.getHidden())))
@@ -1279,21 +1279,17 @@ public class TestPortalApiController extends BaseServiceTest {
         Platform platform = new Platform();
         platform.setName("name");
         platform.setParams("params");
-
-        Long companyId = 1L;
-        platform.setCompanyId(companyId);
-        platform.setCompany(companyDAO.get(companyId));
-
-        platform.setComment("Some comments");
+        platform.setManagerId(1L);
+        platform.setCompanyId(1L);
+        platform.setComment("comment");
 
         createPostResultAction("/api/platforms/create", platform)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
                 .andExpect(jsonPath("$.data.name", is(platform.getName())))
                 .andExpect(jsonPath("$.data.params", is(platform.getParams())))
-                .andExpect(jsonPath("$.data.company.id", is(platform.getCompany().getId().intValue())))
-                .andExpect(jsonPath("$.data.company.cname", is(platform.getCompany().getCname())))
-                .andExpect(jsonPath("$.data.company.category", is(platform.getCompany().getCategory().toString())))
+                .andExpect(jsonPath("$.data.manager.id", is(platform.getManagerId().intValue())))
+                .andExpect(jsonPath("$.data.companyId", is(platform.getCompanyId().intValue())))
                 .andExpect(jsonPath("$.data.comment", is(platform.getComment())));
     }
 
