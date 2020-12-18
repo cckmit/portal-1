@@ -2342,6 +2342,13 @@ a {
             font-size: 0.9em;
             cursor: pointer;
           }
+
+          .directions-label {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+          }
         }
       }
     }
@@ -2502,11 +2509,9 @@ a {
   .date {
     .input-group-btn {
       > button {
-        padding-top: 0;
-        padding-bottom: 0;
         border: 0;
         background-color: transparent;
-        margin-right: -15px;
+        padding: 0 0 0 5px;
       }
     }
   }
@@ -4723,7 +4728,6 @@ table {
 
 .form-group {
   &.form-group-default.date-picker {
-    height: 54px !important;
 
     .form-control {
       border-top-right-radius: 3px;

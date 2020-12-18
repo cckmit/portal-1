@@ -7,11 +7,13 @@ import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_HistoryAction;
-import ru.protei.portal.core.model.dict.En_HistoryType;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.History;
 import ru.protei.portal.core.model.ent.Plan;
+import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.ui.common.client.activity.casehistory.item.AbstractCaseHistoryItemActivity;
 import ru.protei.portal.ui.common.client.activity.casehistory.item.AbstractCaseHistoryItemView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -54,13 +56,16 @@ public abstract class CaseHistoryListActivity implements AbstractCaseHistoryList
 
     private void addHistoryItem(History history) {
         if (policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW)) {
-            if (En_HistoryType.PLAN.equals(history.getType())) {
-                view.root().add(makeHistoryItem(history, lang.plan(), Plan.class));
+            AbstractCaseHistoryItemView itemView;
+            switch (history.getType()) {
+                case PLAN: itemView = makeHistoryItem(history, lang.plan(), Plan.class); break;
+                case TAG: itemView = makeHistoryItem(history, lang.tag(), CaseTag.class); break;
+                case CASE_STATE: itemView = makeHistoryItem(history, lang.issueState(), CaseState.class); break;
+                case CASE_MANAGER: itemView = makeHistoryItem(history, lang.issueManager(), EmployeeShortView.class); break;
+                case CASE_IMPORTANCE: itemView = makeHistoryItem(history, lang.issueImportance(), En_ImportanceLevel.class); break;
+                default: return;
             }
-
-            if (En_HistoryType.TAG.equals(history.getType())) {
-                view.root().add(makeHistoryItem(history, lang.tag(), CaseTag.class));
-            }
+            view.root().add(itemView);
         }
     }
 

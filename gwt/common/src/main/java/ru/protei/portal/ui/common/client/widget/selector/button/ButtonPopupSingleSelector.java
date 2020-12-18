@@ -158,10 +158,10 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
         this.button.setValue(selector.makeElementName(value));
     }
 
-    protected SelectorItem<T> makeSelectorItem( T element, String elementHtml, String name ) {
+    protected SelectorItem<T> makeSelectorItem( T element, String elementHtml ) {
         PopupSelectorItem<T> item = new PopupSelectorItem<>();
         item.setName(elementHtml);
-        item.setTitle(name);
+        item.setTitle( elementHtml );
         return item;
     }
 

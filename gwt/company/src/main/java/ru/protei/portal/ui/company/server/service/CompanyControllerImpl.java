@@ -288,6 +288,12 @@ public class CompanyControllerImpl implements CompanyController {
     }
 
     @Override
+    public List<CompanyImportanceItem> getCompanyImportanceItems(Long companyId) throws RequestFailedException {
+        log.info("getCompanyImportanceItems() companyId={}", companyId);
+        return checkResultAndGetData(companyService.getImportanceLevels(companyId));
+    }
+
+    @Override
     public List<En_ImportanceLevel> getImportanceLevels(Long companyId) throws RequestFailedException {
         log.info("getImportanceLevels() companyId={}", companyId);
         List<CompanyImportanceItem> importanceItems = checkResultAndGetData(companyService.getImportanceLevels(companyId));

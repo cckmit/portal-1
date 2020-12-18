@@ -56,12 +56,12 @@
                                                                maxRows="10"/>
                     </div>
 
-                    <div class="form-group form-group-default col-md-12">
+                    <g:HTMLPanel ui:field="slaContainer" styleName="form-group form-group-default col-md-12">
                         <label class="fade">
                             <ui:text from="{lang.projectSla}"/>
                         </label>
                         <sla:SlaInput ui:field="slaInput"/>
-                    </div>
+                    </g:HTMLPanel>
 
                     <div class="form-group col-md-12 card card-default project-team">
                         <label class="fade">
@@ -103,7 +103,7 @@
                                 <div class="col-md-12">
                                     <div class="form-group form-group-default date-picker" >
                                         <label class="fade" ><ui:text from="{lang.issuePauseDateValidity}"/></label>
-                                        <datepicker:SinglePicker ui:field="pauseDate" type="DATE" formatValue="dd-MM-yyyy" mandatory="true"/>
+                                        <datepicker:SinglePicker ui:field="pauseDate" type="DATE" formatValue="dd-MM-yyyy" mandatory="true" styleName="clearfix"/>
                                     </div>
                                 </div>
                             </g:HTMLPanel>
@@ -133,23 +133,29 @@
                                 </div>
                             </div>
                             <div class="row clearfix reset-no-padding">
-                                <div class="form-group form-group-default date-picker">
-                                    <label class="fade"><ui:text from="{lang.technicalSupportValidity}"/></label>
-                                    <datepicker:SinglePicker ui:field="technicalSupportValidity" type="DATE" formatValue="dd.MM.yyyy" mandatory="false"/>
+                                <div class="col-md-12">
+                                    <div class="form-group form-group-default date-picker">
+                                        <label class="fade"><ui:text from="{lang.technicalSupportValidity}"/></label>
+                                        <datepicker:SinglePicker ui:field="technicalSupportValidity" type="DATE" formatValue="dd.MM.yyyy" mandatory="false" styleName="clearfix"/>
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="row clearfix reset-no-padding">
-                                <div class="form-group form-group-default date-picker">
-                                    <label class="fade"><ui:text from="{lang.workCompletionDate}"/></label>
-                                    <datepicker:SinglePicker ui:field="workCompletionDate" type="DATE" formatValue="dd.MM.yyyy" mandatory="false"/>
+                                <div class="col-md-12">
+                                    <div class="form-group form-group-default date-picker">
+                                        <label class="fade"><ui:text from="{lang.workCompletionDate}"/></label>
+                                        <datepicker:SinglePicker ui:field="workCompletionDate" type="DATE" formatValue="dd.MM.yyyy" mandatory="false" styleName="clearfix"/>
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="row clearfix reset-no-padding">
-                                <div class="form-group form-group-default date-picker">
-                                    <label class="fade"><ui:text from="{lang.purchaseDate}"/></label>
-                                    <datepicker:SinglePicker ui:field="purchaseDate" type="DATE" formatValue="dd.MM.yyyy" mandatory="false"/>
+                                <div class="col-md-12">
+                                    <div class="form-group form-group-default date-picker">
+                                        <label class="fade"><ui:text from="{lang.purchaseDate}"/></label>
+                                        <datepicker:SinglePicker ui:field="purchaseDate" type="DATE" formatValue="dd.MM.yyyy" mandatory="false" styleName="clearfix"/>
+                                    </div>
                                 </div>
                             </div>
                         </div>

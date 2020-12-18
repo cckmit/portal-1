@@ -17,6 +17,7 @@ public class PersonSelectorItemRenderer {
         }
 
         item.setElementHtml(elementHtml);
+        item.setTitle( elementHtml );
         item.setSelected(isSelected);
         return item;
     }
@@ -24,6 +25,7 @@ public class PersonSelectorItemRenderer {
     public static SelectorItem<PersonShortView> makeSingleSelectorItem( PersonShortView value, String elementHtml) {
         PopupSelectorItem<PersonShortView> item = new PopupSelectorItem<>();
         item.setName(elementHtml);
+        item.setTitle( elementHtml );
         if(value!=null){
             item.setIcon( value.isFired() ? FIRED_ICON_STYLE_NAME : "" );
         }

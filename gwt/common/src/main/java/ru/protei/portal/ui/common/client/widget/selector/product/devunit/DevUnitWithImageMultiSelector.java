@@ -6,7 +6,6 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
-import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.lang.En_DevUnitTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -22,11 +21,11 @@ public class DevUnitWithImageMultiSelector extends DevUnitMultiSelector {
     }
 
     @Override
-    protected SelectorItem<ProductShortView> makeSelectorItem(ProductShortView element, String elementHtml, String name) {
+    protected SelectorItem<ProductShortView> makeSelectorItem(ProductShortView element, String elementHtml) {
         PopupSelectableItem<ProductShortView> item = new PopupSelectableItem<>();
         item.setElementHtml(elementHtml);
         item.setSelected(isSelected(element));
-        item.setTitle(name);
+        item.setTitle(makeName(element));
         return item;
     }
 
@@ -34,8 +33,7 @@ public class DevUnitWithImageMultiSelector extends DevUnitMultiSelector {
         return new SelectorItemRenderer<ProductShortView>() {
             @Override
             public String getElementName(ProductShortView productShortView) {
-                return (productShortView.getType() != null ? en_devUnitTypeLang.getName(productShortView.getType()) + ": " : "")
-                        + makeName(productShortView);
+                return makeName(productShortView);
             }
 
             @Override
@@ -44,15 +42,15 @@ public class DevUnitWithImageMultiSelector extends DevUnitMultiSelector {
                 if (productShortView.getType() != null) {
                     root.add(makeImage(productShortView.getType()));
                 }
-                root.add(new InlineLabel(makeName(productShortView)));
+                root.add(new InlineLabel( makeOptionName(productShortView)));
                 return root.toString();
             }
         };
     }
 
-    private String makeName(ProductShortView productShortView) {
-        return productShortView.getName()
-                + (HelperFunc.isEmpty(productShortView.getAliases()) ? "" : " (" + productShortView.getAliases() + ")");
+    private String makeName( ProductShortView productShortView ) {
+        return (productShortView.getType() != null ? en_devUnitTypeLang.getName( productShortView.getType() ) + ": " : "")
+                + makeOptionName( productShortView );
     }
 
     private Widget makeImage(En_DevUnitType type) {

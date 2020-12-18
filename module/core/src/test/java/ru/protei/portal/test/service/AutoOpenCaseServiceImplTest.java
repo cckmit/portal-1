@@ -23,6 +23,9 @@ import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static ru.protei.portal.core.model.util.CrmConstants.AutoOpen.NO_DELAY;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @EnableScheduling
@@ -34,7 +37,16 @@ import java.util.List;
 public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
 
     @Test
-    public void createTask() {
+    public void createTaskNoDelay() {
+        createTask(NO_DELAY);
+    }
+
+    @Test
+    public void createTaskWithDelay() {
+        createTask(TimeUnit.SECONDS.toMillis(3));
+    }
+
+    public void createTask(long delay) {
         Company customerCompany = createNewCustomerCompany();
         customerCompany.setAutoOpenIssue(true);
         companyDAO.persist(customerCompany);
@@ -92,7 +104,7 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
         caseObjectDAO.persist(newCaseObject);
 
         try {
-            service.createTask(newCaseObject.getId(), 0)
+            service.createTask(newCaseObject.getId(), delay)
                     .get();
         } catch (Exception e) {
             e.printStackTrace();
@@ -103,6 +115,8 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
         Assert.assertEquals(caseObjectFromDb.getManagerId(), commonManager.getId());
 
         // non transaction, remove manually
+        removeHistoryCaseObject(caseObject.getId());
+        removeHistoryCaseObject(newCaseObject.getId());
         caseCommentDAO.removeByCondition("case_id = ? or case_id = ?", newCaseObject.getId(), caseObject.getId());
         platformDAO.remove(platform);
         projectToProductDAO.removeByCondition("project_id = ? and product_id = ?", caseObject.getId(), product.getId());

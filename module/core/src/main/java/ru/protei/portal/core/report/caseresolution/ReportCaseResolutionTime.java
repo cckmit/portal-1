@@ -4,7 +4,7 @@ import org.apache.poi.xssf.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.protei.portal.core.Lang;
-import ru.protei.portal.core.model.dao.CaseCommentDAO;
+import ru.protei.portal.core.model.dao.HistoryDAO;
 import ru.protei.portal.core.model.dto.CaseResolutionTimeReportDto;
 import ru.protei.portal.core.model.helper.DateRangeUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -15,12 +15,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
 
-import static ru.protei.portal.core.model.util.CrmConstants.Time.*;
+import static ru.protei.portal.core.model.util.CrmConstants.Time.DAY;
+import static ru.protei.portal.core.model.util.CrmConstants.Time.HOUR;
 
 public class ReportCaseResolutionTime {
 
-    public ReportCaseResolutionTime( CaseQuery caseQuery, CaseCommentDAO caseCommentDAO ) {
-        this.caseCommentDAO = caseCommentDAO;
+    public ReportCaseResolutionTime( CaseQuery caseQuery, HistoryDAO historyDAO ) {
+        this.historyDAO = historyDAO;
         this.caseQuery = caseQuery;
     }
 
@@ -50,7 +51,7 @@ public class ReportCaseResolutionTime {
         ru.protei.portal.core.model.struct.Interval createInterval = DateRangeUtils.makeInterval(caseQuery.getCreatedRange());
 
         long startQuery = System.currentTimeMillis();
-        List<CaseResolutionTimeReportDto> comments = caseCommentDAO.reportCaseResolutionTime(
+        List<CaseResolutionTimeReportDto> histories = historyDAO.reportCaseResolutionTime(
                 (createInterval == null ? null : createInterval.from),
                 (createInterval == null ? null : createInterval.to),
                 caseQuery.getStateIds(),
@@ -63,7 +64,7 @@ public class ReportCaseResolutionTime {
         log.info( "run(): Case comments request time: {} ms", System.currentTimeMillis() - startQuery );
         long startProcessing = System.currentTimeMillis();
 
-        cases = groupBayIssues( comments );
+        cases = groupBayIssues( histories );
 
         Set<Long> acceptableStates = new HashSet<>( caseQuery.getStateIds() );
         for (Interval interval : intervals) {
@@ -177,7 +178,7 @@ public class ReportCaseResolutionTime {
 
     private List<Case> cases = new ArrayList<>();
     private List<Interval> intervals = new ArrayList<>();
-    private CaseCommentDAO caseCommentDAO;
+    private HistoryDAO historyDAO;
     private CaseQuery caseQuery;
 
     private static Logger log = LoggerFactory.getLogger( ReportCaseResolutionTime.class );

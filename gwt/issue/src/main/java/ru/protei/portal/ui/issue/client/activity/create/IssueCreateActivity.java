@@ -443,6 +443,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.setCompany(caseObjectMeta.getInitiatorCompany());
 
         setCurrentCompany(caseObjectMeta.getInitiatorCompany());
+        subcontractorCompanyModel.setCompanyId(caseObjectMeta.getInitiatorCompanyId());
 
         issueMetaView.setInitiator(caseObjectMeta.getInitiator());
 
@@ -710,7 +711,9 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         caseObject.setName(view.name().getValue());
         caseObject.setInfo(view.description().getValue());
         caseObject.setPrivateCase(view.isPrivate().getValue());
-        caseObject.setStateId(issueMetaView.state().getValue().getId());
+        CaseState caseState = issueMetaView.state().getValue();
+        caseObject.setStateId(caseState.getId());
+        caseObject.setStateName(caseState.getState());
         caseObject.setImpLevel(issueMetaView.importance().getValue().getId());
         caseObject.setPauseDate(issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime());
 

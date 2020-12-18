@@ -77,6 +77,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         managers.setNullItem(() -> new PersonShortView(lang.employeeWithoutManager(), CrmConstants.Employee.UNDEFINED));
         searchByCommentsWarning.setText(
                 lang.searchByCommentsUnavailable(CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS));
+        products.setTypes(En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
     }
 
     @Override

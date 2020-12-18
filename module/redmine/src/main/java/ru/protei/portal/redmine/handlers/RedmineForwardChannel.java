@@ -189,13 +189,13 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
         }
 
         Long caseObjId = saveResult.getData();
-        Result<Long> stateCommentId = commonService.createAndStoreStateComment(issue.getCreatedOn(), contactPerson.getId(), obj.getStateId(), caseObjId);
+        Result<Long> stateCommentId = commonService.createAndStoreStateHistory(issue.getCreatedOn(), contactPerson.getId(), obj.getStateId(), caseObjId);
         if (stateCommentId.isError()) {
            logger.error("State comment for the issue {} not saved!", caseObjId);
             return null;
         }
 
-        Result<Long> importanceCommentId = commonService.createAndStoreImportanceComment(issue.getCreatedOn(), contactPerson.getId(), obj.getImpLevel(), caseObjId);
+        Result<Long> importanceCommentId = commonService.createAndStoreImportanceHistory(issue.getCreatedOn(), contactPerson.getId(), obj.getImpLevel(), caseObjId);
         if (importanceCommentId.isError()) {
             logger.error("Importance comment for the issue {} not saved!", caseObjId);
             return null;

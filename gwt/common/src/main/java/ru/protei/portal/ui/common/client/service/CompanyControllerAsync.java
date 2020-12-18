@@ -116,4 +116,6 @@ public interface CompanyControllerAsync {
     void getAllHomeCompanies(AsyncCallback<List<EntityOption>> async);
 
     void getCompanyOmitPrivileges(long id, AsyncCallback<Company> async);
+
+    void getCompanyImportanceItems(Long companyId, AsyncCallback<List<CompanyImportanceItem>> async);
 }

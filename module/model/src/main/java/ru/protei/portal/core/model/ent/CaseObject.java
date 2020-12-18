@@ -160,6 +160,9 @@ public class CaseObject extends AuditableObject {
     // not db column
     private String jiraUrl;
 
+    // not db column
+    private List<String> jiraProjects;
+
 //    Проставляется относительно авторизованного пользователя
     private boolean isFavorite;
 
@@ -509,6 +512,14 @@ public class CaseObject extends AuditableObject {
 
     public void setJiraUrl(String jiraUrl) {
         this.jiraUrl = jiraUrl;
+    }
+
+    public List<String> getJiraProjects() {
+        return jiraProjects;
+    }
+
+    public void setJiraProjects(List<String> jiraProjects) {
+        this.jiraProjects = jiraProjects;
     }
 
     public EntityOption toEntityOption() {

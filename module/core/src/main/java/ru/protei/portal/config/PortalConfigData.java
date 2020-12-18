@@ -43,6 +43,7 @@ public class PortalConfigData {
     private final UiConfig uiConfig;
     private final MailCommentConfig mailCommentConfig;
     private final NRPEConfig nrpeConfig;
+    private final AutoOpenConfig autoOpenConfig;
 
     private final String loginSuffixConfig;
     private final boolean taskSchedulerEnabled;
@@ -70,6 +71,7 @@ public class PortalConfigData {
         uiConfig = new UiConfig(wrapper);
         mailCommentConfig = new MailCommentConfig(wrapper);
         nrpeConfig = new NRPEConfig(wrapper);
+        autoOpenConfig = new AutoOpenConfig(wrapper);
 
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
         taskSchedulerEnabled = wrapper.getProperty("task.scheduler.enabled", Boolean.class,false);
@@ -158,6 +160,10 @@ public class PortalConfigData {
 
     public NRPEConfig getNrpeConfig() {
         return nrpeConfig;
+    }
+
+    public AutoOpenConfig getAutoOpenConfig() {
+        return autoOpenConfig;
     }
 
     public boolean isTaskSchedulerEnabled() {
@@ -750,10 +756,17 @@ public class PortalConfigData {
 
         private final String jiraUrl;
         private final int queueLimit;
+        private final List<String> jiraProjects;
 
         public JiraConfig(PropertiesWrapper properties) throws ConfigException {
             jiraUrl = properties.getProperty("jira.url",  "");
             queueLimit = properties.getProperty("integration.jira.queue.limit", Integer.class, 0);
+            String temp = properties.getProperty("jira.projects", "");
+            if (isNotEmpty(temp)) {
+                jiraProjects = Arrays.stream(temp.split(",")).collect(Collectors.toList());
+            } else {
+                jiraProjects = new ArrayList<>();
+            }
         }
 
         public String getJiraUrl() {
@@ -762,6 +775,10 @@ public class PortalConfigData {
 
         public int getQueueLimit() {
             return queueLimit;
+        }
+
+        public List<String> getJiraProjects() {
+            return jiraProjects;
         }
     }
 
@@ -902,6 +919,42 @@ public class PortalConfigData {
 
         public List<String> getAdminMails() {
             return adminMails;
+        }
+    }
+
+    public static class AutoOpenConfig {
+        final Boolean enable;
+        final Boolean enableDelay;
+        final Integer delayStartup;
+        final Integer delayRuntime;
+        final Integer delayRandom;
+
+        public AutoOpenConfig(PropertiesWrapper properties) {
+            this.enable = properties.getProperty("autoopen.enable", Boolean.class, true);
+            this.enableDelay = properties.getProperty("autoopen.delay.enable", Boolean.class, true);
+            this.delayStartup = properties.getProperty("autoopen.delay.startup", Integer.class, 60);
+            this.delayRuntime = properties.getProperty("autoopen.delay.runtime", Integer.class, 180);
+            this.delayRandom = properties.getProperty("autoopen.delay.random", Integer.class, 120);
+        }
+
+        public Boolean getEnable() {
+            return enable;
+        }
+
+        public Boolean getEnableDelay() {
+            return enableDelay;
+        }
+
+        public Integer getDelayStartup() {
+            return delayStartup;
+        }
+
+        public Integer getDelayRuntime() {
+            return delayRuntime;
+        }
+
+        public Integer getDelayRandom() {
+            return delayRandom;
         }
     }
 

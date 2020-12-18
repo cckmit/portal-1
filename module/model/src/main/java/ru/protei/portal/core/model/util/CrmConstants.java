@@ -29,6 +29,7 @@ public class CrmConstants {
 
     public interface Header {
         String USER_AGENT = "User-Agent";
+        String X_REAL_IP = "X-Real-IP";
     }
 
     public interface Product {
@@ -202,5 +203,9 @@ public class CrmConstants {
 
     public interface Platform {
         int PARAMETERS_MAX_LENGTH = 256;
+    }
+
+    public interface AutoOpen {
+        long NO_DELAY = 0;
     }
 }
