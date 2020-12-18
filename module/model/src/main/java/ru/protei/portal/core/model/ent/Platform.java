@@ -30,6 +30,8 @@ public class Platform extends AuditableObject {
     @JdbcJoinedObject(localColumn = "manager_id", remoteColumn = "id", updateLocalColumn = true)
     private PersonShortView manager;
 
+    private Long managerId;
+
     @JdbcJoinedColumn(joinPath = {
             @JdbcJoinPath(localColumn = "project_id", remoteColumn = "id", table = "case_object"),
             @JdbcJoinPath(localColumn = "MANAGER", remoteColumn = "id", table = "person")
@@ -110,6 +112,18 @@ public class Platform extends AuditableObject {
         return manager;
     }
 
+    public void setManager(PersonShortView manager) {
+        this.manager = manager;
+    }
+
+    public Long getManagerId() {
+        return managerId;
+    }
+
+    public void setManagerId(Long managerId) {
+        this.managerId = managerId;
+    }
+
     public String getCaseManagerShortName() {
         return caseManagerShortName;
     }
@@ -120,10 +134,6 @@ public class Platform extends AuditableObject {
 
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
-    }
-
-    public void setManager(PersonShortView manager) {
-        this.manager = manager;
     }
 
     public void setCaseId(Long caseId) {

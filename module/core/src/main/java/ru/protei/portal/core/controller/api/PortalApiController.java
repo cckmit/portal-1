@@ -535,6 +535,10 @@ public class PortalApiController {
 
         AuthToken authToken = authenticate.getData();
 
+        Integer categoryId = company.getCategoryId();
+        company.setCategory(categoryId != null ? En_CompanyCategory.findById(categoryId)
+                                               : En_CompanyCategory.CUSTOMER);
+
         return companyService.createCompany(authToken, company)
                 .ifOk(result -> log.info("createCompany(): OK"))
                 .ifError(result -> log.warn("createCompany(): Can't create company={}. {}", company, result));

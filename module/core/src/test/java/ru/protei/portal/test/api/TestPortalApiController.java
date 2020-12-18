@@ -1279,21 +1279,17 @@ public class TestPortalApiController extends BaseServiceTest {
         Platform platform = new Platform();
         platform.setName("name");
         platform.setParams("params");
-
-        Long companyId = 1L;
-        platform.setCompanyId(companyId);
-        platform.setCompany(companyDAO.get(companyId));
-
-        platform.setComment("Some comments");
+        platform.setManagerId(1L);
+        platform.setCompanyId(1L);
+        platform.setComment("comment");
 
         createPostResultAction("/api/platforms/create", platform)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
                 .andExpect(jsonPath("$.data.name", is(platform.getName())))
                 .andExpect(jsonPath("$.data.params", is(platform.getParams())))
-                .andExpect(jsonPath("$.data.company.id", is(platform.getCompany().getId().intValue())))
-                .andExpect(jsonPath("$.data.company.cname", is(platform.getCompany().getCname())))
-                .andExpect(jsonPath("$.data.company.category", is(platform.getCompany().getCategory().toString())))
+                .andExpect(jsonPath("$.data.manager.id", is(platform.getManagerId().intValue())))
+                .andExpect(jsonPath("$.data.companyId", is(platform.getCompanyId().intValue())))
                 .andExpect(jsonPath("$.data.comment", is(platform.getComment())));
     }
 

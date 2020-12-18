@@ -24,6 +24,8 @@ public class Company extends AuditableObject implements EntityOptionSupport {
     @JdbcEnumerated( EnumType.ID )
     private En_CompanyCategory category;
 
+    private Integer categoryId;
+
     @JdbcColumn(name = "groupId")
     private Long groupId;
 
@@ -108,6 +110,14 @@ public class Company extends AuditableObject implements EntityOptionSupport {
 
     public void setCategory( En_CompanyCategory category ) {
         this.category = category;
+    }
+
+    public Integer getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
     }
 
     public void setCname( String cname) {

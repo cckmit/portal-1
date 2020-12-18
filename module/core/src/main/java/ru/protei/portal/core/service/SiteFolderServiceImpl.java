@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.query.ServerQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -41,6 +42,8 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     CaseObjectDAO caseObjectDAO;
     @Autowired
     CaseAttachmentDAO caseAttachmentDAO;
+    @Autowired
+    PersonDAO personDAO;
 
     @Override
     public Result<SearchResult<Platform>> getPlatforms( AuthToken token, PlatformQuery query) {
@@ -193,6 +196,16 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         String params = platform.getParams();
         if (params != null && !isValid(params)) {
             return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
+        Long managerId = platform.getManagerId();
+        if (managerId != null) {
+            Person manager = personDAO.get(managerId);
+            if (manager == null) {
+                return error(En_ResultStatus.INCORRECT_PARAMS, "The manager not found by specified ID");
+            }
+
+            platform.setManager(new PersonShortView(manager));
         }
 
         Long id = platformDAO.persist(platform);
