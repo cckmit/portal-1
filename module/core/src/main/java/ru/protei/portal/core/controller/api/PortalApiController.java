@@ -76,6 +76,10 @@ public class PortalApiController {
     @Autowired
     private ContractService contractService;
     @Autowired
+    private CompanyService companyService;
+    @Autowired
+    private SiteFolderService siteFolderService;
+    @Autowired
     PortalConfig config;
 
 
@@ -233,6 +237,33 @@ public class PortalApiController {
                 .ifOk( id -> log.info( "updateProductByInfo(): OK " ) )
                 .ifError( result -> log.warn( "updateProductByInfo(): Can`t update product by info={}. {}",
                         product, result ) );
+    }
+
+    @PostMapping(value = "/products/updateState/{productId}/{productState}")
+    public Result<?> updateProductState(HttpServletRequest request, HttpServletResponse response,
+                                        @PathVariable("productId") Long productId,
+                                        @PathVariable("productState") Integer productState) {
+
+        log.info("API | updateProductState(): productId={}, productState={}", productId, productState);
+
+        final String INCORRECT_STATE = "Некорректный статус продукта. Допустимые значения: 1/2";
+
+        Result<AuthToken> authenticate = authenticate(request, response, authService, sidGen, log);
+
+        if (authenticate.isError()) {
+            return error(authenticate.getStatus(), authenticate.getMessage());
+        }
+
+        AuthToken authToken = authenticate.getData();
+
+        En_DevUnitState state = En_DevUnitState.forId(productState);
+        if (state == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, INCORRECT_STATE);
+        }
+
+        return productService.updateState(authToken, productId, state)
+                .ifOk(result -> log.info("updateProductState(): OK"))
+                .ifError(result -> log.warn("updateProductState(): Can't update product state with id={}. {}", productId, result));
     }
 
     @PostMapping(value = "/updateYoutrackCrmNumbers/{youtrackId}", produces = "text/plain;charset=UTF-8")
@@ -490,6 +521,79 @@ public class PortalApiController {
                         .collect(Collectors.toList()))
                 .ifOk(id -> log.info("getContracts1cGet(): OK"))
                 .ifError(result -> log.warn("getContracts1cGet(): Can't get contracts by contractApiQuery={}. {}", contractApiQuery, result));
+    }
+
+    @PostMapping(value = "/companies/create")
+    public Result<Company> createCompany(HttpServletRequest request, HttpServletResponse response, @RequestBody Company company) {
+        log.info("API | createCompany(): company={}", company);
+
+        Result<AuthToken> authenticate = authenticate(request, response, authService, sidGen, log);
+
+        if (authenticate.isError()) {
+            return error(authenticate.getStatus(), authenticate.getMessage());
+        }
+
+        AuthToken authToken = authenticate.getData();
+
+        return companyService.createCompany(authToken, company)
+                .ifOk(result -> log.info("createCompany(): OK"))
+                .ifError(result -> log.warn("createCompany(): Can't create company={}. {}", company, result));
+    }
+
+    @PostMapping(value = "/companies/updateState/{companyId}/{isArchived}")
+    public Result<?> updateCompanyState(HttpServletRequest request, HttpServletResponse response,
+                                        @PathVariable("companyId") Long companyId,
+                                        @PathVariable("isArchived") Boolean isArchived) {
+
+        log.info("API | updateCompanyState(): companyId={}, isArchived={}" , companyId, isArchived);
+
+        Result<AuthToken> authenticate = authenticate(request, response, authService, sidGen, log);
+
+        if (authenticate.isError()) {
+            return error(authenticate.getStatus(), authenticate.getMessage());
+        }
+
+        AuthToken authToken = authenticate.getData();
+
+        return companyService.updateState(authToken, companyId, isArchived)
+                .ifOk(result -> log.info("updateCompanyState(): OK"))
+                .ifError(result -> log.warn("updateCompanyState(): Can't update company state with id={}. {}", companyId, result));
+    }
+
+    @PostMapping(value = "/platforms/create")
+    public Result<Platform> createPlatform(HttpServletRequest request, HttpServletResponse response, @RequestBody Platform platform) {
+        log.info("API | createPlatform(): platform={}", platform);
+
+        Result<AuthToken> authenticate = authenticate(request, response, authService, sidGen, log);
+
+        if (authenticate.isError()) {
+            return error(authenticate.getStatus(), authenticate.getMessage());
+        }
+
+        AuthToken authToken = authenticate.getData();
+
+        return siteFolderService.createPlatform(authToken, platform)
+                .ifOk(result -> log.info("createPlatform(): OK"))
+                .ifError(result -> log.warn("createPlatform(): Can't create platform={}. {}", platform, result));
+    }
+
+    @PostMapping(value = "/platforms/delete/{platformId}")
+    public Result<?> deletePlatform(HttpServletRequest request, HttpServletResponse response,
+                                    @PathVariable("platformId") Long platformId) {
+
+        log.info("API | deletePlatform(): platformId={}", platformId);
+
+        Result<AuthToken> authenticate = authenticate(request, response, authService, sidGen, log);
+
+        if (authenticate.isError()) {
+            return error(authenticate.getStatus(), authenticate.getMessage());
+        }
+
+        AuthToken authToken = authenticate.getData();
+
+        return siteFolderService.removePlatform(authToken, platformId)
+                .ifOk(result -> log.info("deletePlatform(): OK"))
+                .ifError(result -> log.warn("deletePlatform(): Can't delete platform with id={}. {}", platformId, result));
     }
 
     private CaseQuery makeCaseQuery(CaseApiQuery apiQuery) {

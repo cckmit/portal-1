@@ -21,7 +21,10 @@ public interface DevUnitDAO extends PortalBaseDAO<DevUnit> {
     boolean updateState(DevUnit newState);
     List<DevUnit> getParents(Long productId);
     List<DevUnit> getChildren(Set<Long> productId);
-    DevUnit getProductDirection(Long productId);
+    List<DevUnit> getProductDirections(Long productId);
+
+    List<DevUnit> getProjectDirections(Long projectId);
+    List<DevUnit> getProjectProducts(Long projectId);
 
     @SqlConditionBuilder
     SqlCondition createProductSqlCondition(ProductQuery query);

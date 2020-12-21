@@ -916,6 +916,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String projectDirection();
 
+    String projectDirections();
+
     String projectInfo();
 
     String projectManagers();
@@ -937,6 +939,8 @@ public interface Lang extends Messages, ContactItemLang {
     String projectCustomerCompany();
 
     String projectDescription();
+
+    String projectProduct();
 
     String projectProducts();
 

@@ -2342,6 +2342,13 @@ a {
             font-size: 0.9em;
             cursor: pointer;
           }
+
+          .directions-label {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+          }
         }
       }
     }
@@ -2857,7 +2864,7 @@ div.select2-container {
   border: 1px solid $error_color;
 }
 
-.case-subscribers, .case-plans {
+.case-subscribers, .case-plans, .case-products {
   div.select2-container {
     border: 0 !important;
     ul.select2-choices {
@@ -2889,6 +2896,26 @@ div.select2-container {
           white-space: nowrap;
           line-height: 15px;
           margin-bottom: -2px;
+        }
+      }
+    }
+  }
+}
+
+.case-products {
+  div.select2-container {
+    ul.select2-choices {
+      li.select2-search-choice {
+        .selected-value {
+          span {
+            max-width: 120px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            line-height: 15px;
+            margin-bottom: -2px;
+            display: inline-block;
+          }
         }
       }
     }

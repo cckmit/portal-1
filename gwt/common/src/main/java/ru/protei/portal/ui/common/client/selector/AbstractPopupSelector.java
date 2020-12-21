@@ -211,7 +211,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
     }
 
     private SelectorItem<T> makeItemView(T t, String elementHtml) {
-        SelectorItem<T> itemView = makeSelectorItem(t, elementHtml);
+        SelectorItem<T> itemView = makeSelectorItem(t, elementHtml );
         itemView.setValue(t);
         itemView.addSelectorHandler(this);
         return itemView;

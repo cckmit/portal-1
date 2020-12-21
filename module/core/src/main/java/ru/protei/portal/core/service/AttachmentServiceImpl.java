@@ -7,7 +7,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.event.ProjectAttachmentEvent;
-import ru.protei.portal.core.exception.ResultStatusException;
+import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.AttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
@@ -141,7 +141,7 @@ public class AttachmentServiceImpl implements AttachmentService {
             return ok(id);
         }
 
-        throw new ResultStatusException(En_ResultStatus.NOT_REMOVED, "File was not removed from file storage");
+        throw new RollbackTransactionException(En_ResultStatus.NOT_REMOVED, "File was not removed from file storage");
     }
 
     @Override

@@ -24,7 +24,6 @@ import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.utils.DateUtils;
 import ru.protei.portal.core.utils.EnumLangUtil;
@@ -523,13 +522,15 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("oldCustomerType", getNullOrElse(oldProjectState, Project::getCustomerType));
         templateModel.put("newCustomerType", newProjectState.getCustomerType());
 
-        templateModel.put("productDirectionChanged", event.isProductDirectionChanged());
-        templateModel.put("oldProductDirection", getNullOrElse(getNullOrElse(oldProjectState, Project::getProductDirectionEntityOption), EntityOption::getDisplayText));
-        templateModel.put("newProductDirection", newProjectState.getProductDirectionEntityOption().getDisplayText());
+        final DiffCollectionResult<DevUnit> productDirectionDiffs = event.getProductDirectionDiffs();
+        templateModel.put("productDirectionSameEntries", productDirectionDiffs.getSameEntries());
+        templateModel.put("productDirectionAddedEntries", productDirectionDiffs.getAddedEntries());
+        templateModel.put("productDirectionRemovedEntries", productDirectionDiffs.getRemovedEntries());
 
-        templateModel.put("productChanged", event.isProductChanged());
-        templateModel.put("oldProduct", getNullOrElse(getNullOrElse(oldProjectState, Project::getSingleProduct), ProductShortView::getName));
-        templateModel.put("newProduct", getNullOrElse(newProjectState.getSingleProduct(), ProductShortView::getName));
+        final DiffCollectionResult<DevUnit> productDiffs = event.getProductDiffs();
+        templateModel.put("productSameEntries", productDiffs.getSameEntries());
+        templateModel.put("productAddedEntries", productDiffs.getAddedEntries());
+        templateModel.put("productRemovedEntries", productDiffs.getRemovedEntries());
 
         templateModel.put("supportValidityChanged", event.isSupportValidityChanged());
         templateModel.put("oldSupportValidity", getNullOrElse(oldProjectState, Project::getTechnicalSupportValidity));
@@ -929,13 +930,9 @@ public class TemplateServiceImpl implements TemplateService {
                     Map< String, Object > mailComment = new HashMap<>();
                     mailComment.put( "created", comment.getCreated() );
                     mailComment.put( "author", comment.getAuthor() );
-                    mailComment.put("text", escapeTextAndRenderHTML(comment.getText(), textMarkup));
-                    mailComment.put( "caseState", comment.getCaseStateName() );
-                    mailComment.put( "caseImportance", comment.getCaseImportance() == null ? null : comment.getCaseImportance().getCode() );
-                    mailComment.put( "caseManager", comment.getCaseManagerId());
-                    mailComment.put( "caseManagerAndCompany", comment.getCaseManagerShortName() + " (" + comment.getManagerCompanyName() + ")");
+                    mailComment.put( "text", escapeTextAndRenderHTML(comment.getText(), textMarkup) );
                     mailComment.put( "isPrivateComment", comment.isPrivateComment() );
-                    mailComment.put( "added", isNew);
+                    mailComment.put( "added", isNew );
                     if (isChanged) {
                         CaseComment oldComment = changed.get( changed.indexOf( comment ) );
                         mailComment.put( "oldText", escapeTextAndRenderHTML( oldComment.getText(), textMarkup ) );

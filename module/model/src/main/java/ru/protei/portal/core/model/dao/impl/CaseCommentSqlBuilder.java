@@ -46,6 +46,12 @@ public class CaseCommentSqlBuilder {
                     conditions.add("case_comment.COMMENT_TEXT IS NOT NULL");
                 }
 
+                if (query.getCommentTypes().contains(CaseCommentQuery.CommentType.MANAGER)) {
+                    conditions.add("case_comment.cmanager_id IS NOT NULL OR " +
+                            "(case_comment.cstate_id IS NULL AND case_comment.cimp_level IS NULL " +
+                                "AND case_comment.time_elapsed IS NULL AND case_comment.COMMENT_TEXT IS NULL)");
+                }
+
                 condition
                         .append(String.join(" or ", conditions))
                         .append(")");

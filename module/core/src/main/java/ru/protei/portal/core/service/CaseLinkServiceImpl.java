@@ -11,7 +11,6 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseLinkEvent;
 import ru.protei.portal.core.event.ProjectLinkEvent;
-import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
@@ -38,7 +37,6 @@ import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.util.CaseStateUtil.isTerminalState;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
-import static ru.protei.portal.core.model.helper.CollectionUtils.find;
 
 public class CaseLinkServiceImpl implements CaseLinkService {
 
@@ -115,12 +113,14 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
                 Result<CaseObjectMeta> blockedParentIssue = blockParentIssue(authToken, createdLink);
                 if (blockedParentIssue.isError()) {
-                    throw new RollbackTransactionException("failed to block parent issue with result  = " + blockedParentIssue + " | link = " + createdLink);
+                    throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED,
+                            "failed to block parent issue with result  = " + blockedParentIssue + " | link = " + createdLink);
                 }
 
                 Result<CaseObjectMetaNotifiers> addedNotifierResult = addNotifierToSubtask(authToken, createdLink);
                 if (addedNotifierResult.isError()) {
-                    throw new RollbackTransactionException("failed to add subtask notifier with result = " + addedNotifierResult + " | link = " + createdLink);
+                    throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED,
+                            "failed to add subtask notifier with result = " + addedNotifierResult + " | link = " + createdLink);
                 }
 
                 CaseLink newState = caseLinkDAO.get(createdLink.getId());
@@ -150,13 +150,13 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         Result<CaseObjectMeta> blockedParentIssueResult = blockParentIssue(authToken, createdLink);
         if (blockedParentIssueResult.isError()) {
             log.error("createLinkWithPublish(): failed to block parent issue with result = {} | link = {}", blockedParentIssueResult, link);
-            throw new ResultStatusException(blockedParentIssueResult.getStatus());
+            throw new RollbackTransactionException(blockedParentIssueResult.getStatus());
         }
 
         Result<CaseObjectMetaNotifiers> addedNotifierResult = addNotifierToSubtask(authToken, createdLink);
         if (addedNotifierResult.isError()) {
             log.error("createLinkWithPublish(): failed to add subtask notifier with result = {} | link = {}", addedNotifierResult, link);
-            throw new ResultStatusException(addedNotifierResult.getStatus());
+            throw new RollbackTransactionException(addedNotifierResult.getStatus());
         }
 
         synchronizeYouTrackLinks(Collections.singletonList(link), caseType);
@@ -181,7 +181,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                 Result<CaseObjectMeta> openedIssueResult = openParentIssueIfAllLinksInTerminalState(token, deletedLinkResult.getData());
                 if (openedIssueResult.isError()) {
                     log.error("deleteLinks(): linkId = {} | failed to open parent issue with result = {}", link.getId(), openedIssueResult);
-                    throw new ResultStatusException(openedIssueResult.getStatus());
+                    throw new RollbackTransactionException(openedIssueResult.getStatus());
                 }
             }
         });
@@ -205,7 +205,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         Result<CaseObjectMeta> openedIssueResult = openParentIssueIfAllLinksInTerminalState(authToken, deletedLink);
         if (openedIssueResult.isError()) {
             log.error("deleteLinkWithPublish(): linkId = {} | failed to open parent issue with result = {}", id, openedIssueResult);
-            throw new ResultStatusException(openedIssueResult.getStatus());
+            throw new RollbackTransactionException(openedIssueResult.getStatus());
         }
 
         synchronizeYouTrackLinks(Collections.singletonList(deletedLink), caseType);
@@ -412,7 +412,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             }
         } catch (Exception e){
             log.error("changeYoutrackId(): change failed", e);
-            throw new ResultStatusException(En_ResultStatus.INTERNAL_ERROR);
+            throw new RollbackTransactionException(En_ResultStatus.INTERNAL_ERROR);
         }
 
         return ok();
@@ -813,7 +813,8 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         Long id = caseLinkDAO.persist(newLink);
         if (id == null) {
             log.error("addYoutrackCaseLink(): Can`t add link on to youtrack into case, persistence error");
-            throw new RollbackTransactionException("addYoutrackCaseLink(): rollback transaction");
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED,
+                    "addYoutrackCaseLink(): rollback transaction" );
         }
         newLink.setId(id);
         return ok(newLink);
@@ -823,7 +824,8 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         log.debug("removeCaseLinkOnToYoutrack(): caseLink={}", caseLink);
         if (!caseLinkDAO.removeByKey( caseLink.getId() )) {
             log.error( "removeCaseLinkOnToYoutrack(): Can`t remove link on to youtrack, persistence error" );
-            throw new RollbackTransactionException( "removeCaseLinkOnToYoutrack(): rollback transaction" );
+            throw new RollbackTransactionException(En_ResultStatus.NOT_REMOVED,
+                    "removeCaseLinkOnToYoutrack(): rollback transaction" );
         }
         log.info( "removeCaseLinkOnToYoutrack(): removed CaseLink with id={}", caseLink.getId() );
         return ok(caseLink);

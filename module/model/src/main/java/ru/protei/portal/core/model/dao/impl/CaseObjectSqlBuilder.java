@@ -1,8 +1,6 @@
 package ru.protei.portal.core.model.dao.impl;
 
-import ru.protei.portal.core.model.dict.En_Gender;
-import ru.protei.portal.core.model.dict.En_TimeElapsedType;
-import ru.protei.portal.core.model.dict.En_WorkTrigger;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -13,6 +11,7 @@ import ru.protei.portal.core.model.util.sqlcondition.Condition;
 import ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -135,7 +134,11 @@ public class CaseObjectSqlBuilder {
                     condition.append( " and importance in " ).append( importantces );
                 } else {
                     condition.append( " and (importance in " ).append( importantces )
-                            .append( " or case_comment.cimp_level in " ).append( importantces )
+                            .append(" or (history.new_id in " ).append( importantces )
+                                .append(" and history.value_type = ").append(En_HistoryType.CASE_IMPORTANCE.getId())
+                                .append(" and history.action_type in ")
+                                    .append(makeInArg(Arrays.asList(En_HistoryAction.ADD.getId(), En_HistoryAction.CHANGE.getId()), false))
+                                .append(")")
                             .append( ")" );
                 }
             }

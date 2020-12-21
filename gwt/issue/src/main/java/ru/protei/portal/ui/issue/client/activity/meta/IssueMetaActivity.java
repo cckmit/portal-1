@@ -126,13 +126,15 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     @Override
     public void onStateChange() {
-        if (CrmConstants.State.CREATED == metaView.state().getValue().getId() && meta.getManager() != null){
+        CaseState caseState = metaView.state().getValue();
+        if (CrmConstants.State.CREATED == caseState.getId() && meta.getManager() != null){
             fireEvent(new NotifyEvents.Show(lang.errSaveIssueNeedUnselectManager(), NotifyEvents.NotifyType.ERROR));
             metaView.state().setValue(new CaseState(meta.getStateId(), meta.getStateName()));
             return;
         }
 
-        meta.setStateId(metaView.state().getValue().getId());
+        meta.setStateId(caseState.getId());
+        meta.setStateName(caseState.getState());
         meta.setPauseDate((CrmConstants.State.PAUSED != meta.getStateId() || metaView.pauseDate().getValue() == null) ? null : metaView.pauseDate().getValue().getTime());
 
         metaView.pauseDateContainerVisibility().setVisible(CrmConstants.State.PAUSED == meta.getStateId());
@@ -149,6 +151,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             fireEvent(new IssueEvents.IssueStateChanged(meta.getId(), meta.getStateId()));
             fireEvent(new IssueEvents.IssueMetaChanged(meta));
             onParentIssueChanged(meta.getId());
+            fireEvent(new CaseHistoryEvents.Reload(meta.getId()));
         });
     }
 
@@ -158,6 +161,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         onCaseMetaChanged(meta, () -> {
             fireEvent(new IssueEvents.IssueImportanceChanged(meta.getId()));
             fireEvent(new IssueEvents.IssueMetaChanged(meta));
+            fireEvent(new CaseHistoryEvents.Reload(meta.getId()));
         });
 
         if (!isJiraIssue()) {
@@ -182,6 +186,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             fireEvent(new IssueEvents.IssueManagerChanged(meta.getId()));
             fireEvent(new IssueEvents.IssueMetaChanged(meta));
             onParentIssueChanged(meta.getId());
+            fireEvent(new CaseHistoryEvents.Reload(meta.getId()));
         } );
     }
 

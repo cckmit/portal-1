@@ -9,6 +9,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_DateIntervalType;
+import ru.protei.portal.core.model.dict.En_HistoryAction;
 import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
@@ -41,7 +42,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
             CaseQuery caseQuery = createCaseQuery( date10, addHours( date10, model.numberOfDays * H_DAY ) );
             caseQuery.setProductIds( model.productIncludedIds );
 
-            ReportCaseResolutionTime report = new ReportCaseResolutionTime( caseQuery, caseCommentDAO );
+            ReportCaseResolutionTime report = new ReportCaseResolutionTime( caseQuery, historyDAO );
             report.run();
 
             checkCases( report.getCases(), model.caseObjectIncludedIds );
@@ -63,7 +64,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
             CaseQuery caseQuery = createCaseQuery( date10, addHours( date10, model.numberOfDays * H_DAY ) );
             caseQuery.setCaseTagsIds( model.caseTagIncludedIds );
 
-            ReportCaseResolutionTime report = new ReportCaseResolutionTime( caseQuery, caseCommentDAO );
+            ReportCaseResolutionTime report = new ReportCaseResolutionTime( caseQuery, historyDAO );
             report.run();
 
             checkCases( report.getCases(), model.caseObjectIncludedIds );
@@ -85,7 +86,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
             CaseQuery caseQuery = createCaseQuery( date10, addHours( date10, model.numberOfDays * H_DAY ) );
             caseQuery.setCompanyIds( model.companysIncludedIds );
 
-            ReportCaseResolutionTime report = new ReportCaseResolutionTime( caseQuery , caseCommentDAO );
+            ReportCaseResolutionTime report = new ReportCaseResolutionTime( caseQuery , historyDAO );
             report.run();
 
             checkCases( report.getCases(), model.caseObjectIncludedIds );
@@ -113,18 +114,18 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
     public void casesGroupingTest() {
         Person person = new Person( 1L );
 
-        List<CaseComment> comments = new ArrayList<>();
-        comments.add( createNewComment( person, 1L, "1 case 1 comment", CREATED ) );
-        comments.add( createNewComment( person, 1L, "1 case 2 comment", OPENED ) );
-        comments.add( createNewComment( person, 1L, "1 case 3 comment", DONE ) );
-        comments.add( createNewComment( person, 2L, "2 case 1 comment", CREATED ) );
-        comments.add( createNewComment( person, 2L, "2 case 2 comment", OPENED ) );
-        comments.add( createNewComment( person, 2L, "2 case 3 comment", DONE ) );
-        comments.add( createNewComment( person, 3L, "3 case 1 comment", CREATED ) );
-        comments.add( createNewComment( person, 3L, "3 case 2 comment", OPENED ) );
-        comments.add( createNewComment( person, 3L, "3 case 3 comment", DONE ) );
+        List<History> stateHistories = new ArrayList<>();
+        stateHistories.add( createNewStateHistory( person, 1L, CREATED, new Date()) );
+        stateHistories.add( createNewStateHistory( person, 1L, OPENED, new Date()) );
+        stateHistories.add( createNewStateHistory( person, 1L, DONE, new Date()) );
+        stateHistories.add( createNewStateHistory( person, 2L, CREATED, new Date()) );
+        stateHistories.add( createNewStateHistory( person, 2L, OPENED, new Date()) );
+        stateHistories.add( createNewStateHistory( person, 2L, DONE, new Date()) );
+        stateHistories.add( createNewStateHistory( person, 3L, CREATED, new Date()) );
+        stateHistories.add( createNewStateHistory( person, 3L, OPENED, new Date()) );
+        stateHistories.add( createNewStateHistory( person, 3L, DONE, new Date()) );
 
-        List<Case> cases = groupBayIssues( convert( comments ) );
+        List<Case> cases = groupBayIssues( convert( stateHistories ) );
 
         assertEquals( 3, cases.size() );
     }
@@ -134,24 +135,24 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         Person person = new Person( 1L );
         List<Interval> intervals = makeIntervals( dateRange(), DAY );
 
-        List<CaseComment> comments = new ArrayList<>();
+        List<History> stateHistories = new ArrayList<>();
         //                         | 0| 1| 2| 3| 4| 5| 6| 7| 8| 9|10|11|
         //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
         //                            ^--^--x           ^--------x
         //                               ^-----^-----x     ^--x
-        comments.add( fillComment( createNewComment( person, 1L, "1 case CREATED" ), CREATED, day( 10 ) ) );
-        comments.add( fillComment( createNewComment( person, 1L, "1 case OPENED" ), OPENED, day( 11 ) ) );
-        comments.add( fillComment( createNewComment( person, 1L, "1 case DONE" ), DONE, day( 12 ) ) );
-        comments.add( fillComment( createNewComment( person, 1L, "1 case REOPENED" ), REOPENED, day( 16 ) ) );
-        comments.add( fillComment( createNewComment( person, 1L, "1 case VERIFIED" ), VERIFIED, day( 19 ) ) );
+        stateHistories.add( createNewStateHistory( person, 1L, CREATED, day( 10 ) ) );
+        stateHistories.add( createNewStateHistory( person, 1L, OPENED, day( 11 ) ) );
+        stateHistories.add( createNewStateHistory( person, 1L, DONE, day( 12 ) ) );
+        stateHistories.add( createNewStateHistory( person, 1L, REOPENED, day( 16 ) ) );
+        stateHistories.add( createNewStateHistory( person, 1L, VERIFIED, day( 19 ) ) );
 
-        comments.add( fillComment( createNewComment( person, 2L, "2 case CREATED" ), CREATED, day( 11 ) ) );
-        comments.add( fillComment( createNewComment( person, 2L, "2 case OPENED" ), OPENED, day( 13 ) ) );
-        comments.add( fillComment( createNewComment( person, 2L, "2 case DONE" ), DONE, day( 15 ) ) );
-        comments.add( fillComment( createNewComment( person, 2L, "2 case REOPENED" ), REOPENED, day( 17 ) ) );
-        comments.add( fillComment( createNewComment( person, 2L, "2 case VERIFIED" ), VERIFIED, day( 18 ) ) );
+        stateHistories.add( createNewStateHistory( person, 2L, CREATED, day( 11 ) ) );
+        stateHistories.add( createNewStateHistory( person, 2L, OPENED, day( 13 ) ) );
+        stateHistories.add( createNewStateHistory( person, 2L, DONE, day( 15 ) ) );
+        stateHistories.add( createNewStateHistory( person, 2L, REOPENED, day( 17 ) ) );
+        stateHistories.add( createNewStateHistory( person, 2L, VERIFIED, day( 18 ) ) );
 
-        List<Case> cases = groupBayIssues( convert( comments ) );
+        List<Case> cases = groupBayIssues( convert( stateHistories ) );
 
         for (Interval interval : intervals) {
             log.info( "\n" );
@@ -250,25 +251,25 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         Person person = new Person( 1L );
         List<Interval> intervals = makeIntervals( dateRange(), DAY );
 
-        List<CaseComment> comments = new ArrayList<>();
+        List<History> stateHistories = new ArrayList<>();
         //                         | 0| 1| 2| 3| 4| 5| 6| 7| 8| 9|10|11|
         //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
         //                            ^--^--x           ^--------x
         //                               ^-----^-----x     ^--x
-        comments.add( fillComment( createNewComment( person, 1L, "1 case CREATED" ), CREATED, day( 10 ) ) );
-        comments.add( fillComment( createNewComment( person, 1L, "1 case OPENED" ), OPENED, day( 11 ) ) );
-        comments.add( fillComment( createNewComment( person, 1L, "1 case DONE" ), DONE, day( 12 ) ) );
-        comments.add( fillComment( createNewComment( person, 1L, "1 case REOPENED" ), REOPENED, day( 16 ) ) );
-        comments.add( fillComment( createNewComment( person, 1L, "1 case VERIFIED" ), VERIFIED, day( 19 ) ) );
+        stateHistories.add( createNewStateHistory( person, 1L, CREATED, day( 10 ) ) );
+        stateHistories.add( createNewStateHistory( person, 1L, OPENED, day( 11 ) ) );
+        stateHistories.add( createNewStateHistory( person, 1L, DONE, day( 12 ) ) );
+        stateHistories.add( createNewStateHistory( person, 1L, REOPENED, day( 16 ) ) );
+        stateHistories.add( createNewStateHistory( person, 1L, VERIFIED, day( 19 ) ) );
 
-        comments.add( fillComment( createNewComment( person, 2L, "2 case CREATED" ), CREATED, day( 11 ) ) );
-        comments.add( fillComment( createNewComment( person, 2L, "2 case OPENED" ), OPENED, day( 13 ) ) );
-        comments.add( fillComment( createNewComment( person, 2L, "2 case DONE" ), DONE, day( 15 ) ) );
-        comments.add( fillComment( createNewComment( person, 2L, "2 case REOPENED" ), REOPENED, day( 17 ) ) );
-        comments.add( fillComment( createNewComment( person, 2L, "2 case VERIFIED" ), VERIFIED, day( 18 ) ) );
+        stateHistories.add( createNewStateHistory( person, 2L, CREATED, day( 11 ) ) );
+        stateHistories.add( createNewStateHistory( person, 2L, OPENED, day( 13 ) ) );
+        stateHistories.add( createNewStateHistory( person, 2L, DONE, day( 15 ) ) );
+        stateHistories.add( createNewStateHistory( person, 2L, REOPENED, day( 17 ) ) );
+        stateHistories.add( createNewStateHistory( person, 2L, VERIFIED, day( 18 ) ) );
 
 
-        List<Case> cases = groupBayIssues( convert(comments) );
+        List<Case> cases = groupBayIssues( convert(stateHistories) );
 
         for (Interval interval : intervals) {
             interval.fill( cases, new HashSet<>( activeStatesShort ) );
@@ -282,12 +283,12 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         assertEquals( numberOfDays, workBook.getSheetAt( 0 ).getLastRowNum() ); // учтена строка с заголовком
     }
 
-    private List<CaseResolutionTimeReportDto> convert( List<CaseComment> comments ) {
-        return toList( comments, comment -> {
+    private List<CaseResolutionTimeReportDto> convert( List<History> stateHistories ) {
+        return toList( stateHistories, stateHistory -> {
             CaseResolutionTimeReportDto reportDto = new CaseResolutionTimeReportDto();
-            reportDto.setCaseId( comment.getCaseId() );
-            reportDto.setCaseStateId( comment.getCaseStateId() );
-            reportDto.setCreated( comment.getCreated() );
+            reportDto.setCaseId( stateHistory.getCaseObjectId() );
+            reportDto.setCaseStateId( stateHistory.getNewId() );
+            reportDto.setCreated( stateHistory.getDate() );
             return reportDto;
         } );
     }
@@ -320,38 +321,36 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
         //                               ^x
         Long caseId = factory.makeCase( day( 9 ), includeTag, includedProduct, includedCompany );
-        model.caseObjectIncludedIds.add(caseId);
-        CaseComment c1 = createNewComment( person, caseId, "One day" );
-        makeComment( c1, CREATED, day( 11 ) );                              //2050-01-11 00:00:00
-        makeComment( c1, OPENED, addHours( day( 11 ), 2 ) );                //2050-01-11 02:00:00
-        makeComment( c1, DONE, addHours( day( 11 ), 6 ) );                  //2050-01-11 06:00:00
+        model.caseObjectIncludedIds.add(caseId);        // "One day"
+        History h1 = createNewStateHistory( person, caseId, CREATED, day( 11 ) );      //2050-01-11 00:00:00
+        makeStateHistory( h1 );
+        makeStateHistory( h1, OPENED, addHours( day( 11 ), 2 ) );                //2050-01-11 02:00:00
+        makeStateHistory( h1, DONE, addHours( day( 11 ), 6 ) );                  //2050-01-11 06:00:00
 
         //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
         //                          ^n------^--------x     ^----------------------------------------
         Long caseId2 = factory.makeCase( day( 9 ), includeTag2, includedProduct2, includedCompany2 );
-        model.caseObjectIncludedIds.add(caseId2);
-        CaseComment c2 = createNewComment( person, caseId2, "Week" );
-        makeComment( c2, CREATED, day( 9 ) );                                      //2050-01-09 00:00:00
-        makeComment( c2, null, addHours( day( 9 ), 2 ) );            //2050-01-09 02:00:00
-        makeComment( c2, OPENED, addHours( day( 12 ), 2 ) );                //2050-01-12 02:00:00
-        makeComment( c2, DONE, addHours( day( 15 ), 5 ) );                  //2050-01-15 05:00:00
-        makeComment( c2, REOPENED, addHours( day( 17 ), 11 ) );             //2050-01-17 11:00:00
+        model.caseObjectIncludedIds.add(caseId2); // "Week"
+        History h2 = createNewStateHistory( person, caseId2, CREATED, day( 9 ) );      //2050-01-09 00:00:00
+        makeStateHistory( h2 );
+        makeStateHistory( h2, OPENED, addHours( day( 12 ), 2 ) );                //2050-01-12 02:00:00
+        makeStateHistory( h2, DONE, addHours( day( 15 ), 5 ) );                  //2050-01-15 05:00:00
+        makeStateHistory( h2, REOPENED, addHours( day( 17 ), 11 ) );             //2050-01-17 11:00:00
 
         //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
         //                                     ^--------------^---n------------^
         Long caseId3 = factory.makeCase( day( 9 ), includeTag, includedProduct, includedCompany );
-        model.caseObjectIncludedIds.add(caseId3);
-        CaseComment c3 = createNewComment( person, caseId3, "2 Week" );
-        makeComment( c3, CREATED, day( 13 ) );                                     //2050-01-13 00:00:00
-        makeComment( c3, OPENED, addHours( day( 18 ), 5 ) );                //2050-01-18 05:00:00
-        makeComment( c3, null, addHours( day( 19 ), 11 ) );          //2050-01-19 11:00:00
-        makeComment( c3, DONE, addHours( day( 24 ), 11 ) );                 //2050-01-24 11:00:00
+        model.caseObjectIncludedIds.add(caseId3);       // "2 Week"
+        History h3 = createNewStateHistory( person, caseId3, CREATED, day( 13 ) );     //2050-01-13 00:00:00
+        makeStateHistory( h3 );
+        makeStateHistory( h3, OPENED, addHours( day( 18 ), 5 ) );                //2050-01-18 05:00:00
+        makeStateHistory( h3, null, addHours( day( 19 ), 11 ) );          //2050-01-19 11:00:00
+        makeStateHistory( h3, DONE, addHours( day( 24 ), 11 ) );                 //2050-01-24 11:00:00
 
         //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
         //   excluded                                ^..............................................
-        Long excludedCaseId4 = factory.makeCase( day( 9 ), excludeTag, excludedProduct, excludedCompany );
-        CaseComment c4 = createNewComment( person, excludedCaseId4, "excluded comment" );
-        makeComment( c4, CREATED, day( 15 ) );                                     //2050-01-15 00:00:00
+        Long excludedCaseId4 = factory.makeCase( day( 9 ), excludeTag, excludedProduct, excludedCompany ); // "excluded comment"
+        History h4 = createNewStateHistory( person, excludedCaseId4, CREATED, day( 15 ) );                                     //2050-01-15 00:00:00
 
         return model;
     }
@@ -414,16 +413,23 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         assertEquals( 9, cases.stream().mapToInt( cse -> size( cse.statuses ) ).sum() );
     }
 
-    private void makeComment( CaseComment comment1, Long status, Date created ) {
-        comment1 = fillComment( comment1, status, created );
-        comment1.setId( null );
-        commentsIds.add( caseCommentDAO.persist( comment1 ) );
+    private void makeStateHistory( History history ) {
+        history.setId( null );
+        historyIds.add( historyDAO.persist( history ) );
     }
 
-    private CaseComment fillComment( CaseComment comment1, Long status, Date created ) {
-        comment1.setCreated( created );
-        comment1.setCaseStateId( status );
-        return comment1;
+    private void makeStateHistory( History history, Long status, Date created ) {
+        history = fillHistory( history, status, created );
+        history.setId( null );
+        historyIds.add( historyDAO.persist( history ) );
+    }
+
+    private History fillHistory( History history, Long status, Date created ) {
+        history.setDate( created );
+        history.setOldId( history.getNewId() );
+        history.setNewId( status );
+        history.setAction( En_HistoryAction.CHANGE );
+        return history;
     }
 
     private CaseQuery createCaseQuery(  Date from, Date to ) {
@@ -447,6 +453,11 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
             String caseIdsString = model.caseIds.stream().map( String::valueOf ).collect( Collectors.joining( "," ) );
             caseCommentDAO.removeByCondition( "CASE_ID in (" + caseIdsString + ")" );
             commentsIds.clear();
+        }
+
+        if (isNotEmpty(historyIds)) {
+            historyDAO.removeByKeys( historyIds );
+            historyIds.clear();
         }
 
         caseObjectDAO.removeByKeys( model.caseIds );
@@ -473,6 +484,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
 
     private static List<Long> activeStatesShort = Arrays.asList( 1L, 2L, 6L, 16L, 19L, 30L );
     private static List<Long> commentsIds = new ArrayList<>();
+    private static List<Long> historyIds = new ArrayList<>();
 
     private static final Long CREATED = 1L;
     private static final Long OPENED = 2L;

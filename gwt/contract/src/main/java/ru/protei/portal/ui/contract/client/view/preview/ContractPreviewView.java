@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.contract.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -65,8 +64,8 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     }
 
     @Override
-    public void setDirection(String value) {
-        this.direction.setInnerHTML(value);
+    public void setDirections(String value) {
+        this.directions.setInnerHTML(value);
     }
 
     @Override
@@ -156,7 +155,7 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     @UiField
     SpanElement description;
     @UiField
-    SpanElement direction;
+    SpanElement directions;
     @UiField
     ImageElement state;
     @UiField

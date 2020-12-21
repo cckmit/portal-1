@@ -21,6 +21,8 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.product.client.activity.table.AbstractProductTableActivity;
 import ru.protei.portal.ui.product.client.activity.table.AbstractProductTableView;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
+
 public class ProductTableView extends Composite implements AbstractProductTableView {
 
     @Inject
@@ -119,7 +121,7 @@ public class ProductTableView extends Composite implements AbstractProductTableV
             builder.append(devUnit.isActiveUnit() ? "<div>" : "<div class='deprecated-entity'><i class='fa fa-lock m-r-5'></i> ")
                     .append(SimpleHtmlSanitizer.sanitizeHtml(devUnit.getName()).asString())
                     .append(CollectionUtils.isEmpty(devUnit.getAliases()) ? "" :
-                            " (" + String.join(", ", devUnit.getAliases()) + ")")
+                            " (" + joining(devUnit.getAliases(), ", ") + ")")
                     .append("</div>");
             if (StringUtils.isNotEmpty(devUnit.getInfo())) {
                 builder.append("<small><i>")

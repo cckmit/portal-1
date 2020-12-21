@@ -7,7 +7,6 @@ import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
@@ -115,11 +114,11 @@ public class AssembledProjectEvent extends ApplicationEvent implements HasCaseCo
     }
 
     public boolean isProductDirectionChanged() {
-        return isEditEvent() && !Objects.equals(oldProjectState.getProductDirectionEntityOption(), newProjectState.getProductDirectionEntityOption());
+        return isEditEvent() && !Objects.equals(oldProjectState.getProductDirections(), newProjectState.getProductDirections());
     }
 
     public boolean isProductChanged() {
-        return isEditEvent() && !Objects.equals(oldProjectState.getSingleProduct(), newProjectState.getSingleProduct());
+        return isEditEvent() && !Objects.equals(oldProjectState.getProducts(), newProjectState.getProducts());
     }
 
     public boolean isSupportValidityChanged() {
@@ -139,13 +138,13 @@ public class AssembledProjectEvent extends ApplicationEvent implements HasCaseCo
             return false;
         }
 
-        DiffCollectionResult<PersonProjectMemberView> diffResult = CollectionUtils.diffCollection(oldProjectState.getTeam(), newProjectState.getTeam());
+        DiffCollectionResult<PersonProjectMemberView> diffResult = diffCollection(oldProjectState.getTeam(), newProjectState.getTeam());
 
-        if (CollectionUtils.isNotEmpty(diffResult.getAddedEntries())) {
+        if (isNotEmpty(diffResult.getAddedEntries())) {
             return true;
         }
 
-        if (CollectionUtils.isNotEmpty(diffResult.getRemovedEntries())) {
+        if (isNotEmpty(diffResult.getRemovedEntries())) {
             return true;
         }
 
@@ -165,15 +164,15 @@ public class AssembledProjectEvent extends ApplicationEvent implements HasCaseCo
     }
 
     public boolean isCommentsChanged() {
-        if (CollectionUtils.isNotEmpty(comments.getAddedEntries())) {
+        if (isNotEmpty(comments.getAddedEntries())) {
             return true;
         }
 
-        if (CollectionUtils.isNotEmpty(comments.getChangedEntries())) {
+        if (isNotEmpty(comments.getChangedEntries())) {
             return true;
         }
 
-        if (CollectionUtils.isNotEmpty(comments.getRemovedEntries())) {
+        if (isNotEmpty(comments.getRemovedEntries())) {
             return true;
         }
 
@@ -185,11 +184,11 @@ public class AssembledProjectEvent extends ApplicationEvent implements HasCaseCo
     }
 
     public boolean isLinksChanged() {
-        if (CollectionUtils.isNotEmpty(links.getAddedEntries())) {
+        if (isNotEmpty(links.getAddedEntries())) {
             return true;
         }
 
-        if (CollectionUtils.isNotEmpty(links.getRemovedEntries())) {
+        if (isNotEmpty(links.getRemovedEntries())) {
             return true;
         }
 
@@ -200,9 +199,9 @@ public class AssembledProjectEvent extends ApplicationEvent implements HasCaseCo
         Map<En_DevUnitPersonRoleType, DiffCollectionResult<PersonShortView>> teamDiffs = new TreeMap<>(Comparator.comparingInt(En_DevUnitPersonRoleType::getId));
 
         if (!isEditEvent()) {
-            DiffCollectionResult<PersonProjectMemberView> diffResult = CollectionUtils.diffCollection(null, newProjectState.getTeam());
+            DiffCollectionResult<PersonProjectMemberView> diffResult = diffCollection(null, newProjectState.getTeam());
 
-            for (PersonProjectMemberView currentPerson : CollectionUtils.emptyIfNull(diffResult.getAddedEntries())) {
+            for (PersonProjectMemberView currentPerson : emptyIfNull(diffResult.getAddedEntries())) {
                 DiffCollectionResult<PersonShortView> roleDiffs = teamDiffs.computeIfAbsent(currentPerson.getRole(), k -> new DiffCollectionResult<>());
                 roleDiffs.putSameEntry(currentPerson);
             }
@@ -210,19 +209,19 @@ public class AssembledProjectEvent extends ApplicationEvent implements HasCaseCo
             return teamDiffs;
         }
 
-        DiffCollectionResult<PersonProjectMemberView> diffResult = CollectionUtils.diffCollection(oldProjectState.getTeam(), newProjectState.getTeam());
+        DiffCollectionResult<PersonProjectMemberView> diffResult = diffCollection(oldProjectState.getTeam(), newProjectState.getTeam());
 
-        for (PersonProjectMemberView currentPerson : CollectionUtils.emptyIfNull(diffResult.getAddedEntries())) {
+        for (PersonProjectMemberView currentPerson : emptyIfNull(diffResult.getAddedEntries())) {
             DiffCollectionResult<PersonShortView> roleDiffs = teamDiffs.computeIfAbsent(currentPerson.getRole(), k -> new DiffCollectionResult<>());
             roleDiffs.putAddedEntry(currentPerson);
         }
 
-        for (PersonProjectMemberView currentPerson : CollectionUtils.emptyIfNull(diffResult.getRemovedEntries())) {
+        for (PersonProjectMemberView currentPerson : emptyIfNull(diffResult.getRemovedEntries())) {
             DiffCollectionResult<PersonShortView> roleDiffs = teamDiffs.computeIfAbsent(currentPerson.getRole(), k -> new DiffCollectionResult<>());
             roleDiffs.putRemovedEntry(currentPerson);
         }
 
-        for (PersonProjectMemberView currentPerson : CollectionUtils.emptyIfNull(diffResult.getSameEntries())) {
+        for (PersonProjectMemberView currentPerson : emptyIfNull(diffResult.getSameEntries())) {
             DiffCollectionResult<PersonShortView> roleDiffs = teamDiffs.computeIfAbsent(currentPerson.getRole(), k -> new DiffCollectionResult<>());
             roleDiffs.putSameEntry(currentPerson);
         }
@@ -237,10 +236,6 @@ public class AssembledProjectEvent extends ApplicationEvent implements HasCaseCo
         boolean isNewSlaListEmpty = isSlaListEmpty(newSlaList);
 
         if (!isEditEvent()) {
-            if (isNewSlaListEmpty) {
-                return slaDiffs;
-            }
-
             newSlaList.forEach(sla -> slaDiffs.put(
                     En_ImportanceLevel.find(sla.getImportanceLevelId()),
                     new DiffResult<>(sla, sla))
@@ -257,7 +252,7 @@ public class AssembledProjectEvent extends ApplicationEvent implements HasCaseCo
             return slaDiffs;
         }
 
-        for (En_ImportanceLevel level : En_ImportanceLevel.values()) {
+        for (En_ImportanceLevel level : toList(newProjectState.getProjectSlas(), ProjectSla::getImportanceLevel)) {
             ProjectSla oldSla = getSlaByImportance(oldSlaList, level.getId());
             ProjectSla newSla = getSlaByImportance(newSlaList, level.getId());
 
@@ -269,6 +264,26 @@ public class AssembledProjectEvent extends ApplicationEvent implements HasCaseCo
         }
 
         return slaDiffs;
+    }
+
+    public DiffCollectionResult<DevUnit> getProductDirectionDiffs() {
+        if (!isEditEvent()) {
+            DiffCollectionResult<DevUnit> diffCollectionResult = new DiffCollectionResult<>();
+            diffCollectionResult.putSameEntries(newProjectState.getProductDirections());
+            return diffCollectionResult;
+        }
+
+        return diffCollection(oldProjectState.getProductDirections(), newProjectState.getProductDirections());
+    }
+
+    public DiffCollectionResult<DevUnit> getProductDiffs() {
+        if (!isEditEvent()) {
+            DiffCollectionResult<DevUnit> diffCollectionResult = new DiffCollectionResult<>();
+            diffCollectionResult.putSameEntries(newProjectState.getProducts());
+            return diffCollectionResult;
+        }
+
+        return diffCollection(oldProjectState.getProducts(), newProjectState.getProducts());
     }
 
     // Убрать из существующих элементов добавленные и удаленные
@@ -388,11 +403,11 @@ public class AssembledProjectEvent extends ApplicationEvent implements HasCaseCo
     }
 
     public List<CaseComment> getAddedCaseComments() {
-        return CollectionUtils.emptyIfNull(comments.getAddedEntries());
+        return emptyIfNull(comments.getAddedEntries());
     }
 
     public List<CaseComment> getChangedCaseComments() {
-        if (CollectionUtils.isEmpty(comments.getChangedEntries())) {
+        if (isEmpty(comments.getChangedEntries())) {
             return Collections.emptyList();
         }
 
@@ -400,7 +415,7 @@ public class AssembledProjectEvent extends ApplicationEvent implements HasCaseCo
     }
 
     public List<CaseComment> getRemovedCaseComments() {
-        return CollectionUtils.emptyIfNull(comments.getRemovedEntries());
+        return emptyIfNull(comments.getRemovedEntries());
     }
 
     public List<CaseComment> getAllComments() {

@@ -14,7 +14,7 @@ import ru.protei.winter.jdbc.annotations.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 /**
  * Информация о проекте в регионе
@@ -68,20 +68,6 @@ public class Project extends AuditableObject {
     private Company customer;
 
     /**
-     * Имя продукта
-     */
-    @JdbcJoinedColumn(joinPath = {
-            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
-            @JdbcJoinPath(localColumn = "product_id", remoteColumn = "id", table = "dev_unit")}, mappedColumn = "UNIT_NAME")
-    private String productDirectionName;
-
-    /**
-     * id продукта
-     */
-    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = "product_id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
-    private Long productDirectionId;
-
-    /**
      * Дата создания
      */
     @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Columns.CREATED, table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
@@ -98,9 +84,6 @@ public class Project extends AuditableObject {
 
     @JdbcOneToMany(table = "case_location", localColumn = "id", remoteColumn = "CASE_ID" )
     private List<CaseLocation> locations;
-
-    @JdbcManyToMany(linkTable = "project_to_product", localLinkColumn = "project_id", remoteLinkColumn = "product_id")
-    private Set<DevUnit> products;
 
     @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Columns.DELETED, table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
     private boolean deleted;
@@ -163,6 +146,10 @@ public class Project extends AuditableObject {
 
     private List<EntityOption> contracts;
 
+    private Set<DevUnit> productDirections;
+
+    private Set<DevUnit> products;
+
     public Long getId() {
         return id;
     }
@@ -187,28 +174,21 @@ public class Project extends AuditableObject {
         this.stateId = state.getId();
     }
 
-    public EntityOption getProductDirectionEntityOption() {
-        if (productDirectionName != null && productDirectionId != null) {
-            return new EntityOption(productDirectionName, productDirectionId);
-        } else {
+    public List<EntityOption> getProductDirectionEntityOptionList() {
+        if (isEmpty(productDirections)) {
             return null;
         }
+        return productDirections.stream()
+                .map(direction -> new EntityOption(direction.getName(), direction.getId()))
+                .collect(Collectors.toList());
     }
 
-    public String getProductDirectionName() {
-        return productDirectionName;
+    public Set<DevUnit> getProductDirections() {
+        return productDirections;
     }
 
-    public void setProductDirectionName(String productDirectionName) {
-        this.productDirectionName = productDirectionName;
-    }
-
-    public Long getProductDirectionId() {
-        return productDirectionId;
-    }
-
-    public void setProductDirectionId(Long productDirectionId) {
-        this.productDirectionId = productDirectionId;
+    public void setProductDirections(Set<DevUnit> productDirections) {
+        this.productDirections = productDirections;
     }
 
     public Date getCreated() {
@@ -268,6 +248,10 @@ public class Project extends AuditableObject {
 
     public void setCustomer(Company customer) {
         this.customer = customer;
+    }
+
+    public Long getCustomerId() {
+        return customer == null ? null : customer.getId();
     }
 
     public Set<DevUnit> getProducts() {
@@ -338,8 +322,8 @@ public class Project extends AuditableObject {
         this.deleted = deleted;
     }
 
-    public ProductShortView getSingleProduct() {
-        return products == null ? null : getProducts().stream().map(ProductShortView::fromProduct).findAny().orElse(null);
+    public List<ProductShortView> getProductShortViewList() {
+        return products == null ? null : toList(products, ProductShortView::fromProduct);
     }
 
     public List<EntityOption> getContracts() {
@@ -473,8 +457,7 @@ public class Project extends AuditableObject {
                 ", stateId=" + stateId +
                 ", customerType=" + customerType +
                 ", customer=" + customer +
-                ", productDirectionName='" + productDirectionName + '\'' +
-                ", productDirectionId=" + productDirectionId +
+                ", productDirections=" + productDirections +
                 ", created=" + created +
                 ", creatorId=" + creatorId +
                 ", members=" + members +

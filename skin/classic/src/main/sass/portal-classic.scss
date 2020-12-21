@@ -261,3 +261,16 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
     min-width: 30%;
   }
 }
+
+.dev-unit-selector-image {
+  max-height: 20px;
+  max-width: 20px;
+  margin-right: 6px;
+}
+
+.project-preview-product-links::after {
+  content: ", ";
+}
+.project-preview-product-links:last-child::after {
+  content: none;
+}

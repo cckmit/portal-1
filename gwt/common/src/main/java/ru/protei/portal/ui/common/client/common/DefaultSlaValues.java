@@ -11,6 +11,13 @@ public class DefaultSlaValues {
     private static final List<ProjectSla> list;
 
     static {
+        ProjectSla emergencySla = new ProjectSla(
+                En_ImportanceLevel.EMERGENCY.getId(),
+                hoursToMinutes(1),
+                hoursToMinutes(4),
+                daysToMinutes(3)
+        );
+
         ProjectSla criticalSla = new ProjectSla(
                 En_ImportanceLevel.CRITICAL.getId(),
                 hoursToMinutes(1),
@@ -39,7 +46,7 @@ public class DefaultSlaValues {
                 daysToMinutes(90)
         );
 
-        list = Arrays.asList(criticalSla, importantSla, basicSla, cosmeticSla);
+        list = Arrays.asList(emergencySla, criticalSla, importantSla, basicSla, cosmeticSla);
     }
 
     private static Long hoursToMinutes(int hours) {

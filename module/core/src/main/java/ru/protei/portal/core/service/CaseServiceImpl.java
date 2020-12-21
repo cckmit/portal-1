@@ -10,7 +10,7 @@ import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseNameAndDescriptionEvent;
 import ru.protei.portal.core.event.CaseObjectCreateEvent;
 import ru.protei.portal.core.event.CaseObjectMetaEvent;
-import ru.protei.portal.core.exception.ResultStatusException;
+import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
@@ -86,6 +86,9 @@ public class CaseServiceImpl implements CaseService {
     PersonDAO personDAO;
 
     @Autowired
+    PersonShortViewDAO personShortViewDAO;
+
+    @Autowired
     CaseAttachmentDAO caseAttachmentDAO;
 
     @Autowired
@@ -109,6 +112,9 @@ public class CaseServiceImpl implements CaseService {
     @Autowired
     CaseStateDAO caseStateDAO;
 
+    @Autowired
+    HistoryService historyService;
+    
     @Autowired
     PolicyService policyService;
 
@@ -220,6 +226,7 @@ public class CaseServiceImpl implements CaseService {
             }
         } else {
             caseObject.setStateId(CrmConstants.State.CREATED);
+            caseObject.setStateName(CrmConstants.State.CREATED_NAME);
             caseObject.setTimeElapsed(null);
         }
 
@@ -232,19 +239,21 @@ public class CaseServiceImpl implements CaseService {
         else
             caseObject.setId(caseId);
 
-        Long stateMessageId = createAndPersistStateMessage(token.getPersonId(), caseId, caseObject.getStateId());
-        if (stateMessageId == null) {
+        Result<Long> resultState = addStateHistory(token, caseId, caseObject.getStateId(),
+                caseObject.getStateName() != null ? caseObject.getStateName() : caseStateDAO.get(caseObject.getStateId()).getState());
+        if (resultState.isError()) {
             log.error("State message for the issue {} not saved!", caseId);
         }
 
-        Long impMessageId = createAndPersistImportanceMessage(token.getPersonId(), caseId, caseObject.getImpLevel());
-        if (impMessageId == null) {
+        Result<Long> importanceResult = addImportanceHistory(token, caseId, caseObject.getImpLevel().longValue(), En_ImportanceLevel.getById(caseObject.getImpLevel()).getCode());
+        if (importanceResult.isError()) {
             log.error("Importance level message for the issue {} not saved!", caseId);
         }
 
         if (caseObject.getManager() != null && caseObject.getManager().getId() != null) {
-            Long messageId = createAndPersistManagerMessage(token.getPersonId(), caseObject.getId(), caseObject.getManager().getId());
-            if (messageId == null) {
+            Result<Long> resultManager = addManagerHistory(token, caseObject.getId(), caseObject.getManager().getId(),
+                    caseObject.getManager().getDisplayShortName() != null ? caseObject.getManager().getDisplayShortName() : personShortViewDAO.get(caseObject.getManagerId()).getDisplayShortName());
+            if (resultManager.isError()) {
                 log.error("Manager message for the issue {} not saved!", caseObject.getId());
             }
         }
@@ -307,7 +316,7 @@ public class CaseServiceImpl implements CaseService {
                 Result<Plan> planResult = planService.addIssueToPlan(token, planOption.getId(), caseId);
 
                 if (planResult.isError()) {
-                    throw new ResultStatusException(
+                    throw new RollbackTransactionException(
                             planResult.getStatus(),
                             String.format("Issue was not added to plan. planId=%d", planOption.getId())
                     );
@@ -366,7 +375,7 @@ public class CaseServiceImpl implements CaseService {
                         = caseObjectDAO.partialMerge(caseObject, "ATTACHMENT_EXISTS");
 
                 if (!isAttachmentsExistUpdated) {
-                    throw new ResultStatusException(En_ResultStatus.NOT_UPDATED, "Attachment exists flag was not updated");
+                    throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED, "Attachment exists flag was not updated");
                 }
 
                 caseAttachmentDAO.persistBatch(
@@ -432,21 +441,21 @@ public class CaseServiceImpl implements CaseService {
         if (!isStateTransitionValidByWorkflow) {
             log.info("Wrong state transition for the issue {}: {} -> {}, workflow={}",
                     caseMeta.getId(), oldCaseMeta.getStateId(), caseMeta.getStateId(), workflow);
-            throw new ResultStatusException(En_ResultStatus.VALIDATION_ERROR);
+            throw new RollbackTransactionException(En_ResultStatus.VALIDATION_ERROR);
         }
 
         boolean isStateTransitionValidNoWorkflow = workflow != En_CaseStateWorkflow.NO_WORKFLOW || !isStateReopenNotAllowed(oldCaseMeta, caseMeta);
         if (!isStateTransitionValidNoWorkflow) {
             log.info("Wrong state transition for the issue {}: {} -> {}",
                     caseMeta.getId(), oldCaseMeta.getStateId(), caseMeta.getStateId());
-            throw new ResultStatusException(En_ResultStatus.INVALID_CASE_UPDATE_CASE_IS_CLOSED);
+            throw new RollbackTransactionException(En_ResultStatus.INVALID_CASE_UPDATE_CASE_IS_CLOSED);
         }
 
         boolean isStateTerminalValid = !isTerminalState(caseMeta.getStateId()) || isStateTerminalValid(caseMeta.getId());
         if (!isStateTerminalValid) {
             log.info("Impossible to terminate the issue {}: {} -> {}",
                     caseMeta.getId(), oldCaseMeta.getStateId(), caseMeta.getStateId());
-            throw new ResultStatusException(En_ResultStatus.INVALID_CASE_UPDATE_SUBTASK_NOT_CLOSED);
+            throw new RollbackTransactionException(En_ResultStatus.INVALID_CASE_UPDATE_SUBTASK_NOT_CLOSED);
         }
 
         caseMeta.setModified(new Date());
@@ -455,26 +464,42 @@ public class CaseServiceImpl implements CaseService {
         boolean isUpdated = caseObjectMetaDAO.merge(caseMeta);
         if (!isUpdated) {
             log.info("Failed to update issue meta data {} at db", caseMeta.getId());
-            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
         if (oldCaseMeta.getStateId() != caseMeta.getStateId()) {
-            Long messageId = createAndPersistStateMessage(token.getPersonId(), caseMeta.getId(), caseMeta.getStateId());
-            if (messageId == null) {
+            Result<Long> resultState = changeStateHistory(token, caseMeta.getId(),
+                    oldCaseMeta.getStateId(), oldCaseMeta.getStateName() != null ?  oldCaseMeta.getStateName() : caseStateDAO.get(oldCaseMeta.getStateId()).getState(),
+                    caseMeta.getStateId(), caseMeta.getStateName() != null ? caseMeta.getStateName() : caseStateDAO.get(caseMeta.getStateId()).getState());
+            if (resultState.isError()) {
                 log.error("State message for the issue {} isn't saved!", caseMeta.getId());
             }
         }
 
         if (!Objects.equals(oldCaseMeta.getImpLevel(), caseMeta.getImpLevel())) {
-            Long messageId = createAndPersistImportanceMessage(token.getPersonId(), caseMeta.getId(), caseMeta.getImpLevel());
-            if (messageId == null) {
+            Result<Long> resultImportance = changeImportanceHistory(token, caseMeta.getId(),
+                    oldCaseMeta.getImpLevel().longValue(), En_ImportanceLevel.getById(oldCaseMeta.getImpLevel()).getCode(),
+                    caseMeta.getImpLevel().longValue(), En_ImportanceLevel.getById(caseMeta.getImpLevel()).getCode());
+            if (resultImportance.isError()) {
                 log.error("Importance level message for the issue {} isn't saved!", caseMeta.getId());
             }
         }
 
         if (!Objects.equals(oldCaseMeta.getManagerId(), caseMeta.getManagerId())) {
-            Long messageId = createAndPersistManagerMessage(token.getPersonId(), caseMeta.getId(), caseMeta.getManagerId());
-            if (messageId == null) {
+            Result<Long> resultManager = ok();
+            if (oldCaseMeta.getManagerId() == null && caseMeta.getManagerId() != null) {
+                resultManager = addManagerHistory(token, caseMeta.getId(),
+                        caseMeta.getManagerId(), makeManagerName(caseMeta));
+            } else if (oldCaseMeta.getManagerId() != null && caseMeta.getManagerId() != null) {
+                resultManager = changeManagerHistory(token, caseMeta.getId(),
+                        oldCaseMeta.getManagerId(), makeManagerName(oldCaseMeta),
+                        caseMeta.getManagerId(), makeManagerName(caseMeta));
+            } else if (oldCaseMeta.getManagerId() != null && caseMeta.getManagerId() == null) {
+                resultManager = removeManagerHistory(token, caseMeta.getId(),
+                        oldCaseMeta.getManagerId(), makeManagerName(oldCaseMeta));
+            }
+
+            if (resultManager.isError()) {
                 log.error("Manager message for the issue {} isn't saved!", caseMeta.getId());
             }
         }
@@ -484,7 +509,7 @@ public class CaseServiceImpl implements CaseService {
             openedParentsResult = openParentIssuesIfAllLinksInTerminalState(token, caseMeta.getId());
             if (openedParentsResult.isError()) {
                 log.error("Failed to open parent issue | message = '{}'", openedParentsResult.getMessage());
-                throw new ResultStatusException(openedParentsResult.getStatus());
+                throw new RollbackTransactionException(openedParentsResult.getStatus());
             }
         }
 
@@ -550,7 +575,7 @@ public class CaseServiceImpl implements CaseService {
         boolean isUpdated = caseObjectMetaNotifiersDAO.merge(caseMetaNotifiers);
         if (!isUpdated) {
             log.info("Failed to update issue meta notifiers data {} at db", caseMetaNotifiers.getId());
-            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
         // Event not needed
@@ -721,7 +746,7 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if (!isCaseUpdated) {
-            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED, "failed to update case object");
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED, "failed to update case object");
         }
 
         return ok(caseAttachId);
@@ -768,6 +793,7 @@ public class CaseServiceImpl implements CaseService {
         log.info("CaseServiceImpl#updatePlans : plans={}, caseId={}", plans, caseId);
 
         CaseObject caseObject = caseObjectDAO.partialGet(caseId, "MODIFIED");
+        caseObject.setId(caseId);
         caseObject.setModified(new Date());
 
         if (!caseObjectDAO.partialMerge(caseObject, "MODIFIED")) {
@@ -781,13 +807,13 @@ public class CaseServiceImpl implements CaseService {
         Result<List<PlanOption>> oldPlansResult = planService.listPlanOptions(token, planQuery);
 
         if (oldPlansResult.isError()) {
-            throw new ResultStatusException(oldPlansResult.getStatus());
+            throw new RollbackTransactionException(oldPlansResult.getStatus());
         }
 
         En_ResultStatus resultStatus = updatePlans(token, caseId, new HashSet<>(oldPlansResult.getData()), plans);
 
         if (!En_ResultStatus.OK.equals(resultStatus)) {
-            throw new ResultStatusException(resultStatus);
+            throw new RollbackTransactionException(resultStatus);
         }
 
         return ok(plans);
@@ -872,14 +898,14 @@ public class CaseServiceImpl implements CaseService {
         Result<CaseObject> result = createCaseObject(token, caseObjectCreateRequest);
         if (result.isError()) {
             log.error("createSubtask(): parent-id = {} | failed to save subtask to db with result = {}", parentCaseObjectId, result);
-            throw new ResultStatusException(result.getStatus());
+            throw new RollbackTransactionException(result.getStatus());
         }
 
         parentCaseObject.setStateId(CrmConstants.State.BLOCKED);
         Result<CaseObjectMeta> parentUpdateResult = updateCaseObjectMeta(token, new CaseObjectMeta(parentCaseObject));
         if (parentUpdateResult.isError()) {
             log.error("createSubtask(): parent-id = {} | failed to save parent issue to db with result = {}", parentCaseObjectId, result);
-            throw new ResultStatusException(parentUpdateResult.getStatus());
+            throw new RollbackTransactionException(parentUpdateResult.getStatus());
         }
 
         return result.publishEvents(parentUpdateResult.getEvents());
@@ -938,33 +964,6 @@ public class CaseServiceImpl implements CaseService {
         stateChangeMessage.setPrivateComment(true);
         stateChangeMessage.setText(CrmConstants.Comment.TIME_ELAPSED_DEFAULT_COMMENT);
         return caseCommentDAO.persist(stateChangeMessage);
-    }
-
-    private Long createAndPersistStateMessage(Long authorId, long caseId, long stateId) {
-        CaseComment stateChangeMessage = new CaseComment();
-        stateChangeMessage.setAuthorId(authorId);
-        stateChangeMessage.setCreated(new Date());
-        stateChangeMessage.setCaseId(caseId);
-        stateChangeMessage.setCaseStateId(stateId);
-        return caseCommentDAO.persist(stateChangeMessage);
-    }
-
-    private Long createAndPersistImportanceMessage(Long authorId, Long caseId, Integer importance) {//int -> Integer т.к. падает unit test с NPE, неясно почему
-        CaseComment stateChangeMessage = new CaseComment();
-        stateChangeMessage.setAuthorId(authorId);
-        stateChangeMessage.setCreated(new Date());
-        stateChangeMessage.setCaseId(caseId);
-        stateChangeMessage.setCaseImpLevel(importance);
-        return caseCommentDAO.persist(stateChangeMessage);
-    }
-
-    private Long createAndPersistManagerMessage(Long authorId, Long caseId, Long managerId) {
-        CaseComment managerChangeMessage = new CaseComment();
-        managerChangeMessage.setAuthorId(authorId);
-        managerChangeMessage.setCreated(new Date());
-        managerChangeMessage.setCaseId(caseId);
-        managerChangeMessage.setCaseManagerId(managerId);
-        return caseCommentDAO.persist(managerChangeMessage);
     }
 
     private CaseQuery applyFilterByScope(AuthToken token, CaseQuery caseQuery) {
@@ -1330,6 +1329,7 @@ public class CaseServiceImpl implements CaseService {
                 endpoint.getSlaMapId()
             ));
             caseObject.setJiraUrl(portalConfig.data().jiraConfig().getJiraUrl());
+            caseObject.setJiraProjects(portalConfig.data().jiraConfig().getJiraProjects());
         } catch (Exception e) {
             log.warn("Failed to fill jira SLA information", e);
             caseObject.setCaseObjectMetaJira(new CaseObjectMetaJira());
@@ -1404,4 +1404,37 @@ public class CaseServiceImpl implements CaseService {
         }
         return true;
     }
+
+    private Result<Long> addStateHistory(AuthToken authToken, Long caseId, Long stateId, String stateName) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.ADD, En_HistoryType.CASE_STATE, null, null, stateId, stateName);
+    }
+
+    private Result<Long> changeStateHistory(AuthToken authToken, Long caseId, Long oldStateId, String oldStateName, Long newStateId, String newStateName) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_STATE, oldStateId, oldStateName, newStateId, newStateName);
+    }
+
+    private Result<Long> addManagerHistory(AuthToken authToken, Long caseId, Long managerId, String ManagerName) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.ADD, En_HistoryType.CASE_MANAGER,null, null, managerId, ManagerName);
+    }
+
+    private Result<Long> changeManagerHistory(AuthToken authToken, Long caseId, Long oldManagerId, String oldManagerName, Long newManagerId, String newManagerName) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_MANAGER, oldManagerId, oldManagerName, newManagerId, newManagerName);
+    }
+
+    private Result<Long> removeManagerHistory(AuthToken authToken, Long caseId, Long oldManagerId, String oldManagerName) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.REMOVE, En_HistoryType.CASE_MANAGER, oldManagerId, oldManagerName, null, null);
+    }
+
+    private String makeManagerName(CaseObjectMeta caseObjectMeta) {
+        return (caseObjectMeta.getManager() != null ? caseObjectMeta.getManager() : personShortViewDAO.get(caseObjectMeta.getManagerId())).getDisplayShortName();
+    }
+
+    private Result<Long> addImportanceHistory(AuthToken authToken, Long caseId, Long importanceId, String importanceName) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.ADD, En_HistoryType.CASE_IMPORTANCE, null, null, importanceId, importanceName);
+    }
+
+    private Result<Long> changeImportanceHistory(AuthToken authToken, Long caseId, Long oldImportanceId, String oldImportanceName, Long newImportanceId, String newImportanceName) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_IMPORTANCE, oldImportanceId, oldImportanceName, newImportanceId, newImportanceName);
+    }
+
 }

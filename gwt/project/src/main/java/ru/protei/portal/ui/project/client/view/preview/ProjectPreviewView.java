@@ -56,7 +56,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     }
 
     @Override
-    public void setDirection( String value ) { this.projectDirection.setInnerText( value ); }
+    public void setDirections(String value ) { this.projectDirections.setInnerText( value ); }
 
     @Override
     public void setDescription( String value ) { this.description.setInnerText( value ); }
@@ -65,8 +65,19 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     public void setRegion( String value ) { this.projectRegion.setInnerText( value ); }
 
     @Override
-    public void setProduct(String value ) {
-        this.product.setText( value );
+    public void setProducts(Map<Long, String> value ) {
+        this.products.clear();
+        value.forEach((id, name) -> {
+            final Anchor anchor = new Anchor(name, "#");
+            anchor.setStyleName("project-preview-product-links");
+            anchor.addClickHandler(event -> {
+                event.preventDefault();
+                if (activity != null) {
+                    activity.onProductLinkClicked(id);
+                }
+            });
+            this.products.add(anchor);
+        });
     }
 
     @Override
@@ -197,14 +208,6 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         }
     }
 
-    @UiHandler("product")
-    public void onProductLinkClicked(ClickEvent event) {
-        event.preventDefault();
-        if (activity != null) {
-            activity.onProductLinkClicked();
-        }
-    }
-
     private void addLinksToContainer(Map<String, String> nameToLink, HTMLPanel linksContainer) {
         linksContainer.getElement().removeAllChildren();
 
@@ -229,11 +232,11 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         description.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.INFO_LABEL);
         state.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.STATE_LABEL);
         projectRegion.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.REGION_LABEL);
-        projectDirection.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.DIRECTION_LABEL);
+        projectDirections.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.DIRECTION_LABEL);
         customerType.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.CUSTOMER_TYPE_LABEL);
         company.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.COMPANY_LABEL);
         team.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.TEAM_LABEL);
-        product.ensureDebugId(DebugIds.PROJECT_PREVIEW.PRODUCTS_LABEL);
+        products.ensureDebugId(DebugIds.PROJECT_PREVIEW.PRODUCTS_LABEL);
         documents.ensureDebugId(DebugIds.PROJECT_PREVIEW.DOCUMENTS_CONTAINER);
         commentsContainer.ensureDebugId(DebugIds.PROJECT_PREVIEW.COMMENTS_CONTAINER);
         contracts.ensureDebugId(DebugIds.PROJECT_PREVIEW.CONTRACTS_CONTAINER);
@@ -259,7 +262,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @UiField
     SpanElement projectRegion;
     @UiField
-    SpanElement projectDirection;
+    SpanElement projectDirections;
     @UiField
     DivElement technicalSupportValidity;
     @UiField
@@ -277,7 +280,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @UiField
     SpanElement pauseDate;
     @UiField
-    Anchor product;
+    HTMLPanel products;
     @UiField
     DivElement team;
     @UiField
