@@ -13,7 +13,7 @@ public abstract class ExternalLinkActivity implements Activity {
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
         appService.getExternalLinksHtml(new FluentCallback<String>()
-                .withSuccess(s -> fireEvent(new AppEvents.InitExternalLinks(s))));
+                .withSuccess(htmlOfLinks -> fireEvent(new AppEvents.InitExternalLinks(htmlOfLinks))));
     }
 
     @Inject
