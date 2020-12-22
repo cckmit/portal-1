@@ -1,4 +1,4 @@
-package ru.protei.portal.app.portal.client.service;
+package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -15,5 +15,5 @@ public interface AppService extends RemoteService {
      */
     ClientConfigData getClientConfig();
 
-
+    String getExternalLinksHtml();
 }

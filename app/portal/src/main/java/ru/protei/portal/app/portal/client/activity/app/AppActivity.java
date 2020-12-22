@@ -10,7 +10,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.app.portal.client.service.AppServiceAsync;
+import ru.protei.portal.ui.common.client.service.AppServiceAsync;
 import ru.protei.portal.app.portal.client.widget.locale.LocaleImage;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -76,7 +76,7 @@ public abstract class AppActivity
 
     @Event
     public void onInitExternalLinks(AppEvents.InitExternalLinks event) {
-        view.setExternalLinks(configStorage.getConfigData().externalLinksHtml);
+        view.setExternalLinks(event.ExternalLinksHtml);
     }
 
     @Event

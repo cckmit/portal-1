@@ -79,5 +79,12 @@ public class AppEvents {
         public Object event;
     }
 
-    public static class InitExternalLinks {}
+    public static class InitExternalLinks {
+
+        public InitExternalLinks(String externalLinksHtml) {
+            ExternalLinksHtml = externalLinksHtml;
+        }
+
+        public String ExternalLinksHtml;
+    }
 }
