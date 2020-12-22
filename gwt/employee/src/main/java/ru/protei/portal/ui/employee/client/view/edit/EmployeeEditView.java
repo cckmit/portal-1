@@ -23,12 +23,13 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.InputEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.group.ContactItemGroupWithValidation;
+import ru.protei.portal.ui.common.client.widget.contactitem.group.ContactItemGroupWithValidation;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.companydepartment.CompanyDepartmentSelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.GenderButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.workerposition.WorkerPositionSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
+import ru.protei.portal.ui.common.client.widget.validatefield.ValidableContactItemBox;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.employee.client.activity.edit.AbstractEmployeeEditActivity;
 import ru.protei.portal.ui.employee.client.activity.edit.AbstractEmployeeEditView;
@@ -46,7 +47,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         workEmail.setRegexp( CrmConstants.Masks.EMAIL );
-        workEmail.setMaxLength( CrmConstants.EMAIL_MAX_SIZE );
         ipAddress.setRegexp( CrmConstants.Masks.IP);
 
         gender.setValid(false);
@@ -74,6 +74,8 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
 
         workPhones.setNewContactItem(() -> new ContactItem(En_ContactItemType.GENERAL_PHONE, En_ContactDataAccess.PUBLIC));
         mobilePhones.setNewContactItem(() -> new ContactItem(En_ContactItemType.MOBILE_PHONE, En_ContactDataAccess.PUBLIC));
+
+        workEmail.setSetTypeAndAccess(contactItem -> contactItem.modify(En_ContactDataAccess.PUBLIC).modify(En_ContactItemType.EMAIL));
     }
 
     @Override
@@ -167,7 +169,7 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     }
 
     @Override
-    public HasValue<String> workEmail() {
+    public HasValue<ContactItem> workEmail() {
         return workEmail;
     }
 
@@ -481,7 +483,7 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     ContactItemGroupWithValidation mobilePhones;
 
     @UiField
-    ValidableTextBox workEmail;
+    ValidableContactItemBox workEmail;
 
     @UiField
     ValidableTextBox ipAddress;

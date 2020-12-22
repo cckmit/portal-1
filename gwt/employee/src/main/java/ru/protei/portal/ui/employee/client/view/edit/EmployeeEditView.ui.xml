@@ -7,8 +7,7 @@
              xmlns:companydepartment='urn:import:ru.protei.portal.ui.common.client.widget.selector.companydepartment'
              xmlns:workerposition='urn:import:ru.protei.portal.ui.common.client.widget.selector.workerposition'
              xmlns:validatefield="urn:import:ru.protei.portal.ui.common.client.widget.validatefield"
-             xmlns:phonegroup='urn:import:ru.protei.portal.ui.common.client.widget.group'
->
+             xmlns:group="urn:import:ru.protei.portal.ui.common.client.widget.contactitem.group">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -88,7 +87,7 @@
                                         <label ui:field="workEmailLabel">
                                             <ui:text from="{lang.workEmail}"/>
                                         </label>
-                                        <validatefield:ValidableTextBox ui:field="workEmail"
+                                        <validatefield:ValidableContactItemBox ui:field="workEmail"
                                                                         notNull="true"
                                                                         styleName="form-control"/>
                                     </div>
@@ -104,9 +103,9 @@
                                         <label>
                                             <ui:text from="{lang.workPhone}"/>
                                         </label>
-                                        <phonegroup:ContactItemGroupWithValidation ui:field="workPhones" styleName="form-group"
-                                                                                   itemStyleName="form-control group-item"
-                                                                                   placeHolder="{lang.employeeWorkPhonePlaceHolder}"
+                                        <group:ContactItemGroupWithValidation ui:field="workPhones" styleName="form-group"
+                                                                              itemStyleName="form-control group-item"
+                                                                              placeHolder="{lang.employeeWorkPhonePlaceHolder}"
                                         />
 
                                     </div>
@@ -114,9 +113,9 @@
                                         <label class="">
                                             <ui:text from="{lang.mobilePhone}"/>
                                         </label>
-                                        <phonegroup:ContactItemGroupWithValidation ui:field="mobilePhones" styleName="form-group"
-                                                                                   itemStyleName="form-control group-item"
-                                                                                   placeHolder="{lang.employeeMobilePhonePlaceHolder}"/>
+                                        <group:ContactItemGroupWithValidation ui:field="mobilePhones" styleName="form-group"
+                                                                              itemStyleName="form-control group-item"
+                                                                              placeHolder="{lang.employeeMobilePhonePlaceHolder}"/>
                                     </div>
 
                                 </div>

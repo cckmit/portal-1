@@ -372,8 +372,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         employee.getContactItems().clear();
         employee.getContactItems().addAll(view.workPhones().getValue());
         employee.getContactItems().addAll(view.mobilePhones().getValue());
-        PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(employee.getContactInfo());
-        infoFacade.setEmail(view.workEmail().getValue());
+        employee.getContactItems().add(view.workEmail().getValue());
 
         employee.setIpAddress(view.ipAddress().getValue());
 
@@ -462,9 +461,9 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         view.ipAddress().setValue(employee.getIpAddress());
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(employee.getContactInfo());
-        view.workPhones().setValue(employee.getContactInfo() == null ? null : infoFacade.getWorkPhoneList());
+        view.workPhones().setValue(employee.getContactInfo() == null ? null : infoFacade.getGeneralPhoneList());
         view.mobilePhones().setValue(employee.getContactInfo() == null ? null : infoFacade.getMobilePhoneList());
-        view.workEmail().setValue(employee.getContactInfo() == null ? null : infoFacade.getEmail());
+        view.workEmail().setValue(employee.getContactInfo() == null ? null : infoFacade.getFirstPublicEmail());
 
         view.firedMsgVisibility().setVisible(employee.isFired());
         view.fireBtnVisibility().setVisible(employee.getId() != null && !employee.isFired());

@@ -833,7 +833,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             return false;
         }
 
-        if (!stream(facade.getWorkPhoneList()).allMatch(phone -> workPhone.matcher(phone.value()).matches())) {
+        if (!stream(facade.getGeneralPhoneList()).allMatch(phone -> workPhone.matcher(phone.value()).matches())) {
             return false;
         }
 

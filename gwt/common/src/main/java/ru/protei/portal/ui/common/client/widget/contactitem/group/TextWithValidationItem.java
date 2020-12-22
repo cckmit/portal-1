@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.group;
+package ru.protei.portal.ui.common.client.widget.contactitem.group;
 
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;

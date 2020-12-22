@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.group;
+package ru.protei.portal.ui.common.client.widget.contactitem.group;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
@@ -19,8 +19,11 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.*;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
 public class ContactItemGroupWithValidation extends Composite
@@ -33,7 +36,12 @@ public class ContactItemGroupWithValidation extends Composite
 
     @Override
     public List<ContactItem> getValue() {
-        return new ArrayList<>(items);
+        modelToView.forEach((viewItem, contactItem) -> {
+            if (contactItem != null) {
+                contactItem.modify(viewItem.getValue());
+            }
+        });
+        return stream(modelToView.values()).filter(Objects::nonNull).filter(item -> isNotEmpty(item.value())).collect(Collectors.toList());
     }
 
     @Override
@@ -142,9 +150,8 @@ public class ContactItemGroupWithValidation extends Composite
 
         textWithValidationItem.addAddHandler(event -> {
             addEmptyItem(true);
-            items.add( newContactItem.get().modify(textWithValidationItem.getValue()) );
         } );
-        modelToView.put(textWithValidationItem, value );
+        modelToView.put(textWithValidationItem, value != null ? value : newContactItem.get());
         itemContainer.add(textWithValidationItem);
 
         if (setFocus) {

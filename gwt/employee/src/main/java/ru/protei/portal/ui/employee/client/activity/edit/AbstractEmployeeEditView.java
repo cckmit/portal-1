@@ -50,7 +50,7 @@ public interface AbstractEmployeeEditView extends IsWidget {
 
     HasValue<List<ContactItem>> mobilePhones();
 
-    HasValue<String> workEmail();
+    HasValue<ContactItem> workEmail();
 
     HasValue<String> ipAddress();
 

@@ -37,12 +37,12 @@ public class CustomContactInfoFacade {
         return contactInfo.getItems(En_ContactItemType.MOBILE_PHONE);
     }
 
-    public List<ContactItem> getWorkPhoneList () {
+    public List<ContactItem> getGeneralPhoneList () {
         return contactInfo.getItems(En_ContactItemType.GENERAL_PHONE);
     }
 
-    public List<ContactItem> getGeneralPhoneList () {
-        return contactInfo.getItems(En_ContactItemType.GENERAL_PHONE);
+    public ContactItem getFirstPublicEmail () {
+        return contactInfo.findFirst(En_ContactItemType.EMAIL, En_ContactDataAccess.PUBLIC);
     }
 
     public String findItemValue (En_ContactItemType type, En_ContactDataAccess accessType) {
