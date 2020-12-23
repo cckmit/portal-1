@@ -25,6 +25,7 @@ import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.DateRange;
+import ru.protei.portal.core.model.struct.Pair;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.sqlcondition.Condition;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -36,6 +37,7 @@ import ru.protei.portal.tools.migrate.struct.ExternalReservedIp;
 import ru.protei.portal.tools.migrate.struct.ExternalSubnet;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.winter.core.utils.beans.SearchResult;
+import ru.protei.winter.jdbc.JdbcBaseDAO;
 import ru.protei.winter.jdbc.JdbcDAO;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import ru.protei.winter.jdbc.JdbcObjectMapperRegistrator;
@@ -986,7 +988,7 @@ public class BootstrapServiceImpl implements BootstrapService {
                 "item_type in (5, 6) and (value is not null or TRIM(value) <> '')")
                                 .stream().distinct().collect(toList());
 
-        ContactItemMigrationPair contactItemMigrationPair = new ContactItemMigrationPair();
+        ContactItemMigrationPairLists contactItemMigrationPairLists = new ContactItemMigrationPairLists();
         List<Long> ids = new ArrayList<>();
         for(int i = 0; i < contactItemsIds.size();) {
             ids.clear();
@@ -994,11 +996,13 @@ public class BootstrapServiceImpl implements BootstrapService {
             for(int j = i; j < Math.min(upperBorder, contactItemsIds.size()); j++) {
                 ids.add(contactItemsIds.get(i++));
             }
-            contactItemMigrationPair.addAll(normalizePhone(contactItemDAO.getListByKeys(ids), contactItemId -> getContactItemPersonId(dao, contactItemId)));
-            persistContactItems(dao, contactItemMigrationPair, false);
+            contactItemMigrationPairLists.addAll(
+                    normalizePhone(contactItemDAO.getListByKeys(ids),
+                    contactItemId -> getContactItemPersonId(dao, contactItemId)));
+            persistContactItems(dao, contactItemMigrationPairLists, false);
         }
-        if (!contactItemMigrationPair.contactItems.isEmpty()) {
-            persistContactItems(dao, contactItemMigrationPair, true);
+        if (!contactItemMigrationPairLists.contactItems.isEmpty()) {
+            persistContactItems(dao, contactItemMigrationPairLists, true);
         }
 
         removeBeanDefinition(applicationContext, ContactItemPerson.ContactItemPersonDAO.class);
@@ -1007,20 +1011,36 @@ public class BootstrapServiceImpl implements BootstrapService {
         log.info("normalizePhoneNumbers ended");
     }
 
-    private ContactItemMigrationPair normalizePhone(List<ContactItem> phones, Function<Long, Long> getContactItemPersonId) {
-        ContactItemMigrationPair result = new ContactItemMigrationPair();
+    private ContactItemMigrationPairLists normalizePhone(List<ContactItem> phones,
+                                                         Function<Long, Long> getContactItemPersonId) {
+        ContactItemMigrationPairLists result = new ContactItemMigrationPairLists();
         phones.forEach(phone -> {
-            result.contactItems.add(phone);
+
             String value = phone.value();
-            if (StringUtils.isNotEmpty(value) && value.length() > 1 && value.trim().substring(1).contains("+")) {    // несколько номером "+7911+7912"
-                String[] v = value.trim().substring(1).split("\\+");
-                phone.modify(PhoneUtils.normalizePhoneNumber(v[0]));
-                for(int i = 1; i < v.length; i++) {
+            value = value.replaceAll("д\\.|доб|доп|добавочный|вн|внут|внутр|Внутр|внутренний|корп|местн.тел|ext|Ext|al|\\*", "#");
+            if (value.matches(".*[@Z-z].*")) {
+                log.error("normalizePhone: contains @Z-z, phoneId={}, value={}", phone.id(), phone.value());
+                return;
+            }
+            result.contactItems.add(phone);
+            if (StringUtils.isNotEmpty(value) && value.length() > 1 && value.trim().matches(".*\\+.*|.*,.*|.*или.*|.*и.*|.*;.*")) {    // несколько номеров
+                String[] v = value.trim().split("\\+|,|или|и|;");
+                boolean isMainPhoneModify = false;
+                for (String s : v) {
+                    final String otherPhone = PhoneUtils.normalizePhoneNumber(s);
+                    if (StringUtils.isEmpty(otherPhone)) {
+                        continue;
+                    }
+                    if (!isMainPhoneModify) {
+                        phone.modify(otherPhone);
+                        isMainPhoneModify = true;
+                        continue;
+                    }
                     ContactItem contactItem = new ContactItem(phone.type(), phone.accessType());
-                    contactItem.modify(PhoneUtils.normalizePhoneNumber(v[i]));
+                    contactItem.modify(otherPhone);
 
                     result.contactItems.add(contactItem);
-                    result.contactItemPersons.add(new ContactItemPerson( getContactItemPersonId.apply(phone.id()), phone.id()));
+                    result.contactItemPersons.add(new Pair<>(contactItem, new ContactItemPerson(getContactItemPersonId.apply(phone.id()), contactItem.id()))); // contactItem.id() = null, потому что еще не persist
                 }
             } else {
                 phone.modify(PhoneUtils.normalizePhoneNumber(value));
@@ -1033,29 +1053,34 @@ public class BootstrapServiceImpl implements BootstrapService {
         return dao.getByCondition(
                     condition().and("contact_item_id").equal(contactItemId).getSqlCondition(),
                     contactItemId)
-                .person_id;
+                .personId;
     }
 
     @JdbcEntity(table = "contact_item_person")
-    private static class ContactItemPerson{
+    public static class ContactItemPerson{
         @JdbcColumn(name = "person_id")
-        Long person_id;
+        public Long personId;
         @JdbcColumn(name = "contact_item_id")
-        Long contact_item_id;
+        public Long contactItemId;
 
-        public ContactItemPerson(Long person_id, Long contact_item_id) {
-            this.person_id = person_id;
-            this.contact_item_id = contact_item_id;
+        public ContactItemPerson() {
         }
 
-        private static interface ContactItemPersonDAO extends JdbcDAO<ContactItemPerson, ContactItemPerson>{}
+        public ContactItemPerson(Long personId, Long contactItemId) {
+            this.personId = personId;
+            this.contactItemId = contactItemId;
+        }
+
+        public static class ContactItemPersonDAO
+                extends JdbcBaseDAO<ContactItemPerson, ContactItemPerson>
+                implements JdbcDAO<ContactItemPerson, ContactItemPerson> {}
     }
 
-    private static class ContactItemMigrationPair {
+    private static class ContactItemMigrationPairLists {
         List<ContactItem> contactItems = new ArrayList<>();
-        List<ContactItemPerson> contactItemPersons = new ArrayList<>();
+        List<Pair<ContactItem, ContactItemPerson>> contactItemPersons = new ArrayList<>();
 
-        public void addAll(ContactItemMigrationPair other) {
+        public void addAll(ContactItemMigrationPairLists other) {
             this.contactItems.addAll(other.contactItems);
             this.contactItemPersons.addAll(other.contactItemPersons);
         }
@@ -1066,11 +1091,17 @@ public class BootstrapServiceImpl implements BootstrapService {
         }
     }
 
-    private void persistContactItems(ContactItemPerson.ContactItemPersonDAO dao, ContactItemMigrationPair contactItemMigrationPair, boolean force) {
-        if (force || contactItemMigrationPair.contactItems.size() >= 1000) {
-            contactItemDAO.saveOrUpdateBatch(contactItemMigrationPair.contactItems);
-            dao.persistBatch(contactItemMigrationPair.contactItemPersons);
-            contactItemMigrationPair.clear();
+    private void persistContactItems(ContactItemPerson.ContactItemPersonDAO dao, ContactItemMigrationPairLists contactItemMigrationPairLists, boolean force) {
+        if (force || contactItemMigrationPairLists.contactItems.size() >= 1000) {
+            contactItemDAO.saveOrUpdateBatch(contactItemMigrationPairLists.contactItems);
+            dao.persistBatch(stream(contactItemMigrationPairLists.contactItemPersons)
+                    .map(pair -> {
+                        ContactItem contactItem = pair.getA();
+                        ContactItemPerson contactItemPerson = pair.getB();
+                        contactItemPerson.contactItemId = contactItem.id(); // тут id уже есть после персиста
+                        return contactItemPerson;
+            }).collect(toList()));
+            contactItemMigrationPairLists.clear();
         }
     }
 
