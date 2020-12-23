@@ -29,7 +29,7 @@ public class PersonFormSelector extends FormPopupSingleSelector<PersonShortView>
             return item;
         }
         item.setName( elementHtml );
-        item.setTitle( value.getDisplayName() );
+        item.setTitle( value.getName() );
 
         item.setStyle( value.isFired() ? "not-active" : "" );
         item.setIcon( value.isFired() ? "fa fa-ban ban" : "" );
