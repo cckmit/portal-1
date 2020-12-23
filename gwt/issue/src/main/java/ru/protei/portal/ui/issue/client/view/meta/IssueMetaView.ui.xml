@@ -107,8 +107,7 @@
                                                  validation="false"
                                                  header="{lang.issueCompany}"
                                                  hasNullValue="false"
-                                                 mandatory="false"
-                                                 hasTitle="true"/>
+                                                 mandatory="false"/>
                 </div>
             </div>
             <g:HTMLPanel ui:field="initiatorContainer" styleName="row">

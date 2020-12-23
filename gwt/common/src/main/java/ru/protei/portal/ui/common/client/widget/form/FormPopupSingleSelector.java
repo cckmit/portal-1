@@ -64,9 +64,6 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
         if(isValidable)
             setValid( isValid() );
 
-        if (hasTitle)
-            text.setTitle(getRendered(value));
-
         getPopup().hide();
         ValueChangeEvent.fire(this, value);
     }
@@ -86,9 +83,6 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
         }
         if(isValidable)
             setValid( isValid() );
-
-        if (hasTitle)
-            text.setTitle(getRendered(selectorValue));
     }
 
     @Override
@@ -157,10 +151,6 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
         formContainer.removeStyleName(REQUIRED_STYLENAME);
     }
 
-    public void setHasTitle(boolean hasTitle) {
-        this.hasTitle = hasTitle;
-    }
-
     public void onShowPopupClicked(HTMLPanel button) {
         getPopup().getChildContainer().clear();
         getSelector().fillFromBegin(this);
@@ -193,17 +183,15 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
     }
 
     protected void showValue( T value) {
-        this.text.setInnerHTML(getRendered(value));
-    }
-
-    private String getRendered(T value) {
-       return selectedValueRenderer.render(value);
+        text.setInnerHTML(selectedValueRenderer.render(value));
+        text.setTitle(selector.makeElementName(value));
     }
 
     @Override
     protected SelectorItem<T> makeSelectorItem( T element, String elementHtml ) {
         PopupSelectorItem<T> item = new PopupSelectorItem<>();
         item.setName(elementHtml);
+        item.setTitle(elementHtml);
         return item;
     }
 
@@ -239,7 +227,6 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
     }
     private SingleValuePageableSelector<T> selector = new SingleValuePageableSelector<T>();
     private boolean isValidable;
-    private boolean hasTitle;
     private SelectedValueRenderer<T> selectedValueRenderer = selector::makeElementHtml;
 
     private static final String ERROR_STYLENAME ="has-error";
