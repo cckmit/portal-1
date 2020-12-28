@@ -38,6 +38,7 @@ import static ru.protei.portal.core.model.util.CrmConstants.AutoOpen.NO_DELAY;
 public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
 
     @Test
+    @Transactional
     public void createTaskNoDelay() {
         createTask(NO_DELAY);
     }

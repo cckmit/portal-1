@@ -3,8 +3,6 @@ package ru.protei.portal.core.service.autoopencase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.core.model.dao.CaseObjectMetaDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.PersonShortViewDAO;
@@ -20,17 +18,12 @@ import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.util.Set;
 
-import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
-
 /**
  * Сервис выполняющий автоокрытие помеченных кейсов через определенное время
  */
 public class AutoOpenCaseServiceTaskHandlerImpl implements AutoOpenCaseTaskHandler {
 
-    @Async(BACKGROUND_TASKS)
-    @Transactional
-    @Override
-    public void runOpenCaseTask( Long caseId ) {
+    public void runOpenCaseTask(Long caseId) {
         log.info("Process case id = {}", caseId);
 
         CaseObjectMeta caseMeta = caseObjectMetaDAO.get(caseId);
@@ -62,6 +55,7 @@ public class AutoOpenCaseServiceTaskHandlerImpl implements AutoOpenCaseTaskHandl
 
         caseMeta.setManager(commonManager);
         caseMeta.setStateId(CrmConstants.State.OPENED);
+        caseMeta.setStateName(null);
 
         caseService.updateCaseObjectMeta(createFakeToken(commonManager), caseMeta);
 

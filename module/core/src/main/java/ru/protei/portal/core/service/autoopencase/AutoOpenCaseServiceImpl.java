@@ -14,6 +14,7 @@ import ru.protei.portal.core.service.CaseService;
 
 import java.util.Date;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -53,7 +54,8 @@ public class AutoOpenCaseServiceImpl implements AutoOpenCaseService {
     public Future<?> createTask(Long caseId, long delay) {
         log.info("Schedule case open id = {}, delay = {}", caseId, delay);
         if (delay == NO_DELAY) {
-            return threadPool.submit(() -> openCaseHandler.runOpenCaseTask(caseId));
+            openCaseHandler.runOpenCaseTask(caseId);
+            return new CompletableFuture<Void>();
         } else {
             return threadPool.schedule(() -> openCaseHandler.runOpenCaseTask(caseId), new Date(new Date().getTime() + delay));
         }
@@ -61,10 +63,33 @@ public class AutoOpenCaseServiceImpl implements AutoOpenCaseService {
 
     private long makeDelay(boolean isStartup) {
         PortalConfigData.AutoOpenConfig autoOpenConfig = portalConfig.data().getAutoOpenConfig();
+        Integer delayStartup;
+        Integer delayRuntime;
+        Integer delayRandom;
+        if (autoOpenConfig.getDelayStartup() >= 0) {
+            delayStartup = portalConfig.data().getAutoOpenConfig().getDelayStartup();
+        } else {
+            log.error("makeDelay: config delayStartup ={} not >= 0, set delayStartup =0", autoOpenConfig.getDelayStartup());
+            delayStartup = 0;
+        }
+
+        if (autoOpenConfig.getDelayRuntime() >= 0) {
+            delayRuntime = portalConfig.data().getAutoOpenConfig().getDelayRuntime();
+        } else {
+            log.error("makeDelay: config delayRuntime ={} not >= 0, set delayRuntime =0", autoOpenConfig.getDelayRuntime());
+            delayRuntime = 0;
+        }
+
+        if (autoOpenConfig.getDelayRandom() >= 1) {
+            delayRandom = portalConfig.data().getAutoOpenConfig().getDelayRandom();
+        } else {
+            log.error("makeDelay: config delayRandom ={} not >= 1, set delayRandom =1", autoOpenConfig.getDelayRuntime());
+            delayRandom = 1;
+        }
+
         if (autoOpenConfig.getEnableDelay()) {
-            return isStartup ? TimeUnit.SECONDS.toMillis(portalConfig.data().getAutoOpenConfig().getDelayStartup()) :
-                               TimeUnit.SECONDS.toMillis(portalConfig.data().getAutoOpenConfig().getDelayRuntime())
-                                        + makeRandomDelaySecond(portalConfig.data().getAutoOpenConfig().getDelayRandom());
+            return isStartup ? TimeUnit.SECONDS.toMillis(delayStartup) : TimeUnit.SECONDS.toMillis(delayRuntime)
+                                        + makeRandomDelaySecond(delayRandom);
         } else {
             return NO_DELAY;
         }
