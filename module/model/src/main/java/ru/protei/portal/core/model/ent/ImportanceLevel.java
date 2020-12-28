@@ -32,6 +32,9 @@ public class ImportanceLevel implements Serializable {
     @JdbcColumn(name = "full_solution_time")
     private Long fullSolutionTime;
 
+    @JdbcColumn(name = "color")
+    private String color;
+
     public ImportanceLevel() {}
 
     public ImportanceLevel(Integer id) {
@@ -95,6 +98,14 @@ public class ImportanceLevel implements Serializable {
 
     public void setFullSolutionTime(Long fullSolutionTime) {
         this.fullSolutionTime = fullSolutionTime;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 
     @Override

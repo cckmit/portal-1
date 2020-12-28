@@ -5,7 +5,6 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -51,9 +50,13 @@ public class ToggleButton
         this.button.setTitle( value );
     }
 
-    public void setIcon( String iconName, boolean isBeforeText ) {
+    public void setIcon(String iconStyle, String bgColor, boolean isBeforeText) {
         Element icon = DOM.createElement("i").cast();
-        icon.setClassName( iconName );
+        icon.setClassName( iconStyle );
+
+        if (bgColor != null) {
+            icon.getStyle().setBackgroundColor(bgColor);
+        }
 
         if(isBeforeText) {
             button.getElement().insertFirst(icon);
