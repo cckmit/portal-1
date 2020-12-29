@@ -215,5 +215,8 @@ public class CrmConstants {
 
     public interface AutoOpen {
         long NO_DELAY = 0;
+        long DELAY_STARTUP = 60;
+        long DELAY_RUNTIME = 180;
+        int DELAY_RANDOM = 120;
     }
 }

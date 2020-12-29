@@ -6,5 +6,6 @@ public interface AutoOpenCaseService {
     void scheduleCaseOpen();
 
     void processNewCreatedCaseToAutoOpen( Long caseId, Long companyId);
+    void performCaseOpen(Long caseId);
     Future<?> createTask(Long caseId, long delay);
 }

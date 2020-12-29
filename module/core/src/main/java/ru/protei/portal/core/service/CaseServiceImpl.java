@@ -337,7 +337,11 @@ public class CaseServiceImpl implements CaseService {
         Result<List<CaseLink>> createLinksResult =
                 caseLinkService.createLinks(token, links, CRM_SUPPORT);
 
-        autoOpenCaseService.processNewCreatedCaseToAutoOpen(caseId, caseObject.getInitiatorCompanyId());
+        if (portalConfig.data().getAutoOpenConfig().getEnable()) {
+            autoOpenCaseService.processNewCreatedCaseToAutoOpen(caseId, caseObject.getInitiatorCompanyId());
+        } else {
+            log.debug("Case open is disabled in config");
+        }
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
         CaseObject newState = caseObjectDAO.get(caseId);

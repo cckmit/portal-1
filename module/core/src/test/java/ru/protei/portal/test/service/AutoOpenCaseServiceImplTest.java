@@ -17,7 +17,6 @@ import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
-import ru.protei.portal.core.service.autoopencase.AutoOpenCaseTaskHandler;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
@@ -110,11 +109,15 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
 
         caseObjectDAO.persist(newCaseObject);
 
-        try {
-            service.createTask(newCaseObject.getId(), delay)
-                    .get();
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (delay == NO_DELAY) {
+            service.performCaseOpen(newCaseObject.getId());
+        } else {
+            try {
+                service.createTask(newCaseObject.getId(), delay)
+                        .get();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         CaseObject caseObjectFromDb = caseObjectDAO.get(newCaseObject.getId());
@@ -249,6 +252,4 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
 
     @Autowired
     AutoOpenCaseService service;
-    @Autowired
-    AutoOpenCaseTaskHandler handler;
 }
