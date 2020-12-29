@@ -39,10 +39,7 @@ import ru.protei.portal.ui.project.client.activity.edit.AbstractProjectEditActiv
 import ru.protei.portal.ui.project.client.activity.edit.AbstractProjectEditView;
 import ru.protei.portal.ui.project.client.view.widget.team.TeamSelector;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Вид создания и редактирования проекта

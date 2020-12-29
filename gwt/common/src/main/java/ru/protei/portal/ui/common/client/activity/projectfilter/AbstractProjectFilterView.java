@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -42,4 +43,6 @@ public interface AbstractProjectFilterView extends IsWidget {
 
     void resetFilter();
     void clearFooterStyle();
+
+    void fillStatesButtons(Map<En_RegionState, String> iconsColorsMap);
 }

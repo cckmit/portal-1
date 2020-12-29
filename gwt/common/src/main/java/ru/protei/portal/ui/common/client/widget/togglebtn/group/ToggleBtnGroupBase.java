@@ -96,14 +96,11 @@ public class ToggleBtnGroupBase<T>
         return itemView;
     }
 
-    public void addBtnWithIconAndTooltip( String iconStyle, String buttonStyle, String tooltip, T value ) {
-        addBtnWithIconAndTooltip( iconStyle, buttonStyle, null,  tooltip, value );
-    }
-
-    public void addBtnWithIconAndTooltip( String iconStyle, String buttonStyle, String bgColor, String tooltip, T value ) {
+    public void addBtnWithIconAndTooltip( String iconStyle, String buttonStyle, String tooltip,
+                                          T value, String color, String bgColor ) {
         ToggleButton itemView = addBtn( null, value, buttonStyle );
         if ( iconStyle != null ) {
-            itemView.setIcon( iconStyle, bgColor, false );
+            itemView.setIcon( iconStyle, color, bgColor, false );
         }
         if ( tooltip != null) {
             itemView.setTooltip(tooltip);
@@ -113,7 +110,7 @@ public class ToggleBtnGroupBase<T>
     public void addBtnWithIcon( String iconStyle, String buttonStyle, String caption, T value ) {
         ToggleButton itemView = addBtn( caption, value, buttonStyle );
         if ( iconStyle != null ) {
-            itemView.setIcon( iconStyle, null, false );
+            itemView.setIcon( iconStyle, null, null, false );
         }
     }
 

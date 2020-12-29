@@ -9,7 +9,9 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ProjectAccessType;
+import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.dto.Project;
@@ -22,13 +24,15 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
@@ -82,6 +86,8 @@ public abstract class ProjectTableActivity
         );
 
         this.preScroll = event.preScroll;
+
+        fillProjectStatesButtons();
 
         loadTable();
     }
@@ -245,6 +251,28 @@ public abstract class ProjectTableActivity
         );
     }
 
+    private void fillProjectStatesButtons() {
+        Map<En_RegionState, String> iconsColorsMap = new HashMap<>();
+
+        for (En_RegionState state : En_RegionState.values()) {
+            caseStateService.getCaseState(state.getId(), new AsyncCallback<CaseState>() {
+                @Override
+                public void onFailure(Throwable throwable) {
+                    fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
+                }
+
+                @Override
+                public void onSuccess(CaseState caseState) {
+                    iconsColorsMap.put(state, caseState.getColor());
+
+                    if (En_RegionState.values().length == iconsColorsMap.size()) {
+                        filterView.fillStatesButtons(iconsColorsMap);
+                    }
+                }
+            });
+        }
+    }
+
     private void loadTable() {
         animation.closeDetails();
         view.clearRecords();
@@ -261,6 +289,8 @@ public abstract class ProjectTableActivity
     AbstractPagerView pagerView;
     @Inject
     RegionControllerAsync regionService;
+    @Inject
+    CaseStateControllerAsync caseStateService;
     @Inject
     TableAnimation animation;
     @Inject

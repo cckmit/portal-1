@@ -50,9 +50,13 @@ public class ToggleButton
         this.button.setTitle( value );
     }
 
-    public void setIcon(String iconStyle, String bgColor, boolean isBeforeText) {
+    public void setIcon(String iconStyle, String color, String bgColor, boolean isBeforeText) {
         Element icon = DOM.createElement("i").cast();
         icon.setClassName( iconStyle );
+
+        if (color != null) {
+            icon.getStyle().setColor(color);
+        }
 
         if (bgColor != null) {
             icon.getStyle().setBackgroundColor(bgColor);

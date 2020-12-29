@@ -28,6 +28,7 @@ import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSele
 import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateBtnGroupMulti;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -117,6 +118,11 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
     @Override
     public void clearFooterStyle() {
         footer.removeClassName("card-footer");
+    }
+
+    @Override
+    public void fillStatesButtons(Map<En_RegionState, String> iconsColorsMap) {
+        states.fillButtons(iconsColorsMap);
     }
 
     @UiHandler( "resetBtn" )
