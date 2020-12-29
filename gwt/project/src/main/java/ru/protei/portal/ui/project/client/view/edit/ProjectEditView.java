@@ -264,6 +264,11 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         return subcontractors;
     }
 
+    @Override
+    public void fillOptions(Map<En_RegionState, String> iconsColorsMap) {
+        projectState.fillOptions(iconsColorsMap);
+    }
+
     @UiHandler("addLinkButton")
     public void onAddLinkButtonClick(ClickEvent event) {
         if (activity != null) {

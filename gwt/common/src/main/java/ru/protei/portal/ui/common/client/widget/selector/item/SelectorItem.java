@@ -51,7 +51,11 @@ public class SelectorItem
         icon.setClassName( className );
     }
 
-    public void setIconColor( String color ) {
+    public void setIconColor(String color ) {
+        icon.getStyle().setColor(color);
+    }
+
+    public void setIconBackgroundColor(String color ) {
         icon.getStyle().setBackgroundColor(color);
     }
 

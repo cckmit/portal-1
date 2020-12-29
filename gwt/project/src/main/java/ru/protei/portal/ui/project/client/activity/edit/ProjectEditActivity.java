@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.project.client.activity.edit;
 
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -9,10 +10,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.dto.Project;
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.CompanyImportanceItem;
-import ru.protei.portal.core.model.ent.DevUnit;
-import ru.protei.portal.core.model.ent.ProjectSla;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -22,6 +20,7 @@ import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
@@ -246,6 +245,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.purchaseDate().setValue(project.getPurchaseDate());
 
         fillCaseLinks(project);
+        fillCaseStatesColors();
 
         view.subcontractors().setValue(project.getSubcontractors() == null ? null :
                 project.getSubcontractors().stream().map(Company::toEntityOption).collect(Collectors.toSet()));
@@ -364,6 +364,28 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         }
     }
 
+    private void fillCaseStatesColors() {
+        Map<En_RegionState, String> iconsColorsMap = new HashMap<>();
+
+        for (En_RegionState state : En_RegionState.values()) {
+            caseStateService.getCaseState(state.getId(), new AsyncCallback<CaseState>() {
+                @Override
+                public void onFailure(Throwable throwable) {
+                    fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
+                }
+
+                @Override
+                public void onSuccess(CaseState caseState) {
+                    iconsColorsMap.put(state, caseState.getColor());
+
+                    if (En_RegionState.values().length == iconsColorsMap.size()) {
+                        view.fillOptions(iconsColorsMap);
+                    }
+                }
+            });
+        }
+    }
+
     private boolean validateView() {
         if(!view.nameValidator().isValid()){
             fireEvent(new NotifyEvents.Show(lang.errEmptyName(), NotifyEvents.NotifyType.ERROR));
@@ -425,6 +447,8 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     DefaultErrorHandler defaultErrorHandler;
     @Inject
     CompanyControllerAsync companyService;
+    @Inject
+    CaseStateControllerAsync caseStateService;
 
     private Project project;
     private Set<ProductShortView> selectedComplexes = new HashSet<>();

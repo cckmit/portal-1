@@ -13,6 +13,7 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.List;
 import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -87,4 +88,6 @@ public interface AbstractProjectEditView extends IsWidget {
 
 
     HasValue<Set<EntityOption>> subcontractors();
+
+    void fillOptions(Map<En_RegionState, String> iconsColorsMap);
 }
