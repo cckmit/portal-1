@@ -3,9 +3,11 @@ package ru.protei.portal.core.service.autoopencase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.event.CaseObjectCreateEvent;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.ent.Company;
@@ -38,14 +40,21 @@ public class AutoOpenCaseServiceImpl implements AutoOpenCaseService {
                 });
     }
 
+    @EventListener
     @Override
-    public void processNewCreatedCaseToAutoOpen(Long caseId, Long companyId) {
-        Company company = companyDAO.get(companyId);
+    public void onCaseObjectCreateEvent(CaseObjectCreateEvent event) {
+        if (!portalConfig.data().getAutoOpenConfig().getEnable()) {
+            log.debug("Case open is disabled in config");
+            return;
+        }
+
+        log.info( "onCaseObjectCreateEvent(): CaseObjectId={}", event.getCaseObjectId() );
+        Company company = companyDAO.get(event.getCaseObject().getInitiatorCompanyId());
         if (company.getAutoOpenIssue() != null && company.getAutoOpenIssue()) {
             if (portalConfig.data().getAutoOpenConfig().getEnableDelay()) {
-                createTask(caseId, makeDelay(false));
+                createTask(event.getCaseObjectId(), makeDelay(false));
             } else {
-                performCaseOpen(caseId);
+                performCaseOpen(event.getCaseObjectId());
             }
         }
     }
