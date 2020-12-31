@@ -367,23 +367,21 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     private void fillCaseStatesColors() {
         Map<En_RegionState, String> iconsColorsMap = new HashMap<>();
 
-        for (En_RegionState state : En_RegionState.values()) {
-            caseStateService.getCaseState(state.getId(), new AsyncCallback<CaseState>() {
-                @Override
-                public void onFailure(Throwable throwable) {
-                    fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
+        caseStateService.getCaseStates(En_CaseType.PROJECT, new AsyncCallback<List<CaseState>>() {
+            @Override
+            public void onFailure(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(List<CaseState> caseStates) {
+                for (CaseState state : caseStates) {
+                    iconsColorsMap.put(En_RegionState.forId(state.getId()), state.getColor());
                 }
 
-                @Override
-                public void onSuccess(CaseState caseState) {
-                    iconsColorsMap.put(state, caseState.getColor());
-
-                    if (En_RegionState.values().length == iconsColorsMap.size()) {
-                        view.fillOptions(iconsColorsMap);
-                    }
-                }
-            });
-        }
+                view.fillOptions(iconsColorsMap);
+            }
+        });
     }
 
     private boolean validateView() {
