@@ -30,7 +30,12 @@ public class AutoOpenCaseServiceTaskHandlerImpl implements AutoOpenCaseTaskHandl
     @Async(BACKGROUND_TASKS)
     @Transactional
     @Override
-    public void runOpenCaseTask( Long caseId ) {
+    public void runOpenCaseTaskAsync(Long caseId) {
+        runOpenCaseTask(caseId);
+    }
+
+    @Override
+    public void runOpenCaseTask(Long caseId) {
         log.info("Process case id = {}", caseId);
 
         CaseObjectMeta caseMeta = caseObjectMetaDAO.get(caseId);
@@ -62,6 +67,7 @@ public class AutoOpenCaseServiceTaskHandlerImpl implements AutoOpenCaseTaskHandl
 
         caseMeta.setManager(commonManager);
         caseMeta.setStateId(CrmConstants.State.OPENED);
+        caseMeta.setStateName(null);
 
         caseService.updateCaseObjectMeta(createFakeToken(commonManager), caseMeta);
 

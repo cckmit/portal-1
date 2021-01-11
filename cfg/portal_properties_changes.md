@@ -6,7 +6,4 @@ PORTAL-1582 Вынести значение автооткрытия обращ�
 # Issue autoopen
 autoopen.enable=true
 autoopen.delay.enable=true
-autoopen.delay.startup=60
-autoopen.delay.runtime=180
-autoopen.delay.random=120
 ```

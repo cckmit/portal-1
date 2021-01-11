@@ -54,7 +54,11 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
             scheduler.schedule( () -> employeeRegistrationYoutrackSynchronizer.synchronizeAll(), new CronTrigger( syncCronSchedule ) );
         }
 
-        autoOpenCaseService.scheduleCaseOpen();
+        if (config.data().getAutoOpenConfig().getEnable()) {
+            autoOpenCaseService.scheduleCaseOpen();
+        } else {
+            log.debug("Case open is disabled in config");
+        }
 
         if (!config.data().isTaskSchedulerEnabled()) {
             log.info("portal task's scheduler is not started because disabled in configuration");
