@@ -337,8 +337,6 @@ public class CaseServiceImpl implements CaseService {
         Result<List<CaseLink>> createLinksResult =
                 caseLinkService.createLinks(token, links, CRM_SUPPORT);
 
-        autoOpenCaseService.processNewCreatedCaseToAutoOpen(caseId, caseObject.getInitiatorCompanyId());
-
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
         CaseObject newState = caseObjectDAO.get(caseId);
         newState.setAttachments(caseObject.getAttachments());
