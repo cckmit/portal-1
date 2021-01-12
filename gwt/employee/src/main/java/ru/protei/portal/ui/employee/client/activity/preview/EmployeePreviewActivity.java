@@ -35,9 +35,8 @@ import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemAct
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemView;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
 
 /**
  * Активность превью сотрудника
@@ -183,7 +182,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         accountService.getUserLoginShortViewList(accountQuery, new FluentCallback<List<UserLoginShortView>>()
                 .withSuccess(userLoginShortViews ->
                         view.setLogins(
-                                stream(userLoginShortViews).map(UserLoginShortView::getUlogin).collect(Collectors.joining(", ")))));
+                                joining(userLoginShortViews, ", ", UserLoginShortView::getUlogin))));
     }
 
     private AbstractPositionItemView makePositionView(WorkerEntryShortView workerEntry, PersonShortView head) {
