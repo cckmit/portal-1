@@ -38,7 +38,7 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
     }
 
     @Override
-    public void setLogin(String login) {
+    public void setLogins(String login) {
         this.login.setInnerText(login);
     }
 

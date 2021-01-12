@@ -35,6 +35,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 
 /**
  * Активность превью сотрудника
@@ -150,7 +153,8 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         ));
         view.setID(employee.getId().toString());
         view.setIP(employee.getIpAddress());
-        view.setLogin(String.join(", ", employee.getLogins()));
+
+        requestLogins(employee.getId(), logins -> view.setLogins(String.join(", ", emptyIfNull(logins))));
 
         showAbsences(employee.getId());
     }
@@ -171,6 +175,10 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
 
         view.showAbsencesPanel(true);
         fireEvent(new AbsenceEvents.Show(view.absencesContainer(), employeeId));
+    }
+
+    private void requestLogins(Long employeeId, Consumer<List<String>> consumer) {
+
     }
 
     private AbstractPositionItemView makePositionView(WorkerEntryShortView workerEntry, PersonShortView head) {
