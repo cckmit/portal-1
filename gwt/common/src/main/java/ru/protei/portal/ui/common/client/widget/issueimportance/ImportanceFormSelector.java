@@ -15,7 +15,8 @@ public class ImportanceFormSelector extends FormSelector<ImportanceLevel> {
         setDisplayOptionCreator(value -> new DisplayOption(
                 value == null ? defaultValue : value.getCode(),
                 "importance-item",
-                value == null ? null : ImportanceStyleProvider.getImportanceIcon(value.getCode()) + " selector"
+                value == null ? null : ImportanceStyleProvider.getImportanceIcon(value.getCode()) + " selector " +
+                                       "'style='background-color: " + value.getColor()
         ));
     }
 
