@@ -1125,6 +1125,11 @@ public class MainConfiguration {
         return new NRPEServiceImpl();
     }
 
+    @Bean
+    public ImportanceLevelService getImportanceLevelService() {
+        return new ImportanceLevelServiceImpl();
+    }
+
     /* ASPECT/INTERCEPTORS */
 
     @Bean

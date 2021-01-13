@@ -70,5 +70,6 @@
   <include file="2020-11-16-change-type-ip-mask-allow-column-to-user_login-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-11-20-swap-project-to-direction-many-to-many.xml" relativeToChangelogFile="true"/>
   <include file="2020-12-09-add-fk-on-history-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-12-14-add-default-sla-time-columns-in-importance_level-table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

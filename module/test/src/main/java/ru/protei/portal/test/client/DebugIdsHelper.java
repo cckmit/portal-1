@@ -1,26 +1,9 @@
 package ru.protei.portal.test.client;
 
 public class DebugIdsHelper {
-
-
     public static final class IMPORTANCE_BUTTON {
-        public static String byId(int id) {
-            if (id == 1) {
-                return DebugIds.IMPORTANCE_BUTTON.CRITICAL;
-            }
-            if (id == 2) {
-                return DebugIds.IMPORTANCE_BUTTON.IMPORTANT;
-            }
-            if (id == 3) {
-                return DebugIds.IMPORTANCE_BUTTON.BASIC;
-            }
-            if (id == 4) {
-                return DebugIds.IMPORTANCE_BUTTON.COSMETIC;
-            }
-            if (id == 5) {
-                return DebugIds.IMPORTANCE_BUTTON.MEDIUM;
-            }
-            return DebugIds.IMPORTANCE_BUTTON.DEFAULT + id;
+        public static String byCode(String importanceCode) {
+            return DebugIds.IMPORTANCE_BUTTON.PREFIX + importanceCode;
         }
     }
 

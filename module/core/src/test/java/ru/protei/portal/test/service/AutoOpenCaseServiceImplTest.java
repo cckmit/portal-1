@@ -17,12 +17,15 @@ import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
-import ru.protei.portal.core.service.autoopencase.AutoOpenCaseTaskHandler;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
+import static ru.protei.portal.core.model.util.CrmConstants.AutoOpen.NO_DELAY;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @EnableScheduling
@@ -34,10 +37,25 @@ import java.util.List;
 public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
 
     @Test
-    public void createTask() {
+    @Transactional
+    public void createTaskNoDelay() {
+        createTask(NO_DELAY);
+    }
+
+    @Test
+    public void createTaskWithDelay() {
+        createTask(TimeUnit.SECONDS.toMillis(3));
+    }
+
+    public void createTask(long delay) {
         Company customerCompany = createNewCustomerCompany();
         customerCompany.setAutoOpenIssue(true);
         companyDAO.persist(customerCompany);
+
+        companyImportanceItemDAO.persistBatch(
+                toList(CrmConstants.ImportanceLevel.commonImportanceLevelIds, importanceLevelId ->
+                        new CompanyImportanceItem(customerCompany.getId(), importanceLevelId, 0))
+        );
 
         Person customerPerson = createNewPerson(customerCompany);
         personDAO.persist(customerPerson);
@@ -91,11 +109,15 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
 
         caseObjectDAO.persist(newCaseObject);
 
-        try {
-            service.createTask(newCaseObject.getId(), 0)
-                    .get();
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (delay == NO_DELAY) {
+            service.performCaseOpen(newCaseObject.getId());
+        } else {
+            try {
+                service.createTask(newCaseObject.getId(), delay)
+                        .get();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         CaseObject caseObjectFromDb = caseObjectDAO.get(newCaseObject.getId());
@@ -124,6 +146,11 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
         Company customerCompanyAutoOpen = createNewCustomerCompany();
         customerCompanyAutoOpen.setAutoOpenIssue(true);
         companyDAO.persist(customerCompanyAutoOpen);
+
+        companyImportanceItemDAO.persistBatch(
+                toList(CrmConstants.ImportanceLevel.commonImportanceLevelIds, importanceLevelId ->
+                        new CompanyImportanceItem(customerCompanyAutoOpen.getId(), importanceLevelId, 0))
+        );
 
         Person customerPerson = createNewPerson(customerCompanyAutoOpen);
         personDAO.persist(customerPerson);
@@ -175,6 +202,12 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
         Company customerCompanyAutoOpen = createNewCustomerCompany();
         customerCompanyAutoOpen.setAutoOpenIssue(true);
         companyDAO.persist(customerCompanyAutoOpen);
+
+        companyImportanceItemDAO.persistBatch(
+                toList(CrmConstants.ImportanceLevel.commonImportanceLevelIds, importanceLevelId ->
+                        new CompanyImportanceItem(customerCompanyAutoOpen.getId(), importanceLevelId, 0))
+        );
+
         Person customerPersonAutoOpen = createNewPerson(customerCompanyAutoOpen);
         personDAO.persist(customerPersonAutoOpen);
 
@@ -219,6 +252,4 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
 
     @Autowired
     AutoOpenCaseService service;
-    @Autowired
-    AutoOpenCaseTaskHandler handler;
 }

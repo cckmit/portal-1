@@ -43,6 +43,7 @@ public class PortalConfigData {
     private final UiConfig uiConfig;
     private final MailCommentConfig mailCommentConfig;
     private final NRPEConfig nrpeConfig;
+    private final AutoOpenConfig autoOpenConfig;
 
     private final String loginSuffixConfig;
     private final boolean taskSchedulerEnabled;
@@ -70,6 +71,7 @@ public class PortalConfigData {
         uiConfig = new UiConfig(wrapper);
         mailCommentConfig = new MailCommentConfig(wrapper);
         nrpeConfig = new NRPEConfig(wrapper);
+        autoOpenConfig = new AutoOpenConfig(wrapper);
 
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
         taskSchedulerEnabled = wrapper.getProperty("task.scheduler.enabled", Boolean.class,false);
@@ -158,6 +160,10 @@ public class PortalConfigData {
 
     public NRPEConfig getNrpeConfig() {
         return nrpeConfig;
+    }
+
+    public AutoOpenConfig getAutoOpenConfig() {
+        return autoOpenConfig;
     }
 
     public boolean isTaskSchedulerEnabled() {
@@ -913,6 +919,24 @@ public class PortalConfigData {
 
         public List<String> getAdminMails() {
             return adminMails;
+        }
+    }
+
+    public static class AutoOpenConfig {
+        final Boolean enable;
+        final Boolean enableDelay;
+
+        public AutoOpenConfig(PropertiesWrapper properties) {
+            this.enable = properties.getProperty("autoopen.enable", Boolean.class, false);
+            this.enableDelay = properties.getProperty("autoopen.delay.enable", Boolean.class, true);
+        }
+
+        public Boolean getEnable() {
+            return enable;
+        }
+
+        public Boolean getEnableDelay() {
+            return enableDelay;
         }
     }
 

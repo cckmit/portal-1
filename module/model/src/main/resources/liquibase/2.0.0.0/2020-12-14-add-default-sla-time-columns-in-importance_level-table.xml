@@ -1,0 +1,29 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-default-sla-time-columns-in-importance_level-table" author="fomin">
+        <addColumn tableName="importance_level">
+            <column name="reaction_time" type="BIGINT"/>
+            <column name="temporary_solution_time" type="BIGINT"/>
+            <column name="full_solution_time" type="BIGINT"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add-default-sla-values" author="fomin">
+        <sql>
+            UPDATE importance_level SET reaction_time=60, temporary_solution_time=240, full_solution_time=4320 where id=1;
+            UPDATE importance_level SET reaction_time=120, temporary_solution_time=1440, full_solution_time=4320 where id=2;
+            UPDATE importance_level SET reaction_time=1440, temporary_solution_time=4320, full_solution_time=43200 where id=3;
+            UPDATE importance_level SET reaction_time=1440, temporary_solution_time=20160, full_solution_time=129600 where id=4;
+        </sql>
+    </changeSet>
+
+    <changeSet id="replace-case-filter-importance-enum-values-with-ids" author="fomin">
+        <sql>
+            UPDATE case_filter SET params = REGEXP_REPLACE(params, 'importances', 'importanceIds') where params like "%importances%";
+        </sql>
+    </changeSet>
+</databaseChangeLog>

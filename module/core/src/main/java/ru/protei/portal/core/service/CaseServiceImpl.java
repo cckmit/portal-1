@@ -160,6 +160,12 @@ public class CaseServiceImpl implements CaseService {
     @Autowired
     private CaseLinkDAO caseLinkDAO;
 
+    @Autowired
+    private CompanyImportanceItemDAO companyImportanceItemDAO;
+
+    @Autowired
+    private ImportanceLevelDAO importanceLevelDAO;
+
     @Override
     public Result<SearchResult<CaseShortView>> getCaseObjects(AuthToken token, CaseQuery query) {
 
@@ -245,7 +251,7 @@ public class CaseServiceImpl implements CaseService {
             log.error("State message for the issue {} not saved!", caseId);
         }
 
-        Result<Long> importanceResult = addImportanceHistory(token, caseId, caseObject.getImpLevel().longValue(), En_ImportanceLevel.getById(caseObject.getImpLevel()).getCode());
+        Result<Long> importanceResult = addImportanceHistory(token, caseId, caseObject.getImpLevel().longValue(), importanceLevelDAO.get(caseObject.getImpLevel()).getCode());
         if (importanceResult.isError()) {
             log.error("Importance level message for the issue {} not saved!", caseId);
         }
@@ -330,8 +336,6 @@ public class CaseServiceImpl implements CaseService {
 
         Result<List<CaseLink>> createLinksResult =
                 caseLinkService.createLinks(token, links, CRM_SUPPORT);
-
-        autoOpenCaseService.processNewCreatedCaseToAutoOpen(caseId, caseObject.getInitiatorCompanyId());
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
         CaseObject newState = caseObjectDAO.get(caseId);
@@ -428,7 +432,7 @@ public class CaseServiceImpl implements CaseService {
 
         applyStateBasedOnManager(caseMeta);
 
-        if (!validateMetaFields(token, caseMeta)) {
+        if (!validateMetaFields(token, oldCaseMeta, caseMeta)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -478,8 +482,8 @@ public class CaseServiceImpl implements CaseService {
 
         if (!Objects.equals(oldCaseMeta.getImpLevel(), caseMeta.getImpLevel())) {
             Result<Long> resultImportance = changeImportanceHistory(token, caseMeta.getId(),
-                    oldCaseMeta.getImpLevel().longValue(), En_ImportanceLevel.getById(oldCaseMeta.getImpLevel()).getCode(),
-                    caseMeta.getImpLevel().longValue(), En_ImportanceLevel.getById(caseMeta.getImpLevel()).getCode());
+                    oldCaseMeta.getImpLevel().longValue(), importanceLevelDAO.get(oldCaseMeta.getImpLevel()).getCode(),
+                    caseMeta.getImpLevel().longValue(), importanceLevelDAO.get(caseMeta.getImpLevel()).getCode());
             if (resultImportance.isError()) {
                 log.error("Importance level message for the issue {} isn't saved!", caseMeta.getId());
             }
@@ -1149,20 +1153,16 @@ public class CaseServiceImpl implements CaseService {
     }
 
     private boolean validateMetaFields(AuthToken token, CaseObjectMeta caseMeta) {
+        return validateMetaFields(token, null, caseMeta);
+    }
+
+    private boolean validateMetaFields(AuthToken token, CaseObjectMeta oldCaseMeta, CaseObjectMeta caseMeta) {
         if (caseMeta == null) {
             log.warn("Case meta cannot be null");
             return false;
         }
         if (caseMeta.getImpLevel() == null) {
             log.warn("Importance level must be specified. caseId={}", caseMeta.getId());
-            return false;
-        }
-        if (En_ImportanceLevel.find(caseMeta.getImpLevel()) == null) {
-            log.warn("Unknown importance level. caseId={}, importance={}", caseMeta.getId(), caseMeta.getImpLevel());
-            return false;
-        }
-        if (!isStateValid(caseMeta.getStateId(), caseMeta.getManagerId(), caseMeta.getPauseDate())) {
-            log.warn("State is not valid. caseId={}", caseMeta.getId());
             return false;
         }
         if (caseMeta.getManagerCompanyId() == null) {
@@ -1182,6 +1182,14 @@ public class CaseServiceImpl implements CaseService {
             log.warn("Initiator company must be specified. caseId={}", caseMeta.getId());
             return false;
         }
+        if (!isStateValid(caseMeta.getStateId(), caseMeta.getManagerId(), caseMeta.getInitiatorCompanyId(), caseMeta.getPauseDate())) {
+            log.warn("State is not valid. caseId={}", caseMeta.getId());
+            return false;
+        }
+        if (!importanceBelongsToCompany(caseMeta.getImpLevel(), caseMeta.getInitiatorCompanyId())) {
+            log.warn("Importance level doesn't belong to company. caseId={}, importance={}, companyId={}", caseMeta.getId(), caseMeta.getImpLevel(), caseMeta.getInitiatorCompanyId());
+            return false;
+        }
         if (caseMeta.getInitiatorId() != null && !personBelongsToCompany( caseMeta.getInitiatorId(), caseMeta.getInitiatorCompanyId() )) {
             log.warn("Initiator doesn't belong to company. caseId={}, initiatorId={}, initiatorCompanyId={}",
                     caseMeta.getId(), caseMeta.getInitiatorId(), caseMeta.getInitiatorCompanyId());
@@ -1196,11 +1204,19 @@ public class CaseServiceImpl implements CaseService {
             log.warn("Product is not valid. caseId={}", caseMeta.getId());
             return false;
         }
-        if (!isDeadlineValid(caseMeta.getDeadline())) {
+
+        Long oldDeadline = oldCaseMeta == null ? null : oldCaseMeta.getDeadline();
+
+        if (!Objects.equals(oldDeadline, caseMeta.getDeadline()) && !isDeadlineValid(caseMeta.getDeadline())) {
             log.warn("Deadline has passed. caseId={}", caseMeta.getId());
             return false;
         }
         return true;
+    }
+
+    private boolean importanceBelongsToCompany(Integer importanceLevelId, Long companyId) {
+        return stream(companyImportanceItemDAO.getSortedImportanceLevels(companyId))
+                .anyMatch(companyImportanceItem -> importanceLevelId.equals(companyImportanceItem.getImportanceLevelId()));
     }
 
     private boolean isProductValid(AuthToken token, Long productId, Long platformId, Long companyId) {
@@ -1277,11 +1293,32 @@ public class CaseServiceImpl implements CaseService {
         return persons.stream().anyMatch( person -> personId.equals( person.getId() ) );
     }
 
-    private boolean isStateValid(long caseStateId, Long managerId, Long pauseDate) {
+    private boolean isStateValid(long caseStateId, Long managerId, Long initiatorCompanyId, Long pauseDate) {
+        List<CaseState> crmSupportStates = caseStateDAO.getAllByCaseType(CRM_SUPPORT);
+
+        if (stream(crmSupportStates).noneMatch(caseState -> caseState.getId().equals(caseStateId))) {
+            log.warn("Not crm state");
+            return false;
+        }
+
+        CaseState caseState = caseStateDAO.get(caseStateId);
+        jdbcManyRelationsHelper.fillAll(caseState);
+
+        if (caseState.getUsageInCompanies().equals(En_CaseStateUsageInCompanies.NONE)) {
+            log.warn("The state must be used for some companies");
+            return false;
+        }
+
+        if (caseState.getUsageInCompanies().equals(En_CaseStateUsageInCompanies.SELECTED) &&
+                caseState.getCompanies().stream().noneMatch(company -> company.getId().equals(initiatorCompanyId))) {
+            log.warn("The state can't be used with specified company. companyId={}", initiatorCompanyId);
+            return false;
+        }
+
         if (!(listOf(CrmConstants.State.CREATED, CrmConstants.State.CANCELED)
                 .contains(caseStateId)) && managerId == null) {
 
-            log.warn("State must be CREATED or CANCELED without manager");
+            log.warn("The state must be CREATED or CANCELED without manager");
             return false;
         }
 

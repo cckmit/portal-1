@@ -25,10 +25,12 @@ import ru.protei.portal.core.model.dto.CaseTagInfo;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.youtrack.YtFieldDescriptor;
 import ru.protei.portal.core.model.youtrack.dto.issue.YtIssueComment;
 import ru.protei.portal.core.model.youtrack.dto.user.YtUser;
@@ -1362,6 +1364,8 @@ public class TestPortalApiController extends BaseServiceTest {
             caseLinkDAO.getListByQuery(query)
                     .forEach(caseLink -> caseLinkDAO.remove(caseLink));
             historyDAO.removeByCaseId(caseId);
+            projectToProductDAO.removeAllProductsFromProject(caseId);
+            platformDAO.removeByProjectId(caseId);
             caseObjectDAO.removeByKey(caseId);
         });
     }

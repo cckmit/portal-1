@@ -81,7 +81,7 @@
                                         <person:EmployeeFormSelector ui:field="approvedBy"
                                                                      header="{lang.documentApprovedBy}"
                                                                      enabled="false"
-                                                                     addStyleNames="document-approval-by"/>
+                                                                     styleName="document-approval-by"/>
                             </div>
                         </div>
                         <div class="col-md-4">

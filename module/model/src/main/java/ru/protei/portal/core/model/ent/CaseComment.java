@@ -1,6 +1,5 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
@@ -38,6 +37,9 @@ public class CaseComment extends AuditableObject {
 
     @JdbcColumn(name="cimp_level")
     private Integer caseImpLevel;
+
+    @JdbcJoinedColumn(localColumn = "cimp_level", remoteColumn = "id", table = "importance_level", mappedColumn = "code")
+    private String importanceCode;
 
     @JdbcColumn(name="cmanager_id")
     private Long caseManagerId;
@@ -175,13 +177,8 @@ public class CaseComment extends AuditableObject {
         this.caseImpLevel = caseImpLevel;
     }
 
-    public En_ImportanceLevel getCaseImportance() {
-        return En_ImportanceLevel.getById(this.caseImpLevel);
-    }
-
-    public void setCaseImportance( En_ImportanceLevel caseImportance ) {
-        if(caseImportance == null) caseImpLevel = null;
-        this.caseImpLevel = caseImportance.getId();
+    public String getImportanceCode() {
+        return importanceCode;
     }
 
     public Long getCaseManagerId() {

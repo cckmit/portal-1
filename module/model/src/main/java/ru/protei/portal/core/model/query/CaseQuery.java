@@ -3,9 +3,9 @@ package ru.protei.portal.core.model.query;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.ent.ImportanceLevel;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.DateRange;
@@ -14,7 +14,6 @@ import ru.protei.portal.core.model.struct.Pair;
 import java.util.*;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
-import static ru.protei.portal.core.model.helper.CollectionUtils.toSet;
 
 /**
  * Created by Mike on 02.11.2016.
@@ -236,12 +235,8 @@ public class CaseQuery extends BaseQuery {
 
     public void setImportanceIds(List<Integer> importanceIds) { this.importanceIds = importanceIds; }
 
-    public void setImportances(Iterable<En_ImportanceLevel> importances) {
-        this.importanceIds = importances == null ? null : toList( importances, importanceLevel -> importanceLevel.getId() );
-    }
-
-    public Set<En_ImportanceLevel> getImportances() {
-        return this.importanceIds == null ? null : toSet( importanceIds, id1 -> En_ImportanceLevel.getById( id1 ) );
+    public void setImportanceLevels(Iterable<ImportanceLevel> importances) {
+        this.importanceIds = importances == null ? null : toList( importances, importanceLevel -> importanceLevel.getId().intValue() );
     }
 
     public Date getCreatedFrom() { return createdFrom; }

@@ -188,10 +188,15 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
             caseObj.setStateName(newState.getLocalStatusName());
         }
 
-        En_ImportanceLevel oldImportance = En_ImportanceLevel.getById(caseObj.getImpLevel());
-        En_ImportanceLevel newImportance = getNewImportanceLevel(endpoint.getPriorityMapId(), getIssueSeverity(issue));
-        newImportance = newImportance == null ? En_ImportanceLevel.getById(caseObj.getImpLevel()) : newImportance;
-        caseObj.setImpLevel(newImportance.getId());
+
+        ImportanceLevel oldImportance = new ImportanceLevel(caseObj.getImpLevel(), caseObj.getImportanceCode());
+        ImportanceLevel newImportance = getNewImportanceLevel(endpoint.getPriorityMapId(), getIssueSeverity(issue));
+
+        if (newImportance == null) {
+            newImportance = oldImportance;
+        }
+
+        caseObj.setImportanceLevel(newImportance);
 
         caseObj.setName(getNewName(issue, caseObj.getCaseNumber(), getClmId(issue)));
 
@@ -248,9 +253,14 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         }
         logger.info("issue {}, case-state new={}", issue.getKey(), caseObj.getStateId());
 
-        En_ImportanceLevel newImportance = getNewImportanceLevel(endpoint.getPriorityMapId(), getIssueSeverity(issue));
-        logger.debug("issue {}, case-priority old={}, new={}", issue.getKey(), caseObj.getImportanceLevel(), newImportance);
-        caseObj.setImpLevel(newImportance == null ? En_ImportanceLevel.BASIC.getId() : newImportance.getId());
+        ImportanceLevel newImportance = getNewImportanceLevel(endpoint.getPriorityMapId(), getIssueSeverity(issue));
+
+        if (newImportance == null) {
+            newImportance = new ImportanceLevel(CrmConstants.ImportanceLevel.BASIC, CrmConstants.ImportanceLevel.BASIC_NAME);
+        }
+
+        logger.debug("issue {}, case-priority old={}, new={}", issue.getKey(), caseObj.getImportanceCode(), newImportance);
+        caseObj.setImportanceLevel(newImportance);
 
         IssueField clmId = getClmId(issue);
         caseObj.setName(getNewName(issue, caseObj.getCaseNumber(), clmId));
@@ -270,7 +280,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         caseObjectDAO.merge(caseObj);
 
         addStateHistory(caseObj.getCreated(), authorId, caseObj.getId(), caseObj.getStateId(), caseStateDAO.get(caseObj.getStateId()).getState());
-        addImportanceHistory(caseObj.getCreated(), authorId, caseObj.getId(), caseObj.getImpLevel().longValue());
+        addImportanceHistory(caseObj.getCreated(), authorId, caseObj.getId(), newImportance);
 
         List<CaseComment> caseComments = processComments( endpoint.getServerLogin(), issue.getComments(), caseObj,
                 personMapper, jiraExtAppData, addedAttachments, caseToAttachments );
@@ -521,7 +531,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         return issue.getFieldByName(CustomJiraIssueParser.CUSTOM_FIELD_CLM);
     }
 
-    private En_ImportanceLevel getNewImportanceLevel(Long priorityMapId, String severityName) {
+    private ImportanceLevel getNewImportanceLevel(Long priorityMapId, String severityName) {
         JiraPriorityMapEntry jiraPriorityEntry = severityName != null ? jiraPriorityMapEntryDAO.getByJiraPriorityName(priorityMapId, severityName) : null;
 
         if (jiraPriorityEntry == null) {
@@ -529,7 +539,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
             return null;
         }
 
-        return En_ImportanceLevel.getById(jiraPriorityEntry.getLocalPriorityId());
+        return new ImportanceLevel(jiraPriorityEntry.getLocalPriorityId(), jiraPriorityEntry.getLocalPriorityName());
     }
 
     private Long addStateHistory(Date date, Long personId, Long caseId, Long stateId, String stateName) {
@@ -540,12 +550,12 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         return createHistory(date, personId, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_STATE, oldStateId, oldStateName, newStateId, newStateName);
     }
 
-    private Long addImportanceHistory(Date date, Long personId, Long caseId, Long importanceId) {
+    private Long addImportanceHistory(Date date, Long personId, Long caseId, ImportanceLevel newImportance) {
         return createHistory(date, personId, caseId, En_HistoryAction.ADD, En_HistoryType.CASE_IMPORTANCE, null, null,
-                importanceId, En_ImportanceLevel.getById(importanceId.intValue()).getCode());
+                newImportance.getId().longValue(), newImportance.getCode());
     }
 
-    private Long changeImportanceHistory(Date date, Long personId, Long caseId, En_ImportanceLevel oldImportance, En_ImportanceLevel newImportance) {
+    private Long changeImportanceHistory(Date date, Long personId, Long caseId, ImportanceLevel oldImportance, ImportanceLevel newImportance) {
         return createHistory(date, personId, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_IMPORTANCE,
                 (long)oldImportance.getId(), oldImportance.getCode(), (long)newImportance.getId(), newImportance.getCode());
     }

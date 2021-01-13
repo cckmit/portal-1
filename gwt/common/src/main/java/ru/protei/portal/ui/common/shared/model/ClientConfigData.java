@@ -10,7 +10,6 @@ public class ClientConfigData implements Serializable {
     public String appVersion;
     public String markupHelpLinkMarkdown;
     public String markupHelpLinkJiraMarkup;
-    public String externalLinksHtml;
 
     @Override
     public String toString() {
@@ -18,7 +17,6 @@ public class ClientConfigData implements Serializable {
                 "appVersion='" + appVersion + '\'' +
                 ", markupHelpLinkMarkdown='" + markupHelpLinkMarkdown + '\'' +
                 ", markupHelpLinkJiraMarkup='" + markupHelpLinkJiraMarkup + '\'' +
-                ", externalLinksHtml='" + externalLinksHtml + '\'' +
                 '}';
     }
 }

@@ -31,17 +31,16 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.widget.attachment.popup.AttachPopup;
 import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidget;
-import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CustomerCompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.SubcontractorCompanyModel;
+import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -82,7 +81,6 @@ public abstract class IssueTableFilterActivity
         filterView.resetFilter(DEFAULT_MODIFIED_RANGE);
         filterView.presetFilterType();
         updateCaseStatesFilter();
-        updateImportanceLevelButtons();
         updateCompanyModels(event.profile);
     }
 
@@ -367,16 +365,6 @@ public abstract class IssueTableFilterActivity
     private void updateCaseStatesFilter() {
         if (!policyService.hasSystemScopeForPrivilege(En_Privilege.COMPANY_VIEW)) {
             filterView.getIssueFilterParams().setStateFilter(caseStateFilter.makeFilter(policyService.getUserCompany().getCaseStates()));
-        }
-    }
-
-    private void updateImportanceLevelButtons() {
-        if (!policyService.hasSystemScopeForPrivilege(En_Privilege.COMPANY_VIEW)) {
-            filterView.getIssueFilterParams().fillImportanceButtons(Collections.emptyList());
-            companyService.getImportanceLevels(policyService.getUserCompany().getId(), new FluentCallback<List<En_ImportanceLevel>>()
-                    .withSuccess(importanceLevelList -> {
-                        filterView.getIssueFilterParams().fillImportanceButtons(importanceLevelList);
-                    }));
         }
     }
 

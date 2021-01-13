@@ -19,6 +19,8 @@ public class CrmConstants {
 
     public static final List<String> CONFIG_EXTENSIONS = Arrays.asList(".config", ".cfg", ".properties", ".xml", ".json");
 
+    public static final List<String> PROTEI_DOMAINS = Arrays.asList("@protei.ru", "@sigurd-it.ru", "@neo-s.com");
+
     public interface Session {
         String AUTH_TOKEN = "session-auth-token";
         String FILE_ITEM = "file-item";
@@ -122,7 +124,15 @@ public class CrmConstants {
     }
 
     public interface ImportanceLevel {
-        List<Integer> commonImportanceLevelIds = Arrays.asList(1,2,3,4);
+        String IMPORTANCE_LEVEL = "importance-level";
+        String BASIC_NAME = "basic";
+
+        Integer CRITICAL = 1;
+        Integer IMPORTANT = 2;
+        Integer BASIC = 3;
+        Integer COSMETIC = 4;
+
+        List<Integer> commonImportanceLevelIds = Arrays.asList(CRITICAL,IMPORTANT,BASIC,COSMETIC);
     }
 
     public interface Company {
@@ -203,5 +213,12 @@ public class CrmConstants {
 
     public interface Platform {
         int PARAMETERS_MAX_LENGTH = 256;
+    }
+
+    public interface AutoOpen {
+        long NO_DELAY = 0;
+        long DELAY_STARTUP = 60;
+        long DELAY_RUNTIME = 180;
+        int DELAY_RANDOM = 120;
     }
 }

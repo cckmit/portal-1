@@ -559,6 +559,11 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public ImportanceLevelDAO getImportanceLevelDAO() {
+        return new ImportanceLevelDAO_Impl();
+    }
+
+    @Bean
     public ProjectTechnicalSupportValidityReportInfoDAO getProjectTechnicalSupportValidityReportInfoDAO() {
         return new ProjectTechnicalSupportValidityReportInfoDAO_Impl();
     }

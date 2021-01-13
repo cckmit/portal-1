@@ -7,6 +7,8 @@ import ru.protei.portal.core.model.query.SqlCondition;
 
 public interface PlatformDAO extends PortalBaseDAO<Platform> {
 
+    void removeByProjectId(Long projectId);
+
     @SqlConditionBuilder
     SqlCondition createSqlCondition(PlatformQuery query);
 

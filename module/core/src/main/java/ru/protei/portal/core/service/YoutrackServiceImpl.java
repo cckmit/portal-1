@@ -262,7 +262,6 @@ public class YoutrackServiceImpl implements YoutrackService {
         issueInfo.setDescription(issue.description);
         Long stateId = YoutrackConstansMapping.toCaseState(getIssueState(issue));
         issueInfo.setState(stateId == null ? null : caseStateDAO.get(stateId));
-        issueInfo.setImportance(YoutrackConstansMapping.toCaseImportance(getIssuePriority(issue)));
         issueInfo.setComments(CollectionUtils.stream(issue.comments)
                 .map(this::convertYtIssueComment)
                 .map(Result::getData)
