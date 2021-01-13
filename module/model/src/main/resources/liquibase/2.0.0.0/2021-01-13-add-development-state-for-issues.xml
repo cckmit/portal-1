@@ -1,0 +1,22 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-development-state-for-issues" author="fomin">
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="4"/>
+            <column name="CASE_STATE" value="26"/>
+            <column name="view_order" value="4"/>
+            <column name="info" value="Задача в разработке"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="update-development-state-info" author="fomin">
+        <update tableName="case_state">
+            <column name="INFO" value="Задача в разработке"/>
+            <where>ID = 26</where>
+        </update>
+    </changeSet>
+</databaseChangeLog>
