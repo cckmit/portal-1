@@ -1388,52 +1388,6 @@ td.info {
   opacity: 0;
 }
 
-/**** STATES ****/
-.state-created {
-  color: #ef5350 !important;
-}
-
-.state-opened,
-.state-workaround,
-.state-info_request,
-.state-request_to_nx,
-.state-request_to_customer {
-  color: $info_color !important;
-}
-
-.state-active {
-  color: $info_light_color !important;
-}
-
-.state-customer_pending {
-  color: #133aadcf !important;
-}
-
-.state-done {
-  color: #4caf50 !important;
-}
-
-.state-local_test,
-.state-customer_test {
-  color: #906094 !important;
-}
-
-.state-verified {
-  color: #607D8B !important;
-}
-
-.state-canceled,
-.state-paused,
-.state-request_to_partner {
-  color: #868686 !important;
-}
-
-.state-blocked {
-  color: black;
-}
-
-/****************/
-
 .none-vertical-align {
   vertical-align: 0 !important;
 }
