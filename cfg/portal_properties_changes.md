@@ -24,3 +24,10 @@ autoopen.enable=false
 ## boolean, default: true
 autoopen.delay.enable=true
 ```
+
+Добавить в проперти внутреннего и внешнего серверов
+``` properties
+#### Идентификатор системного пользователя
+## default: ""
+system.user.id=8023
+```

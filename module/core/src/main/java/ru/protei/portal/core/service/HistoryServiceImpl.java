@@ -24,7 +24,7 @@ public class HistoryServiceImpl implements HistoryService {
 
     @Override
     @Transactional
-    public Result<Long> createHistory(AuthToken token, Long caseObjectId, En_HistoryAction action,
+    public Result<Long> createHistory(Long initiatorId, Long caseObjectId, En_HistoryAction action,
                                       En_HistoryType type, Long oldId, String oldValue, Long newId, String newValue) {
 
         if (caseObjectId == null || type == null || action == null || (oldId == null && newId == null) || (oldValue == null && newValue == null)){
@@ -32,7 +32,7 @@ public class HistoryServiceImpl implements HistoryService {
         }
 
         History history = new History();
-        history.setInitiatorId(token.getPersonId());
+        history.setInitiatorId(initiatorId);
         history.setDate(new Date());
         history.setCaseObjectId(caseObjectId);
         history.setAction(action);
@@ -49,6 +49,18 @@ public class HistoryServiceImpl implements HistoryService {
         }
 
         return ok(historyId);
+    }
+
+    @Override
+    @Transactional
+    public Result<Long> createHistory(AuthToken token, Long caseObjectId, En_HistoryAction action,
+                                      En_HistoryType type, Long oldId, String oldValue, Long newId, String newValue) {
+
+        if (token == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        return createHistory(token.getPersonId(), caseObjectId, action, type, oldId, oldValue, newId, newValue);
     }
 
     @Override

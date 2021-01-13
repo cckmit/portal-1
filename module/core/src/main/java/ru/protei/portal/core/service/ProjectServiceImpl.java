@@ -100,6 +100,10 @@ public class ProjectServiceImpl implements ProjectService {
     PortalConfig config;
     @Autowired
     CompanyImportanceItemDAO companyImportanceItemDAO;
+    @Autowired
+    HistoryService historyService;
+    @Autowired
+    CaseStateDAO caseStateDAO;
 
     @EventListener
     @Async(BACKGROUND_TASKS)
@@ -137,6 +141,25 @@ public class ProjectServiceImpl implements ProjectService {
                     project.getPauseDate() == null ? null : simpleDateFormat.format( project.getPauseDate() )
             );
             return;
+        }
+
+        if (project.getPreviousStateId() != null) {
+            CaseObject caseObject = new CaseObject();
+            caseObject.setId(projectId);
+            caseObject.setStateId(project.getPreviousStateId());
+            caseObject.setPreviousStateId(project.getState().getId());
+
+            caseObjectDAO.partialMerge(caseObject, "STATE", "previous_state");
+
+            long oldStateId = caseObject.getPreviousStateId();
+            long newStateId = caseObject.getStateId();
+
+            Long systemUserId = config.data().getCommonConfig().getSystemUserId();
+
+            changeStateHistory(systemUserId == null ? project.getCreatorId() : systemUserId, projectId,
+                    oldStateId, caseStateDAO.get(oldStateId).getState(),
+                    newStateId, caseStateDAO.get(newStateId).getState()
+            );
         }
 
         jdbcManyRelationsHelper.fill( project, "members" );
@@ -263,6 +286,11 @@ public class ProjectServiceImpl implements ProjectService {
         projectFormDB.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(project.getId())));
         projectFormDB.setProducts(new HashSet<>(devUnitDAO.getProjectProducts(project.getId())));
 
+        long oldStateId = projectFormDB.getState().getId();
+        long newStateId = project.getState().getId();
+
+        boolean isStateChanged = oldStateId != newStateId;
+
         List<CompanyImportanceItem> sortedImportanceLevels
                 = companyImportanceItemDAO.getSortedImportanceLevels(project.getCustomerId());
 
@@ -281,6 +309,10 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         caseObject = createCaseObjectFromProject(caseObject, project);
+
+        if (isStateChanged) {
+            caseObject.setPreviousStateId(oldStateId);
+        }
 
         projectFormDB.setTechnicalSupportValidity(project.getTechnicalSupportValidity());
         projectFormDB.setWorkCompletionDate(project.getWorkCompletionDate());
@@ -326,6 +358,10 @@ public class ProjectServiceImpl implements ProjectService {
         newStateProject.setProjectSlas(getSortedSla(newStateProject.getProjectSlas(), sortedImportanceLevels));
         newStateProject.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(project.getId())));
         newStateProject.setProducts(new HashSet<>(devUnitDAO.getProjectProducts(project.getId())));
+
+        if (isStateChanged) {
+            changeStateHistory(token.getPersonId(), project.getId(), oldStateId, caseStateDAO.get(oldStateId).getState(), newStateId, caseStateDAO.get(newStateId).getState());
+        }
 
         return ok(project).publishEvent(new ProjectUpdateEvent(this, oldStateProject, newStateProject, token.getPersonId()));
     }
@@ -383,6 +419,10 @@ public class ProjectServiceImpl implements ProjectService {
 
         Result<List<CaseLink>> createdLinksResult
                 = caseLinkService.createLinks(token, links, En_CaseType.PROJECT);
+
+        long stateId = project.getState().getId();
+
+        addStateHistory(token, projectId, stateId, caseStateDAO.get(stateId).getState());
 
         ProjectCreateEvent projectCreateEvent = new ProjectCreateEvent(this, token.getPersonId(), project.getId());
 
@@ -742,5 +782,13 @@ public class ProjectServiceImpl implements ProjectService {
             locationQuery.setSortDir(En_SortDir.ASC);
         }
         return locationQuery;
+    }
+
+    private Result<Long> addStateHistory(AuthToken authToken, Long projectId, Long stateId, String stateName) {
+        return historyService.createHistory(authToken, projectId, En_HistoryAction.ADD, En_HistoryType.CASE_STATE, null, null, stateId, stateName);
+    }
+
+    private Result<Long> changeStateHistory(Long initiatorId, Long projectId, Long oldStateId, String oldStateName, Long newStateId, String newStateName) {
+        return historyService.createHistory(initiatorId, projectId, En_HistoryAction.CHANGE, En_HistoryType.CASE_STATE, oldStateId, oldStateName, newStateId, newStateName);
     }
 }

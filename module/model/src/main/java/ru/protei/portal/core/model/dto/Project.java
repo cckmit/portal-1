@@ -52,6 +52,9 @@ public class Project extends AuditableObject {
     @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Columns.STATE, table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
     private Long stateId;
 
+    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = "previous_state", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
+    private Long previousStateId;
+
     /**
      * Тип заказчика
      */
@@ -172,6 +175,10 @@ public class Project extends AuditableObject {
 
     public void setState( En_RegionState state ) {
         this.stateId = state.getId();
+    }
+
+    public Long getPreviousStateId() {
+        return previousStateId;
     }
 
     public List<EntityOption> getProductDirectionEntityOptionList() {
@@ -455,14 +462,13 @@ public class Project extends AuditableObject {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", stateId=" + stateId +
+                ", previousStateId=" + previousStateId +
                 ", customerType=" + customerType +
                 ", customer=" + customer +
-                ", productDirections=" + productDirections +
                 ", created=" + created +
                 ", creatorId=" + creatorId +
                 ", members=" + members +
                 ", locations=" + locations +
-                ", products=" + products +
                 ", deleted=" + deleted +
                 ", creator=" + creator +
                 ", managerId=" + managerId +
@@ -474,12 +480,15 @@ public class Project extends AuditableObject {
                 ", purchaseDate=" + purchaseDate +
                 ", projectSlas=" + projectSlas +
                 ", pauseDate=" + pauseDate +
+                ", projectPlans=" + projectPlans +
                 ", regionName='" + regionName + '\'' +
+                ", subcontractors=" + subcontractors +
                 ", team=" + team +
                 ", region=" + region +
                 ", links=" + links +
                 ", contracts=" + contracts +
-                ", projectPlans=" + projectPlans +
+                ", productDirections=" + productDirections +
+                ", products=" + products +
                 '}';
     }
 
