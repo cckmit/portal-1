@@ -53,6 +53,14 @@ public class Project extends AuditableObject {
     private Long stateId;
 
     /**
+     * Цвет иконки состояния проекта
+     */
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = Columns.STATE, remoteColumn = "id", table = "case_state")}, mappedColumn = "color")
+    private String stateColor;
+
+    /**
      * Тип заказчика
      */
     @JdbcColumn(name = Columns.CUSTOMER_TYPE)
@@ -172,6 +180,14 @@ public class Project extends AuditableObject {
 
     public void setState( En_RegionState state ) {
         this.stateId = state.getId();
+    }
+
+    public String getStateColor() {
+        return stateColor;
+    }
+
+    public void setStateColor(String stateColor) {
+        this.stateColor = stateColor;
     }
 
     public List<EntityOption> getProductDirectionEntityOptionList() {

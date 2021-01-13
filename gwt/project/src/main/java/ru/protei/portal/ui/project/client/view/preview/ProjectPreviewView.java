@@ -56,6 +56,11 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     }
 
     @Override
+    public void setStateIconColor(String color) {
+        this.iconState.getStyle().setColor(color);
+    }
+
+    @Override
     public void setDirections(String value ) { this.projectDirections.setInnerText( value ); }
 
     @Override
