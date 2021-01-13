@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.PhoneUtils.prettyPrintPhoneNumber;
 import static ru.protei.portal.core.model.helper.PhoneUtils.prettyPrintWorkPhoneNumber;
 
@@ -107,12 +106,6 @@ public class PlainContactInfoFacade extends CustomContactInfoFacade {
         contactInfo.findOrCreate(En_ContactItemType.GENERAL_PHONE, En_ContactDataAccess.PUBLIC).modify(workPhone);
     }
 
-    public void addWorkPhones(List<String> workPhones) {
-        contactInfo.addItems(stream(workPhones)
-                .map(phone -> new ContactItem(En_ContactItemType.GENERAL_PHONE,En_ContactDataAccess.PUBLIC).modify(phone))
-                .collect(Collectors.toList()));
-    }
-
     public String getHomePhone() {
         return findItemValue(En_ContactItemType.GENERAL_PHONE, En_ContactDataAccess.PRIVATE);
     }
@@ -127,12 +120,6 @@ public class PlainContactInfoFacade extends CustomContactInfoFacade {
 
     public void setMobilePhone(String mobilePhone) {
         contactInfo.findOrCreate(En_ContactItemType.MOBILE_PHONE, En_ContactDataAccess.PUBLIC).modify(mobilePhone);
-    }
-
-    public void addMobilePhones(List<String> workPhones) {
-        contactInfo.addItems(stream(workPhones)
-                .map(phone -> new ContactItem(En_ContactItemType.MOBILE_PHONE,En_ContactDataAccess.PUBLIC).modify(phone))
-                .collect(Collectors.toList()));
     }
 
     public String getEmail() {

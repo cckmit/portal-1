@@ -54,7 +54,7 @@ public class ContactItemGroupWithValidation extends Composite
         clear();
         this.items = values == null ? new ArrayList<>() : values;
 
-        items.forEach(value -> makeItemAndFillValue(value, false));
+        items.forEach(value -> makeItemView(value, false));
         addEmptyItem(false);
 
         if(fireEvents) {
@@ -127,7 +127,7 @@ public class ContactItemGroupWithValidation extends Composite
         this.newContactItem = newContactItem;
     }
 
-    private void makeItemAndFillValue(ContactItem value, boolean setFocus) {
+    private void makeItemView(ContactItem value, boolean setFocus) {
         TextWithValidationItem textWithValidationItem = new TextWithValidationItem();
         textWithValidationItem.setValue( value == null? null : value.value() );
         textWithValidationItem.setPlaceholder(placeHolder);
@@ -160,7 +160,7 @@ public class ContactItemGroupWithValidation extends Composite
     }
 
     private void addEmptyItem(boolean setFocus) {
-        makeItemAndFillValue( null, setFocus );
+        makeItemView( null, setFocus );
     }
 
     private void setTestAttributes() {
