@@ -130,9 +130,9 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     @Transactional
     public CompletableFuture<AssembledCaseEvent> create( JiraEndpoint endpoint, JiraHookEventData event) {
         final Issue issue = event.getIssue();
-        IssueField clmIdField = getClmId(issue);
-        if (clmIdField != null && caseObjectDAO.isJiraDuplicateByClmId(clmIdField.getValue().toString())) {
-            logger.info( "issue is duplicate by clm id" );
+        IssueField projectIdField = getProjectId(issue);
+        if (projectIdField != null && caseObjectDAO.isJiraDuplicateByProjectId(projectIdField.getValue().toString())) {
+            logger.info( "issue is duplicate by projectId" );
             return null;
         }
         CachedPersonMapper personMapper = new CachedPersonMapper( personDAO, contactItemDAO, jdbcManyRelationsHelper, endpoint, personDAO.get( endpoint.getPersonId() ));
@@ -155,9 +155,9 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         CaseObject caseObj = caseObjectDAO.getByExternalAppCaseId(makeExternalIssueID(endpoint.getId(), issue));
         if (caseObj == null) {
-            IssueField clmIdField = getClmId(issue);
-            if (clmIdField != null && caseObjectDAO.isJiraDuplicateByClmId(clmIdField.getValue().toString())) {
-                logger.info( "issue is duplicate by clm id" );
+            IssueField projectIdField = getProjectId(issue);
+            if (projectIdField != null && caseObjectDAO.isJiraDuplicateByProjectId(projectIdField.getValue().toString())) {
+                logger.info( "issue is duplicate by projectId" );
                 return null;
             }
             Person initiator = personMapper.toProteiPerson( issue.getReporter() );
@@ -203,7 +203,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         caseObj.setImportanceLevel(newImportance);
 
-        caseObj.setName(getNewName(issue, caseObj.getCaseNumber(), getClmId(issue)));
+        caseObj.setName(getNewName(issue, caseObj.getCaseNumber(), getProjectId(issue)));
 
         ExternalCaseAppData appData = externalCaseAppDAO.get(caseObj.getId());
         JiraExtAppData jiraExtAppData = JiraExtAppData.fromJSON(appData.getExtAppData());
@@ -267,8 +267,8 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         logger.debug("issue {}, case-priority old={}, new={}", issue.getKey(), caseObj.getImportanceCode(), newImportance);
         caseObj.setImportanceLevel(newImportance);
 
-        IssueField clmId = getClmId(issue);
-        caseObj.setName(getNewName(issue, caseObj.getCaseNumber(), clmId));
+        IssueField projectId = getProjectId(issue);
+        caseObj.setName(getNewName(issue, caseObj.getCaseNumber(), projectId));
 
         List<Platform> platforms = getPlatforms(caseObj.getInitiatorCompanyId());
         if (platforms != null && platforms.size() == 1) {
@@ -291,8 +291,8 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
                 personMapper, jiraExtAppData, addedAttachments, caseToAttachments );
 
         jiraExtAppData = addIssueTypeAndSeverity(jiraExtAppData, issue.getIssueType().getName(), getIssueSeverity(issue));
-        if (clmId != null) {
-            jiraExtAppData.setClmId(clmId.getValue().toString());
+        if (projectId != null) {
+            jiraExtAppData.setProjectId(projectId.getValue().toString());
         }
 
         final ExternalCaseAppData appData = new ExternalCaseAppData(caseObj);
@@ -527,13 +527,13 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         return state;
     }
 
-    private String getNewName(Issue issue, Long caseNumber, IssueField issueCLM){
+    private String getNewName(Issue issue, Long caseNumber, IssueField issueProjectId){
         logger.debug("update case name, issue={}, case={}", issue.getKey(), caseNumber);
-        return (issueCLM == null ? "" : issueCLM.getValue() + " | ") + issue.getSummary();
+        return (issueProjectId == null ? "" : issueProjectId.getValue() + " | ") + issue.getSummary();
     }
 
-    private IssueField getClmId(Issue issue) {
-        return issue.getFieldByName(CustomJiraIssueParser.CUSTOM_FIELD_CLM);
+    private IssueField getProjectId(Issue issue) {
+        return issue.getFieldByName(CustomJiraIssueParser.CUSTOM_FIELD_PROJECT_ID);
     }
 
     private ImportanceLevel getNewImportanceLevel(Long priorityMapId, String severityName) {

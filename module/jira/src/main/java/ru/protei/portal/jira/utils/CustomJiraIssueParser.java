@@ -23,7 +23,7 @@ import static com.atlassian.jira.rest.client.internal.json.JsonParseUtil.parseOp
 public class CustomJiraIssueParser implements JsonObjectParser<Issue> {
     public static final String CUSTOM_FIELD_SEVERITY = "customfield_12405";
     public static final String SEVERITY_CODE_NAME = "severity";
-    public static final String CUSTOM_FIELD_CLM = "customfield_22112";
+    public static final String CUSTOM_FIELD_PROJECT_ID = "customfield_22112";
     public static final String CUSTOM_FIELD_COMPANY_GROUP = "customfield_12375";
     public static final String COMPANY_GROUP_CODE_NAME = "companygroup";
     private final BasicIssueJsonParser basicIssueJsonParser = new BasicIssueJsonParser();
@@ -220,8 +220,8 @@ public class CustomJiraIssueParser implements JsonObjectParser<Issue> {
             JSONObject severity = json.getJSONObject(CUSTOM_FIELD_SEVERITY);
             result.add(new IssueField(severity.getString("id"), SEVERITY_CODE_NAME, "string", severity.getString("value")));
         }
-        if (!json.isNull(CUSTOM_FIELD_CLM)) {
-            result.add(new IssueField(null, CUSTOM_FIELD_CLM, "string", json.getString(CUSTOM_FIELD_CLM)));
+        if (!json.isNull(CUSTOM_FIELD_PROJECT_ID)) {
+            result.add(new IssueField(null, CUSTOM_FIELD_PROJECT_ID, "string", json.getString(CUSTOM_FIELD_PROJECT_ID)));
 
         }
         if (!json.isNull(CUSTOM_FIELD_COMPANY_GROUP)) {

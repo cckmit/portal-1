@@ -57,7 +57,7 @@ public class UtilityTest {
     @Test
     public void testClmId () {
         JiraExtAppData state = JiraExtAppData.fromJSON("{\"clmId\":\"CLM-12345678\"}");
-        Assert.assertEquals("CLM-12345678", state.clmId());
+        Assert.assertEquals("CLM-12345678", state.projectId());
 
         String json = state.toString();
         Assert.assertEquals("{\"issueType\":null,\"sla-severity\":null,\"cid\":[],\"aid\":[],\"clmId\":\"CLM-12345678\"}", json);
