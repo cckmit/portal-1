@@ -73,7 +73,7 @@ public class AssemblerProjectServiceImpl implements AssemblerProjectService {
             return ok(event);
         }
 
-        if (event.isCreateEvent() && event.getNewProjectState() != null) {
+        if (event.isCreateEvent()) {
             schedulePauseTimeNotification(event.getProjectId(), event.getNewProjectState().getPauseDate());
             return ok(event);
         }
