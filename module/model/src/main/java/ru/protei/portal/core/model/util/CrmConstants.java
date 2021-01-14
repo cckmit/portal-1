@@ -19,6 +19,8 @@ public class CrmConstants {
 
     public static final List<String> CONFIG_EXTENSIONS = Arrays.asList(".config", ".cfg", ".properties", ".xml", ".json");
 
+    public static final List<String> PROTEI_DOMAINS = Arrays.asList("@protei.ru", "@sigurd-it.ru", "@neo-s.com");
+
     public interface Session {
         String AUTH_TOKEN = "session-auth-token";
         String FILE_ITEM = "file-item";
@@ -197,6 +199,7 @@ public class CrmConstants {
         long SOLVED_FIXED = 8;
         long SOLVED_DUPLICATED = 9;
         long BLOCKED = 38;
+        long DEVELOPMENT = 26;
     }
 
     public interface Department {
@@ -215,5 +218,8 @@ public class CrmConstants {
 
     public interface AutoOpen {
         long NO_DELAY = 0;
+        long DELAY_STARTUP = 60;
+        long DELAY_RUNTIME = 180;
+        int DELAY_RANDOM = 120;
     }
 }

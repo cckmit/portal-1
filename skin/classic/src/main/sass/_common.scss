@@ -1463,11 +1463,14 @@ td.info {
   font-weight: bold;
 }
 
+.label-development,
+.option-development .option-name,
 .label-customer_pending,
 .option-customer_pending .option-name {
   background-color: #133aadcf;
 }
 
+.case-development,
 .case-customer_pending {
   color: #133aadcf;
   font-weight: bold;

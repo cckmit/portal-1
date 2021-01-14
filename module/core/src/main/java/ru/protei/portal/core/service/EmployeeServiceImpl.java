@@ -214,9 +214,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         jdbcManyRelationsHelper.fill(employeeShortView, CONTACT_ITEMS);
         jdbcManyRelationsHelper.fill(employeeShortView, WORKER_ENTRIES);
-        employeeShortView.setLogins(
-                stream(userLoginDAO.findByPersonId(employeeShortView.getId()))
-                        .map(UserLogin::getUlogin).collect(Collectors.toList()));
 
         employeeShortView = removeSensitiveInformation(employeeShortView);
 
