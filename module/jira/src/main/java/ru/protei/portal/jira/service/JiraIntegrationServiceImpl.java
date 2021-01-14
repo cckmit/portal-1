@@ -155,6 +155,11 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         CaseObject caseObj = caseObjectDAO.getByExternalAppCaseId(makeExternalIssueID(endpoint.getId(), issue));
         if (caseObj == null) {
+            IssueField clmIdField = getClmId(issue);
+            if (clmIdField != null && caseObjectDAO.isJiraDuplicateByClmId(clmIdField.getValue().toString())) {
+                logger.info( "issue is duplicate by clm id" );
+                return null;
+            }
             Person initiator = personMapper.toProteiPerson( issue.getReporter() );
             return completedFuture(createCaseObject( initiator, authorId, issue, endpoint, personMapper ));
         }
