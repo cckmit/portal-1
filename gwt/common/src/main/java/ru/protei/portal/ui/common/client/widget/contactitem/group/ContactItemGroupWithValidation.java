@@ -54,8 +54,8 @@ public class ContactItemGroupWithValidation extends Composite
         clear();
         this.items = values == null ? new ArrayList<>() : values;
 
-        items.forEach(value -> makeItemView(value, false));
-        addEmptyItem(false);
+        items.forEach(this::makeItemView);
+        addEmptyItem();
 
         if(fireEvents) {
             ValueChangeEvent.fire( this, this.items);
@@ -101,7 +101,7 @@ public class ContactItemGroupWithValidation extends Composite
             }
             boolean isHasEmptyItem = modelToView.values().stream().anyMatch(item -> item == null || isEmpty(item.value()));
             if(!isHasEmptyItem) {
-                addEmptyItem(false);
+                addEmptyItem();
             }
         }
     }
@@ -127,7 +127,7 @@ public class ContactItemGroupWithValidation extends Composite
         this.newContactItem = newContactItem;
     }
 
-    private void makeItemView(ContactItem value, boolean setFocus) {
+    private void makeItemView(ContactItem value) {
         TextWithValidationItem textWithValidationItem = new TextWithValidationItem();
         textWithValidationItem.setValue( value == null? null : value.value() );
         textWithValidationItem.setPlaceholder(placeHolder);
@@ -144,23 +144,19 @@ public class ContactItemGroupWithValidation extends Composite
             items.remove( remove );
             boolean isHasEmptyItem = modelToView.values().stream().anyMatch(item -> item == null || isEmpty(item.value()));
             if(!isHasEmptyItem) {
-                addEmptyItem(false);
+                addEmptyItem();
             }
         } );
 
         textWithValidationItem.addAddHandler(event -> {
-            addEmptyItem(true);
+            addEmptyItem();
         } );
         modelToView.put(textWithValidationItem, value != null ? value : newContactItem.get());
         itemContainer.add(textWithValidationItem);
-
-        if (setFocus) {
-            textWithValidationItem.setFocus(true);
-        }
     }
 
-    private void addEmptyItem(boolean setFocus) {
-        makeItemView( null, setFocus );
+    private void addEmptyItem() {
+        makeItemView( null );
     }
 
     private void setTestAttributes() {

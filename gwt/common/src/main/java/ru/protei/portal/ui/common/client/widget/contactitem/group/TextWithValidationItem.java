@@ -19,16 +19,17 @@ public class TextWithValidationItem extends ValidableTextBox
 
     public TextWithValidationItem() {
         super();
-        this.addValueChangeHandler(event -> {
-            if ( event.getValue().isEmpty() ) {
+        this.addInputHandler(event -> {
+            final String value = getValue();
+            if ( isEmpty(value) ) {
                 CloseEvent.fire( this, this );
             }
 
-            if ( isEmpty(oldValue) && isNotEmpty(event.getValue())) {
+            if ( isEmpty(oldValue) && isNotEmpty(value) ) {
                 AddEvent.fire( this );
             }
 
-            oldValue = event.getValue();
+            oldValue = value;
         });
     }
 

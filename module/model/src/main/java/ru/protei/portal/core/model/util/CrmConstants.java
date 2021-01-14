@@ -82,7 +82,7 @@ public class CrmConstants {
         String CONTRACTOR_KPP = "^\\d{9}$";
         String CONTRACTOR_NAME = "^.{1,100}$";
         String CONTRACTOR_FULL_NAME = "^.{1,250}$";
-        String MOBILE_PHONE = "^\\+[1-9]{1}[0-9]{3}[0-9]{7}$";
+        String MOBILE_PHONE = "^\\+?[1-9]{1}[0-9]{3}[0-9]{7}$";
         String WORK_PHONE = "^\\d*#?\\d+$";
     }
 
