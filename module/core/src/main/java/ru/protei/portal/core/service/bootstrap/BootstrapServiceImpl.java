@@ -981,11 +981,9 @@ public class BootstrapServiceImpl implements BootstrapService {
 
         applicationContext.getBean(JdbcObjectMapperRegistrator.class).registerMapper(ContactItemPerson.class);
         registerBeanDefinition(applicationContext, ContactItemPerson.ContactItemPersonDAO.class);
-
-        ContactItemPerson.ContactItemPersonDAO dao = applicationContext.getBean(ContactItemPerson.ContactItemPersonDAO.class);
+        ContactItemPerson.ContactItemPersonDAO contactItemPersonDAO = applicationContext.getBean(ContactItemPerson.ContactItemPersonDAO.class);
 
         List<Long> homeCompanyIds = stream(companyGroupHomeDAO.getAll()).map(CompanyHomeGroupItem::getCompanyId).collect(toList());
-
         List<Long> contactItemsIds = contactItemDAO.listColumnValue("id", Long.class,
                 " value is not null AND TRIM(value) <> '' " +
                         "  AND item_type IN " + HelperFunc.makeInArg(Arrays.asList(En_ContactItemType.MOBILE_PHONE.getId(), En_ContactItemType.GENERAL_PHONE.getId()), false) +
@@ -993,22 +991,20 @@ public class BootstrapServiceImpl implements BootstrapService {
                         "             WHERE p.company_id IN " + HelperFunc.makeInArg(homeCompanyIds, false) + ")"
         );
 
-        List<Pair<ContactItem, Long>> contactItemAndContactItemIdForPersonIdList = new ArrayList<>();
+        List<Pair<ContactItem, Long>> contactItemAndIdForPersonIdList = new ArrayList<>();
         int chunk = 1000;
         for(int i = 0; i < contactItemsIds.size() / chunk + 1; i++) {
             int lowerBorder = i * chunk;
             int upperBorder = (i+1) * chunk;
-            contactItemAndContactItemIdForPersonIdList.addAll(
-                    normalizePhones(
-                            contactItemDAO.getListByKeys(
-                                    contactItemsIds.subList(lowerBorder, Math.min(upperBorder, contactItemsIds.size()))
-                            )
+            contactItemAndIdForPersonIdList.addAll(
+                    normalizePhones(contactItemDAO.getListByKeys(
+                            contactItemsIds.subList(lowerBorder, Math.min(upperBorder, contactItemsIds.size()))                            )
                     )
             );
-            persistContactItems(dao, contactItemAndContactItemIdForPersonIdList, false);
+            persistContactItems(contactItemPersonDAO, contactItemAndIdForPersonIdList, false);
         }
-        if (!contactItemAndContactItemIdForPersonIdList.isEmpty()) {
-            persistContactItems(dao, contactItemAndContactItemIdForPersonIdList, true);
+        if (!contactItemAndIdForPersonIdList.isEmpty()) {
+            persistContactItems(contactItemPersonDAO, contactItemAndIdForPersonIdList, true);
         }
 
         removeBeanDefinition(applicationContext, ContactItemPerson.ContactItemPersonDAO.class);
@@ -1023,8 +1019,8 @@ public class BootstrapServiceImpl implements BootstrapService {
             String phoneNumber = replaceExtOfPhoneNumber(
                     phone.value().trim()
             );
-            if (phoneNumber.matches(".*[@Z-z].*")) {
-                log.error("normalizePhone: contains @Z-z, phoneId={}, value={}", phone.id(), phone.value());
+            if (!isSimpleCheckValid(phoneNumber)) {
+                log.error("normalizePhone: phone is contains non valid characters (@Z-z), phoneId={}, value={}", phone.id(), phone.value());
                 return;
             }
             final List<String> split = split(phoneNumber);
@@ -1059,7 +1055,11 @@ public class BootstrapServiceImpl implements BootstrapService {
         return phoneNumber.replaceAll("д\\.|доб|доп|добавочный|вн|внут|внутр|Внутр|внутренний|корп|местн.тел|ext|Ext|al|\\*", "#");
     }
 
-    private Pattern splitPattern = Pattern.compile("\\+|,|или|и|;");
+    private boolean isSimpleCheckValid(String phoneNumber) {
+        return !phoneNumber.matches(".*[@Z-z].*");
+    }
+
+    private Pattern splitPattern = Pattern.compile("\\+|,| или | и |;");
     private List<String> split(String phoneNumber) {
         if (StringUtils.isNotEmpty(phoneNumber) && phoneNumber.length() > 1) {
             Matcher matcher = splitPattern.matcher(phoneNumber.substring(1));       // костыль на первый "+" в номере
@@ -1067,7 +1067,10 @@ public class BootstrapServiceImpl implements BootstrapService {
                 List<String> result = new ArrayList<>();
                 int mark = 0;
                 do {
-                    result.add(phoneNumber.substring(mark, isIncludeSplitMark(matcher.group())? matcher.start()+1 : matcher.end()+1)); // костыль наносит ответный удар
+                    result.add(phoneNumber.substring(
+                            mark,
+                            isIncludeSplitMark(matcher.group()) ? matcher.start() + 1 : matcher.end() + 1)   // костыль наносит ответный удар
+                    );
                     mark = matcher.end();
                 } while (matcher.find());
                 result.add(phoneNumber.substring(mark));
