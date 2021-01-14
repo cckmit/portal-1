@@ -72,6 +72,5 @@
   <include file="2020-12-09-add-fk-on-history-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-12-14-add-default-sla-time-columns-in-importance_level-table.xml" relativeToChangelogFile="true"/>
   <include file="2021-01-13-add-development-state-for-issues.xml" relativeToChangelogFile="true"/>
-  <include file="2021-01-13-add-previous_state-column-to-case_object.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

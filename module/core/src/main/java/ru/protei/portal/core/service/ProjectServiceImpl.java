@@ -42,6 +42,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Optional.*;
 import static java.util.stream.Collectors.toList;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
@@ -103,6 +104,8 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     HistoryService historyService;
     @Autowired
+    HistoryDAO historyDAO;
+    @Autowired
     CaseStateDAO caseStateDAO;
 
     @EventListener
@@ -143,25 +146,6 @@ public class ProjectServiceImpl implements ProjectService {
             return;
         }
 
-        if (project.getPreviousStateId() != null) {
-            CaseObject caseObject = new CaseObject();
-            caseObject.setId(projectId);
-            caseObject.setStateId(project.getPreviousStateId());
-            caseObject.setPreviousStateId(project.getState().getId());
-
-            caseObjectDAO.partialMerge(caseObject, "STATE", "previous_state");
-
-            long oldStateId = caseObject.getPreviousStateId();
-            long newStateId = caseObject.getStateId();
-
-            Long systemUserId = config.data().getCommonConfig().getSystemUserId();
-
-            changeStateHistory(systemUserId == null ? project.getCreatorId() : systemUserId, projectId,
-                    oldStateId, caseStateDAO.get(oldStateId).getState(),
-                    newStateId, caseStateDAO.get(newStateId).getState()
-            );
-        }
-
         jdbcManyRelationsHelper.fill( project, "members" );
 
         Collection<Long> subscribersIds = toSet( project.getMembers(), caseMember -> caseMember.getMemberId() );
@@ -191,6 +175,35 @@ public class ProjectServiceImpl implements ProjectService {
         for (Person person : persons) {
             publisherService.publishEvent( new ProjectPauseTimeNotificationEvent( this, person, project.getId(), project.getName(), new Date(pauseDate) ) );
         }
+
+        Long previousProjectStateId = ofNullable(historyDAO.getLastHistory(projectId, En_HistoryType.CASE_STATE))
+                .map(History::getOldId)
+                .orElse(null);
+
+        if (previousProjectStateId == null) {
+            log.info( "onPauseTimeNotification(): Previous project state is id null. No need to reset state");
+            return;
+        }
+
+        log.info( "onPauseTimeNotification(): Previous project state id is {}. Need to reset state", previousProjectStateId);
+
+        CaseObject caseObject = new CaseObject();
+        caseObject.setId(projectId);
+        caseObject.setStateId(previousProjectStateId);
+
+        caseObjectDAO.partialMerge(caseObject, CaseObject.Columns.STATE);
+
+        long oldStateId = project.getState().getId();
+        long newStateId = caseObject.getStateId();
+
+        log.info( "onPauseTimeNotification(): Project state has been reset from {} to {}", oldStateId, newStateId);
+
+        Long systemUserId = config.data().getCommonConfig().getSystemUserId();
+
+        changeStateHistory(systemUserId == null ? project.getCreatorId() : systemUserId, projectId,
+                oldStateId, caseStateDAO.get(oldStateId).getState(),
+                newStateId, caseStateDAO.get(newStateId).getState()
+        );
     }
 
     @Override
@@ -286,11 +299,6 @@ public class ProjectServiceImpl implements ProjectService {
         projectFormDB.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(project.getId())));
         projectFormDB.setProducts(new HashSet<>(devUnitDAO.getProjectProducts(project.getId())));
 
-        long oldStateId = projectFormDB.getState().getId();
-        long newStateId = project.getState().getId();
-
-        boolean isStateChanged = oldStateId != newStateId;
-
         List<CompanyImportanceItem> sortedImportanceLevels
                 = companyImportanceItemDAO.getSortedImportanceLevels(project.getCustomerId());
 
@@ -309,10 +317,6 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         caseObject = createCaseObjectFromProject(caseObject, project);
-
-        if (isStateChanged) {
-            caseObject.setPreviousStateId(oldStateId);
-        }
 
         projectFormDB.setTechnicalSupportValidity(project.getTechnicalSupportValidity());
         projectFormDB.setWorkCompletionDate(project.getWorkCompletionDate());
@@ -358,6 +362,11 @@ public class ProjectServiceImpl implements ProjectService {
         newStateProject.setProjectSlas(getSortedSla(newStateProject.getProjectSlas(), sortedImportanceLevels));
         newStateProject.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(project.getId())));
         newStateProject.setProducts(new HashSet<>(devUnitDAO.getProjectProducts(project.getId())));
+
+        long oldStateId = oldStateProject.getState().getId();
+        long newStateId = newStateProject.getState().getId();
+
+        boolean isStateChanged = oldStateId != newStateId;
 
         if (isStateChanged) {
             changeStateHistory(token.getPersonId(), project.getId(), oldStateId, caseStateDAO.get(oldStateId).getState(), newStateId, caseStateDAO.get(newStateId).getState());

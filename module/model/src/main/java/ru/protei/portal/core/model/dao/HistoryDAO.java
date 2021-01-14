@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.dao;
 
+import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.portal.core.model.dto.CaseResolutionTimeReportDto;
 import ru.protei.portal.core.model.ent.History;
 import ru.protei.portal.core.model.query.HistoryQuery;
@@ -11,6 +12,8 @@ import java.util.Set;
 public interface HistoryDAO extends PortalBaseDAO<History> {
 
     List<History> getListByQuery(HistoryQuery query);
+
+    History getLastHistory(Long caseObjectId, En_HistoryType historyType);
 
     void removeByCaseId(Long caseId);
 

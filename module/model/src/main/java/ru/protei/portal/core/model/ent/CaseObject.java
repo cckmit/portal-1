@@ -153,9 +153,6 @@ public class CaseObject extends AuditableObject {
     @JdbcEnumerated(EnumType.ID)
     private En_WorkTrigger workTrigger;
 
-    @JdbcColumn(name = "previous_state")
-    private Long previousStateId;
-
     // not db column
     private En_TimeElapsedType timeElapsedType;
 
@@ -275,14 +272,6 @@ public class CaseObject extends AuditableObject {
 
     public void setStateName(String stateName) {
         this.stateName = stateName;
-    }
-
-    public Long getPreviousStateId() {
-        return previousStateId;
-    }
-
-    public void setPreviousStateId(Long previousStateId) {
-        this.previousStateId = previousStateId;
     }
 
     public Integer getImpLevel() {
@@ -670,7 +659,6 @@ public class CaseObject extends AuditableObject {
                 ", plans=" + plans +
                 ", deadline=" + deadline +
                 ", workTrigger=" + workTrigger +
-                ", previousState=" + previousStateId +
                 ", timeElapsedType=" + timeElapsedType +
                 ", caseObjectMetaJira=" + caseObjectMetaJira +
                 ", jiraUrl='" + jiraUrl + '\'' +
