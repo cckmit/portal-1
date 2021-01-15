@@ -174,6 +174,14 @@ public class Project extends AuditableObject {
         this.stateId = state.getId();
     }
 
+    public Long getStateId() {
+        return stateId;
+    }
+
+    public void setStateId(Long stateId) {
+        this.stateId = stateId;
+    }
+
     public List<EntityOption> getProductDirectionEntityOptionList() {
         if (isEmpty(productDirections)) {
             return null;

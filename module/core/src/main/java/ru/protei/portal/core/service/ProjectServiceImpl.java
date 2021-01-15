@@ -42,7 +42,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.Optional.*;
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
@@ -176,34 +176,24 @@ public class ProjectServiceImpl implements ProjectService {
             publisherService.publishEvent( new ProjectPauseTimeNotificationEvent( this, person, project.getId(), project.getName(), new Date(pauseDate) ) );
         }
 
-        Long previousProjectStateId = ofNullable(historyDAO.getLastHistory(projectId, En_HistoryType.CASE_STATE))
-                .map(History::getOldId)
-                .orElse(null);
+        Optional<Long> previousProjectStateIdOptional =
+                ofNullable(historyDAO.getLastHistory(projectId, En_HistoryType.CASE_STATE))
+                        .map(History::getOldId);
 
-        if (previousProjectStateId == null) {
+        if (!previousProjectStateIdOptional.isPresent()) {
             log.info( "onPauseTimeNotification(): Previous project state is id null. No need to reset state");
             return;
         }
 
+        Long previousProjectStateId = previousProjectStateIdOptional.get();
+
         log.info( "onPauseTimeNotification(): Previous project state id is {}. Need to reset state", previousProjectStateId);
 
-        CaseObject caseObject = new CaseObject();
-        caseObject.setId(projectId);
-        caseObject.setStateId(previousProjectStateId);
-
-        caseObjectDAO.partialMerge(caseObject, CaseObject.Columns.STATE);
-
-        long oldStateId = project.getState().getId();
-        long newStateId = caseObject.getStateId();
-
-        log.info( "onPauseTimeNotification(): Project state has been reset from {} to {}", oldStateId, newStateId);
+        project.setStateId(previousProjectStateId);
 
         Long systemUserId = config.data().getCommonConfig().getSystemUserId();
 
-        changeStateHistory(systemUserId == null ? project.getCreatorId() : systemUserId, projectId,
-                oldStateId, caseStateDAO.get(oldStateId).getState(),
-                newStateId, caseStateDAO.get(newStateId).getState()
-        );
+        updateCaseObjectPart(createFakeToken(systemUserId == null ? project.getCreatorId() : systemUserId), project);
     }
 
     @Override
@@ -291,9 +281,6 @@ public class ProjectServiceImpl implements ProjectService {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
-        CaseObject caseObject = caseObjectDAO.get( project.getId() );
-        jdbcManyRelationsHelper.fillAll( caseObject );
-
         Project projectFormDB = projectDAO.get( project.getId() );
         jdbcManyRelationsHelper.fillAll( projectFormDB );
         projectFormDB.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(project.getId())));
@@ -316,8 +303,6 @@ public class ProjectServiceImpl implements ProjectService {
             return error(En_ResultStatus.NOT_ALLOWED_CHANGE_PROJECT_COMPANY);
         }
 
-        caseObject = createCaseObjectFromProject(caseObject, project);
-
         projectFormDB.setTechnicalSupportValidity(project.getTechnicalSupportValidity());
         projectFormDB.setWorkCompletionDate(project.getWorkCompletionDate());
         projectFormDB.setPurchaseDate(project.getPurchaseDate());
@@ -334,12 +319,10 @@ public class ProjectServiceImpl implements ProjectService {
         jdbcManyRelationsHelper.persist(project, Project.Fields.PROJECT_PLANS);
 
         try {
-            updateTeam( caseObject, project.getTeam() );
-            updateLocations( caseObject, project.getRegion() );
             updateDevUnits( projectFormDB, emptyIfNull(projectFormDB.getProducts()),  emptyIfNull(project.getProducts()) );
             updateDevUnits( projectFormDB, emptyIfNull(projectFormDB.getProductDirections()), emptyIfNull(project.getProductDirections()) );
         } catch (Throwable e) {
-            log.error("saveProject(): error during save project when update one of following parameters: team, location, or products;", e);
+            log.error("saveProject(): error during save project when update products;", e);
             throw new RollbackTransactionException(En_ResultStatus.INTERNAL_ERROR);
         }
 
@@ -350,7 +333,7 @@ public class ProjectServiceImpl implements ProjectService {
             throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
-        merge = caseObjectDAO.merge( caseObject );
+        merge = updateCaseObjectPart(token, project);
 
         if (!merge) {
             log.error("saveProject(): failed to merge caseObject. Rollback transaction");
@@ -362,15 +345,6 @@ public class ProjectServiceImpl implements ProjectService {
         newStateProject.setProjectSlas(getSortedSla(newStateProject.getProjectSlas(), sortedImportanceLevels));
         newStateProject.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(project.getId())));
         newStateProject.setProducts(new HashSet<>(devUnitDAO.getProjectProducts(project.getId())));
-
-        long oldStateId = oldStateProject.getState().getId();
-        long newStateId = newStateProject.getState().getId();
-
-        boolean isStateChanged = oldStateId != newStateId;
-
-        if (isStateChanged) {
-            changeStateHistory(token.getPersonId(), project.getId(), oldStateId, caseStateDAO.get(oldStateId).getState(), newStateId, caseStateDAO.get(newStateId).getState());
-        }
 
         return ok(project).publishEvent(new ProjectUpdateEvent(this, oldStateProject, newStateProject, token.getPersonId()));
     }
@@ -546,6 +520,38 @@ public class ProjectServiceImpl implements ProjectService {
 
         log.info("notifyExpiringProjectTechnicalSupportValidity(): done");
         return ok(true);
+    }
+
+    private boolean updateCaseObjectPart(AuthToken token, Project project) {
+        CaseObject caseObject = caseObjectDAO.get( project.getId() );
+        jdbcManyRelationsHelper.fillAll( caseObject );
+
+        long oldStateId = caseObject.getStateId();
+        long newStateId = project.getStateId();
+
+        caseObject = createCaseObjectFromProject(caseObject, project);
+
+        try {
+            updateTeam( caseObject, project.getTeam() );
+            updateLocations( caseObject, project.getRegion() );
+        } catch (Throwable e) {
+            log.error("saveProject(): error during save project when update team or location;", e);
+            throw new RollbackTransactionException(En_ResultStatus.INTERNAL_ERROR);
+        }
+
+        if (project.getState() != En_RegionState.PAUSED) {
+            caseObject.setPauseDate(null);
+        }
+
+        boolean isMergeSuccessful = caseObjectDAO.merge(caseObject);
+
+        boolean isStateChanged = oldStateId != newStateId;
+
+        if (isMergeSuccessful && isStateChanged) {
+            changeStateHistory(token, project.getId(), oldStateId, caseStateDAO.get(oldStateId).getState(), newStateId, caseStateDAO.get(newStateId).getState());
+        }
+
+        return isMergeSuccessful;
     }
 
     private List<ProjectSla> getSortedSla(List<ProjectSla> unsortedSla, List<CompanyImportanceItem> companyImportanceItems) {
@@ -797,7 +803,14 @@ public class ProjectServiceImpl implements ProjectService {
         return historyService.createHistory(authToken, projectId, En_HistoryAction.ADD, En_HistoryType.CASE_STATE, null, null, stateId, stateName);
     }
 
-    private Result<Long> changeStateHistory(Long initiatorId, Long projectId, Long oldStateId, String oldStateName, Long newStateId, String newStateName) {
-        return historyService.createHistory(initiatorId, projectId, En_HistoryAction.CHANGE, En_HistoryType.CASE_STATE, oldStateId, oldStateName, newStateId, newStateName);
+    private Result<Long> changeStateHistory(AuthToken token, Long projectId, Long oldStateId, String oldStateName, Long newStateId, String newStateName) {
+        return historyService.createHistory(token, projectId, En_HistoryAction.CHANGE, En_HistoryType.CASE_STATE, oldStateId, oldStateName, newStateId, newStateName);
+    }
+
+    private AuthToken createFakeToken(Long personId) {
+        AuthToken result = new AuthToken("0");
+        result.setPersonId(personId);
+
+        return result;
     }
 }
