@@ -72,7 +72,7 @@ public abstract class PopperComposite extends PopupLikeComposite {
             destroyPopper(popper);
         }
 
-        popper = createPopper(relative, getElement(), placement.getCode(), skidding, distance);
+        popper = createPopper(relative, getElement(), placement.getCode(), isFixedStrategy, skidding, distance);
 
         if (isAutoResize) {
             if (resizeHandlerReg == null) {
@@ -100,6 +100,10 @@ public abstract class PopperComposite extends PopupLikeComposite {
         this.isAutoResize = isAutoResize;
     }
 
+    public void setFixedStrategy(boolean isFixedStrategy) {
+        this.isFixedStrategy = isFixedStrategy;
+    }
+
     private void addResizeHandler(Element relative, Element popup) {
         resizeHandlerReg = Window.addResizeHandler(event -> {
             if (isVisible()) {
@@ -121,33 +125,27 @@ public abstract class PopperComposite extends PopupLikeComposite {
         popup.getStyle().setWidth( offsetWidth, Style.Unit.PX );
     }
 
-    private native JavaScriptObject createPopper(Element button, Element popup, String placement, int skidding, int distance) /*-{
+    private native JavaScriptObject createPopper(Element button, Element popup, String placement, boolean fixedStrategy, int skidding, int distance) /*-{
+        var popperSettings = {};
+
         if (placement) {
-            return $wnd.Popper.createPopper(button, popup, {
-                placement: placement,
-                strategy: 'fixed',
-                modifiers: [
-                    {
-                        name: 'offset',
-                        options: {
-                            offset: [skidding, distance]
-                        }
-                    }
-                ]
-            });
+            popperSettings.placement = placement;
         }
 
-        return $wnd.Popper.createPopper(button, popup, {
-            strategy: 'fixed',
-            modifiers: [
-                {
-                    name: 'offset',
-                    options: {
-                        offset: [skidding, distance]
-                    }
+        if (fixedStrategy) {
+            popperSettings.strategy = 'fixed';
+        }
+
+        popperSettings.modifiers = [
+            {
+                name: 'offset',
+                options: {
+                    offset: [skidding, distance]
                 }
-            ]
-        });
+            }
+        ];
+
+        return $wnd.Popper.createPopper(button, popup, popperSettings);
     }-*/;
 
     private native void destroyPopper(JavaScriptObject popper) /*-{
@@ -159,6 +157,7 @@ public abstract class PopperComposite extends PopupLikeComposite {
 
     private JavaScriptObject popper;
     private boolean isAutoResize;
+    private boolean isFixedStrategy = true;
 
     private HandlerRegistration resizeHandlerReg;
 }

@@ -51,7 +51,7 @@
                                         <g:Button styleName="btn btn-complete btn-block btn-sm" ui:field="send" text="{lang.commentSendMessage}"/>
                                     </div>
 
-                                    <timeElapsed:ElapsedTimeTypeSelector ui:field="timeElapsedType" addStyleNames="col-md-4 p-l-0"/>
+                                    <timeElapsed:ElapsedTimeTypeSelector ui:field="timeElapsedType" addStyleNames="col-md-4 p-l-0" fixedStrategy="false"/>
 
                                     <div class="col-md-2 p-l-0">
                                         <timefield:TimeTextBox ui:field="timeElapsed"

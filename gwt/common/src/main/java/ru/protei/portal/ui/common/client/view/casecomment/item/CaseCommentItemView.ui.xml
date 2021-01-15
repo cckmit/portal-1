@@ -14,7 +14,7 @@
             <li ui:field="info" class="info hide p-l-5 p-r-5"/>
             <div class="d-inline">
                 <g:Label ui:field="timeElapsed" styleName="time-label" title="{lang.issueCommentElapsedTimeTypeChange}"/>
-                <popup:EditTimeElapsedTypePopup ui:field="timeElapsedTypePopup" visible="false"/>
+                <popup:EditTimeElapsedTypePopup ui:field="timeElapsedTypePopup" visible="false" />
             </div>
             <li ui:field="status"/>
             <li ui:field="options">
