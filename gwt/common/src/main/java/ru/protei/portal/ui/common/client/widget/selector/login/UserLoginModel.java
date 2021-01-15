@@ -27,7 +27,7 @@ public abstract class UserLoginModel implements AsyncSearchSelectorModel<UserLog
         this.personCompanyId = event.profile.getCompany().getId();
 
         cache.clearCache();
-        cache.setLoadHandler(makeLoadHandler(makeQuery(null, personCompanyId)));
+        cache.setLoadHandler(makeLoadHandler(makeQuery(null, personCompanyId, initiatorCompanyId)));
     }
 
     @Override
@@ -40,7 +40,7 @@ public abstract class UserLoginModel implements AsyncSearchSelectorModel<UserLog
         cache.setIgnoreFirstElements(StringUtils.isNotBlank(searchString));
 
         cache.clearCache();
-        cache.setLoadHandler(makeLoadHandler(makeQuery(searchString, personCompanyId)));
+        cache.setLoadHandler(makeLoadHandler(makeQuery(searchString, personCompanyId, initiatorCompanyId)));
     }
 
     public void setPersonFirstId(Long personId) {
@@ -48,12 +48,16 @@ public abstract class UserLoginModel implements AsyncSearchSelectorModel<UserLog
             return;
         }
 
-        UserLoginShortViewQuery accountQuery = makeQuery(null, personCompanyId);
+        UserLoginShortViewQuery accountQuery = makeQuery(null, personCompanyId, initiatorCompanyId);
         accountQuery.setPersonIds(new HashSet<>(Collections.singleton(personId)));
 
         accountService.getUserLoginShortViewList(accountQuery, new FluentCallback<List<UserLoginShortView>>()
                 .withSuccess(result -> cache.setFirstElements(result))
         );
+    }
+
+    public void setInitiatorCompanyId(Long initiatorCompanyId) {
+        this.initiatorCompanyId = initiatorCompanyId;
     }
 
     private SelectorDataCacheLoadHandler<UserLoginShortView> makeLoadHandler(UserLoginShortViewQuery query) {
@@ -67,11 +71,18 @@ public abstract class UserLoginModel implements AsyncSearchSelectorModel<UserLog
         };
     }
 
-    private UserLoginShortViewQuery makeQuery(String searchString, Long personCompanyId) {
+    private UserLoginShortViewQuery makeQuery(String searchString, Long personCompanyId, Long initiatorCompanyId) {
         UserLoginShortViewQuery accountQuery = new UserLoginShortViewQuery();
         accountQuery.setSearchString(searchString);
         accountQuery.setAdminState(En_AdminState.UNLOCKED);
-        accountQuery.setCompanyIds(new HashSet<>(Collections.singleton(personCompanyId)));
+
+        HashSet<Long> companyIds = new HashSet<>();
+        companyIds.add(personCompanyId);
+        if (initiatorCompanyId != null) {
+            companyIds.add(initiatorCompanyId);
+        }
+
+        accountQuery.setCompanyIds(companyIds);
 
         return accountQuery;
     }
@@ -83,6 +94,7 @@ public abstract class UserLoginModel implements AsyncSearchSelectorModel<UserLog
     Lang lang;
 
     private Long personCompanyId;
+    private Long initiatorCompanyId;
 
     private SelectorDataCacheWithFirstElements<UserLoginShortView> cache = new SelectorDataCacheWithFirstElements<>();
 }

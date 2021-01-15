@@ -122,6 +122,7 @@ public abstract class CaseCommentListActivity
         view.getPrivacyVisibility().setVisible(isPrivateVisible);
 
         view.setCaseCreatorId(event.caseCreatorId);
+        view.setInitiatorCompanyId(event.initiatorCompanyId);
 
         reloadComments(caseType, caseId);
     }

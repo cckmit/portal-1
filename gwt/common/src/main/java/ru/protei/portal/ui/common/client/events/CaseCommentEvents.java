@@ -29,6 +29,7 @@ public class CaseCommentEvents {
         public En_CaseType caseType;
         public Long caseId;
         public Long caseCreatorId;
+        public Long initiatorCompanyId;
         public boolean isElapsedTimeEnabled = false;
         public boolean isModifyEnabled = false;
         public boolean isPrivateVisible = false;

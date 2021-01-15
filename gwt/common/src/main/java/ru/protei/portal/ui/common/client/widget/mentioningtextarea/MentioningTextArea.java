@@ -43,6 +43,10 @@ public class MentioningTextArea extends DndAutoResizeTextArea implements TextAre
         userLoginModel.setPersonFirstId(personId);
     }
 
+    public void setInitiatorCompanyId(Long initiatorCompanyId) {
+        userLoginModel.setInitiatorCompanyId(initiatorCompanyId);
+    }
+
     private void onKeyDown(KeyDownEvent event, ArrowSelectableSelectorPopup selectorPopup,
                            Timer changeTimer) {
 

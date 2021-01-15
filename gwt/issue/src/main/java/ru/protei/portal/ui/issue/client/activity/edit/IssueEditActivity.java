@@ -441,6 +441,7 @@ public abstract class IssueEditActivity implements
         show.isPrivateCase = issue.isPrivateCase();
         show.isNewCommentEnabled = !isTerminalState(issue.getStateId());
         show.textMarkup =  CaseTextMarkupUtil.recognizeTextMarkup( issue );
+        show.initiatorCompanyId =  issue.getInitiatorCompany().getId();
         fireEvent( show );
 
     }
