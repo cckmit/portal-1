@@ -174,6 +174,14 @@ public class Project extends AuditableObject {
         this.stateId = state.getId();
     }
 
+    public Long getStateId() {
+        return stateId;
+    }
+
+    public void setStateId(Long stateId) {
+        this.stateId = stateId;
+    }
+
     public List<EntityOption> getProductDirectionEntityOptionList() {
         if (isEmpty(productDirections)) {
             return null;
@@ -457,12 +465,10 @@ public class Project extends AuditableObject {
                 ", stateId=" + stateId +
                 ", customerType=" + customerType +
                 ", customer=" + customer +
-                ", productDirections=" + productDirections +
                 ", created=" + created +
                 ", creatorId=" + creatorId +
                 ", members=" + members +
                 ", locations=" + locations +
-                ", products=" + products +
                 ", deleted=" + deleted +
                 ", creator=" + creator +
                 ", managerId=" + managerId +
@@ -474,12 +480,15 @@ public class Project extends AuditableObject {
                 ", purchaseDate=" + purchaseDate +
                 ", projectSlas=" + projectSlas +
                 ", pauseDate=" + pauseDate +
+                ", projectPlans=" + projectPlans +
                 ", regionName='" + regionName + '\'' +
+                ", subcontractors=" + subcontractors +
                 ", team=" + team +
                 ", region=" + region +
                 ", links=" + links +
                 ", contracts=" + contracts +
-                ", projectPlans=" + projectPlans +
+                ", productDirections=" + productDirections +
+                ", products=" + products +
                 '}';
     }
 
