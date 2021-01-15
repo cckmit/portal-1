@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.PhoneUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.*;
@@ -107,8 +108,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     CompanyService companyService;
 
-    private Pattern workPhone = Pattern.compile(CrmConstants.Masks.WORK_PHONE);
-    private Pattern mobilePhone = Pattern.compile(CrmConstants.Masks.MOBILE_PHONE);
+    private Pattern workPhone = Pattern.compile(PhoneUtils.WORK_PHONE_NUMBER_PATTERN);
+    private Pattern mobilePhone = Pattern.compile(PhoneUtils.RUS_PHONE_NUMBER_PATTERN);
 
     @Override
     public Result<List<PersonShortView>> shortViewList( EmployeeQuery query) {

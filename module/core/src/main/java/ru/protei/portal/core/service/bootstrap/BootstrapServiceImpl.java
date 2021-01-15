@@ -162,7 +162,10 @@ public class BootstrapServiceImpl implements BootstrapService {
 
         /**
          *  begin Спринт 63 */
-        normalizePhoneNumbers();
+        if(!bootstrapAppDAO.isActionExists( "normalizePhoneNumbers" )) {
+            this.normalizePhoneNumbers();
+            bootstrapAppDAO.createAction("normalizePhoneNumbers");
+        }
         /**
          *  end Спринт */
 

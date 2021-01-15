@@ -127,7 +127,7 @@ public class ContactItemGroupWithValidation extends Composite
         this.newContactItem = newContactItem;
     }
 
-    private void makeItemView(ContactItem value) {
+    private TextWithValidationItem makeItemView(ContactItem value) {
         TextWithValidationItem textWithValidationItem = new TextWithValidationItem();
         textWithValidationItem.setValue( value == null? null : value.value() );
         textWithValidationItem.setPlaceholder(placeHolder);
@@ -142,9 +142,14 @@ public class ContactItemGroupWithValidation extends Composite
             itemContainer.remove( event.getTarget() );
             ContactItem remove = modelToView.remove( event.getTarget() );
             items.remove( remove );
-            boolean isHasEmptyItem = modelToView.values().stream().anyMatch(item -> item == null || isEmpty(item.value()));
-            if(!isHasEmptyItem) {
-                addEmptyItem();
+
+            Optional<TextWithValidationItem> emptyItem = modelToView.entrySet().stream()
+                    .filter(entry -> entry == null || isEmpty(entry.getValue().value()))
+                    .map(entry -> entry.getKey()).findAny();
+            if(emptyItem.isPresent()) {
+                emptyItem.get().setFocus(true);
+            } else {
+                addEmptyItem().setFocus(true);
             }
         } );
 
@@ -153,10 +158,11 @@ public class ContactItemGroupWithValidation extends Composite
         } );
         modelToView.put(textWithValidationItem, value != null ? value : newContactItem.get());
         itemContainer.add(textWithValidationItem);
+        return textWithValidationItem;
     }
 
-    private void addEmptyItem() {
-        makeItemView( null );
+    private TextWithValidationItem addEmptyItem() {
+        return makeItemView( null );
     }
 
     private void setTestAttributes() {

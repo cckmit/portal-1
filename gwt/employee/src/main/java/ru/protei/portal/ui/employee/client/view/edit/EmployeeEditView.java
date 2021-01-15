@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.dict.AttachmentType;
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.helper.PhoneUtils;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -38,8 +39,6 @@ import java.util.Date;
 import java.util.List;
 
 import static ru.protei.portal.core.model.util.CrmConstants.ContactConstants.*;
-import static ru.protei.portal.core.model.util.CrmConstants.Masks.MOBILE_PHONE;
-import static ru.protei.portal.core.model.util.CrmConstants.Masks.WORK_PHONE;
 
 public class EmployeeEditView extends Composite implements AbstractEmployeeEditView {
 
@@ -69,8 +68,8 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
 
         company.setSynchronizeWith1C(false);
 
-        workPhones.setRegexp(WORK_PHONE);
-        mobilePhones.setRegexp(MOBILE_PHONE);
+        workPhones.setRegexp(PhoneUtils.WORK_PHONE_NUMBER_PATTERN);
+        mobilePhones.setRegexp(PhoneUtils.RUS_PHONE_NUMBER_PATTERN);
 
         workPhones.setNewContactItem(() -> new ContactItem(En_ContactItemType.GENERAL_PHONE, En_ContactDataAccess.PUBLIC));
         mobilePhones.setNewContactItem(() -> new ContactItem(En_ContactItemType.MOBILE_PHONE, En_ContactDataAccess.PUBLIC));
