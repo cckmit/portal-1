@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class ImportanceBtnGroupMulti extends ToggleBtnGroupMulti<ImportanceLevel> implements SelectorWithModel<ImportanceLevel> {
     @Inject
-    public void init(ImportanceModel importanceModel) {
+    public void init(ImportanceBtnGroupModel importanceModel) {
         importanceModel.subscribe(this);
     }
 

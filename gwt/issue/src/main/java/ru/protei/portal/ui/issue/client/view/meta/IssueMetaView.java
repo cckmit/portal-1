@@ -30,6 +30,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
 import ru.protei.portal.ui.common.client.view.selector.ElapsedTimeTypeFormSelector;
 import ru.protei.portal.ui.common.client.widget.issueimportance.ImportanceFormSelector;
+import ru.protei.portal.ui.common.client.widget.issueimportance.ImportanceModel;
 import ru.protei.portal.ui.common.client.widget.issuestate.IssueStateFormSelector;
 import ru.protei.portal.ui.common.client.widget.jirasla.JiraSLASelector;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
@@ -87,7 +88,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
 
     @Override
     public void fillImportanceOptions(List<ImportanceLevel> options) {
-        importance.fillOptions(options);
+        importanceModel.fillOptions(options);
     }
 
     @Override
@@ -757,6 +758,8 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     PersonModel managerModel;
     @Inject
     PersonModel initiatorModel;
+    @Inject
+    ImportanceModel importanceModel;
 
     private AbstractIssueMetaActivity activity;
 
