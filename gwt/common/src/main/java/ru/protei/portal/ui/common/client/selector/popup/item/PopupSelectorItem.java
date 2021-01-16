@@ -64,6 +64,10 @@ public class PopupSelectorItem<T>
         icon.setClassName( className );
     }
 
+    public void setIconColor( String color ) {
+        icon.getStyle().setColor( color );
+    }
+
     public void setImage( String src ) {
         image.removeClassName( HIDE );
         image.setSrc( src );

@@ -1,33 +1,37 @@
 package ru.protei.portal.ui.common.client.widget.selector.state;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_RegionState;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.ui.common.client.lang.En_RegionStateLang;
-import ru.protei.portal.ui.common.client.widget.form.FormSelector;
-import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
+import ru.protei.portal.ui.common.client.selector.SelectorItem;
+import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
+import ru.protei.portal.ui.common.client.widget.form.FormPopupSingleSelector;
+import ru.protei.portal.ui.common.client.widget.selector.region.RegionStateModel;
 
-import java.util.Map;
-
-public class RegionStateFormSelector extends FormSelector<En_RegionState> {
+public class RegionStateFormSelector extends FormPopupSingleSelector<CaseState> {
 
     @Inject
-    public void init( ) {
-        setDisplayOptionCreator(value -> new DisplayOption(
-                lang.getStateName( value ), "region-state-item", lang.getStateIcon(value) + " selector"));
+    public void init( RegionStateModel model ) {
+        setAsyncModel( model );
+        setItemRenderer( value -> value == null ? defaultValue :
+                         "<i class='" + lang.getStateIcon(value) + " selector' " +
+                         "style='color:" + value.getColor() + "'></i>" + lang.getStateName(value));
+
+    }
+
+    @Override
+    protected SelectorItem<CaseState> makeSelectorItem( CaseState element, String elementHtml ) {
+        PopupSelectorItem<CaseState> item = new PopupSelectorItem();
+        item.setName( elementHtml );
+        item.setStyle( "region-state-item" );
+        if ( element != null )
+            item.setIconColor( element.getColor() );
+
+        return item;
     }
 
     public void setDefaultValue( String value ) {
         this.defaultValue = value;
-    }
-
-    public void fillOptions(Map<En_RegionState, String> statesColorsMap) {
-        if ( defaultValue != null ) {
-            addOption( null );
-        }
-        for ( En_RegionState state : En_RegionState.values() ) {
-            addOption( state );
-            setIconColor( state, statesColorsMap.get(state) );
-        }
     }
 
     @Inject

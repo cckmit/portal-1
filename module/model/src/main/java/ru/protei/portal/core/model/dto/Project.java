@@ -178,6 +178,10 @@ public class Project extends AuditableObject {
         return stateId == null ? En_RegionState.UNKNOWN : En_RegionState.forId( stateId );
     }
 
+    public void setState( Long id ) {
+        this.stateId = id;
+    }
+
     public void setState( En_RegionState state ) {
         this.stateId = state.getId();
     }

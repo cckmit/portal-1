@@ -13,6 +13,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
@@ -85,7 +86,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     public HasText description() { return description; }
 
     @Override
-    public HasValue<En_RegionState> state() { return projectState; }
+    public HasValue<CaseState> state() { return projectState; }
 
     @Override
     public HasValue<Set<ProductDirectionInfo>> directions() { return productDirection; }
@@ -261,11 +262,6 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         return subcontractors;
     }
 
-    @Override
-    public void fillOptions(Map<En_RegionState, String> iconsColorsMap) {
-        projectState.fillOptions(iconsColorsMap);
-    }
-
     @UiHandler("addLinkButton")
     public void onAddLinkButtonClick(ClickEvent event) {
         if (activity != null) {
@@ -274,7 +270,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     }
 
     @UiHandler("projectState")
-    public void onProjectStateChanged(ValueChangeEvent<En_RegionState> event) {
+    public void onProjectStateChanged(ValueChangeEvent<CaseState> event) {
         if (activity != null) {
             activity.onStateChanged();
         }

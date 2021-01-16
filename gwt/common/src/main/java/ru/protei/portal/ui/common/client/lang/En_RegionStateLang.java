@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.lang;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_RegionState;
+import ru.protei.portal.core.model.ent.CaseState;
 
 /**
  * Названия статусов регионов
@@ -29,6 +30,13 @@ public class En_RegionStateLang {
         }
     }
 
+    public String getStateName( CaseState state ) {
+        if (state == null)
+            return lang.errUnknownResult();
+
+        return getStateName( En_RegionState.forId( state.getId() ) );
+    }
+
     public String getStateIcon( En_RegionState state ) {
         if(state == null)
             return "fa fa-unknown";
@@ -49,6 +57,13 @@ public class En_RegionStateLang {
             default:
                 return "fa fa-unknown";
         }
+    }
+
+    public String getStateIcon( CaseState state ) {
+        if (state == null)
+            return "fa fa-unknown";
+
+        return getStateIcon( En_RegionState.forId( state.getId() ) );
     }
 
     @Inject

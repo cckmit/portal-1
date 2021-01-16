@@ -172,7 +172,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
     @Override
     public void onStateChanged() {
-        view.pauseDateContainerVisibility().setVisible( PAUSED == view.state().getValue() );
+        view.pauseDateContainerVisibility().setVisible( PAUSED.getId() == view.state().getValue().getId() );
     }
 
     @Override
@@ -200,7 +200,9 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     private void fillView(Project project) {
         view.setNumber( isNew( project ) ? null : project.getId().intValue() );
         view.name().setValue( isNew( project ) ? "" : project.getName());
-        view.state().setValue( isNew( project ) ? En_RegionState.UNKNOWN : project.getState() );
+        CaseState caseState = new CaseState( isNew( project ) ? En_RegionState.UNKNOWN.getId()
+                                                              : project.getState().getId() );
+        view.state().setValue( caseState );
         view.directions().setValue(isEmpty(project.getProductDirectionEntityOptionList())? null : toSet(project.getProductDirectionEntityOptionList(), option -> new ProductDirectionInfo(option)));
         view.productEnabled().setEnabled(isNotEmpty(project.getProductDirectionEntityOptionList()));
         view.team().setValue( project.getTeam() == null ? null : new HashSet<>( project.getTeam() ) );
@@ -245,7 +247,6 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.purchaseDate().setValue(project.getPurchaseDate());
 
         fillCaseLinks(project);
-        fillCaseStatesColors();
 
         view.subcontractors().setValue(project.getSubcontractors() == null ? null :
                 project.getSubcontractors().stream().map(Company::toEntityOption).collect(Collectors.toSet()));
@@ -325,8 +326,8 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     private Project fillProject(Project project) {
         project.setName(view.name().getValue());
         project.setDescription(view.description().getText());
-        project.setState(view.state().getValue());
-        project.setPauseDate( (PAUSED != view.state().getValue()) ? null : view.pauseDate().getValue().getTime() );
+        project.setState(view.state().getValue().getId());
+        project.setPauseDate( (PAUSED.getId() != view.state().getValue().getId() ) ? null : view.pauseDate().getValue().getTime() );
         project.setCustomer(Company.fromEntityOption(view.company().getValue()));
         project.setCustomerType(view.customerType().getValue());
         project.setProducts( toSet(view.products().getValue(), DevUnit::fromProductShortView));
@@ -362,26 +363,6 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
                     .withCaseType(PROJECT_CASE_TYPE)
                     .withReadOnly(!canAction));
         }
-    }
-
-    private void fillCaseStatesColors() {
-        Map<En_RegionState, String> iconsColorsMap = new HashMap<>();
-
-        caseStateService.getCaseStates(En_CaseType.PROJECT, new AsyncCallback<List<CaseState>>() {
-            @Override
-            public void onFailure(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(List<CaseState> caseStates) {
-                for (CaseState state : caseStates) {
-                    iconsColorsMap.put(En_RegionState.forId(state.getId()), state.getColor());
-                }
-
-                view.fillOptions(iconsColorsMap);
-            }
-        });
     }
 
     private boolean validateView() {
@@ -445,8 +426,6 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     DefaultErrorHandler defaultErrorHandler;
     @Inject
     CompanyControllerAsync companyService;
-    @Inject
-    CaseStateControllerAsync caseStateService;
 
     private Project project;
     private Set<ProductShortView> selectedComplexes = new HashSet<>();
