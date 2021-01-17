@@ -169,11 +169,6 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
-    public void setStateWorkflow(En_CaseStateWorkflow workflow) {
-        state.setWorkflow(workflow);
-    }
-
-    @Override
     public void setSubscriptionEmails(String value) {
         subscriptions.setInnerText(value);
     }

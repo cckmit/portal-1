@@ -15,7 +15,7 @@ import java.util.List;
 public class IssueStatesOptionList extends OptionList<CaseState> implements SelectorWithModel<CaseState> {
 
     @Inject
-    public void init(StateModel stateModel) {
+    public void init(StateOptionsModel stateModel) {
         stateModel.subscribeNoWorkflow(this);
     }
 
