@@ -5,10 +5,12 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.TimeZone;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.Date;
+import java.util.List;
 
 public interface AbstractEmployeeEditView extends IsWidget {
 
@@ -44,11 +46,11 @@ public interface AbstractEmployeeEditView extends IsWidget {
 
     void setBirthDayTimeZone (TimeZone timeZone);
 
-    HasText workPhone ();
+    HasValue<List<ContactItem>> workPhones();
 
-    HasText mobilePhone();
+    HasValue<List<ContactItem>> mobilePhones();
 
-    HasValue<String> workEmail();
+    HasValue<ContactItem> workEmail();
 
     HasValue<String> ipAddress();
 
@@ -75,6 +77,10 @@ public interface AbstractEmployeeEditView extends IsWidget {
     HasVisibility firedMsgVisibility();
 
     HasValidable workEmailValidator();
+
+    HasValidable workPhonesValidator();
+
+    HasValidable mobilePhonesValidator();
 
     HasValidable ipAddressValidator();
 

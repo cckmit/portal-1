@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.helper;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
+import static ru.protei.portal.core.model.util.CrmConstants.Masks.RUS_PHONE_NUMBER_PATTERN;
 
 public class PhoneUtils {
 
@@ -15,11 +16,21 @@ public class PhoneUtils {
         if (isEmpty(phoneNumber)) {
             return phoneNumber;
         }
-        if (!phoneNumber.matches(PROTEI_PHONE_NUMBER_PATTERN)) {
-            return phoneNumber;
-        }
 
-        return phoneNumber.substring(0, 1) + "-" + phoneNumber.substring(1);
+        String[] split = phoneNumber.split("#");
+        if (split.length > 1) {
+            return split[0] + " доб. " + prettyExtPhoneNumber(split[1]);
+        } else {
+            return prettyExtPhoneNumber(phoneNumber);
+        }
+    }
+
+    public static String prettyExtPhoneNumber(String extPhoneNumber) {
+        if (extPhoneNumber.matches(PROTEI_PHONE_NUMBER_PATTERN)) {
+            return extPhoneNumber.substring(0, 1) + "-" + (extPhoneNumber.substring(1));
+        } else {
+            return extPhoneNumber;
+        }
     }
 
     public static String prettyPrintPhoneNumber(String phoneNumber) {
@@ -62,6 +73,5 @@ public class PhoneUtils {
     }
 
     private static final String PROTEI_PHONE_NUMBER_PATTERN = "^[0-9]{4}$";
-    private static final String RUS_PHONE_NUMBER_PATTERN = "^((\\+7|8)[0-9]{9,10}|[0-9]{6,7})$"; // [+7 или 8] + [3 код региона] + [6-7 номер] ИЛИ [6-7 номер]
-    private static final String NOT_ALLOWED_SYMBOLS_REGEX = "[^+0-9]";
+    private static final String NOT_ALLOWED_SYMBOLS_REGEX = "[^+#0-9]";
 }

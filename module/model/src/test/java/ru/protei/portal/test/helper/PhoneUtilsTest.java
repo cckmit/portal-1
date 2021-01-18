@@ -66,6 +66,7 @@ public class PhoneUtilsTest {
         workPhoneMap.put("+7 999 888-77-66", "+7 999 888-77-66");
         workPhoneMap.put("+7(999)8887766", "+7(999)8887766");
         workPhoneMap.put("(809) 123-1234", "(809) 123-1234");
+        workPhoneMap.put("1234567#5555", "1234567 доб. 5-555");
         workPhoneMap.forEach((number, expected) -> {
             Assert.assertEquals(number, expected, PhoneUtils.prettyPrintWorkPhoneNumber(number));
         });
