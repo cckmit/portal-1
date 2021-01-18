@@ -75,8 +75,8 @@ public class PopupSingleSelector<T> extends AbstractPopupSelector<T> implements 
         RootPanel.get().add(getPopup());
     }
 
-    public void showPopup(PopperComposite.Placement placement) {
-        getPopup().showNear(relative, placement);
+    public void showPopup(PopperComposite.Placement placement, int skidding, int distance) {
+        getPopup().showNear(relative, placement, skidding, distance);
         RootPanel.get().add(getPopup());
     }
 
