@@ -95,7 +95,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     /**
      * Продуктовые направления
      */
-    @JdbcManyToMany(localColumn = "project_id", linkTable = "project_to_direction", localLinkColumn = "project_id", remoteLinkColumn = "direction_id")
+    @JdbcManyToMany(localColumn = "project_id", linkTable = "project_to_product", localLinkColumn = "project_id", remoteLinkColumn = "product_id")
     private Set<DevUnit> productDirections;
 
     /**
