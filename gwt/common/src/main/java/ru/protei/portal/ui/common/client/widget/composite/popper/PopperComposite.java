@@ -30,6 +30,13 @@ public abstract class PopperComposite extends PopupLikeComposite {
             }
         },
 
+        BOTTOM_END {
+            @Override
+            public String getCode() {
+                return "bottom-end";
+            }
+        },
+
         LEFT {
             @Override
             public String getCode() {
@@ -40,7 +47,7 @@ public abstract class PopperComposite extends PopupLikeComposite {
         DEFAULT {
             @Override
             public String getCode() {
-                return null;
+                return "bottom-start";
             }
         };
 
@@ -74,12 +81,12 @@ public abstract class PopperComposite extends PopupLikeComposite {
 
         popper = createPopper(relative, getElement(), placement.getCode(), isFixedStrategy, skidding, distance);
 
+        resizeWidth(relative, getElement());
+
         if (isAutoResize) {
             if (resizeHandlerReg == null) {
                 addResizeHandler(relative, getElement());
             }
-
-            resizeWidth(relative, getElement());
         }
     }
 
@@ -122,7 +129,7 @@ public abstract class PopperComposite extends PopupLikeComposite {
 
     private void resizeWidth(Element relative, Element popup) {
         int offsetWidth = relative.getOffsetWidth();
-        popup.getStyle().setWidth( offsetWidth, Style.Unit.PX );
+        popup.getStyle().setWidth( offsetWidth < 100 ? 150 : offsetWidth, Style.Unit.PX );
     }
 
     private native JavaScriptObject createPopper(Element button, Element popup, String placement, boolean fixedStrategy, int skidding, int distance) /*-{
