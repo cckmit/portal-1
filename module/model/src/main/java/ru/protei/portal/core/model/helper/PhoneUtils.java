@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.helper;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
+import static ru.protei.portal.core.model.util.CrmConstants.Masks.RUS_PHONE_NUMBER_PATTERN;
 
 public class PhoneUtils {
 
@@ -72,7 +73,5 @@ public class PhoneUtils {
     }
 
     private static final String PROTEI_PHONE_NUMBER_PATTERN = "^[0-9]{4}$";
-    public static final String RUS_PHONE_NUMBER_PATTERN = "^((\\+7|8)[0-9]{9,10}|[0-9]{6,7})$"; // [+7 или 8] + [3 код региона] + [6-7 номер] ИЛИ [6-7 номер]
-    public static final String WORK_PHONE_NUMBER_PATTERN = "^\\d*#?\\d+$";
     private static final String NOT_ALLOWED_SYMBOLS_REGEX = "[^+#0-9]";
 }

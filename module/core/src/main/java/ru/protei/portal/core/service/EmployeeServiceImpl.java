@@ -12,7 +12,6 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.helper.PhoneUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.*;
@@ -39,6 +38,7 @@ import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeDateWithOffset;
+import static ru.protei.portal.core.model.util.CrmConstants.Masks.*;
 import static ru.protei.portal.core.model.view.EmployeeShortView.Fields.*;
 
 
@@ -108,8 +108,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     CompanyService companyService;
 
-    private Pattern workPhone = Pattern.compile(PhoneUtils.WORK_PHONE_NUMBER_PATTERN);
-    private Pattern mobilePhone = Pattern.compile(PhoneUtils.RUS_PHONE_NUMBER_PATTERN);
+    private Pattern workPhone = Pattern.compile(WORK_PHONE_NUMBER_PATTERN);
+    private Pattern mobilePhone = Pattern.compile(RUS_PHONE_NUMBER_PATTERN);
 
     @Override
     public Result<List<PersonShortView>> shortViewList( EmployeeQuery query) {
