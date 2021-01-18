@@ -11,9 +11,8 @@ public class RemovablePopupSingleSelector<T> extends PopupSingleSelector<T> {
     }
 
     public void showPopup() {
-        showPopup(PopperComposite.Placement.BOTTOM, -(POPUP_WIDTH - relative.getOffsetWidth()) / 2, DISTANCE);
+        showPopup(PopperComposite.Placement.BOTTOM_END, 0, DISTANCE);
     }
 
-    private static final int POPUP_WIDTH = 225;
     private static final int DISTANCE = 2;
 }
