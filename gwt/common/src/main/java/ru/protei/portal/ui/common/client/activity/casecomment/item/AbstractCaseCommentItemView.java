@@ -1,10 +1,9 @@
 package ru.protei.portal.ui.common.client.activity.casecomment.item;
 
- import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 
@@ -29,7 +28,7 @@ public interface AbstractCaseCommentItemView extends IsWidget {
 
     void setStatus( String value );
 
-    void setImportanceLevel( En_ImportanceLevel importance );
+    void setImportanceLevel( String importanceCode );
 
     void setManagerInfo(String managerInfo );
 

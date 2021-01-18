@@ -5,11 +5,8 @@ import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.jetbrains.annotations.NotNull;
 import ru.protei.portal.core.Lang;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.CaseLink;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.CaseTag;
+import ru.protei.portal.core.model.dict.En_HistoryType;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.CaseObjectReportRequest;
@@ -127,7 +124,7 @@ public class ExcelReportWriter implements
     public Object[] getColumnValues(CaseObjectReportRequest object) {
 
         CaseObject issue = object.getCaseObject();
-        List<CaseComment> comments = object.getCaseComments();
+        List<History> histories = object.getHistories();
 
         Date    created = null,
                 opened = null,
@@ -138,21 +135,22 @@ public class ExcelReportWriter implements
                 critical = null,
                 important = null;
 
-        for (CaseComment comment : comments) {
-
-            if (En_ImportanceLevel.IMPORTANT.equals( comment.getCaseImportance() )) important = comment.getCreated();
-            if (En_ImportanceLevel.CRITICAL.equals( comment.getCaseImportance() )) critical = comment.getCreated();
-
-            Long stateId = comment.getCaseStateId();
-            if (stateId == null) {
-                continue;
+        for (History history : histories) {
+            if (history.getType() == En_HistoryType.CASE_IMPORTANCE) {
+                if (Objects.equals(CrmConstants.ImportanceLevel.IMPORTANT, history.getNewId().intValue() )) important = history.getDate();
+                if (Objects.equals(CrmConstants.ImportanceLevel.CRITICAL, history.getNewId().intValue() )) critical = history.getDate();
             }
-            if (stateId == CrmConstants.State.CREATED) created = comment.getCreated();
-            if (stateId == CrmConstants.State.OPENED) opened = comment.getCreated();
-            if (stateId == CrmConstants.State.WORKAROUND) workaround = comment.getCreated();
-            if (stateId == CrmConstants.State.TEST_CUST) customerTest = comment.getCreated();
-            if (stateId == CrmConstants.State.DONE) done = comment.getCreated();
-            if (stateId == CrmConstants.State.VERIFIED) verified = comment.getCreated();
+
+            if (history.getType() == En_HistoryType.CASE_STATE) {
+                Long stateId = history.getNewId();
+
+                if (Objects.equals(stateId, CrmConstants.State.CREATED)) created = history.getDate();
+                if (Objects.equals(stateId, CrmConstants.State.OPENED)) opened = history.getDate();
+                if (Objects.equals(stateId, CrmConstants.State.WORKAROUND)) workaround = history.getDate();
+                if (Objects.equals(stateId, CrmConstants.State.TEST_CUST)) customerTest = history.getDate();
+                if (Objects.equals(stateId, CrmConstants.State.DONE)) done = history.getDate();
+                if (Objects.equals(stateId, CrmConstants.State.VERIFIED)) verified = history.getDate();
+            }
         }
 
         if (created == null) {
@@ -183,7 +181,7 @@ public class ExcelReportWriter implements
         values.add(issue.getManager() != null && HelperFunc.isNotEmpty(issue.getManager().getDisplayShortName()) ? transliterate(issue.getManager().getDisplayShortName(), locale) : "");
         values.add(issue.getManagerCompanyName() != null ? transliterate(issue.getManagerCompanyName(), locale) : "");
         values.add(issue.getProduct() != null && HelperFunc.isNotEmpty(issue.getProduct().getName()) ? issue.getProduct().getName() : "");
-        values.add(issue.getImportanceLevel() != null ? issue.getImportanceLevel().getCode() : "");
+        values.add(issue.getImportanceCode() != null ? issue.getImportanceCode() : "");
         values.add(HelperFunc.isNotEmpty(issue.getStateName()) ? issue.getStateName() : "");
         if (withTags) values.add(String.join(",", toList(emptyIfNull(object.getCaseTags()), CaseTag::getName)));
         if (withLinkedIssues) values.add(getCaseNumbersAsString(object.getCaseLinks(), lang));

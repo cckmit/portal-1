@@ -50,9 +50,25 @@ public class DevUnitDAO_Impl extends PortalBaseJdbcDAO<DevUnit> implements DevUn
     }
 
     @Override
-    public DevUnit getProductDirection(Long productId) {
-        return getByCondition("dev_unit.ID IN (SELECT DUNIT_ID FROM dev_unit_children WHERE CHILD_ID = ?) AND UTYPE_ID = ?",
+    public List<DevUnit> getProductDirections(Long productId) {
+        return getListByCondition("dev_unit.ID IN (SELECT DUNIT_ID FROM dev_unit_children WHERE CHILD_ID = ?) AND UTYPE_ID = ?",
                 productId,
+                En_DevUnitType.DIRECTION.getId()
+        );
+    }
+
+    @Override
+    public List<DevUnit> getProjectDirections(Long projectId) {
+        return getListByCondition("dev_unit.ID IN (SELECT product_id FROM project_to_product WHERE project_id = ?) AND UTYPE_ID = ?",
+                projectId,
+                En_DevUnitType.DIRECTION.getId()
+        );
+    }
+
+    @Override
+    public List<DevUnit> getProjectProducts(Long projectId) {
+        return getListByCondition("dev_unit.ID IN (SELECT product_id FROM project_to_product WHERE project_id = ?) AND UTYPE_ID != ?",
+                projectId,
                 En_DevUnitType.DIRECTION.getId()
         );
     }
@@ -81,9 +97,10 @@ public class DevUnitDAO_Impl extends PortalBaseJdbcDAO<DevUnit> implements DevUn
             condition.and( "UTYPE_ID" ).not().equal( En_DevUnitType.DIRECTION.getId() );
         }
 
-        if (query.getDirectionId() != null) {
-            condition.condition( " and dev_unit.ID IN (SELECT CHILD_ID FROM dev_unit_children WHERE DUNIT_ID = ?)" )
-                    .attribute( query.getDirectionId() );
+        if (isNotEmpty(query.getDirectionIds())) {
+            condition.condition( " and dev_unit.ID IN (SELECT CHILD_ID FROM dev_unit_children WHERE DUNIT_ID IN "
+                    + HelperFunc.makeInArg( query.getDirectionIds(), false )
+                    + ")" );
         }
 
         if (isNotEmpty( query.getPlatformIds() )) {

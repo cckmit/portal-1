@@ -3,7 +3,6 @@ package ru.protei.portal.ui.issue.client.view.table.columns;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
@@ -37,9 +36,9 @@ public class NumberColumn extends ClickColumn<CaseShortView> {
         cell.addClassName( "number" );
         com.google.gwt.dom.client.Element divElement = DOM.createDiv();
 
-        if ( value.getImpLevel() != null ) {
+        if ( value.getImportanceCode() != null ) {
             com.google.gwt.dom.client.Element i = DOM.createElement( "i" );
-            i.addClassName(ImportanceStyleProvider.getImportanceIcon(En_ImportanceLevel.getById(value.getImpLevel())) + " center");
+            i.addClassName(ImportanceStyleProvider.getImportanceIcon(value.getImportanceCode()) + " center");
             divElement.appendChild( i );
         }
 

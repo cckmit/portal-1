@@ -94,6 +94,11 @@ public class RedmineTestConfigurationMockDao {
     }
 
     @Bean
+    public PersonShortViewDAO getPersonShortViewDAO() {
+        return mock( PersonShortViewDAO.class );
+    }
+
+    @Bean
     public DevUnitDAO getDevUnitDAO() {
         return mock( DevUnitDAO.class );
     }
@@ -382,6 +387,11 @@ public class RedmineTestConfigurationMockDao {
     @Bean
     public ContactItemDAO getContactItemDAO() {
         return mock(ContactItemDAO.class);
+    }
+
+    @Bean
+    public ImportanceLevelDAO getImportanceLevelDAO() {
+        return mock(ImportanceLevelDAO.class);
     }
 
     @Bean

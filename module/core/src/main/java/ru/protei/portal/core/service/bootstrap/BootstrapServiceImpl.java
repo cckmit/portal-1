@@ -19,10 +19,13 @@ import ru.protei.portal.core.model.dto.ReportCaseQuery;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.PhoneUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.DateRange;
+import ru.protei.portal.core.model.struct.Pair;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.sqlcondition.Condition;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -34,6 +37,8 @@ import ru.protei.portal.tools.migrate.struct.ExternalReservedIp;
 import ru.protei.portal.tools.migrate.struct.ExternalSubnet;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.winter.core.utils.beans.SearchResult;
+import ru.protei.winter.jdbc.JdbcBaseDAO;
+import ru.protei.winter.jdbc.JdbcDAO;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import ru.protei.winter.jdbc.JdbcObjectMapperRegistrator;
 import ru.protei.winter.jdbc.annotations.ConverterType;
@@ -46,11 +51,17 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.query.CaseCommentQuery.CommentType.*;
+import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.condition;
 import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
 
 /**
@@ -138,6 +149,26 @@ public class BootstrapServiceImpl implements BootstrapService {
         /**
          *  end Спринт 62 */
 
+        /**
+         *  begin Спринт 63 */
+
+        if(!bootstrapAppDAO.isActionExists( "migrateToHistory" )) {
+            this.migrateToHistory();
+            bootstrapAppDAO.createAction("migrateToHistory");
+        }
+
+        /**
+         *  end Спринт */
+
+        /**
+         *  begin Спринт 63 */
+        if(!bootstrapAppDAO.isActionExists( "normalizePhoneNumbers" )) {
+            this.normalizePhoneNumbers();
+            bootstrapAppDAO.createAction("normalizePhoneNumbers");
+        }
+        /**
+         *  end Спринт */
+
         log.info( "bootstrapApplication(): BootstrapService complete."  );
     }
 
@@ -198,8 +229,8 @@ public class BootstrapServiceImpl implements BootstrapService {
             UserLogin userLogin = userLoginDAO.get(filter.getLoginId());
 
             if (userLogin.getCompanyId() != CrmConstants.Company.HOME_COMPANY_ID) {
-                boolean isManagerCompanyIdsNeedToUpdate = CollectionUtils.isNotEmpty(filter.getParams().getManagerCompanyIds());
-                boolean isManagerIdsNeedToUpdate = CollectionUtils.isNotEmpty(filter.getParams().getManagerIds());
+                boolean isManagerCompanyIdsNeedToUpdate = isNotEmpty(filter.getParams().getManagerCompanyIds());
+                boolean isManagerIdsNeedToUpdate = isNotEmpty(filter.getParams().getManagerIds());
                 if (isManagerCompanyIdsNeedToUpdate) {
                     filter.getParams().getManagerCompanyIds().remove(userLogin.getCompanyId());
                 }
@@ -229,8 +260,8 @@ public class BootstrapServiceImpl implements BootstrapService {
                             objectMapper.readValue(report.getQuery(), CaseQuery.class)
                     ).getQuery();
 
-                    boolean isManagerCompanyIdsNeedToUpdate = CollectionUtils.isNotEmpty(caseQuery.getManagerCompanyIds());
-                    boolean isManagerIdsNeedToUpdate = CollectionUtils.isNotEmpty(caseQuery.getManagerIds());
+                    boolean isManagerCompanyIdsNeedToUpdate = isNotEmpty(caseQuery.getManagerCompanyIds());
+                    boolean isManagerIdsNeedToUpdate = isNotEmpty(caseQuery.getManagerIds());
                     if (isManagerCompanyIdsNeedToUpdate) {
                         caseQuery.getManagerCompanyIds().remove(report.getCreator().getCompanyId());
                     }
@@ -444,7 +475,7 @@ public class BootstrapServiceImpl implements BootstrapService {
         try {
             List<Subnet> subnets = subnetDAO.listByQuery(
                     new ReservedIpQuery(null, En_SortField.address, En_SortDir.ASC));
-            if (CollectionUtils.isNotEmpty(subnets)) {
+            if (isNotEmpty(subnets)) {
                 log.info("Need no to migrate IP reservation data cause some data is already exist");
                 return;
             }
@@ -507,7 +538,7 @@ public class BootstrapServiceImpl implements BootstrapService {
             EmployeeQuery query = new EmployeeQuery();
             query.setLastName(fio.substring(0, fio.indexOf(" ")));
             List<PersonShortView> employees = personShortViewDAO.getEmployees(query);
-            if (CollectionUtils.isNotEmpty(employees)) {
+            if (isNotEmpty(employees)) {
                 return employees.get(0).getId();
             }
         } catch (Exception e ) {}
@@ -520,7 +551,7 @@ public class BootstrapServiceImpl implements BootstrapService {
         for (CaseFilter nextFilter : emptyIfNull(allFilters)) {
             CaseQuery params = nextFilter.getParams();
 
-            if (CollectionUtils.isEmpty(params.getManagerIds()) || CollectionUtils.isNotEmpty(params.getManagerCompanyIds())) {
+            if (CollectionUtils.isEmpty(params.getManagerIds()) || isNotEmpty(params.getManagerCompanyIds())) {
                 continue;
             }
 
@@ -629,7 +660,7 @@ public class BootstrapServiceImpl implements BootstrapService {
 
         try {
             List<PersonAbsence> absences = personAbsenceDAO.getAll();
-            if (CollectionUtils.isNotEmpty(absences)) {
+            if (isNotEmpty(absences)) {
                 log.info("Need no to migrate absences data cause some data is already exist");
                 return;
             }
@@ -811,6 +842,300 @@ public class BootstrapServiceImpl implements BootstrapService {
 
         userLoginDAO.persist(login);
         log.info("addContractEmployee ended");
+    }
+
+    public static class CommentToHistoryMigration {
+        CaseCommentQuery.CommentType commentType;
+        En_HistoryType enHistoryType;
+        Function<CaseComment, Long> getHistoryValue;
+        Function<CaseComment, String> getHistoryName;
+
+        CaseComment prevComment;
+
+        public CommentToHistoryMigration(CaseCommentQuery.CommentType commentType, En_HistoryType enHistoryType,
+                                         Function<CaseComment, Long> getHistoryValue, Function<CaseComment, String> getHistoryName) {
+            this.commentType = commentType;
+            this.enHistoryType = enHistoryType;
+            this.getHistoryValue = getHistoryValue;
+            this.getHistoryName = getHistoryName;
+        }
+
+        static CaseCommentQuery.CommentType commentType(CaseComment comment) {
+            if (comment.getCaseStateId() != null) {
+                return CASE_STATE;
+            }
+            if (comment.getCaseImpLevel() != null) {
+                return IMPORTANCE;
+            }
+            return MANAGER;
+        }
+
+        public void prepare() {
+            this.prevComment = null;
+        }
+
+        public void setPrevComment(CaseComment prevComment) {
+            this.prevComment = prevComment;
+        }
+    }
+
+    private void migrateToHistory() {
+        log.info("migrateToHistory started");
+
+        CaseCommentQuery query = new CaseCommentQuery();
+        query.addCommentType(CASE_STATE);
+        query.addCommentType(IMPORTANCE);
+        query.addCommentType(MANAGER);
+        List<Long> caseCommentsCaseIds = caseCommentDAO.getCaseCommentsCaseIds(query).stream().distinct().collect(toList());
+
+        CaseCommentQuery caseCommentQuery = new CaseCommentQuery();
+        caseCommentQuery.addCommentType(CASE_STATE);
+        caseCommentQuery.addCommentType(IMPORTANCE);
+        caseCommentQuery.addCommentType(MANAGER);
+
+        List<History> histories = new ArrayList<>();
+        List<Long> caseIds = new ArrayList<>();
+        Map<CaseCommentQuery.CommentType, CommentToHistoryMigration> commentToHistoryMigrationMap = new HashMap<>();
+
+        commentToHistoryMigrationMap.put(CASE_STATE, new CommentToHistoryMigration(CASE_STATE, En_HistoryType.CASE_STATE,
+                CaseComment::getCaseStateId, CaseComment::getCaseStateName));
+        commentToHistoryMigrationMap.put(IMPORTANCE, new CommentToHistoryMigration(IMPORTANCE, En_HistoryType.CASE_IMPORTANCE,
+                caseComment -> (long) caseComment.getCaseImpLevel(),
+                CaseComment::getImportanceCode));
+        commentToHistoryMigrationMap.put(MANAGER, new CommentToHistoryMigration(MANAGER, En_HistoryType.CASE_MANAGER,
+                CaseComment::getCaseManagerId, CaseComment::getCaseManagerShortName));
+
+        for(int i = 0; i < caseCommentsCaseIds.size();) {
+            caseIds.clear();
+            int upperBorder = i + 1000;
+            for(int j = i; j < Math.min(upperBorder, caseCommentsCaseIds.size()); j++) {
+                caseIds.add(caseCommentsCaseIds.get(i++));
+            }
+            caseCommentQuery.setCaseObjectIds(caseIds);
+            histories.addAll(convertCaseCommentToHistory(caseCommentDAO.getCaseComments(caseCommentQuery), commentToHistoryMigrationMap));
+            persistHistory(histories, false);
+        }
+        if (!histories.isEmpty()) {
+            persistHistory(histories, true);
+        }
+
+        log.info("migrateToHistory ended");
+    }
+
+    public List<History> convertCaseCommentToHistory(List<CaseComment> caseComments,  Map<CaseCommentQuery.CommentType, CommentToHistoryMigration> commentToHistoryMigrationMap) {
+        List<History> histories = new ArrayList<>();
+        caseComments.stream().collect(groupingBy(CaseComment::getCaseId)).values().forEach(
+                comments -> {
+                    commentToHistoryMigrationMap.values().forEach(CommentToHistoryMigration::prepare);
+                    comments.stream().sorted(Comparator.comparing(CaseComment::getId))
+                        .forEach(comment -> {
+                            CommentToHistoryMigration commentToHistoryMigration = commentToHistoryMigrationMap.get(CommentToHistoryMigration.commentType(comment));
+                            History history = makeHistory(commentToHistoryMigration.prevComment, comment, commentToHistoryMigration.enHistoryType,
+                                    commentToHistoryMigration.getHistoryValue, commentToHistoryMigration.getHistoryName);
+                            if (history != null) {
+                                histories.add(history);
+                                commentToHistoryMigration.setPrevComment(comment);
+                            }
+                    });
+                });
+        return histories;
+    }
+
+    private History makeHistory(CaseComment firstComment, CaseComment secondComment, En_HistoryType historyType,
+                                Function<CaseComment, Long> historyValue, Function<CaseComment, String> historyName) {
+        Long firstValue = firstComment != null ? historyValue.apply(firstComment) : null;
+        Long secondValue = historyValue.apply(secondComment);
+
+        if (firstValue == null && secondValue != null) {
+            return createHistory(secondComment.getAuthorId(), secondComment.getCaseId(), En_HistoryAction.ADD, historyType,
+                    secondComment.getCreated(), null, null, secondValue, historyName.apply(secondComment));
+        } else if (firstValue != null && secondValue != null) {
+            return createHistory(secondComment.getAuthorId(), secondComment.getCaseId(), En_HistoryAction.CHANGE, historyType,
+                    secondComment.getCreated(),firstValue, historyName.apply(firstComment), secondValue, historyName.apply(secondComment));
+        } else if (firstValue != null && secondValue == null) {
+            return createHistory(secondComment.getAuthorId(), secondComment.getCaseId(), En_HistoryAction.REMOVE, historyType,
+                    secondComment.getCreated(), firstValue, historyName.apply(firstComment), null, null);
+        }
+
+        log.error("makeHistory : \nfirst = {}, \nsecond = {}", firstComment, secondComment);
+
+        return null;
+    }
+
+    private History createHistory(Long personId, Long caseObjectId, En_HistoryAction action, En_HistoryType historyType,
+                                  Date date, Long oldId, String oldValue, Long newId, String newValue) {
+        History history = new History();
+        history.setInitiatorId(personId);
+        history.setDate(date);
+        history.setCaseObjectId(caseObjectId);
+        history.setAction(action);
+        history.setType(historyType);
+        history.setOldId(oldId);
+        history.setOldValue(oldValue);
+        history.setNewId(newId);
+        history.setNewValue(newValue);
+
+        return history;
+    }
+
+    private void persistHistory(List<History> histories, boolean force) {
+        if (force || histories.size() > 1000) {
+            histories.stream().filter(Objects::nonNull).forEach(historyDAO::persist);
+            histories.clear();
+        }
+    }
+
+    private void normalizePhoneNumbers() {
+        log.info("normalizePhoneNumbers started");
+
+        applicationContext.getBean(JdbcObjectMapperRegistrator.class).registerMapper(ContactItemPerson.class);
+        registerBeanDefinition(applicationContext, ContactItemPerson.ContactItemPersonDAO.class);
+        ContactItemPerson.ContactItemPersonDAO contactItemPersonDAO = applicationContext.getBean(ContactItemPerson.ContactItemPersonDAO.class);
+
+        List<Long> homeCompanyIds = stream(companyGroupHomeDAO.getAll()).map(CompanyHomeGroupItem::getCompanyId).collect(toList());
+        List<Long> contactItemsIds = contactItemDAO.listColumnValue("id", Long.class,
+                " value is not null AND TRIM(value) <> '' " +
+                        "  AND item_type IN " + HelperFunc.makeInArg(Arrays.asList(En_ContactItemType.MOBILE_PHONE.getId(), En_ContactItemType.GENERAL_PHONE.getId()), false) +
+                        "  AND id IN (SELECT cip.contact_item_id FROM contact_item_person cip join person p on p.id = cip.person_id " +
+                        "             WHERE p.company_id IN " + HelperFunc.makeInArg(homeCompanyIds, false) + ")"
+        );
+
+        List<Pair<ContactItem, Long>> contactItemAndIdForPersonIdList = new ArrayList<>();
+        int chunk = 1000;
+        for(int i = 0; i < contactItemsIds.size() / chunk + 1; i++) {
+            int lowerBorder = i * chunk;
+            int upperBorder = (i+1) * chunk;
+            contactItemAndIdForPersonIdList.addAll(
+                    normalizePhones(contactItemDAO.getListByKeys(
+                            contactItemsIds.subList(lowerBorder, Math.min(upperBorder, contactItemsIds.size()))                            )
+                    )
+            );
+            persistContactItems(contactItemPersonDAO, contactItemAndIdForPersonIdList, false);
+        }
+        if (!contactItemAndIdForPersonIdList.isEmpty()) {
+            persistContactItems(contactItemPersonDAO, contactItemAndIdForPersonIdList, true);
+        }
+
+        removeBeanDefinition(applicationContext, ContactItemPerson.ContactItemPersonDAO.class);
+        removeBeanDefinition(applicationContext, ContactItemPerson.class);
+
+        log.info("normalizePhoneNumbers ended");
+    }
+
+    private List<Pair<ContactItem, Long>> normalizePhones(List<ContactItem> phones) {
+        List<Pair<ContactItem, Long>> result = new ArrayList<>();
+        phones.forEach(phone -> {
+            String phoneNumber = replaceExtOfPhoneNumber(
+                    phone.value().trim()
+            );
+            if (!isSimpleCheckValid(phoneNumber)) {
+                log.error("normalizePhone: phone is contains non valid characters (@Z-z), phoneId={}, value={}", phone.id(), phone.value());
+                return;
+            }
+            final List<String> split = split(phoneNumber);
+            if (split != null) {    // несколько номеров
+                boolean isMainPhoneModify = false;
+                for (String s : split) {
+                    final String otherPhone = PhoneUtils.normalizePhoneNumber(s);
+                    if (StringUtils.isEmpty(otherPhone)) {
+                        continue;
+                    }
+                    if (!isMainPhoneModify) {
+                        phone.modify(otherPhone);
+                        isMainPhoneModify = true;
+                        result.add(new Pair<>(phone, null));
+                        continue;
+                    }
+
+                    ContactItem contactItem = new ContactItem(phone.type(), phone.accessType());
+                    contactItem.modify(otherPhone);
+
+                    result.add(new Pair<>(contactItem, phone.id()));
+                }
+            } else {
+                phone.modify(PhoneUtils.normalizePhoneNumber(phoneNumber));
+                result.add(new Pair<>(phone, null));
+            }
+        });
+        return result;
+    }
+
+    private String replaceExtOfPhoneNumber(String phoneNumber) {
+        return phoneNumber.replaceAll("д\\.|доб|доп|добавочный|вн|внут|внутр|Внутр|внутренний|корп|местн.тел|ext|Ext|al|\\*", "#");
+    }
+
+    private boolean isSimpleCheckValid(String phoneNumber) {
+        return !phoneNumber.matches(".*[@Z-z].*");
+    }
+
+    private Pattern splitPattern = Pattern.compile("\\+|,| или | и |;");
+    private List<String> split(String phoneNumber) {
+        if (StringUtils.isNotEmpty(phoneNumber) && phoneNumber.length() > 1) {
+            Matcher matcher = splitPattern.matcher(phoneNumber.substring(1));       // костыль на первый "+" в номере
+            if (matcher.find()) {
+                List<String> result = new ArrayList<>();
+                int mark = 0;
+                do {
+                    result.add(phoneNumber.substring(
+                            mark,
+                            isIncludeSplitMark(matcher.group()) ? matcher.start() + 1 : matcher.end() + 1)   // костыль наносит ответный удар
+                    );
+                    mark = matcher.end();
+                } while (matcher.find());
+                result.add(phoneNumber.substring(mark));
+                return result;
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+    private boolean isIncludeSplitMark(String group) {
+        return "+".equals(group);
+    }
+
+    private Long getContactItemPersonId(ContactItemPerson.ContactItemPersonDAO dao, Long contactItemId) {
+        return dao.getByCondition(
+                    condition().and("contact_item_id").equal(contactItemId).getSqlCondition(),
+                    contactItemId)
+                .personId;
+    }
+
+    private void persistContactItems(ContactItemPerson.ContactItemPersonDAO dao,
+                                     List<Pair<ContactItem, Long>> contactItemAndContactItemIdForPersonIdList, boolean force) {
+        if (force || contactItemAndContactItemIdForPersonIdList.size() >= 1000) {
+            List<ContactItem> contactItems = contactItemAndContactItemIdForPersonIdList.stream().map(Pair::getA).collect(toList());
+            contactItemDAO.saveOrUpdateBatch(contactItems);
+
+            List<ContactItemPerson> contactItemPerson = contactItemAndContactItemIdForPersonIdList.stream()
+                    .filter(pair -> pair.getB() != null)
+                    .map(pair -> new ContactItemPerson(getContactItemPersonId(dao, pair.getB()), pair.getA().id()))
+                    .collect(toList());
+            dao.persistBatch(contactItemPerson);
+
+            contactItemAndContactItemIdForPersonIdList.clear();
+        }
+    }
+
+    @JdbcEntity(table = "contact_item_person")
+    public static class ContactItemPerson{
+        @JdbcColumn(name = "person_id")
+        public Long personId;
+        @JdbcColumn(name = "contact_item_id")
+        public Long contactItemId;
+
+        public ContactItemPerson() {
+        }
+
+        public ContactItemPerson(Long personId, Long contactItemId) {
+            this.personId = personId;
+            this.contactItemId = contactItemId;
+        }
+
+        public static class ContactItemPersonDAO
+                extends JdbcBaseDAO<ContactItemPerson, ContactItemPerson>
+                implements JdbcDAO<ContactItemPerson, ContactItemPerson> {}
     }
 
     private static class ContactInfoPersonMigration {
@@ -1056,6 +1381,8 @@ public class BootstrapServiceImpl implements BootstrapService {
     ApplicationContext applicationContext;
     @Autowired
     ContactItemDAO contactItemDAO;
+    @Autowired
+    CaseCommentDAO caseCommentDAO;
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 

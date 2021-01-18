@@ -10,7 +10,7 @@ import ru.protei.portal.core.event.ReservedIpAdminNotificationEvent;
 import ru.protei.portal.core.event.ReservedIpNotificationEvent;
 import ru.protei.portal.core.event.ReservedIpReleaseRemainingEvent;
 import ru.protei.portal.core.event.SubnetNotificationEvent;
-import ru.protei.portal.core.exception.ResultStatusException;
+import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.ReservedIpDAO;
 import ru.protei.portal.core.model.dao.SubnetDAO;
@@ -405,7 +405,7 @@ public class IpReservationServiceImpl implements IpReservationService {
             || !(hasAccessForReservedIp(token, En_Privilege.RESERVED_IP_EDIT, reservedIp)
             || hasAccessForReservedIp(token, En_Privilege.RESERVED_IP_EDIT, stored))
         ) {
-            throw new ResultStatusException(PERMISSION_DENIED);
+            throw new RollbackTransactionException(PERMISSION_DENIED);
         }
 
         if (!isValidReservedIp(token, reservedIp, stored)) {
@@ -446,7 +446,7 @@ public class IpReservationServiceImpl implements IpReservationService {
         }
 
         if (token == null || !hasAccessForReservedIp(token, En_Privilege.RESERVED_IP_REMOVE, reservedIp)) {
-            throw new ResultStatusException(PERMISSION_DENIED);
+            throw new RollbackTransactionException(PERMISSION_DENIED);
         }
 
         ReservedIp stored = getReservedIp(reservedIp.getId());

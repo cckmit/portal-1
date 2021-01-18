@@ -15,6 +15,7 @@ import ru.protei.winter.jdbc.annotations.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Договор
@@ -91,14 +92,11 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     }, mappedColumn = "UNIT_NAME")
     private String directionName;
 
-    @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "product_id", sqlTableAlias = "CO")
-    private Long caseDirectionId;
-
-    @JdbcJoinedColumn(joinPath = {
-            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object"),
-            @JdbcJoinPath(localColumn = "product_id", remoteColumn = "id", table = "dev_unit")
-    }, mappedColumn = "UNIT_NAME")
-    private String caseDirectionName;
+    /**
+     * Продуктовые направления
+     */
+    @JdbcManyToMany(localColumn = "project_id", linkTable = "project_to_product", localLinkColumn = "project_id", remoteLinkColumn = "product_id")
+    private Set<DevUnit> productDirections;
 
     /**
      * Текущее состояние договора
@@ -426,12 +424,12 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
         this.projectCustomerType = projectCustomerType;
     }
 
-    public Long getCaseDirectionId() {
-        return caseDirectionId;
+    public Set<DevUnit> getProductDirections() {
+        return productDirections;
     }
 
-    public String getCaseDirectionName() {
-        return caseDirectionName;
+    public void setProductDirections(Set<DevUnit> productDirections) {
+        this.productDirections = productDirections;
     }
 
     public Long getCaseManagerId() {
@@ -444,10 +442,6 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
 
     public void setCaseManagerId( Long caseManagerId ) {
         this.caseManagerId = caseManagerId;
-    }
-
-    public void setCaseDirectionId( Long caseDirectionId ) {
-        this.caseDirectionId = caseDirectionId;
     }
 
     public Long getContractorId() {
@@ -495,8 +489,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
                 ", curatorShortName='" + curatorShortName + '\'' +
                 ", directionId=" + directionId +
                 ", directionName='" + directionName + '\'' +
-                ", caseDirectionId=" + caseDirectionId +
-                ", caseDirectionName='" + caseDirectionName + '\'' +
+                ", productDirections=" + productDirections +
                 ", stateId=" + stateId +
                 ", description='" + description + '\'' +
                 ", number='" + number + '\'' +

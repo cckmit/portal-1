@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 @JdbcEntity(table = "project_sla")
 public class ProjectSla implements Serializable {
@@ -24,7 +25,15 @@ public class ProjectSla implements Serializable {
     @JdbcColumn(name = "project_id")
     private Long projectId;
 
+    @JdbcJoinedColumn(localColumn = "importance_level_id", remoteColumn = "id", table = "importance_level", mappedColumn = "code")
+    private String importanceCode;
+
     public ProjectSla() {}
+
+    public ProjectSla(Integer importanceLevel, String importanceCode) {
+        this.importanceLevelId = importanceLevel;
+        this.importanceCode = importanceCode;
+    }
 
     public ProjectSla(Integer importanceLevelId, Long reactionTime, Long temporarySolutionTime, Long fullSolutionTime) {
         this.importanceLevelId = importanceLevelId;
@@ -81,6 +90,10 @@ public class ProjectSla implements Serializable {
         this.projectId = projectId;
     }
 
+    public String getImportanceCode() {
+        return importanceCode;
+    }
+
     public boolean isEmpty() {
         if (reactionTime != null) {
             return false;
@@ -98,14 +111,28 @@ public class ProjectSla implements Serializable {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProjectSla that = (ProjectSla) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
     public String toString() {
-        return "ContractSLA{" +
+        return "ProjectSla{" +
                 "id=" + id +
                 ", importanceLevelId=" + importanceLevelId +
                 ", reactionTime=" + reactionTime +
                 ", temporarySolutionTime=" + temporarySolutionTime +
                 ", fullSolutionTime=" + fullSolutionTime +
                 ", projectId=" + projectId +
+                ", importanceCode='" + importanceCode + '\'' +
                 '}';
     }
 }

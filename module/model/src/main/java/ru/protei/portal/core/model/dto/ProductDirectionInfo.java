@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.dto;
 
+import ru.protei.portal.core.model.marker.HasLongId;
 import ru.protei.portal.core.model.view.EntityOption;
 
 import java.io.Serializable;
@@ -7,7 +8,7 @@ import java.io.Serializable;
 /**
  * Информация о продуктовом направлении
  */
-public class ProductDirectionInfo implements Serializable {
+public class ProductDirectionInfo implements Serializable, HasLongId {
     public ProductDirectionInfo() {
     }
 
@@ -19,6 +20,15 @@ public class ProductDirectionInfo implements Serializable {
     public ProductDirectionInfo( EntityOption entityOption ) {
         this.id = entityOption.getId();
         this.name = entityOption.getDisplayText();
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     @Override

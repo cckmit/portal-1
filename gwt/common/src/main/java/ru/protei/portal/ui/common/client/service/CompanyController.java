@@ -3,7 +3,6 @@ package ru.protei.portal.ui.common.client.service;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -83,13 +82,13 @@ public interface CompanyController extends RemoteService {
      * Получение списка сокращенного представления компании-субподрядчика через проекты (name,id)
      * @return
      */
-    List<EntityOption> getSubcontractorOptionList(Long companyId) throws RequestFailedException;
+    List<EntityOption> getSubcontractorOptionList(Long companyId, boolean isActive) throws RequestFailedException;
 
     /**
      * Получение списка сокращенного представления компании-инициатора через проекты (name,id)
      * @return
      */
-    List<EntityOption> getInitiatorOptionList(Long subcontractorId) throws RequestFailedException;
+    List<EntityOption> getInitiatorOptionList(Long subcontractorId, boolean isActive) throws RequestFailedException;
 
     /**
      * Получение списка сокращенного представления компании (name,id) игнорируя область видимости и привилегии
@@ -125,5 +124,5 @@ public interface CompanyController extends RemoteService {
 
     List<EntityOption> getAllHomeCompanies() throws RequestFailedException;
 
-    List<En_ImportanceLevel> getImportanceLevels(Long id) throws RequestFailedException;;
+    List<CompanyImportanceItem> getCompanyImportanceItems(Long companyId) throws RequestFailedException;
 }

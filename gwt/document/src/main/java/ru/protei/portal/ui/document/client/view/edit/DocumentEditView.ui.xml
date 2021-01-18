@@ -81,7 +81,7 @@
                                         <person:EmployeeFormSelector ui:field="approvedBy"
                                                                      header="{lang.documentApprovedBy}"
                                                                      enabled="false"
-                                                                     addStyleNames="document-approval-by"/>
+                                                                     styleName="document-approval-by"/>
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -250,7 +250,7 @@
                                 <label ui:field="documentMembersLabel"><ui:text from="{lang.documentMembers}"/></label>
                             </div>
                             <div class="form-group form-group-attached">
-                                <person:EmployeeMultiSelector ui:field="members" styleName="multi-selector-without-border"
+                                <person:EmployeeMultiSelector ui:field="members" styleName="case-subscribers"
                                                               buttonStyle="btn-info btn-xs"/>
                             </div>
                         </div>

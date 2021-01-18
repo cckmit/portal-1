@@ -369,12 +369,11 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         employee.setSecondName(view.secondName().getText());
         employee.setBirthday(view.birthDay().getValue());
 
-        PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(employee.getContactInfo());
+        employee.getContactItems().clear();
+        employee.getContactItems().addAll(view.workPhones().getValue());
+        employee.getContactItems().addAll(view.mobilePhones().getValue());
+        employee.getContactItems().add(view.workEmail().getValue());
 
-        infoFacade.setWorkPhone(view.workPhone().getText());
-        infoFacade.setMobilePhone(view.mobilePhone().getText());
-
-        infoFacade.setEmail(view.workEmail().getValue());
         employee.setIpAddress(view.ipAddress().getValue());
 
         employee.setFired(false, null);
@@ -419,6 +418,14 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
             return lang.errEmployeePositionEmpty();
         }
 
+        if (!view.workPhonesValidator().isValid()) {
+            return lang.errorFieldHasInvalidValue(lang.workPhone());
+        }
+
+        if (!view.mobilePhonesValidator().isValid()) {
+            return lang.errorFieldHasInvalidValue(lang.mobilePhone());
+        }
+
         return null;
     }
 
@@ -454,9 +461,9 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         view.ipAddress().setValue(employee.getIpAddress());
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(employee.getContactInfo());
-        view.workPhone().setText(employee.getContactInfo() == null ? null : infoFacade.getWorkPhone());
-        view.mobilePhone().setText(employee.getContactInfo() == null ? null : infoFacade.getMobilePhone());
-        view.workEmail().setValue(employee.getContactInfo() == null ? null : infoFacade.getEmail());
+        view.workPhones().setValue(employee.getContactInfo() == null ? null : infoFacade.getGeneralPhoneList());
+        view.mobilePhones().setValue(employee.getContactInfo() == null ? null : infoFacade.getMobilePhoneList());
+        view.workEmail().setValue(employee.getContactInfo() == null ? null : infoFacade.getFirstPublicEmail());
 
         view.firedMsgVisibility().setVisible(employee.isFired());
         view.fireBtnVisibility().setVisible(employee.getId() != null && !employee.isFired());

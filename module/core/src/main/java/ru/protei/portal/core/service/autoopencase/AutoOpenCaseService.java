@@ -1,10 +1,13 @@
 package ru.protei.portal.core.service.autoopencase;
 
-import java.util.concurrent.ScheduledFuture;
+import ru.protei.portal.core.event.CaseObjectCreateEvent;
+
+import java.util.concurrent.Future;
 
 public interface AutoOpenCaseService {
     void scheduleCaseOpen();
 
-    void processNewCreatedCaseToAutoOpen( Long caseId, Long companyId);
-    ScheduledFuture<?> createTask(Long caseId, long delay);
+    void onCaseObjectCreateEvent(CaseObjectCreateEvent event);
+    void performCaseOpen(Long caseId);
+    Future<?> createTask(Long caseId, long delay);
 }

@@ -11,7 +11,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.event.ProcessNewReportsEvent;
-import ru.protei.portal.core.exception.ResultStatusException;
+import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.ReportDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ReportCaseQuery;
@@ -404,7 +404,7 @@ public class ReportServiceImpl implements ReportService {
             }
             throw new IllegalStateException("No switch branch matched for En_ReportType");
         } catch (IOException e) {
-            throw new ResultStatusException(En_ResultStatus.INTERNAL_ERROR, e);
+            throw new RollbackTransactionException(En_ResultStatus.INTERNAL_ERROR, e);
         }
     }
 
@@ -451,7 +451,7 @@ public class ReportServiceImpl implements ReportService {
         try {
             return objectMapper.writeValueAsString(query);
         } catch (JsonProcessingException e) {
-            throw new ResultStatusException(En_ResultStatus.INTERNAL_ERROR, e);
+            throw new RollbackTransactionException(En_ResultStatus.INTERNAL_ERROR, e);
         }
     }
 

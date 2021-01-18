@@ -13,13 +13,11 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
-import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.throttler.Throttler;
 import ru.protei.portal.ui.common.client.throttler.ThrottlerFactory;
@@ -110,17 +108,17 @@ public class CaseCommentItemView
     }
 
     @Override
-    public void setImportanceLevel(En_ImportanceLevel importance) {
+    public void setImportanceLevel(String importanceCode) {
         if (root.getStyleName().contains("right")) {
             owner.removeClassName("name");
             owner.addClassName("status");
-            owner.addClassName("case-importance-" + importance.getCode().toLowerCase());
-            owner.setInnerText(importanceLang.getImportanceName(importance));
+            owner.addClassName("case-importance-" + importanceCode.toLowerCase());
+            owner.setInnerText(importanceCode);
             info.setInnerText(lang.issueCommentChangeImportanceTo());
             info.removeClassName("hide");
         } else {
-            status.addClassName("case-importance-" + importance.getCode().toLowerCase());
-            status.setInnerText(importanceLang.getImportanceName(importance));
+            status.addClassName("case-importance-" + importanceCode.toLowerCase());
+            status.setInnerText(importanceCode);
             info.setInnerText(lang.issueCommentChangeImportanceTo());
             info.removeClassName("hide");
         }
@@ -333,8 +331,6 @@ public class CaseCommentItemView
     Lang lang;
     @UiField
     DivElement messageContainer;
-    @Inject
-    En_CaseImportanceLang importanceLang;
     Throttler removeUpdatedTimer = ThrottlerFactory.makeDelayedAntiRapidThrottler( 1 * SECOND, ()-> root.getElement().removeClassName( CrmConstants.Style.UPDATED ) );
     Throttler removeAddedTimer = ThrottlerFactory.makeDelayedAntiRapidThrottler( 1 * SECOND,  () -> root.getElement().removeClassName( CrmConstants.Style.ADDED ) );
 

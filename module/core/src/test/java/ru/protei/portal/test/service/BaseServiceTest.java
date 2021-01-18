@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
 
 public class BaseServiceTest {
 
@@ -80,7 +81,7 @@ public class BaseServiceTest {
         caseObject.setCreator( person );
         caseObject.setCreated( new Date() );
         caseObject.setModified( new Date() );
-        caseObject.setImpLevel( En_ImportanceLevel.BASIC.getId() );
+        caseObject.setImportanceLevel(new ImportanceLevel(CrmConstants.ImportanceLevel.BASIC, CrmConstants.ImportanceLevel.BASIC_NAME));
         return caseObject;
     }
 
@@ -129,6 +130,17 @@ public class BaseServiceTest {
         comment.setCaseAttachments( Collections.emptyList() );
         comment.setPrivacyType(En_CaseCommentPrivacyType.PUBLIC);
         return comment;
+    }
+
+    protected static History createNewStateHistory(Person person, Long caseObjectId, Long caseStateId, Date date ) {
+        History history = new History();
+        history.setDate( date );
+        history.setAction( En_HistoryAction.ADD );
+        history.setType( En_HistoryType.CASE_STATE );
+        history.setCaseObjectId( caseObjectId );
+        history.setInitiatorId( person.getId() );
+        history.setNewId( caseStateId );
+        return history;
     }
 
     protected CaseTag createCaseTag (String name, En_CaseType type, Long companyId){
@@ -190,12 +202,6 @@ public class BaseServiceTest {
 
     // Create and persist
 
-
-
-    protected UserRole makeUserRole(UserRole userRole) {
-        userRole.setId(  userRoleDAO.persist(userRole)  );
-        return userRole;
-    }
 
     protected UserLogin makeUserLogin( Person person ) {
         return makeUserLogin(createUserLogin( person ));
@@ -264,6 +270,10 @@ public class BaseServiceTest {
     protected Company makeCompany( En_CompanyCategory category ) {
         Company company = createNewCompany( category );
         company.setId( companyDAO.persist( company ) );
+        companyImportanceItemDAO.persistBatch(
+                toList(CrmConstants.ImportanceLevel.commonImportanceLevelIds, importanceLevelId ->
+                        new CompanyImportanceItem(company.getId(), importanceLevelId, 0))
+        );
         return company;
     }
 
@@ -273,6 +283,10 @@ public class BaseServiceTest {
 
     protected Company makeCompany( Company company ) {
         company.setId( companyDAO.persist( company ) );
+        companyImportanceItemDAO.persistBatch(
+                toList(CrmConstants.ImportanceLevel.commonImportanceLevelIds, importanceLevelId ->
+                        new CompanyImportanceItem(company.getId(), importanceLevelId, 0))
+        );
         return company;
     }
 
@@ -329,6 +343,11 @@ public class BaseServiceTest {
         caseCommentDAO.getCaseComments(new CaseCommentQuery(caseObject.getId()))
                 .forEach(caseComment -> caseCommentDAO.remove(caseComment));
         return caseObjectDAO.remove(caseObject);
+    }
+
+    protected boolean removeHistoryCaseObject(Long caseObjectId) {
+        historyDAO.removeByCaseId(caseObjectId);
+        return true;
     }
 
     protected static Long generateNextCaseNumber( En_CaseType caseType ) {
@@ -393,7 +412,11 @@ public class BaseServiceTest {
     @Autowired
     protected DutyLogDAO dutyLogDAO;
     @Autowired
+    protected HistoryDAO historyDAO;
+    @Autowired
     protected PortalConfig config;
     @Autowired
     protected ObjectMapper objectMapper;
+    @Autowired
+    protected CompanyImportanceItemDAO companyImportanceItemDAO;
 }

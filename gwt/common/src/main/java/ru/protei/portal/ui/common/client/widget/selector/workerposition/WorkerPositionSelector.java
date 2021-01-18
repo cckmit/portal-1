@@ -26,10 +26,11 @@ public class WorkerPositionSelector extends ButtonPopupSingleSelector<EntityOpti
     }
 
     @Override
-    protected SelectorItem<EntityOption> makeSelectorItem(EntityOption value, String elementHtml) {
+    protected SelectorItem<EntityOption> makeSelectorItem( EntityOption value, String elementHtml ) {
         PopupSelectorItemWithEdit<EntityOption> item = new PopupSelectorItemWithEdit<>();
 
         item.setName(elementHtml);
+        item.setTitle( elementHtml );
         item.setId(value.getId());
         item.setEditable(isEditable);
         item.addEditHandler(editHandler);

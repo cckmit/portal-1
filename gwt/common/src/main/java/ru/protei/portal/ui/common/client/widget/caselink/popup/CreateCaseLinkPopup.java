@@ -171,7 +171,9 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
 
     private void updateBundleTypeSelector() {
         bundleTypeModel.fill(
-                En_CaseType.CRM_SUPPORT.equals(caseType) && En_CaseLink.CRM.equals(typeSelector.getValue()) ?
+                En_CaseType.CRM_SUPPORT.equals(caseType) &&
+                        En_CaseLink.CRM.equals(typeSelector.getValue()) &&
+                        policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW) ?
                         listOf(En_BundleType.values()) :
                         listOf(En_BundleType.LINKED_WITH));
         bundleTypeSelector.setValue(En_BundleType.LINKED_WITH);

@@ -11,7 +11,6 @@ import ru.protei.portal.core.model.dao.PersonShortViewDAO;
 import ru.protei.portal.core.model.dao.UserRoleDAO;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseObjectMeta;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -31,7 +30,12 @@ public class AutoOpenCaseServiceTaskHandlerImpl implements AutoOpenCaseTaskHandl
     @Async(BACKGROUND_TASKS)
     @Transactional
     @Override
-    public void runOpenCaseTask( Long caseId ) {
+    public void runOpenCaseTaskAsync(Long caseId) {
+        runOpenCaseTask(caseId);
+    }
+
+    @Override
+    public void runOpenCaseTask(Long caseId) {
         log.info("Process case id = {}", caseId);
 
         CaseObjectMeta caseMeta = caseObjectMetaDAO.get(caseId);
@@ -63,6 +67,7 @@ public class AutoOpenCaseServiceTaskHandlerImpl implements AutoOpenCaseTaskHandl
 
         caseMeta.setManager(commonManager);
         caseMeta.setStateId(CrmConstants.State.OPENED);
+        caseMeta.setStateName(null);
 
         caseService.updateCaseObjectMeta(createFakeToken(commonManager), caseMeta);
 

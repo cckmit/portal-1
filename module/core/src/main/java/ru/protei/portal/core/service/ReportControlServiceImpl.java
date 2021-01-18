@@ -15,7 +15,7 @@ import ru.protei.portal.core.event.AbsenceReportEvent;
 import ru.protei.portal.core.event.DutyLogReportEvent;
 import ru.protei.portal.core.event.MailReportEvent;
 import ru.protei.portal.core.event.ProcessNewReportsEvent;
-import ru.protei.portal.core.model.dao.CaseCommentDAO;
+import ru.protei.portal.core.model.dao.HistoryDAO;
 import ru.protei.portal.core.model.dao.ReportDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ReportDto;
@@ -69,7 +69,7 @@ public class ReportControlServiceImpl implements ReportControlService {
     @Autowired
     ReportDAO reportDAO;
     @Autowired
-    CaseCommentDAO caseCommentDAO;
+    HistoryDAO historyDAO;
 
     @Autowired
     ReportService reportService;
@@ -233,7 +233,7 @@ public class ReportControlServiceImpl implements ReportControlService {
                 log.info( "writeReport(): Start report {}", report.getName() );
                 ReportCaseResolutionTime caseCompletionTimeReport = new ReportCaseResolutionTime(
                         getQuery(report, CaseQuery.class),
-                        caseCommentDAO
+                        historyDAO
                 );
                 caseCompletionTimeReport.run();
                 Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));

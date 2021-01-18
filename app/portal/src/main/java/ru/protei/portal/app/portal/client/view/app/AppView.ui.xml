@@ -31,9 +31,6 @@
                 </div>
                 <div class="clearfix"/>
             </div>
-
-            <g:Label styleName="app-version" ui:field="appVersion"/>
-
         </g:HTMLPanel>
 
         <div class="header" ui:field="headerDiv">
@@ -49,7 +46,7 @@
             <div class="d-flex align-items-center">
                 <locale:LocaleSelector ui:field="locale" addStyleNames="m-r-20"/>
                 <div class="pull-left p-r-10 fs-14 d-lg-block d-none">
-                    <span class="semi-bold" ui:field="username"/>
+                    <g:Label styleName="username semi-bold" ui:field="username"/>
                 </div>
                 <div class="dropdown pull-right">
                     <g:Button ui:field="profile" styleName="profile-dropdown-toggle">
@@ -57,21 +54,29 @@
                             <img ui:field="photo" src="#" alt="" width="32" height="32" class="thumbnail-photo"/>
                         </span>
                     </g:Button>
-                    <g:FocusPanel ui:field="menuBarFocus">
-                        <g:HTMLPanel ui:field="menuBar" styleName="dropdown-menu dropdown-menu-right profile-dropdown">
-                            <g:Anchor ui:field="settings" styleName="dropdown-item" href="#">
-                                <span class="pull-left m-r-10">
-                                    <i class="fas fa-user-cog"/></span>
+                    <g:PopupPanel ui:field="menuBarPopup" autoHideEnabled="true" visible="false">
+                        <g:HTMLPanel styleName="dropdown-menu dropdown-menu-right profile-dropdown show">
+                            <g:Anchor ui:field="settings" styleName="clearfix dropdown-item" href="#">
                                 <ui:text from="{lang.buttonSettings}"/>
                             </g:Anchor>
-
                             <g:Anchor ui:field="logout" styleName="clearfix dropdown-item" title="{lang.logoutHotKey}" href="#">
-                                <span class="pull-left"><ui:text from="{lang.buttonLogout}"/></span>
-                                <span class="pull-right">
-                                    <i class="fas fa-power-off"/></span>
+                                <ui:text from="{lang.buttonLogout}"/>
                             </g:Anchor>
+                            <div class="dropdown-divider"/>
+                            <div ui:field="help" class="dropdown-item">
+                                <span class="p-r-10"><ui:text from="{lang.help}"/></span>
+                                <span>
+                                    <a href="mailto:portal.support@protei.ru" target="_blank" class="help d-inline p-r-10" title="portal.support@protei.ru">
+                                        <i class="far fa-envelope" style="font-size: 1.2em"/>
+                                    </a>
+                                    <a href="https://mattermost.protei.ru/protei/channels/portal" target="_blank" class="help d-inline" title="https://mattermost.protei.ru/protei/channels/portal">
+                                        <img src="./images/mattermost.png" width="14px" class="p-b-5"/>
+                                    </a>
+                                </span>
+                            </div>
+                            <div ui:field="appVersion" class="dropdown-item"/>
                         </g:HTMLPanel>
-                    </g:FocusPanel>
+                    </g:PopupPanel>
                 </div>
             </div>
         </div>
@@ -81,8 +86,6 @@
                 <g:HTMLPanel ui:field="container" styleName="content"/>
             </div>
         </div>
-
-
 
         <g:HTMLPanel ui:field="notifyContainer" styleName="gritter-notice-wrapper bottom-notice-right"/>
     </g:HTMLPanel>

@@ -11,7 +11,6 @@ import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseObjectCreateEvent;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ExtAppType;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -189,13 +188,13 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
         }
 
         Long caseObjId = saveResult.getData();
-        Result<Long> stateCommentId = commonService.createAndStoreStateComment(issue.getCreatedOn(), contactPerson.getId(), obj.getStateId(), caseObjId);
+        Result<Long> stateCommentId = commonService.createAndStoreStateHistory(issue.getCreatedOn(), contactPerson.getId(), obj.getStateId(), caseObjId);
         if (stateCommentId.isError()) {
            logger.error("State comment for the issue {} not saved!", caseObjId);
             return null;
         }
 
-        Result<Long> importanceCommentId = commonService.createAndStoreImportanceComment(issue.getCreatedOn(), contactPerson.getId(), obj.getImpLevel(), caseObjId);
+        Result<Long> importanceCommentId = commonService.createAndStoreImportanceHistory(issue.getCreatedOn(), contactPerson.getId(), obj.getImpLevel(), caseObjId);
         if (importanceCommentId.isError()) {
             logger.error("Importance comment for the issue {} not saved!", caseObjId);
             return null;
@@ -346,7 +345,7 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
             obj.setImpLevel(redminePriorityMapEntry.getLocalPriorityId());
         } else {
             logger.warn( "Priority level not found, setting default" );
-            obj.setImpLevel(En_ImportanceLevel.BASIC.getId());
+            obj.setImpLevel(CrmConstants.ImportanceLevel.BASIC);
         }
 
         logger.debug("Trying to get portal status id matching with redmine {}", issue.getStatusId());

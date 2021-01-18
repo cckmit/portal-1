@@ -15,7 +15,7 @@ public class CaseStateUtils {
 
     static {
 
-        activeStateIds = new ArrayList<>(10);
+        activeStateIds = new ArrayList<>(11);
         activeStateIds.add(CrmConstants.State.CREATED);
         activeStateIds.add(CrmConstants.State.OPENED);
         activeStateIds.add(CrmConstants.State.ACTIVE);
@@ -26,6 +26,7 @@ public class CaseStateUtils {
         activeStateIds.add(CrmConstants.State.CUST_REQUEST);
         activeStateIds.add(CrmConstants.State.CUST_PENDING);
         activeStateIds.add(CrmConstants.State.TEST_CUST);
+        activeStateIds.add(CrmConstants.State.DEVELOPMENT);
 
         newStateIds = new ArrayList<>(3);
         newStateIds.add(CrmConstants.State.CREATED);

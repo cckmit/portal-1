@@ -22,8 +22,9 @@ import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.AsyncPersonModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitButtonSelector;
-import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
+import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitWithImageMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.region.RegionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
@@ -31,7 +32,6 @@ import ru.protei.portal.ui.project.client.activity.quickcreate.AbstractProjectCr
 import ru.protei.portal.ui.project.client.activity.quickcreate.AbstractProjectCreateView;
 
 import java.util.Set;
-import java.util.function.Supplier;
 
 /**
  * Представление создания проекта с минимальным набором параметров
@@ -42,8 +42,9 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugId();
-        product.setState(En_DevUnitState.ACTIVE);
-        product.setTypes(En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
+        productModel.setUnitState(En_DevUnitState.ACTIVE);
+        productModel.setUnitTypes(En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
+        products.setModel(productModel);
     }
 
     @Override
@@ -52,8 +53,8 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
     }
 
     @Override
-    public void updateProductDirection(Long directionId) {
-        product.setDirectionId(directionId);
+    public void updateProductModel(Set<Long> directionIds) {
+        productModel.setDirectionIds(directionIds);
     }
 
     @Override
@@ -70,7 +71,17 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
     public HasValue<EntityOption> region() { return region; }
 
     @Override
-    public HasValue<ProductDirectionInfo> direction() { return direction; }
+    public HasValue<Set<ProductDirectionInfo>> directions() { return directions; }
+
+    @Override
+    public HasValue<Set<ProductShortView>> products() {
+        return products;
+    }
+
+    @Override
+    public HasEnabled productEnabled() {
+        return products;
+    }
 
     @Override
     public HasValue<En_CustomerType> customerType() {
@@ -82,10 +93,6 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
         return company;
     }
 
-    @Override
-    public HasValue<ProductShortView> product() {
-        return product;
-    }
 
     @Override
     public HasValidable nameValidator() {
@@ -99,7 +106,7 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
 
     @Override
     public HasValidable directionValidator() {
-        return direction;
+        return directions;
     }
 
     @Override
@@ -143,10 +150,17 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
         }
     }
 
-    @UiHandler("direction")
-    public void onDirectionChanged(ValueChangeEvent<ProductDirectionInfo> event) {
+    @UiHandler("directions")
+    public void onDirectionChanged(ValueChangeEvent<Set<ProductDirectionInfo>> event) {
         if (activity != null) {
             activity.onDirectionChanged();
+        }
+    }
+
+    @UiHandler("products")
+    public void onProductChanged(ValueChangeEvent<Set<ProductShortView>> event) {
+        if (activity != null) {
+            activity.onProductChanged();
         }
     }
 
@@ -154,10 +168,10 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
         name.ensureDebugId(DebugIds.DOCUMENT.PROJECT_CREATE.NAME_INPUT);
         description.ensureDebugId(DebugIds.DOCUMENT.PROJECT_CREATE.DESCRIPTION_INPUT);
         region.ensureDebugId(DebugIds.DOCUMENT.PROJECT_CREATE.REGION_SELECTOR);
-        direction.ensureDebugId(DebugIds.DOCUMENT.PROJECT_CREATE.DIRECTION_SELECTOR);
+        directions.ensureDebugId(DebugIds.DOCUMENT.PROJECT_CREATE.DIRECTION_SELECTOR);
         customerType.ensureDebugId(DebugIds.DOCUMENT.PROJECT_CREATE.CUSTOMER_TYPE_SELECTOR);
         company.ensureDebugId(DebugIds.DOCUMENT.PROJECT_CREATE.COMPANY_SELECTOR);
-        product.ensureDebugId(DebugIds.DOCUMENT.PROJECT_CREATE.PRODUCT_SELECTOR);
+        products.ensureDebugId(DebugIds.DOCUMENT.PROJECT_CREATE.PRODUCT_SELECTOR);
         saveBtn.ensureDebugId(DebugIds.DOCUMENT.PROJECT_CREATE.SAVE_BUTTON);
         resetBtn.ensureDebugId(DebugIds.DOCUMENT.PROJECT_CREATE.RESET_BUTTON);
 
@@ -167,7 +181,6 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
         directionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PROJECT_CREATE.DIRECTION_LABEL);
         customerTypeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PROJECT_CREATE.CUSTOMER_TYPE_LABEL);
         companyLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PROJECT_CREATE.COMPANY_LABEL);
-        productLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PROJECT_CREATE.PRODUCT_LABEL);
     }
 
     @UiField
@@ -182,7 +195,7 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
 
     @Inject
     @UiField(provided = true)
-    ProductDirectionButtonSelector direction;
+    ProductDirectionMultiSelector directions;
 
     @Inject
     @UiField(provided = true)
@@ -194,7 +207,7 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
 
     @Inject
     @UiField(provided = true)
-    DevUnitButtonSelector product;
+    DevUnitWithImageMultiSelector products;
 
     @Inject
     @UiField(provided = true)
@@ -224,12 +237,12 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
     @UiField
     LabelElement companyLabel;
 
-    @UiField
-    LabelElement productLabel;
-
     @Inject
     @UiField
     Lang lang;
+
+    @Inject
+    ProductModel productModel;
 
     AbstractProjectCreateActivity activity;
 

@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.BirthdaysNotificationEvent;
-import ru.protei.portal.core.exception.ResultStatusException;
+import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
@@ -29,6 +29,7 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -37,6 +38,8 @@ import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeDateWithOffset;
+import static ru.protei.portal.core.model.util.CrmConstants.Masks.*;
+import static ru.protei.portal.core.model.view.EmployeeShortView.Fields.*;
 
 
 /**
@@ -105,6 +108,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     CompanyService companyService;
 
+    private Pattern workPhone = Pattern.compile(WORK_PHONE_NUMBER_PATTERN);
+    private Pattern mobilePhone = Pattern.compile(RUS_PHONE_NUMBER_PATTERN);
+
     @Override
     public Result<List<PersonShortView>> shortViewList( EmployeeQuery query) {
         List<PersonShortView> list = personShortViewDAO.getEmployees(query);
@@ -121,7 +127,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public Result<SearchResult<EmployeeShortView>> employeeList(AuthToken token, EmployeeQuery query) {
 
         SearchResult<EmployeeShortView> sr = employeeShortViewDAO.getSearchResult(query);
-        jdbcManyRelationsHelper.fill(sr.getResults(), EmployeeShortView.Fields.CONTACT_ITEMS);
+        jdbcManyRelationsHelper.fill(sr.getResults(), CONTACT_ITEMS);
         sr.setResults(stream(sr.getResults())
                 .map(this::removeSensitiveInformation)
                 .collect(Collectors.toList()));
@@ -182,8 +188,8 @@ public class EmployeeServiceImpl implements EmployeeService {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
-        jdbcManyRelationsHelper.fill(employeeShortView, EmployeeShortView.Fields.CONTACT_ITEMS);
-        jdbcManyRelationsHelper.fill(employeeShortView, "workerEntries");
+        jdbcManyRelationsHelper.fill(employeeShortView, CONTACT_ITEMS);
+        jdbcManyRelationsHelper.fill(employeeShortView, WORKER_ENTRIES);
         employeeShortView = removeSensitiveInformation(employeeShortView);
 
         return ok(employeeShortView);
@@ -211,8 +217,9 @@ public class EmployeeServiceImpl implements EmployeeService {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
-        jdbcManyRelationsHelper.fill(employeeShortView, EmployeeShortView.Fields.CONTACT_ITEMS);
-        jdbcManyRelationsHelper.fill(employeeShortView, "workerEntries");
+        jdbcManyRelationsHelper.fill(employeeShortView, CONTACT_ITEMS);
+        jdbcManyRelationsHelper.fill(employeeShortView, WORKER_ENTRIES);
+
         employeeShortView = removeSensitiveInformation(employeeShortView);
 
         employeeShortView.setWorkerEntries(changeCompanyNameIfHidden(employeeShortView.getWorkerEntries()));
@@ -280,7 +287,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                     .flatMap(userLogin -> {
                         userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
                         if (!saveUserLogin(userLogin, token)) {
-                            throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+                            throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
                         }
                         return ok();
                     }).map(ignore -> person);
@@ -403,7 +410,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             boolean isRemoved = removeWorkerEntriesByPersonId(personFromDb.getId());
 
             if (!isRemoved){
-                throw new ResultStatusException(En_ResultStatus.EMPLOYEE_NOT_FIRED_FROM_THESE_COMPANIES);
+                throw new RollbackTransactionException(En_ResultStatus.EMPLOYEE_NOT_FIRED_FROM_THESE_COMPANIES);
             }
 
             List<UserLogin> userLogins = userLoginDAO.findByPersonId(personFromDb.getId());
@@ -458,14 +465,14 @@ public class EmployeeServiceImpl implements EmployeeService {
                     Result createResult  = createEmployeeWorker(token, entry.getKey());
                     makeAudit(entry.getKey(), En_AuditType.WORKER_CREATE, token);
                     if (createResult.isError()){
-                        throw new ResultStatusException(createResult.getStatus(), "Error while worker entry creating");
+                        throw new RollbackTransactionException(createResult.getStatus(), "Error while worker entry creating");
                     }
                     break;
                 case TO_REMOVE :
                     Result removeStatus  = removeWorkerEntry(entry.getKey());
                     makeAudit(entry.getKey(), En_AuditType.WORKER_REMOVE, token);
                     if (removeStatus.isError()){
-                        throw new ResultStatusException(removeStatus.getStatus(), "Error while worker entry removing");
+                        throw new RollbackTransactionException(removeStatus.getStatus(), "Error while worker entry removing");
                     }
                     break;
             }
@@ -821,6 +828,14 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         PlainContactInfoFacade facade = new PlainContactInfoFacade(person.getContactInfo());
         if (StringUtils.isBlank(facade.getEmail())) {
+            return false;
+        }
+
+        if (!stream(facade.getGeneralPhoneList()).allMatch(phone -> workPhone.matcher(phone.value()).matches())) {
+            return false;
+        }
+
+        if (!stream(facade.getMobilePhoneList()).allMatch(phone -> mobilePhone.matcher(phone.value()).matches())) {
             return false;
         }
 

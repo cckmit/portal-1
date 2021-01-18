@@ -17,8 +17,8 @@ public class JiraExtAppData {
     private Set<Long> commentIds;
     @JsonProperty("aid")
     private Set<String> attachmentIds;
-    @JsonProperty("clmId")
-    private String clmId;
+    @JsonProperty("projectId")
+    private String projectId;
 
     public JiraExtAppData() {
         commentIds = new HashSet<>();
@@ -45,8 +45,8 @@ public class JiraExtAppData {
         return this;
     }
 
-    public JiraExtAppData setClmId(String clmId) {
-        this.clmId = clmId;
+    public JiraExtAppData setProjectId(String projectId) {
+        this.projectId = projectId;
         return this;
     }
 
@@ -79,8 +79,8 @@ public class JiraExtAppData {
         return attachmentIds.contains(id);
     }
 
-    public String clmId() {
-        return clmId;
+    public String projectId() {
+        return projectId;
     }
 
     public static String toJSON (JiraExtAppData state) {

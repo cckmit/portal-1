@@ -6,12 +6,13 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel styleName="project-team-selector-item">
-        <div>
-            <role:ProjectRoleFormSelector ui:field="role" header="{lang.projectTeamRole}" mandatory="false"/>
-        </div>
-
-        <div>
-            <person:EmployeeMultiSelector ui:field="members" firedEmployeesVisible="false" buttonStyle="btn-info btn-xs"/>
+        <div class="row">
+            <div class="col-md-4">
+                <role:ProjectRoleFormSelector ui:field="role" header="{lang.projectTeamRole}" mandatory="false"/>
+            </div>
+            <div class="col-md-8">
+                <person:EmployeeMultiSelector ui:field="members" firedEmployeesVisible="false"/>
+            </div>
         </div>
     </g:HTMLPanel>
 

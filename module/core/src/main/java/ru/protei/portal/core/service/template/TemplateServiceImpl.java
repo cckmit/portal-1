@@ -24,7 +24,6 @@ import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.utils.DateUtils;
 import ru.protei.portal.core.utils.EnumLangUtil;
@@ -144,8 +143,8 @@ public class TemplateServiceImpl implements TemplateService {
         CaseObjectMeta oldMetaState = event.getInitCaseMeta() == null ? null : newMetaState.equals(event.getInitCaseMeta()) ? null : event.getInitCaseMeta();
 
         templateModel.put("importanceChanged", event.isCaseImportanceChanged());
-        templateModel.put("importanceLevel", newMetaState.getImportance() == null ? null : newMetaState.getImportance().getCode());
-        templateModel.put("oldImportanceLevel", oldMetaState == null || oldMetaState.getImportance() == null ? null : oldMetaState.getImportance().getCode());
+        templateModel.put("importanceLevel", newMetaState.getImportanceCode());
+        templateModel.put("oldImportanceLevel", oldMetaState == null || oldMetaState.getImportanceCode() == null ? null : oldMetaState.getImportanceCode());
 
         templateModel.put("caseChanged", event.isCaseStateChanged());
         templateModel.put("caseState", newMetaState.getStateName());
@@ -201,7 +200,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put( "author", currentPerson );
         templateModel.put( "caseNumber", caseObject.getCaseNumber() );
         templateModel.put( "caseState", caseMeta.getStateName());
-        templateModel.put( "importanceLevel", caseMeta.getImportance() == null ? null : caseMeta.getImportance().getCode() );
+        templateModel.put( "importanceLevel", caseMeta.getImportanceCode() );
         templateModel.put( "productName", caseMeta.getProduct() == null ? null : caseMeta.getProduct().getName() );
 
         PreparedTemplate template = new PreparedTemplate( "notification/email/crm.subject.%s.ftl" );
@@ -523,13 +522,15 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("oldCustomerType", getNullOrElse(oldProjectState, Project::getCustomerType));
         templateModel.put("newCustomerType", newProjectState.getCustomerType());
 
-        templateModel.put("productDirectionChanged", event.isProductDirectionChanged());
-        templateModel.put("oldProductDirection", getNullOrElse(getNullOrElse(oldProjectState, Project::getProductDirectionEntityOption), EntityOption::getDisplayText));
-        templateModel.put("newProductDirection", newProjectState.getProductDirectionEntityOption().getDisplayText());
+        final DiffCollectionResult<DevUnit> productDirectionDiffs = event.getProductDirectionDiffs();
+        templateModel.put("productDirectionSameEntries", productDirectionDiffs.getSameEntries());
+        templateModel.put("productDirectionAddedEntries", productDirectionDiffs.getAddedEntries());
+        templateModel.put("productDirectionRemovedEntries", productDirectionDiffs.getRemovedEntries());
 
-        templateModel.put("productChanged", event.isProductChanged());
-        templateModel.put("oldProduct", getNullOrElse(getNullOrElse(oldProjectState, Project::getSingleProduct), ProductShortView::getName));
-        templateModel.put("newProduct", getNullOrElse(newProjectState.getSingleProduct(), ProductShortView::getName));
+        final DiffCollectionResult<DevUnit> productDiffs = event.getProductDiffs();
+        templateModel.put("productSameEntries", productDiffs.getSameEntries());
+        templateModel.put("productAddedEntries", productDiffs.getAddedEntries());
+        templateModel.put("productRemovedEntries", productDiffs.getRemovedEntries());
 
         templateModel.put("supportValidityChanged", event.isSupportValidityChanged());
         templateModel.put("oldSupportValidity", getNullOrElse(oldProjectState, Project::getTechnicalSupportValidity));
@@ -929,13 +930,9 @@ public class TemplateServiceImpl implements TemplateService {
                     Map< String, Object > mailComment = new HashMap<>();
                     mailComment.put( "created", comment.getCreated() );
                     mailComment.put( "author", comment.getAuthor() );
-                    mailComment.put( "text", escapeTextAndRenderHTML(comment.getText(), textMarkup));
-                    mailComment.put( "caseState", comment.getCaseStateName() );
-                    mailComment.put( "caseImportance", comment.getCaseImportance() == null ? null : comment.getCaseImportance().getCode() );
-                    mailComment.put( "caseManager", comment.getCaseManagerId());
-                    mailComment.put( "caseManagerAndCompany", comment.getCaseManagerShortName() + " (" + comment.getManagerCompanyName() + ")");
+                    mailComment.put( "text", escapeTextAndRenderHTML(comment.getText(), textMarkup) );
                     mailComment.put( "privacyType", comment.getPrivacyType().name() );
-                    mailComment.put( "added", isNew);
+                    mailComment.put( "added", isNew );
                     if (isChanged) {
                         CaseComment oldComment = changed.get( changed.indexOf( comment ) );
                         mailComment.put( "oldText", escapeTextAndRenderHTML( oldComment.getText(), textMarkup ) );

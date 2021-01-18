@@ -810,21 +810,11 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueCopiedToClipboard();
 
-    String criticalImportance();
-
-    String importantImportance();
-
-    String basicImportance();
-
-    String cosmeticImportance();
-
     String privacyTypePublic();
 
     String privacyTypePrivateCustomers();
 
     String privacyTypePrivate();
-
-    String mediumImportance();
 
     String dataPageNumber( String p0 );
 
@@ -920,6 +910,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String projectDirection();
 
+    String projectDirections();
+
     String projectInfo();
 
     String projectManagers();
@@ -941,6 +933,8 @@ public interface Lang extends Messages, ContactItemLang {
     String projectCustomerCompany();
 
     String projectDescription();
+
+    String projectProduct();
 
     String projectProducts();
 
@@ -1808,7 +1802,11 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeWorkPhone();
 
+    String employeeWorkPhonePlaceHolder();
+
     String employeeMobilePhone();
+
+    String employeeMobilePhonePlaceHolder();
 
     String employeeEmail();
 
@@ -3210,7 +3208,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String fileNotFoundError();
 
-    String projectSubcontractor();
+    String projectSubcontractors();
 
     String subtaskCreate();
 
@@ -3229,4 +3227,6 @@ public interface Lang extends Messages, ContactItemLang {
     String errInvalidCaseUpdateSubtaskNotClosed();
 
     String errNotAllowedIntegrationIssue();
+
+    String help();
 }

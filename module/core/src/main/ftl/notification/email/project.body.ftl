@@ -224,13 +224,21 @@
                 ${_projectProductDirection}
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                <#if productDirectionChanged>
-                    <@changeTo
-                    old="${oldProductDirection!'?'}"
-                    new="${newProductDirection}"
-                    />
-                <#else>
-                    ${newProductDirection}
+                <#if productDirectionSameEntries??>
+                    <#list productDirectionSameEntries as same>
+                        <span style="display:inline-block;padding:1px 4px 1px 0px;white-space:nowrap;text-decoration:none"> ${same.name}
+                        </span>
+                    </#list>
+                </#if>
+                <#if productDirectionAddedEntries??>
+                    <#list productDirectionAddedEntries as added>
+                        <span style="display:inline-block;padding:1px 5px;white-space:nowrap;text-decoration:none;color:#11731d;background:#dff7e2;"> ${added.name}</span>
+                    </#list>
+                </#if>
+                <#if productDirectionRemovedEntries??>
+                    <#list productDirectionRemovedEntries as removed>
+                        <span style="display:inline-block;padding:1px 5px;white-space:nowrap;text-decoration:line-through;color:#bd1313;">${removed.name}</span>
+                    </#list>
                 </#if>
             </td>
         </tr>
@@ -239,13 +247,20 @@
                 ${_projectProduct}
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                <#if productChanged>
-                    <@changeTo
-                    old="${oldProduct!'?'}"
-                    new="${newProduct!'?'}"
-                    />
-                <#else>
-                    ${newProduct!'?'}
+                <#if productSameEntries??>
+                    <#list productSameEntries as same>
+                        <span style="display:inline-block;padding:1px 4px 1px 0px;white-space:nowrap;text-decoration:none"> ${same.name}</span>
+                    </#list>
+                </#if>
+                <#if productAddedEntries??>
+                    <#list productAddedEntries as added>
+                        <span style="display:inline-block;padding:1px 5px;white-space:nowrap;text-decoration:none;color:#11731d;background:#dff7e2;"> ${added.name}</span>
+                    </#list>
+                </#if>
+                <#if productRemovedEntries??>
+                    <#list productRemovedEntries as removed>
+                        <span style="display:inline-block;padding:1px 5px;white-space:nowrap;text-decoration:line-through;color:#bd1313;">${removed.name}</span>
+                    </#list>
                 </#if>
             </td>
         </tr>
@@ -393,7 +408,7 @@
 
                             <tr>
                                 <td>
-                                    ${importanceLevel.getCode()}
+                                    ${importanceLevel}
                                 </td>
                                 <td>
                                     <@changeToIfDiff

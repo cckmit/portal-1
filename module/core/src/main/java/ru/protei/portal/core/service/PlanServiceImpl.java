@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.PlanDAO;
@@ -225,7 +224,7 @@ public class PlanServiceImpl implements PlanService{
 
         if (newIssueInPlan.getId() == null) {
             log.warn("addIssueToPlan(): NOT CREATED. planId={}, issueId={} ", planId, issueId);
-            throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
         }
 
         Plan plan = planDAO.get(planId);
@@ -264,10 +263,10 @@ public class PlanServiceImpl implements PlanService{
 
         if (rowCount == 0) {
             log.warn("removeIssueFromPlan(): NOT_FOUND. plan id={}, token personId={}", planId, token.getPersonId());
-            throw new ResultStatusException(En_ResultStatus.NOT_FOUND);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_FOUND);
         } else {
             log.warn("removeIssueFromPlan(): More than one was removed! Rollback. plan id={}, token personId={}", planId, token.getPersonId());
-            throw new ResultStatusException(En_ResultStatus.NOT_REMOVED);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_REMOVED);
         }
     }
 
@@ -302,7 +301,8 @@ public class PlanServiceImpl implements PlanService{
 
         if (planToCaseObjectDAO.mergeBatch(issueOrderList) != issueOrderList.size()){
             log.warn("changeIssuesOrder(): INCORRECT_PARAMS. updated list and list from db have different sizes! plan name={}, creatorId={}, token personId={}", plan.getName(), plan.getCreatorId(), token.getPersonId());
-            throw new RollbackTransactionException("removeIssueFromPlan(): rollback transaction");
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED,
+                    "removeIssueFromPlan(): rollback transaction");
         }
 
         return ok();
@@ -460,8 +460,8 @@ public class PlanServiceImpl implements PlanService{
         );
     }
 
-    private ResultStatusException createHistoryException(En_ResultStatus status, En_HistoryAction action, Long planId) {
-        return new ResultStatusException(
+    private RollbackTransactionException createHistoryException(En_ResultStatus status, En_HistoryAction action, Long planId) {
+        return new RollbackTransactionException(
                 status,
                 String.format("Failed to create history for plan. action=%s, planId=%d", action, planId)
         );

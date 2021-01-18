@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.*;
-import ru.protei.portal.core.exception.ResultStatusException;
+import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.Project;
@@ -42,6 +42,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
@@ -77,6 +78,8 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     ProjectToProductDAO projectToProductDAO;
     @Autowired
+    DevUnitDAO devUnitDAO;
+    @Autowired
     AuthService authService;
     @Autowired
     ContractDAO contractDAO;
@@ -96,6 +99,14 @@ public class ProjectServiceImpl implements ProjectService {
     EventPublisherService publisherService;
     @Autowired
     PortalConfig config;
+    @Autowired
+    CompanyImportanceItemDAO companyImportanceItemDAO;
+    @Autowired
+    HistoryService historyService;
+    @Autowired
+    HistoryDAO historyDAO;
+    @Autowired
+    CaseStateDAO caseStateDAO;
 
     @EventListener
     @Async(BACKGROUND_TASKS)
@@ -164,6 +175,25 @@ public class ProjectServiceImpl implements ProjectService {
         for (Person person : persons) {
             publisherService.publishEvent( new ProjectPauseTimeNotificationEvent( this, person, project.getId(), project.getName(), new Date(pauseDate) ) );
         }
+
+        Optional<Long> previousProjectStateIdOptional =
+                ofNullable(historyDAO.getLastHistory(projectId, En_HistoryType.CASE_STATE))
+                        .map(History::getOldId);
+
+        if (!previousProjectStateIdOptional.isPresent()) {
+            log.info( "onPauseTimeNotification(): Previous project state is id null. No need to reset state");
+            return;
+        }
+
+        Long previousProjectStateId = previousProjectStateIdOptional.get();
+
+        log.info( "onPauseTimeNotification(): Previous project state id is {}. Need to reset state", previousProjectStateId);
+
+        project.setStateId(previousProjectStateId);
+
+        Long systemUserId = config.data().getCommonConfig().getSystemUserId();
+
+        updateCaseObjectPart(createFakeToken(systemUserId == null ? project.getCreatorId() : systemUserId), project);
     }
 
     @Override
@@ -204,14 +234,16 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         jdbcManyRelationsHelper.fillAll( project );
+        project.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(project.getId())));
+        project.setProducts(new HashSet<>(devUnitDAO.getProjectProducts(project.getId())));
+        project.getProducts().forEach(product -> product.setProductDirections(new HashSet<>(devUnitDAO.getProductDirections(product.getId()))));
+
         List<Contract> contracts = contractDAO.getByProjectId(id);
 
         if (CollectionUtils.isNotEmpty(contracts)) {
 
             project.setContracts(contracts.stream().map(contract -> new EntityOption(contract.getNumber(), contract.getId())).collect(toList()));
         }
-
-        jdbcManyRelationsHelper.fill(project, Project.Fields.PROJECT_PLANS);
 
         if (!canAccessProject(policyService, token, En_Privilege.PROJECT_VIEW, project.getTeam())) {
             return error(En_ResultStatus.PERMISSION_DENIED);
@@ -230,6 +262,13 @@ public class ProjectServiceImpl implements ProjectService {
 
         jdbcManyRelationsHelper.fill(projectFromDb, "locations");
         jdbcManyRelationsHelper.fill(projectFromDb, "members");
+        projectFromDb.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(projectFromDb.getId())));
+        projectFromDb.setProducts(new HashSet<>(devUnitDAO.getProjectProducts(projectFromDb.getId())));
+
+        final Set<DevUnit> products = projectFromDb.getProducts();
+        if (isNotEmpty(products)) {
+            products.forEach(product -> product.setProductDirections(new HashSet<>(emptyIfNull(devUnitDAO.getProductDirections(product.getId())))));
+        }
 
         ProjectInfo project = ProjectInfo.fromProject(projectFromDb);
         return ok(project);
@@ -242,14 +281,19 @@ public class ProjectServiceImpl implements ProjectService {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
-        CaseObject caseObject = caseObjectDAO.get( project.getId() );
-        jdbcManyRelationsHelper.fillAll( caseObject );
-
         Project projectFormDB = projectDAO.get( project.getId() );
         jdbcManyRelationsHelper.fillAll( projectFormDB );
+        projectFormDB.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(project.getId())));
+        projectFormDB.setProducts(new HashSet<>(devUnitDAO.getProjectProducts(project.getId())));
+
+        List<CompanyImportanceItem> sortedImportanceLevels
+                = companyImportanceItemDAO.getSortedImportanceLevels(project.getCustomerId());
 
         Project oldStateProject = projectDAO.get( project.getId() );
         jdbcManyRelationsHelper.fillAll( oldStateProject );
+        oldStateProject.setProjectSlas(getSortedSla(oldStateProject.getProjectSlas(), sortedImportanceLevels));
+        oldStateProject.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(project.getId())));
+        oldStateProject.setProducts(new HashSet<>(devUnitDAO.getProjectProducts(project.getId())));
 
         if (!canAccessProject(policyService, token, En_Privilege.PROJECT_EDIT, oldStateProject.getTeam())) {
             return error(En_ResultStatus.PERMISSION_DENIED);
@@ -258,8 +302,6 @@ public class ProjectServiceImpl implements ProjectService {
         if (!Objects.equals(project.getCustomer(), projectFormDB.getCustomer())) {
             return error(En_ResultStatus.NOT_ALLOWED_CHANGE_PROJECT_COMPANY);
         }
-
-        caseObject = createCaseObjectFromProject(caseObject, project);
 
         projectFormDB.setTechnicalSupportValidity(project.getTechnicalSupportValidity());
         projectFormDB.setWorkCompletionDate(project.getWorkCompletionDate());
@@ -277,30 +319,32 @@ public class ProjectServiceImpl implements ProjectService {
         jdbcManyRelationsHelper.persist(project, Project.Fields.PROJECT_PLANS);
 
         try {
-            updateTeam( caseObject, project.getTeam() );
-            updateLocations( caseObject, project.getRegion() );
-            updateProducts( projectFormDB, project.getProducts() );
+            updateDevUnits( projectFormDB, emptyIfNull(projectFormDB.getProducts()),  emptyIfNull(project.getProducts()) );
+            updateDevUnits( projectFormDB, emptyIfNull(projectFormDB.getProductDirections()), emptyIfNull(project.getProductDirections()) );
         } catch (Throwable e) {
-            log.error("saveProject(): error during save project when update one of following parameters: team, location, or products;", e);
-            throw new ResultStatusException(En_ResultStatus.INTERNAL_ERROR);
+            log.error("saveProject(): error during save project when update products;", e);
+            throw new RollbackTransactionException(En_ResultStatus.INTERNAL_ERROR);
         }
 
         boolean merge = projectDAO.merge(projectFormDB);
 
         if (!merge) {
             log.error("saveProject(): failed to merge project. Rollback transaction");
-            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
-        merge = caseObjectDAO.merge( caseObject );
+        merge = updateCaseObjectPart(token, project);
 
         if (!merge) {
             log.error("saveProject(): failed to merge caseObject. Rollback transaction");
-            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
         Project newStateProject = projectDAO.get(project.getId());
         jdbcManyRelationsHelper.fillAll(newStateProject);
+        newStateProject.setProjectSlas(getSortedSla(newStateProject.getProjectSlas(), sortedImportanceLevels));
+        newStateProject.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(project.getId())));
+        newStateProject.setProducts(new HashSet<>(devUnitDAO.getProjectProducts(project.getId())));
 
         return ok(project).publishEvent(new ProjectUpdateEvent(this, oldStateProject, newStateProject, token.getPersonId()));
     }
@@ -322,7 +366,7 @@ public class ProjectServiceImpl implements ProjectService {
         Long caseObjectId = caseObjectDAO.persist(caseObject);
         if (caseObjectId == null) {
             log.warn("createProject(): caseObject not created. project={}", project);
-            throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
         }
         project.setId(caseObjectId);
 
@@ -330,24 +374,26 @@ public class ProjectServiceImpl implements ProjectService {
 
         if (projectId == null) {
             log.warn("createProject(): project not created. project={}", project);
-            throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
         }
 
         jdbcManyRelationsHelper.persist(project, "projectSlas");
         jdbcManyRelationsHelper.persist(project, Project.Fields.PROJECT_PLANS);
+        jdbcManyRelationsHelper.persist(project, Project.Fields.PROJECT_SUBCONTRACTORS);
 
         try {
             updateTeam(caseObject, project.getTeam());
             updateLocations(caseObject,  project.getRegion());
-            updateProducts(project, project.getProducts());
+            updateDevUnits( project, new HashSet<>(), emptyIfNull(project.getProducts()) );
+            updateDevUnits( project, new HashSet<>(), emptyIfNull(project.getProductDirections()) );
         } catch (Throwable e) {
             log.error("createProject(): error during create project when set one of following parameters: team, location, or products; {}", e.getMessage());
-            throw new ResultStatusException(En_ResultStatus.INTERNAL_ERROR);
+            throw new RollbackTransactionException(En_ResultStatus.INTERNAL_ERROR);
         }
 
         boolean merged = caseObjectDAO.merge(caseObject);
         if (!merged) {
-            throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
         }
 
         List<CaseLink> links = emptyIfNull(project.getLinks());
@@ -356,6 +402,10 @@ public class ProjectServiceImpl implements ProjectService {
 
         Result<List<CaseLink>> createdLinksResult
                 = caseLinkService.createLinks(token, links, En_CaseType.PROJECT);
+
+        long stateId = project.getState().getId();
+
+        addStateHistory(token, projectId, stateId, caseStateDAO.get(stateId).getState());
 
         ProjectCreateEvent projectCreateEvent = new ProjectCreateEvent(this, token.getPersonId(), project.getId());
 
@@ -398,8 +448,12 @@ public class ProjectServiceImpl implements ProjectService {
         SearchResult<Project> projects = projectDAO.getSearchResult(query);
 
         jdbcManyRelationsHelper.fill(projects.getResults(), "members");
-        jdbcManyRelationsHelper.fill(projects.getResults(), "products");
         jdbcManyRelationsHelper.fill(projects.getResults(), "locations");
+        projects.forEach(project -> {
+                    project.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(project.getId())));
+                    project.setProducts(new HashSet<>(devUnitDAO.getProjectProducts(project.getId())));
+                }
+        );
 
         return ok(projects);
     }
@@ -418,6 +472,7 @@ public class ProjectServiceImpl implements ProjectService {
         List<Project> projects = projectDAO.listByQuery(query);
 
         jdbcManyRelationsHelper.fill(projects, "products");
+        jdbcManyRelationsHelper.fill(projects, "productDirections");
 
         List<ProjectInfo> result = projects.stream()
                 .map(ProjectInfo::fromProject).collect(toList());
@@ -465,6 +520,54 @@ public class ProjectServiceImpl implements ProjectService {
 
         log.info("notifyExpiringProjectTechnicalSupportValidity(): done");
         return ok(true);
+    }
+
+    private boolean updateCaseObjectPart(AuthToken token, Project project) {
+        CaseObject caseObject = caseObjectDAO.get( project.getId() );
+        jdbcManyRelationsHelper.fillAll( caseObject );
+
+        long oldStateId = caseObject.getStateId();
+        long newStateId = project.getStateId();
+
+        caseObject = createCaseObjectFromProject(caseObject, project);
+
+        try {
+            updateTeam( caseObject, project.getTeam() );
+            updateLocations( caseObject, project.getRegion() );
+        } catch (Throwable e) {
+            log.error("saveProject(): error during save project when update team or location;", e);
+            throw new RollbackTransactionException(En_ResultStatus.INTERNAL_ERROR);
+        }
+
+        if (project.getState() != En_RegionState.PAUSED) {
+            caseObject.setPauseDate(null);
+        }
+
+        boolean isMergeSuccessful = caseObjectDAO.merge(caseObject);
+
+        boolean isStateChanged = oldStateId != newStateId;
+
+        if (isMergeSuccessful && isStateChanged) {
+            changeStateHistory(token, project.getId(), oldStateId, caseStateDAO.get(oldStateId).getState(), newStateId, caseStateDAO.get(newStateId).getState());
+        }
+
+        return isMergeSuccessful;
+    }
+
+    private List<ProjectSla> getSortedSla(List<ProjectSla> unsortedSla, List<CompanyImportanceItem> companyImportanceItems) {
+        return unsortedSla
+                .stream()
+                .sorted(Comparator.comparingInt(projectSla -> getProjectSlaOrderNumber(projectSla, companyImportanceItems)))
+                .collect(toList());
+    }
+
+    private Integer getProjectSlaOrderNumber(ProjectSla projectSla, List<CompanyImportanceItem> companyImportanceItems) {
+        return companyImportanceItems
+                .stream()
+                .filter(companyImportanceItem -> companyImportanceItem.getImportanceLevelId().equals(projectSla.getImportanceLevelId()))
+                .map(CompanyImportanceItem::getOrderNumber)
+                .findAny()
+                .orElse(0);
     }
 
     private Map<En_ExpiringProjectTSVPeriod, Interval> makeProjectTSVIntervals(LocalDate now) {
@@ -560,8 +663,6 @@ public class ProjectServiceImpl implements ProjectService {
         caseObject.setManagerId(project.getLeader() == null ? null : project.getLeader().getId());
         caseObject.setPauseDate( project.getPauseDate() );
 
-        caseObject.setProductId(project.getProductDirectionEntityOption() == null ? null :  project.getProductDirectionEntityOption().getId());
-
         if (project.getCustomer() == null) {
             caseObject.setInitiatorCompany(null);
         } else {
@@ -631,30 +732,26 @@ public class ProjectServiceImpl implements ProjectService {
         caseLocationDAO.persist( CaseLocation.makeLocationOf( caseObject, location ) );
     }
 
-    private void updateProducts(Project project, Set<DevUnit> products) {
-        if (products == null)
+    private void updateDevUnits(Project project, Set<DevUnit> oldDevUnits , Set<DevUnit> newDevUnits) {
+        if (isEmpty(newDevUnits)) {
             return;
+        }
 
-        Set<DevUnit> oldProducts = project.getProducts() == null ? new HashSet<>() : project.getProducts();
-        Set<DevUnit> newProducts = products == null ? new HashSet<>() : products;
+        Set<DevUnit> toDelete = new HashSet<>(oldDevUnits);
+        Set<DevUnit> toCreate = new HashSet<>(newDevUnits);
+        toCreate.removeAll(oldDevUnits);
+        toDelete.removeAll(newDevUnits);
 
-        Set<DevUnit> toDelete = new HashSet<>(oldProducts);
-        Set<DevUnit> toCreate = new HashSet<>(newProducts);
-        toCreate.removeAll(oldProducts);
-        toDelete.removeAll(newProducts);
-
-        ProjectToProduct projectToProduct = new ProjectToProduct(project.getId(), null);
+        ProjectToProduct projectToDevUnit = new ProjectToProduct(project.getId(), null);
 
         toDelete.forEach(du -> {
-            projectToProduct.setProductId(du.getId());
-            projectToProductDAO.removeByKey(projectToProduct);
+            projectToDevUnit.setProductId(du.getId());
+            projectToProductDAO.removeByKey(projectToDevUnit);
         });
         toCreate.forEach(du -> {
-            projectToProduct.setProductId(du.getId());
-            projectToProductDAO.persist(projectToProduct);
+            projectToDevUnit.setProductId(du.getId());
+            projectToProductDAO.persist(projectToDevUnit);
         });
-
-        project.setProducts(newProducts);
     }
 
     private void iterateAllLocations( Project project, Consumer< Location > handler ) {
@@ -700,5 +797,20 @@ public class ProjectServiceImpl implements ProjectService {
             locationQuery.setSortDir(En_SortDir.ASC);
         }
         return locationQuery;
+    }
+
+    private Result<Long> addStateHistory(AuthToken authToken, Long projectId, Long stateId, String stateName) {
+        return historyService.createHistory(authToken, projectId, En_HistoryAction.ADD, En_HistoryType.CASE_STATE, null, null, stateId, stateName);
+    }
+
+    private Result<Long> changeStateHistory(AuthToken token, Long projectId, Long oldStateId, String oldStateName, Long newStateId, String newStateName) {
+        return historyService.createHistory(token, projectId, En_HistoryAction.CHANGE, En_HistoryType.CASE_STATE, oldStateId, oldStateName, newStateId, newStateName);
+    }
+
+    private AuthToken createFakeToken(Long personId) {
+        AuthToken result = new AuthToken("0");
+        result.setPersonId(personId);
+
+        return result;
     }
 }

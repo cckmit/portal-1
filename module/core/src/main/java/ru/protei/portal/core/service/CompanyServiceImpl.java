@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.Project;
@@ -19,14 +18,11 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
-import ru.protei.portal.core.utils.EntityCache;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import javax.annotation.PostConstruct;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
@@ -118,7 +114,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<List<EntityOption>> subcontractorOptionListByCompanyIds(Collection<Long> companyIds) {
+    public Result<List<EntityOption>> subcontractorOptionListByCompanyIds(Collection<Long> companyIds, boolean isActive) {
 
         if (CollectionUtils.isEmpty(companyIds)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -126,6 +122,8 @@ public class CompanyServiceImpl implements CompanyService {
 
         ProjectQuery query = new ProjectQuery();
         query.setInitiatorCompanyIds(setOf(companyIds));
+        query.setDeleted(CaseObject.NOT_DELETED);
+        query.setActive(isActive);
         Collection<Project> list = projectDAO.getProjects(query);
         if (list == null) {
             return error(En_ResultStatus.GET_DATA_ERROR);
@@ -153,7 +151,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<List<EntityOption>> companyOptionListBySubcontractorIds(Collection<Long> subcontractorIds) {
+    public Result<List<EntityOption>> companyOptionListBySubcontractorIds(Collection<Long> subcontractorIds, boolean isActive) {
 
         if (CollectionUtils.isEmpty(subcontractorIds)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -161,6 +159,8 @@ public class CompanyServiceImpl implements CompanyService {
 
         ProjectQuery query = new ProjectQuery();
         query.setSubcontractorIds(setOf(subcontractorIds));
+        query.setDeleted(CaseObject.NOT_DELETED);
+        query.setActive(isActive);
         Collection<Project> list = projectDAO.getProjects(query);
         if (list == null) {
             return error(En_ResultStatus.GET_DATA_ERROR);
@@ -399,7 +399,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<List<CompanyImportanceItem>> getImportanceLevels(Long companyId) {
+    public Result<List<CompanyImportanceItem>> getCompanyImportanceItems(Long companyId) {
         List<CompanyImportanceItem> result = companyImportanceItemDAO.getSortedImportanceLevels(companyId);
         return ok(result);
     }
@@ -417,8 +417,8 @@ public class CompanyServiceImpl implements CompanyService {
 
         List<CompanyImportanceItem> importanceItems = new ArrayList<>();
 
-        for (En_ImportanceLevel level : En_ImportanceLevel.values(true)) {
-            importanceItems.add(new CompanyImportanceItem(companyId, level.getId(), level.getId()));
+        for (Integer nextDefaultImportanceId : CrmConstants.ImportanceLevel.commonImportanceLevelIds) {
+            importanceItems.add(new CompanyImportanceItem(companyId, nextDefaultImportanceId, nextDefaultImportanceId));
         }
         companyImportanceItemDAO.persistBatch(importanceItems);
     }

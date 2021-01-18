@@ -26,12 +26,13 @@ public class CompanyDepartmentSelector extends ButtonPopupSingleSelector<EntityO
     }
 
     @Override
-    protected SelectorItem<EntityOption> makeSelectorItem(EntityOption value, String elementHtml) {
+    protected SelectorItem<EntityOption> makeSelectorItem( EntityOption value, String elementHtml ) {
         PopupSelectorItemWithEdit<EntityOption> item = new PopupSelectorItemWithEdit<>();
 
         item.setName(elementHtml);
         item.setId(value.getId());
         item.setEditable(StringUtils.isEmpty(value.getInfo()));
+        item.setTitle( elementHtml );
         item.addEditHandler(editHandler);
         return item;
     }

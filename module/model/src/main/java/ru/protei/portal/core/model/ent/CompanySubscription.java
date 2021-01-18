@@ -1,8 +1,11 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 /**
  * Created by michael on 26.05.17.
@@ -33,9 +36,7 @@ public class CompanySubscription implements Serializable {
     @JdbcJoinedColumn(localColumn = "dev_unit_id", table = "dev_unit", remoteColumn = "id", mappedColumn = "unit_name")
     private String productName;
 
-
-    public CompanySubscription() {
-    }
+    public CompanySubscription() {}
 
     public Long getId() {
         return id;
@@ -105,8 +106,8 @@ public class CompanySubscription implements Serializable {
         return (this.email + "_" + this.companyId + "_" + this.productId + "_" + this.platformId);
     }
 
-    public static boolean isProteiRecipient(String email){
-        return email.endsWith("@protei.ru");
+    public static boolean isProteiRecipient(String email) {
+        return stream(CrmConstants.PROTEI_DOMAINS).anyMatch(email::endsWith);
     }
 
     @Override

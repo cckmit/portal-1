@@ -13,11 +13,11 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.dict.En_WorkTrigger;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.ImportanceLevel;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
@@ -81,12 +81,12 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
-    public  HasValue<En_ImportanceLevel> importance( ) {
+    public HasValue<ImportanceLevel> importance( ) {
         return importance;
     }
 
     @Override
-    public void fillImportanceOptions(List<En_ImportanceLevel> options) {
+    public void fillImportanceOptions(List<ImportanceLevel> options) {
         importance.fillOptions(options);
     }
 
@@ -342,6 +342,11 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
+    public void setProductBorderBottomVisible(boolean isVisible) {
+        productContainer.setStyleName("add-border-bottom", isVisible);
+    }
+
+    @Override
     public HasVisibility jiraSlaSelectorVisibility() {
         return jiraSlaSelector;
     }
@@ -559,7 +564,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @UiHandler("importance")
-    public void onImportanceChanged(ValueChangeEvent<En_ImportanceLevel> event) {
+    public void onImportanceChanged(ValueChangeEvent<ImportanceLevel> event) {
         activity.onImportanceChanged();
     }
 

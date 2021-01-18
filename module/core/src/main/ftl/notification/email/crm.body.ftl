@@ -235,6 +235,12 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                                   <#case "basic">
                                      background: #42a5f5;
                                      <#break>
+                                  <#case "medium">
+                                     background: #c9d600;
+                                     <#break>
+                                  <#case "emergency">
+                                     background: #ee1414;
+                                     <#break>
                                   <#default>
                                      background: #607D8B;
                                 </#switch>
@@ -373,20 +379,12 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                             ${TranslitUtils.transliterate(caseComment.author.displayName, lang)!''}
                         </#if>
                     </span>
-                    <#if caseComment.caseState??>
-                        ${_changedStateTo} ${caseComment.caseState}
-                    <#elseif caseComment.caseImportance??>
-                        ${_changedImportanceTo} ${caseComment.caseImportance}
-                    <#elseif caseComment.caseManager??>
-                        ${_changedManagerTo} ${TranslitUtils.transliterate(caseComment.caseManagerAndCompany, lang)}
-                    <#elseif caseComment.text??>
-                        <#if caseComment.oldText??>
-                            <span style="color:#11731d;line-height: 17px;margin-right:10px">${_updated}</span>
-                            <div class="markdown"
-                                 style="margin-top:4px;line-height:1.5em;"><@diffHTML old="${caseComment.oldText}" new="${caseComment.text}"/></div>
-                        <#else>
-                            <div class="markdown" style="margin-top:4px;line-height:1.5em;">${caseComment.text}</div>
-                        </#if>
+                    <#if caseComment.oldText??>
+                        <span style="color:#11731d;line-height: 17px;margin-right:10px">${_updated}</span>
+                        <div class="markdown"
+                             style="margin-top:4px;line-height:1.5em;"><@diffHTML old="${caseComment.oldText}" new="${caseComment.text}"/></div>
+                    <#else>
+                        <div class="markdown" style="margin-top:4px;line-height:1.5em;">${caseComment.text}</div>
                     </#if>
                 </div>
             </#list>

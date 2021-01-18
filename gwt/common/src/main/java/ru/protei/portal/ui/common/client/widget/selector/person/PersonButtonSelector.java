@@ -2,15 +2,13 @@ package ru.protei.portal.ui.common.client.widget.selector.person;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.selector.button.ButtonPopupSingleSelector;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
+import ru.protei.portal.ui.common.client.widget.selector.button.ButtonPopupSingleSelector;
 
-import java.util.Set;
 import java.util.logging.Logger;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.contains;
@@ -37,6 +35,7 @@ public class PersonButtonSelector extends ButtonPopupSingleSelector< PersonShort
     protected SelectorItem makeSelectorItem( PersonShortView value, String elementHtml ) {
         PopupSelectorItem item = new PopupSelectorItem();
         item.setName(elementHtml);
+        item.setTitle( elementHtml );
         if(value!=null){
             item.setIcon( value.isFired() ? "not-active" : "" );
             item.setIcon( value.isFired() ? "fa fa-ban ban" : "" );

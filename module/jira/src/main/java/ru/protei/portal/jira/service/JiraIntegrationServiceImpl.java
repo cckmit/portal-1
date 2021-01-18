@@ -93,6 +93,10 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     AttachmentDAO attachmentDAO;
     @Autowired
     PlatformDAO platformDAO;
+    @Autowired
+    HistoryDAO historyDAO;
+    @Autowired
+    CaseStateDAO caseStateDAO;
 
     private EntityCache<JiraEndpoint> jiraEndpointCache;
     private EntityCache<JiraEndpoint> jiraEndpointCache() {
@@ -128,9 +132,9 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     @Transactional
     public CompletableFuture<AssembledCaseEvent> create( JiraEndpoint endpoint, JiraHookEventData event) {
         final Issue issue = event.getIssue();
-        IssueField clmIdField = getClmId(issue);
-        if (clmIdField != null && caseObjectDAO.isJiraDuplicateByClmId(clmIdField.getValue().toString())) {
-            logger.info( "issue is duplicate by clm id" );
+        IssueField projectIdField = getProjectId(issue);
+        if (projectIdField != null && caseObjectDAO.isJiraDuplicateByProjectId(projectIdField.getValue().toString())) {
+            logger.info( "issue is duplicate by projectId" );
             return null;
         }
         CachedPersonMapper personMapper = new CachedPersonMapper( personDAO, contactItemDAO, jdbcManyRelationsHelper, endpoint, personDAO.get( endpoint.getPersonId() ));
@@ -153,6 +157,11 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         CaseObject caseObj = caseObjectDAO.getByExternalAppCaseId(makeExternalIssueID(endpoint.getId(), issue));
         if (caseObj == null) {
+            IssueField projectIdField = getProjectId(issue);
+            if (projectIdField != null && caseObjectDAO.isJiraDuplicateByProjectId(projectIdField.getValue().toString())) {
+                logger.info( "issue is duplicate by projectId" );
+                return null;
+            }
             Person initiator = personMapper.toProteiPerson( issue.getReporter() );
             return completedFuture(createCaseObject( initiator, authorId, issue, endpoint, personMapper ));
         }
@@ -186,12 +195,17 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
             caseObj.setStateName(newState.getLocalStatusName());
         }
 
-        En_ImportanceLevel oldImportance = En_ImportanceLevel.getById(caseObj.getImpLevel());
-        En_ImportanceLevel newImportance = getNewImportanceLevel(endpoint.getPriorityMapId(), getIssueSeverity(issue));
-        newImportance = newImportance == null ? En_ImportanceLevel.getById(caseObj.getImpLevel()) : newImportance;
-        caseObj.setImpLevel(newImportance.getId());
 
-        caseObj.setName(getNewName(issue, caseObj.getCaseNumber(), getClmId(issue)));
+        ImportanceLevel oldImportance = new ImportanceLevel(caseObj.getImpLevel(), caseObj.getImportanceCode());
+        ImportanceLevel newImportance = getNewImportanceLevel(endpoint.getPriorityMapId(), getIssueSeverity(issue));
+
+        if (newImportance == null) {
+            newImportance = oldImportance;
+        }
+
+        caseObj.setImportanceLevel(newImportance);
+
+        caseObj.setName(getNewName(issue, caseObj.getCaseNumber(), getProjectId(issue)));
 
         ExternalCaseAppData appData = externalCaseAppDAO.get(caseObj.getId());
         JiraExtAppData jiraExtAppData = JiraExtAppData.fromJSON(appData.getExtAppData());
@@ -207,11 +221,13 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         caseObjectDAO.merge(caseObj);
 
         if (caseObj.getStateId() != oldStateId) {
-            persistStateComment(authorId, caseObj.getId(), caseObj.getStateId());
+            changeStateHistory(new Date(), authorId, caseObj.getId(),
+                    oldStateId, caseStateDAO.get(oldStateId).getState(),
+                    caseObj.getStateId(), caseObj.getStateName());
         }
 
         if (!newImportance.equals(oldImportance)) {
-            persistImportanceComment(authorId, caseObj.getId(), newImportance.getId());
+            changeImportanceHistory(new Date(), authorId, caseObj.getId(), oldImportance, newImportance);
         }
 
         AssembledCaseEvent caseEvent = generateUpdateEvent(oldCase, caseObj, authorId);
@@ -244,12 +260,17 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         }
         logger.info("issue {}, case-state new={}", issue.getKey(), caseObj.getStateId());
 
-        En_ImportanceLevel newImportance = getNewImportanceLevel(endpoint.getPriorityMapId(), getIssueSeverity(issue));
-        logger.debug("issue {}, case-priority old={}, new={}", issue.getKey(), caseObj.getImportanceLevel(), newImportance);
-        caseObj.setImpLevel(newImportance == null ? En_ImportanceLevel.BASIC.getId() : newImportance.getId());
+        ImportanceLevel newImportance = getNewImportanceLevel(endpoint.getPriorityMapId(), getIssueSeverity(issue));
 
-        IssueField clmId = getClmId(issue);
-        caseObj.setName(getNewName(issue, caseObj.getCaseNumber(), clmId));
+        if (newImportance == null) {
+            newImportance = new ImportanceLevel(CrmConstants.ImportanceLevel.BASIC, CrmConstants.ImportanceLevel.BASIC_NAME);
+        }
+
+        logger.debug("issue {}, case-priority old={}, new={}", issue.getKey(), caseObj.getImportanceCode(), newImportance);
+        caseObj.setImportanceLevel(newImportance);
+
+        IssueField projectId = getProjectId(issue);
+        caseObj.setName(getNewName(issue, caseObj.getCaseNumber(), projectId));
 
         List<Platform> platforms = getPlatforms(caseObj.getInitiatorCompanyId());
         if (platforms != null && platforms.size() == 1) {
@@ -265,15 +286,15 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         caseObj.setInfo(convertDescription(issue.getDescription(), addedAttachments));
         caseObjectDAO.merge(caseObj);
 
-        persistStateComment(authorId, caseObj.getId(), caseObj.getStateId());
-        persistImportanceComment(authorId, caseObj.getId(), caseObj.getImpLevel());
+        addStateHistory(caseObj.getCreated(), authorId, caseObj.getId(), caseObj.getStateId(), caseStateDAO.get(caseObj.getStateId()).getState());
+        addImportanceHistory(caseObj.getCreated(), authorId, caseObj.getId(), newImportance);
 
         List<CaseComment> caseComments = processComments( endpoint.getServerLogin(), issue.getComments(), caseObj,
                 personMapper, jiraExtAppData, addedAttachments, caseToAttachments );
 
         jiraExtAppData = addIssueTypeAndSeverity(jiraExtAppData, issue.getIssueType().getName(), getIssueSeverity(issue));
-        if (clmId != null) {
-            jiraExtAppData.setClmId(clmId.getValue().toString());
+        if (projectId != null) {
+            jiraExtAppData.setProjectId(projectId.getValue().toString());
         }
 
         final ExternalCaseAppData appData = new ExternalCaseAppData(caseObj);
@@ -509,16 +530,16 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         return state;
     }
 
-    private String getNewName(Issue issue, Long caseNumber, IssueField issueCLM){
+    private String getNewName(Issue issue, Long caseNumber, IssueField issueProjectId){
         logger.debug("update case name, issue={}, case={}", issue.getKey(), caseNumber);
-        return (issueCLM == null ? "" : issueCLM.getValue() + " | ") + issue.getSummary();
+        return (issueProjectId == null ? "" : issueProjectId.getValue() + " | ") + issue.getSummary();
     }
 
-    private IssueField getClmId(Issue issue) {
-        return issue.getFieldByName(CustomJiraIssueParser.CUSTOM_FIELD_CLM);
+    private IssueField getProjectId(Issue issue) {
+        return issue.getFieldByName(CustomJiraIssueParser.CUSTOM_FIELD_PROJECT_ID);
     }
 
-    private En_ImportanceLevel getNewImportanceLevel(Long priorityMapId, String severityName) {
+    private ImportanceLevel getNewImportanceLevel(Long priorityMapId, String severityName) {
         JiraPriorityMapEntry jiraPriorityEntry = severityName != null ? jiraPriorityMapEntryDAO.getByJiraPriorityName(priorityMapId, severityName) : null;
 
         if (jiraPriorityEntry == null) {
@@ -526,27 +547,41 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
             return null;
         }
 
-        return En_ImportanceLevel.getById(jiraPriorityEntry.getLocalPriorityId());
+        return new ImportanceLevel(jiraPriorityEntry.getLocalPriorityId(), jiraPriorityEntry.getLocalPriorityName());
     }
 
-    private Long persistStateComment(Long authorId, Long caseId, long stateId){
-        CaseComment stateChangeMessage = new CaseComment();
-        stateChangeMessage.setAuthorId(authorId);
-        stateChangeMessage.setCreated(new Date());
-        stateChangeMessage.setCaseId(caseId);
-        stateChangeMessage.setCaseStateId(stateId);
-        stateChangeMessage.setPrivacyType(En_CaseCommentPrivacyType.PUBLIC);
-        return commentDAO.persist(stateChangeMessage);
+    private Long addStateHistory(Date date, Long personId, Long caseId, Long stateId, String stateName) {
+        return createHistory(date, personId, caseId, En_HistoryAction.ADD, En_HistoryType.CASE_STATE, null, null, stateId, stateName);
     }
 
-    private Long persistImportanceComment(Long authorId, Long caseId, Integer importance) {
-        CaseComment stateChangeMessage = new CaseComment();
-        stateChangeMessage.setAuthorId(authorId);
-        stateChangeMessage.setCreated(new Date());
-        stateChangeMessage.setCaseId(caseId);
-        stateChangeMessage.setCaseImpLevel(importance);
-        stateChangeMessage.setPrivacyType(En_CaseCommentPrivacyType.PUBLIC);
-        return commentDAO.persist(stateChangeMessage);
+    private Long changeStateHistory(Date date, Long personId, Long caseId, Long oldStateId, String oldStateName, Long newStateId, String newStateName) {
+        return createHistory(date, personId, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_STATE, oldStateId, oldStateName, newStateId, newStateName);
+    }
+
+    private Long addImportanceHistory(Date date, Long personId, Long caseId, ImportanceLevel newImportance) {
+        return createHistory(date, personId, caseId, En_HistoryAction.ADD, En_HistoryType.CASE_IMPORTANCE, null, null,
+                newImportance.getId().longValue(), newImportance.getCode());
+    }
+
+    private Long changeImportanceHistory(Date date, Long personId, Long caseId, ImportanceLevel oldImportance, ImportanceLevel newImportance) {
+        return createHistory(date, personId, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_IMPORTANCE,
+                (long)oldImportance.getId(), oldImportance.getCode(), (long)newImportance.getId(), newImportance.getCode());
+    }
+
+    private Long createHistory(Date date, Long personId, Long caseObjectId, En_HistoryAction action,
+                               En_HistoryType type, Long oldId, String oldValue, Long newId, String newValue) {
+        History history = new History();
+        history.setInitiatorId(personId);
+        history.setDate(date);
+        history.setCaseObjectId(caseObjectId);
+        history.setAction(action);
+        history.setType(type);
+        history.setOldId(oldId);
+        history.setOldValue(oldValue);
+        history.setNewId(newId);
+        history.setNewValue(newValue);
+
+        return historyDAO.persist(history);
     }
 
     private JiraExtAppData addIssueTypeAndSeverity(JiraExtAppData jiraExtAppData, String issueType, String severity) {

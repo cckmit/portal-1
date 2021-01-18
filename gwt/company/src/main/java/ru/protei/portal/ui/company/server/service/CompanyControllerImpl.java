@@ -13,9 +13,9 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.service.CaseStateService;
 import ru.protei.portal.core.service.CompanyService;
 import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.CompanyController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
-import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -177,10 +177,10 @@ public class CompanyControllerImpl implements CompanyController {
     }
 
     @Override
-    public List<EntityOption> getSubcontractorOptionList(Long companyId) throws RequestFailedException {
-        log.info("getSubcontractorOptionList(): companyId={}", companyId);
+    public List<EntityOption> getSubcontractorOptionList(Long companyId, boolean isActive) throws RequestFailedException {
+        log.info("getSubcontractorOptionList(): companyId={}, isActive={}", companyId, isActive);
 
-        Result<List<EntityOption>> result = companyService.subcontractorOptionListByCompanyIds(setOf(companyId));
+        Result<List<EntityOption>> result = companyService.subcontractorOptionListByCompanyIds(setOf(companyId), isActive);
 
         log.info("getSubcontractorOptionList(): {}", result.isOk() ? "ok" : result.getStatus());
 
@@ -191,10 +191,10 @@ public class CompanyControllerImpl implements CompanyController {
     }
 
     @Override
-    public List<EntityOption> getInitiatorOptionList(Long subcontractorId) throws RequestFailedException {
-        log.info("getInitiatorOptionList(): subcontractorId={}", subcontractorId);
+    public List<EntityOption> getInitiatorOptionList(Long subcontractorId, boolean isActive) throws RequestFailedException {
+        log.info("getInitiatorOptionList(): subcontractorId={}, isActive={}", subcontractorId, isActive);
 
-        Result<List<EntityOption>> result = companyService.companyOptionListBySubcontractorIds(setOf(subcontractorId));
+        Result<List<EntityOption>> result = companyService.companyOptionListBySubcontractorIds(setOf(subcontractorId), isActive);
 
         log.info("getInitiatorOptionList(): {}", result.isOk() ? "ok" : result.getStatus());
 
@@ -288,16 +288,9 @@ public class CompanyControllerImpl implements CompanyController {
     }
 
     @Override
-    public List<En_ImportanceLevel> getImportanceLevels(Long companyId) throws RequestFailedException {
-        log.info("getImportanceLevels() companyId={}", companyId);
-        List<CompanyImportanceItem> importanceItems = checkResultAndGetData(companyService.getImportanceLevels(companyId));
-        List<En_ImportanceLevel> importanceLevels = importanceItems.stream()
-                .map(CompanyImportanceItem::getImportanceLevelId)
-                .map(En_ImportanceLevel::getById)
-                .collect(Collectors.toList());
-        log.info("getImportanceLevels() importanceLevels={}", importanceLevels);
-
-        return importanceLevels;
+    public List<CompanyImportanceItem> getCompanyImportanceItems(Long companyId) throws RequestFailedException {
+        log.info("getCompanyImportanceItems() companyId={}", companyId);
+        return checkResultAndGetData(companyService.getCompanyImportanceItems(companyId));
     }
 
     @Autowired

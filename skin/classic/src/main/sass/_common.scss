@@ -1292,12 +1292,20 @@ td.info {
   color: #ffa726 !important;
 }
 
+.medium {
+  color: #c9d600 !important;
+}
+
 .basic {
   color: $info_color !important;
 }
 
 .cosmetic {
   color: #607D8B !important;
+}
+
+.emergency {
+  color: #ee1414 !important;
 }
 
 /****************/
@@ -1397,6 +1405,7 @@ td.info {
   color: $info_light_color !important;
 }
 
+.state-development,
 .state-customer_pending {
   color: #133aadcf !important;
 }
@@ -1501,11 +1510,14 @@ td.info {
   font-weight: bold;
 }
 
+.label-development,
+.option-development .option-name,
 .label-customer_pending,
 .option-customer_pending .option-name {
   background-color: #133aadcf;
 }
 
+.case-development,
 .case-customer_pending {
   color: #133aadcf;
   font-weight: bold;
@@ -2007,6 +2019,30 @@ a {
     background-color: #eeff00 !important;
   }
 
+  &.emergency {
+    &:before {
+      content: "E";
+      color: #ffffff;
+    }
+    background-color: #960000 !important;
+  }
+
+  &.high {
+    &:before {
+      content: "H";
+      color: #333333;
+    }
+    background-color: #fcd64a !important;
+  }
+
+  &.low {
+    &:before {
+      content: "L";
+      color: #333333;
+    }
+    background-color: #e5e5e5 !important;
+  }
+
   &.center {
     display: block;
     margin: 0 auto;
@@ -2035,8 +2071,6 @@ a {
 }
 
 .importance-btn-group {
-  width: 200px;
-
   .btn {
     padding: .375rem .75rem;
   }
@@ -2064,6 +2098,21 @@ a {
 
 .case-importance-medium {
   color: #c9d600;
+  font-weight: bold;
+}
+
+.case-importance-emergency {
+  color: #960000;
+  font-weight: bold;
+}
+
+.case-importance-high {
+  color: #e9b90c;
+  font-weight: bold;
+}
+
+.case-importance-low {
+  color: #686868;
   font-weight: bold;
 }
 
@@ -2301,6 +2350,13 @@ a {
             font-size: 0.9em;
             cursor: pointer;
           }
+
+          .directions-label {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+          }
         }
       }
     }
@@ -2461,11 +2517,9 @@ a {
   .date {
     .input-group-btn {
       > button {
-        padding-top: 0;
-        padding-bottom: 0;
         border: 0;
         background-color: transparent;
-        margin-right: -15px;
+        padding: 0 0 0 5px;
       }
     }
   }
@@ -2816,7 +2870,7 @@ div.select2-container {
   border: 1px solid $error_color;
 }
 
-.multi-selector-without-border {
+.case-subscribers, .case-plans, .case-products {
   div.select2-container {
     border: 0 !important;
     ul.select2-choices {
@@ -2828,7 +2882,6 @@ div.select2-container {
       }
     }
   }
-
   .select2-container {
     .select2-button {
       .select2-add-button {
@@ -2838,16 +2891,12 @@ div.select2-container {
   }
 }
 
-.case-plans {
+.case-subscribers, .case-plans {
   div.select2-container {
-    border: 0 !important;
     ul.select2-choices {
-      padding-left: 0;
-      margin-bottom: 5px;
       li.select2-search-choice {
-        padding-right: 10px;
         .selected-value {
-          max-width: 100px;
+          max-width: 150px;
           text-overflow: ellipsis;
           overflow: hidden;
           white-space: nowrap;
@@ -2857,11 +2906,23 @@ div.select2-container {
       }
     }
   }
+}
 
-  .select2-container {
-    .select2-button {
-      .select2-add-button {
-        flex-grow: 0;
+.case-products {
+  div.select2-container {
+    ul.select2-choices {
+      li.select2-search-choice {
+        .selected-value {
+          span {
+            max-width: 120px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            line-height: 15px;
+            margin-bottom: -2px;
+            display: inline-block;
+          }
+        }
       }
     }
   }
@@ -4675,7 +4736,6 @@ table {
 
 .form-group {
   &.form-group-default.date-picker {
-    height: 54px !important;
 
     .form-control {
       border-top-right-radius: 3px;
@@ -4696,14 +4756,21 @@ table {
     }
   }
 
-  .project-team-selector {
-    .select2-container {
-      border: 0;
-      &.select2-container-multi {
-        .select2-add-button {
-          flex-grow: 0;
-        }
-      }
+  &.project-team {
+
+    padding: 7px 12px 4px;
+
+    label.fade {
+      opacity: .5;
+      -webkit-backface-visibility: hidden;
+      -moz-backface-visibility: hidden;
+      backface-visibility: hidden;
+    }
+
+    input, .select2-container {
+      border-radius: 2px !important;
+      -webkit-border-radius: 2px !important;
+      -moz-border-radius: 2px !important;
     }
 
     .project-team-selector-item:not(:first-child) {

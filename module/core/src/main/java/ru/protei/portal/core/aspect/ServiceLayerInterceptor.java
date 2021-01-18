@@ -10,13 +10,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.core.annotation.Order;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.DuplicateKeyException;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.CreateAuditObjectEvent;
 import ru.protei.portal.core.exception.InsufficientPrivilegesException;
 import ru.protei.portal.core.exception.InvalidAuthTokenException;
-import ru.protei.portal.core.exception.ResultStatusException;
+import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.CasePrivileged;
 import ru.protei.portal.core.model.annotations.Privileged;
@@ -112,8 +110,8 @@ public class ServiceLayerInterceptor {
                 return error( En_ResultStatus.PERMISSION_DENIED );
             }
 
-            if ( e instanceof ResultStatusException ) {
-                return error( ((ResultStatusException) e).getResultStatus());
+            if ( e instanceof RollbackTransactionException) {
+                return error( ((RollbackTransactionException) e).getResultStatus());
             }
 
             return error( En_ResultStatus.INTERNAL_ERROR );

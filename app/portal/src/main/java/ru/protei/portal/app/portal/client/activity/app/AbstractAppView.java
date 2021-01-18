@@ -1,6 +1,5 @@
 package ru.protei.portal.app.portal.client.activity.app;
 
-import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -31,4 +30,6 @@ public interface AbstractAppView extends IsWidget {
     void setExternalLinks(String html);
 
     void clearExternalLinks();
+
+    void showHelp(boolean isShow);
 }
