@@ -123,6 +123,7 @@ public abstract class CaseCommentListActivity
 
         view.setCaseCreatorId(event.caseCreatorId);
         view.setInitiatorCompanyId(event.initiatorCompanyId);
+        view.setMentionEnabled(event.isMentionEnabled);
 
         reloadComments(caseType, caseId);
     }
@@ -404,7 +405,8 @@ public abstract class CaseCommentListActivity
         view.setNewCommentHidden(!isModifyEnabled);
         view.setNewCommentDisabled(!isNewCommentEnabled);
 
-        view.setCommentPlaceholder(lang.commentAddMessageMentionPlaceholder());
+        view.setCommentPlaceholder(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW) ?
+                lang.commentAddMessageMentionPlaceholder() : lang.commentAddMessagePlaceholder());
 
         List<AbstractCaseCommentItemView> views = new ArrayList<>();
         List<String> textList = new ArrayList<>();

@@ -441,7 +441,8 @@ public abstract class IssueEditActivity implements
         show.isPrivateCase = issue.isPrivateCase();
         show.isNewCommentEnabled = !isTerminalState(issue.getStateId());
         show.textMarkup =  CaseTextMarkupUtil.recognizeTextMarkup( issue );
-        show.initiatorCompanyId =  issue.getInitiatorCompany().getId();
+        show.initiatorCompanyId = issue.getInitiatorCompany().getId();
+        show.isMentionEnabled = policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
         fireEvent( show );
 
     }
