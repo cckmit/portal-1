@@ -3,16 +3,21 @@ package ru.protei.portal.core.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.dao.CaseTagDAO;
 import ru.protei.portal.core.model.dao.HistoryDAO;
 import ru.protei.portal.core.model.dict.En_HistoryAction;
 import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.History;
+import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.core.model.query.HistoryQuery;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
@@ -21,6 +26,9 @@ public class HistoryServiceImpl implements HistoryService {
 
     @Autowired
     HistoryDAO historyDAO;
+
+    @Autowired
+    CaseTagDAO caseTagDAO;
 
     @Override
     @Transactional
@@ -68,6 +76,48 @@ public class HistoryServiceImpl implements HistoryService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        return listHistories(token, new HistoryQuery(caseId));
+        Result<List<History>> historyListResult = listHistories(token, new HistoryQuery(caseId));
+
+        if (historyListResult.isError()) {
+            return error(historyListResult.getStatus());
+        }
+
+        return ok(fillHistoriesWithColors(historyListResult.getData()));
+    }
+
+    private List<History> fillHistoriesWithColors(List<History> histories) {
+        Map<En_HistoryType, List<History>> typeToHistories = histories
+                .stream()
+                .collect(Collectors.toMap(History::getType, Arrays::asList, CollectionUtils::mergeLists));
+
+        fillTagHistoriesWithColors(typeToHistories.get(En_HistoryType.TAG));
+
+        return histories;
+    }
+
+    private void fillTagHistoriesWithColors(List<History> tagHistories) {
+        List<Long> preparedTagIds = tagHistories
+                .stream()
+                .flatMap(history -> Stream.of(history.getOldId(), history.getNewId()))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        CaseTagQuery caseTagQuery = new CaseTagQuery();
+        caseTagQuery.setIds(preparedTagIds);
+
+        Map<Long, String> caseTagIdToColor =
+                caseTagDAO.getListByQuery(caseTagQuery)
+                        .stream()
+                        .collect(Collectors.toMap(CaseTag::getId, CaseTag::getColor));
+
+        for (History nextHistory : tagHistories) {
+            if (nextHistory.getOldId() != null) {
+                nextHistory.setOldColor(caseTagIdToColor.get(nextHistory.getOldId()));
+            }
+
+            if (nextHistory.getNewId() != null) {
+                nextHistory.setNewColor(caseTagIdToColor.get(nextHistory.getNewId()));
+            }
+        }
     }
 }

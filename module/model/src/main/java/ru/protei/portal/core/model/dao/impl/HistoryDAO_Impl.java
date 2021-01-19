@@ -48,14 +48,12 @@ public class HistoryDAO_Impl extends PortalBaseJdbcDAO<History> implements Histo
 
     @Override
     public History getLastHistory(Long caseObjectId, En_HistoryType historyType) {
-        Condition condition = query()
+        List<History> historyResult = getSearchResult(query()
                 .where("history.case_object_id").equal(caseObjectId)
-                .and("history.value_type").equal(historyType.getId());
-
-        List<History> historyResult = getSearchResult(new JdbcQueryParameters()
-                .withCondition(condition.getSqlCondition(), condition.getSqlParameters())
-                .withSort(new JdbcSort(JdbcSort.Direction.DESC, "history.date"))
-                .withLimit(1)
+                .and("history.value_type").equal(historyType.getId())
+                .asQuery()
+                .sort(En_SortDir.DESC, "history.date")
+                .limit(1).build()
         ).getResults();
 
         return getFirst(historyResult);

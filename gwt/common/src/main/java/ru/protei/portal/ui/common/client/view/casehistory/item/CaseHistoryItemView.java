@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.view.casehistory.item;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -14,6 +15,8 @@ import ru.protei.portal.ui.common.client.activity.casehistory.item.AbstractCaseH
 
 import static ru.protei.portal.test.client.DebugIds.CASE_HISTORY.ITEM.*;
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
+import static ru.protei.portal.ui.common.client.util.ColorUtils.makeContrastColor;
+import static ru.protei.portal.ui.common.client.util.ColorUtils.makeSafeColor;
 
 /**
  * Один комментарий
@@ -49,8 +52,8 @@ public class CaseHistoryItemView
     }
 
     @Override
-    public void setHistoryType(String historyType) {
-        this.historyType.setInnerText(historyType + ":");
+    public void setChangeInfoMessage(String changeInfoMessage) {
+        this.changeInfoMessage.setInnerText(changeInfoMessage);
     }
 
     @Override
@@ -87,13 +90,47 @@ public class CaseHistoryItemView
         this.date.setInnerText(date);
     }
 
+    @Override
+    public void setPhoto(String photoUrl) {
+        this.photo.setSrc(photoUrl);
+    }
+
+    @Override
+    public void setAddedValueColor(String addedValueColor) {
+        addedValue.addClassName("colored-history-item");
+
+        String backgroundColor = makeSafeColor(addedValueColor);
+        String foregroundColor = makeContrastColor(backgroundColor);
+
+        addedValue.getStyle().setProperty("backgroundColor", backgroundColor);
+        addedValue.getStyle().setProperty("color", foregroundColor);
+    }
+
+    @Override
+    public void setChangedValueColors(String oldValueColor, String newValueColor) {
+        oldValue.addClassName("colored-history-item");
+        newValue.addClassName("colored-history-item");
+
+        String backgroundOldColor = makeSafeColor(oldValueColor);
+        String foregroundOldColor = makeContrastColor(backgroundOldColor);
+
+        String backgroundNewColor = makeSafeColor(newValueColor);
+        String foregroundNewColor = makeContrastColor(backgroundNewColor);
+
+        oldValue.getStyle().setProperty("backgroundColor", backgroundOldColor);
+        oldValue.getStyle().setProperty("color", foregroundOldColor);
+
+        newValue.getStyle().setProperty("backgroundColor", backgroundNewColor);
+        newValue.getStyle().setProperty("color", foregroundNewColor);
+    }
+
     private void setTestAttributes() {
         addedValue.setAttribute(DEBUG_ID_ATTRIBUTE, ADDED_VALUE);
         removedValue.setAttribute(DEBUG_ID_ATTRIBUTE, REMOVED_VALUE);
         oldValue.setAttribute(DEBUG_ID_ATTRIBUTE, OLD_VALUE);
         newValue.setAttribute(DEBUG_ID_ATTRIBUTE, NEW_VALUE);
         date.setAttribute(DEBUG_ID_ATTRIBUTE, CREATE_DATE);
-        historyType.setAttribute(DEBUG_ID_ATTRIBUTE, HISTORY_TYPE);
+        changeInfoMessage.setAttribute(DEBUG_ID_ATTRIBUTE, HISTORY_TYPE);
         initiator.setAttribute(DEBUG_ID_ATTRIBUTE, INITIATOR);
     }
 
@@ -110,10 +147,13 @@ public class CaseHistoryItemView
     SpanElement date;
 
     @UiField
+    ImageElement photo;
+
+    @UiField
     SpanElement initiator;
 
     @UiField
-    SpanElement historyType;
+    SpanElement changeInfoMessage;
 
     @UiField
     SpanElement oldValue;

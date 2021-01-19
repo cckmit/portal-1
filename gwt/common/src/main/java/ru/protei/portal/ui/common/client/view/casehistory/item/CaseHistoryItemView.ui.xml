@@ -4,20 +4,25 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel tag="li" styleName="row">
+    <g:HTMLPanel tag="li" styleName="row form-group">
         <div class="col-md-9">
-            <span ui:field="initiator" class="history-item-initiator"/>
-            <span ui:field="historyType" class="history-item-history-type"/>
+            <span class="thumbnail-wrapper d32 circular inline m-r-5">
+                <img ui:field="photo" src="#" alt="" width="32" height="32" class="thumbnail-photo"/>
+            </span>
+            <span ui:field="initiator" class="float-left m-r-10 font-weight-bold"/>
+            <span ui:field="changeInfoMessage" class="history-item-history-type"/>
             <g:HTMLPanel ui:field="addedValueContainer" tag="span" styleName="history-item-added-value">
-                <span ui:field="addedValue"/>
+                <span ui:field="addedValue" class="font-weight-bold"/>
             </g:HTMLPanel>
             <g:HTMLPanel ui:field="changedValueContainer" tag="span" styleName="history-item-changed-value">
                 <span ui:field="oldValue" class="history-item-old-value"/>
-                <i class="fas fa-long-arrow-alt-right history-arrow-icon"/>
+                <span class="float-left p-x-5">
+                    <ui:text from="{lang.caseHistoryChangedTo}"/>
+                </span>
                 <span ui:field="newValue" class="history-item-new-value"/>
             </g:HTMLPanel>
             <g:HTMLPanel ui:field="removedValueContainer" tag="span" styleName="history-item-removed-value">
-                <strike ui:field="removedValue"/>
+                <strike ui:field="removedValue" class="font-weight-bold"/>
             </g:HTMLPanel>
         </div>
         <div class="col-md-3 text-right">

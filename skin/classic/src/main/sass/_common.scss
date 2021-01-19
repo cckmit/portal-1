@@ -4863,11 +4863,6 @@ table {
   margin-right: 10px;
 }
 
-.history-item-initiator {
-  float: left;
-  margin-right: 10px;
-}
-
 .history-item-added-value, .history-item-removed-value {
   white-space: nowrap;
   float: left;
@@ -4884,6 +4879,7 @@ table {
     max-width: 60%;
     text-overflow: ellipsis;
     overflow: hidden;
+    font-weight: bold;
   }
 
   .history-arrow-icon {
@@ -4894,6 +4890,13 @@ table {
   }
 }
 
+.colored-history-item {
+  display: inline-block;
+  padding: 0 5px;
+  white-space: nowrap;
+  border-radius: .25em;
+  position: relative;
+}
 
 .fired {
   opacity: 0.5;
@@ -5325,4 +5328,9 @@ table {
   .dropdown-menu ul > li > a {
     padding: 3px 10px;
   }
+}
+
+.p-x-5 {
+  padding-left: 5px;
+  padding-right: 5px;
 }

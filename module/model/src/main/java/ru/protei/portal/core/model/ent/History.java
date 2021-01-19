@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_HistoryAction;
 import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.winter.jdbc.annotations.*;
@@ -18,6 +19,16 @@ public class History implements Serializable {
 
     @JdbcJoinedColumn( localColumn = "initiator_id", table = "person", remoteColumn = "id", mappedColumn = "displayShortName", sqlTableAlias = "PersonInitiator" )
     private String initiator;
+
+    @JdbcJoinedColumn(localColumn = "initiator_id", remoteColumn = "id", table = "person", mappedColumn = "sex", sqlTableAlias = "person")
+    private String genderCode;
+
+    @JdbcJoinedColumn(mappedColumn = "category_id", joinPath = {
+            @JdbcJoinPath(table = "person", localColumn = "initiator_id", remoteColumn = "id", sqlTableAlias = "person"),
+            @JdbcJoinPath(table = "company", localColumn = "company_id", remoteColumn = "id", sqlTableAlias = "company")
+    })
+    @JdbcEnumerated(EnumType.ID)
+    private En_CompanyCategory companyCategory;
 
     @JdbcColumn(name = "date")
     private Date date;
@@ -44,6 +55,10 @@ public class History implements Serializable {
 
     @JdbcColumn(name = "new_value")
     private String newValue;
+
+    private String oldColor;
+
+    private String newColor;
 
     public History() {
     }
@@ -136,12 +151,38 @@ public class History implements Serializable {
         this.newValue = newValue;
     }
 
+    public String getGenderCode() {
+        return genderCode;
+    }
+
+    public En_CompanyCategory getCompanyCategory() {
+        return companyCategory;
+    }
+
+    public String getOldColor() {
+        return oldColor;
+    }
+
+    public void setOldColor(String oldColor) {
+        this.oldColor = oldColor;
+    }
+
+    public String getNewColor() {
+        return newColor;
+    }
+
+    public void setNewColor(String newColor) {
+        this.newColor = newColor;
+    }
+
     @Override
     public String toString() {
         return "History{" +
                 "id=" + id +
                 ", initiatorId=" + initiatorId +
-                ", initiator=" + initiator +
+                ", initiator='" + initiator + '\'' +
+                ", genderCode='" + genderCode + '\'' +
+                ", companyCategory=" + companyCategory +
                 ", date=" + date +
                 ", caseObjectId=" + caseObjectId +
                 ", action=" + action +

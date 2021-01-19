@@ -15,7 +15,7 @@ public interface AbstractCaseHistoryItemView extends IsWidget {
 
     HasVisibility changeContainerVisibility();
 
-    void setHistoryType(String historyType);
+    void setChangeInfoMessage(String changeInfoMessage);
 
     void setInitiator(String initiator);
 
@@ -28,4 +28,10 @@ public interface AbstractCaseHistoryItemView extends IsWidget {
     void setNewValue(String newValue, String title);
 
     void setDate(String date);
+
+    void setPhoto(String photoUrl);
+
+    void setAddedValueColor(String backgroundColor);
+
+    void setChangedValueColors(String oldValueColor, String newValueColor);
 }

@@ -47,10 +47,11 @@ public class AppView extends Composite
         }
 
         resizeHandler = event -> {
-            if (menuBarPopup.isAttached()) {
+            if (menuBarPopup.isShowing()) {
                 showPopupMenu();
             }
         };
+
         windowScrollHandler = event -> {
             if (menuBarPopup.isAttached()) {
                 showPopupMenu();
