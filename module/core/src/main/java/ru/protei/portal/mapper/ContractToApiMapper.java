@@ -23,7 +23,7 @@ public class ContractToApiMapper {
         apiContract.setCurrency(contract.getCurrency());
         apiContract.setVat(contract.getVat());
         apiContract.setDescription(contract.getDescription());
-        apiContract.setDirectionName(joining(contract.getProductDirections(), ", ", DevUnit::getName));
+        apiContract.setDirections(joining(contract.getProductDirections(), ", ", DevUnit::getName));
         apiContract.setMinistryOfDefence(contract.getProjectCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE);
         apiContract.setDates(stream(contract.getContractDates())
                 .map(contractDate -> contractDateToApi(contractDate, contract.getCost()))
