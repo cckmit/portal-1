@@ -12,14 +12,12 @@ import ru.protei.portal.ui.common.client.widget.form.FormPopupSingleSelector;
  */
 public class ImportanceFormSelector extends FormPopupSingleSelector<ImportanceLevel> {
 
-    private ImportanceModel model;
-
     @Inject
     public void init( ImportanceModel model ) {
-        this.model = model;
+        setSearchEnabled(false);
         setAsyncModel( model );
-        super.setSearchEnabled(false);
-        setItemRenderer( value -> value == null ? defaultValue :
+        setItemRenderer( value -> value == null ? defaultValue : value.getCode() );
+        setValueRenderer( value -> value == null ? defaultValue :
                          "<i class='" + ImportanceStyleProvider.getImportanceIcon(value.getCode()) + " selector' " +
                          "style='background-color:" + value.getColor() + "'></i>" + value.getCode());
     }
@@ -28,7 +26,7 @@ public class ImportanceFormSelector extends FormPopupSingleSelector<ImportanceLe
     protected SelectorItem<ImportanceLevel> makeSelectorItem(ImportanceLevel element, String elementHtml ) {
         PopupSelectorItem<ImportanceLevel> item = new PopupSelectorItem();
         item.setName( element.getCode() );
-        item.setTitle( element.getInfo() );
+        item.setTitle( element.getCode() );
         item.setStyle( "importance-item" );
         item.setIcon( ImportanceStyleProvider.getImportanceIcon(element.getCode()) + " selector");
         item.setIconBackgroundColor( element.getColor() );

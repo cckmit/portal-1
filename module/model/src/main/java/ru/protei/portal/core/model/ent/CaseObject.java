@@ -53,6 +53,12 @@ public class CaseObject extends AuditableObject {
     @JdbcJoinedColumn(localColumn = STATE, table = "case_state", remoteColumn = "id", mappedColumn = "STATE")
     private String stateName;
 
+    @JdbcJoinedColumn(localColumn = STATE, table = "case_state", remoteColumn = "id", mappedColumn = "color")
+    private String stateColor;
+
+    @JdbcJoinedColumn(localColumn = STATE, table = "case_state", remoteColumn = "id", mappedColumn = "INFO")
+    private String stateInfo;
+
     @JdbcColumn(name = "IMPORTANCE")
     private Integer impLevel;
 
@@ -272,6 +278,22 @@ public class CaseObject extends AuditableObject {
 
     public void setStateName(String stateName) {
         this.stateName = stateName;
+    }
+
+    public String getStateColor() {
+        return stateColor;
+    }
+
+    public void setStateColor(String stateColor) {
+        this.stateColor = stateColor;
+    }
+
+    public String getStateInfo() {
+        return stateInfo;
+    }
+
+    public void setStateInfo(String stateInfo) {
+        this.stateInfo = stateInfo;
     }
 
     public Integer getImpLevel() {

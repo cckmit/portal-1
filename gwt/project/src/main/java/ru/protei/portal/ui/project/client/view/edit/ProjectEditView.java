@@ -32,7 +32,7 @@ import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitWithImageMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.region.RegionFormSelector;
-import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.state.ProjectStateFormSelector;
 import ru.protei.portal.ui.common.client.widget.sla.SlaInput;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
@@ -337,7 +337,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     ProductDirectionMultiSelector productDirection;
     @Inject
     @UiField( provided = true )
-    RegionStateFormSelector projectState;
+    ProjectStateFormSelector projectState;
     @Inject
     @UiField( provided = true )
     RegionFormSelector projectRegion;

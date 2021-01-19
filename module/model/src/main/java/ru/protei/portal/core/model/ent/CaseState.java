@@ -42,6 +42,13 @@ public class CaseState implements Serializable {
         this.state = state;
     }
 
+    public CaseState(Long id, String state, String color, String info) {
+        this.id = id;
+        this.state = state;
+        this.color = color;
+        this.info = info;
+    }
+
     public Long getId() {
         return id;
     }

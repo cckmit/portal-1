@@ -8,15 +8,19 @@ import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.form.FormPopupSingleSelector;
 import ru.protei.portal.ui.common.client.widget.selector.region.RegionStateModel;
 
-public class RegionStateFormSelector extends FormPopupSingleSelector<CaseState> {
+/**
+ * Селектор состояния проекта
+ */
+public class ProjectStateFormSelector extends FormPopupSingleSelector<CaseState> {
 
     @Inject
     public void init( RegionStateModel model ) {
+        setSearchEnabled( false );
         setAsyncModel( model );
-        setItemRenderer( value -> value == null ? defaultValue :
+        setItemRenderer( value -> value == null ? defaultValue : lang.getStateName(value) );
+        setValueRenderer( value -> value == null ? defaultValue :
                          "<i class='" + lang.getStateIcon(value) + " selector' " +
                          "style='color:" + value.getColor() + "'></i>" + lang.getStateName(value));
-
     }
 
     @Override
@@ -24,8 +28,11 @@ public class RegionStateFormSelector extends FormPopupSingleSelector<CaseState> 
         PopupSelectorItem<CaseState> item = new PopupSelectorItem();
         item.setName( elementHtml );
         item.setStyle( "region-state-item" );
-        if ( element != null )
+        if (element != null) {
+            item.setTitle( lang.getStateName(element) );
+            item.setIcon( lang.getStateIcon(element) + " selector" );
             item.setIconColor( element.getColor() );
+        }
 
         return item;
     }

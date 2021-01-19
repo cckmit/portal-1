@@ -7,15 +7,19 @@ import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.common.client.widget.form.FormPopupSingleSelector;
 
+/**
+ * Селектор критичности кейсов
+ */
 public class IssueStateFormSelector extends FormPopupSingleSelector<CaseState> {
 
     @Inject
     public void init( StateModel model ) {
+        setSearchEnabled( false );
         setAsyncModel( model );
-        setSearchEnabled(false);
-        setItemRenderer( value -> value == null ? defaultValue :
+        setItemRenderer( value -> value == null ? defaultValue : value.getInfo() );
+        setValueRenderer( value -> value == null ? defaultValue :
                          "<i class='fas fa-circle m-r-5 state-" + makeCaseStateStyle(value) +
-                         "' style='color:" + value.getColor() + "'></i>" + value.getState());
+                         "' style='color:" + makeCaseStateColor(value) + "'></i>" + value.getState());
     }
 
     @Override
@@ -24,7 +28,7 @@ public class IssueStateFormSelector extends FormPopupSingleSelector<CaseState> {
         item.setName( makeCaseStateName(element));
         item.setTitle( makeCaseStateTitle(element));
         item.setIcon( "fas fa-circle m-r-5 state-" + makeCaseStateStyle(element) );
-        item.setIconColor( element.getColor() );
+        item.setIconColor( makeCaseStateColor(element) );
         return item;
     }
 
@@ -38,6 +42,10 @@ public class IssueStateFormSelector extends FormPopupSingleSelector<CaseState> {
 
     private String makeCaseStateTitle(CaseState caseState) {
         return caseState == null ? "" : caseState.getInfo();
+    }
+
+    private String makeCaseStateColor(CaseState caseState) {
+        return caseState == null ? "" : caseState.getColor();
     }
 
     public void setDefaultValue(String value ) {
