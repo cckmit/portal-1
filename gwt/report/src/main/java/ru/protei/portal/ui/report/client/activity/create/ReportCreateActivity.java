@@ -163,6 +163,9 @@ public abstract class ReportCreateActivity implements Activity,
             }
             case PROJECT: {
                 ProjectQuery query = getProjectQuery();
+                if (!validateProjectQuery(query)) {
+                    return null;
+                }
                 return new ReportProjectQuery(report, query);
             }
             case CONTRACT: {
@@ -301,6 +304,21 @@ public abstract class ReportCreateActivity implements Activity,
         return true;
     }
 
+    private boolean validateProjectQuery(ProjectQuery query) {
+        if (query == null) {
+            return false;
+        }
+        boolean dateRangeValid = validateProjectCommentCreationRange(query.getCommentCreationRange(), false);
+
+        if (!dateRangeValid) {
+            fireEvent(new NotifyEvents.Show(lang.reportNotValidPeriod(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
+        return true;
+    }
+
+
     private boolean isValidMaxPeriod(DateRange dateRange) {
         if (dateRange != null && dateRange.getIntervalType() == En_DateIntervalType.FIXED &&
                 dateRange.getTo() != null && dateRange.getFrom() != null) {
@@ -341,12 +359,24 @@ public abstract class ReportCreateActivity implements Activity,
         return typeValid && rangeValid;
     }
 
+    private boolean validateProjectCommentCreationRange(DateRange dateRange, boolean isMandatory) {
+        boolean typeValid = validateTypeRange(dateRange, isMandatory);
+        boolean rangeValid = typeValid ? validateDateRange(dateRange) : true;
+
+        validateProjectCommentCreation(typeValid, rangeValid);
+        return typeValid && rangeValid;
+    }
+
     private void validateCreatedRange(boolean isTypeValid, boolean isRangeValid) {
         issueFilterWidget.getIssueFilterParams().setCreatedRangeValid(isTypeValid, isRangeValid);
     }
 
     private void validateModifiedRange(boolean isTypeValid, boolean isRangeValid) {
         issueFilterWidget.getIssueFilterParams().setModifiedRangeValid(isTypeValid, isRangeValid);
+    }
+
+    private void validateProjectCommentCreation(boolean isTypeValid, boolean isRangeValid) {
+        projectFilterView.setCommentCreationRangeValid(isTypeValid, isRangeValid);
     }
 
     private void applyIssueFilterVisibilityByPrivileges() {
@@ -389,6 +419,7 @@ public abstract class ReportCreateActivity implements Activity,
         }
         query.setInitiatorCompanyIds(projectFilterView.initiatorCompanies().getValue().stream()
                 .map(entityOption -> entityOption.getId()).collect(Collectors.toSet()));
+        query.setCommentCreationRange(toDateRange(projectFilterView.commentCreationRange().getValue()));
         return query;
     }
     
