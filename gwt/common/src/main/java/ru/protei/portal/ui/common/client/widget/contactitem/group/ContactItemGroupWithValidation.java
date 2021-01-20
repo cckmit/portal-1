@@ -144,7 +144,7 @@ public class ContactItemGroupWithValidation extends Composite
             items.remove( remove );
 
             Optional<TextWithValidationItem> emptyItem = modelToView.entrySet().stream()
-                    .filter(entry -> entry == null || isEmpty(entry.getValue().value()))
+                    .filter(entry -> entry == null || isEmpty(entry.getKey().getValue()))
                     .map(entry -> entry.getKey()).findAny();
             if(emptyItem.isPresent()) {
                 emptyItem.get().setFocus(true);
