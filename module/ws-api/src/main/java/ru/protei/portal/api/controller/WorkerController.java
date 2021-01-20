@@ -284,7 +284,10 @@ public class WorkerController {
                     if (rec.getId() != null) {
                         person = personDAO.get(rec.getId());
                         if (person == null) {
-                            person = personDAO.getByCondition("company_id=1 and firstname=? and lastname=? and birthday=?", rec.getFirstName().trim(), rec.getLastName().trim(), rec.getBirthday() );
+                            person = personDAO.findEmployeeByParameters(
+                                    rec.getFirstName().trim(),
+                                    rec.getLastName().trim(),
+                                    HelperFunc.isEmpty(rec.getBirthday()) ? null : HelperService.DATE.parse(rec.getBirthday()));
                         }
                         if (person != null) {
                             jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);

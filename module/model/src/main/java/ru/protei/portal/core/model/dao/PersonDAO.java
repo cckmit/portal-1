@@ -29,6 +29,8 @@ public interface PersonDAO extends PortalBaseDAO<Person> {
 
     Person getCommonManagerByProductId(Long productId);
 
+    Person findEmployeeByParameters(String firstname, String lastname, Date birthday);
+
     default Person createNewPerson(Long companyId) throws Exception {
         Person person = new Person();
         person.setCreated(new Date());
@@ -45,5 +47,4 @@ public interface PersonDAO extends PortalBaseDAO<Person> {
      * @return
      */
     Map<Long,Long> mapLegacyId ();
-
 }
