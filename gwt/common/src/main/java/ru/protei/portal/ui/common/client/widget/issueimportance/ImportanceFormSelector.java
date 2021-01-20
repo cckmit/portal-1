@@ -18,8 +18,8 @@ public class ImportanceFormSelector extends FormPopupSingleSelector<ImportanceLe
         setAsyncModel( model );
         setItemRenderer( value -> value == null ? defaultValue : value.getCode() );
         setValueRenderer( value -> value == null ? defaultValue :
-                         "<i class='" + ImportanceStyleProvider.getImportanceIcon(value.getCode()) + " selector' " +
-                         "style='background-color:" + value.getColor() + "'></i>" + value.getCode());
+                         "<i class='" + makeValue(value) +
+                         "' style='background-color:" + value.getColor() + "'></i>" + value.getCode());
     }
 
     @Override
@@ -28,9 +28,13 @@ public class ImportanceFormSelector extends FormPopupSingleSelector<ImportanceLe
         item.setName( element.getCode() );
         item.setTitle( element.getCode() );
         item.setStyle( "importance-item" );
-        item.setIcon( ImportanceStyleProvider.getImportanceIcon(element.getCode()) + " selector");
+        item.setIcon( makeValue(element) );
         item.setIconBackgroundColor( element.getColor() );
         return item;
+    }
+
+    private String makeValue(ImportanceLevel value) {
+        return ImportanceStyleProvider.getImportanceIcon(value.getCode()) + " selector";
     }
 
     public void setDefaultValue(String value ) {

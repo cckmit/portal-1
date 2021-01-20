@@ -25,7 +25,7 @@ public abstract class ImportanceBtnGroupModel implements Activity {
         selector.fillOptions(importanceLevels);
     }
 
-    private void notifySubscribers() {
+    private void notifySubscribers(List<ImportanceLevel> importanceLevels) {
         subscribers.forEach(subscriber -> {
             subscriber.fillOptions(importanceLevels);
             subscriber.refreshValue();
@@ -39,7 +39,7 @@ public abstract class ImportanceBtnGroupModel implements Activity {
                         importanceLevels.clear();
                         importanceLevels.addAll(result);
 
-                        notifySubscribers();
+                        notifySubscribers(result);
                     })
             );
 
@@ -51,7 +51,7 @@ public abstract class ImportanceBtnGroupModel implements Activity {
                     importanceLevels.clear();
                     importanceLevels.addAll(result);
 
-                    notifySubscribers();
+                    notifySubscribers(result);
                 })
         );
     }

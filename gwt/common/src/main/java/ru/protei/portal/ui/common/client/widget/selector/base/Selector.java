@@ -157,10 +157,6 @@ public abstract class Selector<T>
         popup.getChildContainer().add(itemView.asWidget());
     }
 
-    public void setIconColor(T value, String color) {
-        itemToViewModel.get(value).setIconColor(color);
-    }
-
     public void clearOptions() {
         popup.getChildContainer().clear();
 

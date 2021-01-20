@@ -172,7 +172,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
     @Override
     public void onStateChanged() {
-        view.pauseDateContainerVisibility().setVisible( PAUSED.getId() == view.state().getValue().getId() );
+        view.pauseDateContainerVisibility().setVisible( view.state().getValue().getId().equals(PAUSED.getId()) );
     }
 
     @Override
