@@ -33,6 +33,7 @@ import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
 public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements ProjectDAO {
 
     public static final String LEFT_OUTER_JOIN_PROJECT_TO_PRODUCT = " left outer join project_to_product ptp on ptp.project_id = CO.id";
+    public static final String LEFT_JOIN_CASE_COMMENT = " LEFT JOIN case_comment cc ON CO.id = cc.CASE_ID";
 
     @Override
     public Collection<Project> selectScheduledPauseTime( long greaterThanTime ) {
@@ -75,7 +76,10 @@ public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements Proje
             parameters.withDistinct(true);
             parameters.withJoins(LEFT_OUTER_JOIN_PROJECT_TO_PRODUCT);
         }
-
+        if (query.getCommentCreationRange() != null) {
+            parameters.withDistinct(true);
+            parameters.withJoins(LEFT_JOIN_CASE_COMMENT);
+        }
         if (query.limit > 0) {
             parameters = parameters.withLimit(query.getLimit());
         }
@@ -259,6 +263,18 @@ public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements Proje
                 condition.append(" and (project.technical_support_validity >= ? or project.work_completion_date >= ?)");
                 args.add(new Date());
                 args.add(new Date());
+            }
+
+            if (query.getCommentCreationRange() != null) {
+                Interval interval = makeInterval(query.getCommentCreationRange());
+                if (interval.from != null) {
+                    condition.append( " and cc.created >= ?" );
+                    args.add(interval.from );
+                }
+                if (interval.to != null) {
+                    condition.append( " and cc.created < ?" );
+                    args.add( interval.to );
+                }
             }
         }));
     }
