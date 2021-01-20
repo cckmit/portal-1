@@ -29,11 +29,13 @@ public class CaseCommentEvents {
         public En_CaseType caseType;
         public Long caseId;
         public Long caseCreatorId;
+        public Long initiatorCompanyId;
         public boolean isElapsedTimeEnabled = false;
         public boolean isModifyEnabled = false;
         public boolean isPrivateVisible = false;
         public boolean isPrivateCase = false;
         public boolean isNewCommentEnabled = true;
+        public boolean isMentionEnabled = true;
         public En_TextMarkup textMarkup = En_TextMarkup.MARKDOWN;
     }
 
