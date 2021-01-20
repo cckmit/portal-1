@@ -221,14 +221,7 @@ public class WorkerController {
         WorkerRecordList persons = new WorkerRecordList();
 
         try {
-            List<Company> homeCompaniesWithSync = companyDAO.listByQuery(new CompanyQuery(true, true).synchronizeWith1C(true));
-            Set<EntityOption> homeCompanies = new HashSet<>();
-            homeCompaniesWithSync.forEach(company -> homeCompanies.add(company.toEntityOption()));
-
             EmployeeQuery query = new EmployeeQuery(Tm_SqlQueryHelper.makeLikeArgEx(expr.trim()), En_SortField.person_full_name, En_SortDir.ASC);
-
-            query.setHomeCompanies(homeCompanies);
-
             stream(personDAO.getEmployees(query))
                 .map(person -> {
                     jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
@@ -291,7 +284,7 @@ public class WorkerController {
                     if (rec.getId() != null) {
                         person = personDAO.get(rec.getId());
                         if (person == null) {
-                            person = personDAO.getByCondition("company_id=1 and isfired=0 and isdeleted=0 and firstname=? and lastname=? and birthday=?", rec.getFirstName().trim(), rec.getLastName().trim(), rec.getBirthday() );
+                            person = personDAO.getByCondition("company_id=1 and firstname=? and lastname=? and birthday=?", rec.getFirstName().trim(), rec.getLastName().trim(), rec.getBirthday() );
                         }
                         if (person != null) {
                             jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
