@@ -177,7 +177,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         showComments.isPrivateCase = false;
         showComments.isNewCommentEnabled = canAccessProject(policyService, En_Privilege.PROJECT_EDIT, value.getTeam());
         showComments.initiatorCompanyId = project.getCustomerId();
-        showComments.isMentionEnabled = policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
+        showComments.isMentionEnabled = policyService.hasSystemScopeForPrivilege(En_Privilege.PROJECT_VIEW);
         fireEvent(showComments);
 
         fireEvent(new ProjectEvents.ShowProjectDocuments(view.getDocumentsContainer(), project.getId(), false));

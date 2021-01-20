@@ -129,7 +129,7 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
         fireEvent(new CaseTagEvents.ShowList(view.getTagsContainer(), En_CaseType.CONTRACT, contractId, true, a -> {}));
         CaseCommentEvents.Show caseCommentShowEvent = new CaseCommentEvents.Show(view.getCommentsContainer(), value.getId(), En_CaseType.CONTRACT, true, value.getCreatorId());
         caseCommentShowEvent.initiatorCompanyId = value.getOrganizationId();
-        caseCommentShowEvent.isMentionEnabled = policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
+        caseCommentShowEvent.isMentionEnabled = policyService.hasSystemScopeForPrivilege(En_Privilege.CONTRACT_VIEW);
         fireEvent(caseCommentShowEvent);
     }
 

@@ -266,7 +266,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
             show.isPrivateCase = false;
             show.isNewCommentEnabled = canAccessProject(policyService, actionPrivilege, project.getTeam());
             show.initiatorCompanyId = project.getCustomerId();
-            show.isMentionEnabled = policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
+            show.isMentionEnabled = policyService.hasSystemScopeForPrivilege(En_Privilege.PROJECT_VIEW);
             fireEvent(show);
         }
 

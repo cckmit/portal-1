@@ -27,8 +27,6 @@ public class MentioningTextArea extends DndAutoResizeTextArea implements TextAre
 
         addKeyDownHandler(event -> onKeyDown(event, selectorPopup, changeTimer));
         addClickHandler(event -> changeTimer.run());
-
-        isMentionEnabled = true;
     }
 
     @Override
@@ -159,7 +157,7 @@ public class MentioningTextArea extends DndAutoResizeTextArea implements TextAre
     private final UserLoginModel userLoginModel;
     private final UserLoginSelector userLoginSelector;
     private final Timer changeTimer;
-    private Boolean isMentionEnabled;
+    private boolean isMentionEnabled = true;
 
     private PossibleLoginInfo possibleLoginInfo;
 
