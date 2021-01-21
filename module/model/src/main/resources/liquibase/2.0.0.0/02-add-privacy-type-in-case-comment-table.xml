@@ -17,6 +17,6 @@
             UPDATE case_comment SET privacy_type = 'PRIVATE' WHERE private_flag is TRUE;
         </sql>
 
+        <dropColumn tableName="case_comment" columnName="private_flag"/>
     </changeSet>
-
 </databaseChangeLog>
