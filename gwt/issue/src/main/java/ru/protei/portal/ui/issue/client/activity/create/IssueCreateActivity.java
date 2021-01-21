@@ -699,7 +699,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     private void fillImportanceSelector(Long id) {
-        issueMetaView.fillImportanceOptions(new ArrayList<>());
         importanceService.getImportanceLevels(id, new FluentCallback<List<ImportanceLevel>>()
                 .withSuccess(importanceLevelList -> {
                     issueMetaView.fillImportanceOptions(importanceLevelList);

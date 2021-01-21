@@ -1,12 +1,14 @@
 package ru.protei.portal.ui.common.client.widget.selector.state;
 
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.ui.common.client.lang.En_RegionStateLang;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.form.FormPopupSingleSelector;
-import ru.protei.portal.ui.common.client.widget.selector.region.RegionStateModel;
+import ru.protei.portal.ui.common.client.widget.selector.region.ProjectStateModel;
 
 /**
  * Селектор состояния проекта
@@ -14,13 +16,13 @@ import ru.protei.portal.ui.common.client.widget.selector.region.RegionStateModel
 public class ProjectStateFormSelector extends FormPopupSingleSelector<CaseState> {
 
     @Inject
-    public void init( RegionStateModel model ) {
+    public void init( ProjectStateModel model ) {
         setSearchEnabled( false );
         setAsyncModel( model );
-        setItemRenderer( value -> value == null ? defaultValue : lang.getStateName(value) );
+        setItemRenderer( value -> value == null ? defaultValue : getStateName( value ) );
         setValueRenderer( value -> value == null ? defaultValue :
-                         "<i class='" + lang.getStateIcon(value) + " selector' " +
-                         "style='color:" + value.getColor() + "'></i>" + lang.getStateName(value));
+                         "<i class='" + getStateIcon(value) + " selector' " +
+                         "style='color:" + value.getColor() + "'></i>" + getStateName(value));
     }
 
     @Override
@@ -29,12 +31,26 @@ public class ProjectStateFormSelector extends FormPopupSingleSelector<CaseState>
         item.setName( elementHtml );
         item.setStyle( "region-state-item" );
         if (element != null) {
-            item.setTitle( lang.getStateName(element) );
-            item.setIcon( lang.getStateIcon(element) + " selector" );
+            item.setTitle( getStateName(element) );
+            item.setIcon( getStateIcon(element) + " selector" );
             item.setIconColor( element.getColor() );
         }
 
         return item;
+    }
+
+    public String getStateName( CaseState state ) {
+        if ( state == null )
+            return lang.errUnknownResult();
+
+        return regionStateLang.getStateName( En_RegionState.forId( state.getId() ) );
+    }
+
+    public String getStateIcon( CaseState state ) {
+        if ( state == null )
+            return "fa fa-unknown";
+
+        return regionStateLang.getStateIcon( En_RegionState.forId( state.getId() ) );
     }
 
     public void setDefaultValue( String value ) {
@@ -42,7 +58,9 @@ public class ProjectStateFormSelector extends FormPopupSingleSelector<CaseState>
     }
 
     @Inject
-    En_RegionStateLang lang;
+    Lang lang;
+    @Inject
+    En_RegionStateLang regionStateLang;
 
     private String defaultValue;
 }
