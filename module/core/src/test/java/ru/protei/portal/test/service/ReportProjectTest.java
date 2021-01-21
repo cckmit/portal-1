@@ -17,7 +17,7 @@ import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.ProjectQuery;
-import ru.protei.portal.core.model.struct.ReportProjectWithLastComment;
+import ru.protei.portal.core.model.struct.ReportProjectWithComments;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.report.projects.ReportProject;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
@@ -161,7 +161,7 @@ public class ReportProjectTest extends BaseServiceTest {
         report.setQuery(serializeAsJson(query));
         report.setLocale("ru");
 
-        List<ReportProjectWithLastComment> data = reportProject.createData(deserializeFromJson(report.getQuery(), ProjectQuery.class));
+        List<ReportProjectWithComments> data = reportProject.createData(deserializeFromJson(report.getQuery(), ProjectQuery.class));
 
         Assert.assertEquals("Selected 2 cases", 2, data.size());
         Assert.assertEquals("name case #1", REPORT_PROJECT_TEST + " : Test_Project 1", data.get(0).getProject().getName());
@@ -182,7 +182,7 @@ public class ReportProjectTest extends BaseServiceTest {
         report.setQuery(serializeAsJson(query));
         report.setLocale("ru");
 
-        List<ReportProjectWithLastComment> data = reportProject.createData(deserializeFromJson(report.getQuery(), ProjectQuery.class));
+        List<ReportProjectWithComments> data = reportProject.createData(deserializeFromJson(report.getQuery(), ProjectQuery.class));
 
         Assert.assertEquals("no cases", 0, data.size());
     }
