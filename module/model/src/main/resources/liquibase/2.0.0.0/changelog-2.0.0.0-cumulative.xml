@@ -5,7 +5,6 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
   <include file="01-init-database.xml" relativeToChangelogFile="true" />
-  <include file="02-add-privacy-type-in-case-comment-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-04-16-dropnotnullconstraint-in-company_dep-and-worker_entry-and-add-field-sync_1c.xml" relativeToChangelogFile="true" />
   <include file="2020-04-17-set-linked_equipment_id-equipment-fk.xml" relativeToChangelogFile="true" />
   <include file="2020-04-20-add-pause_date-to-case_object.xml" relativeToChangelogFile="true" />
@@ -74,5 +73,6 @@
   <include file="2020-12-14-add-default-sla-time-columns-in-importance_level-table.xml" relativeToChangelogFile="true"/>
   <include file="2021-01-13-add-development-state-for-issues.xml" relativeToChangelogFile="true"/>
   <include file="2021-01-14-rename-case-object-ext-app-data-jira-clm-id.xml" relativeToChangelogFile="true"/>
+  <include file="2021-01-21-add-privacy-type-in-case-comment-table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

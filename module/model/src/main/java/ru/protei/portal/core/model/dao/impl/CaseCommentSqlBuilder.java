@@ -82,7 +82,7 @@ public class CaseCommentSqlBuilder {
             }
 
             if (query.isViewPrivate() != null) {
-                condition.append( " and case_comment.privacy_type='"+ (query.isViewPrivate()? "PRIVATE" : "PUBLIC") +"'" );
+                condition.append(" and case_comment.privacy_type ").append(query.isViewPrivate() ? "=" : "!=").append(" 'PRIVATE'");
             }
 
             if (HelperFunc.isNotEmpty(query.getRemoteId())) {
