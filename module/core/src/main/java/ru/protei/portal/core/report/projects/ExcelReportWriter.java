@@ -20,9 +20,11 @@ import java.io.OutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
@@ -35,14 +37,16 @@ public class ExcelReportWriter implements
     private final EnumLangUtil enumLangUtil;
     private final String[] formats;
     private final boolean withComments;
+    private final boolean isLimitComments;
     private final DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 
-    public ExcelReportWriter(Lang.LocalizedLang localizedLang, EnumLangUtil enumLangUtil, boolean withComments) {
+    public ExcelReportWriter(Lang.LocalizedLang localizedLang, EnumLangUtil enumLangUtil, boolean withComments, boolean isLimitComments) {
         this.book = new JXLSHelper.ReportBook<>(localizedLang, this);
         this.lang = localizedLang;
         this.enumLangUtil = enumLangUtil;
         this.formats = getFormats();
         this.withComments = withComments;
+        this.isLimitComments = isLimitComments;
     }
 
     @Override
@@ -134,7 +138,11 @@ public class ExcelReportWriter implements
 
         if (withComments) {
             if (isNotEmpty(comments)) {
-                values.add(comments.stream().map(comment -> dateFormat.format(comment.getCreated()) + "\n" + comment.getText() + "\n")
+                Stream<CaseComment> stream = comments.stream().sorted(Comparator.comparing(CaseComment::getCreated).reversed());
+                if (isLimitComments) {
+                    stream = stream.limit(20);
+                }
+                values.add(stream.map(comment -> dateFormat.format(comment.getCreated()) + "\n" + comment.getText() + "\n")
                                 .collect(Collectors.joining("\n")));
             } else {
                 values.add("");

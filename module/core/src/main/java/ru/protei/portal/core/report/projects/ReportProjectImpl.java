@@ -57,7 +57,8 @@ public class ReportProjectImpl implements ReportProject {
 
         if (count < 1) {
             log.debug("writeReport : reportId={} has no corresponding projects", report.getId());
-            ReportWriter<ReportProjectWithComments> writer = new ExcelReportWriter(localizedLang, new EnumLangUtil(lang), query.getCommentCreationRange() != null);
+            ReportWriter<ReportProjectWithComments> writer = new ExcelReportWriter(localizedLang, new EnumLangUtil(lang),
+                    query.getCommentCreationRange() != null, report.isProjectLimitComments());
             writer.createSheet();
             writer.collect(buffer);
             return true;
@@ -65,7 +66,8 @@ public class ReportProjectImpl implements ReportProject {
 
         log.debug("writeReport : reportId={} has {} projects to process", report.getId(), count);
 
-        try (ReportWriter<ReportProjectWithComments> writer = new ExcelReportWriter(localizedLang, new EnumLangUtil(lang), query.getCommentCreationRange() != null)) {
+        try (ReportWriter<ReportProjectWithComments> writer = new ExcelReportWriter(localizedLang, new EnumLangUtil(lang),
+                query.getCommentCreationRange() != null, report.isProjectLimitComments())) {
             int sheetNumber = writer.createSheet();
             if (writeReport(writer, sheetNumber, report.getId(), query, count, isCancel)) {
                 writer.collect(buffer);
@@ -136,23 +138,11 @@ public class ReportProjectImpl implements ReportProject {
             CaseIdToCaseComment = null;
         }
 
-        return projects.stream()
-                .map(project -> makeProjectReportProjectWithComments(project, CaseIdToLastCaseComment, CaseIdToCaseComment))
+        return projects.stream().map(project ->
+                new ReportProjectWithComments(
+                                    project,
+                                    CaseIdToLastCaseComment.get(project.getId()),
+                                    CaseIdToCaseComment != null ?  CaseIdToCaseComment.get(project.getId()) : null))
                 .collect(Collectors.toList());
-    }
-
-    private ReportProjectWithComments makeProjectReportProjectWithComments(Project project, Map<Long, CaseComment> CaseIdToLastCaseComment, Map<Long, List<CaseComment>> CaseIdToCaseComment) {
-        List<CaseComment> comments = null;
-        if (CaseIdToCaseComment != null) {
-            comments = CaseIdToCaseComment.get(project.getId());
-            if (comments != null && 1 < comments.size()) {
-                comments.sort(Comparator.comparing(CaseComment::getCreated));
-            }
-        }
-        return new ReportProjectWithComments(
-                project,
-                CaseIdToLastCaseComment.get(project.getId()),
-                comments
-        );
     }
 }
