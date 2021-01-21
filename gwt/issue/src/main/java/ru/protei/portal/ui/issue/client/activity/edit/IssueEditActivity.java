@@ -41,6 +41,7 @@ import static ru.protei.portal.core.model.helper.CaseCommentUtils.addImageInMess
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.util.CaseStateUtil.isTerminalState;
+import static ru.protei.portal.core.model.util.CrmConstants.Jira.EXTENDED_PRIVACY_PROJECT;
 
 public abstract class IssueEditActivity implements
         AbstractIssueEditActivity,
@@ -433,7 +434,6 @@ public abstract class IssueEditActivity implements
                 .withReadOnly(isReadOnly()));
     }
 
-    // todo пересмотреть логику приватности
     private void showComments(CaseObject issue) {
         CaseCommentEvents.Show show = new CaseCommentEvents.Show( issueInfoWidget.getCommentsContainer(),
                 issue.getId(), En_CaseType.CRM_SUPPORT, hasAccess() && !isReadOnly(), issue.getCreatorId() );
@@ -452,7 +452,8 @@ public abstract class IssueEditActivity implements
     }
 
     private boolean selectExtendedPrivacyType(CaseObject issue) {
-        return En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType());
+        return En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType()) &&
+                issue.getName().startsWith(EXTENDED_PRIVACY_PROJECT);
     }
 
     private void reloadComments() {
