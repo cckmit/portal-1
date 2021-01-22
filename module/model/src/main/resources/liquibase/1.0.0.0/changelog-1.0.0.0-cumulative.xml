@@ -143,8 +143,6 @@
   <include file="2020-03-23-add-equipment-decimal-number-sort-view.xml" relativeToChangelogFile="true"/>
   <include file="2020-03-24-drop-project_id-unique-constraint-from-contract-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-03-24-add-company_importance_item-table.xml" relativeToChangelogFile="true"/>
-  <include file="2020-03-26-add-privacy-type-in-case-comment-table.xml" relativeToChangelogFile="true"/>
-  <include file="2020-03-28-remove-private-flag-in-case-comment-table.xml" relativeToChangelogFile="true"/>
   <!-- !!! STOP USAGE !!! -->
   <include file="2020-03-17-table-refactoring.xml" relativeToChangelogFile="true"/>
 <!-- !!! STOP USAGE !!! -->

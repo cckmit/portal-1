@@ -70,7 +70,7 @@ public class AttachmentDAO_Impl extends PortalBaseJdbcDAO<Attachment> implements
                         query()
                                 .select("case_comment.id")
                                 .from("case_comment")
-                                .where("case_comment.privacy_type").not().equal("PUBLIC")
+                                .where("case_comment.privacy_type").not().equal("PRIVATE")
                                 .asQuery()
                 );
     }
