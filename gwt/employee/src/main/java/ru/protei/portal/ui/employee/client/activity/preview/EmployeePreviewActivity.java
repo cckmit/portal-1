@@ -7,8 +7,10 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.UserLoginShortView;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.query.UserLoginShortViewQuery;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.struct.WorkerEntryFacade;
 import ru.protei.portal.core.model.view.EmployeeShortView;
@@ -22,6 +24,7 @@ import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.EmployeeEvents;
 import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
 import ru.protei.portal.ui.common.client.util.AvatarUtils;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
@@ -31,10 +34,9 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemView;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
 
 /**
  * Активность превью сотрудника
@@ -150,7 +152,8 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         ));
         view.setID(employee.getId().toString());
         view.setIP(employee.getIpAddress());
-        view.setLogin(String.join(", ", employee.getLogins()));
+
+        requestLogins(employee.getId());
 
         showAbsences(employee.getId());
     }
@@ -171,6 +174,15 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
 
         view.showAbsencesPanel(true);
         fireEvent(new AbsenceEvents.Show(view.absencesContainer(), employeeId));
+    }
+
+    private void requestLogins(Long employeeId) {
+        UserLoginShortViewQuery accountQuery = new UserLoginShortViewQuery();
+        accountQuery.setPersonIds(new HashSet<>(Collections.singleton(employeeId)));
+        accountService.getUserLoginShortViewList(accountQuery, new FluentCallback<List<UserLoginShortView>>()
+                .withSuccess(userLoginShortViews ->
+                        view.setLogins(
+                                joining(userLoginShortViews, ", ", UserLoginShortView::getUlogin))));
     }
 
     private AbstractPositionItemView makePositionView(WorkerEntryShortView workerEntry, PersonShortView head) {
@@ -218,6 +230,9 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
 
     @Inject
     EmployeeControllerAsync employeeService;
+
+    @Inject
+    AccountControllerAsync accountService;
 
     @Inject
     PolicyService policyService;

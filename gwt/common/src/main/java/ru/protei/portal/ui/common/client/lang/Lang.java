@@ -1796,7 +1796,11 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeWorkPhone();
 
+    String employeeWorkPhonePlaceHolder();
+
     String employeeMobilePhone();
+
+    String employeeMobilePhonePlaceHolder();
 
     String employeeEmail();
 

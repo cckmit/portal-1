@@ -29,6 +29,7 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -37,6 +38,7 @@ import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeDateWithOffset;
+import static ru.protei.portal.core.model.util.CrmConstants.Masks.*;
 import static ru.protei.portal.core.model.view.EmployeeShortView.Fields.*;
 
 
@@ -105,6 +107,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     EventPublisherService publisherService;
     @Autowired
     CompanyService companyService;
+
+    private Pattern workPhone = Pattern.compile(WORK_PHONE_NUMBER_PATTERN);
+    private Pattern mobilePhone = Pattern.compile(RUS_PHONE_NUMBER_PATTERN);
 
     @Override
     public Result<List<PersonShortView>> shortViewList( EmployeeQuery query) {
@@ -214,9 +219,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         jdbcManyRelationsHelper.fill(employeeShortView, CONTACT_ITEMS);
         jdbcManyRelationsHelper.fill(employeeShortView, WORKER_ENTRIES);
-        employeeShortView.setLogins(
-                stream(userLoginDAO.findByPersonId(employeeShortView.getId()))
-                        .map(UserLogin::getUlogin).collect(Collectors.toList()));
 
         employeeShortView = removeSensitiveInformation(employeeShortView);
 
@@ -826,6 +828,14 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         PlainContactInfoFacade facade = new PlainContactInfoFacade(person.getContactInfo());
         if (StringUtils.isBlank(facade.getEmail())) {
+            return false;
+        }
+
+        if (!stream(facade.getGeneralPhoneList()).allMatch(phone -> workPhone.matcher(phone.value()).matches())) {
+            return false;
+        }
+
+        if (!stream(facade.getMobilePhoneList()).allMatch(phone -> mobilePhone.matcher(phone.value()).matches())) {
             return false;
         }
 

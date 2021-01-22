@@ -44,22 +44,22 @@ public class ContactItemDAO_Impl extends PortalBaseJdbcDAO<ContactItem> implemen
 
             if (isNotEmpty(query.getPersonIds())) {
                 condition.append(" AND contact_item.id IN (");
-                condition.append(" SELECT cip.contact_item_id FROM contact_item_person AS cip WHERE cip.person_id IN (");
+                condition.append(" SELECT cip.contact_item_id FROM contact_item_person AS cip WHERE cip.person_id IN ");
                 condition.append(HelperFunc.makeInArg(
                     query.getPersonIds(),
                     String::valueOf
                 ));
-                condition.append(" ))");
+                condition.append(" )");
             }
 
             if (isNotEmpty(query.getCompanyIds())) {
                 condition.append(" AND contact_item.id IN (");
-                condition.append(" SELECT cic.contact_item_id FROM contact_item_company AS cic WHERE cic.company_id IN (");
+                condition.append(" SELECT cic.contact_item_id FROM contact_item_company AS cic WHERE cic.company_id IN ");
                 condition.append(HelperFunc.makeInArg(
                     query.getCompanyIds(),
                     String::valueOf
                 ));
-                condition.append(" ))");
+                condition.append(" )");
             }
 
         }));

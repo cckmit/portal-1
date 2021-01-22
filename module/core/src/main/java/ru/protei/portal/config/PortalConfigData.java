@@ -180,6 +180,7 @@ public class PortalConfigData {
             crmUrlFiles = properties.getProperty( "crm.url.files", "http://newportal/crm/" );
             isProductionServer = properties.getProperty( "is.production.server", Boolean.class, false );
             systemId = properties.getProperty( "system.id", "" );
+            systemUserId = properties.getProperty("system.user.id", Long.class, null);
         }
         public String getCrmUrlInternal() {
             return crmUrlInternal;
@@ -205,12 +206,17 @@ public class PortalConfigData {
             return systemId;
         }
 
+        public Long getSystemUserId() {
+            return systemUserId;
+        }
+
         private final String crmUrlInternal;
         private final String crmUrlExternal;
         private final String crmUrlCurrent;
         private final String crmUrlFiles;
         private final Boolean isProductionServer;
         private final String systemId;
+        private final Long systemUserId;
     }
 
     public static class MailNotificationConfig extends CommonConfig {

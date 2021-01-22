@@ -5,10 +5,12 @@ import ru.protei.portal.core.model.api.ApiContractDate;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.ContractDate;
+import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.struct.Money;
 
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 public class ContractToApiMapper {
@@ -21,7 +23,7 @@ public class ContractToApiMapper {
         apiContract.setCurrency(contract.getCurrency());
         apiContract.setVat(contract.getVat());
         apiContract.setDescription(contract.getDescription());
-        apiContract.setDirectionName(contract.getDirectionName());
+        apiContract.setDirections(joining(contract.getProductDirections(), ", ", DevUnit::getName));
         apiContract.setMinistryOfDefence(contract.getProjectCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE);
         apiContract.setDates(stream(contract.getContractDates())
                 .map(contractDate -> contractDateToApi(contractDate, contract.getCost()))

@@ -81,21 +81,9 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     private String curatorShortName;
 
     /**
-     * Направление
-     */
-    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "product_id", sqlTableAlias = "P")
-    private Long directionId;
-
-    @JdbcJoinedColumn(joinPath = {
-            @JdbcJoinPath(localColumn = "project_id", remoteColumn = "id", table = "case_object"),
-            @JdbcJoinPath(localColumn = "product_id", remoteColumn = "id", table = "dev_unit")
-    }, mappedColumn = "UNIT_NAME")
-    private String directionName;
-
-    /**
      * Продуктовые направления
      */
-    @JdbcManyToMany(localColumn = "project_id", linkTable = "project_to_direction", localLinkColumn = "project_id", remoteLinkColumn = "direction_id")
+    @JdbcManyToMany(localColumn = "project_id", linkTable = "project_to_product", localLinkColumn = "project_id", remoteLinkColumn = "product_id")
     private Set<DevUnit> productDirections;
 
     /**
@@ -256,14 +244,6 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
         this.curatorId = curatorId;
     }
 
-    public Long getDirectionId() {
-        return directionId;
-    }
-
-    public void setDirectionId(Long directionId) {
-        this.directionId = directionId;
-    }
-
     public Integer getStateId() {
         return stateId;
     }
@@ -326,10 +306,6 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
 
     public String getCuratorShortName() {
         return curatorShortName;
-    }
-
-    public String getDirectionName() {
-        return directionName;
     }
 
     public Date getDateSigning() {
@@ -487,8 +463,6 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
                 ", caseManagerShortName='" + caseManagerShortName + '\'' +
                 ", curatorId=" + curatorId +
                 ", curatorShortName='" + curatorShortName + '\'' +
-                ", directionId=" + directionId +
-                ", directionName='" + directionName + '\'' +
                 ", productDirections=" + productDirections +
                 ", stateId=" + stateId +
                 ", description='" + description + '\'' +

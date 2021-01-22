@@ -627,6 +627,7 @@ public class CaseObject extends AuditableObject {
                 ", stateId=" + stateId +
                 ", stateName='" + stateName + '\'' +
                 ", impLevel=" + impLevel +
+                ", importanceCode='" + importanceCode + '\'' +
                 ", creatorId=" + creatorId +
                 ", creator=" + creator +
                 ", creatorIp='" + creatorIp + '\'' +
@@ -656,12 +657,13 @@ public class CaseObject extends AuditableObject {
                 ", managerCompanyId=" + managerCompanyId +
                 ", managerCompanyName='" + managerCompanyName + '\'' +
                 ", plans=" + plans +
+                ", deadline=" + deadline +
+                ", workTrigger=" + workTrigger +
                 ", timeElapsedType=" + timeElapsedType +
                 ", caseObjectMetaJira=" + caseObjectMetaJira +
                 ", jiraUrl='" + jiraUrl + '\'' +
+                ", jiraProjects=" + jiraProjects +
                 ", isFavorite=" + isFavorite +
-                ", deadline=" + deadline +
-                ", workTrigger=" + workTrigger +
                 '}';
     }
 }

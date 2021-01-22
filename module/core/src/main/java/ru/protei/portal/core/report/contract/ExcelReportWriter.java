@@ -5,6 +5,7 @@ import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.ent.Contract;
+import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.EnumLangUtil;
 import ru.protei.portal.core.utils.JXLSHelper;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.StringUtils.emptyIfNull;
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
@@ -111,7 +113,7 @@ public class ExcelReportWriter implements
         values.add(makeCost(contract));
         values.add(makeCurrency(contract));
         values.add(makeContractDates(contract));
-        values.add(emptyIfNull(contract.getDirectionName()));
+        values.add(joining(contract.getProductDirections(), ", ", DevUnit::getName));
         values.add(makeState(contract));
         values.add(makeExpenditureContracts(contract));
         values.add(emptyIfNull(contract.getCuratorShortName()));

@@ -1091,4 +1091,10 @@ public class DebugIds {
             String TYPE = "duty-log-filter-type-selector";
         }
     }
+
+    public interface GROUP {
+        String ROOT = "group-root";
+        String CONTAINER = "group-container";
+        String ITEM = "group-item";
+    }
 }
