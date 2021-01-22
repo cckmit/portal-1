@@ -18,6 +18,8 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.function.Consumer;
 
+import static ru.protei.portal.core.model.util.CrmConstants.Platform.PARAMETERS_MAX_LENGTH;
+
 public abstract class ServerEditActivity implements Activity, AbstractServerEditActivity {
 
     @PostConstruct
@@ -73,8 +75,9 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
     @Override
     public void onSaveClicked() {
 
-        if (!isValid()) {
-            fireEvent(new NotifyEvents.Show(lang.errFieldsRequired(), NotifyEvents.NotifyType.ERROR));
+        String validationErrorMsg = validate();
+        if (validationErrorMsg != null) {
+            fireEvent(new NotifyEvents.Show(validationErrorMsg, NotifyEvents.NotifyType.ERROR));
             return;
         }
 
@@ -157,6 +160,20 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
 
     private boolean isValid() {
         return view.nameValidator().isValid() && view.platformValidator().isValid();
+    }
+
+    private String validate() {
+        boolean isValid = view.nameValidator().isValid() && view.platformValidator().isValid();
+
+        if (!isValid) {
+            return lang.errFieldsRequired();
+        }
+
+        if (view.parameters().getValue().length() > PARAMETERS_MAX_LENGTH) {
+            return lang.errAccessParametersLengthExceeded(PARAMETERS_MAX_LENGTH);
+        }
+
+        return null;
     }
 
     private boolean hasPrivileges(Long serverId) {
