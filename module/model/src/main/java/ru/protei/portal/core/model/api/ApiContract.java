@@ -33,8 +33,8 @@ public class ApiContract implements Serializable {
     @JsonProperty("subject")
     private String description;
 
-    @JsonProperty("direction")
-    private String directionName;
+    @JsonProperty("directions")
+    private String directions;
 
     @JsonProperty("is_ministry_of_defence")
     private Boolean isMinistryOfDefence;
@@ -93,12 +93,12 @@ public class ApiContract implements Serializable {
         this.description = description;
     }
 
-    public String getDirectionName() {
-        return directionName;
+    public String getDirections() {
+        return directions;
     }
 
-    public void setDirectionName(String directionName) {
-        this.directionName = directionName;
+    public void setDirections(String directions) {
+        this.directions = directions;
     }
 
     public Boolean getMinistryOfDefence() {
@@ -126,7 +126,7 @@ public class ApiContract implements Serializable {
                 ", currency=" + currency +
                 ", vat=" + vat +
                 ", description='" + description + '\'' +
-                ", directionName='" + directionName + '\'' +
+                ", directions='" + directions + '\'' +
                 ", isMinistryOfDefence=" + isMinistryOfDefence +
                 ", dates=" + dates +
                 '}';

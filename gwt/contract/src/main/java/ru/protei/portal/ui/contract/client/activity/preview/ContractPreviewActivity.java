@@ -127,7 +127,10 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
         view.setProject(StringUtils.emptyIfNull(value.getProjectName()), LinkUtils.makePreviewLink(Project.class, value.getProjectId()));
 
         fireEvent(new CaseTagEvents.ShowList(view.getTagsContainer(), En_CaseType.CONTRACT, contractId, true, a -> {}));
-        fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer(), value.getId(), En_CaseType.CONTRACT, true, value.getCreatorId()));
+        CaseCommentEvents.Show caseCommentShowEvent = new CaseCommentEvents.Show(view.getCommentsContainer(), value.getId(), En_CaseType.CONTRACT, true, value.getCreatorId());
+        caseCommentShowEvent.initiatorCompanyId = value.getOrganizationId();
+        caseCommentShowEvent.isMentionEnabled = policyService.hasSystemScopeForPrivilege(En_Privilege.CONTRACT_VIEW);
+        fireEvent(caseCommentShowEvent);
     }
 
     private List<Widget> getAllDatesAsWidget(List<ContractDate> dates) {

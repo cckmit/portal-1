@@ -8,10 +8,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.client.enterprise1c.api.Api1C;
 import ru.protei.portal.core.exception.RollbackTransactionException;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
-import ru.protei.portal.core.model.dao.CaseTypeDAO;
-import ru.protei.portal.core.model.dao.ContractDAO;
-import ru.protei.portal.core.model.dao.ContractorDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.enterprise1c.dto.Contract1C;
@@ -56,6 +53,8 @@ public class ContractServiceImpl implements ContractService {
     @Autowired
     ContractorDAO contractorDAO;
     @Autowired
+    DevUnitDAO devUnitDAO;
+    @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
     @Autowired
     PortalConfig portalConfig;
@@ -76,6 +75,7 @@ public class ContractServiceImpl implements ContractService {
             query.setManagerIds(CollectionUtils.singleValueList(token.getPersonId()));
         }
         SearchResult<Contract> sr = contractDAO.getSearchResult(query);
+        sr.getResults().forEach(contract -> contract.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(contract.getProjectId()))));
         return ok(sr);
     }
 
@@ -103,8 +103,9 @@ public class ContractServiceImpl implements ContractService {
         jdbcManyRelationsHelper.fill(contract, "childContracts");
         jdbcManyRelationsHelper.fill(contract, "contractDates");
         jdbcManyRelationsHelper.fill(contract, "contractSpecifications");
-        jdbcManyRelationsHelper.fill(contract, "productDirections");
         Collections.sort(contract.getContractSpecifications());
+
+        contract.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(contract.getProjectId())));
 
         return ok(contract);
     }

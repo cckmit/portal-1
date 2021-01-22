@@ -193,6 +193,16 @@ public class CaseCommentListView
     }
 
     @Override
+    public void setInitiatorCompanyId(Long initiatorCompanyId) {
+        comment.setInitiatorCompanyId(initiatorCompanyId);
+    }
+
+    @Override
+    public void setMentionEnabled(boolean isMentionEnabled) {
+        comment.setIsMentionEnabled(isMentionEnabled);
+    }
+
+    @Override
     public void setCommentPlaceholder(String placeholder) {
         comment.getElement().setAttribute("placeholder", placeholder);
     }
