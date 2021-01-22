@@ -9,7 +9,7 @@ public class PrivacyTypeStyleProvider {
             return "privacy-level";
         }
         switch (privacyType){
-            case PUBLIC: return "privacy-level fas fa-lock-open text-success";
+            case PUBLIC: return "privacy-level fas fa-unlock text-success";
             case PRIVATE_CUSTOMERS: return "privacy-level fas fa-unlock text-warning";
             case PRIVATE: return "privacy-level fas fa-lock text-danger";
             default: return "privacy-level";

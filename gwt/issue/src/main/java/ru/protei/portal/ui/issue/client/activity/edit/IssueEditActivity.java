@@ -41,7 +41,7 @@ import static ru.protei.portal.core.model.helper.CaseCommentUtils.addImageInMess
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.util.CaseStateUtil.isTerminalState;
-import static ru.protei.portal.core.model.util.CrmConstants.Jira.EXTENDED_PRIVACY_PROJECT;
+import static ru.protei.portal.core.model.util.CrmConstants.Jira.NO_EXTENDED_PRIVACY_PROJECT;
 
 public abstract class IssueEditActivity implements
         AbstractIssueEditActivity,
@@ -455,7 +455,7 @@ public abstract class IssueEditActivity implements
 
     private boolean selectExtendedPrivacyType(CaseObject issue) {
         return En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType()) &&
-                issue.getName().startsWith(EXTENDED_PRIVACY_PROJECT);
+                !issue.getName().startsWith(NO_EXTENDED_PRIVACY_PROJECT);
     }
 
     private void reloadComments() {

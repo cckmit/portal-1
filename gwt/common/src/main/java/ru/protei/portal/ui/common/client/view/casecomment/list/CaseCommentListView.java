@@ -281,7 +281,7 @@ public class CaseCommentListView
 
     @Override
     public void setExtendedPrivacyTypeAndResetSelector(boolean extendedPrivacyType) {
-        privacyType.setExtendedPrivacy(extendedPrivacyType);
+        privacyType.fillOptions(extendedPrivacyType ? En_CaseCommentPrivacyType.extendPrivacyType() : En_CaseCommentPrivacyType.simplePrivacyType());
         privacyType.setValue(En_CaseCommentPrivacyType.PUBLIC);
     }
 

@@ -157,5 +157,4 @@ public class JiraUtils {
 
     public static final String PROJECT_CUSTOMER_ROLE = "Project Customer Role";
     public static final String PROJECT_SUPPORT_ROLE = "Project Support Role";
-    public static final String PROJECT_TECH_USER_ROLE = "Project TechUser Role";
 }
