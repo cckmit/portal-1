@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -26,8 +27,8 @@ public class CaseAttachment implements Serializable{
     @JdbcColumn(name = "remote_id")
     private String remoteId;
 
-    @JdbcJoinedColumn(localColumn = "ccomment_id", remoteColumn = "id", table = "case_comment", mappedColumn = "private_flag")
-    private Boolean isPrivate;
+    @JdbcJoinedColumn(localColumn = "ccomment_id", remoteColumn = "id", table = "case_comment", mappedColumn = "privacy_type")
+    private En_CaseCommentPrivacyType privacyType;
 
     public CaseAttachment() {
     }
@@ -87,12 +88,12 @@ public class CaseAttachment implements Serializable{
         this.remoteId = remoteId;
     }
 
-    public boolean isPrivate() {
-        return Boolean.TRUE.equals(isPrivate);
+    public En_CaseCommentPrivacyType getPrivacyType() {
+        return privacyType;
     }
 
-    public void setPrivate(Boolean isPrivate) {
-        this.isPrivate = isPrivate;
+    public void setPrivacyType(En_CaseCommentPrivacyType privacyType) {
+        this.privacyType = privacyType;
     }
 
     @Override
@@ -114,7 +115,7 @@ public class CaseAttachment implements Serializable{
                 ", attachmentId=" + attachmentId +
                 ", commentId=" + commentId +
                 ", remoteId='" + remoteId + '\'' +
-                ", isPrivate=" + isPrivate +
+                ", privacyType=" + privacyType +
                 '}';
     }
 }

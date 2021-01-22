@@ -931,7 +931,7 @@ public class TemplateServiceImpl implements TemplateService {
                     mailComment.put( "created", comment.getCreated() );
                     mailComment.put( "author", comment.getAuthor() );
                     mailComment.put( "text", escapeTextAndRenderHTML(comment.getText(), textMarkup) );
-                    mailComment.put( "isPrivateComment", comment.isPrivateComment() );
+                    mailComment.put( "privacyType", comment.getPrivacyType().name() );
                     mailComment.put( "added", isNew );
                     if (isChanged) {
                         CaseComment oldComment = changed.get( changed.indexOf( comment ) );

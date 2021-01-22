@@ -1,5 +1,6 @@
 package ru.protei.portal.core.event;
 
+import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseComment;
 
@@ -54,6 +55,7 @@ public class AssembledEventFactory {
         comment.setId( id );
         comment.setText( text );
         comment.setCreated( new Date() );
+        comment.setPrivacyType( En_CaseCommentPrivacyType.PUBLIC );
         return comment;
     }
 

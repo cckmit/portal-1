@@ -10,7 +10,7 @@
             <li ui:field="date" class="date-time"/>
             <li ui:field="owner" class="name"/>
             <g:Anchor styleName="issue-link" ui:field="remoteLink" href="#"/>
-            <i ui:field="privateComment"/>
+            <i ui:field="privateType"/>
             <li ui:field="info" class="info hide p-l-5 p-r-5"/>
             <div class="d-inline">
                 <g:Label ui:field="timeElapsed" styleName="time-label" title="{lang.issueCommentElapsedTimeTypeChange}"/>

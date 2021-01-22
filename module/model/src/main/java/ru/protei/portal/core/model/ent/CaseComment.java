@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
@@ -81,8 +82,9 @@ public class CaseComment extends AuditableObject {
     @JdbcColumn(name = "original_author_full_name")
     private String originalAuthorFullName;
 
-    @JdbcColumn(name = "private_flag")
-    private boolean privateComment;
+    @JdbcColumn(name = "privacy_type")
+    @JdbcEnumerated
+    private En_CaseCommentPrivacyType privacyType;
 
     @JdbcJoinedColumn(mappedColumn = "cname", joinPath = {
             @JdbcJoinPath(localColumn = "cmanager_id", remoteColumn = "id", table = "person"),
@@ -286,11 +288,11 @@ public class CaseComment extends AuditableObject {
     }
 
     public boolean isPrivateComment() {
-        return privateComment;
+        return privacyType == En_CaseCommentPrivacyType.PRIVATE;
     }
 
     public void setPrivateComment(boolean privateComment) {
-        this.privateComment = privateComment;
+        this.privacyType = privateComment ? En_CaseCommentPrivacyType.PRIVATE : En_CaseCommentPrivacyType.PUBLIC;
     }
 
     public Date getUpdated() {
@@ -307,6 +309,14 @@ public class CaseComment extends AuditableObject {
 
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public En_CaseCommentPrivacyType getPrivacyType() {
+        return privacyType;
+    }
+
+    public void setPrivacyType(En_CaseCommentPrivacyType privacyType) {
+        this.privacyType = privacyType;
     }
 
     public String getManagerCompanyName() {
@@ -359,7 +369,7 @@ public class CaseComment extends AuditableObject {
                 ", remoteLink=" + remoteLink +
                 ", originalAuthorName='" + originalAuthorName + '\'' +
                 ", originalAuthorFullName='" + originalAuthorFullName + '\'' +
-                ", privateComment=" + privateComment +
+                ", privacyType=" + privacyType +
                 ", managerCompanyName='" + managerCompanyName + '\'' +
                 ", updated=" + updated +
                 ", deleted=" + deleted +

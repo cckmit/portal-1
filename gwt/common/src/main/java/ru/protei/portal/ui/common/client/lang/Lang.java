@@ -810,6 +810,12 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueCopiedToClipboard();
 
+    String privacyTypePublic();
+
+    String privacyTypePrivateCustomers();
+
+    String privacyTypePrivate();
+
     String dataPageNumber( String p0 );
 
     String dashboard();

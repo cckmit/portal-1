@@ -123,6 +123,7 @@ public class CrmConstants {
     public interface Jira {
         String INFO_LINK = "jiraInfo";
         String WORKFLOW_IMAGE = "./images/jira-workflow.jpg";
+        String NO_EXTENDED_PRIVACY_PROJECT = "CLM";
     }
 
     public interface ImportanceLevel {

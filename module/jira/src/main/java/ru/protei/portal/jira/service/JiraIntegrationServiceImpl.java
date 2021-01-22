@@ -29,6 +29,7 @@ import ru.protei.portal.core.service.AttachmentService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.utils.DateUtils;
 import ru.protei.portal.core.utils.EntityCache;
+import ru.protei.portal.core.utils.JiraUtils;
 import ru.protei.portal.jira.dto.JiraHookEventData;
 import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.jira.mapper.CachedPersonMapper;
@@ -44,6 +45,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
+import static com.atlassian.jira.rest.client.api.domain.Visibility.Type.ROLE;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
@@ -496,6 +498,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         our.setOriginalAuthorFullName(comment.getAuthor().getDisplayName());
         our.setOriginalAuthorName(comment.getAuthor().getDisplayName());
         our.setText(comment.getBody());
+        our.setPrivacyType(makePrivacyType(comment));
 
         if (attachments != null) {
             replaceImageLink(our, attachments, caseToAttachment);
@@ -642,6 +645,15 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     private static User fromBasicUserInfo (BasicUser basicUser) {
         return new User(basicUser.getSelf(), basicUser.getDisplayName(), basicUser.getDisplayName(), null, true,
                 null, fakeAvatarURI_map, null);
+    }
+
+    private static En_CaseCommentPrivacyType makePrivacyType(Comment comment) {
+        Visibility visibility = comment.getVisibility();
+        if (visibility != null &&
+                (visibility.getType() == ROLE && !visibility.getValue().equals(JiraUtils.PROJECT_CUSTOMER_ROLE))) {
+            return En_CaseCommentPrivacyType.PRIVATE_CUSTOMERS;
+        }
+        return En_CaseCommentPrivacyType.PUBLIC;
     }
 
     private static String makeExternalIssueID (Long endpointId, Issue issue) {

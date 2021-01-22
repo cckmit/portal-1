@@ -37,6 +37,7 @@ public class CaseCommentEvents {
         public boolean isNewCommentEnabled = true;
         public boolean isMentionEnabled = true;
         public En_TextMarkup textMarkup = En_TextMarkup.MARKDOWN;
+        public boolean extendedPrivacyType = false;
     }
 
     /**

@@ -15,6 +15,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListActivity;
@@ -29,6 +30,7 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.events.HasAttach
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveHandler;
 import ru.protei.portal.ui.common.client.widget.imagepastetextarea.event.PasteEvent;
+import ru.protei.portal.ui.common.client.widget.privacytype.PrivacyTypeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.mentioningtextarea.MentioningTextArea;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
@@ -272,26 +274,20 @@ public class CaseCommentListView
         }
     }
 
-    private HasVisibility privacyVisibility = new HasVisibility() {
-        @Override
-        public boolean isVisible() {
-            return privateComment.isVisible();
-        }
-
-        @Override
-        public void setVisible( boolean b ) {
-            privateComment.setVisible( b );
-        }
-    };
-
     @Override
     public HasVisibility getPrivacyVisibility() {
-        return privacyVisibility;
+        return privacyType;
     }
 
     @Override
-    public HasValue<Boolean> privateComment() {
-        return privateComment;
+    public void setExtendedPrivacyTypeAndResetSelector(boolean extendedPrivacyType) {
+        privacyType.fillOptions(extendedPrivacyType ? En_CaseCommentPrivacyType.extendPrivacyType() : En_CaseCommentPrivacyType.simplePrivacyType());
+        privacyType.setValue(En_CaseCommentPrivacyType.PUBLIC);
+    }
+
+    @Override
+    public HasValue<En_CaseCommentPrivacyType> privacyType() {
+        return privacyType;
     }
 
     private void ensureDebugIds() {
@@ -302,7 +298,6 @@ public class CaseCommentListView
         commentsContainer.ensureDebugId(DebugIds.CASE_COMMENT.COMMENT_LIST.COMMENTS_LIST);
         newCommentUserImage.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CASE_COMMENT.COMMENT_LIST.USER_ICON);
         comment.ensureDebugId(DebugIds.CASE_COMMENT.COMMENT_LIST.TEXT_INPUT);
-        privateComment.ensureDebugId(DebugIds.CASE_COMMENT.COMMENT_LIST.PRIVACY_BUTTON);
         send.ensureDebugId(DebugIds.CASE_COMMENT.COMMENT_LIST.SEND_BUTTON);
         filesUpload.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CASE_COMMENT.COMMENT_LIST.FILES_UPLOAD);
         timeElapsed.ensureDebugId(DebugIds.CASE_COMMENT.COMMENT_LIST.TIME_ELAPSED);
@@ -316,8 +311,9 @@ public class CaseCommentListView
     MentioningTextArea comment;
     @UiField
     FlowPanel commentsContainer;
-    @UiField
-    CheckBox privateComment;
+    @Inject
+    @UiField(provided = true)
+    PrivacyTypeButtonSelector privacyType;
     @UiField
     Button send;
     @Inject
