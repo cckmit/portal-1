@@ -58,7 +58,7 @@ public class ReportProjectImpl implements ReportProject {
         if (count < 1) {
             log.debug("writeReport : reportId={} has no corresponding projects", report.getId());
             ReportWriter<ReportProjectWithComments> writer = new ExcelReportWriter(localizedLang, new EnumLangUtil(lang),
-                    query.getCommentCreationRange() != null, report.isProjectLimitComments());
+                    query.getCommentCreationRange() != null, report.isProjectLimitComments(), config.data().reportConfig().getProjectLimitComments());
             writer.createSheet();
             writer.collect(buffer);
             return true;
@@ -67,7 +67,7 @@ public class ReportProjectImpl implements ReportProject {
         log.debug("writeReport : reportId={} has {} projects to process", report.getId(), count);
 
         try (ReportWriter<ReportProjectWithComments> writer = new ExcelReportWriter(localizedLang, new EnumLangUtil(lang),
-                query.getCommentCreationRange() != null, report.isProjectLimitComments())) {
+                query.getCommentCreationRange() != null, report.isProjectLimitComments(), config.data().reportConfig().getProjectLimitComments())) {
             int sheetNumber = writer.createSheet();
             if (writeReport(writer, sheetNumber, report.getId(), query, count, isCancel)) {
                 writer.collect(buffer);
@@ -125,24 +125,23 @@ public class ReportProjectImpl implements ReportProject {
         List<Long> ids = projects.stream().map(Project::getId).collect(Collectors.toList());
         List<CaseComment> lastNotNullTextCommentsForReport = caseCommentDAO
                 .getLastNotNullTextCommentsForReport(ids);
-        Map<Long, CaseComment> CaseIdToLastCaseComment = lastNotNullTextCommentsForReport
+        Map<Long, CaseComment> caseIdToLastCaseComment = lastNotNullTextCommentsForReport
                 .stream().collect(Collectors.toMap(CaseComment::getCaseId, Function.identity()));
 
-        Map<Long, List<CaseComment>> CaseIdToCaseComment;
+        Map<Long, List<CaseComment>> caseIdToCaseComment;
         if (query.getCommentCreationRange() != null) {
             CaseCommentQuery caseCommentQuery = new CaseCommentQuery();
             caseCommentQuery.setCreationRange(query.getCommentCreationRange());
             List<CaseComment> caseComments = caseCommentDAO.getCaseComments(caseCommentQuery);
-            CaseIdToCaseComment = caseComments.stream().collect(Collectors.groupingBy(CaseComment::getCaseId));
+            caseIdToCaseComment = caseComments.stream().collect(Collectors.groupingBy(CaseComment::getCaseId));
         } else {
-            CaseIdToCaseComment = null;
+            caseIdToCaseComment = null;
         }
 
         return projects.stream().map(project ->
-                new ReportProjectWithComments(
-                                    project,
-                                    CaseIdToLastCaseComment.get(project.getId()),
-                                    CaseIdToCaseComment != null ?  CaseIdToCaseComment.get(project.getId()) : null))
-                .collect(Collectors.toList());
+                new ReportProjectWithComments(project,
+                        caseIdToLastCaseComment.get(project.getId()),
+                        caseIdToCaseComment != null ? caseIdToCaseComment.get(project.getId()) : null)
+                ).collect(Collectors.toList());
     }
 }
