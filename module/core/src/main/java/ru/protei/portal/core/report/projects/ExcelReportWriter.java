@@ -140,18 +140,18 @@ public class ExcelReportWriter implements
         values.add(lastComment != null ? lastComment.getText() : "");
 
         if (withComments) {
+            String commentsValue = "";
             if (isNotEmpty(comments)) {
                 Stream<CaseComment> stream = comments.stream().sorted(Comparator.comparing(CaseComment::getCreated).reversed());
                 if (isLimitComments) {
+                    commentsValue += lang.get("ir_comments_for_period_limit_comment_prefix", new Object[]{limitCommentsNumber}) + "\n\n";
                     stream = stream.limit(limitCommentsNumber);
                 }
-                values.add(stream.map(comment -> dateFormat.format(comment.getCreated()) + "\n" + comment.getText() + "\n")
-                                .collect(Collectors.joining("\n")));
-            } else {
-                values.add("");
+                commentsValue += stream.map(comment -> dateFormat.format(comment.getCreated()) + "\n" + comment.getText() + "\n")
+                        .collect(Collectors.joining("\n"));
             }
+            values.add(commentsValue);
         }
-
 
         return values.toArray();
     }

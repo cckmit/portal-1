@@ -12,6 +12,6 @@ PORTAL-1644
 Добавить в проперти внутреннего и внешнего серверов
 ```
 ## разумное ограничение по количеству выгружаемых комментариев
-## int, default: 20
-report.project.limit_comments_number=20
+## int, default: 30
+report.project.limit_comments_number=30
 ```
