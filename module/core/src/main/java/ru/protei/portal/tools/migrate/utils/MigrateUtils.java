@@ -275,6 +275,7 @@ public class MigrateUtils {
         comment.setAuthorId(ext.getCreatorId());
         comment.setText(ext.getComment());
         comment.setOldId(ext.getId());
+        comment.setPrivacyType(En_CaseCommentPrivacyType.PUBLIC);
 
         return comment;
     }

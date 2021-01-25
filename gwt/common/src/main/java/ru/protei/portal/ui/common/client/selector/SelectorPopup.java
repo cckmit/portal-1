@@ -43,4 +43,6 @@ public interface SelectorPopup extends IsWidget {
     boolean isVisible();
 
     void setAutoResize(boolean isAutoResize);
+
+    void setFixedStrategy(boolean isFixedStrategy);
 }

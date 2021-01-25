@@ -11,28 +11,34 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.AttachmentType;
+import ru.protei.portal.core.model.dict.En_ContactDataAccess;
+import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.InputEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.contactitem.group.ContactItemGroupWithValidation;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.companydepartment.CompanyDepartmentSelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.GenderButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.workerposition.WorkerPositionSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
+import ru.protei.portal.ui.common.client.widget.validatefield.ValidableContactItemBox;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.employee.client.activity.edit.AbstractEmployeeEditActivity;
 import ru.protei.portal.ui.employee.client.activity.edit.AbstractEmployeeEditView;
 
 import java.util.Date;
+import java.util.List;
 
 import static ru.protei.portal.core.model.util.CrmConstants.ContactConstants.*;
+import static ru.protei.portal.core.model.util.CrmConstants.Masks.*;
 
 public class EmployeeEditView extends Composite implements AbstractEmployeeEditView {
 
@@ -40,7 +46,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         workEmail.setRegexp( CrmConstants.Masks.EMAIL );
-        workEmail.setMaxLength( CrmConstants.EMAIL_MAX_SIZE );
         ipAddress.setRegexp( CrmConstants.Masks.IP);
 
         gender.setValid(false);
@@ -62,6 +67,14 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         lastNameErrorLabel.setText(lang.promptFieldLengthExceed(lastNameLabel(), LAST_NAME_SIZE));
 
         company.setSynchronizeWith1C(false);
+
+        workPhones.setRegexp(WORK_PHONE_NUMBER_PATTERN);
+        mobilePhones.setRegexp(RUS_PHONE_NUMBER_PATTERN);
+
+        workPhones.setNewContactItem(() -> new ContactItem(En_ContactItemType.GENERAL_PHONE, En_ContactDataAccess.PUBLIC));
+        mobilePhones.setNewContactItem(() -> new ContactItem(En_ContactItemType.MOBILE_PHONE, En_ContactDataAccess.PUBLIC));
+
+        workEmail.setSetTypeAndAccess(contactItem -> contactItem.modify(En_ContactDataAccess.PUBLIC).modify(En_ContactItemType.EMAIL));
     }
 
     @Override
@@ -101,12 +114,12 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
 
     @Override
     public HasEnabled mobilePhoneEnabled() {
-        return mobilePhone;
+        return mobilePhones;
     }
 
     @Override
     public HasEnabled workPhoneEnabled() {
-        return workPhone;
+        return workPhones;
     }
 
     @Override
@@ -145,17 +158,17 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     }
 
     @Override
-    public HasText workPhone() {
-        return workPhone;
+    public HasValue<List<ContactItem>> workPhones() {
+        return workPhones;
     }
 
     @Override
-    public HasText mobilePhone() {
-        return mobilePhone;
+    public HasValue<List<ContactItem>> mobilePhones() {
+        return mobilePhones;
     }
 
     @Override
-    public HasValue<String> workEmail() {
+    public HasValue<ContactItem> workEmail() {
         return workEmail;
     }
 
@@ -197,6 +210,16 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @Override
     public HasValidable workEmailValidator(){
         return workEmail;
+    }
+
+    @Override
+    public HasValidable workPhonesValidator() {
+        return workPhones;
+    }
+
+    @Override
+    public HasValidable mobilePhonesValidator() {
+        return mobilePhones;
     }
 
     @Override
@@ -453,13 +476,13 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     SinglePicker birthDay;
 
     @UiField
-    TextBox workPhone;
+    ContactItemGroupWithValidation workPhones;
 
     @UiField
-    TextBox mobilePhone;
+    ContactItemGroupWithValidation mobilePhones;
 
     @UiField
-    ValidableTextBox workEmail;
+    ValidableContactItemBox workEmail;
 
     @UiField
     ValidableTextBox ipAddress;

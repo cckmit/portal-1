@@ -292,10 +292,10 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
         initiators.setValue(applyPersons(filter.getPersonShortViews(), caseQuery.getInitiatorIds()));
         commentAuthors.setValue(applyPersons(filter.getPersonShortViews(), caseQuery.getCommentAuthorIds()));
-        timeElapsedTypes.setValue(toSet(caseQuery.getTimeElapsedTypeIds(), En_TimeElapsedType::findById));
+        timeElapsedTypes.setValue(toSet(caseQuery.getTimeElapsedTypeIds(), id -> En_TimeElapsedType.findById(id)));
         creators.setValue(applyPersons(filter.getPersonShortViews(), caseQuery.getCreatorIds()));
         plan.setValue(filter.getPlanOption());
-        workTriggers.setValue(toSet(caseQuery.getWorkTriggersIds(), En_WorkTrigger::findById));
+        workTriggers.setValue(toSet(caseQuery.getWorkTriggersIds(), id -> En_WorkTrigger.findById(id)));
         overdueDeadlines.setValue(caseQuery.getOverdueDeadlines());
 
         Set<PersonShortView> personShortViews = new LinkedHashSet<>();
@@ -753,7 +753,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         }
         return productSet
                 .stream()
-                .map( ProductShortView::getId )
+                .map(productShortView -> productShortView.getId())
                 .collect( Collectors.toSet() );
     }
 
@@ -764,7 +764,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         }
         return companySet
                 .stream()
-                .map( EntityOption::getId )
+                .map(entityOption -> entityOption.getId())
                 .collect( Collectors.toList() );
     }
 
@@ -786,7 +786,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
         return personSet
                 .stream()
-                .map( PersonShortView::getId )
+                .map(personShortView -> personShortView.getId())
                 .collect( Collectors.toList() );
     }
 

@@ -41,6 +41,7 @@ import static ru.protei.portal.core.model.helper.CaseCommentUtils.addImageInMess
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.util.CaseStateUtil.isTerminalState;
+import static ru.protei.portal.core.model.util.CrmConstants.Jira.NO_EXTENDED_PRIVACY_PROJECT;
 
 public abstract class IssueEditActivity implements
         AbstractIssueEditActivity,
@@ -441,12 +442,20 @@ public abstract class IssueEditActivity implements
         show.isPrivateCase = issue.isPrivateCase();
         show.isNewCommentEnabled = !isTerminalState(issue.getStateId());
         show.textMarkup =  CaseTextMarkupUtil.recognizeTextMarkup( issue );
+        show.initiatorCompanyId = issue.getInitiatorCompany().getId();
+        show.isMentionEnabled = policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
+        show.extendedPrivacyType =  selectExtendedPrivacyType( issue );
         fireEvent( show );
 
     }
 
     private void showPlansHistory(CaseObject issue) {
         fireEvent(new CaseHistoryEvents.Load(issue.getId(), issueInfoWidget.getHistoryContainer()));
+    }
+
+    private boolean selectExtendedPrivacyType(CaseObject issue) {
+        return En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType()) &&
+                !issue.getName().startsWith(NO_EXTENDED_PRIVACY_PROJECT);
     }
 
     private void reloadComments() {

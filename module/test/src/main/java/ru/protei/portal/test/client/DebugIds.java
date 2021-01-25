@@ -241,6 +241,13 @@ public class DebugIds {
         String PREFIX = "importance-button-";
     }
 
+    public interface PRIVACY_TYPE_BUTTON {
+        String DEFAULT = "privacy-type-button-";
+        String PUBLIC = "privacy-type-button-public";
+        String PRIVATE_CUSTOMER = "privacy-type-button-private-customer";
+        String PRIVATE = "privacy-type-button-private";
+    }
+
     public interface PRODUCT_TYPES_BUTTON {
         String DEFAULT = "product-types-button-";
         String COMPONENT = "product-types-button-component";
@@ -1090,5 +1097,11 @@ public class DebugIds {
             String EMPLOYEE = "duty-log-filter-employee-selector";
             String TYPE = "duty-log-filter-type-selector";
         }
+    }
+
+    public interface GROUP {
+        String ROOT = "group-root";
+        String CONTAINER = "group-container";
+        String ITEM = "group-item";
     }
 }

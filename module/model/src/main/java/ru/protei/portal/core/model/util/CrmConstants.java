@@ -85,6 +85,8 @@ public class CrmConstants {
         String CONTRACTOR_KPP = "^\\d{9}$";
         String CONTRACTOR_NAME = "^.{1,100}$";
         String CONTRACTOR_FULL_NAME = "^.{1,250}$";
+        String RUS_PHONE_NUMBER_PATTERN = "^((\\+7|8)[0-9]{9,10}|[0-9]{6,7})$"; // [+7 или 8] + [3 код региона] + [6-7 номер] ИЛИ [6-7 номер]
+        String WORK_PHONE_NUMBER_PATTERN = "^\\d*#?\\d+$";
     }
 
     public interface Time {
@@ -121,6 +123,7 @@ public class CrmConstants {
     public interface Jira {
         String INFO_LINK = "jiraInfo";
         String WORKFLOW_IMAGE = "./images/jira-workflow.jpg";
+        String NO_EXTENDED_PRIVACY_PROJECT = "CLM";
     }
 
     public interface ImportanceLevel {

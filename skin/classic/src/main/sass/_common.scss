@@ -126,7 +126,7 @@ $bg_master_lightest: #fafafa;
 
 .dropdown-menu ul > li > a {
   display: block;
-  padding: 3px 20px;
+  padding: 3px 9px;
   clear: both;
   line-height: 20px;
   color: #333;
@@ -1891,10 +1891,10 @@ a {
 }
 
 .importance-item:not(.selector-val) {
-  padding: 5px !important;
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
   > span {
     position: relative;
-    float: left;
     line-height: 18px;
     &:after {
       content: "";
@@ -2009,6 +2009,10 @@ a {
       font-size: 12px;
     }
   }
+}
+
+.privacy-level {
+  font-size: 13px;
 }
 
 .importance-btn-group {
@@ -2803,6 +2807,7 @@ div.select2-container {
     .select2-add-button {
       flex-grow: 1;
       margin-right: 5px;
+      padding-left: 12px;
     }
   }
 }
@@ -2949,6 +2954,7 @@ div.select2-container {
   text-align: left;
   padding-right: 27px;
   min-height: 35px;
+  padding-left: 12px;
 
   &::after {
     position: absolute;

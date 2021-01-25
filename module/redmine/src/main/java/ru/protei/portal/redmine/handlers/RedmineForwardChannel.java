@@ -211,9 +211,7 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
         processComments(issue.getJournals(), obj, personMapper);
         processAttachments(issue.getAttachments(), obj, endpoint, personMapper);
 
-        if (obj != null) {
-            logger.debug("Object with id {} was created, guid={}", obj.getId(), obj.defGUID());
-        }
+        logger.debug("Object with id {} was created, guid={}", obj.getId(), obj.defGUID());
         return obj;
     }
 
