@@ -20,7 +20,6 @@ import java.io.OutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -140,7 +139,7 @@ public class ExcelReportWriter implements
         if (withComments) {
             String commentsValue = "";
             if (isNotEmpty(comments)) {
-                Stream<CaseComment> stream = comments.stream().sorted(Comparator.comparing(CaseComment::getCreated).reversed());
+                Stream<CaseComment> stream = comments.stream();
                 if (limitCommentsNumber < comments.size()) {
                     commentsValue += lang.get("ir_comments_for_period_limit_comment_prefix", new Object[]{limitCommentsNumber}) + "\n\n";
                     stream = stream.limit(limitCommentsNumber);

@@ -9,6 +9,8 @@ import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.DevUnitDAO;
 import ru.protei.portal.core.model.dao.ProjectDAO;
 import ru.protei.portal.core.model.dao.ReportDAO;
+import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.Report;
@@ -124,15 +126,18 @@ public class ReportProjectImpl implements ReportProject {
 
         List<Long> ids = projects.stream().map(Project::getId).collect(Collectors.toList());
         List<CaseComment> lastNotNullTextCommentsForReport = caseCommentDAO
-                .getLastNotNullTextCommentsForReport(ids);
+                .getLastNotNullTextPartialCommentsForReport(ids);
         Map<Long, CaseComment> caseIdToLastCaseComment = lastNotNullTextCommentsForReport
                 .stream().collect(Collectors.toMap(CaseComment::getCaseId, Function.identity()));
 
         Map<Long, List<CaseComment>> caseIdToCaseComment;
         if (query.getCommentCreationRange() != null) {
             CaseCommentQuery caseCommentQuery = new CaseCommentQuery();
+            caseCommentQuery.setCaseObjectIds(ids);
             caseCommentQuery.setCreationRange(query.getCommentCreationRange());
-            List<CaseComment> caseComments = caseCommentDAO.getCaseComments(caseCommentQuery);
+            caseCommentQuery.setSortDir(En_SortDir.DESC);
+            caseCommentQuery.setSortField(En_SortField.creation_date);
+            List<CaseComment> caseComments = caseCommentDAO.getPartialCommentsForReport(caseCommentQuery);
             caseIdToCaseComment = caseComments.stream().collect(Collectors.groupingBy(CaseComment::getCaseId));
         } else {
             caseIdToCaseComment = null;

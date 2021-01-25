@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.portal.core.utils.TypeConverters;
 
 import java.sql.ResultSet;
 import java.util.Date;
@@ -50,7 +51,7 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
     }
 
     @Override
-    public List<CaseComment> getLastNotNullTextCommentsForReport(List<Long> caseId) {
+    public List<CaseComment> getLastNotNullTextPartialCommentsForReport(List<Long> caseId) {
         return jdbcTemplate.query( "SELECT ID, CASE_ID, CREATED, COMMENT_TEXT " +
                         "FROM case_comment " +
                         "WHERE id in " +
@@ -72,5 +73,11 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
                     caseComment.setText(rs.getString("COMMENT_TEXT"));
                     return caseComment;
                 });
+    }
+
+    @Override
+    public List<CaseComment> getPartialCommentsForReport(CaseCommentQuery query) {
+        SqlCondition where = createSqlCondition( query );
+        return partialGetListByCondition(where.condition,  TypeConverters.createSort(query), where.args, "id", "case_id", "created", "comment_text");
     }
 }
