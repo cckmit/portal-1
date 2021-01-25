@@ -591,7 +591,7 @@ public class PortalConfigData {
                 this.liveTime = DurationUtils.getDuration(properties.getProperty("report.live_time_duration", "3d"), TimeUnit.MILLISECONDS);
                 this.hangInterval = TimeUnit.SECONDS.toMillis(properties.getProperty("report.hang_interval_sec", Integer.class, 30 * 60));
                 this.storagePath = properties.getProperty("report.storage.path", "reports");
-                this.projectLimitComments = properties.getProperty("report.project.limit_comments_number", Integer.class, 20);
+                this.projectLimitComments = properties.getProperty("report.project.limit_comments_number", Integer.class, 30);
             } catch (IncorrectDurationException e) {
                 throw new ConfigException(e);
             }
