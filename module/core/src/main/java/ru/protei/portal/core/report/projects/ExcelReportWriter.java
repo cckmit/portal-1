@@ -37,18 +37,16 @@ public class ExcelReportWriter implements
     private final EnumLangUtil enumLangUtil;
     private final String[] formats;
     private final boolean withComments;
-    private final boolean isLimitComments;
     private final DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
     private final int limitCommentsNumber;
 
     public ExcelReportWriter(Lang.LocalizedLang localizedLang, EnumLangUtil enumLangUtil,
-                             boolean withComments, boolean isLimitComments, int limitCommentsNumber) {
+                             boolean withComments, int limitCommentsNumber) {
         this.book = new JXLSHelper.ReportBook<>(localizedLang, this);
         this.lang = localizedLang;
         this.enumLangUtil = enumLangUtil;
         this.formats = getFormats();
         this.withComments = withComments;
-        this.isLimitComments = isLimitComments;
         this.limitCommentsNumber = limitCommentsNumber;
     }
 
@@ -143,7 +141,7 @@ public class ExcelReportWriter implements
             String commentsValue = "";
             if (isNotEmpty(comments)) {
                 Stream<CaseComment> stream = comments.stream().sorted(Comparator.comparing(CaseComment::getCreated).reversed());
-                if (isLimitComments) {
+                if (limitCommentsNumber < comments.size()) {
                     commentsValue += lang.get("ir_comments_for_period_limit_comment_prefix", new Object[]{limitCommentsNumber}) + "\n\n";
                     stream = stream.limit(limitCommentsNumber);
                 }

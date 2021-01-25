@@ -144,7 +144,6 @@ public abstract class ReportCreateActivity implements Activity,
         report.setWithTags(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.TAGS));
         report.setWithLinkedIssues(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.LINKED_ISSUES));
         report.setHumanReadable(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.HUMAN_READABLE));
-        report.setProjectLimitComments(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.PROJECT_LIMIT_COMMENTS));
         return report;
     }
 
@@ -196,8 +195,7 @@ public abstract class ReportCreateActivity implements Activity,
                 view.getFilterContainer().clear();
                 view.getFilterContainer().add(projectFilterView.asWidget());
                 view.scheduledTypeContainerVisibility().setVisible(false);
-                view.additionalParamsVisibility().setVisible(true);
-                view.setAdditionalParamsFilter(value -> En_ReportAdditionalParamType.getReportType().contains(value));
+                view.additionalParamsVisibility().setVisible(false);
                 view.additionalParams().setValue(null);
                 break;
             }
@@ -208,7 +206,6 @@ public abstract class ReportCreateActivity implements Activity,
                 view.getFilterContainer().add(contractFilterView.asWidget());
                 view.scheduledTypeContainerVisibility().setVisible(false);
                 view.additionalParamsVisibility().setVisible(false);
-                view.setAdditionalParamsFilter(null);
                 view.additionalParams().setValue(null);
                 break;
             }
@@ -218,7 +215,6 @@ public abstract class ReportCreateActivity implements Activity,
                 view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
                 view.scheduledTypeContainerVisibility().setVisible(isScheduledEnabled(reportType));
                 view.additionalParamsVisibility().setVisible(reportType == En_ReportType.CASE_OBJECTS);
-                view.setAdditionalParamsFilter(reportType == En_ReportType.CASE_OBJECTS ? value -> En_ReportAdditionalParamType.getCaseObjectType().contains(value) : null);
                 view.additionalParams().setValue(null);
                 issueFilterWidget.updateFilterType(En_CaseFilterType.valueOf(reportType.name()));
                 validateDateRanges(reportType);

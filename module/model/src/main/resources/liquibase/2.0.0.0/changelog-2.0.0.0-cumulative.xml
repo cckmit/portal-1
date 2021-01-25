@@ -73,6 +73,5 @@
   <include file="2020-12-14-add-default-sla-time-columns-in-importance_level-table.xml" relativeToChangelogFile="true"/>
   <include file="2021-01-13-add-development-state-for-issues.xml" relativeToChangelogFile="true"/>
   <include file="2021-01-14-rename-case-object-ext-app-data-jira-clm-id.xml" relativeToChangelogFile="true"/>
-  <include file="2021-01-21-add-project-limit-comments-column-to-report-table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

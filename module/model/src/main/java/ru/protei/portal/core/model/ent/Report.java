@@ -74,9 +74,6 @@ public class Report implements Serializable {
     @JdbcColumn(name = "human_readable")
     private boolean isHumanReadable;
 
-    @JdbcColumn(name = "project_limit_comments")
-    private boolean isProjectLimitComments;
-
     public Long getId() {
         return id;
     }
@@ -229,14 +226,6 @@ public class Report implements Serializable {
         isHumanReadable = humanReadable;
     }
 
-    public boolean isProjectLimitComments() {
-        return isProjectLimitComments;
-    }
-
-    public void setProjectLimitComments(boolean projectLimitComments) {
-        isProjectLimitComments = projectLimitComments;
-    }
-
     @Override
     public String toString() {
         return "Report{" +
@@ -258,7 +247,6 @@ public class Report implements Serializable {
                 ", isRemoved=" + isRemoved +
                 ", systemId='" + systemId + '\'' +
                 ", isHumanReadable=" + isHumanReadable +
-                ", isProjectLimitComments=" + isProjectLimitComments +
                 '}';
     }
 

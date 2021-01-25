@@ -58,7 +58,7 @@ public class ReportProjectImpl implements ReportProject {
         if (count < 1) {
             log.debug("writeReport : reportId={} has no corresponding projects", report.getId());
             ReportWriter<ReportProjectWithComments> writer = new ExcelReportWriter(localizedLang, new EnumLangUtil(lang),
-                    query.getCommentCreationRange() != null, report.isProjectLimitComments(), config.data().reportConfig().getProjectLimitComments());
+                    query.getCommentCreationRange() != null, config.data().reportConfig().getProjectLimitComments());
             writer.createSheet();
             writer.collect(buffer);
             return true;
@@ -67,7 +67,7 @@ public class ReportProjectImpl implements ReportProject {
         log.debug("writeReport : reportId={} has {} projects to process", report.getId(), count);
 
         try (ReportWriter<ReportProjectWithComments> writer = new ExcelReportWriter(localizedLang, new EnumLangUtil(lang),
-                query.getCommentCreationRange() != null, report.isProjectLimitComments(), config.data().reportConfig().getProjectLimitComments())) {
+                query.getCommentCreationRange() != null, config.data().reportConfig().getProjectLimitComments())) {
             int sheetNumber = writer.createSheet();
             if (writeReport(writer, sheetNumber, report.getId(), query, count, isCancel)) {
                 writer.collect(buffer);

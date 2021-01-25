@@ -3168,8 +3168,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueReportHumanReadable();
 
-    String issueReportProjectLimitComments();
-
     String issueReportHumanReadableTitle();
 
     String errReportingServiceNotConfigured();

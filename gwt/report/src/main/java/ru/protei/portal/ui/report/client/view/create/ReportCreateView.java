@@ -12,7 +12,6 @@ import ru.protei.portal.core.model.dict.En_ReportAdditionalParamType;
 import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.report.additionalparams.ReportAdditionalParamsMultiSelector;
 import ru.protei.portal.ui.report.client.activity.create.AbstractReportCreateActivity;
 import ru.protei.portal.ui.report.client.activity.create.AbstractReportCreateView;
@@ -75,11 +74,6 @@ public class ReportCreateView extends Composite implements AbstractReportCreateV
     @Override
     public HasVisibility additionalParamsVisibility() {
         return additionalParamsContainer;
-    }
-
-    @Override
-    public void setAdditionalParamsFilter(Selector.SelectorFilter<En_ReportAdditionalParamType> selectorFilter) {
-        additionalParams.setFilter(selectorFilter);
     }
 
     @Override

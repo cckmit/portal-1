@@ -183,7 +183,6 @@ public class ReportProjectTest extends BaseServiceTest {
         Report report = new Report();
         report.setQuery(serializeAsJson(query));
         report.setLocale("ru");
-        report.setProjectLimitComments(true);
 
         List<ReportProjectWithComments> data = reportProject.createData(deserializeFromJson(report.getQuery(), ProjectQuery.class));
 

@@ -7,7 +7,6 @@ import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_ReportAdditionalParamType;
 import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.dict.En_ReportType;
-import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 
 import java.util.List;
 import java.util.Set;
@@ -31,8 +30,6 @@ public interface AbstractReportCreateView extends IsWidget {
     HasVisibility scheduledTypeContainerVisibility();
 
     HasVisibility additionalParamsVisibility();
-
-    void setAdditionalParamsFilter(Selector.SelectorFilter<En_ReportAdditionalParamType> selectorFilter);
 
     HasValue<Set<En_ReportAdditionalParamType>> additionalParams();
 }
