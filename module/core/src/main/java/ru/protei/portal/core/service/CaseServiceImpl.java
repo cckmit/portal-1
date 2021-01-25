@@ -1101,7 +1101,7 @@ public class CaseServiceImpl implements CaseService {
     }
 
     private void applyStateBasedOnManager(CaseObjectMeta caseMeta) {
-        if (CrmConstants.State.CREATED == caseMeta.getStateId() && caseMeta.getManager() != null) {
+        if (CrmConstants.State.CREATED == caseMeta.getStateId() && caseMeta.getManagerId() != null) {
             caseMeta.setStateId(CrmConstants.State.OPENED);
         }
     }
