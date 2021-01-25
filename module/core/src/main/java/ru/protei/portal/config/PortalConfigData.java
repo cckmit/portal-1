@@ -582,6 +582,7 @@ public class PortalConfigData {
         private final long liveTime;
         private final long hangInterval;
         private final String storagePath;
+        private final int projectLimitComments;
 
         public ReportConfig(PropertiesWrapper properties) throws ConfigException {
             try {
@@ -590,6 +591,7 @@ public class PortalConfigData {
                 this.liveTime = DurationUtils.getDuration(properties.getProperty("report.live_time_duration", "3d"), TimeUnit.MILLISECONDS);
                 this.hangInterval = TimeUnit.SECONDS.toMillis(properties.getProperty("report.hang_interval_sec", Integer.class, 30 * 60));
                 this.storagePath = properties.getProperty("report.storage.path", "reports");
+                this.projectLimitComments = properties.getProperty("report.project.limit_comments_number", Integer.class, 30);
             } catch (IncorrectDurationException e) {
                 throw new ConfigException(e);
             }
@@ -613,6 +615,10 @@ public class PortalConfigData {
 
         public String getStoragePath() {
             return storagePath;
+        }
+
+        public int getProjectLimitComments() {
+            return projectLimitComments;
         }
     }
 
