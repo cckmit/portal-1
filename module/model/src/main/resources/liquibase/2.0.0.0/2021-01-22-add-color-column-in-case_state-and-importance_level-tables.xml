@@ -6,7 +6,9 @@
 
     <changeSet id="add-color-column-in-case_state-table" author="novikov_a">
         <addColumn tableName="case_state">
-            <column name="color" type="VARCHAR(9)" defaultValue="NULL"/>
+            <column name="color" type="VARCHAR(9)" defaultValue="#e6e6e6">
+                <constraints nullable="false"/>
+            </column>
         </addColumn>
     </changeSet>
 
@@ -36,7 +38,7 @@
             <where>id = 17</where>
         </update>
         <update tableName="case_state">
-            <column name="color" valueBoolean="#906094"/>
+            <column name="color" value="#906094"/>
             <where>id in (19,20)</where>
         </update>
         <update tableName="case_state">
