@@ -9,6 +9,9 @@
 <@set name="_reservedIpUsePeriod" value="${reservedIpUsePeriod}"/>
 <@set name="_reservedIpForever" value="${reservedIpForever}"/>
 <@set name="_reservedIpComment" value="${reservedIpComment}"/>
+<@set name="_reservedIpInstructionStart" value="${reservedIpInstructionStart}"
+<@set name="_reservedIpInstructionEnding" value="${reservedIpInstructionEnding}"
+<@set name="_reservedIpInstructionPortal" value="${reservedIpInstructionPortal}"
 <#noparse>
 <html>
 <head>
@@ -59,6 +62,11 @@
     </#list>
     </tbody>
 </table>
+    <div style="padding: 8px 0 0;">${_reservedIpUsePeriod}
+        <a href="https://newportal.protei.ru/portal/#reserved_ips" rel="link">${_reservedIpInstructionEnding}</a>.
+        ${_reservedIpInstructionPortal}
+    </div>
+
     <div style="padding: 4px 0 8px;">
         <div style="color: #777777; font-size: 11px; font-family:sans-serif; margin: 20px 0; padding: 8px 0; border-top: 1px solid #D4D5D6;">
             ${_you} (<b>${userName}</b>) ${_notification_footer}
