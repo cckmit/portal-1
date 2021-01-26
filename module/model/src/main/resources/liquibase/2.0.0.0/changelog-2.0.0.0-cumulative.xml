@@ -76,7 +76,6 @@
   <include file="2021-01-21-add-privacy-type-in-case-comment-table.xml" relativeToChangelogFile="true"/>
   <include file="2021-01-22-add-color-column-in-case_state-and-importance_level-tables.xml" relativeToChangelogFile="true"/>
   <include file="2021-01-22-add-paused-state-for-projects.xml" relativeToChangelogFile="true"/>
-  <include file="2021-01-26-drop-default-color-value-in-case_state-table.xml" relativeToChangelogFile="true"/>
   <include file="2021-01-26-remove-contact-info-in-person-and-company.xml" relativeToChangelogFile="true"/>
   <include file="2021-01-26-clean-single-product_id-for-project.xml" relativeToChangelogFile="true"/>
 

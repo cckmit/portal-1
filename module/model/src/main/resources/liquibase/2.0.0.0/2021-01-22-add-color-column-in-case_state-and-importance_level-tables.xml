@@ -83,6 +83,10 @@
         </update>
     </changeSet>
 
+    <changeSet id="drop-default-color-value-in-case_state-table" author="novikov_a">
+        <dropDefaultValue tableName="case_state" columnName="color"/>
+    </changeSet>
+
     <changeSet id="add-color-column-in-importance_level-table" author="novikov_a">
         <addColumn tableName="importance_level">
             <column name="color" type="VARCHAR(9)">
