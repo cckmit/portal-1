@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
-
 @JsonAutoDetect
 public class ContactInfo implements Serializable, AbstractContactInfo {
 
@@ -51,7 +49,7 @@ public class ContactInfo implements Serializable, AbstractContactInfo {
     @JsonIgnore
     public List<ContactItem> getItems(En_ContactItemType type) {
         return itemList.stream()
-                .filter(contactItem -> contactItem.isItemOf(type))
+                .filter(contactItem -> contactItem != null && contactItem.isItemOf(type))
                 .collect(Collectors.toList());
     }
 
@@ -63,14 +61,14 @@ public class ContactInfo implements Serializable, AbstractContactInfo {
     @Override
     public ContactItem findFirst(En_ContactItemType type) {
         return itemList.stream()
-                .filter(contactItem -> contactItem.isItemOf(type))
+                .filter(contactItem -> contactItem != null && contactItem.isItemOf(type))
                 .findFirst().orElse(null);
     }
 
     @Override
     public ContactItem findFirst(En_ContactItemType type, En_ContactDataAccess accessType) {
         return itemList.stream()
-                .filter(contactItem -> contactItem.isItemOf(type) && contactItem.accessType() == accessType)
+                .filter(contactItem -> contactItem != null && contactItem.isItemOf(type) && contactItem.accessType() == accessType)
                 .findFirst().orElse(null);
     }
 
