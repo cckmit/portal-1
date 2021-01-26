@@ -74,5 +74,6 @@
   <include file="2021-01-13-add-development-state-for-issues.xml" relativeToChangelogFile="true"/>
   <include file="2021-01-14-rename-case-object-ext-app-data-jira-clm-id.xml" relativeToChangelogFile="true"/>
   <include file="2021-01-21-add-privacy-type-in-case-comment-table.xml" relativeToChangelogFile="true"/>
+  <include file="2021-01-26-remove-contact-info-in-person-and-company.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
