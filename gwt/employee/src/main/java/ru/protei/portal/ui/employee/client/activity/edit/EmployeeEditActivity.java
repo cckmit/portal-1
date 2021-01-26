@@ -394,7 +394,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
             return lang.errFieldsRequired();
         }
 
-        if (view.workEmail().getValue() != null && !view.workEmailValidator().isValid()) {
+        if (view.workEmail().getValue() == null || !view.workEmailValidator().isValid()) {
             return lang.errorFieldHasInvalidValue(view.workEmailLabel());
         }
 
