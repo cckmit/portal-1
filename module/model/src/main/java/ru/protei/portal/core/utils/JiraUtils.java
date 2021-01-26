@@ -154,4 +154,7 @@ public class JiraUtils {
                         node.alt != null ? node.alt : attachment.getFileName())
         );
     }
+
+    public static final String PROJECT_CUSTOMER_ROLE = "Project Customer Role";
+    public static final String PROJECT_SUPPORT_ROLE = "Project Support Role";
 }

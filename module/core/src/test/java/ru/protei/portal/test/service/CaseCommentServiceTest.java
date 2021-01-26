@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
@@ -122,6 +123,7 @@ public class CaseCommentServiceTest extends BaseServiceTest {
         comment.setCreated(new Date());
         comment.setText("Unit-test - тестовый комментарий");
         comment.setCaseAttachments(Collections.emptyList());
+        comment.setPrivacyType(En_CaseCommentPrivacyType.PUBLIC);
 
         result = caseCommentService.addCaseComment(getAuthToken(), caseType, comment);
         Assert.assertNotNull(result);

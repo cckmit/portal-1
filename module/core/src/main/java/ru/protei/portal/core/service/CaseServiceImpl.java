@@ -114,7 +114,7 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     HistoryService historyService;
-    
+
     @Autowired
     PolicyService policyService;
 
@@ -965,8 +965,8 @@ public class CaseServiceImpl implements CaseService {
         stateChangeMessage.setCaseId(caseId);
         stateChangeMessage.setTimeElapsed(timeElapsed);
         stateChangeMessage.setTimeElapsedType(timeElapsedType != null ? timeElapsedType : En_TimeElapsedType.NONE);
-        stateChangeMessage.setPrivateComment(true);
         stateChangeMessage.setText(CrmConstants.Comment.TIME_ELAPSED_DEFAULT_COMMENT);
+        stateChangeMessage.setPrivacyType(En_CaseCommentPrivacyType.PRIVATE);
         return caseCommentDAO.persist(stateChangeMessage);
     }
 
@@ -1101,7 +1101,7 @@ public class CaseServiceImpl implements CaseService {
     }
 
     private void applyStateBasedOnManager(CaseObjectMeta caseMeta) {
-        if (CrmConstants.State.CREATED == caseMeta.getStateId() && caseMeta.getManager() != null) {
+        if (CrmConstants.State.CREATED == caseMeta.getStateId() && caseMeta.getManagerId() != null) {
             caseMeta.setStateId(CrmConstants.State.OPENED);
         }
     }

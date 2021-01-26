@@ -235,6 +235,11 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     @Transactional
     public Result<Server> createServer( AuthToken token, Server server) {
 
+        String params = server.getParams();
+        if (params != null && !isValid(params)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
         Long id = serverDAO.persist(server);
 
         if (id == null) {
@@ -247,6 +252,11 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     @Override
     @Transactional
     public Result<Server> createServerAndCloneApps( AuthToken token, Server server, Long serverIdOfAppsToBeCloned) {
+
+        String params = server.getParams();
+        if (params != null && !isValid(params)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
 
         Result<Server> response = createServer(token, server);
 
@@ -320,6 +330,11 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     @Override
     @Transactional
     public Result<Server> updateServer( AuthToken token, Server server) {
+
+        String params = server.getParams();
+        if (params != null && !isValid(params)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
 
         boolean status = serverDAO.merge(server);
 

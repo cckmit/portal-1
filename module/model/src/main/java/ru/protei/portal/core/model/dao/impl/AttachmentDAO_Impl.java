@@ -7,7 +7,6 @@ import ru.protei.portal.core.model.util.sqlcondition.Query;
 
 import java.util.List;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
 import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.condition;
 import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
 
@@ -71,7 +70,7 @@ public class AttachmentDAO_Impl extends PortalBaseJdbcDAO<Attachment> implements
                         query()
                                 .select("case_comment.id")
                                 .from("case_comment")
-                                .where("case_comment.private_flag").equal(false)
+                                .where("case_comment.privacy_type").not().equal("PRIVATE")
                                 .asQuery()
                 );
     }

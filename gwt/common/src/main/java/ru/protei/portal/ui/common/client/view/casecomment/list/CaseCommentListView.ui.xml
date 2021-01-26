@@ -4,7 +4,9 @@
              xmlns:timefield='urn:import:ru.protei.portal.ui.common.client.widget.timefield'
              xmlns:timeElapsed='urn:import:ru.protei.portal.ui.common.client.view.selector'
              xmlns:commentArea="urn:import:ru.protei.portal.ui.common.client.widget.mentioningtextarea"
-             xmlns:fileuploader="urn:import:ru.protei.portal.ui.common.client.widget.uploader.impl">
+             xmlns:fileuploader="urn:import:ru.protei.portal.ui.common.client.widget.uploader.impl"
+             xmlns:privacyType="urn:import:ru.protei.portal.ui.common.client.widget.privacytype"
+>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -47,17 +49,19 @@
                                 </div>
 
                                 <div class="row">
-                                    <g:Button styleName="btn btn-complete" ui:field="send" text="{lang.commentSendMessage}"/>
-
-                                    <timeElapsed:ElapsedTimeTypeSelector ui:field="timeElapsedType" addStyleNames="col-md-3"/>
-
                                     <div class="col-md-3 p-l-0">
+                                        <g:Button styleName="btn btn-complete btn-block btn-sm" ui:field="send" text="{lang.commentSendMessage}"/>
+                                    </div>
+
+                                    <timeElapsed:ElapsedTimeTypeSelector ui:field="timeElapsedType" addStyleNames="col-md-4 p-l-0" fixedStrategy="false"/>
+
+                                    <div class="col-md-2 p-l-0">
                                         <timefield:TimeTextBox ui:field="timeElapsed"
                                                                styleName="form-control time-elapsed" notNull="false"/>
                                     </div>
 
-                                    <div class="col-md-4 p-l-0 m-t-5">
-                                        <g:CheckBox ui:field="privateComment" styleName="checkbox check-danger" text="{lang.commentSetPrivate}"/>
+                                    <div class="col-md-3 p-l-0">
+                                        <privacyType:PrivacyTypeButtonSelector ui:field="privacyType" styleName="btn-group btn-group-justified"/>
                                     </div>
                                 </div>
 

@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.view;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
@@ -16,8 +17,8 @@ public class CaseCommentShortView {
     @JdbcColumn(name="created")
     private Date created;
 
-    @JdbcColumn(name = "private_flag")
-    private boolean isPrivateComment;
+    @JdbcColumn(name = "privacy_type")
+    private En_CaseCommentPrivacyType privacyType;
 
     @JdbcColumn(name="case_id")
     private Long caseId;
@@ -73,11 +74,11 @@ public class CaseCommentShortView {
     }
 
     public boolean isPrivateComment() {
-        return isPrivateComment;
+        return privacyType == En_CaseCommentPrivacyType.PRIVATE;
     }
 
     public void setPrivateComment(boolean privateComment) {
-        this.isPrivateComment = privateComment;
+        privacyType = privateComment ? En_CaseCommentPrivacyType.PRIVATE : En_CaseCommentPrivacyType.PUBLIC;
     }
 
     public Long getCaseId() {
@@ -170,7 +171,7 @@ public class CaseCommentShortView {
         return "CaseCommentShortView{" +
                 "id=" + id +
                 ", created=" + created +
-                ", isPrivateComment=" + isPrivateComment +
+                ", privacyType=" + privacyType +
                 ", caseId=" + caseId +
                 ", authorId=" + authorId +
                 ", authorName='" + authorName + '\'' +

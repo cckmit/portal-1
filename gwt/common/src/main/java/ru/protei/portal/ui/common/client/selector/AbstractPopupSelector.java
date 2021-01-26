@@ -179,6 +179,10 @@ public abstract class AbstractPopupSelector<T> extends Composite
         popup.setPopupHandler(this);
     }
 
+    public void setFixedStrategy(boolean isFixedStrategy) {
+        popup.setFixedStrategy(isFixedStrategy);
+    }
+
     /**
      * Выполнить после сокрытия попапа
      */

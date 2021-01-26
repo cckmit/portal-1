@@ -471,8 +471,10 @@ public class ProjectServiceImpl implements ProjectService {
     public Result<List<ProjectInfo>> listInfoProjects(AuthToken token, ProjectQuery query) {
         List<Project> projects = projectDAO.listByQuery(query);
 
-        jdbcManyRelationsHelper.fill(projects, "products");
-        jdbcManyRelationsHelper.fill(projects, "productDirections");
+        projects.forEach(project -> {
+            project.setProducts(new HashSet<>(devUnitDAO.getProjectProducts(project.getId())));
+            project.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(project.getId())));
+        });
 
         List<ProjectInfo> result = projects.stream()
                 .map(ProjectInfo::fromProject).collect(toList());
