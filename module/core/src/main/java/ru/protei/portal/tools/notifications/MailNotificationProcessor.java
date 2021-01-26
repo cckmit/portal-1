@@ -260,8 +260,8 @@ public class MailNotificationProcessor {
 
             MimeMessageHeadersFacade headers =  makeHeaders( caseObject.getCaseNumber(), lastMessageId, entry.hashCode() );
 
-            String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), isProteiRecipients);
-            String subject = subjectTemplate.getText(entry.getAddress(), entry.getLangCode(), isProteiRecipients);
+            String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), isProteiRecipients, null);
+            String subject = subjectTemplate.getText(entry.getAddress(), entry.getLangCode(), isProteiRecipients, null);
             try {
                 MimeMessage mimeMessage = messageFactory.createMailMessage(headers.getMessageId(), headers.getInReplyTo(), headers.getReferences());
                 MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, config.data().smtp().getDefaultCharset());
@@ -353,9 +353,9 @@ public class MailNotificationProcessor {
         }
 
         try {
-            String body = bodyTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), false);
+            String body = bodyTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), false, null);
 
-            String subject = subjectTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), false);
+            String subject = subjectTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), false, null);
 
             sendMail(notificationEntry.getAddress(), subject, body, getFromCrmAddress());
         } catch (Exception e) {
@@ -911,8 +911,8 @@ public class MailNotificationProcessor {
 
         notificationEntries.forEach(entry -> {
             try {
-                String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), true);
-                String subject = subjectTemplate.getText(entry.getAddress(), entry.getLangCode(), true);
+                String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), true, null);
+                String subject = subjectTemplate.getText(entry.getAddress(), entry.getLangCode(), true, null);
                 sendMail(entry.getAddress(), subject, body, getFromAbsenceAddress());
             } catch (Exception e) {
                 log.error("Failed to make MimeMessage", e);
@@ -942,8 +942,8 @@ public class MailNotificationProcessor {
         }
 
         try {
-            String subject = subjectTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), true);
-            String body = bodyTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), true);
+            String subject = subjectTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), true, null);
+            String body = bodyTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), true, null);
             sendMailWithAttachment(notificationEntry.getAddress(), subject, body, getFromAbsenceAddress(), title + ".xlsx", event.getContent());
         } catch (Exception e) {
             log.error("Failed to make MimeMessage", e);
@@ -972,8 +972,8 @@ public class MailNotificationProcessor {
         }
 
         try {
-            String subject = subjectTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), true);
-            String body = bodyTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), true);
+            String subject = subjectTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), true, null);
+            String body = bodyTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), true, null);
             sendMailWithAttachment(notificationEntry.getAddress(), subject, body, getFromPortalAddress(), title + ".xlsx", event.getContent());
         } catch (Exception e) {
             log.error("Failed to make MimeMessage", e);
@@ -1034,8 +1034,8 @@ public class MailNotificationProcessor {
 
         adminEmails.forEach(adminEmail -> {
             try {
-                String body = bodyTemplate.getText(adminEmail, null, false);
-                String subject = subjectTemplate.getText(adminEmail, null, false);
+                String body = bodyTemplate.getText(adminEmail, null, false, null);
+                String subject = subjectTemplate.getText(adminEmail, null, false, null);
 
                 sendMail(adminEmail, subject, body, getFromPortalAddress());
             } catch (Exception e) {
@@ -1065,8 +1065,8 @@ public class MailNotificationProcessor {
         }
 
         try {
-            String body = bodyTemplate.getText(notificationEntry.getAddress(), null, false);
-            String subject = subjectTemplate.getText(notificationEntry.getAddress(), null, false);
+            String body = bodyTemplate.getText(notificationEntry.getAddress(), null, false, null);
+            String subject = subjectTemplate.getText(notificationEntry.getAddress(), null, false, null);
 
             sendMail(notificationEntry.getAddress(), subject, body, getFromPortalAddress());
         } catch (Exception e) {
@@ -1092,8 +1092,8 @@ public class MailNotificationProcessor {
                                       PreparedTemplate subjectTemplate, boolean isShowPrivacy, String from) {
         recipients.forEach(entry -> {
             try {
-                String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), isShowPrivacy);
-                String subject = subjectTemplate.getText(entry.getAddress(), entry.getLangCode(), isShowPrivacy);
+                String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), isShowPrivacy, getLinkToPortal(entry));
+                String subject = subjectTemplate.getText(entry.getAddress(), entry.getLangCode(), isShowPrivacy, null);
                 sendMail(entry.getAddress(), subject, body, from);
             } catch (Exception e) {
                 log.error("Failed to make MimeMessage", e);
@@ -1101,12 +1101,19 @@ public class MailNotificationProcessor {
         });
     }
 
+    private String getLinkToPortal(NotificationEntry entry) {
+        if (isProteiRecipient(entry)) {
+            return config.data().getMailNotificationConfig().getCrmUrlInternal();
+        }
+        return  config.data().getMailNotificationConfig().getCrmUrlExternal();
+    }
+
     private void sendMailToRecipientWithAttachment(NotificationEntry recipients, PreparedTemplate bodyTemplate,
                                                    PreparedTemplate subjectTemplate, boolean isShowPrivacy,
                                                    InputStream content, String filename, String from) {
             try {
-                String body = bodyTemplate.getText(recipients.getAddress(), recipients.getLangCode(), isShowPrivacy);
-                String subject = subjectTemplate.getText(recipients.getAddress(), recipients.getLangCode(), isShowPrivacy);
+                String body = bodyTemplate.getText(recipients.getAddress(), recipients.getLangCode(), isShowPrivacy, null);
+                String subject = subjectTemplate.getText(recipients.getAddress(), recipients.getLangCode(), isShowPrivacy, null);
                 sendMailWithAttachment(recipients.getAddress(), subject, body, from, filename, content);
             } catch (Exception e) {
                 log.error("Failed to make MimeMessage", e);

@@ -12,6 +12,7 @@
 <@set name="_reservedIpInstructionStart" value="${reservedIpInstructionStart}"
 <@set name="_reservedIpInstructionEnding" value="${reservedIpInstructionEnding}"
 <@set name="_reservedIpInstructionPortal" value="${reservedIpInstructionPortal}"
+<@set name="linkTo" value="${reservedIpInstructionPortal}"
 <#noparse>
 <html>
 <head>
@@ -63,7 +64,7 @@
     </tbody>
 </table>
     <div style="padding: 8px 0 0;">${_reservedIpUsePeriod}
-        <a href="https://newportal.protei.ru/portal/#reserved_ips" rel="link">${_reservedIpInstructionEnding}</a>.
+        <a href="${linkToPortal}/#reserved_ips" rel="link">${_reservedIpInstructionEnding}</a>.
         ${_reservedIpInstructionPortal}
     </div>
 
