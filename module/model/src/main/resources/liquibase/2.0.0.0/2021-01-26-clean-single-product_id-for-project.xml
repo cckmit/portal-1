@@ -6,7 +6,7 @@
 
     <changeSet id="clean-single-product_id-for-project" author="porubov">
         <update tableName="case_object">
-            <column name="product_id"/>
+            <column name="product_id" value="null"/>
             <where>CASE_TYPE = 9</where>
         </update>
     </changeSet>
