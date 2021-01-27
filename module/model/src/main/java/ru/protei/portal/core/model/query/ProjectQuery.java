@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.query;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -43,6 +44,8 @@ public class ProjectQuery extends BaseQuery {
     private Boolean platformIndependentProject;
 
     private Set<Long> initiatorCompanyIds;
+
+    private DateRange commentCreationRange;
 
     private Long pauseDateGreaterThan;
 
@@ -196,6 +199,14 @@ public class ProjectQuery extends BaseQuery {
         this.initiatorCompanyIds = initiatorCompanyIds;
     }
 
+    public DateRange getCommentCreationRange() {
+        return commentCreationRange;
+    }
+
+    public void setCommentCreationRange(DateRange commentCreationRange) {
+        this.commentCreationRange = commentCreationRange;
+    }
+
     public void setType(En_CaseType type) {
         this.type = type;
     }
@@ -252,6 +263,7 @@ public class ProjectQuery extends BaseQuery {
                 CollectionUtils.isNotEmpty(productIds) ||
                 CollectionUtils.isNotEmpty(initiatorCompanyIds) ||
                 CollectionUtils.isNotEmpty(subcontractorIds) ||
+                commentCreationRange != null ||
                 customerType != null ||
                 createdFrom != null ||
                 createdTo != null ||
@@ -280,6 +292,7 @@ public class ProjectQuery extends BaseQuery {
                 ", createdTo=" + createdTo +
                 ", platformIndependentProject=" + platformIndependentProject +
                 ", initiatorCompanyIds=" + initiatorCompanyIds +
+                ", commentCreationRange=" + commentCreationRange +
                 ", pauseDateGreaterThan=" + pauseDateGreaterThan +
                 ", deleted=" + deleted +
                 ", subcontractorIds=" + subcontractorIds +
@@ -307,6 +320,7 @@ public class ProjectQuery extends BaseQuery {
                 Objects.equals(createdTo, that.createdTo) &&
                 Objects.equals(platformIndependentProject, that.platformIndependentProject) &&
                 Objects.equals(initiatorCompanyIds, that.initiatorCompanyIds) &&
+                Objects.equals(commentCreationRange, that.commentCreationRange) &&
                 Objects.equals(pauseDateGreaterThan, that.pauseDateGreaterThan) &&
                 Objects.equals(deleted, that.deleted) &&
                 Objects.equals(subcontractorIds, that.subcontractorIds) &&
@@ -318,7 +332,7 @@ public class ProjectQuery extends BaseQuery {
     public int hashCode() {
         return Objects.hash(caseIds, states, regions, headManagers, caseMembers, directions,
                 districtIds, memberId, productIds, customerType, createdFrom, createdTo,
-                platformIndependentProject, initiatorCompanyIds, pauseDateGreaterThan, deleted,
+                platformIndependentProject, initiatorCompanyIds, commentCreationRange, pauseDateGreaterThan, deleted,
                 subcontractorIds, technicalSupportExpiresInDays, isActive);
     }
 }

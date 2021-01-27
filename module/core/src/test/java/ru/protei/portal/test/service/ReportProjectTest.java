@@ -8,16 +8,14 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
-import ru.protei.portal.core.model.dict.En_CompanyCategory;
-import ru.protei.portal.core.model.dict.En_CustomerType;
-import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
-import ru.protei.portal.core.model.dict.En_RegionState;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.ProjectQuery;
-import ru.protei.portal.core.model.struct.ReportProjectWithLastComment;
+import ru.protei.portal.core.model.struct.DateRange;
+import ru.protei.portal.core.model.struct.ReportProjectWithComments;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.report.projects.ReportProject;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
@@ -61,7 +59,8 @@ public class ReportProjectTest extends BaseServiceTest {
 
         project1.setId(projectService.createProject(getAuthToken(), project1).getData().getId());
 
-        caseCommentDAO.persist(createNewComment(person1, project1.getId(), REPORT_PROJECT_TEST + " : Comment 1"));
+        caseCommentDAO.persist(createNewComment(person1, project1.getId(), REPORT_PROJECT_TEST + " : Comment 1_1"));
+        caseCommentDAO.persist(createNewComment(person1, project1.getId(), REPORT_PROJECT_TEST + " : Comment 1_2"));
         caseCommentDAO.persist(createNewComment(person1, project1.getId(), REPORT_PROJECT_TEST + " : Last Comment 1"));
         caseCommentDAO.persist(createNewComment(person1, project1.getId(), null));
 
@@ -149,7 +148,6 @@ public class ReportProjectTest extends BaseServiceTest {
         Assert.assertTrue("report file is not empty", buffer.size() > 0);
     }
 
-
     @Test
     public void data() {
         init();
@@ -161,7 +159,7 @@ public class ReportProjectTest extends BaseServiceTest {
         report.setQuery(serializeAsJson(query));
         report.setLocale("ru");
 
-        List<ReportProjectWithLastComment> data = reportProject.createData(deserializeFromJson(report.getQuery(), ProjectQuery.class));
+        List<ReportProjectWithComments> data = reportProject.createData(deserializeFromJson(report.getQuery(), ProjectQuery.class));
 
         Assert.assertEquals("Selected 2 cases", 2, data.size());
         Assert.assertEquals("name case #1", REPORT_PROJECT_TEST + " : Test_Project 1", data.get(0).getProject().getName());
@@ -169,6 +167,34 @@ public class ReportProjectTest extends BaseServiceTest {
 
         Assert.assertEquals("comment text case #1", REPORT_PROJECT_TEST + " : Last Comment 1", data.get(0).getLastComment().getText());
         Assert.assertNull("comment case #2 is null", data.get(1).getLastComment());
+
+        Assert.assertNull("period comment size case #1", data.get(0).getComments());
+        Assert.assertNull("period comment size case #2", data.get(1).getComments());
+    }
+
+    @Test
+    public void dataWithComments() {
+        init();
+
+        ProjectQuery query = new ProjectQuery();
+        query.setSearchString(REPORT_PROJECT_TEST);
+        query.setCommentCreationRange(new DateRange(En_DateIntervalType.TODAY, null, null));
+
+        Report report = new Report();
+        report.setQuery(serializeAsJson(query));
+        report.setLocale("ru");
+
+        List<ReportProjectWithComments> data = reportProject.createData(deserializeFromJson(report.getQuery(), ProjectQuery.class));
+
+        Assert.assertEquals("Selected 2 cases", 2, data.size());
+        Assert.assertEquals("name case #1", REPORT_PROJECT_TEST + " : Test_Project 1", data.get(0).getProject().getName());
+        Assert.assertEquals("name case #2", REPORT_PROJECT_TEST + " : Test_Project 2", data.get(1).getProject().getName());
+
+        Assert.assertEquals("comment text case #1", REPORT_PROJECT_TEST + " : Last Comment 1", data.get(0).getLastComment().getText());
+        Assert.assertEquals("comment text case #2", REPORT_PROJECT_TEST + " : Last Comment 2", data.get(1).getLastComment().getText());
+
+        Assert.assertEquals("period comment size case #1", 4, data.get(0).getComments().size());
+        Assert.assertEquals("period comment size case #1", 3, data.get(1).getComments().size());
     }
 
     @Test
@@ -182,7 +208,7 @@ public class ReportProjectTest extends BaseServiceTest {
         report.setQuery(serializeAsJson(query));
         report.setLocale("ru");
 
-        List<ReportProjectWithLastComment> data = reportProject.createData(deserializeFromJson(report.getQuery(), ProjectQuery.class));
+        List<ReportProjectWithComments> data = reportProject.createData(deserializeFromJson(report.getQuery(), ProjectQuery.class));
 
         Assert.assertEquals("no cases", 0, data.size());
     }
