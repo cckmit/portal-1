@@ -24,6 +24,8 @@ public interface AbstractProjectPreviewView extends IsWidget {
 
     void setState( long value );
 
+    void setStateIconColor( String value );
+
     void setDirections(String value );
 
     void setTeam( String value );

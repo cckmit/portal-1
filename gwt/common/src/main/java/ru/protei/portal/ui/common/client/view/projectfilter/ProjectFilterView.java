@@ -147,6 +147,11 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
         footer.removeClassName("card-footer");
     }
 
+    @Override
+    public void fillStatesButtons(Map<En_RegionState, String> iconsColorsMap) {
+        states.fillButtons(iconsColorsMap);
+    }
+
     @UiHandler( "resetBtn" )
     public void onResetClicked ( ClickEvent event ) {
         if ( activity != null ) {

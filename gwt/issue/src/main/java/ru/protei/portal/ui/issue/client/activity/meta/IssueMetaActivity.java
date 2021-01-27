@@ -35,7 +35,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
-import static ru.protei.portal.core.model.util.CaseStateWorkflowUtil.recognizeWorkflow;
 
 /**
  *
@@ -445,7 +444,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
 
     private void fillImportanceSelector(Long id) {
-        metaView.fillImportanceOptions(new ArrayList<>());
         importanceService.getImportanceLevels(id, new FluentCallback<List<ImportanceLevel>>()
                 .withSuccess(importanceLevelList -> {
                     metaView.fillImportanceOptions(importanceLevelList);
@@ -545,8 +543,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
                 })
         );
 
-        metaView.setStateWorkflow(recognizeWorkflow(meta.getExtAppType()));//Обязательно сетить до установки значения!
-        metaView.state().setValue(new CaseState(meta.getStateId(), meta.getStateName()));
+        metaView.state().setValue(new CaseState(meta.getStateId(), meta.getStateName(), meta.getStateColor(), meta.getStateInfo()));
         metaView.pauseDate().setValue(meta.getPauseDate() == null ? null : new Date(meta.getPauseDate()));
         metaView.pauseDateContainerVisibility().setVisible(CrmConstants.State.PAUSED == meta.getStateId());
         metaView.setPauseDateValid(isPauseDateValid(meta.getStateId(), meta.getPauseDate()));

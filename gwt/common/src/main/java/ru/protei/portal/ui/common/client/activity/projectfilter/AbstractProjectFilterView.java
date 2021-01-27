@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -51,4 +52,6 @@ public interface AbstractProjectFilterView extends IsWidget {
 
     void resetFilter();
     void clearFooterStyle();
+
+    void fillStatesButtons(Map<En_RegionState, String> iconsColorsMap);
 }

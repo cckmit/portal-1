@@ -2,7 +2,7 @@ package ru.protei.portal.ui.project.client.activity.edit;
 
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_CustomerType;
-import ru.protei.portal.core.model.dict.En_RegionState;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -13,6 +13,7 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.List;
 import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -28,7 +29,7 @@ public interface AbstractProjectEditView extends IsWidget {
 
     HasValue<String> name();
     HasText description();
-    HasValue<En_RegionState> state();
+    HasValue<CaseState> state();
     HasValue<EntityOption> region();
     HasValue<Set<ProductDirectionInfo>> directions();
     HasValue<Set<ProductShortView>> products();

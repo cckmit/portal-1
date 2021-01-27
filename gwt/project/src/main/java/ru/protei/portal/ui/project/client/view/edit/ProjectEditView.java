@@ -13,6 +13,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
@@ -31,7 +32,7 @@ import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitWithImageMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.region.RegionFormSelector;
-import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.state.ProjectStateFormSelector;
 import ru.protei.portal.ui.common.client.widget.sla.SlaInput;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
@@ -39,10 +40,7 @@ import ru.protei.portal.ui.project.client.activity.edit.AbstractProjectEditActiv
 import ru.protei.portal.ui.project.client.activity.edit.AbstractProjectEditView;
 import ru.protei.portal.ui.project.client.view.widget.team.TeamSelector;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Вид создания и редактирования проекта
@@ -88,7 +86,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     public HasText description() { return description; }
 
     @Override
-    public HasValue<En_RegionState> state() { return projectState; }
+    public HasValue<CaseState> state() { return projectState; }
 
     @Override
     public HasValue<Set<ProductDirectionInfo>> directions() { return productDirection; }
@@ -272,7 +270,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     }
 
     @UiHandler("projectState")
-    public void onProjectStateChanged(ValueChangeEvent<En_RegionState> event) {
+    public void onProjectStateChanged(ValueChangeEvent<CaseState> event) {
         if (activity != null) {
             activity.onStateChanged();
         }
@@ -339,7 +337,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     ProductDirectionMultiSelector productDirection;
     @Inject
     @UiField( provided = true )
-    RegionStateFormSelector projectState;
+    ProjectStateFormSelector projectState;
     @Inject
     @UiField( provided = true )
     RegionFormSelector projectRegion;
