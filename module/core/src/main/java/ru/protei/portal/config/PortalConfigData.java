@@ -225,6 +225,7 @@ public class PortalConfigData {
         private final String contractUrl;
         private final String crmDocumentPreviewUrl;
         private final String crmEmployeeRegistrationUrl;
+        private final String crmReservedIpsUrl;
         private final String[] crmEmployeeRegistrationNotificationsRecipients;
         private final String[] crmRoomReservationNotificationsRecipients;
         private final String[] crmIpReservationNotificationsRecipients;
@@ -237,6 +238,7 @@ public class PortalConfigData {
             contractUrl = properties.getProperty( "crm.contract.url", "#contracts/contract:id=%d;" );
             crmDocumentPreviewUrl = properties.getProperty( "crm.document.url.preview", "#doc_preview:id=%d");
             crmEmployeeRegistrationUrl = properties.getProperty( "crm.employee_registration.url");
+            crmReservedIpsUrl = properties.getProperty("crm.reserved_ips.url");
             crmEmployeeRegistrationNotificationsRecipients = properties.getProperty( "crm.employee_registration.recipients", "" ).split(",");
             crmRoomReservationNotificationsRecipients = properties.getProperty("crm.room_reservation.recipients", "").split(",");
             crmIpReservationNotificationsRecipients = properties.getProperty("crm.ip_reservation.recipients", "").split(",");
@@ -261,6 +263,10 @@ public class PortalConfigData {
 
         public String getCrmEmployeeRegistrationUrl() {
             return crmEmployeeRegistrationUrl;
+        }
+
+        public String getCrmReservedIpsUrl() {
+            return crmReservedIpsUrl;
         }
 
         public String[] getCrmEmployeeRegistrationNotificationsRecipients() {

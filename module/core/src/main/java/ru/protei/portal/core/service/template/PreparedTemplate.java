@@ -33,7 +33,7 @@ public class PreparedTemplate {
         this.model = model;
     }
 
-    public String getText(String receiver, String lang, boolean isShowPrivacy, String linkToPortal) {
+    public String getText(String receiver, String lang, boolean isShowPrivacy) {
         Writer writer = new StringWriter();
 
         if ( lang == null ) {
@@ -44,7 +44,6 @@ public class PreparedTemplate {
             model.put( "userName", receiver );
             model.put( "showPrivacy", isShowPrivacy );
             model.put("lang", lang);
-            model.put("linkToPortal", linkToPortal);
             Template template = templateConfiguration.getTemplate( String.format( nameTemplate, lang ), Locale.forLanguageTag( lang ) );
             template.process( model, writer );
             return writer.toString();

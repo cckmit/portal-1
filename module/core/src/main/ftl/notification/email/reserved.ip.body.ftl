@@ -12,7 +12,6 @@
 <@set name="_reservedIpInstructionStart" value="${reservedIpInstructionStart}"
 <@set name="_reservedIpInstructionEnding" value="${reservedIpInstructionEnding}"
 <@set name="_reservedIpInstructionPortal" value="${reservedIpInstructionPortal}"
-<@set name="linkTo" value="${reservedIpInstructionPortal}"
 <#noparse>
 <html>
 <head>

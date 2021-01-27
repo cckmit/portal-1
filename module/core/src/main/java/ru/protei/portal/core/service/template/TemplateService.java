@@ -82,6 +82,8 @@ public interface TemplateService {
 
     PreparedTemplate getReservedIpNotificationBody(List<ReservedIp> reservedIps, Collection<String> recipients);
 
+    PreparedTemplate getReservedIpNotificationWithInstructionBody(List<ReservedIp> reservedIps, Collection<String> recipients, String linkToPortal);
+
     PreparedTemplate getReservedIpRemainingNotificationSubject(Date releaseDateStart, Date releaseDateEnd);
 
     PreparedTemplate getPersonCaseFilterNotificationSubject();

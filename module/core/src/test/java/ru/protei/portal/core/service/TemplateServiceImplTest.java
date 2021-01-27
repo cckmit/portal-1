@@ -112,8 +112,8 @@ public class TemplateServiceImplTest {
         assertNotNull( subjectTemplate );
         assertNotNull( bodyTemplate );
 
-        String subject = subjectTemplate.getText(entry.getAddress(), entry.getLangCode(), true, null);
-        String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), true, null);
+        String subject = subjectTemplate.getText(entry.getAddress(), entry.getLangCode(), true);
+        String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), true);
 
         assertNotNull( subject );
         assertNotNull( body );
@@ -160,7 +160,7 @@ public class TemplateServiceImplTest {
 
         NotificationEntry entry = createNewNotificationEntry();
 
-        String body = bodyTemplate.getText( entry.getAddress(), entry.getLangCode(), true, null);
+        String body = bodyTemplate.getText( entry.getAddress(), entry.getLangCode(), true);
 
         assertNotNull( body );
     }
@@ -209,7 +209,7 @@ public class TemplateServiceImplTest {
 
         NotificationEntry entry = createNewNotificationEntry();
 
-        String body = bodyTemplate.getText( entry.getAddress(), entry.getLangCode(), true, null);
+        String body = bodyTemplate.getText( entry.getAddress(), entry.getLangCode(), true);
 
         assertNotNull( "Expected html from template", body );
 
@@ -283,7 +283,7 @@ public class TemplateServiceImplTest {
         assertNotNull( bodyTemplate );
         NotificationEntry entry = createNewNotificationEntry();
 
-        String body = bodyTemplate.getText( entry.getAddress(), entry.getLangCode(), true, null);
+        String body = bodyTemplate.getText( entry.getAddress(), entry.getLangCode(), true);
 
         assertNotNull( "Expected html from template", body );
 

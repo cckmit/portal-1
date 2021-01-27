@@ -48,6 +48,7 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
 import static java.util.stream.Collectors.partitioningBy;
+import static ru.protei.portal.core.event.ReservedIpReleaseRemainingEvent.*;
 import static ru.protei.portal.core.model.dict.En_CaseLink.CRM;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
@@ -260,8 +261,8 @@ public class MailNotificationProcessor {
 
             MimeMessageHeadersFacade headers =  makeHeaders( caseObject.getCaseNumber(), lastMessageId, entry.hashCode() );
 
-            String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), isProteiRecipients, null);
-            String subject = subjectTemplate.getText(entry.getAddress(), entry.getLangCode(), isProteiRecipients, null);
+            String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), isProteiRecipients);
+            String subject = subjectTemplate.getText(entry.getAddress(), entry.getLangCode(), isProteiRecipients);
             try {
                 MimeMessage mimeMessage = messageFactory.createMailMessage(headers.getMessageId(), headers.getInReplyTo(), headers.getReferences());
                 MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, config.data().smtp().getDefaultCharset());
@@ -353,9 +354,9 @@ public class MailNotificationProcessor {
         }
 
         try {
-            String body = bodyTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), false, null);
+            String body = bodyTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), false);
 
-            String subject = subjectTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), false, null);
+            String subject = subjectTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), false);
 
             sendMail(notificationEntry.getAddress(), subject, body, getFromCrmAddress());
         } catch (Exception e) {
@@ -835,6 +836,7 @@ public class MailNotificationProcessor {
         Date releaseDateStart = event.getReleaseDateStart();
         Date releaseDateEnd = event.getReleaseDateEnd();
         List<NotificationEntry> notifiers = event.getNotificationEntryList();
+        Recipient recipientType = event.getRecipientType();
 
         if (isEmpty(notifiers)) {
             log.info("Failed to send release reserved IPs remaining notification: empty notifiers set");
@@ -847,8 +849,15 @@ public class MailNotificationProcessor {
             return;
         }
 
-        List<String> recipients = getNotifiersAddresses(notifiers);
+        if (Recipient.ADMIN.equals(recipientType)) {
+            sendReleaseIpRemainingNotificationToAdmins(reservedIps, notifiers, subjectTemplate);
+        } else {
+            sendReleaseIpRemainingNotificationToOwners(reservedIps, notifiers, subjectTemplate);
+        }
+    }
 
+    private void sendReleaseIpRemainingNotificationToAdmins(List<ReservedIp> reservedIps, List<NotificationEntry> notifiers, PreparedTemplate subjectTemplate) {
+        List<String> recipients = getNotifiersAddresses(notifiers);
         PreparedTemplate bodyTemplate = templateService.getReservedIpNotificationBody(reservedIps, recipients);
 
         if (bodyTemplate == null) {
@@ -857,6 +866,40 @@ public class MailNotificationProcessor {
         }
 
         sendMailToRecipients(notifiers, bodyTemplate, subjectTemplate, true, getFromPortalAddress());
+    }
+
+    private void sendReleaseIpRemainingNotificationToOwners(List<ReservedIp> reservedIps, List<NotificationEntry> notifiers, PreparedTemplate subjectTemplate) {
+        Map<Boolean, List<NotificationEntry>> partitionNotifiers = notifiers.stream().collect(partitioningBy(this::isProteiRecipient));
+        final boolean IS_PRIVATE_RECIPIENT = true;
+
+        List<NotificationEntry> privateNotifiers = partitionNotifiers.get( IS_PRIVATE_RECIPIENT );
+        List<NotificationEntry> publicNotifiers = partitionNotifiers.get( !IS_PRIVATE_RECIPIENT );
+
+        String privatePortalUrl = getPortalUrl( IS_PRIVATE_RECIPIENT );
+        String publicPortalUrl = getPortalUrl( !IS_PRIVATE_RECIPIENT );
+
+        List<String> privateRecipients = getNotifiersAddresses(privateNotifiers);
+        List<String> publicRecipients = getNotifiersAddresses(publicNotifiers);
+
+        if (!privateNotifiers.isEmpty()) {
+            PreparedTemplate bodyTemplate = templateService.getReservedIpNotificationWithInstructionBody(reservedIps, privateRecipients, privatePortalUrl);
+
+            if (bodyTemplate == null) {
+                log.error("Failed to prepare body template for release reserved IPs notification to admins");
+            } else {
+                sendMailToRecipients(privateNotifiers, bodyTemplate, subjectTemplate, true, getFromPortalAddress());
+            }
+        }
+
+        if (!publicNotifiers.isEmpty()) {
+            PreparedTemplate bodyTemplate = templateService.getReservedIpNotificationWithInstructionBody(reservedIps, publicRecipients, publicPortalUrl);
+
+            if (bodyTemplate == null) {
+                log.error("Failed to prepare body template for release reserved IPs notification to owners");
+            } else {
+                sendMailToRecipients(publicNotifiers, bodyTemplate, subjectTemplate, true, getFromPortalAddress());
+            }
+        }
     }
 
     @EventListener
@@ -911,8 +954,8 @@ public class MailNotificationProcessor {
 
         notificationEntries.forEach(entry -> {
             try {
-                String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), true, null);
-                String subject = subjectTemplate.getText(entry.getAddress(), entry.getLangCode(), true, null);
+                String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), true);
+                String subject = subjectTemplate.getText(entry.getAddress(), entry.getLangCode(), true);
                 sendMail(entry.getAddress(), subject, body, getFromAbsenceAddress());
             } catch (Exception e) {
                 log.error("Failed to make MimeMessage", e);
@@ -942,8 +985,8 @@ public class MailNotificationProcessor {
         }
 
         try {
-            String subject = subjectTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), true, null);
-            String body = bodyTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), true, null);
+            String subject = subjectTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), true);
+            String body = bodyTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), true);
             sendMailWithAttachment(notificationEntry.getAddress(), subject, body, getFromAbsenceAddress(), title + ".xlsx", event.getContent());
         } catch (Exception e) {
             log.error("Failed to make MimeMessage", e);
@@ -972,8 +1015,8 @@ public class MailNotificationProcessor {
         }
 
         try {
-            String subject = subjectTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), true, null);
-            String body = bodyTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), true, null);
+            String subject = subjectTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), true);
+            String body = bodyTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), true);
             sendMailWithAttachment(notificationEntry.getAddress(), subject, body, getFromPortalAddress(), title + ".xlsx", event.getContent());
         } catch (Exception e) {
             log.error("Failed to make MimeMessage", e);
@@ -1034,8 +1077,8 @@ public class MailNotificationProcessor {
 
         adminEmails.forEach(adminEmail -> {
             try {
-                String body = bodyTemplate.getText(adminEmail, null, false, null);
-                String subject = subjectTemplate.getText(adminEmail, null, false, null);
+                String body = bodyTemplate.getText(adminEmail, null, false);
+                String subject = subjectTemplate.getText(adminEmail, null, false);
 
                 sendMail(adminEmail, subject, body, getFromPortalAddress());
             } catch (Exception e) {
@@ -1065,8 +1108,8 @@ public class MailNotificationProcessor {
         }
 
         try {
-            String body = bodyTemplate.getText(notificationEntry.getAddress(), null, false, null);
-            String subject = subjectTemplate.getText(notificationEntry.getAddress(), null, false, null);
+            String body = bodyTemplate.getText(notificationEntry.getAddress(), null, false);
+            String subject = subjectTemplate.getText(notificationEntry.getAddress(), null, false);
 
             sendMail(notificationEntry.getAddress(), subject, body, getFromPortalAddress());
         } catch (Exception e) {
@@ -1092,8 +1135,8 @@ public class MailNotificationProcessor {
                                       PreparedTemplate subjectTemplate, boolean isShowPrivacy, String from) {
         recipients.forEach(entry -> {
             try {
-                String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), isShowPrivacy, getLinkToPortal(entry));
-                String subject = subjectTemplate.getText(entry.getAddress(), entry.getLangCode(), isShowPrivacy, null);
+                String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), isShowPrivacy);
+                String subject = subjectTemplate.getText(entry.getAddress(), entry.getLangCode(), isShowPrivacy);
                 sendMail(entry.getAddress(), subject, body, from);
             } catch (Exception e) {
                 log.error("Failed to make MimeMessage", e);
@@ -1101,19 +1144,22 @@ public class MailNotificationProcessor {
         });
     }
 
-    private String getLinkToPortal(NotificationEntry entry) {
-        if (isProteiRecipient(entry)) {
-            return config.data().getMailNotificationConfig().getCrmUrlInternal();
+    private String getPortalUrl(boolean isProteiRecipient) {
+        String baseUrl = "";
+        if (isProteiRecipient) {
+            baseUrl = config.data().getMailNotificationConfig().getCrmUrlInternal();
+        } else {
+            baseUrl = config.data().getMailNotificationConfig().getCrmUrlExternal();
         }
-        return  config.data().getMailNotificationConfig().getCrmUrlExternal();
+        return baseUrl + config.data().getMailNotificationConfig().getCrmReservedIpsUrl();
     }
 
     private void sendMailToRecipientWithAttachment(NotificationEntry recipients, PreparedTemplate bodyTemplate,
                                                    PreparedTemplate subjectTemplate, boolean isShowPrivacy,
                                                    InputStream content, String filename, String from) {
             try {
-                String body = bodyTemplate.getText(recipients.getAddress(), recipients.getLangCode(), isShowPrivacy, null);
-                String subject = subjectTemplate.getText(recipients.getAddress(), recipients.getLangCode(), isShowPrivacy, null);
+                String body = bodyTemplate.getText(recipients.getAddress(), recipients.getLangCode(), isShowPrivacy);
+                String subject = subjectTemplate.getText(recipients.getAddress(), recipients.getLangCode(), isShowPrivacy);
                 sendMailWithAttachment(recipients.getAddress(), subject, body, from, filename, content);
             } catch (Exception e) {
                 log.error("Failed to make MimeMessage", e);

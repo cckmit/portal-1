@@ -772,6 +772,28 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
+    public PreparedTemplate getReservedIpNotificationWithInstructionBody(List<ReservedIp> reservedIps, Collection<String> recipients, String linkToPortal) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("reservedIps", reservedIps);
+        templateModel.put("recipients", recipients);
+        templateModel.put("linkToPortal", linkToPortal);
+
+        BeansWrapper wrapper = BeansWrapper.getDefaultInstance();
+        TemplateHashModel staticModels = wrapper.getStaticModels();
+        try {
+            TemplateHashModel htmlUtils =
+                    (TemplateHashModel) staticModels.get("org.springframework.web.util.HtmlUtils");
+            templateModel.put("HtmlUtils", htmlUtils);
+        } catch (Exception ex) {
+            log.error("getReservedIpNotificationBody: error at 'staticModels.get(org.springframework.web.util.HtmlUtils)'");
+        }
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/reserved.ip.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;    }
+
+    @Override
     public PreparedTemplate getReservedIpRemainingNotificationSubject(Date releaseDateStart, Date releaseDateEnd) {
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put( "releaseDateStart", releaseDateStart != null ?
