@@ -17,6 +17,7 @@ import ru.protei.portal.jira.service.JiraIntegrationService;
 import ru.protei.portal.jira.utils.JiraHookEventParser;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import static ru.protei.portal.api.struct.Result.error;
@@ -63,8 +64,13 @@ public class JiraEventController {
         }
 
         JiraHookEventData eventData = parseResult.getData();
-        if (eventData == null || eventData.getIssue() == null) {
+        if (eventData == null) {
             logger.warn( "jiraWebhook(): companyId={} | failed to parse json-data, return", companyId );
+            return;
+        }
+
+        if (eventData.getIssue() == null) {
+            logger.info( "jiraWebhook(): companyId={} | event has no issue field, return", companyId );
             return;
         }
 
@@ -77,13 +83,13 @@ public class JiraEventController {
             return;
         }
 
-        proceesEvent( endpoint.getData(), eventData )
-                .thenAccept( assembledCaseEvent -> assemblerService.proceed( assembledCaseEvent ) )
-                .exceptionally( throwable -> {
-                    logger.error( "jiraWebhook(): endpoint={}, src-ip={}, host={}, query={}, eventData={} | event dropped",
-                            endpoint, realIP, fromHost, request.getQueryString(), eventData.toDebugString(), throwable );
-                    return null;
-                } );
+        Optional.ofNullable(processEvent(endpoint.getData(), eventData))
+                .ifPresent(future -> future.thenAccept(assembledCaseEvent -> assemblerService.proceed(assembledCaseEvent))
+                            .exceptionally(throwable -> {
+                                logger.error("jiraWebhook(): endpoint={}, src-ip={}, host={}, query={}, eventData={} | event dropped",
+                                        endpoint, realIP, fromHost, request.getQueryString(), eventData.toDebugString(), throwable);
+                                return null;
+                            }));
 
         /**
              * Важное замечание: в каждом событии приходит довольно много информации, но зато она очень подробная и полная
@@ -119,7 +125,7 @@ public class JiraEventController {
         }
     }
 
-    private CompletableFuture<AssembledCaseEvent> proceesEvent( JiraEndpoint endpoint, JiraHookEventData eventData ) {
+    private CompletableFuture<AssembledCaseEvent> processEvent(JiraEndpoint endpoint, JiraHookEventData eventData ) {
         switch (eventData.getEventType()) {
             case ISSUE_CREATED:
                 return integrationService.create( endpoint, eventData );
