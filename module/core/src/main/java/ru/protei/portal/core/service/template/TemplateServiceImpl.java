@@ -772,11 +772,11 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getReservedIpNotificationWithInstructionBody(List<ReservedIp> reservedIps, Collection<String> recipients, String linkToPortal) {
+    public PreparedTemplate getReservedIpNotificationWithInstructionBody(List<ReservedIp> reservedIps, Collection<String> recipients, String portalUrl) {
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("reservedIps", reservedIps);
         templateModel.put("recipients", recipients);
-        templateModel.put("linkToPortal", linkToPortal);
+        templateModel.put("linkToPortal", portalUrl);
 
         BeansWrapper wrapper = BeansWrapper.getDefaultInstance();
         TemplateHashModel staticModels = wrapper.getStaticModels();
@@ -785,13 +785,14 @@ public class TemplateServiceImpl implements TemplateService {
                     (TemplateHashModel) staticModels.get("org.springframework.web.util.HtmlUtils");
             templateModel.put("HtmlUtils", htmlUtils);
         } catch (Exception ex) {
-            log.error("getReservedIpNotificationBody: error at 'staticModels.get(org.springframework.web.util.HtmlUtils)'");
+            log.error("getReservedIpNotificationWithInstructionBody: error at 'staticModels.get(org.springframework.web.util.HtmlUtils)'");
         }
 
-        PreparedTemplate template = new PreparedTemplate("notification/email/reserved.ip.body.%s.ftl");
+        PreparedTemplate template = new PreparedTemplate("notification/email/reserved.ip.instruction.body.%s.ftl");
         template.setModel(templateModel);
         template.setTemplateConfiguration(templateConfiguration);
-        return template;    }
+        return template;
+    }
 
     @Override
     public PreparedTemplate getReservedIpRemainingNotificationSubject(Date releaseDateStart, Date releaseDateEnd) {
