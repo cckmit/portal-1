@@ -25,6 +25,8 @@
                                 <label><ui:text from="{lang.reportScheduledType}"/></label>
                                 <reporttype:ReportScheduledTypeButtonSelector ui:field="scheduledType"/>
                             </g:HTMLPanel>
+                        </div>
+                        <div class="row">
                             <g:HTMLPanel ui:field="additionalParamsContainer" styleName="form-group col-md-4">
                                 <additionalparams:ReportAdditionalParamsMultiSelector ui:field="additionalParams" header="{lang.issueReportAdditionalParams}"/>
                             </g:HTMLPanel>

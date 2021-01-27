@@ -10,6 +10,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
@@ -26,9 +27,11 @@ import ru.protei.portal.ui.common.client.widget.selector.region.RegionMultiSelec
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateBtnGroupMulti;
+import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
+import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedSelectorRangePicker;
 
 import java.util.HashSet;
-import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -39,6 +42,7 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         sortField.setType( ModuleType.PROJECT );
+        fillDateRanges(commentCreationRange);
     }
 
     @Override
@@ -97,6 +101,28 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
     }
 
     @Override
+    public HasValue<DateIntervalWithType> commentCreationRange() {
+        return commentCreationRange;
+    }
+
+    @Override
+    public boolean isCommentCreationRangeTypeValid() {
+        return !commentCreationRange.isTypeMandatory()
+                || (commentCreationRange.getValue() != null
+                && commentCreationRange.getValue().getIntervalType() != null);
+    }
+
+    @Override
+    public boolean isCommentCreationRangeValid() {
+        return isDateRangeValid(commentCreationRange.getValue());
+    }
+
+    @Override
+    public void setCommentCreationRangeValid(boolean isTypeValid, boolean isRangeValid) {
+        commentCreationRange.setValid(isTypeValid, isRangeValid);
+    }
+
+    @Override
     public HasVisibility onlyMineProjectsVisibility() {
         return onlyMineProjectsContainer;
     }
@@ -113,6 +139,7 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
         caseMembers.setValue(new HashSet<>());
         onlyMineProjects.setValue( false );
         initiatorCompanies.setValue( null );
+        commentCreationRange.setValue(null);
     }
 
     @Override
@@ -202,6 +229,13 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
         }
     }
 
+    @UiHandler("commentCreationRange")
+    public void onDateRangeChanged(ValueChangeEvent<DateIntervalWithType> event) {
+        if ( activity != null ) {
+            activity.onProjectFilterChanged();
+        }
+    }
+
     Timer timer = new Timer() {
         @Override
         public void run() {
@@ -210,6 +244,19 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
             }
         }
     };
+
+    private void fillDateRanges(TypedSelectorRangePicker rangePicker) {
+        rangePicker.fillSelector(En_DateIntervalType.issueTypes());
+    }
+
+    public boolean isDateRangeValid(DateIntervalWithType dateRange) {
+        if (dateRange == null || dateRange.getIntervalType() == null) {
+            return true;
+        }
+
+        return !Objects.equals(dateRange.getIntervalType(), En_DateIntervalType.FIXED) || dateRange.getInterval().isValid();
+    }
+
 
     @Inject
     @UiField( provided = true )
@@ -251,6 +298,10 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
     @Inject
     @UiField( provided = true )
     CompanyMultiSelector initiatorCompanies;
+
+    @Inject
+    @UiField(provided = true)
+    TypedSelectorRangePicker commentCreationRange;
 
     @UiField
     HTMLPanel onlyMineProjectsContainer;
