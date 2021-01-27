@@ -96,11 +96,19 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
     private void fillTagHistoriesWithColors(List<History> tagHistories) {
+        if (CollectionUtils.isEmpty(tagHistories)) {
+            return;
+        }
+
         List<Long> preparedTagIds = tagHistories
                 .stream()
                 .flatMap(history -> Stream.of(history.getOldId(), history.getNewId()))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
+
+        if (CollectionUtils.isEmpty(preparedTagIds)) {
+            return;
+        }
 
         CaseTagQuery caseTagQuery = new CaseTagQuery();
         caseTagQuery.setIds(preparedTagIds);
