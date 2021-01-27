@@ -7,7 +7,8 @@ import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.struct.ReportProjectWithLastComment;
+import ru.protei.portal.core.model.struct.ListBuilder;
+import ru.protei.portal.core.model.struct.ReportProjectWithComments;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.EnumLangUtil;
@@ -16,26 +17,36 @@ import ru.protei.portal.core.utils.JXLSHelper;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public class ExcelReportWriter implements
-        ReportWriter<ReportProjectWithLastComment>,
-        JXLSHelper.ReportBook.Writer<ReportProjectWithLastComment> {
+        ReportWriter<ReportProjectWithComments>,
+        JXLSHelper.ReportBook.Writer<ReportProjectWithComments> {
 
-    private final JXLSHelper.ReportBook<ReportProjectWithLastComment> book;
+    private final JXLSHelper.ReportBook<ReportProjectWithComments> book;
     private final Lang.LocalizedLang lang;
     private final EnumLangUtil enumLangUtil;
     private final String[] formats;
+    private final boolean withComments;
+    private final DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+    private final int limitCommentsNumber;
 
-    public ExcelReportWriter(Lang.LocalizedLang localizedLang, EnumLangUtil enumLangUtil) {
+    public ExcelReportWriter(Lang.LocalizedLang localizedLang, EnumLangUtil enumLangUtil,
+                             boolean withComments, int limitCommentsNumber) {
         this.book = new JXLSHelper.ReportBook<>(localizedLang, this);
         this.lang = localizedLang;
         this.enumLangUtil = enumLangUtil;
         this.formats = getFormats();
+        this.withComments = withComments;
+        this.limitCommentsNumber = limitCommentsNumber;
     }
 
     @Override
@@ -49,7 +60,7 @@ public class ExcelReportWriter implements
     }
 
     @Override
-    public void write(int sheetNumber, List<ReportProjectWithLastComment> objects) {
+    public void write(int sheetNumber, List<ReportProjectWithComments> objects) {
         book.write(sheetNumber, objects);
     }
 
@@ -75,26 +86,41 @@ public class ExcelReportWriter implements
 
     @Override
     public int[] getColumnsWidth() {
-        return new int[] {
-                2350, 12570, 4200,
-                5200, 5800, 5800,
-                3800, 6800, 5800, 18570
-        };
+        return getColumnsWidth(withComments);
+    }
+
+    private int[] getColumnsWidth(boolean withComments) {
+        List<Integer> columnsWidthList = new ListBuilder<Integer>()
+                .add(2350).add(12570).add(4200)
+                .add(5200).add(5800).add(5800)
+                .add(3800).add(6800).add(5800).add(18570)
+                .addIf(18570, withComments)
+                .build();
+
+        return toPrimitiveIntegerArray(columnsWidthList);
     }
 
     @Override
     public String[] getColumnNames() {
-        return new String[] {
-                "ir_id", "ir_name", "ir_state",
-                "ir_customerType", "ir_customer", "ir_region",
-                "ir_direction", "ir_pause_date", "ir_last_comment_date", "ir_last_comment_text"
-        };
+        return getColumns(withComments);
+    }
+
+    private String[] getColumns(boolean withComments) {
+        List<String> columnsList = new ListBuilder<String>()
+                .add("ir_id").add("ir_name").add("ir_state")
+                .add("ir_customerType").add("ir_customer").add("ir_region")
+                .add("ir_direction").add("ir_pause_date").add("ir_last_comment_date").add("ir_last_comment_text")
+                .addIf("ir_comments_for_period", withComments)
+                .build();
+
+        return columnsList.toArray(new String[]{});
     }
 
     @Override
-    public Object[] getColumnValues(ReportProjectWithLastComment object) {
+    public Object[] getColumnValues(ReportProjectWithComments object) {
         Project project = object.getProject();
-        CaseComment comment = object.getLastComment();
+        CaseComment lastComment = object.getLastComment();
+        List<CaseComment> comments = object.getComments();
 
         List<Object> values = new ArrayList<>();
 
@@ -107,8 +133,22 @@ public class ExcelReportWriter implements
                 project.getRegion().getDisplayText() : "");
         values.add(joining(project.getProductDirectionEntityOptionList(), ", ", EntityOption::getDisplayText));
         values.add(project.getPauseDate() != null ? new Date(project.getPauseDate()) : "");
-        values.add(comment != null ? comment.getCreated() : "");
-        values.add(comment != null ? comment.getText() : "");
+        values.add(lastComment != null ? lastComment.getCreated() : "");
+        values.add(lastComment != null ? lastComment.getText() : "");
+
+        if (withComments) {
+            String commentsValue = "";
+            if (isNotEmpty(comments)) {
+                Stream<CaseComment> stream = comments.stream();
+                if (limitCommentsNumber < comments.size()) {
+                    commentsValue += lang.get("ir_comments_for_period_limit_comment_prefix", new Object[]{limitCommentsNumber}) + "\n\n";
+                    stream = stream.limit(limitCommentsNumber);
+                }
+                commentsValue += stream.map(comment -> dateFormat.format(comment.getCreated()) + "\n" + comment.getText() + "\n")
+                        .collect(Collectors.joining("\n"));
+            }
+            values.add(commentsValue);
+        }
 
         return values.toArray();
     }
@@ -117,7 +157,8 @@ public class ExcelReportWriter implements
         return new String[] {
                 ExcelFormat.STANDARD, ExcelFormat.STANDARD, ExcelFormat.STANDARD,
                 ExcelFormat.STANDARD, ExcelFormat.STANDARD, ExcelFormat.STANDARD,
-                ExcelFormat.STANDARD, ExcelFormat.FULL_DATE, ExcelFormat.FULL_DATE_TIME, ExcelFormat.STANDARD
+                ExcelFormat.STANDARD, ExcelFormat.FULL_DATE, ExcelFormat.FULL_DATE_TIME, ExcelFormat.STANDARD,
+                ExcelFormat.STANDARD
         };
     }
 }
