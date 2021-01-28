@@ -33,7 +33,7 @@ public class PreparedTemplate {
         this.model = model;
     }
 
-    public String getText( String receiver, String lang, boolean isShowPrivacy ) {
+    public String getText(String receiver, String lang, boolean isShowPrivacy) {
         Writer writer = new StringWriter();
 
         if ( lang == null ) {
