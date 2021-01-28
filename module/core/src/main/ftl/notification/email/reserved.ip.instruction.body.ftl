@@ -10,8 +10,12 @@
 <@set name="_reservedIpForever" value="${reservedIpForever}"/>
 <@set name="_reservedIpComment" value="${reservedIpComment}"/>
 <@set name="_reservedIpInstructionStart" value="${reservedIpInstructionStart}"/>
-<@set name="_reservedIpInstructionEnding" value="${reservedIpInstructionEnding}"/>
 <@set name="_reservedIpInstructionPortal" value="${reservedIpInstructionPortal}"/>
+<@set name="_reservedIpInstruction1" value="${reservedIpInstruction1}"/>
+<@set name="_reservedIpInstruction2" value="${reservedIpInstruction2}"/>
+<@set name="_reservedIpInstruction3" value="${reservedIpInstruction3}"/>
+<@set name="_reservedIpInstruction4" value="${reservedIpInstruction4}"/>
+<@set name="_reservedIpInstruction5" value="${reservedIpInstruction5}"/>
 <#noparse>
 <html>
 <head>
@@ -63,8 +67,12 @@
     </tbody>
 </table>
     <div style="padding: 8px 0 0; font-size: 14px; color: grey;">${_reservedIpInstructionStart}
-        <a href="${linkToPortal}" rel="link">${_reservedIpInstructionPortal}</a>.<br/>
-        ${_reservedIpInstructionEnding}
+        <a href="${linkToPortal}" rel="link">${_reservedIpInstructionPortal}</a>.
+        <div>1) ${_reservedIpInstruction1}</div>
+        <div>2) ${_reservedIpInstruction2}</div>
+        <div>3) ${_reservedIpInstruction3}</div>
+        <div>4) ${_reservedIpInstruction4}</div>
+        <div>5) ${_reservedIpInstruction5}</div>
     </div>
 
     <div style="padding: 4px 0 8px;">

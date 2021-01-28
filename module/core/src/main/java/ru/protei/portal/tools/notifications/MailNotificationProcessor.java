@@ -870,34 +870,34 @@ public class MailNotificationProcessor {
 
     private void sendReleaseIpRemainingNotificationToOwners(List<ReservedIp> reservedIps, List<NotificationEntry> notifiers, PreparedTemplate subjectTemplate) {
         Map<Boolean, List<NotificationEntry>> partitionNotifiers = notifiers.stream().collect(partitioningBy(this::isProteiRecipient));
-        final boolean IS_PRIVATE_RECIPIENT = true;
+        final boolean IS_INTERNAL_CRM_RECIPIENT = true;
 
-        List<NotificationEntry> privateNotifiers = partitionNotifiers.get( IS_PRIVATE_RECIPIENT );
-        List<NotificationEntry> publicNotifiers = partitionNotifiers.get( !IS_PRIVATE_RECIPIENT );
+        List<NotificationEntry> internalCrmNotifiers = partitionNotifiers.get( IS_INTERNAL_CRM_RECIPIENT );
+        List<NotificationEntry> externalCrmNotifiers = partitionNotifiers.get( !IS_INTERNAL_CRM_RECIPIENT );
 
-        String privatePortalUrl = getPortalUrl( IS_PRIVATE_RECIPIENT );
-        String publicPortalUrl = getPortalUrl( !IS_PRIVATE_RECIPIENT );
+        String internalCrmPortalUrl = getPortalUrl( IS_INTERNAL_CRM_RECIPIENT );
+        String externalCrmPortalUrl = getPortalUrl( !IS_INTERNAL_CRM_RECIPIENT );
 
-        List<String> privateRecipients = getNotifiersAddresses(privateNotifiers);
-        List<String> publicRecipients = getNotifiersAddresses(publicNotifiers);
+        List<String> internalCrmRecipients = getNotifiersAddresses(internalCrmNotifiers);
+        List<String> externalCrmRecipients = getNotifiersAddresses(externalCrmNotifiers);
 
-        if (!privateNotifiers.isEmpty()) {
-            PreparedTemplate bodyTemplate = templateService.getReservedIpNotificationWithInstructionBody(reservedIps, privateRecipients, privatePortalUrl);
+        if (!internalCrmNotifiers.isEmpty()) {
+            PreparedTemplate bodyTemplate = templateService.getReservedIpNotificationWithInstructionBody(reservedIps, internalCrmRecipients, internalCrmPortalUrl);
 
             if (bodyTemplate == null) {
-                log.error("Failed to prepare body template for release reserved IPs notification to admins");
+                log.error("Failed to prepare body template for release reserved IPs notification to internal crm recipients");
             } else {
-                sendMailToRecipients(privateNotifiers, bodyTemplate, subjectTemplate, true, getFromPortalAddress());
+                sendMailToRecipients(internalCrmNotifiers, bodyTemplate, subjectTemplate, true, getFromPortalAddress());
             }
         }
 
-        if (!publicNotifiers.isEmpty()) {
-            PreparedTemplate bodyTemplate = templateService.getReservedIpNotificationWithInstructionBody(reservedIps, publicRecipients, publicPortalUrl);
+        if (!externalCrmNotifiers.isEmpty()) {
+            PreparedTemplate bodyTemplate = templateService.getReservedIpNotificationWithInstructionBody(reservedIps, externalCrmRecipients, externalCrmPortalUrl);
 
             if (bodyTemplate == null) {
-                log.error("Failed to prepare body template for release reserved IPs notification to owners");
+                log.error("Failed to prepare body template for release reserved IPs notification to external crm recipients");
             } else {
-                sendMailToRecipients(publicNotifiers, bodyTemplate, subjectTemplate, true, getFromPortalAddress());
+                sendMailToRecipients(externalCrmNotifiers, bodyTemplate, subjectTemplate, true, getFromPortalAddress());
             }
         }
     }
