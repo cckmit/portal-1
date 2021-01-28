@@ -30,6 +30,12 @@ public class CaseObjectMeta extends AuditableObject {
     @JdbcJoinedColumn(localColumn = "STATE", table = "case_state", remoteColumn = "id", mappedColumn = "STATE")
     private String stateName;
 
+    @JdbcJoinedColumn(localColumn = "STATE", table = "case_state", remoteColumn = "id", mappedColumn = "color")
+    private String stateColor;
+
+    @JdbcJoinedColumn(localColumn = "STATE", table = "case_state", remoteColumn = "id", mappedColumn = "INFO")
+    private String stateInfo;
+
     @JdbcColumn(name = "IMPORTANCE")
     private Integer impLevel;
 
@@ -102,6 +108,8 @@ public class CaseObjectMeta extends AuditableObject {
         if (co.getModified() != null) setModified(co.getModified());
         if (co.getStateId() != 0) setStateId(co.getStateId());
         if (co.getStateName() != null) setStateName(co.getStateName());
+        if (co.getStateColor() != null) setStateColor(co.getStateColor());
+        if (co.getStateInfo() != null) setStateInfo(co.getStateInfo());
         if (co.getPauseDate() != null) setPauseDate(co.getPauseDate());
         if (co.getImpLevel() != null) setImpLevel(co.getImpLevel());
         if (co.getInitiator() != null) setInitiator(co.getInitiator());
@@ -160,6 +168,22 @@ public class CaseObjectMeta extends AuditableObject {
 
     public void setStateName(String stateName) {
         this.stateName = stateName;
+    }
+
+    public String getStateColor() {
+        return stateColor;
+    }
+
+    public void setStateColor(String stateColor) {
+        this.stateColor = stateColor;
+    }
+
+    public String getStateInfo() {
+        return stateInfo;
+    }
+
+    public void setStateInfo(String stateInfo) {
+        this.stateInfo = stateInfo;
     }
 
     public Integer getImpLevel() {
@@ -356,6 +380,8 @@ public class CaseObjectMeta extends AuditableObject {
                 ", modified=" + modified +
                 ", stateId=" + stateId +
                 ", stateName='" + stateName + '\'' +
+                ", stateColor='" + stateColor + '\'' +
+                ", stateInfo='" + stateInfo + '\'' +
                 ", impLevel=" + impLevel +
                 ", initiatorId=" + initiatorId +
                 ", initiator=" + initiator +

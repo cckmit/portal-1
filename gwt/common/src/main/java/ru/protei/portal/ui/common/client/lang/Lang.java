@@ -982,6 +982,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String projectTeamRole();
 
+    String projectCommentCreationDate();
+
     String inputProjectName();
 
     String selectCustomerType();
@@ -2215,6 +2217,8 @@ public interface Lang extends Messages, ContactItemLang {
     String reportMissingProduct();
 
     String reportMissingPeriod();
+
+    String reportNotValidPeriod();
 
     String reportPeriodNotSelected();
 

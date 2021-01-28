@@ -8,7 +8,9 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -38,8 +40,18 @@ public interface AbstractProjectFilterView extends IsWidget {
 
     HasValue< Set<EntityOption> > initiatorCompanies();
 
+    HasValue<DateIntervalWithType> commentCreationRange();
+
+    boolean isCommentCreationRangeTypeValid();
+
+    boolean isCommentCreationRangeValid();
+
+    void setCommentCreationRangeValid(boolean isTypeValid, boolean isRangeValid);
+
     HasVisibility onlyMineProjectsVisibility();
 
     void resetFilter();
     void clearFooterStyle();
+
+    void fillStatesButtons(Map<En_RegionState, String> iconsColorsMap);
 }

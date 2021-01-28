@@ -5,6 +5,8 @@ import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.ui.common.client.lang.En_RegionStateLang;
 import ru.protei.portal.ui.common.client.widget.togglebtn.group.ToggleBtnGroupMulti;
 
+import java.util.Map;
+
 /**
  * Селектор состояния региона
  */
@@ -13,10 +15,9 @@ public class RegionStateBtnGroupMulti extends ToggleBtnGroupMulti<En_RegionState
     @Inject
     public void init() {
         addStyleName( "status-group" );
-        fillButtons();
     }
 
-    public void fillButtons() {
+    public void fillButtons(Map<En_RegionState, String> iconsColorsMap) {
         clear();
 
         for ( En_RegionState state : En_RegionState.values() ) {
@@ -24,7 +25,9 @@ public class RegionStateBtnGroupMulti extends ToggleBtnGroupMulti<En_RegionState
                     lang.getStateIcon( state )+" fa-lg",
                     "btn btn-default",
                     lang.getStateName(state),
-                    state
+                    state,
+                    iconsColorsMap.get(state),
+                    null
             );
         }
     }

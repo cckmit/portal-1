@@ -6,8 +6,6 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.togglebtn.item.ToggleButton;
@@ -98,10 +96,11 @@ public class ToggleBtnGroupBase<T>
         return itemView;
     }
 
-    public void addBtnWithIconAndTooltip( String iconStyle, String buttonStyle, String tooltip, T value ) {
+    public void addBtnWithIconAndTooltip( String iconStyle, String buttonStyle, String tooltip,
+                                          T value, String color, String bgColor ) {
         ToggleButton itemView = addBtn( null, value, buttonStyle );
         if ( iconStyle != null ) {
-            itemView.setIcon( iconStyle, false );
+            itemView.setIcon( iconStyle, color, bgColor, false );
         }
         if ( tooltip != null) {
             itemView.setTooltip(tooltip);
@@ -111,7 +110,7 @@ public class ToggleBtnGroupBase<T>
     public void addBtnWithIcon( String iconStyle, String buttonStyle, String caption, T value ) {
         ToggleButton itemView = addBtn( caption, value, buttonStyle );
         if ( iconStyle != null ) {
-            itemView.setIcon( iconStyle, false );
+            itemView.setIcon( iconStyle, null, null, false );
         }
     }
 

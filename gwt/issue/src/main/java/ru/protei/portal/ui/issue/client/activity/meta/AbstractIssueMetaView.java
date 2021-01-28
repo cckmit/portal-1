@@ -39,7 +39,6 @@ public interface AbstractIssueMetaView extends IsWidget {
 
     HasValue<CaseObjectMetaJira> jiraSlaSelector();
 
-    void setStateWorkflow(En_CaseStateWorkflow workflow);
     void setSubscriptionEmails(String value);
     void initiatorSelectorAllowAddNew(boolean isVisible);
     void setInitiatorFilter( Long companyId);

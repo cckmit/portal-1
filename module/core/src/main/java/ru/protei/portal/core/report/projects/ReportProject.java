@@ -2,7 +2,7 @@ package ru.protei.portal.core.report.projects;
 
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.ProjectQuery;
-import ru.protei.portal.core.model.struct.ReportProjectWithLastComment;
+import ru.protei.portal.core.model.struct.ReportProjectWithComments;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -15,5 +15,5 @@ public interface ReportProject {
                         ProjectQuery query,
                         Predicate<Long> isCancel) throws IOException;
 
-    List<ReportProjectWithLastComment> createData(ProjectQuery query);
+    List<ReportProjectWithComments> createData(ProjectQuery query);
 }

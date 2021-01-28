@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.project.client.activity.edit;
 
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -9,10 +10,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.dto.Project;
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.CompanyImportanceItem;
-import ru.protei.portal.core.model.ent.DevUnit;
-import ru.protei.portal.core.model.ent.ProjectSla;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -22,6 +20,7 @@ import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
@@ -173,7 +172,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
     @Override
     public void onStateChanged() {
-        view.pauseDateContainerVisibility().setVisible( PAUSED == view.state().getValue() );
+        view.pauseDateContainerVisibility().setVisible( view.state().getValue().getId().equals(PAUSED.getId()) );
     }
 
     @Override
@@ -201,7 +200,9 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     private void fillView(Project project) {
         view.setNumber( isNew( project ) ? null : project.getId().intValue() );
         view.name().setValue( isNew( project ) ? "" : project.getName());
-        view.state().setValue( isNew( project ) ? En_RegionState.UNKNOWN : project.getState() );
+        CaseState caseState = new CaseState( isNew( project ) ? En_RegionState.UNKNOWN.getId()
+                                                              : project.getState().getId() );
+        view.state().setValue( caseState );
         view.directions().setValue(isEmpty(project.getProductDirectionEntityOptionList())? null : toSet(project.getProductDirectionEntityOptionList(), option -> new ProductDirectionInfo(option)));
         view.productEnabled().setEnabled(isNotEmpty(project.getProductDirectionEntityOptionList()));
         view.team().setValue( project.getTeam() == null ? null : new HashSet<>( project.getTeam() ) );
@@ -327,8 +328,8 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     private Project fillProject(Project project) {
         project.setName(view.name().getValue());
         project.setDescription(view.description().getText());
-        project.setState(view.state().getValue());
-        project.setPauseDate( (PAUSED != view.state().getValue()) ? null : view.pauseDate().getValue().getTime() );
+        project.setState(view.state().getValue().getId());
+        project.setPauseDate( (PAUSED.getId() != view.state().getValue().getId() ) ? null : view.pauseDate().getValue().getTime() );
         project.setCustomer(Company.fromEntityOption(view.company().getValue()));
         project.setCustomerType(view.customerType().getValue());
         project.setProducts( toSet(view.products().getValue(), DevUnit::fromProductShortView));

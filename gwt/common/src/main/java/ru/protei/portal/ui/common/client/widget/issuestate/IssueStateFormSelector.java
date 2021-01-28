@@ -1,73 +1,35 @@
 package ru.protei.portal.ui.common.client.widget.issuestate;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
 import ru.protei.portal.core.model.ent.CaseState;
-import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.selector.SelectorItem;
+import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.util.CaseStateUtils;
-import ru.protei.portal.ui.common.client.widget.form.FormSelector;
-import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
-import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOptionCreator;
-import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
+import ru.protei.portal.ui.common.client.widget.form.FormPopupSingleSelector;
 
-import java.util.List;
-
-public class IssueStateFormSelector extends FormSelector<CaseState> implements SelectorWithModel<CaseState> {
+/**
+ * Селектор критичности кейсов
+ */
+public class IssueStateFormSelector extends FormPopupSingleSelector<CaseState> {
 
     @Inject
-    public void init(StateModel model, Lang lang) {
-        this.model = model;
-        noSearchResult = lang.searchTerminalState();
+    public void init( StateModel model ) {
+        setSearchEnabled( false );
+        setAsyncModel( model );
+        setItemRenderer( value -> value == null ? defaultValue : value.getInfo() );
+        setValueRenderer( value -> value == null ? defaultValue :
+                         "<i class='fas fa-circle m-r-5 state-" + makeCaseStateStyle(value) +
+                         "' style='color:" + makeCaseStateColor(value) + "'></i>" + value.getState());
     }
 
     @Override
-    public void setValue(CaseState value, boolean fireEvents) {
-        onValueSet(value);
-        super.setValue(value, fireEvents);
-    }
-
-    @Override
-    public void fillOptions(List<CaseState> options) {
-        clearOptions();
-        if (defaultValue != null) {
-            addOption(null);
-        }
-        options.forEach(this::addOption);
-    }
-
-    @Override
-    public void refreshValue() { /* no need to set value again */ }
-
-    public void setWorkflow(En_CaseStateWorkflow workflow) {
-        this.workflow = workflow;
-    }
-
-    public void setDefaultValue(String defaultValue) {
-        this.defaultValue = defaultValue;
-    }
-
-    private void onValueSet(CaseState caseState) {
-        if (model == null || workflow == null) {
-            // widget has not been configured properly yet
-            return;
-        }
-        setDisplayOptionCreator(makeDisplayOptionCreator(workflow));
-        model.subscribe(this, workflow, caseState);
-    }
-
-    private DisplayOptionCreator<CaseState> makeDisplayOptionCreator(En_CaseStateWorkflow workflow) {
-        if (workflow == En_CaseStateWorkflow.NO_WORKFLOW) {
-            return caseState -> {
-                DisplayOption displayOption = new DisplayOption(makeCaseStateName(caseState), "", "fas fa-circle m-r-5 state-" + makeCaseStateStyle(caseState));
-                displayOption.setTitle(makeCaseStateTitle(caseState));
-                return displayOption;
-            };
-        }
-        return caseState -> {
-            DisplayOption displayOption = new DisplayOption(makeCaseStateName(caseState), "", "fas fa-dot-circle m-r-5 state-" + makeCaseStateStyle(caseState));
-            displayOption.setTitle(makeCaseStateTitle(caseState));
-            return displayOption;
-        };
+    protected SelectorItem<CaseState> makeSelectorItem(CaseState element, String elementHtml ) {
+        PopupSelectorItem<CaseState> item = new PopupSelectorItem();
+        item.setName( makeCaseStateName(element));
+        item.setTitle( makeCaseStateTitle(element));
+        item.setIcon( "fas fa-circle m-r-5 state-" + makeCaseStateStyle(element) );
+        item.setIconColor( makeCaseStateColor(element) );
+        return item;
     }
 
     private String makeCaseStateName(CaseState caseState) {
@@ -82,7 +44,13 @@ public class IssueStateFormSelector extends FormSelector<CaseState> implements S
         return caseState == null ? "" : caseState.getInfo();
     }
 
-    private En_CaseStateWorkflow workflow;
-    private StateModel model;
+    private String makeCaseStateColor(CaseState caseState) {
+        return caseState == null ? "" : caseState.getColor();
+    }
+
+    public void setDefaultValue(String value ) {
+        this.defaultValue = value;
+    }
+
     private String defaultValue;
 }

@@ -54,7 +54,7 @@ public enum En_RegionState {
     /**
      * Приостановлена пользователем до даты
      */
-    PAUSED(34)
+    PAUSED(4)
     ;
 
 

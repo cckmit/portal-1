@@ -93,7 +93,7 @@
                         <div class="form-group form-group-attached">
                             <div class="row clearfix reset-no-padding">
                                 <div class="col-md-12">
-                                    <state:RegionStateFormSelector ui:field="projectState" validation="false"
+                                    <state:ProjectStateFormSelector ui:field="projectState" validation="false"
                                                                    header="{lang.projectState}"
                                                                    hasNullValue="true"
                                                                    mandatory="false"/>
