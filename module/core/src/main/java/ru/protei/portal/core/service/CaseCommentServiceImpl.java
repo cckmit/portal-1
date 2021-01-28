@@ -19,6 +19,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
+import ru.protei.portal.core.model.query.HistoryQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.query.UserLoginShortViewQuery;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
@@ -63,6 +64,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     PolicyService policyService;
     @Autowired
     AuthService authService;
+    @Autowired
+    HistoryService historyService;
 
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
@@ -648,6 +651,64 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
         return ok(true).publishEvent( new CaseCommentEvent( this, ServiceModule.GENERAL, person.getId(), comment.getCaseId(), isEagerEvent,
                 null, comment, null) );
+    }
+
+    @Override
+    public Result<CommentsAndHistories> getCommentsAndHistories(AuthToken token, En_CaseType caseType, long caseObjectId) {
+        Result<List<CaseComment>> caseCommentListResult = getCaseCommentList(token, caseType, caseObjectId);
+
+        if (caseCommentListResult.isError()) {
+            return error(caseCommentListResult.getStatus());
+        }
+
+        Result<List<History>> historyListResult = historyService.getHistoryListByCaseId(token, caseObjectId);
+
+        if (historyListResult.isError()) {
+            return error(historyListResult.getStatus());
+        }
+
+        List<CaseComment> comments = caseCommentListResult.getData();
+        List<History> histories = historyListResult.getData();
+
+        CommentsAndHistories commentsAndHistories = new CommentsAndHistories();
+        commentsAndHistories.setIdToComment(comments.stream().collect(Collectors.toMap(CaseComment::getId, Function.identity())));
+        commentsAndHistories.setIdToHistory(histories.stream().collect(Collectors.toMap(History::getId, Function.identity())));
+
+        List<CommentsAndHistories.CommentOrHistory> commentOrHistoryList = new ArrayList<>();
+
+        int commentIndex = 0;
+        int historyIndex = 0;
+
+        while (commentIndex < comments.size() && historyIndex < histories.size()) {
+            CaseComment caseComment = comments.get(commentIndex);
+            History history = histories.get(historyIndex);
+
+            if (caseComment.getCreated().before(history.getDate())) {
+                commentIndex++;
+                commentOrHistoryList.add(new CommentsAndHistories.CommentOrHistory(caseComment));
+            } else {
+                historyIndex++;
+                commentOrHistoryList.add(new CommentsAndHistories.CommentOrHistory(history));
+            }
+        }
+
+        if (commentIndex < comments.size()) {
+            commentOrHistoryList.addAll(toList(
+                    comments.subList(commentIndex, comments.size()),
+                    (Function<CaseComment, CommentsAndHistories.CommentOrHistory>) CommentsAndHistories.CommentOrHistory::new)
+            );
+        }
+
+        if (historyIndex < histories.size()) {
+            commentOrHistoryList.addAll(toList(
+                    histories.subList(historyIndex, histories.size()),
+                    (Function<History, CommentsAndHistories.CommentOrHistory>) CommentsAndHistories.CommentOrHistory::new)
+            );
+        }
+
+        commentsAndHistories.setSortedCommentOrHistoryList(commentOrHistoryList);
+
+        return ok(commentsAndHistories);
     }
 
     private CaseComment createComment(CaseObject caseObject, Person person, String comment) {

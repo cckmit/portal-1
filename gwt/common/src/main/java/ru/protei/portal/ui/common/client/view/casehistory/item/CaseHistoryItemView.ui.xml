@@ -5,10 +5,8 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel tag="li" styleName="row form-group">
-        <div class="col-md-9">
-            <span class="thumbnail-wrapper d32 circular inline m-r-5">
-                <img ui:field="photo" src="#" alt="" width="32" height="32" class="thumbnail-photo"/>
-            </span>
+        <ul class="col-md-9">
+            <span class="float-left m-r-10 fas fa-history fa-lg"/>
             <span ui:field="initiator" class="float-left m-r-10 font-weight-bold"/>
             <span ui:field="changeInfoMessage" class="history-item-history-type"/>
             <g:HTMLPanel ui:field="addedValueContainer" tag="span" styleName="history-item-added-value">
@@ -24,7 +22,7 @@
             <g:HTMLPanel ui:field="removedValueContainer" tag="span" styleName="history-item-removed-value">
                 <strike ui:field="removedValue" class="font-weight-bold"/>
             </g:HTMLPanel>
-        </div>
+        </ul>
         <div class="col-md-3 text-right">
             <span class="case-history-item-date" ui:field="date"/>
         </div>

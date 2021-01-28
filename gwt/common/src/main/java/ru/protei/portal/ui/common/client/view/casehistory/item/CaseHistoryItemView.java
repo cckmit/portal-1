@@ -91,11 +91,6 @@ public class CaseHistoryItemView
     }
 
     @Override
-    public void setPhoto(String photoUrl) {
-        this.photo.setSrc(photoUrl);
-    }
-
-    @Override
     public void setAddedValueColor(String addedValueColor) {
         addedValue.addClassName("colored-history-item");
 
@@ -145,9 +140,6 @@ public class CaseHistoryItemView
 
     @UiField
     SpanElement date;
-
-    @UiField
-    ImageElement photo;
 
     @UiField
     SpanElement initiator;

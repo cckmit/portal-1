@@ -6,7 +6,6 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_HistoryAction;
 import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.portal.core.model.dict.En_Privilege;
@@ -19,7 +18,6 @@ import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.CaseHistoryEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseHistoryControllerAsync;
-import ru.protei.portal.ui.common.client.util.AvatarUtils;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
@@ -73,7 +71,6 @@ public abstract class CaseHistoryListActivity implements AbstractCaseHistoryList
 
         historyItem.setActivity(this);
         historyItem.setInitiator(history.getInitiator());
-        historyItem.setPhoto(AvatarUtils.getAvatarUrl(history.getInitiatorId(), history.getCompanyCategory(), En_Gender.parse(history.getGenderCode())));
 
         historyItem.addedValueContainerVisibility().setVisible(En_HistoryAction.ADD.equals(history.getAction()));
         historyItem.changeContainerVisibility().setVisible(En_HistoryAction.CHANGE.equals(history.getAction()));
@@ -159,6 +156,7 @@ public abstract class CaseHistoryListActivity implements AbstractCaseHistoryList
     }
 
     private void fillChangedValueColors(AbstractCaseHistoryItemView historyItem, History history) {
+
     }
 
     @Inject

@@ -29,8 +29,6 @@ public interface AbstractCaseHistoryItemView extends IsWidget {
 
     void setDate(String date);
 
-    void setPhoto(String photoUrl);
-
     void setAddedValueColor(String backgroundColor);
 
     void setChangedValueColors(String oldValueColor, String newValueColor);

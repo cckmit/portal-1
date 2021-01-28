@@ -20,16 +20,6 @@ public class History implements Serializable {
     @JdbcJoinedColumn( localColumn = "initiator_id", table = "person", remoteColumn = "id", mappedColumn = "displayShortName", sqlTableAlias = "PersonInitiator" )
     private String initiator;
 
-    @JdbcJoinedColumn(localColumn = "initiator_id", remoteColumn = "id", table = "person", mappedColumn = "sex", sqlTableAlias = "person")
-    private String genderCode;
-
-    @JdbcJoinedColumn(mappedColumn = "category_id", joinPath = {
-            @JdbcJoinPath(table = "person", localColumn = "initiator_id", remoteColumn = "id", sqlTableAlias = "person"),
-            @JdbcJoinPath(table = "company", localColumn = "company_id", remoteColumn = "id", sqlTableAlias = "company")
-    })
-    @JdbcEnumerated(EnumType.ID)
-    private En_CompanyCategory companyCategory;
-
     @JdbcColumn(name = "date")
     private Date date;
 
@@ -151,14 +141,6 @@ public class History implements Serializable {
         this.newValue = newValue;
     }
 
-    public String getGenderCode() {
-        return genderCode;
-    }
-
-    public En_CompanyCategory getCompanyCategory() {
-        return companyCategory;
-    }
-
     public String getOldColor() {
         return oldColor;
     }
@@ -181,8 +163,6 @@ public class History implements Serializable {
                 "id=" + id +
                 ", initiatorId=" + initiatorId +
                 ", initiator='" + initiator + '\'' +
-                ", genderCode='" + genderCode + '\'' +
-                ", companyCategory=" + companyCategory +
                 ", date=" + date +
                 ", caseObjectId=" + caseObjectId +
                 ", action=" + action +

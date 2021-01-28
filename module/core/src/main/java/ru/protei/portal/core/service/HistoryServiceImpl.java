@@ -3,14 +3,14 @@ package ru.protei.portal.core.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.model.dao.CaseTagDAO;
 import ru.protei.portal.core.model.dao.HistoryDAO;
+import ru.protei.portal.core.model.dao.ImportanceLevelDAO;
 import ru.protei.portal.core.model.dict.En_HistoryAction;
 import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.CaseTag;
-import ru.protei.portal.core.model.ent.History;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.core.model.query.HistoryQuery;
@@ -21,6 +21,7 @@ import java.util.stream.Stream;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 public class HistoryServiceImpl implements HistoryService {
 
@@ -29,6 +30,12 @@ public class HistoryServiceImpl implements HistoryService {
 
     @Autowired
     CaseTagDAO caseTagDAO;
+
+    @Autowired
+    CaseStateDAO caseStateDAO;
+
+    @Autowired
+    ImportanceLevelDAO importanceLevelDAO;
 
     @Override
     @Transactional
@@ -67,7 +74,7 @@ public class HistoryServiceImpl implements HistoryService {
             return error(En_ResultStatus.GET_DATA_ERROR);
         }
 
-        return ok(list);
+        return ok(fillHistoriesWithColors(list));
     }
 
     @Override
@@ -90,23 +97,46 @@ public class HistoryServiceImpl implements HistoryService {
                 .stream()
                 .collect(Collectors.toMap(History::getType, Arrays::asList, CollectionUtils::mergeLists));
 
+        fillCaseStateHistoriesWithColors(typeToHistories.get(En_HistoryType.CASE_STATE));
+        fillImportanceHistoriesWithColors(typeToHistories.get(En_HistoryType.CASE_IMPORTANCE));
         fillTagHistoriesWithColors(typeToHistories.get(En_HistoryType.TAG));
 
         return histories;
     }
 
-    private void fillTagHistoriesWithColors(List<History> tagHistories) {
-        if (CollectionUtils.isEmpty(tagHistories)) {
+    private void fillCaseStateHistoriesWithColors(List<History> caseStateHistories) {
+        List<Long> preparedCaseStateIds = getOldAndNewIds(caseStateHistories);
+
+        if (preparedCaseStateIds.isEmpty()) {
             return;
         }
 
-        List<Long> preparedTagIds = tagHistories
+        Map<Long, String> caseStateIdToColor = caseStateDAO.getCaseStatesByIds(preparedCaseStateIds)
                 .stream()
-                .flatMap(history -> Stream.of(history.getOldId(), history.getNewId()))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                .collect(Collectors.toMap(CaseState::getId, CaseState::getColor));
 
-        if (CollectionUtils.isEmpty(preparedTagIds)) {
+        fillHistoriesWithSpecifiedColors(caseStateHistories, caseStateIdToColor);
+    }
+
+    private void fillImportanceHistoriesWithColors(List<History> importanceHistories) {
+        List<Long> preparedImportanceIds = getOldAndNewIds(importanceHistories);
+
+        if (preparedImportanceIds.isEmpty()) {
+            return;
+        }
+
+        Map<Long, String> importanceLevelIdToColor =
+                importanceLevelDAO.getImportanceLevelsByIds(preparedImportanceIds)
+                        .stream()
+                        .collect(Collectors.toMap(importanceLevel -> importanceLevel.getId().longValue(), ImportanceLevel::getCode));
+
+        fillHistoriesWithSpecifiedColors(importanceHistories, importanceLevelIdToColor);
+    }
+
+    private void fillTagHistoriesWithColors(List<History> tagHistories) {
+        List<Long> preparedTagIds = getOldAndNewIds(tagHistories);
+
+        if (preparedTagIds.isEmpty()) {
             return;
         }
 
@@ -118,14 +148,25 @@ public class HistoryServiceImpl implements HistoryService {
                         .stream()
                         .collect(Collectors.toMap(CaseTag::getId, CaseTag::getColor));
 
-        for (History nextHistory : tagHistories) {
+        fillHistoriesWithSpecifiedColors(tagHistories, caseTagIdToColor);
+    }
+
+    private void fillHistoriesWithSpecifiedColors(List<History> histories, Map<Long, String> idToColor) {
+        for (History nextHistory : histories) {
             if (nextHistory.getOldId() != null) {
-                nextHistory.setOldColor(caseTagIdToColor.get(nextHistory.getOldId()));
+                nextHistory.setOldColor(idToColor.get(nextHistory.getOldId()));
             }
 
             if (nextHistory.getNewId() != null) {
-                nextHistory.setNewColor(caseTagIdToColor.get(nextHistory.getNewId()));
+                nextHistory.setNewColor(idToColor.get(nextHistory.getNewId()));
             }
         }
+    }
+
+    private List<Long> getOldAndNewIds(List<History> histories) {
+        return stream(histories)
+                .flatMap(history -> Stream.of(history.getOldId(), history.getNewId()))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 }
