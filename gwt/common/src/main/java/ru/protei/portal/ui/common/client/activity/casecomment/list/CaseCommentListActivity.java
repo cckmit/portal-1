@@ -438,7 +438,7 @@ public abstract class CaseCommentListActivity
         itemView.setActivity(this);
 
         if (value.getAuthorId().equals(profile.getId())) {
-            itemView.setMine();
+//            itemView.setMine();
             itemView.setIcon(AvatarUtils.getAvatarUrl(profile));
         } else {
             itemView.setIcon(AvatarUtils.getAvatarUrl(value.getAuthor()));

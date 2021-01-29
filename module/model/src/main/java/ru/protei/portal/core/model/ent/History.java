@@ -1,6 +1,5 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_HistoryAction;
 import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.winter.jdbc.annotations.*;
@@ -17,8 +16,11 @@ public class History implements Serializable {
     @JdbcColumn(name = "initiator_id")
     private Long initiatorId;
 
-    @JdbcJoinedColumn( localColumn = "initiator_id", table = "person", remoteColumn = "id", mappedColumn = "displayShortName", sqlTableAlias = "PersonInitiator" )
-    private String initiator;
+    @JdbcJoinedColumn( localColumn = "initiator_id", table = "person", remoteColumn = "id", mappedColumn = "displayShortName", sqlTableAlias = "person_short_name" )
+    private String initiatorShortName;
+
+    @JdbcJoinedColumn( localColumn = "initiator_id", table = "person", remoteColumn = "id", mappedColumn = "displayName", sqlTableAlias = "person_full_name" )
+    private String initiatorFullName;
 
     @JdbcColumn(name = "date")
     private Date date;
@@ -65,12 +67,20 @@ public class History implements Serializable {
         return initiatorId;
     }
 
-    public String getInitiator() {
-        return initiator;
+    public String getInitiatorShortName() {
+        return initiatorShortName;
     }
 
-    public void setInitiator(String initiator) {
-        this.initiator = initiator;
+    public void setInitiatorShortName(String initiatorShortName) {
+        this.initiatorShortName = initiatorShortName;
+    }
+
+    public String getInitiatorFullName() {
+        return initiatorFullName;
+    }
+
+    public void setInitiatorFullName(String initiatorFullName) {
+        this.initiatorFullName = initiatorFullName;
     }
 
     public void setInitiatorId(Long initiatorId) {
@@ -162,7 +172,8 @@ public class History implements Serializable {
         return "History{" +
                 "id=" + id +
                 ", initiatorId=" + initiatorId +
-                ", initiator='" + initiator + '\'' +
+                ", initiatorShortName='" + initiatorShortName + '\'' +
+                ", initiatorFullName='" + initiatorFullName + '\'' +
                 ", date=" + date +
                 ", caseObjectId=" + caseObjectId +
                 ", action=" + action +
@@ -171,6 +182,8 @@ public class History implements Serializable {
                 ", oldValue='" + oldValue + '\'' +
                 ", newId=" + newId +
                 ", newValue='" + newValue + '\'' +
+                ", oldColor='" + oldColor + '\'' +
+                ", newColor='" + newColor + '\'' +
                 '}';
     }
 }

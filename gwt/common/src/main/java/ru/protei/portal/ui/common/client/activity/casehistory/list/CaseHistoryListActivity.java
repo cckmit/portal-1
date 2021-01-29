@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.common.client.activity.casehistory.list;
 
-import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -11,22 +10,25 @@ import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.view.EmployeeShortView;
-import ru.protei.portal.ui.common.client.activity.casehistory.item.AbstractCaseHistoryItemActivity;
-import ru.protei.portal.ui.common.client.activity.casehistory.item.AbstractCaseHistoryItemView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.CaseHistoryEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseHistoryControllerAsync;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
+import ru.protei.portal.ui.common.client.view.casehistory.item.CaseHistoryItem;
+import ru.protei.portal.ui.common.client.view.casehistory.item.CaseHistoryItemsContainer;
+import ru.protei.portal.ui.common.client.view.casehistory.item.casestate.CaseHistoryStateItemView;
+import ru.protei.portal.ui.common.client.view.casehistory.item.importance.CaseHistoryImportanceItemView;
+import ru.protei.portal.ui.common.client.view.casehistory.item.simple.CaseHistorySimpleItemView;
+import ru.protei.portal.ui.common.client.view.casehistory.item.tag.CaseHistoryTagItemView;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.forEachReverse;
-
-public abstract class CaseHistoryListActivity implements AbstractCaseHistoryListActivity, AbstractCaseHistoryItemActivity, Activity {
+public abstract class CaseHistoryListActivity implements AbstractCaseHistoryListActivity, Activity {
     @Event
     public void onLoad(CaseHistoryEvents.Load event) {
         event.container.clear();
@@ -48,121 +50,141 @@ public abstract class CaseHistoryListActivity implements AbstractCaseHistoryList
 
     private void fillView(List<History> caseHistories) {
         view.root().clear();
-        forEachReverse(caseHistories, this::addHistoryItem);
+
+        String historyDate = null;
+        CaseHistoryItemsContainer historyItemsContainer = null;
+
+        List<Widget> historyItemsContainers = new LinkedList<>();
+
+        for (History nextHistory : caseHistories) {
+            if (!DateFormatter.formatDateTime(nextHistory.getDate()).equals(historyDate)) {
+                historyDate = DateFormatter.formatDateTime(nextHistory.getDate());
+                historyItemsContainer = caseHistoryItemsContainerProvider.get();
+                historyItemsContainer.setDate(historyDate);
+                historyItemsContainer.setInitiator(nextHistory.getInitiatorFullName());
+                historyItemsContainers.add(0, historyItemsContainer);
+            }
+
+            addHistoryItem(nextHistory, historyItemsContainer);
+        }
+
+        historyItemsContainers.forEach(view.root()::add);
     }
 
-    private void addHistoryItem(History history) {
+    private void addHistoryItem(History history, CaseHistoryItemsContainer historyItemsContainer) {
         if (policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW)) {
-            AbstractCaseHistoryItemView itemView;
+            CaseHistoryItem itemView;
             switch (history.getType()) {
-                case PLAN: itemView = makeHistoryItem(history, Plan.class); break;
-                case TAG: itemView = makeHistoryItem(history, CaseTag.class); break;
-                case CASE_STATE: itemView = makeHistoryItem(history, CaseState.class); break;
-                case CASE_MANAGER: itemView = makeHistoryItem(history, EmployeeShortView.class); break;
-                case CASE_IMPORTANCE: itemView = makeHistoryItem(history, ImportanceLevel.class); break;
+                case PLAN: itemView = makeHistoryItem(history, lang.plan(), Plan.class); break;
+                case TAG: itemView = makeHistoryItem(history, lang.tag(), CaseTag.class); break;
+                case CASE_STATE: itemView = makeHistoryItem(history, lang.issueState(), CaseState.class); break;
+                case CASE_MANAGER: itemView = makeHistoryItem(history, lang.issueManager(), EmployeeShortView.class); break;
+                case CASE_IMPORTANCE: itemView = makeHistoryItem(history, lang.issueImportance(), ImportanceLevel.class); break;
                 default: return;
             }
-            view.root().add(itemView);
+            historyItemsContainer.itemsContainer().add(itemView);
         }
     }
 
-    private AbstractCaseHistoryItemView makeHistoryItem(History history, Class<?> clazz) {
-        AbstractCaseHistoryItemView historyItem = caseHistoryItemProvider.get();
-
-        historyItem.setActivity(this);
-        historyItem.setInitiator(history.getInitiator());
+    private CaseHistoryItem makeHistoryItem(History history, String historyType, Class<?> clazz) {
+        CaseHistoryItem historyItem = caseHistoryItemProvider.get();
 
         historyItem.addedValueContainerVisibility().setVisible(En_HistoryAction.ADD.equals(history.getAction()));
         historyItem.changeContainerVisibility().setVisible(En_HistoryAction.CHANGE.equals(history.getAction()));
         historyItem.removedValueContainerVisibility().setVisible(En_HistoryAction.REMOVE.equals(history.getAction()));
+        historyItem.setHistoryType(historyType);
 
         if (En_HistoryAction.ADD.equals(history.getAction())) {
-            historyItem.setAddedValue(
-                    makeLink(clazz, history.getNewId(), history.getNewValue()),
-                    history.getNewValue()
+            historyItem.addedValueContainer().add(makeItem(
+                    history.getType(),
+                    history.getNewValue(),
+                    history.getNewColor(),
+                    makeLink(clazz, history.getNewId()))
             );
-            historyItem.setChangeInfoMessage(makeAddInfoMessage(history.getType()));
-            fillAddedValueColors(historyItem, history);
         }
 
         if (En_HistoryAction.CHANGE.equals(history.getAction())) {
-            historyItem.setOldValue(
-                    makeLink(clazz, history.getOldId(), history.getOldValue()),
-                    history.getOldValue()
-            );
-            historyItem.setNewValue(
-                    makeLink(clazz, history.getNewId(), history.getNewValue()),
-                    history.getNewValue()
-            );
-            historyItem.setChangeInfoMessage(makeChangeInfoMessage(history.getType()));
-            fillChangedValueColors(historyItem, history);
+            historyItem.oldValueContainer().add(makeItem(
+                    history.getType(),
+                    history.getOldValue(),
+                    history.getOldColor(),
+                    makeLink(clazz, history.getOldId())
+            ));
+
+            historyItem.newValueContainer().add(makeItem(
+                    history.getType(),
+                    history.getNewValue(),
+                    history.getNewColor(),
+                    makeLink(clazz, history.getNewId())
+            ));
         }
 
         if (En_HistoryAction.REMOVE.equals(history.getAction())) {
-            historyItem.setRemovedValue(
-                    makeLink(clazz, history.getOldId(), history.getOldValue()),
-                    history.getOldValue()
-            );
-            historyItem.setChangeInfoMessage(makeRemoveInfoMessage(history.getType()));
+            historyItem.removedValueContainer().add(makeItem(
+                    history.getType(),
+                    history.getOldValue(),
+                    history.getOldColor(),
+                    makeLink(clazz, history.getOldId())
+            ));
         }
-
-        historyItem.setDate(DateFormatter.formatDateTime(history.getDate()));
 
         return historyItem;
     }
 
-    private String makeLink(Class<?> clazz, Long id, String value) {
-        if (LinkUtils.isLinkNeeded(clazz)) {
-            return new Anchor(value, LinkUtils.makePreviewLink(clazz, id), "_blank")
-                    .toString();
-        } else {
-            return new InlineLabel(value).toString();
-        }
+    private String makeLink(Class<?> clazz, Long id) {
+        return LinkUtils.isLinkNeeded(clazz) ? LinkUtils.makePreviewLink(clazz, id) : null;
     }
 
-    private String makeAddInfoMessage(En_HistoryType type) {
-        switch (type) {
-            case PLAN: return lang.caseHistoryAddedPlan();
-            case TAG: return lang.caseHistoryAddedTag();
-            case CASE_STATE: return lang.caseHistoryChangedStateTo();
-            case CASE_MANAGER: return lang.caseHistoryChangedManagerTo();
-            case CASE_IMPORTANCE: return lang.caseHistoryChangedImportanceTo();
-            default: return null;
+    private Widget makeItem(En_HistoryType historyType, String name, String color, String link) {
+        if (En_HistoryType.CASE_STATE.equals(historyType)) {
+            CaseHistoryStateItemView caseHistoryStateItemView = caseHistoryStateItemViewProvider.get();
+            caseHistoryStateItemView.setName(name);
+            caseHistoryStateItemView.setColor(color);
+
+            return caseHistoryStateItemView;
         }
-    }
 
-    private String makeChangeInfoMessage(En_HistoryType type) {
-        switch (type) {
-            case CASE_STATE: return lang.caseHistoryChangedStateFrom();
-            case CASE_MANAGER: return lang.caseHistoryChangedManagerFrom();
-            case CASE_IMPORTANCE: return lang.caseHistoryChangedImportanceFrom();
-            default: return null;
+        if (En_HistoryType.CASE_IMPORTANCE.equals(historyType)) {
+            CaseHistoryImportanceItemView caseHistoryImportanceItemView = caseHistoryImportanceItemViewProvider.get();
+            caseHistoryImportanceItemView.setName(name);
+            caseHistoryImportanceItemView.setColor(color);
+
+            return caseHistoryImportanceItemView;
         }
-    }
 
-    private String makeRemoveInfoMessage(En_HistoryType type) {
-        switch (type) {
-            case PLAN: return lang.caseHistoryRemovedPlan();
-            case TAG: return lang.caseHistoryRemovedTag();
-            case CASE_MANAGER: return lang.caseHistoryRemovedManager();
-            default: return null;
+        if (En_HistoryType.TAG.equals(historyType)) {
+            CaseHistoryTagItemView caseHistoryTagItemView = caseHistoryTagItemViewProvider.get();
+            caseHistoryTagItemView.setName(name);
+            caseHistoryTagItemView.setColor(color);
+
+            return caseHistoryTagItemView;
         }
-    }
 
-    private void fillAddedValueColors(AbstractCaseHistoryItemView historyItem, History history) {
-        switch (history.getType()) {
-            case TAG: historyItem.setAddedValueColor(history.getNewColor());
+        if (En_HistoryType.CASE_MANAGER.equals(historyType) || En_HistoryType.PLAN.equals(historyType)) {
+            CaseHistorySimpleItemView caseHistorySimpleItemView = caseHistorySimpleItemViewProvider.get();
+            caseHistorySimpleItemView.setLink(name, link);
+
+            return caseHistorySimpleItemView;
         }
-    }
 
-    private void fillChangedValueColors(AbstractCaseHistoryItemView historyItem, History history) {
-
+        return null;
     }
 
     @Inject
     private AbstractCaseHistoryListView view;
     @Inject
-    private Provider<AbstractCaseHistoryItemView> caseHistoryItemProvider;
+    private Provider<CaseHistoryItemsContainer> caseHistoryItemsContainerProvider;
+    @Inject
+    private Provider<CaseHistoryItem> caseHistoryItemProvider;
+
+    @Inject
+    private Provider<CaseHistoryStateItemView> caseHistoryStateItemViewProvider;
+    @Inject
+    private Provider<CaseHistoryImportanceItemView> caseHistoryImportanceItemViewProvider;
+    @Inject
+    private Provider<CaseHistoryTagItemView> caseHistoryTagItemViewProvider;
+    @Inject
+    private Provider<CaseHistorySimpleItemView> caseHistorySimpleItemViewProvider;
 
     @Inject
     private PolicyService policyService;

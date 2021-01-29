@@ -6,7 +6,6 @@ import ru.protei.portal.ui.common.client.activity.actionbar.ActionBarActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
 import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListView;
 import ru.protei.portal.ui.common.client.activity.casecomment.list.CaseCommentListActivity;
-import ru.protei.portal.ui.common.client.activity.casehistory.item.AbstractCaseHistoryItemView;
 import ru.protei.portal.ui.common.client.activity.casehistory.list.AbstractCaseHistoryListView;
 import ru.protei.portal.ui.common.client.activity.casehistory.list.CaseHistoryListActivity;
 import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
@@ -54,7 +53,6 @@ import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.service.HomeCompanyService;
 import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemView;
 import ru.protei.portal.ui.common.client.view.casecomment.list.CaseCommentListView;
-import ru.protei.portal.ui.common.client.view.casehistory.item.CaseHistoryItemView;
 import ru.protei.portal.ui.common.client.view.casehistory.list.CaseHistoryListView;
 import ru.protei.portal.ui.common.client.view.caselink.item.CaseLinkItemView;
 import ru.protei.portal.ui.common.client.view.caselink.list.CaseLinkListView;
@@ -181,8 +179,6 @@ public class CommonClientModule extends AbstractGinModule {
 
         bind(CaseHistoryListActivity.class).asEagerSingleton();
         bind(AbstractCaseHistoryListView.class).to(CaseHistoryListView.class).in(Singleton.class);
-
-        bind(AbstractCaseHistoryItemView.class).to(CaseHistoryItemView.class);
 
         bind( ProjectSearchActivity.class ).asEagerSingleton();
         bind(AbstractProjectSearchView.class ).to( ProjectSearchView.class ).in( Singleton.class );

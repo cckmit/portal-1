@@ -29,6 +29,10 @@
                     <tab:pane.TabWidgetPane tabName="{lang.caseHistory}">
                         <g:HTMLPanel ui:field="historyContainer"/>
                     </tab:pane.TabWidgetPane>
+
+                    <tab:pane.TabWidgetPane tabName="Комменты с историей">
+                        <g:HTMLPanel ui:field="commentHistoryContainer"/>
+                    </tab:pane.TabWidgetPane>
                 </tab:TabWidget>
             </div>
         </div>

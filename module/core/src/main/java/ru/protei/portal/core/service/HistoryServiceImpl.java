@@ -128,7 +128,7 @@ public class HistoryServiceImpl implements HistoryService {
         Map<Long, String> importanceLevelIdToColor =
                 importanceLevelDAO.getImportanceLevelsByIds(preparedImportanceIds)
                         .stream()
-                        .collect(Collectors.toMap(importanceLevel -> importanceLevel.getId().longValue(), ImportanceLevel::getCode));
+                        .collect(Collectors.toMap(importanceLevel -> importanceLevel.getId().longValue(), ImportanceLevel::getColor));
 
         fillHistoriesWithSpecifiedColors(importanceHistories, importanceLevelIdToColor);
     }

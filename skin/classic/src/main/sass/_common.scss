@@ -4793,6 +4793,7 @@ table {
 .case-history {
   list-style: none;
   padding: 0;
+  font-size: 13px;
   .case-history-item-date {
     color: #999;
   }
@@ -4822,6 +4823,19 @@ table {
   overflow: hidden;
 }
 
+.history-time-icon {
+  margin-top: 8px;
+  float: right;
+}
+
+.history-item-removed-value {
+  text-decoration: line-through;
+}
+
+.history-state-item {
+  color: #5e5e5e;
+}
+
 .history-item-changed-value {
   float: left;
   .history-item-old-value, .history-item-new-value {
@@ -4841,12 +4855,17 @@ table {
   }
 }
 
-.colored-history-item {
+.history-tag-icon, .history-importance-icon {
   display: inline-block;
-  padding: 0 5px;
-  white-space: nowrap;
-  border-radius: .25em;
+  border-radius: 2px;
+  width: 18px;
+  height: 19px;
+  text-align: center;
+  line-height: 22px;
+  font-size: 10px;
+  font-weight: bold;
   position: relative;
+  bottom: 1px;
 }
 
 .fired {

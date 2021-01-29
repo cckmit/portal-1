@@ -46,6 +46,10 @@ public class IssueInfoWidget extends Composite {
         return historyContainer;
     }
 
+    public HasWidgets getCommentHistoryContainer() {
+        return commentHistoryContainer;
+    }
+
     public HasAttachments attachmentsListContainer() {
         return attachmentListContainer;
     }
@@ -99,6 +103,8 @@ public class IssueInfoWidget extends Composite {
     HTMLPanel commentsContainer;
     @UiField
     HTMLPanel historyContainer;
+    @UiField
+    HTMLPanel commentHistoryContainer;
     @Inject
     @UiField(provided = true)
     FullViewAttachmentList attachmentListContainer;
