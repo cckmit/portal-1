@@ -376,7 +376,7 @@ public abstract class IssueEditActivity implements
     }
 
     private void fireSuccessCopyNotify() {
-        fireEvent(new NotifyEvents.Show(lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS));
+        fireEvent(new NotifyEvents.Show(lang.copiedToClipboardSuccessfully(), NotifyEvents.NotifyType.SUCCESS));
     }
 
     private void fireErrorCopyNotify() {

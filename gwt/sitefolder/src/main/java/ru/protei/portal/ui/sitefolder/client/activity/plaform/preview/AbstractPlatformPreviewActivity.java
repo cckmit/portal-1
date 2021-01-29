@@ -8,4 +8,6 @@ public interface AbstractPlatformPreviewActivity extends Activity {
     void onFullScreenClicked();
 
     void onGoToIssuesClicked();
+
+    void onCopyPreviewLinkClicked();
 }

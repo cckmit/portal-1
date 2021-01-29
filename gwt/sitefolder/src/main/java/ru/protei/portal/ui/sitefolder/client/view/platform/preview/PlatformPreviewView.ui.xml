@@ -10,7 +10,10 @@
         <g:HTMLPanel ui:field="preview" styleName="preview site-folder card-body no-padding">
             <div class="card card-default no-border">
                 <div class="card-body">
-                    <h4 class="col-md-12 no-margin no-padding">
+                    <h4 class="col-md-12 copy-panel no-margin no-padding">
+                        <g:Anchor ui:field="copyPreviewLink" styleName="copy-button" >
+                            <i class="far fa-clone"/>
+                        </g:Anchor>
                         <g:Anchor ui:field="name" styleName="full-screen-link small" href="#"/>
                         <g:Button styleName="btn btn-xs btn-info pull-right" ui:field="openServersButton"
                                   text="{lang.siteFolderServers}"/>

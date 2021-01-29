@@ -965,6 +965,7 @@ public class DebugIds {
         interface PLATFORM {
             String PROJECT = "site-folder-platform-project";
             String COMPANY = "site-folder-platform-company";
+            String COPY_PREVIEW_LINK_BUTTON = "site-folder-platform-copy-preview-link-button";
             String NAME = "site-folder-platform-name";
             String MANAGER = "site-folder-platform-manager";
             String PARAMETERS = "site-folder-platform-parameters";
