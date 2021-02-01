@@ -23,6 +23,8 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
         attachmentContainer.setHiddenControls(true);
+
+        copyPreviewLink.getElement().setAttribute( "title", lang.siteFolderCopyPreviewLink() );
         ensureDebugIds();
     }
 
@@ -116,10 +118,19 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
         }
     }
 
+    @UiHandler("copyPreviewLink")
+    public void onCopyPreviewLinkClick(ClickEvent event) {
+        event.preventDefault();
+        if (activity != null) {
+            activity.onCopyPreviewLinkClicked();
+        }
+    }
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
+        copyPreviewLink.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.COPY_PREVIEW_LINK_BUTTON);
         name.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.NAME);
         openServersButton.ensureDebugId(DebugIds.SITE_FOLDER.SERVER.OPEN_BUTTON);
         comment.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.COMMENT);
@@ -138,6 +149,8 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
 
     @UiField
     HTMLPanel preview;
+    @UiField
+    Anchor copyPreviewLink;
     @UiField
     Anchor name;
     @UiField

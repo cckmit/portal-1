@@ -808,7 +808,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String appNavHeader();
 
-    String issueCopiedToClipboard();
+    String copiedToClipboardSuccessfully();
 
     String privacyTypePublic();
 
@@ -1749,6 +1749,8 @@ public interface Lang extends Messages, ContactItemLang {
     String siteFolderAppNotSaved();
 
     String siteFolderAppName();
+
+    String siteFolderCopyPreviewLink();
 
     String issueLinkIncorrectCrmNumberFormat();
 

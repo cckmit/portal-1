@@ -13,6 +13,7 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
+import ru.protei.portal.ui.common.client.util.ClipboardUtils;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
@@ -76,6 +77,28 @@ public abstract class PlatformPreviewActivity implements AbstractPlatformPreview
     public void onGoToIssuesClicked() {
         fireEvent(new SiteFolderPlatformEvents.Show(true));
     }
+
+    @Override
+    public void onCopyPreviewLinkClicked() {
+        copyToClipboardNotify(ClipboardUtils.copyToClipboard(LinkUtils.makePreviewLink(Platform.class, platformId)));
+    }
+
+    private void copyToClipboardNotify(Boolean success) {
+        if (success) {
+            fireSuccessCopyNotify();
+        } else {
+            fireErrorCopyNotify();
+        }
+    }
+
+    private void fireSuccessCopyNotify() {
+        fireEvent(new NotifyEvents.Show(lang.copiedToClipboardSuccessfully(), NotifyEvents.NotifyType.SUCCESS));
+    }
+
+    private void fireErrorCopyNotify() {
+        fireEvent( new NotifyEvents.Show( lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR ) );
+    }
+
 
     private void platformRequest(Long platformId, Consumer<Platform> consumer) {
         siteFolderController.getPlatform(platformId, new FluentCallback<Platform>().withSuccess(consumer));
