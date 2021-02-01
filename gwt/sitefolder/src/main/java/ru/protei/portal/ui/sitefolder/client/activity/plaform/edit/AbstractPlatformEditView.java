@@ -9,8 +9,6 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 public interface AbstractPlatformEditView extends IsWidget {
 
-    void setPlatformIndependentProjects(Boolean platformIndependentProjects);
-
     void setActivity(AbstractPlatformEditActivity activity);
 
     void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler);

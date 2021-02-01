@@ -41,10 +41,6 @@ public class ProjectButtonSelector
         this.defaultValue = defaultValue;
     }
 
-    public void setPlatformIndependentProject(Boolean platformIndependentProject) {
-        model.setPlatformIndependentProject(platformIndependentProject);
-    }
-
     public void setRequestByOnLoad(boolean requestByOnLoad) {
         this.requestByOnLoad = requestByOnLoad;
     }
