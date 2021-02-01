@@ -9,13 +9,15 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.*;
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.Report;
+import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.query.BaseQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.contractfilter.AbstractContractFilterView;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
@@ -24,6 +26,7 @@ import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectF
 import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectFilterView;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.client.service.ReportControllerAsync;
 import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidget;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
@@ -32,16 +35,21 @@ import ru.protei.portal.ui.common.client.widget.selector.company.SubcontractorCo
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
+import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
+import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.makeSearchStringFromCaseNumber;
 import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.searchCaseNumber;
+import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.fromDateRange;
 import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.toDateRange;
 import static ru.protei.portal.ui.report.client.util.AccessUtil.availableReportTypes;
 import static ru.protei.portal.ui.report.client.util.AccessUtil.canEdit;
@@ -77,8 +85,39 @@ public abstract class ReportCreateActivity implements Activity,
             fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
+        reportDto = null;
+
         showView();
         resetView();
+        fillSelectors();
+        presetCompanyAtFilter();
+        isSaving = false;
+
+    }
+
+    @Event(Type.FILL_CONTENT)
+    public void onEdit(ReportEvents.Edit event) {
+        if (!canEdit(policyService)) {
+            fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
+            return;
+        }
+
+        if (event.reportDto != null) {
+            fillEditView(event.reportDto);
+        } else {
+            reportController.getReport(event.reportId, new FluentCallback<ReportDto>()
+                    .withError(throwable -> {
+                        isSaving = false;
+                        defaultErrorHandler.accept(throwable);
+                    })
+                    .withSuccess(this::fillEditView));
+        }
+    }
+
+    private void fillEditView(ReportDto reportDto) {
+        this.reportDto = reportDto;
+        showView();
+        fillView(this.reportDto);
         fillSelectors();
         presetCompanyAtFilter();
         isSaving = false;
@@ -97,6 +136,7 @@ public abstract class ReportCreateActivity implements Activity,
     private void resetView() {
         view.name().setValue(null);
         view.reportType().setValue(availableReportTypes(policyService).get(0), true);
+        view.reportTypeEnable().setEnabled(true);
         view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
         view.additionalParams().setValue(null);
     }
@@ -132,6 +172,121 @@ public abstract class ReportCreateActivity implements Activity,
                     fireEvent(new ReportEvents.Show());
                 })
         );
+    }
+
+
+    private void fillView(ReportDto reportDto) {
+        Report report = reportDto.getReport();
+
+        view.reportTypeEnable().setEnabled(false);
+        view.reportType().setValue(report.getReportType());
+        onReportTypeChanged();
+
+        view.reportScheduledType().setValue(report.getScheduledType());
+        view.name().setValue(report.getName());
+
+        Set<En_ReportAdditionalParamType> additionalParams = new HashSet<>();
+        if (report.isWithDescription()) {
+            additionalParams.add(En_ReportAdditionalParamType.DESCRIPTION);
+        }
+        if (report.isWithTags()) {
+            additionalParams.add(En_ReportAdditionalParamType.TAGS);
+        }
+        if (report.isWithLinkedIssues()) {
+            additionalParams.add(En_ReportAdditionalParamType.LINKED_ISSUES);
+        }
+        if (report.isHumanReadable()) {
+            additionalParams.add(En_ReportAdditionalParamType.HUMAN_READABLE);
+        }
+        view.additionalParams().setValue(additionalParams);
+
+        BaseQuery query = reportDto.getQuery();
+        switch (report.getReportType()) {
+            case CASE_OBJECTS:
+            case CASE_TIME_ELAPSED:
+            case CASE_RESOLUTION_TIME: {
+                CaseQuery caseQuery = (CaseQuery)query;
+                if (caseQuery.isCheckImportanceHistory()) {
+                    additionalParams.add(En_ReportAdditionalParamType.IMPORTANCE_HISTORY);
+                }
+                fillFilter(caseQuery);
+                break;
+            }
+            case PROJECT: {
+                fillFilter((ProjectQuery)query);
+                break;
+            }
+            case CONTRACT: {
+                fillFilter((ContractQuery)query);
+                break;
+            }
+        }
+
+    }
+
+    private void fillFilter(CaseQuery query) {
+        filterController.getSelectorsParams(query, new RequestCallback<SelectorsParams>() {
+            @Override
+            public void onError(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(SelectorsParams selectorsParams) {
+                issueFilterWidget.getIssueFilterParams().fillFilterFields(query, selectorsParams);
+            }
+        });
+    }
+
+    private void fillFilter(ProjectQuery query) {
+        if (query.getCaseIds() != null) {
+            projectFilterView.searchPattern().setValue(makeSearchStringFromCaseNumber(query.getCaseIds()));
+        } else {
+            projectFilterView.searchPattern().setValue(query.getSearchString());
+        }
+
+        projectFilterView.states().setValue(query.getStates());
+        projectFilterView.regions().setValue(query.getRegions());
+        projectFilterView.headManagers().setValue(query.getHeadManagers());
+        projectFilterView.caseMembers().setValue(query.getCaseMembers());
+        projectFilterView.direction().setValue(query.getDirections());
+        projectFilterView.sortField().setValue(query.getSortField());
+        projectFilterView.sortDir().setValue(query.getSortDir() == En_SortDir.ASC);
+        projectFilterView.onlyMineProjects().setValue(query.getMemberId() != null);
+
+        projectFilterView.initiatorCompanies().setValue(
+                stream(query.getInitiatorCompanyIds()).map(EntityOption::new).collect(Collectors.toSet()));
+        projectFilterView.commentCreationRange().setValue(fromDateRange(query.getCommentCreationRange()));
+    }
+
+    private void fillFilter(ContractQuery query) {
+        contractFilterView.searchString().setValue(query.getSearchString());
+        contractFilterView.sortDir().setValue(query.getSortDir() ==  En_SortDir.ASC);
+        contractFilterView.sortField().setValue(query.getSortField());
+        contractFilterView.contractors().setValue(
+                stream(query.getContractorIds()).map(id -> {
+                    Contractor contractor = new Contractor();
+                    contractor.setId(id);
+                    return contractor;
+                }).collect(Collectors.toSet()));
+        contractFilterView.organizations().setValue(
+                stream(query.getOrganizationIds()).map(EntityOption::new).collect(Collectors.toSet()));
+        contractFilterView.managers().setValue(
+                stream(query.getManagerIds()).map(PersonShortView::new).collect(Collectors.toSet()));
+        contractFilterView.types().setValue(query.getTypes() == null? null : new HashSet<>(query.getTypes()));
+
+        if (query.getCaseTagsIds() == null) {
+            contractFilterView.tags().setValue(null);
+        } else {
+            contractFilterView.tags().setValue(
+                stream(query.getCaseTagsIds()).map(id -> id.equals(CrmConstants.CaseTag.NOT_SPECIFIED) ? null : new CaseTag(id)).collect(Collectors.toSet())
+            );
+        }
+        contractFilterView.states().setValue(query.getStates() == null ? null : new HashSet<>(query.getStates()));
+        contractFilterView.direction().setValue(query.getDirectionId() == null ? null : new ProductDirectionInfo(query.getDirectionId(), ""));
+        contractFilterView.kind().setValue(query.getKind());
+        contractFilterView.dateSigningRange().setValue(fromDateRange(query.getDateSigningRange()));
+        contractFilterView.dateValidRange().setValue(fromDateRange(query.getDateValidRange()));
     }
 
     private Report makeReport() {
@@ -481,9 +636,12 @@ public abstract class ReportCreateActivity implements Activity,
     CustomerCompanyModel customerCompanyModel;
     @Inject
     SubcontractorCompanyModel subcontractorCompanyModel;
+    @Inject
+    IssueFilterControllerAsync filterController;
 
     private boolean isSaving;
     private AppEvents.InitDetails initDetails;
+    private ReportDto reportDto;
 
     static public int LITTLE_OVER_YEAR_DAYS = 370;
 }

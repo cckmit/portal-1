@@ -1,9 +1,6 @@
 package ru.protei.portal.ui.report.client.activity.create;
 
-import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.HasVisibility;
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_ReportAdditionalParamType;
 import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.dict.En_ReportType;
@@ -16,6 +13,8 @@ public interface AbstractReportCreateView extends IsWidget {
     void setActivity(AbstractReportCreateActivity activity);
 
     HasValue<En_ReportType> reportType();
+
+    HasEnabled reportTypeEnable();
 
     HasValue<En_ReportScheduledType> reportScheduledType();
 

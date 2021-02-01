@@ -40,6 +40,11 @@ public class ReportCreateView extends Composite implements AbstractReportCreateV
     }
 
     @Override
+    public HasEnabled reportTypeEnable() {
+        return reportType;
+    }
+
+    @Override
     public HasValue<En_ReportScheduledType> reportScheduledType() {
         return scheduledType;
     }
