@@ -1117,6 +1117,28 @@ public class MailNotificationProcessor {
         }
     }
 
+    // ----------------------
+    // Education notification
+    // ----------------------
+
+    @EventListener
+    public void onEducationCreate(EducationCreateEvent event) {
+        // нужен Person
+        try {
+            NotificationEntry notifier = fetchNotificationEntryFromPerson(event.getPerson());
+
+            String subject = templateService.getEmployeeRegistrationEmployeeFeedbackEmailNotificationSubject();
+
+            String body = templateService.getEmployeeRegistrationEmployeeFeedbackEmailNotificationBody(
+                    event.getPerson().getDisplayName()
+            );
+
+            sendMail( notifier.getAddress(), subject, body, getFromPortalAddress() );
+        } catch (Exception e) {
+            log.warn( "Failed to sent  notification: {}", event.getPerson().getDisplayName(), e );
+        }
+    }
+
     // -----
     // Utils
     // -----

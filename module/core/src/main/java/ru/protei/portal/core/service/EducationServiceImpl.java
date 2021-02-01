@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.event.EducationCreateEvent;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_Privilege;
@@ -13,6 +14,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dict.En_Scope;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -42,6 +44,10 @@ public class EducationServiceImpl implements EducationService {
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
     @Autowired
     PolicyService policyService;
+    @Autowired
+    EventPublisherService publisherService;
+    @Autowired
+    PersonDAO personDAO;
 
     @Override
     public Result<List<EducationWallet>> getAllWallets(AuthToken token) {
@@ -100,6 +106,11 @@ public class EducationServiceImpl implements EducationService {
                     return attendance;
                 })
                 .collect(Collectors.toList()));
+
+        // todo создать Person. Надо будет взять департамент у данного пользователя, получит руководителя, в отдельном методе создать записи
+        Person initiator = personDAO.get(7925L);
+        jdbcManyRelationsHelper.fill(initiator, Company.Fields.CONTACT_ITEMS);
+        publisherService.publishEvent(new EducationCreateEvent(this, initiator, entry.getId()));
 
         return ok(entry);
     }
