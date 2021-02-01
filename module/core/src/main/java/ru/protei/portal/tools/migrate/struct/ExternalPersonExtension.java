@@ -7,6 +7,8 @@ import ru.protei.portal.core.model.ent.LegacyEntity;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 
+import java.util.Date;
+
 /**
  * Created by turik on 08.09.16.
  */
@@ -26,6 +28,7 @@ public class ExternalPersonExtension implements LegacyEntity {
     private String actualAddress;
     private String officialAddress;
     private Boolean isRetired;
+    private Date retireDate;
     private String ipAddress;
 
     private String inn = "";
@@ -56,6 +59,7 @@ public class ExternalPersonExtension implements LegacyEntity {
         setActualAddress (contactInfoFacade.getHomeAddress () == null ? "" : contactInfoFacade.getHomeAddress ());
         setOfficialAddress (contactInfoFacade.getLegalAddress() == null ? "" : contactInfoFacade.getLegalAddress());
         setRetired (person.isFired ());
+        setRetireDate (person.isFired() ? person.getFireDate() : null);
         setIpAddress (person.getIpAddress () == null ? "" : person.getIpAddress ());
     }
 
@@ -271,7 +275,15 @@ public class ExternalPersonExtension implements LegacyEntity {
         this.educationDocument = educationDocument;
     }
 
+    @Column(name="dRetire")
+    public Date getRetireDate() {
+        return retireDate;
+    }
 
+    @Column(name="dRetire")
+    public void setRetireDate(Date retireDate) {
+        this.retireDate = retireDate;
+    }
 
     public boolean isFired () {
         return this.isRetired != null && this.isRetired.booleanValue();
