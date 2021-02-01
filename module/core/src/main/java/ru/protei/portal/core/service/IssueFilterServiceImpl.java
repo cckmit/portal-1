@@ -96,7 +96,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
 
         List<Long> companyIds = collectCompanyIds(caseQuery);
         if (!isEmpty(companyIds)) {
-            Result<List<EntityOption>> result = companyService.companyOptionListByIds( filterToList(companyIds, Objects::nonNull ));
+            Result<List<EntityOption>> result = companyService.companyOptionListByIds( token, filterToList(companyIds, Objects::nonNull ));
             if (result.isOk()) {
                 selectorsParams.setCompanyEntityOptions(result.getData());
             } else {

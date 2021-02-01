@@ -91,7 +91,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<List<EntityOption>> companyOptionListIgnorePrivileges(CompanyQuery query) {
+    public Result<List<EntityOption>> companyOptionListIgnorePrivileges(AuthToken token, CompanyQuery query) {
         List<Company> list = companyDAO.listByQuery(query);
 
         if (list == null) {
@@ -102,7 +102,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<List<EntityOption>> companyOptionListByIds( List<Long> ids ) {
+    public Result<List<EntityOption>> companyOptionListByIds(AuthToken token, List<Long> ids ) {
         List<Company> list = companyDAO.getListByKeys(ids);
 
         if (list == null)
@@ -114,7 +114,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<List<EntityOption>> subcontractorOptionListByCompanyIds(Collection<Long> companyIds, boolean isActive) {
+    public Result<List<EntityOption>> subcontractorOptionListByCompanyIds(AuthToken token, Collection<Long> companyIds, boolean isActive) {
 
         if (CollectionUtils.isEmpty(companyIds)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -151,7 +151,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<List<EntityOption>> companyOptionListBySubcontractorIds(Collection<Long> subcontractorIds, boolean isActive) {
+    public Result<List<EntityOption>> companyOptionListBySubcontractorIds(AuthToken token, Collection<Long> subcontractorIds, boolean isActive) {
 
         if (CollectionUtils.isEmpty(subcontractorIds)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -184,7 +184,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<List<CompanySubscription>> getCompanySubscriptions( Long companyId ) {
+    public Result<List<CompanySubscription>> getCompanySubscriptions( AuthToken token, Long companyId ) {
         if ( companyId == null ) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -238,7 +238,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<List<EntityOption>> groupOptionList() {
+    public Result<List<EntityOption>> groupOptionList(AuthToken token) {
         List<CompanyGroup> list = companyGroupDAO.getListByQuery(new CompanyGroupQuery(null, En_SortField.group_name, En_SortDir.ASC));
 
         if (list == null)
@@ -250,14 +250,14 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<List<CompanyGroup>> groupList( CompanyGroupQuery query) {
+    public Result<List<CompanyGroup>> groupList(AuthToken token, CompanyGroupQuery query) {
         return Result.ok(
                 companyGroupDAO.getListByQuery(query)
         );
     }
 
     @Override
-    public Result<List<En_CompanyCategory>> categoryOptionList( boolean hasOfficial) {
+    public Result<List<En_CompanyCategory>> categoryOptionList(AuthToken token, boolean hasOfficial) {
 
         List<En_CompanyCategory> list;
 
@@ -374,7 +374,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<Boolean> isCompanyNameExists( String name, Long excludeId) {
+    public Result<Boolean> isCompanyNameExists(AuthToken token, String name, Long excludeId) {
 
         if (name == null || name.trim().isEmpty())
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -383,7 +383,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<Boolean> isGroupNameExists( String name, Long excludeId) {
+    public Result<Boolean> isGroupNameExists(AuthToken token, String name, Long excludeId) {
 
         if (name == null || name.trim().isEmpty())
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -399,7 +399,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<List<CompanyImportanceItem>> getCompanyImportanceItems(Long companyId) {
+    public Result<List<CompanyImportanceItem>> getCompanyImportanceItems(AuthToken token, Long companyId) {
         List<CompanyImportanceItem> result = companyImportanceItemDAO.getSortedImportanceLevels(companyId);
         return ok(result);
     }

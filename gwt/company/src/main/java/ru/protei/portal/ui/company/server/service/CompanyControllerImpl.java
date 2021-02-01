@@ -50,10 +50,11 @@ public class CompanyControllerImpl implements CompanyController {
     public List< CompanyGroup > getCompanyGroups( String searchPattern ) throws RequestFailedException {
 
         log.info("getCompanyGroups: searchPattern={}", searchPattern);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
         CompanyGroupQuery query = new CompanyGroupQuery( searchPattern, En_SortField.group_name, En_SortDir.ASC );
 
-        Result< List<CompanyGroup> > result = companyService.groupList(query);
+        Result< List<CompanyGroup> > result = companyService.groupList(token, query);
 
         if (result.isError())
             throw new RequestFailedException(result.getStatus());
@@ -106,8 +107,9 @@ public class CompanyControllerImpl implements CompanyController {
     public Boolean isCompanyNameExists( String name, Long excludeId ) throws RequestFailedException {
 
         log.info( "isCompanyNameExists(): name={} | excludeId={}", name, excludeId );
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<Boolean> response = companyService.isCompanyNameExists( name, excludeId );
+        Result<Boolean> response = companyService.isCompanyNameExists( token, name, excludeId );
 
         log.info( "isCompanyNameExists(): response.isOk()={} | response.getData() = {}", response.isOk(), response.getData() );
 
@@ -120,8 +122,9 @@ public class CompanyControllerImpl implements CompanyController {
     public Boolean isGroupNameExists(String name, Long excludeId) throws RequestFailedException {
 
         log.info( "isGroupNameExists(): name={} | excludeId={}", name, excludeId );
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<Boolean> response = companyService.isGroupNameExists(name, excludeId);
+        Result<Boolean> response = companyService.isGroupNameExists(token, name, excludeId);
 
         log.info( "isGroupNameExists(): response.isOk()={} | response.getData() = {}", response.isOk(), response.getData() );
 
@@ -179,8 +182,9 @@ public class CompanyControllerImpl implements CompanyController {
     @Override
     public List<EntityOption> getSubcontractorOptionList(Long companyId, boolean isActive) throws RequestFailedException {
         log.info("getSubcontractorOptionList(): companyId={}, isActive={}", companyId, isActive);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<List<EntityOption>> result = companyService.subcontractorOptionListByCompanyIds(setOf(companyId), isActive);
+        Result<List<EntityOption>> result = companyService.subcontractorOptionListByCompanyIds(token, setOf(companyId), isActive);
 
         log.info("getSubcontractorOptionList(): {}", result.isOk() ? "ok" : result.getStatus());
 
@@ -193,8 +197,9 @@ public class CompanyControllerImpl implements CompanyController {
     @Override
     public List<EntityOption> getInitiatorOptionList(Long subcontractorId, boolean isActive) throws RequestFailedException {
         log.info("getInitiatorOptionList(): subcontractorId={}, isActive={}", subcontractorId, isActive);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<List<EntityOption>> result = companyService.companyOptionListBySubcontractorIds(setOf(subcontractorId), isActive);
+        Result<List<EntityOption>> result = companyService.companyOptionListBySubcontractorIds(token, setOf(subcontractorId), isActive);
 
         log.info("getInitiatorOptionList(): {}", result.isOk() ? "ok" : result.getStatus());
 
@@ -209,7 +214,7 @@ public class CompanyControllerImpl implements CompanyController {
         log.info( "getCompanyOptionListIgnorePrivileges(): query={}", query );
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result< List< EntityOption > > result = companyService.companyOptionListIgnorePrivileges(query);
+        Result< List< EntityOption > > result = companyService.companyOptionListIgnorePrivileges(token, query);
 
         log.info( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 
@@ -223,8 +228,9 @@ public class CompanyControllerImpl implements CompanyController {
     public List< EntityOption > getGroupOptionList() throws RequestFailedException {
 
         log.info( "getGroupOptionList()" );
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result< List< EntityOption > > result = companyService.groupOptionList();
+        Result< List< EntityOption > > result = companyService.groupOptionList(token);
 
         log.info( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 
@@ -243,7 +249,7 @@ public class CompanyControllerImpl implements CompanyController {
         Set<UserRole> availableRoles = token.getRoles();
         boolean hasOfficial = policyService.hasPrivilegeFor(En_Privilege.OFFICIAL_VIEW, availableRoles);
 
-        Result< List< En_CompanyCategory > > result = companyService.categoryOptionList(hasOfficial);
+        Result< List< En_CompanyCategory > > result = companyService.categoryOptionList(token, hasOfficial);
 
         log.info( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 
@@ -256,8 +262,9 @@ public class CompanyControllerImpl implements CompanyController {
     @Override
     public List< CompanySubscription > getCompanySubscription( Long companyId ) throws RequestFailedException {
         log.info( "getCompanySubscription()" );
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result< List< CompanySubscription > > result = companyService.getCompanySubscriptions( companyId );
+        Result< List< CompanySubscription > > result = companyService.getCompanySubscriptions( token, companyId );
 
         if ( result.isError() ) {
             throw new RequestFailedException( result.getStatus() );
@@ -290,7 +297,9 @@ public class CompanyControllerImpl implements CompanyController {
     @Override
     public List<CompanyImportanceItem> getCompanyImportanceItems(Long companyId) throws RequestFailedException {
         log.info("getCompanyImportanceItems() companyId={}", companyId);
-        return checkResultAndGetData(companyService.getCompanyImportanceItems(companyId));
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        return checkResultAndGetData(companyService.getCompanyImportanceItems(token,companyId));
     }
 
     @Autowired
