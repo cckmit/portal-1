@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.sitefolder.client.activity.plaform.preview;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -81,7 +80,7 @@ public abstract class PlatformPreviewActivity implements AbstractPlatformPreview
 
     @Override
     public void onCopyPreviewLinkClicked() {
-        copyToClipboardNotify(ClipboardUtils.copyToClipboard(GWT.getHostPageBaseURL() + "#sfplatform_preview:id=" + platformId));
+        copyToClipboardNotify(ClipboardUtils.copyToClipboard(LinkUtils.makePreviewLink(Platform.class, platformId)));
     }
 
     private void copyToClipboardNotify(Boolean success) {

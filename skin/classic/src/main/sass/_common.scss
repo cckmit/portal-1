@@ -3948,6 +3948,7 @@ label {
 
   &:hover {
     .copy-button {
+      cursor: pointer;
       opacity: 1;
     }
   }
@@ -3980,6 +3981,7 @@ label {
 
   &:hover {
     .copy-issue-number-and-name {
+      cursor: pointer;
       opacity: 1;
     }
   }
