@@ -191,14 +191,14 @@ public class RegionControllerImpl implements RegionController {
     }
 
     @Override
-    public SelectorsParams getSelectorsParams(ProjectQuery projectQuery) throws RequestFailedException {
-        log.info("getSelectorsParams, projectQuery: {}", projectQuery );
+    public SelectorsParams getSelectorsParams(ProjectQuery query) throws RequestFailedException {
+        log.info("getSelectorsParams, projectQuery: {}", query);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<SelectorsParams> response = projectService.getSelectorsParams( token, projectQuery );
+        Result<SelectorsParams> response = projectService.getSelectorsParams( token, query );
 
-        log.info("getSelectorsParams, id: {}, response: {} ", projectQuery, response.isError() ? "error" : response.getData());
+        log.info("getSelectorsParams, id: {}, response: {} ", query, response.isError() ? "error" : response.getData());
 
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );

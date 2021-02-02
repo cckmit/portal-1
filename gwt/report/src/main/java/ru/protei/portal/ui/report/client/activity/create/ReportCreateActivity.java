@@ -27,10 +27,7 @@ import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectF
 import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectFilterView;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
-import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
-import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
-import ru.protei.portal.ui.common.client.service.ReportControllerAsync;
+import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidget;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CustomerCompanyModel;
@@ -297,6 +294,8 @@ public abstract class ReportCreateActivity implements Activity,
                     contractor.setId(id);
                     return contractor;
                 }).collect(Collectors.toSet()));
+        contractFilterView.curators().setValue(
+                stream(query.getManagerIds()).map(PersonShortView::new).collect(Collectors.toSet()));
         contractFilterView.organizations().setValue(
                 stream(query.getOrganizationIds()).map(EntityOption::new).collect(Collectors.toSet()));
         contractFilterView.managers().setValue(
@@ -315,6 +314,28 @@ public abstract class ReportCreateActivity implements Activity,
         contractFilterView.kind().setValue(query.getKind());
         contractFilterView.dateSigningRange().setValue(fromDateRange(query.getDateSigningRange()));
         contractFilterView.dateValidRange().setValue(fromDateRange(query.getDateValidRange()));
+
+        contractController.getSelectorsParams(query, new RequestCallback<SelectorsParams>() {
+            @Override
+            public void onError(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(SelectorsParams selectorsParams) {
+                Set<Contractor> contractors = applyContractors(selectorsParams.getContractors(), query.getContractorIds());
+                contractFilterView.contractors().setValue(contractors);
+                Set<PersonShortView> curators = applyPersons(selectorsParams.getPersonShortViews(), query.getCuratorIds());
+                contractFilterView.curators().setValue(curators);
+                Set<EntityOption> organisations = applyCompanies(selectorsParams.getCompanyEntityOptions(), query.getOrganizationIds());
+                contractFilterView.organizations().setValue(organisations);
+                Set<PersonShortView> managers = applyPersons(selectorsParams.getPersonShortViews(), query.getManagerIds());
+                contractFilterView.managers().setValue(managers);
+                if (query.getDirectionId() != null) {
+                    contractFilterView.direction().setValue(selectorsParams.getProductDirectionInfos().get(0));
+                }
+            }
+        });
     }
 
     private Set<EntityOption> applyCompanies(Collection<EntityOption> companies, Collection<Long> companyIds) {
@@ -323,6 +344,21 @@ public abstract class ReportCreateActivity implements Activity,
                         stream(companyIds).anyMatch(ids -> ids.equals(company.getId())))
                 .collect(Collectors.toSet());
     }
+
+    private Set<PersonShortView> applyPersons(List<PersonShortView> personShortViews, List<Long> personIds) {
+        return stream(personShortViews)
+                .filter(personShortView ->
+                        stream(personIds).anyMatch(ids -> ids.equals(personShortView.getId())))
+                .collect(Collectors.toSet());
+    }
+
+    private Set<Contractor> applyContractors(Collection<Contractor> contractors, Collection<Long> ids) {
+        return stream(contractors)
+                .filter(contractor ->
+                        stream(ids).anyMatch(id -> id.equals(contractor.getId())))
+                .collect(Collectors.toSet());
+    }
+
 
     private Report makeReport() {
         Report report = new Report();
@@ -619,6 +655,7 @@ public abstract class ReportCreateActivity implements Activity,
         query.setSortDir(contractFilterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
         query.setSortField(contractFilterView.sortField().getValue());
         query.setContractorIds(collectIds(contractFilterView.contractors().getValue()));
+        query.setCuratorIds(collectIds(contractFilterView.curators().getValue()));
         query.setOrganizationIds(collectIds(contractFilterView.organizations().getValue()));
         query.setManagerIds(collectIds(contractFilterView.managers().getValue()));
         query.setTypes(nullIfEmpty(listOfOrNull(contractFilterView.types().getValue())));
@@ -677,6 +714,8 @@ public abstract class ReportCreateActivity implements Activity,
     CaseStateControllerAsync caseStateController;
     @Inject
     RegionControllerAsync regionController;
+    @Inject
+    ContractControllerAsync contractController;
 
     private boolean isSaving;
     private AppEvents.InitDetails initDetails;

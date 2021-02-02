@@ -44,5 +44,5 @@ public interface RegionControllerAsync {
 
     void getProjectLeader(Long projectId, AsyncCallback<PersonShortView> async);
 
-    void getSelectorsParams(ProjectQuery caseQuery, AsyncCallback<SelectorsParams> async );
+    void getSelectorsParams(ProjectQuery projectQuery, AsyncCallback<SelectorsParams> async);
 }

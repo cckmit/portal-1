@@ -47,5 +47,5 @@ public interface RegionController extends RemoteService {
 
     PersonShortView getProjectLeader(Long projectId) throws RequestFailedException;
 
-    SelectorsParams getSelectorsParams(ProjectQuery caseQuery ) throws RequestFailedException;
+    SelectorsParams getSelectorsParams(ProjectQuery query) throws RequestFailedException;
 }

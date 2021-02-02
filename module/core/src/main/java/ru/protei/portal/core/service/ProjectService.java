@@ -101,5 +101,5 @@ public interface ProjectService {
 
     Result<Boolean> notifyExpiringProjectTechnicalSupportValidity(LocalDate now);
 
-    Result<SelectorsParams> getSelectorsParams(AuthToken token, ProjectQuery projectQuery);
+    Result<SelectorsParams> getSelectorsParams(AuthToken token, ProjectQuery query);
 }
