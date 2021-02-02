@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.Project;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Report;
@@ -98,7 +99,7 @@ public class ReportProjectTest extends BaseServiceTest {
 
         ProjectQuery query = new ProjectQuery();
         query.setSearchString(REPORT_PROJECT_TEST);
-        query.setStates(new HashSet<>(Collections.singletonList(En_RegionState.FINISHED)));
+        query.setStates(new HashSet<>(Collections.singletonList(new CaseState(En_RegionState.FINISHED.getId()))));
         Report report = new Report();
         report.setQuery(serializeAsJson(query));
         report.setLocale("ru");
@@ -126,7 +127,7 @@ public class ReportProjectTest extends BaseServiceTest {
 
         ProjectQuery query = new ProjectQuery();
         query.setSearchString(REPORT_PROJECT_TEST);
-        query.setStates(new HashSet<>(Collections.singletonList(En_RegionState.UNKNOWN)));
+        query.setStates(new HashSet<>(Collections.singletonList(new CaseState(En_RegionState.UNKNOWN.getId()))));
         Report report = new Report();
         report.setQuery(serializeAsJson(query));
         report.setLocale("ru");
@@ -154,7 +155,7 @@ public class ReportProjectTest extends BaseServiceTest {
 
         ProjectQuery query = new ProjectQuery();
         query.setSearchString(REPORT_PROJECT_TEST);
-        query.setStates(new HashSet<>(Collections.singletonList(En_RegionState.PRESALE)));
+        query.setStates(new HashSet<>(Collections.singletonList(new CaseState(En_RegionState.PRESALE.getId()))));
         Report report = new Report();
         report.setQuery(serializeAsJson(query));
         report.setLocale("ru");
@@ -203,7 +204,7 @@ public class ReportProjectTest extends BaseServiceTest {
 
         ProjectQuery query = new ProjectQuery();
         query.setSearchString(REPORT_PROJECT_TEST);
-        query.setStates(new HashSet<>(Collections.singletonList(En_RegionState.UNKNOWN)));
+        query.setStates(new HashSet<>(Collections.singletonList(new CaseState(En_RegionState.UNKNOWN.getId()))));
         Report report = new Report();
         report.setQuery(serializeAsJson(query));
         report.setLocale("ru");

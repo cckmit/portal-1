@@ -11,9 +11,9 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DateIntervalType;
-import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectFilterActivity;
@@ -30,10 +30,7 @@ import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateBtnGro
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedSelectorRangePicker;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Представление фильтра проектов
@@ -67,7 +64,7 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
     }
 
     @Override
-    public HasValue<Set<En_RegionState>> states() {
+    public HasValue<Set<CaseState>> states() {
         return states;
     }
 
@@ -148,11 +145,6 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
         footer.removeClassName("card-footer");
     }
 
-    @Override
-    public void fillStatesButtons(Map<En_RegionState, String> iconsColorsMap) {
-        states.fillButtons(iconsColorsMap);
-    }
-
     @UiHandler( "resetBtn" )
     public void onResetClicked ( ClickEvent event ) {
         if ( activity != null ) {
@@ -169,7 +161,7 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
     }
 
     @UiHandler( "states" )
-    public void onStateSelected( ValueChangeEvent<Set<En_RegionState>> event ) {
+    public void onStateSelected( ValueChangeEvent<Set<CaseState>> event ) {
         if ( activity != null ) {
             activity.onProjectFilterChanged();
         }
