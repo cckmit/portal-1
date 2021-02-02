@@ -37,11 +37,6 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
     }
 
     @Override
-    public void setPlatformIndependentProjects(Boolean platformIndependentProjects) {
-        project.setPlatformIndependentProject(platformIndependentProjects);
-    }
-
-    @Override
     public void setActivity(AbstractPlatformEditActivity activity) {
         this.activity = activity;
         attachmentContainer.setActivity(activity);

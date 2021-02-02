@@ -231,10 +231,6 @@ public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements Proje
                 }
             }
 
-            if (query.getPlatformIndependentProject() != null && query.getPlatformIndependentProject()) {
-                condition.append(" and project.id NOT IN (SELECT platform.project_id FROM platform WHERE platform.project_id IS NOT NULL)");
-            }
-
             if (isNotEmpty(query.getInitiatorCompanyIds())) {
                 condition.append(" and initiator_company in ").append(makeInArg(query.getInitiatorCompanyIds(), false));
             }

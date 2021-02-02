@@ -41,8 +41,6 @@ public class ProjectQuery extends BaseQuery {
 
     private Date createdTo;
 
-    private Boolean platformIndependentProject;
-
     private Set<Long> initiatorCompanyIds;
 
     private DateRange commentCreationRange;
@@ -159,14 +157,6 @@ public class ProjectQuery extends BaseQuery {
         this.createdTo = createdTo;
     }
 
-    public Boolean getPlatformIndependentProject() {
-        return platformIndependentProject;
-    }
-
-    public void setPlatformIndependentProject(Boolean platformIndependentProject) {
-        this.platformIndependentProject = platformIndependentProject;
-    }
-
     public Set<EntityOption> getRegions() {
         return regions;
     }
@@ -267,7 +257,6 @@ public class ProjectQuery extends BaseQuery {
                 customerType != null ||
                 createdFrom != null ||
                 createdTo != null ||
-                platformIndependentProject != null ||
                 pauseDateGreaterThan != null ||
                 deleted != null ||
                 CollectionUtils.isNotEmpty(technicalSupportExpiresInDays) ||
@@ -290,7 +279,6 @@ public class ProjectQuery extends BaseQuery {
                 ", customerType=" + customerType +
                 ", createdFrom=" + createdFrom +
                 ", createdTo=" + createdTo +
-                ", platformIndependentProject=" + platformIndependentProject +
                 ", initiatorCompanyIds=" + initiatorCompanyIds +
                 ", commentCreationRange=" + commentCreationRange +
                 ", pauseDateGreaterThan=" + pauseDateGreaterThan +
@@ -318,7 +306,6 @@ public class ProjectQuery extends BaseQuery {
                 customerType == that.customerType &&
                 Objects.equals(createdFrom, that.createdFrom) &&
                 Objects.equals(createdTo, that.createdTo) &&
-                Objects.equals(platformIndependentProject, that.platformIndependentProject) &&
                 Objects.equals(initiatorCompanyIds, that.initiatorCompanyIds) &&
                 Objects.equals(commentCreationRange, that.commentCreationRange) &&
                 Objects.equals(pauseDateGreaterThan, that.pauseDateGreaterThan) &&
@@ -332,7 +319,7 @@ public class ProjectQuery extends BaseQuery {
     public int hashCode() {
         return Objects.hash(caseIds, states, regions, headManagers, caseMembers, directions,
                 districtIds, memberId, productIds, customerType, createdFrom, createdTo,
-                platformIndependentProject, initiatorCompanyIds, commentCreationRange, pauseDateGreaterThan, deleted,
+                initiatorCompanyIds, commentCreationRange, pauseDateGreaterThan, deleted,
                 subcontractorIds, technicalSupportExpiresInDays, isActive);
     }
 }
