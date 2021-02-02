@@ -222,6 +222,7 @@ public class WorkerController {
 
         try {
             EmployeeQuery query = new EmployeeQuery(Tm_SqlQueryHelper.makeLikeArgEx(expr.trim()), En_SortField.person_full_name, En_SortDir.ASC);
+            query.setDeleted(false);
             stream(personDAO.getEmployees(query))
                 .map(person -> {
                     jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
