@@ -4794,8 +4794,42 @@ table {
   list-style: none;
   padding: 0;
   font-size: 13px;
+
   .case-history-item-date {
-    color: #999;
+    margin-left: 5px;
+  }
+
+  .case-history-item-container {
+    line-height: 24px;
+    margin-bottom: 10px;
+
+    &.without-initiator {
+      margin-top: 1em;
+
+      .case-history-icon {
+        display: none;
+      }
+
+      .case-history-initiator {
+        display: none;
+      }
+
+      .case-history-item-date {
+        margin-left: 2.8em;
+      }
+    }
+
+    > div {
+      padding-left: 1em;
+    }
+
+    .case-history-initiator {
+      margin-left: 2.8em;
+    }
+
+    .case-history-item .row div {
+      padding-left: 4em;
+    }
   }
 }
 
@@ -4810,12 +4844,12 @@ table {
   }
 }
 
-.history-item-history-type {
+.case-history-item-history-type {
   float: left;
   margin-right: 10px;
 }
 
-.history-item-added-value, .history-item-removed-value {
+.case-history-item-added-value, .case-history-item-removed-value {
   white-space: nowrap;
   float: left;
   max-width: 90%;
@@ -4823,31 +4857,29 @@ table {
   overflow: hidden;
 }
 
-.history-time-icon {
-  margin-top: 8px;
-  float: right;
+.case-history-time-icon {
+  margin-top: 4px;
 }
 
-.history-item-removed-value {
+.case-history-item-removed-value {
   text-decoration: line-through;
 }
 
-.history-state-item {
+.case-history-state-item {
   color: #5e5e5e;
 }
 
-.history-item-changed-value {
+.case-history-item-changed-value {
   float: left;
-  .history-item-old-value, .history-item-new-value {
+  .case-history-item-old-value, .case-history-item-new-value {
     white-space: nowrap;
     float: left;
-    max-width: 60%;
     text-overflow: ellipsis;
     overflow: hidden;
     font-weight: bold;
   }
 
-  .history-arrow-icon {
+  .case-history-arrow-icon {
     float: left;
     margin-left: 5px;
     margin-right: 5px;
@@ -4855,7 +4887,7 @@ table {
   }
 }
 
-.history-tag-icon, .history-importance-icon {
+.case-history-tag-icon, .case-history-importance-icon {
   display: inline-block;
   border-radius: 2px;
   width: 18px;
@@ -5303,4 +5335,34 @@ table {
 .p-x-5 {
   padding-left: 5px;
   padding-right: 5px;
+}
+
+.chats.case-history {
+  .timeline {
+    padding-top: 0;
+    padding-bottom: 0;
+    &::before {
+      top: 25px;
+      height: 100%;
+      background-color: #ddd;
+    }
+    .timeline-point {
+      top: auto;
+      background-color: white;
+      border-color: #ddd;
+      left: -1px;
+      &.case-history-icon {
+        top: 5px;
+        width: 30px;
+        height: 30px;
+        background-color: white;
+        border-color: #ddd;
+        left: 4px;
+        .fas.fa-history {
+          margin-left: 4px;
+          margin-top: 7px
+        }
+      }
+    }
+  }
 }

@@ -166,25 +166,24 @@ public class CaseCommentListView
 
     @Override
     public void clearCommentsContainer() {
-        commentsContainer.clear();
-        commentsContainer.add( newMessage );
+        itemsContainer.clear();
     }
 
     @Override
-    public void addCommentToFront(IsWidget comment) {
-        commentsContainer.insert( comment.asWidget(), 1 );
+    public void addItemToFront(IsWidget item) {
+        itemsContainer.insert(item.asWidget(), 0);
     }
 
     @Override
     public void replaceCommentView( IsWidget removed, IsWidget inserted ) {
-        int widgetIndex = commentsContainer.getWidgetIndex( removed );
-        commentsContainer.insert( inserted.asWidget(), widgetIndex);
-        commentsContainer.remove( widgetIndex + 1 );
+        int widgetIndex = itemsContainer.getWidgetIndex( removed );
+        itemsContainer.insert( inserted.asWidget(), widgetIndex);
+        itemsContainer.remove( widgetIndex + 1 );
     }
 
     @Override
     public void removeComment(IsWidget comment) {
-        commentsContainer.remove( comment.asWidget() );
+        itemsContainer.remove( comment.asWidget() );
     }
 
     @Override
@@ -311,6 +310,8 @@ public class CaseCommentListView
     MentioningTextArea comment;
     @UiField
     FlowPanel commentsContainer;
+    @UiField
+    FlowPanel itemsContainer;
     @Inject
     @UiField(provided = true)
     PrivacyTypeButtonSelector privacyType;

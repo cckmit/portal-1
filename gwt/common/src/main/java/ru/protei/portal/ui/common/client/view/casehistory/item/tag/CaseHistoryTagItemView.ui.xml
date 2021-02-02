@@ -2,7 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
     <g:HTMLPanel tag="span">
-        <span ui:field="icon" class="history-tag-icon"/>
+        <span ui:field="icon" class="case-history-tag-icon"/>
         <span ui:field="name"/>
     </g:HTMLPanel>
 </ui:UiBinder>

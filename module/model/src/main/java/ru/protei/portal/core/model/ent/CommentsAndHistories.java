@@ -30,6 +30,14 @@ public class CommentsAndHistories implements Serializable {
             this.id = history.getId();
             this.type = Type.HISTORY;
         }
+
+        public Long getId() {
+            return id;
+        }
+
+        public Type getType() {
+            return type;
+        }
     }
 
     public enum Type {

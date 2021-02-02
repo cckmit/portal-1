@@ -11,9 +11,8 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel ui:field="root">
-        <g:FlowPanel ui:field="commentsContainer" tag="ul" styleName="chats">
+        <g:FlowPanel ui:field="commentsContainer" tag="ul" styleName="chats case-history">
             <g:HTMLPanel tag="li" ui:field="newMessage" styleName="left new-message">
-
                 <g:HTMLPanel ui:field="messageBlock">
 
                     <div ui:field="newCommentUserImage" class="image">
@@ -95,6 +94,7 @@
                     </div>
                 </g:HTMLPanel>
             </g:HTMLPanel>
+            <g:FlowPanel ui:field="itemsContainer" styleName="timeline" tag="section"/>
         </g:FlowPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

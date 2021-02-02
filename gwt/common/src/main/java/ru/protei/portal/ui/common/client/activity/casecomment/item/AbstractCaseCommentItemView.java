@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.activity.casecomment.item;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
@@ -24,8 +25,6 @@ public interface AbstractCaseCommentItemView extends IsWidget {
 
     void setMessage(String value );
 
-    void setMine();
-
     void setStatus( String value );
 
     void setImportanceLevel( String importanceCode );
@@ -36,6 +35,8 @@ public interface AbstractCaseCommentItemView extends IsWidget {
 
     void enableReply(boolean isEnabled);
 
+    HasVisibility timeElapsedVisibility();
+
     void showAttachments(boolean isShow);
 
     HasAttachments attachmentContainer();
@@ -43,10 +44,6 @@ public interface AbstractCaseCommentItemView extends IsWidget {
     void hideOptions();
 
     void setIcon( String iconSrc );
-
-    void setTimeElapsed( String timeTypeString );
-
-    void clearElapsedTime();
 
     void setRemoteLinkNumber(String number);
 
@@ -61,4 +58,8 @@ public interface AbstractCaseCommentItemView extends IsWidget {
     void displayAddedAnimation();
 
     HasVisibility timeElapsedTypePopupVisibility();
+
+    HasVisibility timeElapsedInfoContainerVisibility();
+
+    void setTimeElapsedInfo(String timeElapsedInfo);
 }

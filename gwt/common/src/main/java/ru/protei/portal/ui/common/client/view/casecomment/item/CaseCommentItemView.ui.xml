@@ -5,16 +5,15 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel tag="li" ui:field="root" styleName="left">
-        <ul class="list-inline m-b-10">
-            <li ui:field="date" class="date-time"/>
+    <g:HTMLPanel tag="li" ui:field="root" styleName="timeline-block left">
+        <ul class="list-inline">
             <li ui:field="owner" class="name"/>
+            <li ui:field="date" class="date-time"/>
             <g:Anchor styleName="issue-link" ui:field="remoteLink" href="#"/>
             <i ui:field="privateType"/>
             <li ui:field="info" class="info hide p-l-5 p-r-5"/>
             <div class="d-inline">
-                <g:Label ui:field="timeElapsed" styleName="time-label" title="{lang.issueCommentElapsedTimeTypeChange}"/>
-                <popup:EditTimeElapsedTypePopup ui:field="timeElapsedTypePopup" visible="false" />
+                <popup:EditTimeElapsedTypePopup ui:field="timeElapsedTypePopup" visible="false"/>
             </div>
             <li ui:field="status"/>
             <li ui:field="options">
@@ -28,19 +27,27 @@
                     <g:Anchor href="javascript:;" ui:field="remove">
                         <i class="fas fa-trash"/>
                     </g:Anchor>
+                    <g:Anchor href="javascript:;" ui:field="timeElapsed">
+                        <i class="fas fa-clock"/>
+                    </g:Anchor>
                 </span>
             </li>
         </ul>
 
         <div ui:field="messageBlock" class="hide">
             <div class="meta">
-                <div class="image">
+                <div class="timeline-point image">
                     <img alt="" src="./images/user-icon-m.svg" ui:field="icon"/>
                 </div>
             </div>
 
             <div class="message" ui:field="messageContainer">
                 <g:HTMLPanel ui:field="message" styleName="markdown"/>
+                <g:HTMLPanel ui:field="timeElapsedInfoContainer" visible="false">
+                    <hr class="m-b-5"/>
+                    <i class="far fa-clock m-r-5"/>
+                    <g:HTMLPanel ui:field="timeElapsedInfo" tag="i"/>
+                </g:HTMLPanel>
                 <div class="attachment-block" ui:field="attachBlock">
                     <label style="font-size: 11px;font-weight: bold;">
                         <ui:text from="{lang.issueAttachments}"/>

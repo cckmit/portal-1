@@ -62,13 +62,7 @@ public class CaseCommentItemView
 
     @Override
     public void setOwner( String value ) {
-        if ( root.getStyleName().contains( "right" ) ) {
-            this.status.setInnerText( value );
-            this.status.removeClassName( "status" );
-            this.status.addClassName( "name" );
-        } else {
-            this.owner.setInnerText( value );
-        }
+        this.owner.setInnerText( value );
     }
 
     @Override
@@ -85,60 +79,28 @@ public class CaseCommentItemView
     }
 
     @Override
-    public void setMine() {
-        root.setStyleName( "right" );
-    }
-
-    @Override
     public void setStatus(String value) {
         String styleName = CaseStateUtils.makeStyleName(value);
-        if ( root.getStyleName().contains("right")) {
-            owner.removeClassName("name");
-            owner.addClassName("status");
-            owner.addClassName("case-" + styleName);
-            owner.setInnerText(value);
-            info.setInnerText(lang.issueCommentChangeStatusTo());
-            info.removeClassName("hide");
-        } else {
-            this.status.addClassName("case-" + styleName);
-            this.status.setInnerText(value);
-            info.setInnerText(lang.issueCommentChangeStatusTo());
-            info.removeClassName("hide");
-        }
+        this.status.addClassName("case-" + styleName);
+        this.status.setInnerText(value);
+        info.setInnerText(lang.issueCommentChangeStatusTo());
+        info.removeClassName("hide");
     }
 
     @Override
     public void setImportanceLevel(String importanceCode) {
-        if (root.getStyleName().contains("right")) {
-            owner.removeClassName("name");
-            owner.addClassName("status");
-            owner.addClassName("case-importance-" + importanceCode.toLowerCase());
-            owner.setInnerText(importanceCode);
-            info.setInnerText(lang.issueCommentChangeImportanceTo());
-            info.removeClassName("hide");
-        } else {
-            status.addClassName("case-importance-" + importanceCode.toLowerCase());
-            status.setInnerText(importanceCode);
-            info.setInnerText(lang.issueCommentChangeImportanceTo());
-            info.removeClassName("hide");
-        }
+        status.addClassName("case-importance-" + importanceCode.toLowerCase());
+        status.setInnerText(importanceCode);
+        info.setInnerText(lang.issueCommentChangeImportanceTo());
+        info.removeClassName("hide");
     }
 
     @Override
     public void setManagerInfo(String managerInfo) {
-        if (root.getStyleName().contains("right")) {
-            owner.removeClassName("name");
-            owner.addClassName("status");
-            owner.addClassName("name");
-            owner.setInnerText(managerInfo);
-            info.setInnerText(lang.issueCommentChangeManagerTo());
-            info.removeClassName("hide");
-        } else {
-            status.addClassName("name");
-            status.setInnerText(managerInfo);
-            info.setInnerText(lang.issueCommentChangeManagerTo());
-            info.removeClassName("hide");
-        }
+        status.addClassName("name");
+        status.setInnerText(managerInfo);
+        info.setInnerText(lang.issueCommentChangeManagerTo());
+        info.removeClassName("hide");
     }
 
     @Override
@@ -150,6 +112,11 @@ public class CaseCommentItemView
     @Override
     public void enableReply(boolean isEnabled) {
         reply.setVisible(isEnabled);
+    }
+
+    @Override
+    public HasVisibility timeElapsedVisibility() {
+        return timeElapsed;
     }
 
     @Override
@@ -173,16 +140,6 @@ public class CaseCommentItemView
     @Override
     public void setIcon( String iconSrc ) {
         this.icon.setSrc( iconSrc );
-    }
-
-    @Override
-    public void setTimeElapsed( String timeTypeString ) {
-        timeElapsed.setText(timeTypeString == null ? "" : timeTypeString);
-    }
-
-    @Override
-    public void clearElapsedTime() {
-        timeElapsed.setText("");
     }
 
     @Override
@@ -240,6 +197,16 @@ public class CaseCommentItemView
         return timeElapsedTypePopup;
     }
 
+    @Override
+    public HasVisibility timeElapsedInfoContainerVisibility() {
+        return timeElapsedInfoContainer;
+    }
+
+    @Override
+    public void setTimeElapsedInfo(String timeElapsedInfo) {
+        this.timeElapsedInfo.getElement().setInnerText(timeElapsedInfo);
+    }
+
     @UiHandler( "remove" )
     public void onRemoveClicked( ClickEvent event ) {
         event.preventDefault();
@@ -292,6 +259,10 @@ public class CaseCommentItemView
     @UiField
     HTMLPanel message;
     @UiField
+    HTMLPanel timeElapsedInfoContainer;
+    @UiField
+    HTMLPanel timeElapsedInfo;
+    @UiField
     Element privateType;
     @UiField
     Anchor remove;
@@ -305,7 +276,7 @@ public class CaseCommentItemView
     @UiField(provided = true)
     AttachmentList attachList;
     @UiField
-    Label timeElapsed;
+    Anchor timeElapsed;
     @UiField
     DivElement attachBlock;
     @UiField

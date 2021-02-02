@@ -6,10 +6,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.ent.Attachment;
-import ru.protei.portal.core.model.ent.CaseAttachment;
-import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.CaseLink;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.event.CaseCommentSavedClientEvent;
 import ru.protei.portal.core.model.event.CaseCommentRemovedClientEvent;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -179,7 +176,7 @@ public abstract class CaseCommentListActivity
                         }
 
                         itemViewToModel.put( newView, comment );
-                        view.addCommentToFront( newView );
+                        view.addItemToFront( newView );
                         newView.displayAddedAnimation();
                         updateCaseAttachment(Collections.emptyList(), comment.getCaseAttachments());
                     });
@@ -400,7 +397,7 @@ public abstract class CaseCommentListActivity
         tempAttachments.add(attach);
     }
 
-    private void fillView(List<CaseComment> comments){
+    private void fillView(List<CaseComment> comments) {
         itemViewToModel.clear();
         view.clearCommentsContainer();
         view.setNewCommentHidden(!isModifyEnabled);
@@ -409,6 +406,56 @@ public abstract class CaseCommentListActivity
         view.setCommentPlaceholder(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW) ?
                 lang.commentAddMessageMentionPlaceholder() : lang.commentAddMessagePlaceholder());
 
+        fillViewWithComments(view, comments);
+    }
+
+    public void fillView(CommentsAndHistories commentsAndHistories) {
+        itemViewToModel.clear();
+        view.clearCommentsContainer();
+        view.setNewCommentHidden(!isModifyEnabled);
+        view.setNewCommentDisabled(!isNewCommentEnabled);
+
+        view.setCommentPlaceholder(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW) ?
+                lang.commentAddMessageMentionPlaceholder() : lang.commentAddMessagePlaceholder());
+
+        List<CommentsAndHistories.CommentOrHistory> sortedCommentOrHistoryList
+                = commentsAndHistories.getSortedCommentOrHistoryList();
+
+        List<History> histories = new ArrayList<>();
+        List<CaseComment> comments = new ArrayList<>();
+
+        for (CommentsAndHistories.CommentOrHistory commentOrHistory : sortedCommentOrHistoryList) {
+            if (CommentsAndHistories.Type.COMMENT.equals(commentOrHistory.getType())) {
+                if (!histories.isEmpty()) {
+                    fireEvent(new CaseHistoryEvents.Fill(histories, view::addItemToFront));
+                    histories.clear();
+                }
+
+                comments.add(commentsAndHistories.getComment(commentOrHistory.getId()));
+                continue;
+            }
+
+            if (CommentsAndHistories.Type.HISTORY.equals(commentOrHistory.getType())) {
+                if (!comments.isEmpty()) {
+                    fillViewWithComments(view, comments);
+                    comments.clear();
+                }
+
+                histories.add(commentsAndHistories.getHistory(commentOrHistory.getId()));
+                continue;
+            }
+        }
+
+        if (!histories.isEmpty()) {
+            fireEvent(new CaseHistoryEvents.Fill(histories, view::addItemToFront));
+        }
+
+        if (!comments.isEmpty()) {
+            fillViewWithComments(view, comments);
+        }
+    }
+
+    public void fillViewWithComments(AbstractCaseCommentListView view, List<CaseComment> comments) {
         List<AbstractCaseCommentItemView> views = new ArrayList<>();
         List<String> textList = new ArrayList<>();
 
@@ -419,7 +466,7 @@ public abstract class CaseCommentListActivity
                 textList.add(comment.getText());
             }
             itemViewToModel.put( itemView, comment );
-            view.addCommentToFront( itemView.asWidget() );
+            view.addItemToFront( itemView.asWidget() );
         }
 
         textRenderController.render(textMarkup, textList, true, new FluentCallback<List<String>>()
@@ -438,9 +485,9 @@ public abstract class CaseCommentListActivity
         itemView.setActivity(this);
 
         if (value.getAuthorId().equals(profile.getId())) {
-//            itemView.setMine();
             itemView.setIcon(AvatarUtils.getAvatarUrl(profile));
         } else {
+            itemView.timeElapsedVisibility().setVisible(false);
             itemView.setIcon(AvatarUtils.getAvatarUrl(value.getAuthor()));
         }
 
@@ -456,7 +503,6 @@ public abstract class CaseCommentListActivity
         if (StringUtils.isNotEmpty(value.getText())) {
             itemView.setMessage(value.getText());
         }
-        itemView.clearElapsedTime();
         fillTimeElapsed(value, itemView);
         if (isPrivateVisible) {
             itemView.setPrivacyType(value.getPrivacyType());
@@ -509,15 +555,24 @@ public abstract class CaseCommentListActivity
     }
 
     private void fillTimeElapsed( CaseComment value, AbstractCaseCommentItemView itemView ) {
-        if (isElapsedTimeEnabled && value.getTimeElapsed() != null) {
-            String timeType = (value.getTimeElapsedType() == null || value.getTimeElapsedType().equals( En_TimeElapsedType.NONE ) ? "" : ", " + timeElapsedTypeLang.getName( value.getTimeElapsedType() ));
-            itemView.setTimeElapsed( StringUtils.join(
-                    " ( +", workTimeFormatter.asString( value.getTimeElapsed() ), timeType, " )"
-                    ).toString()
-            );
+        itemView.timeElapsedVisibility().setVisible(value.getAuthorId().equals(profile.getId()) && value.getTimeElapsed() != null);
+        itemView.setTimeElapsedType(value.getTimeElapsedType());
+        itemView.setTimeElapsedInfo("");
+
+        if (!isElapsedTimeEnabled) {
+            return;
         }
 
-        itemView.setTimeElapsedType(value.getTimeElapsedType());
+        if (value.getTimeElapsed() == null) {
+            return;
+        }
+
+        String timeType = (value.getTimeElapsedType() == null || value.getTimeElapsedType().equals( En_TimeElapsedType.NONE ) ? "" : ", " + timeElapsedTypeLang.getName( value.getTimeElapsedType() ));
+        itemView.timeElapsedInfoContainerVisibility().setVisible(true);
+        itemView.setTimeElapsedInfo( StringUtils.join(
+                "+", workTimeFormatter.asString( value.getTimeElapsed() ), timeType
+                ).toString()
+        );
     }
 
     private void bindAttachmentsToComment(AbstractCaseCommentItemView itemView, List<CaseAttachment> caseAttachments){
@@ -671,7 +726,6 @@ public abstract class CaseCommentListActivity
 
         if (isEdit) {
             renderTextAsync(caseComment.getText(), textMarkup, lastCommentView::setMessage);
-            lastCommentView.clearElapsedTime();
             fillTimeElapsed( comment, lastCommentView );
 
             Collection<Attachment> prevAttachments = lastCommentView.attachmentContainer().getAll();
@@ -687,7 +741,7 @@ public abstract class CaseCommentListActivity
             AbstractCaseCommentItemView itemView = makeCommentView(caseComment);
             lastCommentView = itemView;
             itemViewToModel.put( itemView, caseComment );
-            view.addCommentToFront(itemView.asWidget());
+            view.addItemToFront(itemView.asWidget());
             renderTextAsync(caseComment.getText(), textMarkup, itemView::setMessage);
         }
 
@@ -777,6 +831,15 @@ public abstract class CaseCommentListActivity
     }
 
     private void reloadComments(En_CaseType caseType, Long caseId) {
+        if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
+            caseCommentController.getCommentsAndHistories(caseType, caseId, new FluentCallback<CommentsAndHistories>()
+                    .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR)))
+                    .withSuccess(this::fillView)
+            );
+
+            return;
+        }
+
         caseCommentController.getCaseComments(caseType, caseId, new FluentCallback<List<CaseComment>>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR)))
                 .withSuccess(this::fillView)

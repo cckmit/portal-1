@@ -4,15 +4,13 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel tag="li" styleName="row form-group">
-        <div class="col-md-1">
-            <span class="history-time-icon fas fa-history fa-lg"/>
-        </div>
-        <div class="col-md-11">
-            <span ui:field="initiator" class="float-left m-r-10 font-weight-bold"/>
-            <div class="text-right">
-                <span class="case-history-item-date" ui:field="date"/>
-            </div>
+    <g:HTMLPanel ui:field="root" tag="li" styleName="timeline-block row form-group case-history-item-container">
+        <div class="col-md-12 p-r-5">
+            <g:HTMLPanel tag="span" styleName="timeline-point case-history-icon" ui:field="historyIconContainer">
+                <span class="float-left case-history-time-icon fas fa-history fa-lg"/>
+            </g:HTMLPanel>
+            <g:HTMLPanel tag="span" styleName="float-left m-l-10 m-r-10 font-weight-bold case-history-initiator" ui:field="initiator"/>
+            <g:HTMLPanel tag="span" styleName="case-history-item-date" ui:field="date"/>
         </div>
         <g:HTMLPanel styleName="col-md-12" ui:field="itemsContainer"/>
     </g:HTMLPanel>

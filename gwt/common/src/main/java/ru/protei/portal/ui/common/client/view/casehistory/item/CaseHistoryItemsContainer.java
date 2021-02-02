@@ -22,8 +22,12 @@ public class CaseHistoryItemsContainer
         setTestAttributes();
     }
 
+    public void initWithoutInitiatorMode() {
+        root.addStyleName("without-initiator");
+    }
+
     public void setInitiator(String initiator) {
-        this.initiator.setInnerText(initiator);
+        this.initiator.getElement().setInnerText(initiator);
     }
 
     public HasWidgets itemsContainer() {
@@ -31,19 +35,25 @@ public class CaseHistoryItemsContainer
     }
 
     public void setDate(String date) {
-        this.date.setInnerText(date);
+        this.date.getElement().setInnerText(date);
     }
 
     private void setTestAttributes() {
-        date.setAttribute(DEBUG_ID_ATTRIBUTE, CREATE_DATE);
-        initiator.setAttribute(DEBUG_ID_ATTRIBUTE, INITIATOR);
+        date.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, CREATE_DATE);
+        initiator.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, INITIATOR);
     }
 
     @UiField
-    SpanElement date;
+    HTMLPanel root;
 
     @UiField
-    SpanElement initiator;
+    HTMLPanel date;
+
+    @UiField
+    HTMLPanel initiator;
+
+    @UiField
+    HTMLPanel historyIconContainer;
 
     @UiField
     HTMLPanel itemsContainer;

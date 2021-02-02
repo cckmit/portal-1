@@ -19,7 +19,7 @@ public interface AbstractCaseCommentListView extends IsWidget {
 
     void clearCommentsContainer();
 
-    void addCommentToFront( IsWidget comment );
+    void addItemToFront(IsWidget comment );
 
     void replaceCommentView( IsWidget removed, IsWidget inserted );
 

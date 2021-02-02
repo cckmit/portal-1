@@ -3,6 +3,6 @@
 
     <g:HTMLPanel tag="span">
         <i ui:field="icon" class="fas fa-circle"/>
-        <span ui:field="name" class="history-state-item"/>
+        <span ui:field="name" class="case-history-state-item"/>
     </g:HTMLPanel>
 </ui:UiBinder>

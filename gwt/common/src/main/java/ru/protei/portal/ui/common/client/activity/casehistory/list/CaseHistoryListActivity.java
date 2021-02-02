@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.activity.casehistory.list;
 
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -9,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_HistoryAction;
 import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -26,6 +28,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.function.Consumer;
 
 public abstract class CaseHistoryListActivity implements AbstractCaseHistoryListActivity, Activity {
@@ -34,12 +37,17 @@ public abstract class CaseHistoryListActivity implements AbstractCaseHistoryList
         event.container.clear();
         event.container.add(view.asWidget());
 
-        requestHistoryList(event.caseId, this::fillView);
+        requestHistoryList(event.caseId, caseHistories -> fillView(caseHistories, view.root()::add));
     }
 
     @Event
     public void onReload(CaseHistoryEvents.Reload event) {
-        requestHistoryList(event.caseId, this::fillView);
+        requestHistoryList(event.caseId, caseHistories -> fillView(caseHistories, view.root()::add));
+    }
+
+    @Event
+    public void onFill(CaseHistoryEvents.Fill event) {
+        fillView(event.histories, event.historyItemConsumer);
     }
 
     private void requestHistoryList(Long caseId, Consumer<List<History>> historyListConsumer) {
@@ -48,27 +56,50 @@ public abstract class CaseHistoryListActivity implements AbstractCaseHistoryList
         );
     }
 
-    private void fillView(List<History> caseHistories) {
+    private void fillView(List<History> caseHistories, Consumer<IsWidget> containerConsumer) {
+        if (CollectionUtils.isEmpty(caseHistories)) {
+            return;
+        }
+
         view.root().clear();
 
         String historyDate = null;
+        Long historyAuthorId = null;
         CaseHistoryItemsContainer historyItemsContainer = null;
 
         List<Widget> historyItemsContainers = new LinkedList<>();
 
-        for (History nextHistory : caseHistories) {
-            if (!DateFormatter.formatDateTime(nextHistory.getDate()).equals(historyDate)) {
+        ListIterator<History> historyListIterator = caseHistories.listIterator(caseHistories.size());
+
+        while (historyListIterator.hasPrevious()) {
+            History nextHistory = historyListIterator.previous();
+
+            if (!DateFormatter.formatDateTime(nextHistory.getDate()).equals(historyDate) && nextHistory.getInitiatorId().equals(historyAuthorId)) {
                 historyDate = DateFormatter.formatDateTime(nextHistory.getDate());
+
+                historyItemsContainer = caseHistoryItemsContainerProvider.get();
+                historyItemsContainer.initWithoutInitiatorMode();
+
+                historyItemsContainer.setDate(historyDate);
+
+                historyItemsContainers.add(0, historyItemsContainer);
+            }
+
+            if (!nextHistory.getInitiatorId().equals(historyAuthorId)) {
+                historyAuthorId = nextHistory.getInitiatorId();
+                historyDate = DateFormatter.formatDateTime(nextHistory.getDate());
+
                 historyItemsContainer = caseHistoryItemsContainerProvider.get();
                 historyItemsContainer.setDate(historyDate);
                 historyItemsContainer.setInitiator(nextHistory.getInitiatorFullName());
+
                 historyItemsContainers.add(0, historyItemsContainer);
             }
 
             addHistoryItem(nextHistory, historyItemsContainer);
         }
 
-        historyItemsContainers.forEach(view.root()::add);
+        historyItemsContainers.forEach(containerConsumer);
     }
 
     private void addHistoryItem(History history, CaseHistoryItemsContainer historyItemsContainer) {
