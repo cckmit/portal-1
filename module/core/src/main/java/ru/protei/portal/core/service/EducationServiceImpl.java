@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.event.EducationCreateEvent;
+import ru.protei.portal.core.event.EducationRequestEvent;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_Privilege;
@@ -108,11 +108,15 @@ public class EducationServiceImpl implements EducationService {
                 .collect(Collectors.toList()));
 
         // todo создать Person. Надо будет взять департамент у данного пользователя, получит руководителя, в отдельном методе создать записи
-        Person initiator = personDAO.get(7925L);
-        jdbcManyRelationsHelper.fill(initiator, Company.Fields.CONTACT_ITEMS);
-        publisherService.publishEvent(new EducationCreateEvent(this, initiator, entry.getId()));
+        sendEducationRequestNotifications(entry);
 
         return ok(entry);
+    }
+
+    private void sendEducationRequestNotifications(EducationEntry entry) {
+        Person initiator = personDAO.get(7925L);
+        jdbcManyRelationsHelper.fill(initiator, Company.Fields.CONTACT_ITEMS);
+        publisherService.publishEvent(new EducationRequestEvent(this, initiator, entry.getId()));
     }
 
     @Override

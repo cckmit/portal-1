@@ -3,11 +3,11 @@ package ru.protei.portal.core.event;
 import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.model.ent.Person;
 
-public class EducationCreateEvent extends ApplicationEvent implements AbstractEducationEvent {
+public class EducationRequestEvent extends ApplicationEvent implements AbstractEducationEvent {
     private Person person;
     private Long educationId;
 
-    public EducationCreateEvent(Object source, Person person, Long educationId) {
+    public EducationRequestEvent(Object source, Person person, Long educationId) {
         super(source);
         this.person = person;
         this.educationId = educationId;

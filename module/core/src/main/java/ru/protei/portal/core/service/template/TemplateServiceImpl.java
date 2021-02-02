@@ -938,6 +938,25 @@ public class TemplateServiceImpl implements TemplateService {
         return template;
     }
 
+    @Override
+    public PreparedTemplate getEducationRequestNotificationSubject() {
+        Map<String, Object> model = new HashMap<>();
+        PreparedTemplate template = new PreparedTemplate("notification/email/education.request.subject.%s.ftl");
+        template.setModel(model);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getEducationRequestNotificationBody(List<String> recipients) {
+        Map<String, Object> model = new HashMap<>();
+        model.put("recipients", recipients);
+        PreparedTemplate template = new PreparedTemplate("notification/email/education.request.body.%s.ftl");
+        template.setModel(model);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
     private <T, R> R getNullOrElse(T value, Function<T, R> orElseFunction) {
         return value == null ? null : orElseFunction.apply(value);
     }

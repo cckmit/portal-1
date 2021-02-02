@@ -1122,18 +1122,17 @@ public class MailNotificationProcessor {
     // ----------------------
 
     @EventListener
-    public void onEducationCreate(EducationCreateEvent event) {
-        // нужен Person
+    public void onEducationRequest(EducationRequestEvent event) {
         try {
             NotificationEntry notifier = fetchNotificationEntryFromPerson(event.getPerson());
 
-            String subject = templateService.getEmployeeRegistrationEmployeeFeedbackEmailNotificationSubject();
+            PreparedTemplate subjectTemplate = templateService.getEducationRequestNotificationSubject();
 
-            String body = templateService.getEmployeeRegistrationEmployeeFeedbackEmailNotificationBody(
-                    event.getPerson().getDisplayName()
-            );
+            List<String> recipients = getNotifiersAddresses(Collections.singleton(notifier));
 
-            sendMail( notifier.getAddress(), subject, body, getFromPortalAddress() );
+            PreparedTemplate bodyTemplate = templateService.getEducationRequestNotificationBody(recipients);
+
+            sendMailToRecipients( Collections.singleton(notifier), bodyTemplate, subjectTemplate, true, getFromPortalAddress() );
         } catch (Exception e) {
             log.warn( "Failed to sent  notification: {}", event.getPerson().getDisplayName(), e );
         }
