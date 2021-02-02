@@ -12,6 +12,6 @@
         <addForeignKeyConstraint constraintName="fk_project_id_to_case_object"
                                  baseTableName="platform" baseColumnNames="project_id"
                                  referencedTableName="case_object" referencedColumnNames="id"
-                                 onUpdate="CASCADE"/>
+                                 onDelete="NO ACTION" onUpdate="CASCADE"/>
     </changeSet>
 </databaseChangeLog>
