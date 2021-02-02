@@ -78,7 +78,7 @@ public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements Proje
         }
         if (query.getCommentCreationRange() != null) {
             parameters.withDistinct(true);
-            parameters.withJoins(LEFT_JOIN_CASE_COMMENT);
+            parameters.withJoins(parameters.getJoins() == null ? LEFT_JOIN_CASE_COMMENT : parameters.getJoins() + LEFT_JOIN_CASE_COMMENT);
         }
         if (query.limit > 0) {
             parameters = parameters.withLimit(query.getLimit());

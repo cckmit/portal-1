@@ -19,13 +19,9 @@ import ru.protei.portal.core.model.dto.RegionInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.DateRangeUtils;
-import ru.protei.portal.core.model.query.LocationQuery;
-import ru.protei.portal.core.model.query.PersonQuery;
-import ru.protei.portal.core.model.query.ProjectQuery;
+import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.Interval;
-import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.PersonProjectMemberView;
-import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
@@ -107,6 +103,8 @@ public class ProjectServiceImpl implements ProjectService {
     HistoryDAO historyDAO;
     @Autowired
     CaseStateDAO caseStateDAO;
+    @Autowired
+    CompanyService companyService;
 
     @EventListener
     @Async(BACKGROUND_TASKS)
@@ -522,6 +520,30 @@ public class ProjectServiceImpl implements ProjectService {
 
         log.info("notifyExpiringProjectTechnicalSupportValidity(): done");
         return ok(true);
+    }
+
+    @Override
+    public Result<SelectorsParams> getSelectorsParams(AuthToken token, ProjectQuery projectQuery) {
+        log.debug( "getSelectorsParams(): projectQuery={} ", projectQuery );
+        SelectorsParams selectorsParams = new SelectorsParams();
+
+        List<Long> companyIds = collectCompanyIds(projectQuery);
+        if (!isEmpty(companyIds)) {
+            Result<List<EntityOption>> result = companyService.companyOptionListByIds( token, filterToList(companyIds, Objects::nonNull ));
+            if (result.isOk()) {
+                selectorsParams.setCompanyEntityOptions(result.getData());
+            } else {
+                return error(result.getStatus(), "Error at getCompanyIds" );
+            }
+        }
+
+        return ok(selectorsParams);
+    }
+
+    private List<Long> collectCompanyIds(ProjectQuery projectQuery) {
+        List<Long> companyIds = new ArrayList<>();
+        companyIds.addAll(emptyIfNull(projectQuery.getInitiatorCompanyIds()));
+        return companyIds;
     }
 
     private boolean updateCaseObjectPart(AuthToken token, Project project) {

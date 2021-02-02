@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.report.client.activity.create;
 
 import com.google.gwt.i18n.client.LocaleInfo;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -26,7 +27,9 @@ import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectF
 import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectFilterView;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
+import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.service.ReportControllerAsync;
 import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidget;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
@@ -37,10 +40,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -75,6 +75,7 @@ public abstract class ReportCreateActivity implements Activity,
     public void onAuthSuccess(AuthEvents.Success event) {
         issueFilterWidget.resetFilter(null);
         projectFilterView.resetFilter();
+        fillProjectStatesButtons();
         contractFilterView.resetFilter();
         updateCompanyModels(event.profile);
     }
@@ -118,7 +119,6 @@ public abstract class ReportCreateActivity implements Activity,
         this.reportDto = reportDto;
         showView();
         fillView(this.reportDto);
-        fillSelectors();
         presetCompanyAtFilter();
         isSaving = false;
     }
@@ -174,6 +174,24 @@ public abstract class ReportCreateActivity implements Activity,
         );
     }
 
+    private void fillProjectStatesButtons() {
+        caseStateController.getCaseStates(En_CaseType.PROJECT, new AsyncCallback<List<CaseState>>() {
+            @Override
+            public void onFailure(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(List<CaseState> caseStates) {
+                projectFilterView.fillStatesButtons(
+                        stream(caseStates).collect(Collectors.toMap(
+                            state -> En_RegionState.forId(state.getId()),
+                            state -> state.getColor(),
+                            (colorInMap, colorToPut) -> colorToPut)
+                        ));
+            }
+        });
+    }
 
     private void fillView(ReportDto reportDto) {
         Report report = reportDto.getReport();
@@ -198,7 +216,6 @@ public abstract class ReportCreateActivity implements Activity,
         if (report.isHumanReadable()) {
             additionalParams.add(En_ReportAdditionalParamType.HUMAN_READABLE);
         }
-        view.additionalParams().setValue(additionalParams);
 
         BaseQuery query = reportDto.getQuery();
         switch (report.getReportType()) {
@@ -221,7 +238,7 @@ public abstract class ReportCreateActivity implements Activity,
                 break;
             }
         }
-
+        view.additionalParams().setValue(additionalParams);
     }
 
     private void fillFilter(CaseQuery query) {
@@ -244,7 +261,6 @@ public abstract class ReportCreateActivity implements Activity,
         } else {
             projectFilterView.searchPattern().setValue(query.getSearchString());
         }
-
         projectFilterView.states().setValue(query.getStates());
         projectFilterView.regions().setValue(query.getRegions());
         projectFilterView.headManagers().setValue(query.getHeadManagers());
@@ -253,10 +269,22 @@ public abstract class ReportCreateActivity implements Activity,
         projectFilterView.sortField().setValue(query.getSortField());
         projectFilterView.sortDir().setValue(query.getSortDir() == En_SortDir.ASC);
         projectFilterView.onlyMineProjects().setValue(query.getMemberId() != null);
-
+        projectFilterView.commentCreationRange().setValue(fromDateRange(query.getCommentCreationRange()));
         projectFilterView.initiatorCompanies().setValue(
                 stream(query.getInitiatorCompanyIds()).map(EntityOption::new).collect(Collectors.toSet()));
-        projectFilterView.commentCreationRange().setValue(fromDateRange(query.getCommentCreationRange()));
+
+        regionController.getSelectorsParams(query, new RequestCallback<SelectorsParams>() {
+            @Override
+            public void onError(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(SelectorsParams selectorsParams) {
+                Set<EntityOption> initiatorsCompanies = applyCompanies(selectorsParams.getCompanyEntityOptions(), query.getInitiatorCompanyIds());
+                projectFilterView.initiatorCompanies().setValue(initiatorsCompanies);
+            }
+        });
     }
 
     private void fillFilter(ContractQuery query) {
@@ -287,6 +315,13 @@ public abstract class ReportCreateActivity implements Activity,
         contractFilterView.kind().setValue(query.getKind());
         contractFilterView.dateSigningRange().setValue(fromDateRange(query.getDateSigningRange()));
         contractFilterView.dateValidRange().setValue(fromDateRange(query.getDateValidRange()));
+    }
+
+    private Set<EntityOption> applyCompanies(Collection<EntityOption> companies, Collection<Long> companyIds) {
+        return stream(companies)
+                .filter(company ->
+                        stream(companyIds).anyMatch(ids -> ids.equals(company.getId())))
+                .collect(Collectors.toSet());
     }
 
     private Report makeReport() {
@@ -638,6 +673,10 @@ public abstract class ReportCreateActivity implements Activity,
     SubcontractorCompanyModel subcontractorCompanyModel;
     @Inject
     IssueFilterControllerAsync filterController;
+    @Inject
+    CaseStateControllerAsync caseStateController;
+    @Inject
+    RegionControllerAsync regionController;
 
     private boolean isSaving;
     private AppEvents.InitDetails initDetails;

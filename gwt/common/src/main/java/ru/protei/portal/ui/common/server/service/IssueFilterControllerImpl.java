@@ -60,7 +60,7 @@ public class IssueFilterControllerImpl implements IssueFilterController {
 
     @Override
     public SelectorsParams getSelectorsParams( CaseQuery caseQuery ) throws RequestFailedException {
-        log.info("getSelectorsParams, selectorsParamsRequest: {}", caseQuery );
+        log.info("getSelectorsParams, caseQuery: {}", caseQuery );
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
@@ -101,7 +101,9 @@ public class IssueFilterControllerImpl implements IssueFilterController {
     public Long removeIssueFilter(Long id ) throws RequestFailedException {
         log.info( "removeIssueFilter(): id={}", id );
 
-        Result< Long > response = issueFilterService.removeIssueFilter( id );
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        Result< Long > response = issueFilterService.removeIssueFilter( token, id );
         log.info( "removeIssueFilter(): result={}", response.getStatus() );
 
         if ( response.isError() ) {

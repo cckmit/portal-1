@@ -5,16 +5,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.util.UiResult;
-import ru.protei.portal.core.model.query.DistrictQuery;
-import ru.protei.portal.core.model.query.ProjectQuery;
-import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.dto.RegionInfo;
+import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.SelectorsParams;
+import ru.protei.portal.core.model.query.DistrictQuery;
+import ru.protei.portal.core.model.query.ProjectQuery;
+import ru.protei.portal.core.model.struct.DistrictInfo;
+import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.LocationService;
 import ru.protei.portal.core.service.ProjectService;
@@ -188,6 +188,22 @@ public class RegionControllerImpl implements RegionController {
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         return ServiceUtils.checkResultAndGetData(projectService.getProjectLeader(token, projectId));
+    }
+
+    @Override
+    public SelectorsParams getSelectorsParams(ProjectQuery projectQuery) throws RequestFailedException {
+        log.info("getSelectorsParams, projectQuery: {}", projectQuery );
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        Result<SelectorsParams> response = projectService.getSelectorsParams( token, projectQuery );
+
+        log.info("getSelectorsParams, id: {}, response: {} ", projectQuery, response.isError() ? "error" : response.getData());
+
+        if ( response.isError() ) {
+            throw new RequestFailedException( response.getStatus() );
+        }
+        return response.getData();
     }
 
     @Autowired

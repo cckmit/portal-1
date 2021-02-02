@@ -88,6 +88,7 @@ public class DocumentServiceImpl implements DocumentService {
     @Async(BACKGROUND_TASKS)
     @Override
     public void documentBuildFullIndex() { // Данный метод создаст индексы для всех существующих документов
+        if(true) return;//TODO for develop
         log.info( "documentBuildFullIndex(): Begin." );
         try {
             if (!Objects.equals(config.data().getCommonConfig().getCrmUrlCurrent(), config.data().getCommonConfig().getCrmUrlInternal())) {
