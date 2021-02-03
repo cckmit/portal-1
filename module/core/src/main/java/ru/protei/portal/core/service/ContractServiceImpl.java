@@ -482,6 +482,7 @@ public class ContractServiceImpl implements ContractService {
         }
         List<Contract> contracts = contractDAO.getByApiQuery(apiQuery);
         jdbcManyRelationsHelper.fill(contracts, "contractDates");
+        contracts.forEach(contract -> contract.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(contract.getProjectId()))));
         return ok(contracts);
     }
 
