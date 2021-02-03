@@ -76,7 +76,7 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     @Transactional
-    public Result<Long> createReport(AuthToken token, ReportDto reportDto) {
+    public Result<Long> saveReport(AuthToken token, ReportDto reportDto) {
 
         if (token == null || reportDto == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -112,26 +112,30 @@ public class ReportServiceImpl implements ReportService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
+        boolean isCreate = (report.getId() == null);
         Date now = new Date();
-        report.setCreatorId(token.getPersonId());
-        report.setCreated(now);
-        report.setModified(now);
-        report.setStatus(En_ReportStatus.CREATED);
-        report.setRestricted(!hasGrantAccess);
-        report.setQuery(serializeQuery(query, report.getReportType()));
-        report.setSystemId(systemId);
-        if (StringUtils.isBlank(report.getLocale())) {
-            report.setLocale(LOCALE_RU);
-        }
-        if (StringUtils.isBlank(report.getName())) {
-            report.setName(makeReportName(report.getReportType(), report.getLocale()));
+        if (isCreate) {
+            report.setCreatorId(token.getPersonId());
+            report.setCreated(now);
+            report.setRestricted(!hasGrantAccess);
+            report.setSystemId(systemId);
+            if (StringUtils.isBlank(report.getLocale())) {
+                report.setLocale(LOCALE_RU);
+            }
+            if (StringUtils.isBlank(report.getName())) {
+                report.setName(makeReportName(report.getReportType(), report.getLocale()));
+            }
         }
 
-        Long id = reportDAO.persist(report);
+        report.setStatus(En_ReportStatus.CREATED);
+        report.setModified(now);
+        report.setQuery(serializeQuery(query, report.getReportType()));
+
+        reportDAO.saveOrUpdate(report);
 
         publisherService.publishEvent(new ProcessNewReportsEvent(this));
 
-        return ok(id);
+        return ok(report.getId());
     }
 
     @Override

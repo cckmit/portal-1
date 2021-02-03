@@ -16,7 +16,7 @@ import java.util.Set;
 public interface ReportService {
 
     @Privileged(requireAny = { En_Privilege.ISSUE_REPORT, En_Privilege.CONTRACT_REPORT })
-    Result<Long> createReport(AuthToken authToken, ReportDto report);
+    Result<Long> saveReport(AuthToken authToken, ReportDto report);
 
     @Privileged(requireAny = { En_Privilege.ISSUE_REPORT, En_Privilege.CONTRACT_REPORT })
     Result<Long> recreateReport(AuthToken authToken, Long reportId);

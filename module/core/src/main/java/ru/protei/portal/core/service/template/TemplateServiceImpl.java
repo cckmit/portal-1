@@ -435,6 +435,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("reportId", report.getId());
         templateModel.put("name", report.getName());
         templateModel.put("created", report.getCreated());
+        templateModel.put("modified", report.getModified());
         templateModel.put("creator", report.getCreator().getDisplayShortName());
         templateModel.put("type", report.getReportType());
         templateModel.put("status", report.getStatus());

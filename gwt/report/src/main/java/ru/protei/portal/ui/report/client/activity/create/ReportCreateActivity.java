@@ -58,6 +58,7 @@ public abstract class ReportCreateActivity implements Activity,
     public void onInit() {
         view.setActivity(this);
         issueFilterWidget.getIssueFilterParams().setModel(this);
+        view.fillReportScheduledTypes(asList(En_ReportScheduledType.values()));
         issueFilterWidget.clearFooterStyle();
         projectFilterView.clearFooterStyle();
         contractFilterView.clearFooterStyle();
@@ -90,7 +91,6 @@ public abstract class ReportCreateActivity implements Activity,
         fillSelectors();
         presetCompanyAtFilter();
         isSaving = false;
-
     }
 
     @Event(Type.FILL_CONTENT)
@@ -104,10 +104,7 @@ public abstract class ReportCreateActivity implements Activity,
             fillEditView(event.reportDto);
         } else {
             reportController.getReport(event.reportId, new FluentCallback<ReportDto>()
-                    .withError(throwable -> {
-                        isSaving = false;
-                        defaultErrorHandler.accept(throwable);
-                    })
+                    .withError(defaultErrorHandler)
                     .withSuccess(this::fillEditView));
         }
     }
@@ -122,7 +119,6 @@ public abstract class ReportCreateActivity implements Activity,
 
     private void fillSelectors() {
         view.fillReportTypes(availableReportTypes(policyService));
-        view.fillReportScheduledTypes(asList(En_ReportScheduledType.values()));
     }
 
     private void showView() {
@@ -150,7 +146,7 @@ public abstract class ReportCreateActivity implements Activity,
 
     @Override
     public void onSaveClicked() {
-        Report report = makeReport();
+        Report report = makeReport(reportDto == null ? new Report() : reportDto.getReport());
         ReportDto reportDto = makeReportDto(report);
 
         if (reportDto == null || isSaving) {
@@ -158,7 +154,7 @@ public abstract class ReportCreateActivity implements Activity,
         }
         isSaving = true;
 
-        reportController.createReport(reportDto, new FluentCallback<Long>()
+        reportController.saveReport(reportDto, new FluentCallback<Long>()
                 .withError(throwable -> {
                     isSaving = false;
                     defaultErrorHandler.accept(throwable);
@@ -360,8 +356,7 @@ public abstract class ReportCreateActivity implements Activity,
     }
 
 
-    private Report makeReport() {
-        Report report = new Report();
+    private Report makeReport(Report report) {
         report.setReportType(view.reportType().getValue());
         report.setScheduledType(view.reportScheduledType().getValue());
         report.setName(view.name().getValue());

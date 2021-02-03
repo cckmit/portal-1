@@ -10,7 +10,7 @@ import java.util.Set;
 
 public interface ReportControllerAsync {
 
-    void createReport(ReportDto report, AsyncCallback<Long> async);
+    void saveReport(ReportDto report, AsyncCallback<Long> async);
 
     void getReport(Long id, AsyncCallback<ReportDto> async);
 

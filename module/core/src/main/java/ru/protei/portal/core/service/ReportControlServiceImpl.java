@@ -51,7 +51,6 @@ import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
 import static ru.protei.portal.config.MainConfiguration.REPORT_TASKS;
-import static ru.protei.portal.core.model.dict.En_ReportStatus.CANCELLED;
 import static ru.protei.portal.core.model.dict.En_ResultStatus.NOT_FOUND;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.size;
@@ -165,8 +164,8 @@ public class ReportControlServiceImpl implements ReportControlService {
             }
 
             En_ReportStatus currentReportStatus = getReportStatus(report.getId());
-            if (currentReportStatus == null || CANCELLED.equals(currentReportStatus)) {
-                log.warn("processReport(): Report {} is canceled", report.getId());
+            if (!En_ReportStatus.PROCESS.equals(currentReportStatus)) {
+                log.warn("processReport(): Report {} is canceled by status = {}", report.getId(), currentReportStatus);
                 return;
             }
 
@@ -260,8 +259,8 @@ public class ReportControlServiceImpl implements ReportControlService {
     private Boolean isCancel(Long reportId) {
         Report report = reportDAO.partialGet(reportId, Report.Columns.STATUS, Report.Columns.REMOVED);
         if (report == null || report.isRemoved()) return true;
-        if (En_ReportStatus.PROCESS.equals(report.getStatus())) return false;
-        return true;
+        if (!En_ReportStatus.PROCESS.equals(report.getStatus())) return true;
+        return false;
     }
 
 
