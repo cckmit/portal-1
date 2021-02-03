@@ -2284,8 +2284,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueCommentElapsedTimeTypeChange();
 
-    String timeElapsedInfo();
-
     String privateComment();
 
     String departmentAddButton();

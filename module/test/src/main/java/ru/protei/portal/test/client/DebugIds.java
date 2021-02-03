@@ -391,7 +391,8 @@ public class DebugIds {
     public interface CASE_COMMENT {
 
         interface COMMENT_LIST {
-            String COMMENTS_LIST = "issue-preview-comment-list-comments-list";
+            String ITEMS_LIST = "issue-preview-comment-list-items-list";
+            String NEW_MESSAGE = "issue-preview-comment-list-new-message";
             String USER_ICON = "issue-preview-comment-list-user-icon";
             String TEXT_INPUT = "issue-preview-comment-list-text-input";
             String PRIVACY_BUTTON = "issue-preview-comment-list-privacy-button";
@@ -431,7 +432,7 @@ public class DebugIds {
         @Deprecated String PLATFORM = DebugIds.SITE_FOLDER.LINK.PLATFORM;
 
         @Deprecated interface COMMENT_LIST {
-            @Deprecated String COMMENTS_LIST = DebugIds.CASE_COMMENT.COMMENT_LIST.COMMENTS_LIST;
+            @Deprecated String COMMENTS_LIST = DebugIds.CASE_COMMENT.COMMENT_LIST.ITEMS_LIST;
             @Deprecated String USER_ICON = DebugIds.CASE_COMMENT.COMMENT_LIST.USER_ICON;
             @Deprecated String TEXT_INPUT = DebugIds.CASE_COMMENT.COMMENT_LIST.TEXT_INPUT;
             @Deprecated String PRIVACY_BUTTON = DebugIds.CASE_COMMENT.COMMENT_LIST.PRIVACY_BUTTON;

@@ -42,12 +42,12 @@
             </div>
 
             <div class="message" ui:field="messageContainer">
-                <g:HTMLPanel ui:field="message" styleName="markdown"/>
                 <g:HTMLPanel ui:field="timeElapsedInfoContainer" visible="false">
-                    <hr class="m-b-5"/>
                     <i class="far fa-clock m-r-5"/>
                     <g:HTMLPanel ui:field="timeElapsedInfo" tag="i"/>
+                    <hr class="m-t-5"/>
                 </g:HTMLPanel>
+                <g:HTMLPanel ui:field="message" styleName="markdown"/>
                 <div class="attachment-block" ui:field="attachBlock">
                     <label style="font-size: 11px;font-weight: bold;">
                         <ui:text from="{lang.issueAttachments}"/>

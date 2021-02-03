@@ -405,7 +405,6 @@ public abstract class IssueEditActivity implements
                     showTags(issue);
                     showMeta(issue);
                     showComments(issue);
-                    showPlansHistory(issue);
                     attachToContainer(container);
                 }));
     }
@@ -447,10 +446,6 @@ public abstract class IssueEditActivity implements
         show.extendedPrivacyType =  selectExtendedPrivacyType( issue );
         fireEvent( show );
 
-    }
-
-    private void showPlansHistory(CaseObject issue) {
-        fireEvent(new CaseHistoryEvents.Load(issue.getId(), issueInfoWidget.getHistoryContainer()));
     }
 
     private boolean selectExtendedPrivacyType(CaseObject issue) {

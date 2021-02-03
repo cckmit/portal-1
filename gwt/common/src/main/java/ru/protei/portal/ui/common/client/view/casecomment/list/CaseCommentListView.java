@@ -108,11 +108,6 @@ public class CaseCommentListView
     public void setTimeElapsedVisibility(boolean visible) {
         timeElapsed.setVisible(visible);
         timeElapsedType.setVisible(visible);
-        if (visible) {
-            timeElapsedInfoContainer.removeClassName( HIDE );
-        } else {
-            timeElapsedInfoContainer.addClassName( HIDE );
-        }
     }
 
     @Override
@@ -206,6 +201,11 @@ public class CaseCommentListView
         comment.getElement().setAttribute("placeholder", placeholder);
     }
 
+    @Override
+    public FlowPanel itemsContainer() {
+        return itemsContainer;
+    }
+
     @UiHandler( "send" )
     public void onSendClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -294,7 +294,8 @@ public class CaseCommentListView
             return;
         }
 
-        commentsContainer.ensureDebugId(DebugIds.CASE_COMMENT.COMMENT_LIST.COMMENTS_LIST);
+        itemsContainer.ensureDebugId(DebugIds.CASE_COMMENT.COMMENT_LIST.ITEMS_LIST);
+        newMessage.ensureDebugId(DebugIds.CASE_COMMENT.COMMENT_LIST.NEW_MESSAGE);
         newCommentUserImage.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CASE_COMMENT.COMMENT_LIST.USER_ICON);
         comment.ensureDebugId(DebugIds.CASE_COMMENT.COMMENT_LIST.TEXT_INPUT);
         send.ensureDebugId(DebugIds.CASE_COMMENT.COMMENT_LIST.SEND_BUTTON);
@@ -308,8 +309,6 @@ public class CaseCommentListView
     @Inject
     @UiField(provided = true)
     MentioningTextArea comment;
-    @UiField
-    FlowPanel commentsContainer;
     @UiField
     FlowPanel itemsContainer;
     @Inject
@@ -355,8 +354,6 @@ public class CaseCommentListView
     HTMLPanel newCommentContainer;
     @UiField
     HTMLPanel newCommentDisabledContainer;
-    @UiField
-    Element timeElapsedInfoContainer;
 
     @Inject
     private TimeElapsedTypeLang elapsedTimeTypeLang;

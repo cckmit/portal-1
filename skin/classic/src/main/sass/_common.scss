@@ -5343,7 +5343,7 @@ table {
     padding-bottom: 0;
     &::before {
       top: 25px;
-      height: 100%;
+      height: calc(100% - 25px);
       background-color: #ddd;
     }
     .timeline-point {

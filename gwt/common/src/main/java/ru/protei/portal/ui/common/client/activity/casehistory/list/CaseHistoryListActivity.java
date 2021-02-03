@@ -1,6 +1,6 @@
 package ru.protei.portal.ui.common.client.activity.casehistory.list;
 
-import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -16,7 +16,6 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.CaseHistoryEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.CaseHistoryControllerAsync;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.client.view.casehistory.item.CaseHistoryItem;
 import ru.protei.portal.ui.common.client.view.casehistory.item.CaseHistoryItemsContainer;
@@ -24,50 +23,27 @@ import ru.protei.portal.ui.common.client.view.casehistory.item.casestate.CaseHis
 import ru.protei.portal.ui.common.client.view.casehistory.item.importance.CaseHistoryImportanceItemView;
 import ru.protei.portal.ui.common.client.view.casehistory.item.simple.CaseHistorySimpleItemView;
 import ru.protei.portal.ui.common.client.view.casehistory.item.tag.CaseHistoryTagItemView;
-import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.function.Consumer;
 
 public abstract class CaseHistoryListActivity implements AbstractCaseHistoryListActivity, Activity {
     @Event
-    public void onLoad(CaseHistoryEvents.Load event) {
-        event.container.clear();
-        event.container.add(view.asWidget());
-
-        requestHistoryList(event.caseId, caseHistories -> fillView(caseHistories, view.root()::add));
-    }
-
-    @Event
-    public void onReload(CaseHistoryEvents.Reload event) {
-        requestHistoryList(event.caseId, caseHistories -> fillView(caseHistories, view.root()::add));
-    }
-
-    @Event
     public void onFill(CaseHistoryEvents.Fill event) {
-        fillView(event.histories, event.historyItemConsumer);
+        fillView(event.histories, event.historyContainer);
     }
 
-    private void requestHistoryList(Long caseId, Consumer<List<History>> historyListConsumer) {
-        caseHistoryService.getHistoryListByCaseId(caseId, new FluentCallback<List<History>>()
-                .withSuccess(historyListConsumer)
-        );
-    }
-
-    private void fillView(List<History> caseHistories, Consumer<IsWidget> containerConsumer) {
+    private void fillView(List<History> caseHistories, FlowPanel historyContainer) {
         if (CollectionUtils.isEmpty(caseHistories)) {
             return;
         }
-
-        view.root().clear();
 
         String historyDate = null;
         Long historyAuthorId = null;
         CaseHistoryItemsContainer historyItemsContainer = null;
 
-        List<Widget> historyItemsContainers = new LinkedList<>();
+        List<Widget> historyItemsContainerList = new ArrayList<>();
 
         ListIterator<History> historyListIterator = caseHistories.listIterator(caseHistories.size());
 
@@ -82,7 +58,7 @@ public abstract class CaseHistoryListActivity implements AbstractCaseHistoryList
 
                 historyItemsContainer.setDate(historyDate);
 
-                historyItemsContainers.add(0, historyItemsContainer);
+                historyItemsContainerList.add(0, historyItemsContainer);
             }
 
             if (!nextHistory.getInitiatorId().equals(historyAuthorId)) {
@@ -93,13 +69,13 @@ public abstract class CaseHistoryListActivity implements AbstractCaseHistoryList
                 historyItemsContainer.setDate(historyDate);
                 historyItemsContainer.setInitiator(nextHistory.getInitiatorFullName());
 
-                historyItemsContainers.add(0, historyItemsContainer);
+                historyItemsContainerList.add(0, historyItemsContainer);
             }
 
             addHistoryItem(nextHistory, historyItemsContainer);
         }
 
-        historyItemsContainers.forEach(containerConsumer);
+        historyItemsContainerList.forEach(widget -> historyContainer.insert(widget, 0));
     }
 
     private void addHistoryItem(History history, CaseHistoryItemsContainer historyItemsContainer) {
@@ -202,8 +178,6 @@ public abstract class CaseHistoryListActivity implements AbstractCaseHistoryList
     }
 
     @Inject
-    private AbstractCaseHistoryListView view;
-    @Inject
     private Provider<CaseHistoryItemsContainer> caseHistoryItemsContainerProvider;
     @Inject
     private Provider<CaseHistoryItem> caseHistoryItemProvider;
@@ -219,8 +193,6 @@ public abstract class CaseHistoryListActivity implements AbstractCaseHistoryList
 
     @Inject
     private PolicyService policyService;
-    @Inject
-    private CaseHistoryControllerAsync caseHistoryService;
     @Inject
     private Lang lang;
 }

@@ -11,7 +11,7 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel ui:field="root">
-        <g:FlowPanel ui:field="commentsContainer" tag="ul" styleName="chats case-history">
+        <ul class="chats case-history p-b-0">
             <g:HTMLPanel tag="li" ui:field="newMessage" styleName="left new-message">
                 <g:HTMLPanel ui:field="messageBlock">
 
@@ -70,8 +70,6 @@
                                 </div>
                             </div>
 
-                            <small ui:field="timeElapsedInfoContainer" class="text-muted hide"><ui:text from='{lang.timeElapsedInfo}'/></small>
-
                             <div ui:field="commentPreviewContainer" class="message-preview hide">
                                 <div class="message-preview-label"><ui:text from='{lang.commentPreview}'/>
                                     <g:ToggleButton ui:field="isDisplayPreview" styleName="btn show-preview-btn p-t-3"
@@ -95,6 +93,6 @@
                 </g:HTMLPanel>
             </g:HTMLPanel>
             <g:FlowPanel ui:field="itemsContainer" styleName="timeline" tag="section"/>
-        </g:FlowPanel>
+        </ul>
     </g:HTMLPanel>
 </ui:UiBinder>

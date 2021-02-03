@@ -1,9 +1,6 @@
 package ru.protei.portal.ui.common.client.activity.casecomment.list;
 
-import com.google.gwt.user.client.ui.HasEnabled;
-import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.HasVisibility;
-import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
@@ -58,6 +55,8 @@ public interface AbstractCaseCommentListView extends IsWidget {
     void setMentionEnabled(boolean isMentionEnabled);
 
     void setCommentPlaceholder(String placeholder);
+
+    FlowPanel itemsContainer();
 
     HasVisibility getPrivacyVisibility();
 
