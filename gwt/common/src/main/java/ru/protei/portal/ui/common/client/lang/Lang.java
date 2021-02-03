@@ -3205,4 +3205,52 @@ public interface Lang extends Messages, ContactItemLang {
     String contractTypeAdditionalAgreement();
 
     String contractContractSignManager();
+
+    String contractDateColumn();
+
+    String contractCostColumn();
+
+    String contractCommentColumn();
+
+    String contractInAmount(String cost);
+
+    String contractDateType();
+
+    String contractDateComment();
+
+    String contractDateCalendarDay();
+
+    String contractDateDate();
+
+    String contractDateEditHeader();
+
+    String contractDatePercent();
+
+    String contractDatesBaseSection();
+
+    String contractDatesCostSection();
+
+    String contractDatesAdvanceSection();
+
+    String contractDateCostType();
+
+    String contractCostTypeServices();
+
+    String contractCostTypeSoftware();
+
+    String contractCostTypeEquipment();
+
+    String contractValidDay();
+
+    String contractValidDate();
+
+    String contractEDSSigned();
+
+    String contractSignedOnSite();
+
+    String contractTypeContract();
+
+    String contractTypeContractForService();
+
+    String contractTypeAgreement();
 }

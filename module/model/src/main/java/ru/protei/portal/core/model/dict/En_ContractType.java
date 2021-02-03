@@ -83,11 +83,6 @@ public enum En_ContractType implements HasId {
     ORDER(14),
 
     /**
-     * Оборудование, ПО и услуги
-     */
-    HARDWARE_SOFTWARE_SERVICE(15),
-
-    /**
      * Заявка
      */
     REQUEST(16),
@@ -96,7 +91,22 @@ public enum En_ContractType implements HasId {
      * Доп соглашение
      */
     ADDITIONAL_AGREEMENT(17),
-    ;
+
+    /**
+     * Договор
+     */
+    // agreement – чтобы хоть как-то отличалось от типа "контракт" (19) :)
+    AGREEMENT(18),
+
+    /**
+     * Контракт
+     */
+    CONTRACT(19),
+
+    /**
+     * Договор на услуги
+     */
+    CONTRACT_FOR_SERVICE(20);
 
     En_ContractType(int id) {
         this.id = id;

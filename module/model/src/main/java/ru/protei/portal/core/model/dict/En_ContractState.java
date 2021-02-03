@@ -36,7 +36,16 @@ public enum En_ContractState {
      * отменен
      */
     CANCELLED(6),
-    ;
+
+    /**
+     * подписан на площадке
+     */
+    SIGNED_ON_SITE(7),
+
+    /**
+     * подписан ЭЦП
+     */
+    EDS_SIGNED(8);
 
     @JsonCreator
     public static En_ContractState getById(Integer id) {

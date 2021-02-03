@@ -43,6 +43,12 @@ public class En_ContractTypeLang {
                 return lang.contractTypeAdditionalAgreement();
             case REQUEST:
                 return lang.contractTypeRequest();
+            case CONTRACT:
+                return lang.contractTypeContract();
+            case CONTRACT_FOR_SERVICE:
+                return lang.contractTypeContractForService();
+            case AGREEMENT:
+                return lang.contractTypeAgreement();
         }
         return lang.unknownField();
     }

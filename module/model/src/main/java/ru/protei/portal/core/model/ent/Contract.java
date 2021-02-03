@@ -165,7 +165,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     @JdbcColumn(name = "parent_contract_id")
     private Long parentContractId;
 
-    // winter не поддерживает JdbcJoinedObject на ту же сущность во избежание рекурсии
+    // winter не поддерживает JdbcJoinedObj ect на ту же сущность во избежание рекурсии
     private String parentContractNumber;
 
     @JdbcOneToMany(table = "contract", localColumn = "id", remoteColumn = "parent_contract_id")
@@ -525,4 +525,5 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     public EntityOption toEntityOption() {
         return new EntityOption(getNumber(), getId());
     }
+
 }

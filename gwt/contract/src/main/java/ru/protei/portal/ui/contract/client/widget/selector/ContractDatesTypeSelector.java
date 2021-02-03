@@ -3,26 +3,27 @@ package ru.protei.portal.ui.contract.client.widget.selector;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_ContractDatesType;
 import ru.protei.portal.ui.common.client.lang.En_ContractDatesTypeLang;
-import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
-import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
+import ru.protei.portal.ui.common.client.selector.pageable.SelectorModel;
+import ru.protei.portal.ui.common.client.widget.form.FormPopupSingleSelector;
 
-public class ContractDatesTypeSelector extends ButtonSelector<En_ContractDatesType> {
+import java.util.Arrays;
+import java.util.List;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.size;
+
+public class ContractDatesTypeSelector extends FormPopupSingleSelector<En_ContractDatesType> {
 
     @Inject
     public void init() {
-        setDisplayOptionCreator(o -> new DisplayOption(lang.getName(o)));
-        fillOptions();
+        setItemRenderer(value -> value == null ? defaultValue : lang.getName(value));
+        setModel(elementIndex -> {
+            if (size(values) <= elementIndex) return null;
+            return values.get(elementIndex);
+        });
     }
-
-    public void fillOptions() {
-        clearOptions();
-
-        for(En_ContractDatesType value : En_ContractDatesType.values())
-            addOption(value);
-    }
-
 
     @Inject
     En_ContractDatesTypeLang lang;
+
+    private List<En_ContractDatesType> values = Arrays.asList(En_ContractDatesType.values());
 }

@@ -44,9 +44,7 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasValue<Long> dateValidDays();
 
-    ContractDatesList contractDatesList();
-
-    HasValue<List<ContractDate>> contractDates();
+    HasWidgets getContractDateTableContainer();
 
     HasValue<List<ContractSpecification>> contractSpecifications();
 
@@ -72,29 +70,13 @@ public interface AbstractContractEditView extends IsWidget {
 
     void setOrganization(String organization);
 
-    HasValue<Boolean> secondContractCheckbox();
-
-    HasVisibility secondContractCheckboxVisibility();
-
-    HasVisibility secondContractVisibility();
-
-    HasValue<String> secondContractNumber();
-
-    HasValue<EntityOption> secondContractOrganization();
-
-    HasValue<Contractor> secondContractContractor();
-
-    HasEnabled secondContractContractorEnabled();
-
-    void setSecondContractOrganization(String organization);
-
-    HasWidgets expenditureContractsContainer();
-
-    HasVisibility expenditureContractsVisibility();
-
     HasVisibility tagsVisibility();
 
     HasVisibility tagsButtonVisibility();
 
     HasWidgets tagsContainer();
+
+    HasWidgets expenditureContractsContainer();
+
+    HasVisibility expenditureContractsVisibility();
 }

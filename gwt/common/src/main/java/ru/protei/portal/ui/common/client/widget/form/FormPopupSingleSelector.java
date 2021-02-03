@@ -217,7 +217,7 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
     @UiField
     SpanElement text;
     @UiField
-    Lang lang;
+    protected Lang lang;
 
     @Override
     protected AbstractPageableSelector<T> getSelector() {

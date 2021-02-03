@@ -22,6 +22,10 @@ public class En_ContractStateLang {
                 return lang.contractWaitingCopiesFromCustomer();
             case CANCELLED:
                 return lang.contractCancelled();
+            case EDS_SIGNED:
+                return lang.contractEDSSigned();
+            case SIGNED_ON_SITE:
+                return lang.contractSignedOnSite();
         }
         return lang.unknownField();
     }

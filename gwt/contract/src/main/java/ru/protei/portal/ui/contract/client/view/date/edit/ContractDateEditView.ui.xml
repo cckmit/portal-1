@@ -1,0 +1,81 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:selector="urn:import:ru.protei.portal.ui.contract.client.widget.selector"
+             xmlns:single="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
+             xmlns:validatefield="urn:import:ru.protei.portal.ui.common.client.widget.validatefield"
+             xmlns:money="urn:import:ru.protei.portal.ui.common.client.widget.money"
+             xmlns:form="urn:import:ru.protei.portal.ui.common.client.widget.form">
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel ui:field="root">
+        <p class="m-t-20"><ui:text from="{lang.contractDatesBaseSection}"/></p>
+        <div class="form-group-attached">
+            <div class="row">
+                <selector:ContractDatesTypeSelector ui:field="type" styleName="col-md-12"
+                                                    header="{lang.contractDateType}"/>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group form-group-default">
+                        <label class="fade">
+                            <ui:text from="{lang.contractDateCalendarDay}"/>
+                        </label>
+                        <g:IntegerBox ui:field="calendarDay" styleName="form-control"/>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group form-group-default date-picker" ui:field="approvalDateContainer">
+                        <label class="fade" ui:field="approvalDateLabel">
+                            <ui:text from="{lang.contractDateDate}"/>
+                        </label>
+                        <single:SinglePicker ui:field="date" type="DATE" formatValue="dd.MM.yyyy" mandatory="false"
+                                             styleName=""/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p class="m-t-20"><ui:text from="{lang.contractDatesCostSection}"/></p>
+        <div class="form-group-attached">
+            <div class="row">
+                <form:FormPopupSingleSelector ui:field="costType" header="{lang.contractDateCostType}" styleName="col-md-3"/>
+                <div class="col-md-3">
+                    <div class="form-group form-group-default">
+                        <label class="fade">
+                            <ui:text from="{lang.percent}"/>
+                        </label>
+                        <validatefield:ValidableDoubleBox ui:field="moneyPercent"
+                                                          styleName="form-control"
+                                                          placeholder="{lang.contractDatePercent}"/>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group form-group-default">
+                        <label class="fade">
+                            <ui:text from="{lang.contractCost}"/>
+                        </label>
+                        <money:MoneyCurrencyWidget ui:field="moneyWithCurrency" defaultCurrency="RUB"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p class="m-t-20"><ui:text from="{lang.contractDatesAdvanceSection}"/></p>
+        <div class="form-group-attached">
+            <div class="row form-group form-group-default">
+                <div class="col-md-12">
+                    <label class="fade">
+                        <ui:text from="{lang.contractDateComment}"/>
+                    </label>
+                    <g:TextBox ui:field="comment" styleName="form-control"/>
+                </div>
+            </div>
+        </div>
+
+        <div class="row m-t-10">
+            <div class="col-md-12">
+                <g:CheckBox ui:field="notify" styleName="checkbox" text="{lang.contractDatesNotify}"/>
+            </div>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

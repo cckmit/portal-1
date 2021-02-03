@@ -159,7 +159,7 @@ public class ContractTableView extends Composite implements AbstractContractTabl
             StringBuilder sb = new StringBuilder();
             sb.append("<b>")
                     .append(sanitizeHtml(contractTypeLang.getName(contract.getContractType())))
-                    .append(" ")
+                    .append(" № ")
                     .append(sanitizeHtml(contract.getNumber()))
                     .append("</b>");
             sb.append("<br/>");

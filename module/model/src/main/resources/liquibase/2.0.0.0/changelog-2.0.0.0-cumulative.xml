@@ -65,5 +65,6 @@
   <include file="2020-10-28-edit-reserved-ip-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-11-13-add-private_flag-to-attachment.xml" relativeToChangelogFile="true"/>
   <include file="2020-11-16-change-type-ip-mask-allow-column-to-user_login-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-12-12-add-cost_type-column-to-contract_date-table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
