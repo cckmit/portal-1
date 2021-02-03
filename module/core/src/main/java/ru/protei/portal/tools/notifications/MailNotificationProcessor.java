@@ -1124,9 +1124,11 @@ public class MailNotificationProcessor {
     @EventListener
     public void onEducationRequest(EducationRequestEvent event) {
         try {
+            EducationEntry educationEntry = event.getEducationEntry();
+
             NotificationEntry notifier = fetchNotificationEntryFromPerson(event.getPerson());
 
-            PreparedTemplate subjectTemplate = templateService.getEducationRequestNotificationSubject();
+            PreparedTemplate subjectTemplate = templateService.getEducationRequestNotificationSubject(educationEntry);
 
             List<String> recipients = getNotifiersAddresses(Collections.singleton(notifier));
 

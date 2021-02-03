@@ -1,11 +1,12 @@
 package ru.protei.portal.core.event;
 
+import ru.protei.portal.core.model.ent.EducationEntry;
 import ru.protei.portal.core.model.ent.Person;
 
 public interface AbstractEducationEvent {
     Person getPerson();
 
-    Long getEducationId();
+    EducationEntry getEducationEntry();
 
     Object getSource();
 

@@ -112,6 +112,6 @@ public interface TemplateService {
     PreparedTemplate getExpiringTechnicalSupportValidityNotificationBody(ExpiringProjectTSVNotificationEvent event,
                                      Collection<String> recipients, String urlTemplate);
 
-    PreparedTemplate getEducationRequestNotificationSubject();
+    PreparedTemplate getEducationRequestNotificationSubject(EducationEntry educationEntry);
     PreparedTemplate getEducationRequestNotificationBody(List<String> recipients);
 }

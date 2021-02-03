@@ -4,7 +4,7 @@
 
 <@set name="_you" value="${you}"/>
 <@set name="_notification_footer" value="${notification_footer}"/>
-<@set name="_educationRequestTitle" value="${educationRequestTitle}"/>
+<@set name="_educationRequest" value="${educationRequest}"/>
 
 <#noparse>
     <html>
@@ -13,7 +13,7 @@
     </head>
     <body bgcolor="#FFFFFF" text="#000000">
     <div>
-        ${_educationRequestTitle}
+        ${_educationRequest}
     </div>
 
     <div>

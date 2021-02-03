@@ -939,8 +939,9 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getEducationRequestNotificationSubject() {
+    public PreparedTemplate getEducationRequestNotificationSubject(EducationEntry educationEntry) {
         Map<String, Object> model = new HashMap<>();
+        model.put("educationTitle", educationEntry.getTitle());
         PreparedTemplate template = new PreparedTemplate("notification/email/education.request.subject.%s.ftl");
         template.setModel(model);
         template.setTemplateConfiguration(templateConfiguration);

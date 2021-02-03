@@ -1,1 +1,1 @@
-${educationRequestTitle}
+${educationRequest}<#noparse>: ${educationTitle}</#noparse>

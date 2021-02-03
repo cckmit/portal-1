@@ -107,16 +107,13 @@ public class EducationServiceImpl implements EducationService {
                 })
                 .collect(Collectors.toList()));
 
-        // todo создать Person. Надо будет взять департамент у данного пользователя, получит руководителя, в отдельном методе создать записи
-        sendEducationRequestNotifications(entry);
-
-        return ok(entry);
+        return ok(entry).publishEvent(new EducationRequestEvent(this, getPerson(token.getPersonId()), entry));
     }
 
-    private void sendEducationRequestNotifications(EducationEntry entry) {
+    private Person getPerson(Long id) {
         Person initiator = personDAO.get(7925L);
         jdbcManyRelationsHelper.fill(initiator, Company.Fields.CONTACT_ITEMS);
-        publisherService.publishEvent(new EducationRequestEvent(this, initiator, entry.getId()));
+        return initiator;
     }
 
     @Override
