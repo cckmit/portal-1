@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.report.client.activity.create;
 
 import com.google.gwt.i18n.client.LocaleInfo;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -51,17 +50,17 @@ import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateInte
 import static ru.protei.portal.ui.report.client.util.AccessUtil.availableReportTypes;
 import static ru.protei.portal.ui.report.client.util.AccessUtil.canEdit;
 
-public abstract class ReportCreateActivity implements Activity,
-        AbstractReportCreateActivity, AbstractIssueFilterModel, AbstractProjectFilterActivity {
+public abstract class ReportCreateEditActivity implements Activity,
+        AbstractReportCreateEditActivity, AbstractIssueFilterModel, AbstractProjectFilterActivity {
 
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
         issueFilterWidget.getIssueFilterParams().setModel(this);
-        view.fillReportScheduledTypes(asList(En_ReportScheduledType.values()));
         issueFilterWidget.clearFooterStyle();
         projectFilterView.clearFooterStyle();
         contractFilterView.clearFooterStyle();
+        view.fillReportScheduledTypes(asList(En_ReportScheduledType.values()));
     }
 
     @Event
@@ -73,7 +72,6 @@ public abstract class ReportCreateActivity implements Activity,
     public void onAuthSuccess(AuthEvents.Success event) {
         issueFilterWidget.resetFilter(null);
         projectFilterView.resetFilter();
-        fillProjectStatesButtons();
         contractFilterView.resetFilter();
         updateCompanyModels(event.profile);
     }
@@ -165,25 +163,6 @@ public abstract class ReportCreateActivity implements Activity,
                     fireEvent(new ReportEvents.Show());
                 })
         );
-    }
-
-    private void fillProjectStatesButtons() {
-        caseStateController.getCaseStates(En_CaseType.PROJECT, new AsyncCallback<List<CaseState>>() {
-            @Override
-            public void onFailure(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(List<CaseState> caseStates) {
-                projectFilterView.fillStatesButtons(
-                        stream(caseStates).collect(Collectors.toMap(
-                            state -> En_RegionState.forId(state.getId()),
-                            state -> state.getColor(),
-                            (colorInMap, colorToPut) -> colorToPut)
-                        ));
-            }
-        });
     }
 
     private void fillView(ReportDto reportDto) {
@@ -682,7 +661,7 @@ public abstract class ReportCreateActivity implements Activity,
     @Inject
     Lang lang;
     @Inject
-    AbstractReportCreateView view;
+    AbstractReportCreateEditView view;
     @Inject
     ReportControllerAsync reportController;
     @Inject
@@ -705,8 +684,6 @@ public abstract class ReportCreateActivity implements Activity,
     SubcontractorCompanyModel subcontractorCompanyModel;
     @Inject
     IssueFilterControllerAsync filterController;
-    @Inject
-    CaseStateControllerAsync caseStateController;
     @Inject
     RegionControllerAsync regionController;
     @Inject

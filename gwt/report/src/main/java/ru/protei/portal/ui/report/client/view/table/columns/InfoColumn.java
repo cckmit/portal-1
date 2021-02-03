@@ -52,6 +52,11 @@ public class InfoColumn extends StaticColumn<ReportDto> {
         if (created != null) {
             divElement.appendChild(created);
         }
+        divElement.appendChild(DOM.createElement("p"));
+        Element modified = renderDate(report == null ? null : report.getModified());
+        if (modified != null) {
+            divElement.appendChild(modified);
+        }
 
         Element type = DOM.createElement("p");
         type.setInnerText(report == null ? "" : lang.type() + ": " + reportTypeLang.getType(report.getReportType()));

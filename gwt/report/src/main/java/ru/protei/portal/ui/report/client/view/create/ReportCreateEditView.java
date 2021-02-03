@@ -13,15 +13,15 @@ import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.selector.report.additionalparams.ReportAdditionalParamsMultiSelector;
-import ru.protei.portal.ui.report.client.activity.create.AbstractReportCreateActivity;
-import ru.protei.portal.ui.report.client.activity.create.AbstractReportCreateView;
+import ru.protei.portal.ui.report.client.activity.create.AbstractReportCreateEditActivity;
+import ru.protei.portal.ui.report.client.activity.create.AbstractReportCreateEditView;
 import ru.protei.portal.ui.report.client.widget.reporttype.ReportScheduledTypeButtonSelector;
 import ru.protei.portal.ui.report.client.widget.reporttype.ReportTypeButtonSelector;
 
 import java.util.List;
 import java.util.Set;
 
-public class ReportCreateView extends Composite implements AbstractReportCreateView {
+public class ReportCreateEditView extends Composite implements AbstractReportCreateEditView {
 
     @Inject
     public void onInit() {
@@ -30,7 +30,7 @@ public class ReportCreateView extends Composite implements AbstractReportCreateV
     }
 
     @Override
-    public void setActivity(AbstractReportCreateActivity activity) {
+    public void setActivity(AbstractReportCreateEditActivity activity) {
         this.activity = activity;
     }
 
@@ -93,7 +93,7 @@ public class ReportCreateView extends Composite implements AbstractReportCreateV
         }
     }
 
-    @UiHandler("createButton")
+    @UiHandler("saveButton")
     public void createButtonClick(ClickEvent event) {
         if (activity != null) {
             activity.onSaveClicked();
@@ -116,7 +116,7 @@ public class ReportCreateView extends Composite implements AbstractReportCreateV
         additionalParams.setClearEnsureDebugId(DebugIds.ISSUE_REPORT.ADDITIONAL_PARAMS_CLEAR_BUTTON);
         additionalParams.setItemContainerEnsureDebugId(DebugIds.ISSUE_REPORT.ADDITIONAL_PARAMS_ITEM_CONTAINER);
         additionalParams.setLabelEnsureDebugId(DebugIds.ISSUE_REPORT.ADDITIONAL_PARAMS_LABEL);
-        createButton.ensureDebugId(DebugIds.ISSUE_REPORT.CREATE_BUTTON);
+        saveButton.ensureDebugId(DebugIds.ISSUE_REPORT.CREATE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.ISSUE_REPORT.CANCEL_BUTTON);
     }
 
@@ -135,15 +135,15 @@ public class ReportCreateView extends Composite implements AbstractReportCreateV
     @UiField
     HTMLPanel filterContainer;
     @UiField
-    Button createButton;
+    Button saveButton;
     @UiField
     Button cancelButton;
     @Inject
     @UiField(provided = true)
     ReportAdditionalParamsMultiSelector additionalParams;
 
-    private AbstractReportCreateActivity activity;
+    private AbstractReportCreateEditActivity activity;
 
-    interface IssueReportCreateViewUiBinder extends UiBinder<Widget, ReportCreateView> {}
+    interface IssueReportCreateViewUiBinder extends UiBinder<Widget, ReportCreateEditView> {}
     private static IssueReportCreateViewUiBinder ourUiBinder = GWT.create(IssueReportCreateViewUiBinder.class);
 }

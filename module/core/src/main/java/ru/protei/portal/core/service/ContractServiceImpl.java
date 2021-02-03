@@ -520,7 +520,7 @@ public class ContractServiceImpl implements ContractService {
             }
         }
 
-        if ( query.getDirectionId() != null ) {
+        if (query.getDirectionId() != null) {
             Result<List<ProductDirectionInfo>> result = productService.productDirectionList( token, Collections.singletonList(query.getDirectionId()));
             if (result.isOk()) {
                 selectorsParams.setProductDirectionInfos(result.getData());
@@ -530,7 +530,7 @@ public class ContractServiceImpl implements ContractService {
         }
 
         List<Long> personIds = collectPersonIds(query);
-        if (!CollectionUtils.isEmpty( personIds )) {
+        if (!CollectionUtils.isEmpty(personIds)) {
             Result<List<PersonShortView>> result = personService.shortViewListByIds( personIds );
             if (result.isOk()) {
                 selectorsParams.setPersonShortViews(result.getData());

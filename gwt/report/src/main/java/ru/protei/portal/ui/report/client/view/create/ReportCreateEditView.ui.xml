@@ -43,7 +43,7 @@
         <div class="card-footer">
             <div class="card card-transparent no-margin">
                 <div class="text-right">
-                    <g:Button ui:field="createButton" styleName="btn btn-complete" text="{lang.buttonCreate}"/>
+                    <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
                     <g:Button ui:field="cancelButton" styleName="btn btn-default" text="{lang.buttonCancel}"/>
                 </div>
             </div>

@@ -8,9 +8,9 @@ import ru.protei.portal.core.model.dict.En_ReportType;
 import java.util.List;
 import java.util.Set;
 
-public interface AbstractReportCreateView extends IsWidget {
+public interface AbstractReportCreateEditView extends IsWidget {
 
-    void setActivity(AbstractReportCreateActivity activity);
+    void setActivity(AbstractReportCreateEditActivity activity);
 
     HasValue<En_ReportType> reportType();
 
