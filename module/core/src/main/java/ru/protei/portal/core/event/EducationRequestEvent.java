@@ -8,12 +8,14 @@ public class EducationRequestEvent extends ApplicationEvent implements AbstractE
     private Person initiator;
     private EducationEntry educationEntry;
     private String typeName;
+    private Person headOfDepartment;
 
-    public EducationRequestEvent(Object source, Person initiator, EducationEntry educationEntry, String typeName) {
+    public EducationRequestEvent(Object source, Person initiator, Person headOfDepartment, EducationEntry educationEntry, String typeName) {
         super(source);
         this.initiator = initiator;
         this.educationEntry = educationEntry;
         this.typeName = typeName;
+        this.headOfDepartment = headOfDepartment;
     }
 
     @Override
@@ -34,5 +36,9 @@ public class EducationRequestEvent extends ApplicationEvent implements AbstractE
     @Override
     public String getTypeName() {
         return typeName;
+    }
+
+    public Person getHeadOfDepartment() {
+        return headOfDepartment;
     }
 }

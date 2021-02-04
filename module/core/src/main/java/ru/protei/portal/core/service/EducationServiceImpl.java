@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -114,16 +115,45 @@ public class EducationServiceImpl implements EducationService {
 
         jdbcManyRelationsHelper.fill(entry, "attendanceList");
 
-
-
         return ok(entry).publishEvent(new EducationRequestEvent(this, getInitiator(token.getPersonId()),
-                entry, makeTypeName(entry.getType(), "ru")));
+                getHeadOfDepartment(token.getPersonId()), entry, makeTypeName(entry.getType(), "ru")));
     }
 
-    private Person getInitiator(Long id) {
-        Person initiator = personDAO.get(id);
+    private Person getInitiator(Long personId) {
+        Person initiator = personDAO.get(personId);
         jdbcManyRelationsHelper.fill(initiator, Company.Fields.CONTACT_ITEMS);
         return initiator;
+    }
+
+    private Person getHeadOfDepartment(Long personId) {
+        WorkerEntry initiatorWorkerEntry = workerEntryDAO.getByPersonId(personId);
+        if (initiatorWorkerEntry == null) {
+            return null;
+        }
+        CompanyDepartment department = companyDepartmentDAO.get(initiatorWorkerEntry.getDepartmentId());
+        if (department == null) {
+            return null;
+        }
+
+        Person headPerson = null;
+
+        PersonShortView head = department.getHead();
+        if (head != null) {
+            headPerson = personDAO.get(head.getId());
+        }
+
+        if (headPerson == null) {
+            PersonShortView parentHead = department.getParentHead();
+            if (parentHead != null) {
+                headPerson = personDAO.get(parentHead.getId());
+            }
+        }
+
+        if (headPerson != null) {
+            jdbcManyRelationsHelper.fill(headPerson, Company.Fields.CONTACT_ITEMS);
+        }
+
+        return headPerson;
     }
 
     private String makeTypeName(EducationEntryType type, String locale) {

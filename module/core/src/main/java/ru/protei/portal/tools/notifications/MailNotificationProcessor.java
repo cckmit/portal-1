@@ -1126,14 +1126,25 @@ public class MailNotificationProcessor {
         try {
             EducationEntry educationEntry = event.getEducationEntry();
             String typeName = event.getTypeName();
-            NotificationEntry notifier = fetchNotificationEntryFromPerson(event.getInitiator());
+            Person headOfDepartment = event.getHeadOfDepartment();
+
+            List<String> recipients = new ArrayList<>();
+            recipients.add(new PlainContactInfoFacade(headOfDepartment.getContactInfo()).getEmail());
 
             PreparedTemplate subjectTemplate = templateService.getEducationRequestNotificationSubject(educationEntry);
-
-            List<String> recipients = getNotifiersAddresses(Collections.singleton(notifier));
             PreparedTemplate bodyTemplate = templateService.getEducationRequestNotificationBody(recipients, educationEntry, typeName);
 
-            sendMailToRecipients( Collections.singleton(notifier), bodyTemplate, subjectTemplate, true, getFromPortalAddress() );
+            recipients.forEach(email -> {
+                try {
+                    String body = bodyTemplate.getText(email, null, false);
+                    String subject = subjectTemplate.getText(email, null, false);
+
+                    sendMail(email, subject, body, getFromPortalAddress());
+                } catch (Exception e) {
+                    log.error("Failed to make MimeMessage mail={}, e={}", email, e);
+                }
+            });
+
         } catch (Exception e) {
             log.warn( "Failed to sent  notification: {}", event.getInitiator().getDisplayName(), e );
         }
