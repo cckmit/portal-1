@@ -9,18 +9,26 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
+import ru.protei.portal.core.model.dict.En_CommentOrHistoryType;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.UiConstants;
+import ru.protei.portal.ui.common.client.lang.En_CommentOrHistoryTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
 import ru.protei.portal.ui.common.client.widget.accordion.AccordionWidget;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.attachment.list.fullview.FullViewAttachmentList;
+import ru.protei.portal.ui.common.client.widget.tab.multi.MultiTabWidget;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.Consumer;
+
+import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.COMMENT;
+import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.HISTORY;
 
 public class IssueInfoWidget extends Composite {
 
@@ -31,6 +39,11 @@ public class IssueInfoWidget extends Composite {
 
         accordionWidget.setLocalStorageKey(UiConstants.ATTACHMENTS_PANEL_VISIBILITY);
         accordionWidget.setMaxHeight(UiConstants.Accordion.ATTACHMENTS_MAX_HEIGHT);
+
+        multiTabWidget.setTabToNameRenderer(type -> commentOrHistoryTypeLang.getName(type));
+        multiTabWidget.addTabs(Arrays.asList(COMMENT, HISTORY));
+
+        multiTabWidget.setOnTabClickHandler(selectedTabs -> activity.selectedTabsChanged(selectedTabs));
     }
 
     public void setActivity( AbstractIssueEditActivity activity ) {
@@ -38,16 +51,16 @@ public class IssueInfoWidget extends Composite {
         attachmentListContainer.setActivity(activity);
     }
 
-    public HasWidgets getCommentsContainer() {
-        return commentsContainer;
+    public HasWidgets getItemsContainer() {
+        return multiTabWidget.getContainer();
     }
 
-    public HasWidgets getHistoryContainer() {
-        return historyContainer;
+    public void selectTabs(List<En_CommentOrHistoryType> tabs) {
+        multiTabWidget.selectTabs(tabs);
     }
 
-    public HasWidgets getCommentHistoryContainer() {
-        return commentHistoryContainer;
+    public List<En_CommentOrHistoryType> getSelectedTabs() {
+        return multiTabWidget.getSelectedTabs();
     }
 
     public HasAttachments attachmentsListContainer() {
@@ -100,11 +113,7 @@ public class IssueInfoWidget extends Composite {
     Lang lang;
 
     @UiField
-    HTMLPanel commentsContainer;
-    @UiField
-    HTMLPanel historyContainer;
-    @UiField
-    HTMLPanel commentHistoryContainer;
+    MultiTabWidget<En_CommentOrHistoryType> multiTabWidget;
     @Inject
     @UiField(provided = true)
     FullViewAttachmentList attachmentListContainer;
@@ -113,6 +122,8 @@ public class IssueInfoWidget extends Composite {
     @Inject
     @UiField(provided = true)
     AccordionWidget accordionWidget;
+    @Inject
+    En_CommentOrHistoryTypeLang commentOrHistoryTypeLang;
 
     @Inject
     TextRenderControllerAsync textRenderController;

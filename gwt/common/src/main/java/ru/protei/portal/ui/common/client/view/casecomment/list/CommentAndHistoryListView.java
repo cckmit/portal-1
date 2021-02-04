@@ -18,8 +18,8 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListActivity;
-import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListView;
+import ru.protei.portal.ui.common.client.activity.commenthistory.AbstractCommentAndHistoryListActivity;
+import ru.protei.portal.ui.common.client.activity.commenthistory.AbstractCommentAndHistoryListView;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.lang.TimeElapsedTypeLang;
@@ -43,9 +43,9 @@ import static ru.protei.portal.core.model.util.CrmConstants.Style.HIDE;
 /**
  * Контейнер для комментариев
  */
-public class CaseCommentListView
+public class CommentAndHistoryListView
         extends Composite
-        implements AbstractCaseCommentListView, HasAttachmentListHandlers {
+        implements AbstractCommentAndHistoryListView, HasAttachmentListHandlers {
 
     @Inject
     public void onInit() {
@@ -58,7 +58,7 @@ public class CaseCommentListView
     }
 
     @Override
-    public void setActivity(AbstractCaseCommentListActivity activity) {
+    public void setActivity(AbstractCommentAndHistoryListActivity activity) {
         this.activity = activity;
         attachmentList.setActivity(activity);
     }
@@ -160,20 +160,8 @@ public class CaseCommentListView
     }
 
     @Override
-    public void clearCommentsContainer() {
+    public void clearItemsContainer() {
         itemsContainer.clear();
-    }
-
-    @Override
-    public void addItemToFront(IsWidget item) {
-        itemsContainer.insert(item.asWidget(), 0);
-    }
-
-    @Override
-    public void replaceCommentView( IsWidget removed, IsWidget inserted ) {
-        int widgetIndex = itemsContainer.getWidgetIndex( removed );
-        itemsContainer.insert( inserted.asWidget(), widgetIndex);
-        itemsContainer.remove( widgetIndex + 1 );
     }
 
     @Override
@@ -210,17 +198,6 @@ public class CaseCommentListView
     public void onSendClicked( ClickEvent event ) {
         if ( activity != null ) {
             activity.onSendClicked();
-        }
-    }
-
-    @UiHandler( "send" )
-    public void onEditLastMessage( KeyUpEvent event ) {
-        if ( event.getNativeKeyCode() != KeyCodes.KEY_UP ) {
-            return;
-        }
-
-        if ( activity != null ) {
-            activity.onEditLastMessage();
         }
     }
 
@@ -357,8 +334,8 @@ public class CaseCommentListView
 
     @Inject
     private TimeElapsedTypeLang elapsedTimeTypeLang;
-    private AbstractCaseCommentListActivity activity;
+    private AbstractCommentAndHistoryListActivity activity;
 
     private static CaseCommentListUiBinder ourUiBinder = GWT.create(CaseCommentListUiBinder.class);
-    interface CaseCommentListUiBinder extends UiBinder<HTMLPanel, CaseCommentListView> {}
+    interface CaseCommentListUiBinder extends UiBinder<HTMLPanel, CommentAndHistoryListView> {}
 }

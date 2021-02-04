@@ -23,6 +23,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
+import ru.protei.portal.ui.common.client.util.AttachmentUtils;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.PasteInfo;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -32,6 +33,7 @@ import java.util.*;
 import java.util.function.Consumer;
 
 import static ru.protei.portal.core.model.util.CrmConstants.Platform.PARAMETERS_MAX_LENGTH;
+import static ru.protei.portal.ui.common.client.util.AttachmentUtils.getRemoveErrorHandler;
 
 public abstract class PlatformEditActivity implements AbstractPlatformEditActivity {
 
@@ -162,19 +164,7 @@ public abstract class PlatformEditActivity implements AbstractPlatformEditActivi
     @Override
     public void onRemoveAttachment(Attachment attachment) {
         attachmentService.removeAttachmentEverywhere(En_CaseType.SF_PLATFORM, attachment.getId(), new FluentCallback<Long>()
-                .withError((throwable, defaultErrorHandler, status) -> {
-                    if (En_ResultStatus.NOT_FOUND.equals(status)) {
-                        fireEvent(new NotifyEvents.Show(lang.fileNotFoundError(), NotifyEvents.NotifyType.ERROR));
-                        return;
-                    }
-
-                    if (En_ResultStatus.NOT_REMOVED.equals(status)) {
-                        fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR));
-                        return;
-                    }
-
-                    defaultErrorHandler.accept(throwable);
-                })
+                .withError(getRemoveErrorHandler(this, lang))
                 .withSuccess(result -> {
                     view.attachmentsContainer().remove(attachment);
                     platform.getAttachments().remove(attachment);

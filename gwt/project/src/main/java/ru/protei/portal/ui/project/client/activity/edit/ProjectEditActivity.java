@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.project.client.activity.edit;
 
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -20,7 +19,6 @@ import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
@@ -256,7 +254,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
                 : En_Privilege.PROJECT_EDIT;
 
         if (!isNew(project)) {
-            CaseCommentEvents.Show show = new CaseCommentEvents.Show(
+            CommentAndHistoryEvents.Show show = new CommentAndHistoryEvents.Show(
                 view.getCommentsContainer(),
                 project.getId(),
                 En_CaseType.PROJECT,

@@ -18,4 +18,10 @@ public class CaseHistoryEvents {
         public FlowPanel historyContainer;
         public List<History> histories;
     }
+
+    public static class Clear {}
+
+    public static class Show {}
+
+    public static class Hide {}
 }

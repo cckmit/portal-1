@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.activity.casecomment.list;
+package ru.protei.portal.ui.common.client.activity.commenthistory;
 
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
@@ -10,15 +10,11 @@ import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader
 /**
  * Представление списка комментариев
  */
-public interface AbstractCaseCommentListView extends IsWidget {
+public interface AbstractCommentAndHistoryListView extends IsWidget {
 
-    void setActivity( AbstractCaseCommentListActivity activity );
+    void setActivity( AbstractCommentAndHistoryListActivity activity );
 
-    void clearCommentsContainer();
-
-    void addItemToFront(IsWidget comment );
-
-    void replaceCommentView( IsWidget removed, IsWidget inserted );
+    void clearItemsContainer();
 
     void removeComment( IsWidget comment );
 

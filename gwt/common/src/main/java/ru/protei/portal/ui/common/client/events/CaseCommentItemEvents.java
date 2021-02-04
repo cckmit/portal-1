@@ -16,7 +16,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class CommentsAndHistoryEvents {
+public class CaseCommentItemEvents {
     public static class Init {
         public Init(En_CaseType caseType, Long caseId, En_TextMarkup textMarkup,
                     boolean isPrivateVisible, boolean isElapsedTimeEnabled, boolean isModifyEnabled,
@@ -43,6 +43,8 @@ public class CommentsAndHistoryEvents {
         public Function<CaseComment, String> makeAllowRemoveValidationString;
     }
 
+    public static class Clear {}
+
     public static class FillComments {
         public FillComments(FlowPanel commentsContainer, List<CaseComment> comments) {
             this.commentsContainer = commentsContainer;
@@ -54,13 +56,11 @@ public class CommentsAndHistoryEvents {
     }
 
     public static class CreateComment {
-        public CreateComment(CaseComment caseComment, Consumer<AbstractCaseCommentItemView> itemViewConsumer) {
+        public CreateComment(CaseComment caseComment) {
             this.caseComment = caseComment;
-            this.itemViewConsumer = itemViewConsumer;
         }
 
         public CaseComment caseComment;
-        public Consumer<AbstractCaseCommentItemView> itemViewConsumer;
     }
 
     public static class EditComment {
@@ -75,6 +75,9 @@ public class CommentsAndHistoryEvents {
         public BiConsumer<CaseComment, Collection<Attachment>> resultConsumer;
     }
 
+    /**
+     * Сохранение комментария из пуш-уведомления
+     */
     public static class SaveOrUpdateClientComment {
         public SaveOrUpdateClientComment(CaseComment caseComment) {
             this.caseComment = caseComment;
@@ -83,8 +86,9 @@ public class CommentsAndHistoryEvents {
         public CaseComment caseComment;
     }
 
-    public static class RemoveComment {}
-
+    /**
+     * Удаление комментария из пуш-уведомления
+     */
     public static class RemoveClientComment {
         public RemoveClientComment(Long commentId) {
             this.commentId = commentId;
@@ -94,13 +98,11 @@ public class CommentsAndHistoryEvents {
     }
 
     public static class RemoveAttachment {
-        public RemoveAttachment(CaseCommentItemView itemView, CaseComment comment, Attachment attachment) {
-            this.itemView = itemView;
+        public RemoveAttachment(CaseComment comment, Attachment attachment) {
             this.comment = comment;
             this.attachment = attachment;
         }
 
-        public CaseCommentItemView itemView;
         public CaseComment comment;
         public Attachment attachment;
     }
@@ -113,13 +115,7 @@ public class CommentsAndHistoryEvents {
         public Long authorId;
     }
 
-    public static class FillHistories {
-        public FillHistories(List<History> histories, InsertPanel.ForIsWidget container) {
-            this.histories = histories;
-            this.container = container;
-        }
+    public static class Show {}
 
-        private final List<History> histories;
-        private final InsertPanel.ForIsWidget container;
-    }
+    public static class Hide {}
 }

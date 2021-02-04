@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.activity.casecomment.list;
+package ru.protei.portal.ui.common.client.activity.commenthistory;
 
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.protei.portal.core.model.ent.Attachment;
@@ -6,11 +6,9 @@ import ru.protei.portal.core.model.ent.Attachment;
 /**
  * Абстрактная активность списка комментариев
  */
-public interface AbstractCaseCommentListActivity extends Activity {
+public interface AbstractCommentAndHistoryListActivity extends Activity {
 
     void onSendClicked();
-
-    void onEditLastMessage();
 
     void removeTempAttachment(Attachment attachment);
 

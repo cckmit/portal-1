@@ -9,7 +9,6 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -145,7 +144,7 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
                 .withCaseId(value.getId())
                 .readOnly());
 
-        fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer(),
+        fireEvent(new CommentAndHistoryEvents.Show(view.getCommentsContainer(),
                 value.getId(),
                 En_CaseType.EMPLOYEE_REGISTRATION,
                 policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_REGISTRATION_VIEW),

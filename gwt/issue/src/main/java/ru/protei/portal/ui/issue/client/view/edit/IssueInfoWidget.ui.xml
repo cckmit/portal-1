@@ -21,19 +21,7 @@
         </div>
         <div class="row">
             <div class="form-group col-md-12">
-                <tab:TabWidget styleName="issue-info-tab-widget">
-                    <tab:pane.TabWidgetPane tabName="{lang.comments}">
-                        <g:HTMLPanel ui:field="commentsContainer"/>
-                    </tab:pane.TabWidgetPane>
-
-                    <tab:pane.TabWidgetPane tabName="{lang.caseHistory}">
-                        <g:HTMLPanel ui:field="historyContainer"/>
-                    </tab:pane.TabWidgetPane>
-
-                    <tab:pane.TabWidgetPane tabName="Комменты с историей">
-                        <g:HTMLPanel ui:field="commentHistoryContainer"/>
-                    </tab:pane.TabWidgetPane>
-                </tab:TabWidget>
+                <tab:multi.MultiTabWidget ui:field="multiTabWidget" styleName="issue-info-tab-widget"/>
             </div>
         </div>
     </g:HTMLPanel>

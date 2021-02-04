@@ -167,7 +167,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
             view.getLinksContainer().clear();
         }
 
-        CaseCommentEvents.Show showComments = new CaseCommentEvents.Show(
+        CommentAndHistoryEvents.Show showComments = new CommentAndHistoryEvents.Show(
             view.getCommentsContainer(),
             value.getId(),
             En_CaseType.PROJECT,

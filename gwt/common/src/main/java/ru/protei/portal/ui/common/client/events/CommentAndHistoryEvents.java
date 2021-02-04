@@ -3,11 +3,18 @@ package ru.protei.portal.ui.common.client.events;
 import com.google.gwt.user.client.ui.HasWidgets;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
+import ru.protei.portal.core.model.dict.En_CommentOrHistoryType;
 
-public class CaseCommentEvents {
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.COMMENT;
+
+public class CommentAndHistoryEvents {
 
     /**
-     * Показать комментарии
+     * Показать комментарии и историю
      */
     public static class Show {
 
@@ -38,10 +45,11 @@ public class CaseCommentEvents {
         public boolean isMentionEnabled = true;
         public En_TextMarkup textMarkup = En_TextMarkup.MARKDOWN;
         public boolean extendedPrivacyType = false;
+        public List<En_CommentOrHistoryType> typesToShow = new ArrayList<>(Collections.singletonList(COMMENT));
     }
 
     /**
-     * Перезагрузить список комментариев
+     * Перезагрузить список элементов
      */
     public static class Reload {
         public Reload() {}
@@ -49,5 +57,13 @@ public class CaseCommentEvents {
 
     public static class DisableNewComment {
         public DisableNewComment() {}
+    }
+
+    public static class ShowItems {
+        public ShowItems(List<En_CommentOrHistoryType> typesToShow) {
+            this.typesToShow = typesToShow;
+        }
+
+        public List<En_CommentOrHistoryType> typesToShow;
     }
 }

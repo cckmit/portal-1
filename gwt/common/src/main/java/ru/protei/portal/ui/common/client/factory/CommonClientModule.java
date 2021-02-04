@@ -5,10 +5,10 @@ import com.google.inject.Singleton;
 import ru.protei.portal.ui.common.client.activity.actionbar.ActionBarActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
-import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListView;
+import ru.protei.portal.ui.common.client.activity.commenthistory.AbstractCommentAndHistoryListView;
 import ru.protei.portal.ui.common.client.activity.casecomment.list.CaseCommentItemsListActivity;
-import ru.protei.portal.ui.common.client.activity.casecomment.list.CaseCommentListActivity;
-import ru.protei.portal.ui.common.client.activity.casehistory.list.CaseHistoryListActivity;
+import ru.protei.portal.ui.common.client.activity.commenthistory.CommentAndHistoryListActivity;
+import ru.protei.portal.ui.common.client.activity.casehistory.CaseHistoryItemsListActivity;
 import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
 import ru.protei.portal.ui.common.client.activity.caselink.item.AbstractCaseLinkItemView;
 import ru.protei.portal.ui.common.client.activity.caselink.list.AbstractCaseLinkListView;
@@ -53,7 +53,7 @@ import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.service.HomeCompanyService;
 import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemView;
-import ru.protei.portal.ui.common.client.view.casecomment.list.CaseCommentListView;
+import ru.protei.portal.ui.common.client.view.casecomment.list.CommentAndHistoryListView;
 import ru.protei.portal.ui.common.client.view.caselink.item.CaseLinkItemView;
 import ru.protei.portal.ui.common.client.view.caselink.list.CaseLinkListView;
 import ru.protei.portal.ui.common.client.view.casetag.edit.CaseTagEditView;
@@ -136,8 +136,8 @@ public class CommonClientModule extends AbstractGinModule {
         bind( AbstractPathItemListView.class ).to( PathItemListView.class );
         bind( AbstractPathItemView.class ).to( PathItemView.class );
 
-        bind( CaseCommentListActivity.class ).asEagerSingleton();
-        bind( AbstractCaseCommentListView.class ).to( CaseCommentListView.class ).in( Singleton.class );
+        bind( CommentAndHistoryListActivity.class ).asEagerSingleton();
+        bind( AbstractCommentAndHistoryListView.class ).to( CommentAndHistoryListView.class ).in( Singleton.class );
         bind( AbstractCaseCommentItemView.class ).to( CaseCommentItemView.class );
 
         bind( CaseLinkListActivity.class ).asEagerSingleton();
@@ -177,7 +177,7 @@ public class CommonClientModule extends AbstractGinModule {
         bind( IssueFilterWidgetModel.class ).asEagerSingleton();
         bind( AbstractIssueFilterParamView.class ).to( IssueFilterParamView.class );
 
-        bind(CaseHistoryListActivity.class).asEagerSingleton();
+        bind(CaseHistoryItemsListActivity.class).asEagerSingleton();
         bind(AbstractCaseCommentItemActivity.class).to(CaseCommentItemsListActivity.class).asEagerSingleton();
 
         bind( ProjectSearchActivity.class ).asEagerSingleton();

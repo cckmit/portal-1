@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.activity.casehistory.list;
+package ru.protei.portal.ui.common.client.activity.casehistory;
 
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -25,13 +25,31 @@ import ru.protei.portal.ui.common.client.view.casehistory.item.simple.CaseHistor
 import ru.protei.portal.ui.common.client.view.casehistory.item.tag.CaseHistoryTagItemView;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
-public abstract class CaseHistoryListActivity implements AbstractCaseHistoryListActivity, Activity {
+public abstract class CaseHistoryItemsListActivity implements AbstractCaseHistoryItemActivity, Activity {
     @Event
     public void onFill(CaseHistoryEvents.Fill event) {
         fillView(event.histories, event.historyContainer);
+    }
+
+    @Event
+    public void onShow(CaseHistoryEvents.Show event) {
+        isVisibleByDefault = true;
+        historyItemsContainers.forEach(historyItemsContainer -> historyItemsContainer.setVisible(isVisibleByDefault));
+    }
+
+    @Event
+    public void onHide(CaseHistoryEvents.Hide event) {
+        isVisibleByDefault = false;
+        historyItemsContainers.forEach(historyItemsContainer -> historyItemsContainer.setVisible(isVisibleByDefault));
+    }
+
+    @Event
+    public void onClear(CaseHistoryEvents.Clear event) {
+        historyItemsContainers.clear();
     }
 
     private void fillView(List<History> caseHistories, FlowPanel historyContainer) {
@@ -39,43 +57,50 @@ public abstract class CaseHistoryListActivity implements AbstractCaseHistoryList
             return;
         }
 
-        String historyDate = null;
-        Long historyAuthorId = null;
-        CaseHistoryItemsContainer historyItemsContainer = null;
+        String lastHistoryDate = null;
+        Long lastHistoryAuthorId = null;
+        CaseHistoryItemsContainer lastHistoryItemsContainer = null;
 
-        List<Widget> historyItemsContainerList = new ArrayList<>();
+        List<CaseHistoryItemsContainer> currentHistoryItemsContainers = new LinkedList<>();
 
         ListIterator<History> historyListIterator = caseHistories.listIterator(caseHistories.size());
 
         while (historyListIterator.hasPrevious()) {
             History nextHistory = historyListIterator.previous();
+            String nextHistoryDate = DateFormatter.formatDateTime(nextHistory.getDate());
 
-            if (!DateFormatter.formatDateTime(nextHistory.getDate()).equals(historyDate) && nextHistory.getInitiatorId().equals(historyAuthorId)) {
-                historyDate = DateFormatter.formatDateTime(nextHistory.getDate());
+            if (!nextHistoryDate.equals(lastHistoryDate) && nextHistory.getInitiatorId().equals(lastHistoryAuthorId)) {
+                lastHistoryItemsContainer = caseHistoryItemsContainerProvider.get();
+                lastHistoryItemsContainer.initWithoutInitiatorMode();
 
-                historyItemsContainer = caseHistoryItemsContainerProvider.get();
-                historyItemsContainer.initWithoutInitiatorMode();
+                lastHistoryItemsContainer.setDate(nextHistoryDate);
 
-                historyItemsContainer.setDate(historyDate);
+                lastHistoryDate = nextHistoryDate;
 
-                historyItemsContainerList.add(0, historyItemsContainer);
+                currentHistoryItemsContainers.add(0, lastHistoryItemsContainer);
             }
 
-            if (!nextHistory.getInitiatorId().equals(historyAuthorId)) {
-                historyAuthorId = nextHistory.getInitiatorId();
-                historyDate = DateFormatter.formatDateTime(nextHistory.getDate());
+            if (!nextHistory.getInitiatorId().equals(lastHistoryAuthorId)) {
+                lastHistoryAuthorId = nextHistory.getInitiatorId();
 
-                historyItemsContainer = caseHistoryItemsContainerProvider.get();
-                historyItemsContainer.setDate(historyDate);
-                historyItemsContainer.setInitiator(nextHistory.getInitiatorFullName());
+                lastHistoryDate = nextHistoryDate;
 
-                historyItemsContainerList.add(0, historyItemsContainer);
+                lastHistoryItemsContainer = caseHistoryItemsContainerProvider.get();
+                lastHistoryItemsContainer.setDate(nextHistoryDate);
+                lastHistoryItemsContainer.setInitiator(nextHistory.getInitiatorFullName());
+
+                currentHistoryItemsContainers.add(0, lastHistoryItemsContainer);
             }
 
-            addHistoryItem(nextHistory, historyItemsContainer);
+            addHistoryItem(nextHistory, lastHistoryItemsContainer);
         }
 
-        historyItemsContainerList.forEach(widget -> historyContainer.insert(widget, 0));
+        currentHistoryItemsContainers.forEach(itemsContainer -> {
+            itemsContainer.setVisible(isVisibleByDefault);
+            historyContainer.insert(itemsContainer, 0);
+        });
+
+        historyItemsContainers.addAll(currentHistoryItemsContainers);
     }
 
     private void addHistoryItem(History history, CaseHistoryItemsContainer historyItemsContainer) {
@@ -195,4 +220,8 @@ public abstract class CaseHistoryListActivity implements AbstractCaseHistoryList
     private PolicyService policyService;
     @Inject
     private Lang lang;
+
+    private boolean isVisibleByDefault;
+
+    private final List<CaseHistoryItemsContainer> historyItemsContainers = new ArrayList<>();
 }

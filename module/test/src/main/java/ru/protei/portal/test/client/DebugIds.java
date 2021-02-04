@@ -343,6 +343,7 @@ public class DebugIds {
         String DEADLINE_CONTAINER = "issue-deadline-container";
         String WORK_TRIGGER_SELECTOR = "issue-work-trigger-selector";
         String SUBTASK_BUTTON = "issue-subtask-button";
+        String TABS_CONTAINER = "issue-tabs-container";
 
         interface LABEL {
             String NAME = "issue-label-name";

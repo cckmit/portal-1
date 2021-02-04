@@ -1,5 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_CommentOrHistoryType;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -12,36 +14,32 @@ public class CommentsAndHistories implements Serializable {
 
     public static class CommentOrHistory implements Serializable {
         private Long id;
-        private Type type;
+        private En_CommentOrHistoryType type;
 
         public CommentOrHistory() {}
 
-        public CommentOrHistory(Long id, Type type) {
+        public CommentOrHistory(Long id, En_CommentOrHistoryType type) {
             this.id = id;
             this.type = type;
         }
 
         public CommentOrHistory(CaseComment caseComment) {
             this.id = caseComment.getId();
-            this.type = Type.COMMENT;
+            this.type = En_CommentOrHistoryType.COMMENT;
         }
 
         public CommentOrHistory(History history) {
             this.id = history.getId();
-            this.type = Type.HISTORY;
+            this.type = En_CommentOrHistoryType.HISTORY;
         }
 
         public Long getId() {
             return id;
         }
 
-        public Type getType() {
+        public En_CommentOrHistoryType getType() {
             return type;
         }
-    }
-
-    public enum Type {
-        COMMENT, HISTORY
     }
 
     public List<CommentOrHistory> getSortedCommentOrHistoryList() {

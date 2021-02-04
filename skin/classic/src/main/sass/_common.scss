@@ -4842,6 +4842,22 @@ table {
   .nav-tabs ~ .tab-content {
     overflow: unset;
   }
+
+  .nav-tabs {
+    .nav-item {
+      a {
+        color: rgba(98, 98, 98, .7);
+
+        &.active.show {
+          color: #626262;
+        }
+
+        &:focus {
+          color: rgba(98, 98, 98, .7);
+        }
+      }
+    }
+  }
 }
 
 .case-history-item-history-type {

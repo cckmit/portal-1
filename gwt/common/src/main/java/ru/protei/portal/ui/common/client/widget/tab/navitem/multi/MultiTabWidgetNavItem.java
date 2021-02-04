@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.tab.navitem;
+package ru.protei.portal.ui.common.client.widget.tab.navitem.multi;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
@@ -11,14 +11,14 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import ru.protei.portal.ui.common.client.widget.tab.base.TabHandler;
+import ru.protei.portal.ui.common.client.widget.tab.base.multi.MultiTabHandler;
 
-public class TabWidgetNavItem extends Composite {
-
-    public TabWidgetNavItem() {
+public class MultiTabWidgetNavItem<T> extends Composite {
+    public MultiTabWidgetNavItem() {
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 
-    public void setActivity(TabHandler activity) {
+    public void setActivity(MultiTabHandler<T> activity) {
         this.activity = activity;
     }
 
@@ -30,20 +30,9 @@ public class TabWidgetNavItem extends Composite {
         anchor.removeStyleName("active show");
     }
 
-    public void setTabName(String tabName) {
-        this.tabName = tabName;
+    public void setTab(T tab, String tabName) {
+        this.tab = tab;
         text.setInnerText(tabName);
-    }
-
-    public void setTabIcon(String tabIcon) {
-        if (tabIcon != null) {
-            icon.removeClassName("hide");
-            icon.addClassName(tabIcon);
-        }
-    }
-
-    public void setBadge(String badge) {
-        this.badge.setInnerText("(" + badge + ")");
     }
 
     public void setTabNameDebugId(String debugId) {
@@ -55,7 +44,7 @@ public class TabWidgetNavItem extends Composite {
         event.preventDefault();
         event.stopPropagation();
         if (activity != null) {
-            activity.onTabClicked(tabName);
+            activity.onTabClicked(tab);
         }
     }
 
@@ -64,15 +53,13 @@ public class TabWidgetNavItem extends Composite {
     @UiField
     Anchor anchor;
     @UiField
-    Element icon;
-    @UiField
     SpanElement text;
     @UiField
     SpanElement badge;
 
-    private String tabName;
-    private TabHandler activity;
+    private T tab;
+    private MultiTabHandler<T> activity;
 
-    interface TabWidgetNavItemUiBinder extends UiBinder<HTMLPanel, TabWidgetNavItem> {}
-    private static TabWidgetNavItemUiBinder ourUiBinder = GWT.create(TabWidgetNavItemUiBinder.class);
+    interface MultiTabWidgetNavItemUiBinder extends UiBinder<HTMLPanel, MultiTabWidgetNavItem<?>> {}
+    private static MultiTabWidgetNavItemUiBinder ourUiBinder = GWT.create(MultiTabWidgetNavItemUiBinder.class);
 }

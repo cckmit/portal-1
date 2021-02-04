@@ -55,7 +55,7 @@ public abstract class CaseCommentItemsListActivity implements Activity, Abstract
     }
 
     @Event
-    public void onInit(CommentsAndHistoryEvents.Init event) {
+    public void onInit(CaseCommentItemEvents.Init event) {
         this.caseType = event.caseType;
         this.textMarkup = event.textMarkup;
         this.isPrivateVisible = event.isPrivateVisible;
@@ -68,14 +68,19 @@ public abstract class CaseCommentItemsListActivity implements Activity, Abstract
     }
 
     @Event
-    public void onFillComments(CommentsAndHistoryEvents.FillComments event) {
+    public void onClear(CaseCommentItemEvents.Clear event) {
+        itemViewToModel.clear();
+    }
+
+    @Event
+    public void onFillComments(CaseCommentItemEvents.FillComments event) {
         this.commentsContainer = event.commentsContainer;
 
         fillViewWithComments(commentsContainer, event.comments);
     }
 
     @Event
-    public void onCreateComment(CommentsAndHistoryEvents.CreateComment event) {
+    public void onCreateComment(CaseCommentItemEvents.CreateComment event) {
         CaseComment caseComment = event.caseComment;
 
         AbstractCaseCommentItemView itemView = makeCommentView(caseComment);
@@ -87,7 +92,7 @@ public abstract class CaseCommentItemsListActivity implements Activity, Abstract
     }
 
     @Event
-    public void onSaveOrUpdateComment(CommentsAndHistoryEvents.SaveOrUpdateClientComment event) {
+    public void onSaveOrUpdateComment(CaseCommentItemEvents.SaveOrUpdateClientComment event) {
         CaseComment comment = event.caseComment;
 
         AbstractCaseCommentItemView newView = makeCommentView( comment );
@@ -116,7 +121,7 @@ public abstract class CaseCommentItemsListActivity implements Activity, Abstract
     }
 
     @Event
-    public void onRemoveClientComment(CommentsAndHistoryEvents.RemoveClientComment event) {
+    public void onRemoveClientComment(CaseCommentItemEvents.RemoveClientComment event) {
         AbstractCaseCommentItemView oldView = findItemViewByCommentId( event.commentId );
 
         if (oldView == null) {
@@ -133,6 +138,18 @@ public abstract class CaseCommentItemsListActivity implements Activity, Abstract
         itemViewToModel.remove(oldView);
     }
 
+    @Event
+    public void onShow(CaseCommentItemEvents.Show event) {
+        isVisibleByDefault = true;
+        itemViewToModel.keySet().forEach(itemView -> itemView.asWidget().setVisible(isVisibleByDefault));
+    }
+
+    @Event
+    public void onHide(CaseCommentItemEvents.Hide event) {
+        isVisibleByDefault = false;
+        itemViewToModel.keySet().forEach(itemView -> itemView.asWidget().setVisible(isVisibleByDefault));
+    }
+
     @Override
     public void onRemoveClicked(AbstractCaseCommentItemView itemView) {
         CaseComment caseComment = itemViewToModel.get( itemView );
@@ -142,8 +159,6 @@ public abstract class CaseCommentItemsListActivity implements Activity, Abstract
             fireEvent(new NotifyEvents.Show(validationString, NotifyEvents.NotifyType.ERROR));
             return;
         }
-
-        fireEvent(new CommentsAndHistoryEvents.RemoveComment());
 
         if (caseComment.getCaseStateId() != null) {
             caseComment.setText(null);
@@ -176,7 +191,7 @@ public abstract class CaseCommentItemsListActivity implements Activity, Abstract
             return;
         }
 
-        fireEvent(new CommentsAndHistoryEvents.EditComment(caseComment, itemView, (comment, newAttachments) -> {
+        fireEvent(new CaseCommentItemEvents.EditComment(caseComment, itemView, (comment, newAttachments) -> {
             renderTextAsync(caseComment.getText(), textMarkup, itemView::setMessage);
             fillTimeElapsed(comment, itemView);
 
@@ -200,13 +215,12 @@ public abstract class CaseCommentItemsListActivity implements Activity, Abstract
             return;
         }
 
-        fireEvent(new CommentsAndHistoryEvents.ReplyComment(value.getAuthorId()));
+        fireEvent(new CaseCommentItemEvents.ReplyComment(value.getAuthorId()));
     }
 
     @Override
     public void onRemoveAttachment(CaseCommentItemView itemView, Attachment attachment) {
-        fireEvent(new CommentsAndHistoryEvents.RemoveAttachment(
-                itemView,
+        fireEvent(new CaseCommentItemEvents.RemoveAttachment(
                 itemViewToModel.get(itemView),
                 attachment)
         );
@@ -240,8 +254,6 @@ public abstract class CaseCommentItemsListActivity implements Activity, Abstract
     }
 
     private void fillViewWithComments(FlowPanel commentsContainer, List<CaseComment> comments) {
-        itemViewToModel.clear();
-
         List<AbstractCaseCommentItemView> views = new ArrayList<>();
         List<String> textList = new ArrayList<>();
 
@@ -269,6 +281,7 @@ public abstract class CaseCommentItemsListActivity implements Activity, Abstract
     private AbstractCaseCommentItemView makeCommentView(CaseComment value) {
         AbstractCaseCommentItemView itemView = commentItemViewProvider.get();
         itemView.setActivity(this);
+        itemView.asWidget().setVisible(isVisibleByDefault);
 
         if (value.getAuthorId().equals(profile.getId())) {
             itemView.setIcon(AvatarUtils.getAvatarUrl(profile));
@@ -476,6 +489,8 @@ public abstract class CaseCommentItemsListActivity implements Activity, Abstract
     private boolean isElapsedTimeEnabled;
     private boolean isModifyEnabled;
     private Long caseId;
+
+    private boolean isVisibleByDefault;
 
     private WorkTimeFormatter workTimeFormatter;
 

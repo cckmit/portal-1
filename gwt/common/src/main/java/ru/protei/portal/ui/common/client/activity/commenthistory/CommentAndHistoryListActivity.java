@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.activity.casecomment.list;
+package ru.protei.portal.ui.common.client.activity.commenthistory;
 
 import com.google.gwt.user.client.Timer;
 import com.google.inject.Inject;
@@ -9,7 +9,6 @@ import ru.protei.portal.core.model.event.CaseCommentRemovedClientEvent;
 import ru.protei.portal.core.model.event.CaseCommentSavedClientEvent;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.util.ValidationResult;
-import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
@@ -32,15 +31,18 @@ import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.COMMENT;
+import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.HISTORY;
 import static ru.protei.portal.core.model.helper.CaseCommentUtils.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
+import static ru.protei.portal.ui.common.client.util.AttachmentUtils.getRemoveErrorHandler;
 
 /**
  * Активность списка комментариев
  */
-public abstract class CaseCommentListActivity
-        implements AbstractCaseCommentListActivity {
+public abstract class CommentAndHistoryListActivity
+        implements AbstractCommentAndHistoryListActivity {
 
     @Inject
     public void onInit() {
@@ -71,7 +73,7 @@ public abstract class CaseCommentListActivity
     }
 
     @Event
-    public void onShow(CaseCommentEvents.Show event) {
+    public void onShow(CommentAndHistoryEvents.Show event) {
         event.parent.clear();
         event.parent.add(view.asWidget());
 
@@ -84,7 +86,7 @@ public abstract class CaseCommentListActivity
         this.isPrivateCase = event.isPrivateCase;
         this.isNewCommentEnabled = event.isNewCommentEnabled;
 
-        fireEvent(new CommentsAndHistoryEvents.Init(
+        fireEvent(new CaseCommentItemEvents.Init(
                 caseType, caseId, textMarkup,
                 isPrivateVisible, isElapsedTimeEnabled, isModifyEnabled,
                 comment -> makeAllowEditValidationString(comment, profile),
@@ -92,13 +94,12 @@ public abstract class CaseCommentListActivity
         ));
 
         comment = null;
-        lastCommentView = null;
         tempAttachments.clear();
         unlockSave();
 
         view.message().setValue(makeCommentText(null), true);
         view.attachmentContainer().clear();
-        view.clearCommentsContainer();
+        view.clearItemsContainer();
         view.clearTimeElapsed();
         view.setTimeElapsedVisibility(isElapsedTimeEnabled);
         view.setUserIcon(AvatarUtils.getAvatarUrl(profile));
@@ -117,12 +118,12 @@ public abstract class CaseCommentListActivity
         view.setInitiatorCompanyId(event.initiatorCompanyId);
         view.setMentionEnabled(event.isMentionEnabled);
 
-        reloadComments(caseType, caseId);
+        reloadItems(caseType, caseId, event.typesToShow);
     }
 
     @Event
-    public void onReload(CaseCommentEvents.Reload event) {
-        reloadComments(caseType, caseId);
+    public void onReload(CommentAndHistoryEvents.Reload event) {
+        reloadItems(caseType, caseId);
     }
 
     @Event
@@ -131,7 +132,7 @@ public abstract class CaseCommentListActivity
         if (!Objects.equals( caseId, event.getCaseObjectId() )) return;
         if (Objects.equals( policyService.getProfileId(), event.getPersonId() )) return;
 
-        fireEvent(new CommentsAndHistoryEvents.RemoveClientComment(event.getCaseCommentID()));
+        fireEvent(new CaseCommentItemEvents.RemoveClientComment(event.getCaseCommentID()));
     }
 
     @Event
@@ -147,34 +148,28 @@ public abstract class CaseCommentListActivity
 
                     renderTextAsync(comment.getText(), textMarkup, converted -> {
                         comment.setText(converted);
-                        fireEvent(new CommentsAndHistoryEvents.SaveOrUpdateClientComment(comment));
+                        fireEvent(new CaseCommentItemEvents.SaveOrUpdateClientComment(comment));
                     });
                 })
         );
     }
 
     @Event
-    public void onDisableNewComment(CaseCommentEvents.DisableNewComment event) {
+    public void onDisableNewComment(CommentAndHistoryEvents.DisableNewComment event) {
         this.isNewCommentEnabled = false;
         view.setNewCommentDisabled(true);
     }
 
     @Event
-    public void onRemoveComment(CommentsAndHistoryEvents.RemoveComment event) {
-        lastCommentView = null;
-    }
-
-    @Event
-    public void onEditComment(CommentsAndHistoryEvents.EditComment event) {
+    public void onEditComment(CaseCommentItemEvents.EditComment event) {
         commentCompleteEditConsumer = event.resultConsumer;
 
         comment = event.comment;
-        lastCommentView = event.itemView;
 
         view.attachmentContainer().clear();
         tempAttachments.clear();
 
-        Collection<Attachment> commentAttachments = lastCommentView.attachmentContainer().getAll();
+        Collection<Attachment> commentAttachments = event.itemView.attachmentContainer().getAll();
 
         if(!commentAttachments.isEmpty()) {
             view.attachmentContainer().add(commentAttachments);
@@ -195,7 +190,7 @@ public abstract class CaseCommentListActivity
     }
 
     @Event
-    public void onReplyComment(CommentsAndHistoryEvents.ReplyComment event) {
+    public void onReplyComment(CaseCommentItemEvents.ReplyComment event) {
         comment = null;
 
         accountService.getLoginByPersonId(event.authorId, new FluentCallback<String>()
@@ -205,22 +200,31 @@ public abstract class CaseCommentListActivity
         view.focus();
     }
 
+    @Event
+    public void onRemoveAttachment(CaseCommentItemEvents.RemoveAttachment event) {
+        if(comment != null && comment == event.comment) {
+            //deleting while editing
+            fireEvent(new NotifyEvents.Show(lang.errEditIssueComment(), NotifyEvents.NotifyType.ERROR));
+            return;
+        }
+
+        removeAttachment(event.attachment.getId(), () -> {
+            fireEvent(new AttachmentEvents.Remove(caseId, Collections.singletonList(event.attachment)));
+            reloadItems(caseType, caseId);
+        });
+    }
+
+    @Event
+    public void onShowItems(CommentAndHistoryEvents.ShowItems event) {
+        displayItems(event.typesToShow);
+    }
+
     @Override
     public void onSendClicked() {
         if (!isNewCommentEnabled) {
             return;
         }
         send();
-    }
-
-    @Override
-    public void onEditLastMessage() {
-//        CaseComment value = itemViewToModel.get( lastCommentView );
-//        if ( value == null ) {
-//            return;
-//        }
-//
-//        view.message().setValue( value.getText(), true );
     }
 
     @Override
@@ -259,41 +263,15 @@ public abstract class CaseCommentListActivity
         scheduleChangedPreview();
     }
 
-    @Event
-    public void onRemoveAttachment(CommentsAndHistoryEvents.RemoveAttachment event) {
-        if(comment != null && comment == event.comment) {
-            //deleting while editing
-            fireEvent(new NotifyEvents.Show(lang.errEditIssueComment(), NotifyEvents.NotifyType.ERROR));
-            return;
-        }
-
-        removeAttachment(event.attachment.getId(), () -> {
-            fireEvent(new AttachmentEvents.Remove(caseId, Collections.singletonList(event.attachment)));
-            reloadComments(caseType, caseId);
-        });
-    }
-
     @Override
     public void onDisplayPreviewChanged( Boolean isDisplayPreview ) {
         storage.set( IS_PREVIEW_DISPLAYED, String.valueOf( isDisplayPreview ) );
         fireChangedPreview();
     }
 
-    private void removeAttachment(Long id, Runnable successAction){
+    private void removeAttachment(Long id, Runnable successAction) {
         attachmentService.removeAttachmentEverywhere(caseType, id, new FluentCallback<Long>()
-                .withError((throwable, defaultErrorHandler, status) -> {
-                    if (En_ResultStatus.NOT_FOUND.equals(status)) {
-                        fireEvent(new NotifyEvents.Show(lang.fileNotFoundError(), NotifyEvents.NotifyType.ERROR));
-                        return;
-                    }
-
-                    if (En_ResultStatus.NOT_REMOVED.equals(status)) {
-                        fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR));
-                        return;
-                    }
-
-                    defaultErrorHandler.accept(throwable);
-                })
+                .withError(getRemoveErrorHandler(this, lang))
                 .withSuccess(result -> successAction.run())
         );
     }
@@ -309,18 +287,23 @@ public abstract class CaseCommentListActivity
     }
 
     private void fillView(List<CaseComment> comments) {
-        view.clearCommentsContainer();
+        view.clearItemsContainer();
         view.setNewCommentHidden(!isModifyEnabled);
         view.setNewCommentDisabled(!isNewCommentEnabled);
 
         view.setCommentPlaceholder(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW) ?
                 lang.commentAddMessageMentionPlaceholder() : lang.commentAddMessagePlaceholder());
 
-        fireEvent(new CommentsAndHistoryEvents.FillComments(view.itemsContainer(), comments));
+        fireEvent(new CaseCommentItemEvents.Clear());
+        fireEvent(new CaseCommentItemEvents.FillComments(view.itemsContainer(), comments));
     }
 
     public void fillView(CommentsAndHistories commentsAndHistories) {
-        view.clearCommentsContainer();
+        view.clearItemsContainer();
+
+        fireEvent(new CaseCommentItemEvents.Clear());
+        fireEvent(new CaseHistoryEvents.Clear());
+
         view.setNewCommentHidden(!isModifyEnabled);
         view.setNewCommentDisabled(!isNewCommentEnabled);
 
@@ -334,13 +317,13 @@ public abstract class CaseCommentListActivity
         List<CaseComment> comments = new ArrayList<>();
 
         for (CommentsAndHistories.CommentOrHistory commentOrHistory : sortedCommentOrHistoryList) {
-            if (CommentsAndHistories.Type.COMMENT.equals(commentOrHistory.getType())) {
+            if (COMMENT.equals(commentOrHistory.getType())) {
                 flushHistories(histories);
                 comments.add(commentsAndHistories.getComment(commentOrHistory.getId()));
                 continue;
             }
 
-            if (CommentsAndHistories.Type.HISTORY.equals(commentOrHistory.getType())) {
+            if (HISTORY.equals(commentOrHistory.getType())) {
                 flushComments(comments);
                 histories.add(commentsAndHistories.getHistory(commentOrHistory.getId()));
                 continue;
@@ -365,7 +348,7 @@ public abstract class CaseCommentListActivity
             return;
         }
 
-        fireEvent(new CommentsAndHistoryEvents.FillComments(view.itemsContainer(), comments));
+        fireEvent(new CaseCommentItemEvents.FillComments(view.itemsContainer(), comments));
         comments.clear();
     }
 
@@ -374,7 +357,6 @@ public abstract class CaseCommentListActivity
                 Collections.emptyList():
                 list.stream().map(CaseAttachment::getAttachmentId).collect(Collectors.toList());
     }
-
 
     private void send() {
         if (isLockedSave()) {
@@ -480,7 +462,7 @@ public abstract class CaseCommentListActivity
             commentCompleteEditConsumer.accept(comment, tempAttachments);
         } else {
             fireEvent(new AttachmentEvents.Add(caseId, tempAttachments));
-            fireEvent(new CommentsAndHistoryEvents.CreateComment(caseComment, itemView -> lastCommentView = itemView));
+            fireEvent(new CaseCommentItemEvents.CreateComment(caseComment));
         }
 
         comment = null;
@@ -550,11 +532,21 @@ public abstract class CaseCommentListActivity
                 .withSuccess(consumer));
     }
 
-    private void reloadComments(En_CaseType caseType, Long caseId) {
+    private void reloadItems(En_CaseType caseType, Long caseId) {
+        reloadItems(caseType, caseId, new ArrayList<>());
+    }
+
+    private void reloadItems(En_CaseType caseType, Long caseId, List<En_CommentOrHistoryType> typesToShow) {
         if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
             caseCommentController.getCommentsAndHistories(caseType, caseId, new FluentCallback<CommentsAndHistories>()
                     .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR)))
-                    .withSuccess(this::fillView)
+                    .withSuccess(commentsAndHistories -> {
+                        fillView(commentsAndHistories);
+
+                        if (!typesToShow.isEmpty()) {
+                            displayItems(typesToShow);
+                        }
+                    })
             );
 
             return;
@@ -562,8 +554,47 @@ public abstract class CaseCommentListActivity
 
         caseCommentController.getCaseComments(caseType, caseId, new FluentCallback<List<CaseComment>>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR)))
-                .withSuccess(this::fillView)
+                .withSuccess(comments -> {
+                    fillView(comments);
+
+                    if (!typesToShow.isEmpty()) {
+                        displayItems(typesToShow);
+                    }
+                })
         );
+    }
+
+    private void displayItems(List<En_CommentOrHistoryType> typesToShow) {
+        hideCommentItems();
+        hideHistoryItems();
+
+        view.setNewCommentHidden(!typesToShow.contains(COMMENT));
+
+        typesToShow.forEach(type -> {
+            if (type.equals(COMMENT)) {
+                showCommentItems();
+            }
+
+            if (type.equals(HISTORY)) {
+                showHistoryItems();
+            }
+        });
+    }
+
+    private void showCommentItems() {
+        fireEvent(new CaseCommentItemEvents.Show());
+    }
+
+    private void hideCommentItems() {
+        fireEvent(new CaseCommentItemEvents.Hide());
+    }
+
+    private void showHistoryItems() {
+        fireEvent(new CaseHistoryEvents.Show());
+    }
+
+    private void hideHistoryItems() {
+        fireEvent(new CaseHistoryEvents.Hide());
     }
 
     private final Timer changedPreviewTimer = new Timer() {
@@ -578,7 +609,7 @@ public abstract class CaseCommentListActivity
     @Inject
     CaseCommentControllerAsync caseCommentController;
     @Inject
-    AbstractCaseCommentListView view;
+    AbstractCommentAndHistoryListView view;
     @Inject
     AttachmentControllerAsync attachmentService;
     @Inject
@@ -594,7 +625,6 @@ public abstract class CaseCommentListActivity
     PolicyService policyService;
 
     private CaseComment comment;
-    private AbstractCaseCommentItemView lastCommentView;
 
     private Profile profile;
 
@@ -609,7 +639,6 @@ public abstract class CaseCommentListActivity
     private boolean isNewCommentEnabled = true;
     private BiConsumer<CaseComment, Collection<Attachment>> commentCompleteEditConsumer;
 
-//    private Map<AbstractCaseCommentItemView, CaseComment> itemViewToModel = new HashMap<>();
     private Collection<Attachment> tempAttachments = new ArrayList<>();
 
     private final static int PREVIEW_CHANGE_DELAY_MS = 200;
@@ -617,5 +646,5 @@ public abstract class CaseCommentListActivity
     private final String STORAGE_CASE_COMMENT_PREFIX = "CaseСomment_";
     private final String IS_PREVIEW_DISPLAYED = STORAGE_CASE_COMMENT_PREFIX+"is_preview_displayed";
 
-    private static final Logger log = Logger.getLogger( CaseCommentListActivity.class.getName() );
+    private static final Logger log = Logger.getLogger( CommentAndHistoryListActivity.class.getName() );
 }
