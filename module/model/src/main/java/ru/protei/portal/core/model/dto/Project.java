@@ -53,6 +53,15 @@ public class Project extends AuditableObject {
     private Long stateId;
 
     /**
+     * Текущее состояние проекта в строковом виде
+     */
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = Columns.STATE, remoteColumn = "id", table = "case_state", sqlTableAlias = CASE_OBJECT_ALIAS),
+    }, mappedColumn = "state")
+    private String strState;
+
+    /**
      * Цвет иконки состояния проекта
      */
     @JdbcJoinedColumn(joinPath = {
@@ -192,6 +201,14 @@ public class Project extends AuditableObject {
 
     public void setStateId(Long stateId) {
         this.stateId = stateId;
+    }
+
+    public String getStrState() {
+        return strState;
+    }
+
+    public void setState(String strState) {
+        this.strState = strState;
     }
 
     public String getStateColor() {

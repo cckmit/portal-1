@@ -1,24 +1,22 @@
-package ru.protei.portal.ui.common.client.widget.selector.state;
+package ru.protei.portal.ui.common.client.widget.selector.project.state;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.ent.CaseState;
-import ru.protei.portal.ui.common.client.lang.En_RegionStateLang;
-import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.lang.En_ProjectStateLang;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
-import ru.protei.portal.ui.common.client.widget.selector.region.RegionBtnGroupStateModel;
+import ru.protei.portal.ui.common.client.widget.selector.region.ProjectStateBtnGroupModel;
 import ru.protei.portal.ui.common.client.widget.togglebtn.group.ToggleBtnGroupMulti;
 
 import java.util.List;
 
 /**
- * Селектор состояния региона
+ * Селектор состояния проекта
  */
-public class RegionStateBtnGroupMulti extends ToggleBtnGroupMulti<CaseState> implements SelectorWithModel<CaseState> {
+public class ProjectStateBtnGroupMulti extends ToggleBtnGroupMulti<CaseState> implements SelectorWithModel<CaseState> {
 
     @Inject
-    public void init( RegionBtnGroupStateModel model ) {
+    public void init( ProjectStateBtnGroupModel model ) {
         model.subscribe(this);
     }
 
@@ -43,21 +41,13 @@ public class RegionStateBtnGroupMulti extends ToggleBtnGroupMulti<CaseState> imp
     }
 
     public String getStateName( CaseState state ) {
-        if ( state == null )
-            return lang.errUnknownResult();
-
-        return regionStateLang.getStateName( En_RegionState.forId( state.getId() ) );
+        return regionStateLang.getStateName( state );
     }
 
     public String getStateIcon( CaseState state ) {
-        if ( state == null )
-            return "fa fa-unknown";
-
-        return regionStateLang.getStateIcon( En_RegionState.forId( state.getId() ) );
+        return regionStateLang.getStateIcon( state );
     }
 
     @Inject
-    Lang lang;
-    @Inject
-    En_RegionStateLang regionStateLang;
+    En_ProjectStateLang regionStateLang;
 }

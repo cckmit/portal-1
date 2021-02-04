@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * Модель состояния проекта для группы кнопок
  */
-public abstract class RegionBtnGroupStateModel extends BaseSelectorModel<CaseState> implements Activity {
+public abstract class ProjectStateBtnGroupModel extends BaseSelectorModel<CaseState> implements Activity {
 
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {

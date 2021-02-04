@@ -4,11 +4,9 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DateIntervalType;
-import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.dto.ReportDto;
-import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
@@ -29,7 +27,7 @@ public class FilterColumn extends StaticColumn<ReportDto> {
 
     @Inject
     public FilterColumn(Lang lang, En_SortFieldLang sortFieldLang, En_SortDirLang sortDirLang,
-                        En_RegionStateLang regionStateLang, En_DateIntervalLang intervalTypeLang,
+                        En_ProjectStateLang regionStateLang, En_DateIntervalLang intervalTypeLang,
                         En_ContractKindLang contractKindLang, En_ContractTypeLang contractTypeLang,
                         En_ContractStateLang contractStateLang) {
         this.lang = lang;
@@ -204,7 +202,7 @@ public class FilterColumn extends StaticColumn<ReportDto> {
             managerElement.setInnerText(lang.issueState() + ": " +
                     projectQuery.getStates()
                             .stream()
-                            .map(this::getStateName)
+                            .map(state -> regionStateLang.getStateName(state))
                             .collect(Collectors.joining(", "))
             );
             element.appendChild(managerElement);
@@ -235,13 +233,6 @@ public class FilterColumn extends StaticColumn<ReportDto> {
             onlyMineElement.setInnerText(lang.projectOnlyMine() + ": " +
                     (projectQuery.getMemberId() != null ? lang.yes() : lang.no()));
             element.appendChild(onlyMineElement);
-    }
-
-    public String getStateName( CaseState state ) {
-        if ( state == null )
-            return lang.errUnknownResult();
-
-        return regionStateLang.getStateName( En_RegionState.forId( state.getId() ) );
     }
 
     private void appendContractQueryInfo(Element element, ContractQuery contractQuery) {
@@ -363,7 +354,7 @@ public class FilterColumn extends StaticColumn<ReportDto> {
     private Lang lang;
     private En_SortFieldLang sortFieldLang;
     private En_SortDirLang sortDirLang;
-    private En_RegionStateLang regionStateLang;
+    private En_ProjectStateLang regionStateLang;
     private En_DateIntervalLang intervalTypeLang;
     private En_ContractKindLang contractKindLang;
     private En_ContractTypeLang contractTypeLang;

@@ -22,7 +22,7 @@ public interface AbstractProjectPreviewView extends IsWidget {
 
     void setHeader(String name );
 
-    void setState( long value );
+    void setState( String value );
 
     void setStateIconColor( String value );
 

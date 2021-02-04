@@ -26,7 +26,7 @@ import ru.protei.portal.ui.common.client.widget.selector.productdirection.Produc
 import ru.protei.portal.ui.common.client.widget.selector.region.RegionMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
-import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateBtnGroupMulti;
+import ru.protei.portal.ui.common.client.widget.selector.project.state.ProjectStateBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedSelectorRangePicker;
 
@@ -270,7 +270,7 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
 
     @Inject
     @UiField( provided = true )
-    RegionStateBtnGroupMulti states;
+    ProjectStateBtnGroupMulti states;
 
     @Inject
     @UiField(provided = true)
