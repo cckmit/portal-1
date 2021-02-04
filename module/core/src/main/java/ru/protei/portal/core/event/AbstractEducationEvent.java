@@ -4,7 +4,7 @@ import ru.protei.portal.core.model.ent.EducationEntry;
 import ru.protei.portal.core.model.ent.Person;
 
 public interface AbstractEducationEvent {
-    Person getPerson();
+    Person getInitiator();
 
     EducationEntry getEducationEntry();
 
@@ -13,4 +13,6 @@ public interface AbstractEducationEvent {
     default boolean isCreateEvent() {
         return false;
     }
+
+    String getTypeName();
 }

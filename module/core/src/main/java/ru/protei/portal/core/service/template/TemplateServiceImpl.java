@@ -2,6 +2,7 @@ package ru.protei.portal.core.service.template;
 
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.*;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.util.HtmlUtils;
@@ -949,20 +950,33 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getEducationRequestNotificationBody(List<String> recipients, EducationEntry educationEntry) {
+    public PreparedTemplate getEducationRequestNotificationBody(List<String> recipients, EducationEntry educationEntry, String typeName) {
+        String participants = educationEntry.getAttendanceList().stream()
+                .map(EducationEntryAttendance::getWorkerName)
+                .collect(Collectors.joining(", "));
+
         Map<String, Object> model = new HashMap<>();
         model.put("title", educationEntry.getTitle());
+        model.put("type", typeName);
         model.put("coins", educationEntry.getCoins());
         model.put("link", educationEntry.getLink());
         model.put("location", educationEntry.getLocation());
-        model.put("dates", educationEntry.getDateStart() + " - " + educationEntry.getDateEnd());
+        model.put("dates", getDateInterval(educationEntry));
         model.put("description", educationEntry.getDescription());
-        model.put("participants", "peoples");
+        model.put("participants", participants);
         model.put("recipients", recipients);
         PreparedTemplate template = new PreparedTemplate("notification/email/education.request.body.%s.ftl");
         template.setModel(model);
         template.setTemplateConfiguration(templateConfiguration);
         return template;
+    }
+
+    @NotNull
+    private String getDateInterval(EducationEntry educationEntry) {
+        if (educationEntry.getDateStart() != null && educationEntry.getDateEnd() != null) {
+            return dateFormat.format(educationEntry.getDateStart()) + " - " + dateFormat.format(educationEntry.getDateEnd());
+        }
+        return "";
     }
 
     private <T, R> R getNullOrElse(T value, Function<T, R> orElseFunction) {

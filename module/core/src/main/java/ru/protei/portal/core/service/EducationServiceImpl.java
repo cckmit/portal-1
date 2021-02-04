@@ -3,15 +3,15 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.event.EducationRequestEvent;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.dict.En_Scope;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.service.events.EventPublisherService;
@@ -19,6 +19,8 @@ import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,6 +31,7 @@ import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 
 public class EducationServiceImpl implements EducationService {
     private static Logger log = LoggerFactory.getLogger(EducationServiceImpl.class);
+    private final static DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 
     @Autowired
     EducationWalletDAO educationWalletDAO;
@@ -48,6 +51,8 @@ public class EducationServiceImpl implements EducationService {
     EventPublisherService publisherService;
     @Autowired
     PersonDAO personDAO;
+    @Autowired
+    Lang lang;
 
     @Override
     public Result<List<EducationWallet>> getAllWallets(AuthToken token) {
@@ -107,13 +112,36 @@ public class EducationServiceImpl implements EducationService {
                 })
                 .collect(Collectors.toList()));
 
-        return ok(entry).publishEvent(new EducationRequestEvent(this, getPerson(token.getPersonId()), entry));
+        jdbcManyRelationsHelper.fill(entry, "attendanceList");
+
+
+
+        return ok(entry).publishEvent(new EducationRequestEvent(this, getInitiator(token.getPersonId()),
+                entry, makeTypeName(entry.getType(), "ru")));
     }
 
-    private Person getPerson(Long id) {
-        Person initiator = personDAO.get(7925L);
+    private Person getInitiator(Long id) {
+        Person initiator = personDAO.get(id);
         jdbcManyRelationsHelper.fill(initiator, Company.Fields.CONTACT_ITEMS);
         return initiator;
+    }
+
+    private String makeTypeName(EducationEntryType type, String locale) {
+        String langKey = "";
+        switch (type) {
+            case CONFERENCE: langKey = "educationConference"; break;
+            case COURSE: langKey = "educationCourse"; break;
+            case LITERATURE:  langKey = "educationLiterature"; break;
+        }
+        Lang.LocalizedLang localizedLang = getLang().getFor(Locale.forLanguageTag(locale));
+        return localizedLang.get(langKey);
+    }
+
+    private Lang getLang() {
+        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasenames("Lang");
+        messageSource.setDefaultEncoding("UTF-8");
+        return new Lang(messageSource);
     }
 
     @Override

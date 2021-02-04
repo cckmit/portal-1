@@ -11,6 +11,7 @@
 <@set name="_notification_footer" value="${notification_footer}"/>
 
 <@set name="_educationEntryTitle" value="${educationEntryTitle}"/>
+<@set name="_educationEntryType" value="${educationEntryType}"/>
 <@set name="_educationEntryCoins" value="${educationEntryCoins}"/>
 <@set name="_educationEntryLink" value="${educationEntryLink}"/>
 <@set name="_educationEntryLocation" value="${educationEntryLocation}"/>
@@ -69,9 +70,6 @@
     </head>
 
     <body>
-<#--    <div style="padding: 5px;font-size: 14px;<#if isCreated>background:#dff7e2;color:#11731d;<#else>background:#f0f0f0;color:#666666;</#if>">-->
-<#--        ${_createdBy} ${(TransliterationUtils.transliterate(creator, lang))!'?'} ${(created??)?then(created?datetime, '?')}-->
-<#--    </div>-->
     <div style="margin-top: 12px">
         <table>
             <tbody>
@@ -81,6 +79,14 @@
                 </td>
                 <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
                     ${title}
+                </td>
+            </tr>
+            <tr>
+                <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
+                    ${_educationEntryType}
+                </td>
+                <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
+                    ${type}
                 </td>
             </tr>
             <tr>

@@ -5,18 +5,20 @@ import ru.protei.portal.core.model.ent.EducationEntry;
 import ru.protei.portal.core.model.ent.Person;
 
 public class EducationRequestEvent extends ApplicationEvent implements AbstractEducationEvent {
-    private Person person;
+    private Person initiator;
     private EducationEntry educationEntry;
+    private String typeName;
 
-    public EducationRequestEvent(Object source, Person person, EducationEntry educationEntry) {
+    public EducationRequestEvent(Object source, Person initiator, EducationEntry educationEntry, String typeName) {
         super(source);
-        this.person = person;
+        this.initiator = initiator;
         this.educationEntry = educationEntry;
+        this.typeName = typeName;
     }
 
     @Override
-    public Person getPerson() {
-        return person;
+    public Person getInitiator() {
+        return initiator;
     }
 
     @Override
@@ -27,5 +29,10 @@ public class EducationRequestEvent extends ApplicationEvent implements AbstractE
     @Override
     public boolean isCreateEvent() {
         return true;
+    }
+
+    @Override
+    public String getTypeName() {
+        return typeName;
     }
 }
