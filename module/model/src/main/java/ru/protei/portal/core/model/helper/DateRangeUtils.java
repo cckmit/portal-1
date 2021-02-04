@@ -148,7 +148,7 @@ public class DateRangeUtils {
         Interval interval = new Interval();
         LocalDateTime local = LocalDateTime.now();
         ZoneOffset currentOffsetForMyZone =  ZoneId.systemDefault().getRules().getOffset(local);
-        interval.from = Date.from(local.minusMonths(3).toInstant(currentOffsetForMyZone));<
+        interval.from = Date.from(local.minusMonths(3).toInstant(currentOffsetForMyZone));
         interval.to = Date.from(local.toInstant(currentOffsetForMyZone));
         return interval;
     }
