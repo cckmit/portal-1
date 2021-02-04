@@ -950,7 +950,7 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getEducationRequestNotificationBody(List<String> recipients, EducationEntry educationEntry, String typeName) {
+    public PreparedTemplate getEducationRequestNotificationBody(Collection<String> recipients, EducationEntry educationEntry, String typeName) {
         String participants = educationEntry.getAttendanceList().stream()
                 .map(EducationEntryAttendance::getWorkerName)
                 .collect(Collectors.joining(", "));

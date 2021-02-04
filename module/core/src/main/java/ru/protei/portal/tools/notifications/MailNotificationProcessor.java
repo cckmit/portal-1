@@ -1128,8 +1128,9 @@ public class MailNotificationProcessor {
             String typeName = event.getTypeName();
             Person headOfDepartment = event.getHeadOfDepartment();
 
-            List<String> recipients = new ArrayList<>();
+            Set<String> recipients = new HashSet<>();
             recipients.add(new PlainContactInfoFacade(headOfDepartment.getContactInfo()).getEmail());
+            recipients.addAll(Arrays.asList(config.data().getMailNotificationConfig().getCrmEducationRequestRecipients()));
 
             PreparedTemplate subjectTemplate = templateService.getEducationRequestNotificationSubject(educationEntry);
             PreparedTemplate bodyTemplate = templateService.getEducationRequestNotificationBody(recipients, educationEntry, typeName);

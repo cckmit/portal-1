@@ -113,5 +113,5 @@ public interface TemplateService {
                                      Collection<String> recipients, String urlTemplate);
 
     PreparedTemplate getEducationRequestNotificationSubject(EducationEntry educationEntry);
-    PreparedTemplate getEducationRequestNotificationBody(List<String> recipients, EducationEntry educationEntry, String typeName);
+    PreparedTemplate getEducationRequestNotificationBody(Collection<String> recipients, EducationEntry educationEntry, String typeName);
 }
