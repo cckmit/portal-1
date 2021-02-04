@@ -1132,7 +1132,7 @@ public class MailNotificationProcessor {
 
             List<String> recipients = getNotifiersAddresses(Collections.singleton(notifier));
 
-            PreparedTemplate bodyTemplate = templateService.getEducationRequestNotificationBody(recipients);
+            PreparedTemplate bodyTemplate = templateService.getEducationRequestNotificationBody(recipients, educationEntry);
 
             sendMailToRecipients( Collections.singleton(notifier), bodyTemplate, subjectTemplate, true, getFromPortalAddress() );
         } catch (Exception e) {

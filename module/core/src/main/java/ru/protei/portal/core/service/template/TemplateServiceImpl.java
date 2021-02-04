@@ -941,7 +941,7 @@ public class TemplateServiceImpl implements TemplateService {
     @Override
     public PreparedTemplate getEducationRequestNotificationSubject(EducationEntry educationEntry) {
         Map<String, Object> model = new HashMap<>();
-        model.put("educationTitle", educationEntry.getTitle());
+        model.put("title", educationEntry.getTitle());
         PreparedTemplate template = new PreparedTemplate("notification/email/education.request.subject.%s.ftl");
         template.setModel(model);
         template.setTemplateConfiguration(templateConfiguration);
@@ -949,8 +949,15 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getEducationRequestNotificationBody(List<String> recipients) {
+    public PreparedTemplate getEducationRequestNotificationBody(List<String> recipients, EducationEntry educationEntry) {
         Map<String, Object> model = new HashMap<>();
+        model.put("title", educationEntry.getTitle());
+        model.put("coins", educationEntry.getCoins());
+        model.put("link", educationEntry.getLink());
+        model.put("location", educationEntry.getLocation());
+        model.put("dates", educationEntry.getDateStart() + " - " + educationEntry.getDateEnd());
+        model.put("description", educationEntry.getDescription());
+        model.put("participants", "peoples");
         model.put("recipients", recipients);
         PreparedTemplate template = new PreparedTemplate("notification/email/education.request.body.%s.ftl");
         template.setModel(model);
