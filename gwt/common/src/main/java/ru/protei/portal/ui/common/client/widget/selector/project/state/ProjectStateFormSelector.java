@@ -2,7 +2,7 @@ package ru.protei.portal.ui.common.client.widget.selector.project.state;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CaseState;
-import ru.protei.portal.ui.common.client.lang.En_ProjectStateLang;
+import ru.protei.portal.ui.common.client.lang.ProjectStateLang;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.form.FormPopupSingleSelector;
@@ -38,11 +38,11 @@ public class ProjectStateFormSelector extends FormPopupSingleSelector<CaseState>
     }
 
     public String getStateName( CaseState state ) {
-        return regionStateLang.getStateName( state );
+        return projectStateLang.getStateName( state );
     }
 
     public String getStateIcon( CaseState state ) {
-        return regionStateLang.getStateIcon( state );
+        return projectStateLang.getStateIcon( state );
     }
 
     public void setDefaultValue( String value ) {
@@ -50,7 +50,7 @@ public class ProjectStateFormSelector extends FormPopupSingleSelector<CaseState>
     }
 
     @Inject
-    En_ProjectStateLang regionStateLang;
+    ProjectStateLang projectStateLang;
 
     private String defaultValue;
 }

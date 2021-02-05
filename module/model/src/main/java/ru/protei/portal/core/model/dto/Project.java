@@ -58,7 +58,7 @@ public class Project extends AuditableObject {
             @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
             @JdbcJoinPath(localColumn = Columns.STATE, remoteColumn = "id", table = "case_state", sqlTableAlias = CASE_OBJECT_ALIAS),
     }, mappedColumn = "state")
-    private String strState;
+    private String stateName;
 
     /**
      * Цвет иконки состояния проекта
@@ -190,12 +190,12 @@ public class Project extends AuditableObject {
         this.stateId = stateId;
     }
 
-    public String getStrState() {
-        return strState;
+    public String getStateName() {
+        return stateName;
     }
 
-    public void setStrState(String strState) {
-        this.strState = strState;
+    public void setStateName(String stateName) {
+        this.stateName = stateName;
     }
 
     public String getStateColor() {

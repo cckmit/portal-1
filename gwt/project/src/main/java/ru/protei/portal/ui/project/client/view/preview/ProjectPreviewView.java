@@ -14,7 +14,7 @@ import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.lang.En_ProjectStateLang;
+import ru.protei.portal.ui.common.client.lang.ProjectStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.sla.SlaInputReadOnly;
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewActivity;
@@ -51,8 +51,8 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @Override
     public void setState( String value ) {
         CaseState state = new CaseState( value );
-        this.iconState.setClassName(regionStateLang.getStateIcon( state )+ " fa-lg");
-        this.state.setInnerText( regionStateLang.getStateName( state ) );
+        this.iconState.setClassName(projectStateLang.getStateIcon( state )+ " fa-lg");
+        this.state.setInnerText( projectStateLang.getStateName( state ) );
     }
 
     @Override
@@ -321,7 +321,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @UiField
     DivElement subcontractors;
     @Inject
-    En_ProjectStateLang regionStateLang;
+    ProjectStateLang projectStateLang;
 
     AbstractProjectPreviewActivity activity;
 

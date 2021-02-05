@@ -501,10 +501,10 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("newDescription", HtmlUtils.htmlEscape(newProjectState.getDescription()));
 
         templateModel.put("stateChanged", event.isStateChanged());
-        templateModel.put("oldState", getNullOrElse(oldProjectState, Project::getStrState));
-        templateModel.put("newState", newProjectState.getStrState());
+        templateModel.put("oldState", getNullOrElse(oldProjectState, Project::getStateName));
+        templateModel.put("newState", newProjectState.getStateName());
 
-        templateModel.put("showPauseDate", Objects.equals(newProjectState.getStateId(), 4L));
+        templateModel.put("showPauseDate", Objects.equals(newProjectState.getStateId(), CrmConstants.State.PAUSED));
         templateModel.put("pauseDateChanged", event.isPauseDateChanged());
         templateModel.put("oldPauseDate", getNullOrElse(getNullOrElse(oldProjectState, Project::getPauseDate), new SimpleDateFormat("dd.MM.yyyy")::format));
         templateModel.put("newPauseDate", getNullOrElse(newProjectState.getPauseDate(), new SimpleDateFormat("dd.MM.yyyy")::format));

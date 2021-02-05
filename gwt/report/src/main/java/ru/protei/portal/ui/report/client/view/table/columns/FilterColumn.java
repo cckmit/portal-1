@@ -27,13 +27,13 @@ public class FilterColumn extends StaticColumn<ReportDto> {
 
     @Inject
     public FilterColumn(Lang lang, En_SortFieldLang sortFieldLang, En_SortDirLang sortDirLang,
-                        En_ProjectStateLang regionStateLang, En_DateIntervalLang intervalTypeLang,
+                        ProjectStateLang projectStateLang, En_DateIntervalLang intervalTypeLang,
                         En_ContractKindLang contractKindLang, En_ContractTypeLang contractTypeLang,
                         En_ContractStateLang contractStateLang) {
         this.lang = lang;
         this.sortFieldLang = sortFieldLang;
         this.sortDirLang = sortDirLang;
-        this.regionStateLang = regionStateLang;
+        this.projectStateLang = projectStateLang;
         this.intervalTypeLang = intervalTypeLang;
         this.contractKindLang = contractKindLang;
         this.contractTypeLang = contractTypeLang;
@@ -202,7 +202,7 @@ public class FilterColumn extends StaticColumn<ReportDto> {
             managerElement.setInnerText(lang.issueState() + ": " +
                     projectQuery.getStates()
                             .stream()
-                            .map(state -> regionStateLang.getStateName(state))
+                            .map(state -> projectStateLang.getStateName(state))
                             .collect(Collectors.joining(", "))
             );
             element.appendChild(managerElement);
@@ -354,7 +354,7 @@ public class FilterColumn extends StaticColumn<ReportDto> {
     private Lang lang;
     private En_SortFieldLang sortFieldLang;
     private En_SortDirLang sortDirLang;
-    private En_ProjectStateLang regionStateLang;
+    private ProjectStateLang projectStateLang;
     private En_DateIntervalLang intervalTypeLang;
     private En_ContractKindLang contractKindLang;
     private En_ContractTypeLang contractTypeLang;

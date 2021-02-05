@@ -23,6 +23,7 @@ import ru.protei.portal.core.model.query.LocationQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.Interval;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -541,7 +542,7 @@ public class ProjectServiceImpl implements ProjectService {
             throw new RollbackTransactionException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        if (!project.getStateId().equals(4L)) {
+        if (!project.getStateId().equals(CrmConstants.State.PAUSED)) {
             caseObject.setPauseDate(null);
         }
 

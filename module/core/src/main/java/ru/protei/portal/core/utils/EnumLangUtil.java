@@ -102,9 +102,9 @@ public class EnumLangUtil {
                 return localizedLang.get("projectStateCanceled");
             case "paused":
                 return localizedLang.get("projectStatePaused");
+            default:
+                return state;
         }
-
-        return localizedLang.get("projectStateUnknown");
     }
 
     public String getCustomerType(En_CustomerType type, String langCode) {

@@ -6,7 +6,7 @@ import ru.protei.portal.core.model.ent.CaseState;
 /**
  * Названия статусов проектов
  */
-public class En_ProjectStateLang {
+public class ProjectStateLang {
 
     public String getStateName(CaseState state){
         if (state == null || state.getState() == null)
@@ -25,7 +25,7 @@ public class En_ProjectStateLang {
             case "canceled": return lang.projectStateCanceled();
             case "paused": return lang.projectStatePaused();
             default:
-                return lang.errUnknownResult();
+                return state.getState();
         }
     }
 
@@ -46,7 +46,7 @@ public class En_ProjectStateLang {
             case "canceled": return ICON + "canceled";
             case "paused": return ICON + "paused";
             default:
-                return "fa fa-unknown";
+                return ICON + state.getState();
         }
     }
 

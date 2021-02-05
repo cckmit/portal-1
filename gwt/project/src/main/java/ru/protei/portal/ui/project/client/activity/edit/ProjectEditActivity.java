@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.project.client.activity.edit;
 
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -12,6 +11,7 @@ import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 import static ru.protei.portal.ui.project.client.util.AccessUtil.*;
+import static ru.protei.portal.core.model.util.CrmConstants.State.*;
 
 /**
  * Активность карточки создания и редактирования проектов
@@ -170,7 +171,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
     @Override
     public void onStateChanged() {
-        view.pauseDateContainerVisibility().setVisible( view.state().getValue().getId().equals(4L) );
+        view.pauseDateContainerVisibility().setVisible( view.state().getValue().getId().equals(CrmConstants.State.PAUSED) );
     }
 
     @Override
@@ -198,7 +199,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     private void fillView(Project project) {
         view.setNumber( isNew( project ) ? null : project.getId().intValue() );
         view.name().setValue( isNew( project ) ? "" : project.getName());
-        CaseState caseState = new CaseState( isNew( project ) ? 22L : project.getStateId() );
+        CaseState caseState = new CaseState( isNew( project ) ? UNKNOWN : project.getStateId() );
         view.state().setValue( caseState );
         view.directions().setValue(isEmpty(project.getProductDirectionEntityOptionList())? null : toSet(project.getProductDirectionEntityOptionList(), option -> new ProductDirectionInfo(option)));
         view.productEnabled().setEnabled(isNotEmpty(project.getProductDirectionEntityOptionList()));
@@ -215,7 +216,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         if (isNew( project )) view.setHideNullValue(true);
         view.customerType().setValue(project.getCustomerType());
         view.updateProductModel( toSet(project.getProductDirectionEntityOptionList(), EntityOption::getId));
-        view.pauseDateContainerVisibility().setVisible( Objects.equals(project.getStateId(), 4L) );
+        view.pauseDateContainerVisibility().setVisible( Objects.equals(project.getStateId(), PAUSED) );
         view.pauseDate().setValue( project.getPauseDate() == null ? null : new Date( project.getPauseDate() ) );
 
         if (customer != null && isNotEmpty(project.getProjectSlas())) {
@@ -327,7 +328,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         project.setDescription(view.description().getText());
         Long stateId = view.state().getValue().getId();
         project.setStateId(stateId);
-        project.setPauseDate((!Objects.equals(stateId, 4L)) ? null : view.pauseDate().getValue().getTime());
+        project.setPauseDate((!Objects.equals(stateId, PAUSED)) ? null : view.pauseDate().getValue().getTime());
         project.setCustomer(Company.fromEntityOption(view.company().getValue()));
         project.setCustomerType(view.customerType().getValue());
         project.setProducts(toSet(view.products().getValue(), DevUnit::fromProductShortView));
@@ -389,7 +390,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
             return false;
         }
 
-        if ( view.state().getValue().getId().equals(4L) ) {
+        if ( view.state().getValue().getId().equals(PAUSED) ) {
             Date pauseDate = view.pauseDate().getValue();
             if (pauseDate == null) {
                 fireEvent(new NotifyEvents.Show(lang.errSaveProjectPauseDate(), NotifyEvents.NotifyType.ERROR));

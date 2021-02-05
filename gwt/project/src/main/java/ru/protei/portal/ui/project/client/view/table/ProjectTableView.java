@@ -20,7 +20,7 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
-import ru.protei.portal.ui.common.client.lang.En_ProjectStateLang;
+import ru.protei.portal.ui.common.client.lang.ProjectStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.project.client.activity.table.AbstractProjectTableActivity;
 import ru.protei.portal.ui.project.client.activity.table.AbstractProjectTableView;
@@ -125,7 +125,7 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
 
         DynamicColumn<Project> statusColumn = new DynamicColumn<>(null, "status",
                 value -> {
-                    String iconState = regionStateLang.getStateIcon(new CaseState(value.getStrState()));
+                    String iconState = projectStateLang.getStateIcon(new CaseState(value.getStateName()));
                     String style = "'style='color: " + value.getStateColor() + "'";
                     return "<i class='" + iconState + " fa-2x" + style + "'></i>";
                 });
@@ -211,7 +211,7 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
     HTMLPanel pagerContainer;
 
     @Inject
-    En_ProjectStateLang regionStateLang;
+    ProjectStateLang projectStateLang;
     @Inject
     En_CustomerTypeLang customerTypeLang;
     @Inject

@@ -126,7 +126,7 @@ public class ExcelReportWriter implements
 
         values.add(project.getId());
         values.add(HelperFunc.isNotEmpty(project.getName()) ? project.getName() : "");
-        values.add(project.getStrState() != null ? enumLangUtil.getProjectState(project.getStrState(), lang.getLanguageTag()) : "");
+        values.add(project.getStateName() != null ? enumLangUtil.getProjectState(project.getStateName(), lang.getLanguageTag()) : "");
         values.add(project.getCustomerType() != null ? enumLangUtil.getCustomerType(project.getCustomerType(), lang.getLanguageTag()) : "");
         values.add(project.getCustomer() != null ? project.getCustomer().getCname() : "");
         values.add(project.getRegion() != null && project.getRegion().getDisplayText() != null ?

@@ -3,7 +3,7 @@ package ru.protei.portal.ui.common.client.widget.selector.project.state;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.CaseState;
-import ru.protei.portal.ui.common.client.lang.En_ProjectStateLang;
+import ru.protei.portal.ui.common.client.lang.ProjectStateLang;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.region.ProjectStateBtnGroupModel;
 import ru.protei.portal.ui.common.client.widget.togglebtn.group.ToggleBtnGroupMulti;
@@ -41,13 +41,13 @@ public class ProjectStateBtnGroupMulti extends ToggleBtnGroupMulti<CaseState> im
     }
 
     public String getStateName( CaseState state ) {
-        return regionStateLang.getStateName( state );
+        return projectStateLang.getStateName( state );
     }
 
     public String getStateIcon( CaseState state ) {
-        return regionStateLang.getStateIcon( state );
+        return projectStateLang.getStateIcon( state );
     }
 
     @Inject
-    En_ProjectStateLang regionStateLang;
+    ProjectStateLang projectStateLang;
 }

@@ -21,7 +21,6 @@ import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.UiConstants;
-import ru.protei.portal.ui.common.client.lang.En_ProjectStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
@@ -399,8 +398,6 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     @Inject
     @UiField
     Lang lang;
-    @Inject
-    En_ProjectStateLang regionStateLang;
 
     @Inject
     ProductModel productModel;
