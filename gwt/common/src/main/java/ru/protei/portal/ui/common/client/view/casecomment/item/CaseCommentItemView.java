@@ -79,31 +79,6 @@ public class CaseCommentItemView
     }
 
     @Override
-    public void setStatus(String value) {
-        String styleName = CaseStateUtils.makeStyleName(value);
-        this.status.addClassName("case-" + styleName);
-        this.status.setInnerText(value);
-        info.setInnerText(lang.issueCommentChangeStatusTo());
-        info.removeClassName("hide");
-    }
-
-    @Override
-    public void setImportanceLevel(String importanceCode) {
-        status.addClassName("case-importance-" + importanceCode.toLowerCase());
-        status.setInnerText(importanceCode);
-        info.setInnerText(lang.issueCommentChangeImportanceTo());
-        info.removeClassName("hide");
-    }
-
-    @Override
-    public void setManagerInfo(String managerInfo) {
-        status.addClassName("name");
-        status.setInnerText(managerInfo);
-        info.setInnerText(lang.issueCommentChangeManagerTo());
-        info.removeClassName("hide");
-    }
-
-    @Override
     public void enabledEdit( boolean isEnabled ) {
         remove.setVisible( isEnabled );
         edit.setVisible( isEnabled );
@@ -249,7 +224,6 @@ public class CaseCommentItemView
         timeElapsed.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CASE_COMMENT.COMMENT_ITEM.TIME_ELAPSED);
         date.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CASE_COMMENT.COMMENT_ITEM.CREATE_DATE);
         owner.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CASE_COMMENT.COMMENT_ITEM.OWNER);
-        status.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CASE_COMMENT.COMMENT_ITEM.STATUS);
         timeElapsedTypePopup.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CASE_COMMENT.COMMENT_ITEM.EDIT_TIME_ELAPSED_TYPE_POPUP);
     }
 
@@ -287,8 +261,6 @@ public class CaseCommentItemView
     LIElement owner;
     @UiField
     LIElement info;
-    @UiField
-    LIElement status;
     @UiField
     LIElement options;
     @UiField

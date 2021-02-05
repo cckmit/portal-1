@@ -76,7 +76,7 @@ public abstract class CaseCommentItemsListActivity implements Activity, Abstract
     public void onFillComments(CaseCommentItemEvents.FillComments event) {
         this.commentsContainer = event.commentsContainer;
 
-        fillViewWithComments(commentsContainer, event.comments);
+        fillView(commentsContainer, event.comments);
     }
 
     @Event
@@ -141,13 +141,13 @@ public abstract class CaseCommentItemsListActivity implements Activity, Abstract
     @Event
     public void onShow(CaseCommentItemEvents.Show event) {
         isVisibleByDefault = true;
-        itemViewToModel.keySet().forEach(itemView -> itemView.asWidget().setVisible(isVisibleByDefault));
+        itemViewToModel.keySet().forEach(itemView -> itemView.setVisible(isVisibleByDefault));
     }
 
     @Event
     public void onHide(CaseCommentItemEvents.Hide event) {
         isVisibleByDefault = false;
-        itemViewToModel.keySet().forEach(itemView -> itemView.asWidget().setVisible(isVisibleByDefault));
+        itemViewToModel.keySet().forEach(itemView -> itemView.setVisible(isVisibleByDefault));
     }
 
     @Override
@@ -253,7 +253,7 @@ public abstract class CaseCommentItemsListActivity implements Activity, Abstract
         fireEvent(new IssueEvents.ChangeTimeElapsed(timeElapsed));
     }
 
-    private void fillViewWithComments(FlowPanel commentsContainer, List<CaseComment> comments) {
+    private void fillView(FlowPanel commentsContainer, List<CaseComment> comments) {
         List<AbstractCaseCommentItemView> views = new ArrayList<>();
         List<String> textList = new ArrayList<>();
 
@@ -262,9 +262,9 @@ public abstract class CaseCommentItemsListActivity implements Activity, Abstract
             if (StringUtils.isNotEmpty(comment.getText())) {
                 views.add(itemView);
                 textList.add(comment.getText());
+                itemViewToModel.put(itemView, comment);
+                commentsContainer.insert(itemView.asWidget(), 0);
             }
-            itemViewToModel.put(itemView, comment);
-            commentsContainer.insert(itemView.asWidget(), 0);
         }
 
         textRenderController.render(textMarkup, textList, true, new FluentCallback<List<String>>()
@@ -281,7 +281,7 @@ public abstract class CaseCommentItemsListActivity implements Activity, Abstract
     private AbstractCaseCommentItemView makeCommentView(CaseComment value) {
         AbstractCaseCommentItemView itemView = commentItemViewProvider.get();
         itemView.setActivity(this);
-        itemView.asWidget().setVisible(isVisibleByDefault);
+        itemView.setVisible(isVisibleByDefault);
 
         if (value.getAuthorId().equals(profile.getId())) {
             itemView.setIcon(AvatarUtils.getAvatarUrl(profile));
@@ -305,27 +305,6 @@ public abstract class CaseCommentItemsListActivity implements Activity, Abstract
         fillTimeElapsed(value, itemView);
         if (isPrivateVisible) {
             itemView.setPrivacyType(value.getPrivacyType());
-        }
-
-        boolean isStateChangeComment = value.getCaseStateId() != null;
-        boolean isImportanceChangeComment = value.getCaseImpLevel() != null;
-        boolean isManagerChangeComment = value.getCaseManagerId() != null;
-        boolean isChangeComment = isStateChangeComment || isImportanceChangeComment || isManagerChangeComment;
-
-        if (HelperFunc.isEmpty( value.getText() ) && isChangeComment) {
-            itemView.hideOptions();
-        }
-
-        if ( isStateChangeComment ) {
-            itemView.setStatus( value.getCaseStateName() );
-        }
-
-        if ( isImportanceChangeComment ) {
-            itemView.setImportanceLevel( value.getImportanceCode() );
-        }
-
-        if ( isManagerChangeComment ) {
-            itemView.setManagerInfo(makeManagerInfo(value.getCaseManagerShortName(), value.getManagerCompanyName()));
         }
 
         bindAttachmentsToComment(itemView, value.getCaseAttachments());

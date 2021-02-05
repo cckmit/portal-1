@@ -3233,28 +3233,4 @@ public interface Lang extends Messages, ContactItemLang {
     String errNotAllowedIntegrationIssue();
 
     String help();
-
-    String caseHistoryChangedStateFrom();
-
-    String caseHistoryChangedImportanceFrom();
-
-    String caseHistoryChangedManagerFrom();
-
-    String caseHistoryAddedPlan();
-
-    String caseHistoryRemovedPlan();
-
-    String caseHistoryChangedTo();
-
-    String caseHistoryAddedTag();
-
-    String caseHistoryRemovedTag();
-
-    String caseHistoryChangedStateTo();
-
-    String caseHistoryChangedManagerTo();
-
-    String caseHistoryChangedImportanceTo();
-
-    String caseHistoryRemovedManager();
 }

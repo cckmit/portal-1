@@ -59,11 +59,6 @@ public class MultiTabWidget<T> extends Composite implements MultiTabHandler<T> {
         tabs.forEach(this::selectTab);
     }
 
-    public void clearTabs() {
-        tabContent.clear();
-        navTabs.clear();
-    }
-
     public List<T> getSelectedTabs() {
         return selectedTabs;
     }
@@ -107,6 +102,6 @@ public class MultiTabWidget<T> extends Composite implements MultiTabHandler<T> {
     private Consumer<List<T>> selectedTabNamesHandler;
     private Function<T, String> tabToNameRenderer;
 
-    interface MultiTabWidgetUiBinder extends UiBinder<HTMLPanel, MultiTabWidget> {}
+    interface MultiTabWidgetUiBinder extends UiBinder<HTMLPanel, MultiTabWidget<?>> {}
     private static MultiTabWidgetUiBinder ourUiBinder = GWT.create(MultiTabWidgetUiBinder.class);
 }

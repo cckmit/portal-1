@@ -25,12 +25,6 @@ public interface AbstractCaseCommentItemView extends IsWidget {
 
     void setMessage(String value );
 
-    void setStatus( String value );
-
-    void setImportanceLevel( String importanceCode );
-
-    void setManagerInfo(String managerInfo );
-
     void enabledEdit( boolean isEnabled );
 
     void enableReply(boolean isEnabled);
@@ -62,4 +56,6 @@ public interface AbstractCaseCommentItemView extends IsWidget {
     HasVisibility timeElapsedInfoContainerVisibility();
 
     void setTimeElapsedInfo(String timeElapsedInfo);
+
+    void setVisible(boolean isVisible);
 }

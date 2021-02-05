@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.activity.casehistory;
 
+import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
@@ -11,6 +12,7 @@ import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -87,7 +89,7 @@ public abstract class CaseHistoryItemsListActivity implements AbstractCaseHistor
 
                 lastHistoryItemsContainer = caseHistoryItemsContainerProvider.get();
                 lastHistoryItemsContainer.setDate(nextHistoryDate);
-                lastHistoryItemsContainer.setInitiator(nextHistory.getInitiatorFullName());
+                lastHistoryItemsContainer.setInitiator(transliteration(nextHistory.getInitiatorFullName()));
 
                 currentHistoryItemsContainers.add(0, lastHistoryItemsContainer);
             }
@@ -194,12 +196,16 @@ public abstract class CaseHistoryItemsListActivity implements AbstractCaseHistor
 
         if (En_HistoryType.CASE_MANAGER.equals(historyType) || En_HistoryType.PLAN.equals(historyType)) {
             CaseHistorySimpleItemView caseHistorySimpleItemView = caseHistorySimpleItemViewProvider.get();
-            caseHistorySimpleItemView.setLink(name, link);
+            caseHistorySimpleItemView.setLink(transliteration(name), link);
 
             return caseHistorySimpleItemView;
         }
 
         return null;
+    }
+
+    private String transliteration(String name) {
+        return TransliterationUtils.transliterate(name, LocaleInfo.getCurrentLocale().getLocaleName());
     }
 
     @Inject

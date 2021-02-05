@@ -15,7 +15,6 @@
             <div class="d-inline">
                 <popup:EditTimeElapsedTypePopup ui:field="timeElapsedTypePopup" visible="false"/>
             </div>
-            <li ui:field="status"/>
             <li ui:field="options">
                 <span class="options">
                     <g:Anchor href="javascript:;" ui:field="reply">
