@@ -20,7 +20,7 @@
                     <productdirection:ProductDirectionMultiSelector ui:field="direction" />
                 </div>
                 <div class="form-group col-md-4 resize-md-12">
-                    <label><ui:text from="{lang.regionState}"/></label>
+                    <label><ui:text from="{lang.projectState}"/></label>
                     <state:ProjectStateBtnGroupMulti ui:field="states" />
                 </div>
                 <div class="form-group col-md-4 resize-md-12">

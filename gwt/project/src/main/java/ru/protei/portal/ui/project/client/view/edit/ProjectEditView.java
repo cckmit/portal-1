@@ -56,7 +56,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         products.setModel(productModel);
         company.setDefaultValue(lang.selectIssueCompany());
 
-        projectState.setDefaultValue(lang.regionStateUnknown());
+        projectState.setDefaultValue(lang.projectStateUnknown());
         projectRegion.setDefaultValue(lang.selectOfficialRegion());
         customerType.setDefaultValue(lang.selectCustomerType());
 

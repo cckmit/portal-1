@@ -53,7 +53,7 @@ public class ReportProjectTest extends BaseServiceTest {
 
         project1.setName(REPORT_PROJECT_TEST + " : Test_Project 1");
         project1.setDescription(REPORT_PROJECT_TEST);
-        project1.setState(En_RegionState.PRESALE);
+        project1.setStateId(24L);
         project1.setCustomerType(En_CustomerType.STATE_BUDGET);
         project1.setCustomer(company1);
         project1.setTeam(Collections.singletonList(personProjectMemberView));
@@ -69,7 +69,7 @@ public class ReportProjectTest extends BaseServiceTest {
 
         project2.setName(REPORT_PROJECT_TEST + " : Test_Project 2");
         project2.setDescription(REPORT_PROJECT_TEST);
-        project2.setState(En_RegionState.FINISHED);
+        project2.setStateId(32L);
         project2.setCustomerType(En_CustomerType.STATE_BUDGET);
         project2.setCustomer(company1);
         project2.setTeam(Collections.singletonList(personProjectMemberView));
@@ -84,7 +84,7 @@ public class ReportProjectTest extends BaseServiceTest {
 
         project3.setName(REPORT_PROJECT_TEST + " : Test_Project 3");
         project3.setDescription(REPORT_PROJECT_TEST);
-        project3.setState(En_RegionState.PRESALE);
+        project3.setStateId(24L);
         project3.setCustomerType(En_CustomerType.STATE_BUDGET);
         project3.setCustomer(company2);
         project3.setTeam(Collections.singletonList(personProjectMemberView));
@@ -99,7 +99,7 @@ public class ReportProjectTest extends BaseServiceTest {
 
         ProjectQuery query = new ProjectQuery();
         query.setSearchString(REPORT_PROJECT_TEST);
-        query.setStates(new HashSet<>(Collections.singletonList(new CaseState(En_RegionState.FINISHED.getId()))));
+        query.setStates(new HashSet<>(Collections.singletonList(new CaseState(32L))));
         Report report = new Report();
         report.setQuery(serializeAsJson(query));
         report.setLocale("ru");
@@ -127,7 +127,7 @@ public class ReportProjectTest extends BaseServiceTest {
 
         ProjectQuery query = new ProjectQuery();
         query.setSearchString(REPORT_PROJECT_TEST);
-        query.setStates(new HashSet<>(Collections.singletonList(new CaseState(En_RegionState.UNKNOWN.getId()))));
+        query.setStates(new HashSet<>(Collections.singletonList(new CaseState(22L))));
         Report report = new Report();
         report.setQuery(serializeAsJson(query));
         report.setLocale("ru");
@@ -155,7 +155,7 @@ public class ReportProjectTest extends BaseServiceTest {
 
         ProjectQuery query = new ProjectQuery();
         query.setSearchString(REPORT_PROJECT_TEST);
-        query.setStates(new HashSet<>(Collections.singletonList(new CaseState(En_RegionState.PRESALE.getId()))));
+        query.setStates(new HashSet<>(Collections.singletonList(new CaseState(24L))));
         Report report = new Report();
         report.setQuery(serializeAsJson(query));
         report.setLocale("ru");
@@ -204,7 +204,7 @@ public class ReportProjectTest extends BaseServiceTest {
 
         ProjectQuery query = new ProjectQuery();
         query.setSearchString(REPORT_PROJECT_TEST);
-        query.setStates(new HashSet<>(Collections.singletonList(new CaseState(En_RegionState.UNKNOWN.getId()))));
+        query.setStates(new HashSet<>(Collections.singletonList(new CaseState(22L))));
         Report report = new Report();
         report.setQuery(serializeAsJson(query));
         report.setLocale("ru");

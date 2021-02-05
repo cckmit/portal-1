@@ -2,7 +2,6 @@ package ru.protei.portal.core.model.dto;
 
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
-import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.AuditableObject;
@@ -183,18 +182,6 @@ public class Project extends AuditableObject {
         this.name = name;
     }
 
-    public En_RegionState getState() {
-        return stateId == null ? En_RegionState.UNKNOWN : En_RegionState.forId( stateId );
-    }
-
-    public void setState( Long id ) {
-        this.stateId = id;
-    }
-
-    public void setState( En_RegionState state ) {
-        this.stateId = state.getId();
-    }
-
     public Long getStateId() {
         return stateId;
     }
@@ -207,7 +194,7 @@ public class Project extends AuditableObject {
         return strState;
     }
 
-    public void setState(String strState) {
+    public void setStrState(String strState) {
         this.strState = strState;
     }
 

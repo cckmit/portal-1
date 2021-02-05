@@ -13,17 +13,17 @@ public class En_ProjectStateLang {
             return lang.errUnknownResult();
 
         switch (state.getState().toLowerCase()) {
-            case "unknown": return lang.regionStateUnknown();
-            case "marketing": return lang.regionStateMarketing();
-            case "presale": return lang.regionStatePresale();
-            case "projecting": return lang.regionStateProjecting();
-            case "development": return lang.regionStateDevelopment();
-            case "deployment": return lang.regionStateDeployment();
-            case "support": return lang.regionStateSupport();
-            case "finished": return lang.regionStateFinished();
-            case "testing": return lang.regionStateTesting();
-            case "canceled": return lang.regionStateCanceled();
-            case "paused": return lang.regionStatePaused();
+            case "unknown": return lang.projectStateUnknown();
+            case "marketing": return lang.projectStateMarketing();
+            case "presale": return lang.projectStatePresale();
+            case "projecting": return lang.projectStateProjecting();
+            case "development": return lang.projectStateDevelopment();
+            case "deployment": return lang.projectStateDeployment();
+            case "support": return lang.projectStateSupport();
+            case "finished": return lang.projectStateFinished();
+            case "testing": return lang.projectStateTesting();
+            case "canceled": return lang.projectStateCanceled();
+            case "paused": return lang.projectStatePaused();
             default:
                 return lang.errUnknownResult();
         }
@@ -53,5 +53,5 @@ public class En_ProjectStateLang {
     @Inject
     Lang lang;
 
-    private static final String ICON = "region-state ";
+    private static final String ICON = "project-state ";
 }

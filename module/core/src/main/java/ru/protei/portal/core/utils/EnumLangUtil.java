@@ -74,37 +74,37 @@ public class EnumLangUtil {
         return localizedLang.get("personRoleUnknown");
     }
 
-    public String getRegionState(En_RegionState state, String langCode) {
+    public String getProjectState(String state, String langCode) {
         if (localizedLang == null) {
             localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
         }
 
-        switch (state) {
-            case UNKNOWN:
-                return localizedLang.get("regionStateUnknown");
-            case MARKETING:
-                return localizedLang.get("regionStateMarketing");
-            case PRESALE:
-                return localizedLang.get("regionStatePresale");
-            case PROJECTING:
-                return localizedLang.get("regionStateProjecting");
-            case DEVELOPMENT:
-                return localizedLang.get("regionStateDevelopment");
-            case DEPLOYMENT:
-                return localizedLang.get("regionStateDeployment");
-            case SUPPORT:
-                return localizedLang.get("regionStateSupport");
-            case FINISHED:
-                return localizedLang.get("regionStateFinished");
-            case TESTING:
-                return localizedLang.get("regionStateTesting");
-            case CANCELED:
-                return localizedLang.get("regionStateCanceled");
-            case PAUSED:
-                return localizedLang.get("regionStatePaused");
+        switch (state.toLowerCase()) {
+            case "unknown":
+                return localizedLang.get("projectStateUnknown");
+            case "marketing":
+                return localizedLang.get("projectStateMarketing");
+            case "presale":
+                return localizedLang.get("projectStatePresale");
+            case "projecting":
+                return localizedLang.get("projectStateProjecting");
+            case "development":
+                return localizedLang.get("projectStateDevelopment");
+            case "deployment":
+                return localizedLang.get("projectStateDeployment");
+            case "support":
+                return localizedLang.get("projectStateSupport");
+            case "finished":
+                return localizedLang.get("projectStateFinished");
+            case "testing":
+                return localizedLang.get("projectStateTesting");
+            case "canceled":
+                return localizedLang.get("projectStateCanceled");
+            case "paused":
+                return localizedLang.get("projectStatePaused");
         }
 
-        return localizedLang.get("regionStateUnknown");
+        return localizedLang.get("projectStateUnknown");
     }
 
     public String getCustomerType(En_CustomerType type, String langCode) {

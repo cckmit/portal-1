@@ -27,7 +27,7 @@ public class ProjectStateFormSelector extends FormPopupSingleSelector<CaseState>
     protected SelectorItem<CaseState> makeSelectorItem( CaseState element, String elementHtml ) {
         PopupSelectorItem<CaseState> item = new PopupSelectorItem();
         item.setName( elementHtml );
-        item.setStyle( "region-state-item" );
+        item.setStyle( "project-state-item" );
         if (element != null) {
             item.setTitle( getStateName(element) );
             item.setIcon( getStateIcon(element) + " selector" );

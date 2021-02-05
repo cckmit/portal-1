@@ -97,7 +97,7 @@ public class AssembledProjectEvent extends ApplicationEvent implements HasCaseCo
     }
 
     public boolean isStateChanged() {
-        return isEditEvent() && !Objects.equals(oldProjectState.getState(), newProjectState.getState());
+        return isEditEvent() && !Objects.equals(oldProjectState.getStateId(), newProjectState.getStateId());
     }
 
     public boolean isRegionChanged() {

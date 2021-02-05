@@ -26,7 +26,7 @@
   }
 }
 
-.region-state {
+.project-state  {
   font-family: "Font Awesome 5 Free", serif;
   font-style: normal;
   -webkit-font-smoothing: antialiased;
@@ -125,13 +125,13 @@
 
 }
 
-/*  region state style for button selector  */
+/*  project state style for button selector  */
 
-.region-state-btn {
+.project-state-btn {
   padding: 5px 10px 5px 5px !important;
 }
 
-.region-state-item:not(.selector-val) {
+.project-state-item:not(.selector-val) {
   padding: 5px !important;
   > span {
     position: relative;

@@ -2,7 +2,6 @@ package ru.protei.portal.ui.common.client.lang;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_ContractState;
-import ru.protei.portal.core.model.dict.En_RegionState;
 
 public class En_ContractStateLang {
     public String getName(En_ContractState value) {

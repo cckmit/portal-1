@@ -20,7 +20,6 @@ import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
@@ -32,7 +31,6 @@ import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.dict.En_RegionState.PAUSED;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 import static ru.protei.portal.ui.project.client.util.AccessUtil.*;
@@ -172,7 +170,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
     @Override
     public void onStateChanged() {
-        view.pauseDateContainerVisibility().setVisible( view.state().getValue().getId().equals(PAUSED.getId()) );
+        view.pauseDateContainerVisibility().setVisible( view.state().getValue().getId().equals(4L) );
     }
 
     @Override
@@ -200,8 +198,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     private void fillView(Project project) {
         view.setNumber( isNew( project ) ? null : project.getId().intValue() );
         view.name().setValue( isNew( project ) ? "" : project.getName());
-        CaseState caseState = new CaseState( isNew( project ) ? En_RegionState.UNKNOWN.getId()
-                                                              : project.getState().getId() );
+        CaseState caseState = new CaseState( isNew( project ) ? 22L : project.getStateId() );
         view.state().setValue( caseState );
         view.directions().setValue(isEmpty(project.getProductDirectionEntityOptionList())? null : toSet(project.getProductDirectionEntityOptionList(), option -> new ProductDirectionInfo(option)));
         view.productEnabled().setEnabled(isNotEmpty(project.getProductDirectionEntityOptionList()));
@@ -218,7 +215,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         if (isNew( project )) view.setHideNullValue(true);
         view.customerType().setValue(project.getCustomerType());
         view.updateProductModel( toSet(project.getProductDirectionEntityOptionList(), EntityOption::getId));
-        view.pauseDateContainerVisibility().setVisible( PAUSED == project.getState() );
+        view.pauseDateContainerVisibility().setVisible( Objects.equals(project.getStateId(), 4L) );
         view.pauseDate().setValue( project.getPauseDate() == null ? null : new Date( project.getPauseDate() ) );
 
         if (customer != null && isNotEmpty(project.getProjectSlas())) {
@@ -328,11 +325,12 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     private Project fillProject(Project project) {
         project.setName(view.name().getValue());
         project.setDescription(view.description().getText());
-        project.setState(view.state().getValue().getId());
-        project.setPauseDate( (PAUSED.getId() != view.state().getValue().getId() ) ? null : view.pauseDate().getValue().getTime() );
+        Long stateId = view.state().getValue().getId();
+        project.setStateId(stateId);
+        project.setPauseDate((!Objects.equals(stateId, 4L)) ? null : view.pauseDate().getValue().getTime());
         project.setCustomer(Company.fromEntityOption(view.company().getValue()));
         project.setCustomerType(view.customerType().getValue());
-        project.setProducts( toSet(view.products().getValue(), DevUnit::fromProductShortView));
+        project.setProducts(toSet(view.products().getValue(), DevUnit::fromProductShortView));
         project.setTechnicalSupportValidity(view.technicalSupportValidity().getValue());
         project.setWorkCompletionDate(view.workCompletionDate().getValue());
         project.setPurchaseDate(view.purchaseDate().getValue());
@@ -391,7 +389,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
             return false;
         }
 
-        if (PAUSED.equals( view.state().getValue() )) {
+        if ( view.state().getValue().getId().equals(4L) ) {
             Date pauseDate = view.pauseDate().getValue();
             if (pauseDate == null) {
                 fireEvent(new NotifyEvents.Show(lang.errSaveProjectPauseDate(), NotifyEvents.NotifyType.ERROR));

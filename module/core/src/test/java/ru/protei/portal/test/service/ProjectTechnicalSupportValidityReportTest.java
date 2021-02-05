@@ -110,7 +110,7 @@ public class ProjectTechnicalSupportValidityReportTest extends BaseServiceTest {
 
         projectLess7.setName(TEST_ID + " : Test_Project Less7");
         projectLess7.setDescription(TEST_ID);
-        projectLess7.setState(En_RegionState.PRESALE);
+        projectLess7.setStateId(24L);
         projectLess7.setCustomerType(En_CustomerType.STATE_BUDGET);
         projectLess7.setCustomer(companyLess7);
         projectLess7.setTeam(Collections.singletonList(headManagerLess7));
@@ -121,7 +121,7 @@ public class ProjectTechnicalSupportValidityReportTest extends BaseServiceTest {
 
         project7.setName(TEST_ID + " : Test_Project 7");
         project7.setDescription(TEST_ID);
-        project7.setState(En_RegionState.PRESALE);
+        project7.setStateId(24L);
         project7.setCustomerType(En_CustomerType.STATE_BUDGET);
         project7.setCustomer(company7);
         project7.setTeam(Collections.singletonList(headManager));
@@ -133,7 +133,7 @@ public class ProjectTechnicalSupportValidityReportTest extends BaseServiceTest {
 
         projectBetween7And14.setName(TEST_ID + " : Test_Project Between7And14");
         projectBetween7And14.setDescription(TEST_ID);
-        projectBetween7And14.setState(En_RegionState.PRESALE);
+        projectBetween7And14.setStateId(24L);
         projectBetween7And14.setCustomerType(En_CustomerType.STATE_BUDGET);
         projectBetween7And14.setCustomer(companyBetween7And14);
         projectBetween7And14.setTeam(Collections.singletonList(headManagerBetween7And14));
@@ -145,7 +145,7 @@ public class ProjectTechnicalSupportValidityReportTest extends BaseServiceTest {
 
         project14.setName(TEST_ID + " : Test_Project 14");
         project14.setDescription(TEST_ID);
-        project14.setState(En_RegionState.FINISHED);
+        project14.setStateId(32L);
         project14.setCustomerType(En_CustomerType.STATE_BUDGET);
         project14.setCustomer(company14);
         project14.setTeam(Collections.singletonList(headManager));
@@ -157,7 +157,7 @@ public class ProjectTechnicalSupportValidityReportTest extends BaseServiceTest {
 
         projectBetween14And30.setName(TEST_ID + " : Test_Project Between14And30");
         projectBetween14And30.setDescription(TEST_ID);
-        projectBetween14And30.setState(En_RegionState.FINISHED);
+        projectBetween14And30.setStateId(32L);
         projectBetween14And30.setCustomerType(En_CustomerType.STATE_BUDGET);
         projectBetween14And30.setCustomer(companyBetween14And30);
         projectBetween14And30.setTeam(Collections.singletonList(headManagerBetween14And30));
@@ -169,7 +169,7 @@ public class ProjectTechnicalSupportValidityReportTest extends BaseServiceTest {
 
         project30.setName(TEST_ID + " : Test_Project 30");
         project30.setDescription(TEST_ID);
-        project30.setState(En_RegionState.PRESALE);
+        project30.setStateId(24L);
         project30.setCustomerType(En_CustomerType.STATE_BUDGET);
         project30.setCustomer(company30);
         project30.setTeam(Collections.singletonList(headManager));
@@ -181,7 +181,7 @@ public class ProjectTechnicalSupportValidityReportTest extends BaseServiceTest {
 
         projectMore30.setName(TEST_ID + " : Test_Project more 30");
         projectMore30.setDescription(TEST_ID);
-        projectMore30.setState(En_RegionState.PRESALE);
+        projectMore30.setStateId(24L);
         projectMore30.setCustomerType(En_CustomerType.STATE_BUDGET);
         projectMore30.setCustomer(companyMore30);
         projectMore30.setTeam(Collections.singletonList(headManagerMore30));
@@ -193,7 +193,7 @@ public class ProjectTechnicalSupportValidityReportTest extends BaseServiceTest {
 
         projectNo.setName(TEST_ID + " : Test_Project NO");
         projectNo.setDescription(TEST_ID);
-        projectNo.setState(En_RegionState.PRESALE);
+        projectNo.setStateId(24L);
         projectNo.setCustomerType(En_CustomerType.STATE_BUDGET);
         projectNo.setCustomer(companyNo);
         projectNo.setTeam(Collections.singletonList(headManagerNo));

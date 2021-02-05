@@ -403,7 +403,7 @@ public class ProjectServiceImpl implements ProjectService {
         Result<List<CaseLink>> createdLinksResult
                 = caseLinkService.createLinks(token, links, En_CaseType.PROJECT);
 
-        long stateId = project.getState().getId();
+        long stateId = project.getStateId();
 
         addStateHistory(token, projectId, stateId, caseStateDAO.get(stateId).getState());
 
@@ -541,7 +541,7 @@ public class ProjectServiceImpl implements ProjectService {
             throw new RollbackTransactionException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        if (project.getState() != En_RegionState.PAUSED) {
+        if (!project.getStateId().equals(4L)) {
             caseObject.setPauseDate(null);
         }
 
@@ -658,7 +658,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         caseObject.setId(project.getId());
 
-        caseObject.setStateId(project.getState().getId());
+        caseObject.setStateId(project.getStateId());
 
         caseObject.setName(project.getName());
         caseObject.setInfo(project.getDescription());
