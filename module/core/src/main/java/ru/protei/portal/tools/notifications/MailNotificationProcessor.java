@@ -1,6 +1,7 @@
 package ru.protei.portal.tools.notifications;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1123,32 +1124,50 @@ public class MailNotificationProcessor {
 
     @EventListener
     public void onEducationRequest(EducationRequestEvent event) {
-        try {
-            EducationEntry educationEntry = event.getEducationEntry();
-            String typeName = event.getTypeName();
-            Person headOfDepartment = event.getHeadOfDepartment();
+        EducationEntry educationEntry = event.getEducationEntry();
+        String typeName = event.getTypeName();
+        Person headOfDepartment = event.getHeadOfDepartment();
+        Person initiator = event.getInitiator();
 
-            Set<String> recipients = new HashSet<>();
+        Set<String> recipients = new HashSet<>();
+
+        if (headOfDepartment != null) {
             recipients.add(new PlainContactInfoFacade(headOfDepartment.getContactInfo()).getEmail());
-            recipients.addAll(Arrays.asList(config.data().getMailNotificationConfig().getCrmEducationRequestRecipients()));
-
-            PreparedTemplate subjectTemplate = templateService.getEducationRequestNotificationSubject(educationEntry);
-            PreparedTemplate bodyTemplate = templateService.getEducationRequestNotificationBody(recipients, educationEntry, typeName);
-
-            recipients.forEach(email -> {
-                try {
-                    String body = bodyTemplate.getText(email, null, false);
-                    String subject = subjectTemplate.getText(email, null, false);
-
-                    sendMail(email, subject, body, getFromPortalAddress());
-                } catch (Exception e) {
-                    log.error("Failed to make MimeMessage mail={}, e={}", email, e);
-                }
-            });
-
-        } catch (Exception e) {
-            log.warn( "Failed to sent  notification: {}", event.getInitiator().getDisplayName(), e );
         }
+
+        Set<String> recipientsFromConfig = Arrays.stream(config.data().getMailNotificationConfig().getCrmEducationRequestRecipients())
+                .filter(Strings::isNotEmpty)
+                .collect(Collectors.toSet());
+        if (isNotEmpty(recipientsFromConfig)) {
+            recipients.addAll(recipientsFromConfig);
+        }
+
+        if (isEmpty(recipients)) {
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.getEducationRequestNotificationSubject(educationEntry);
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for education request initiator={}", initiator);
+            return;
+        }
+
+        PreparedTemplate bodyTemplate = templateService.getEducationRequestNotificationBody(recipients, educationEntry, typeName);
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for education request notification");
+            return;
+        }
+
+        recipients.forEach(email -> {
+            try {
+                String body = bodyTemplate.getText(email, null, false);
+                String subject = subjectTemplate.getText(email, null, false);
+
+                sendMail(email, subject, body, getFromPortalAddress());
+            } catch (Exception e) {
+                log.error("Failed to make MimeMessage mail={}, e={}", email, e);
+            }
+        });
     }
 
     // -----
