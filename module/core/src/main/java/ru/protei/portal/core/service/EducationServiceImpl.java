@@ -8,6 +8,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.Lang;
+import ru.protei.portal.core.event.EducationRequestApproveEvent;
 import ru.protei.portal.core.event.EducationRequestEvent;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
@@ -279,7 +280,14 @@ public class EducationServiceImpl implements EducationService {
             removeAttendances(entry.getId(), workersDeclined, entry.getCoins());
         }
 
-        return ok(entry);
+        Result<EducationEntry> okResult = ok(entry);
+
+        if (!workersApproved.isEmpty()) {
+            okResult.publishEvent(new EducationRequestApproveEvent(this, getInitiator(token.getPersonId()),
+                    getHeadOfDepartment(token.getPersonId()), entry, workersApproved, makeTypeName(entry.getType(), "ru")));
+        }
+
+        return okResult;
     }
 
     private void reChargeWalletsForCostModification(Long entryId, int oldCoins, int newCoins) throws RollbackTransactionException {

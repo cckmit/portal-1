@@ -5,8 +5,6 @@
 <@set name="_you" value="${you}"/>
 <@set name="_notification_footer" value="${notification_footer}"/>
 <@set name="_educationRequest" value="${educationRequest}"/>
-
-<@set name="_createdBy" value="${created_by}"/>
 <@set name="_you" value="${you}"/>
 <@set name="_notification_footer" value="${notification_footer}"/>
 

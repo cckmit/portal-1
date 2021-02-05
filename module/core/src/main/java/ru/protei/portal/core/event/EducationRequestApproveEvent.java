@@ -4,17 +4,21 @@ import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.model.ent.EducationEntry;
 import ru.protei.portal.core.model.ent.Person;
 
-public class EducationRequestEvent extends ApplicationEvent {
+import java.util.List;
+
+public class EducationRequestApproveEvent extends ApplicationEvent {
     private Person initiator;
     private EducationEntry educationEntry;
+    private List<Long> workersApproved;
     private String typeName;
     private Person headOfDepartment;
 
-    public EducationRequestEvent(Object source, Person initiator, Person headOfDepartment,
-                                 EducationEntry educationEntry, String typeName) {
+    public EducationRequestApproveEvent(Object source, Person initiator, Person headOfDepartment,
+                                        EducationEntry educationEntry, List<Long> workersApproved, String typeName) {
         super(source);
         this.initiator = initiator;
         this.educationEntry = educationEntry;
+        this.workersApproved = workersApproved;
         this.typeName = typeName;
         this.headOfDepartment = headOfDepartment;
     }
@@ -25,6 +29,10 @@ public class EducationRequestEvent extends ApplicationEvent {
 
     public EducationEntry getEducationEntry() {
         return educationEntry;
+    }
+
+    public List<Long> getWorkersApproved() {
+        return workersApproved;
     }
 
     public boolean isCreateEvent() {

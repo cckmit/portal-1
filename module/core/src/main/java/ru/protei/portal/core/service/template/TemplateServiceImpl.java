@@ -2,7 +2,6 @@ package ru.protei.portal.core.service.template;
 
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.*;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.util.HtmlUtils;
@@ -971,7 +970,30 @@ public class TemplateServiceImpl implements TemplateService {
         return template;
     }
 
-    @NotNull
+    @Override
+    public PreparedTemplate getEducationRequestApproveNotificationBody(Collection<String> recipients, EducationEntry educationEntry,
+                                                                       String typeName, String approved) {
+        String participants = educationEntry.getAttendanceList().stream()
+                .map(EducationEntryAttendance::getWorkerName)
+                .collect(Collectors.joining(", "));
+
+        Map<String, Object> model = new HashMap<>();
+        model.put("title", educationEntry.getTitle());
+        model.put("type", typeName);
+        model.put("coins", educationEntry.getCoins());
+        model.put("link", educationEntry.getLink());
+        model.put("location", educationEntry.getLocation());
+        model.put("dates", getDateInterval(educationEntry));
+        model.put("description", educationEntry.getDescription());
+        model.put("participants", participants);
+        model.put("approved", approved);
+        model.put("recipients", recipients);
+        PreparedTemplate template = new PreparedTemplate("notification/email/education.request.approve.body.%s.ftl");
+        template.setModel(model);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
     private String getDateInterval(EducationEntry educationEntry) {
         if (educationEntry.getDateStart() != null && educationEntry.getDateEnd() != null) {
             return dateFormat.format(educationEntry.getDateStart()) + " - " + dateFormat.format(educationEntry.getDateEnd());

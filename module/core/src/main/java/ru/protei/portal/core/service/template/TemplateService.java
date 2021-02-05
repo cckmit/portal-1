@@ -114,4 +114,5 @@ public interface TemplateService {
 
     PreparedTemplate getEducationRequestNotificationSubject(EducationEntry educationEntry);
     PreparedTemplate getEducationRequestNotificationBody(Collection<String> recipients, EducationEntry educationEntry, String typeName);
+    PreparedTemplate getEducationRequestApproveNotificationBody(Collection<String> recipients, EducationEntry educationEntry, String typeName, String approved);
 }

@@ -1170,6 +1170,62 @@ public class MailNotificationProcessor {
         });
     }
 
+    @EventListener
+    public void onEducationRequestApprove(EducationRequestApproveEvent event) {
+        EducationEntry educationEntry = event.getEducationEntry();
+        String typeName = event.getTypeName();
+        Person headOfDepartment = event.getHeadOfDepartment();
+        Person initiator = event.getInitiator();
+        List<Long> workersApproved = event.getWorkersApproved();
+
+        Set<String> recipients = new HashSet<>();
+
+        if (headOfDepartment != null) {
+            recipients.add(new PlainContactInfoFacade(headOfDepartment.getContactInfo()).getEmail());
+        }
+
+        Set<String> recipientsFromConfig = Arrays.stream(config.data().getMailNotificationConfig().getCrmEducationRequestApprovedRecipients())
+                .filter(Strings::isNotEmpty)
+                .collect(Collectors.toSet());
+        if (isNotEmpty(recipientsFromConfig)) {
+            recipients.addAll(recipientsFromConfig);
+        }
+
+        if (isEmpty(recipients)) {
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.getEducationRequestNotificationSubject(educationEntry);
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for education request approve initiator={}", initiator);
+            return;
+        }
+
+        String approved = educationEntry.getAttendanceList().stream()
+                .filter(entry -> workersApproved.contains(entry.getWorkerId()))
+                .map(EducationEntryAttendance::getWorkerName)
+                .collect(Collectors.joining(", "));
+
+
+        PreparedTemplate bodyTemplate = templateService.getEducationRequestApproveNotificationBody(recipients,
+                educationEntry, typeName, approved);
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for education request approve notification");
+            return;
+        }
+
+        recipients.forEach(email -> {
+            try {
+                String body = bodyTemplate.getText(email, null, false);
+                String subject = subjectTemplate.getText(email, null, false);
+
+                sendMail(email, subject, body, getFromPortalAddress());
+            } catch (Exception e) {
+                log.error("Failed to make MimeMessage mail={}, e={}", email, e);
+            }
+        });
+    }
+
     // -----
     // Utils
     // -----
