@@ -10,10 +10,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.dto.ReportDto;
-import ru.protei.portal.ui.common.client.columns.CancelClickColumn;
-import ru.protei.portal.ui.common.client.columns.DownloadClickColumn;
-import ru.protei.portal.ui.common.client.columns.RefreshClickColumn;
-import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
+import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.report.client.activity.table.AbstractReportTableActivity;
 import ru.protei.portal.ui.report.client.activity.table.AbstractReportTableView;
@@ -80,6 +77,9 @@ public class ReportTableView extends Composite implements AbstractReportTableVie
 
         table.addColumn(filterColumn.header, filterColumn.values);
 
+        editClickColumn.setEditHandler( activity );
+        table.addColumn(editClickColumn.header, editClickColumn.values);
+
         table.addColumn(cancelClickColumn.header, cancelClickColumn.values);
         cancelClickColumn.setDisplayPredicate(v -> v.getReport().getStatus() == En_ReportStatus.PROCESS);
         cancelClickColumn.setCancelHandler(activity);
@@ -123,6 +123,8 @@ public class ReportTableView extends Composite implements AbstractReportTableVie
     private RefreshClickColumn<ReportDto> refreshClickColumn;
     @Inject
     private CancelClickColumn<ReportDto> cancelClickColumn;
+    @Inject
+    private EditClickColumn<ReportDto> editClickColumn;
 
     private AbstractReportTableActivity activity;
 

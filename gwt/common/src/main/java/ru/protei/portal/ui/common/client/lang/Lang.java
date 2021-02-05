@@ -2878,6 +2878,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String thisWeekAndBeyondInterval();
 
+    String relativeLastDayInterval();
+
+    String relativeLastWeekInterval();
+
     String relativeLastMonthInterval();
 
     String relativeLastThreeMonthsInterval();

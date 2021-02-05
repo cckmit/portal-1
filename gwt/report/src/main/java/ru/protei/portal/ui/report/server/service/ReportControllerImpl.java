@@ -37,10 +37,10 @@ public class ReportControllerImpl implements ReportController {
     ReportService reportService;
 
     @Override
-    public Long createReport(ReportDto reportDto) throws RequestFailedException {
+    public Long saveReport(ReportDto reportDto) throws RequestFailedException {
         log.info("createReport(): reportDto={}", reportDto);
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
-        return checkResultAndGetData(reportService.createReport(token, reportDto));
+        return checkResultAndGetData(reportService.saveReport(token, reportDto));
     }
 
     @Override

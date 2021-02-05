@@ -66,6 +66,7 @@ public class ContractFilterView extends Composite implements AbstractContractFil
         sortField.setValue(En_SortField.contract_creation_date);
         sortDir.setValue(false);
         contractors.setValue(null);
+        curators.setValue(null);
         organizations.setValue(null);
         managers.setValue(null);
         direction.setValue(null);

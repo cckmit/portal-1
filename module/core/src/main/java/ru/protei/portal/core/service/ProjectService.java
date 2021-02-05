@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.dto.RegionInfo;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
@@ -99,4 +100,6 @@ public interface ProjectService {
     Result<PersonShortView> getProjectLeader(AuthToken authToken, Long projectId);
 
     Result<Boolean> notifyExpiringProjectTechnicalSupportValidity(LocalDate now);
+
+    Result<SelectorsParams> getSelectorsParams(AuthToken token, ProjectQuery query);
 }

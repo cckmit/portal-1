@@ -151,6 +151,11 @@ public abstract class ReportTableActivity implements
         view.scrollTo(page);
     }
 
+    @Override
+    public void onEditClicked( ReportDto value ) {
+        fireEvent(new ReportEvents.Edit(value.getReport().getId(), value));
+    }
+
     private void loadTable() {
         view.clearRecords();
         view.triggerTableLoad();

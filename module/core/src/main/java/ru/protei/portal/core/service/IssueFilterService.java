@@ -23,5 +23,5 @@ public interface IssueFilterService {
 
     Result<CaseFilter> saveIssueFilter( AuthToken token, CaseFilter filter);
 
-    Result<Long> removeIssueFilter(Long id);
+    Result<Long> removeIssueFilter(AuthToken token, Long id);
 }
