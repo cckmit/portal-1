@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.report.client.view.create;
+package ru.protei.portal.ui.report.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -13,15 +13,15 @@ import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.selector.report.additionalparams.ReportAdditionalParamsMultiSelector;
-import ru.protei.portal.ui.report.client.activity.create.AbstractReportCreateEditActivity;
-import ru.protei.portal.ui.report.client.activity.create.AbstractReportCreateEditView;
+import ru.protei.portal.ui.report.client.activity.edit.AbstractReportCreateEditActivity;
+import ru.protei.portal.ui.report.client.activity.edit.AbstractReportEditView;
 import ru.protei.portal.ui.report.client.widget.reporttype.ReportScheduledTypeButtonSelector;
 import ru.protei.portal.ui.report.client.widget.reporttype.ReportTypeButtonSelector;
 
 import java.util.List;
 import java.util.Set;
 
-public class ReportCreateEditView extends Composite implements AbstractReportCreateEditView {
+public class ReportEditView extends Composite implements AbstractReportEditView {
 
     @Inject
     public void onInit() {
@@ -144,6 +144,6 @@ public class ReportCreateEditView extends Composite implements AbstractReportCre
 
     private AbstractReportCreateEditActivity activity;
 
-    interface IssueReportCreateViewUiBinder extends UiBinder<Widget, ReportCreateEditView> {}
-    private static IssueReportCreateViewUiBinder ourUiBinder = GWT.create(IssueReportCreateViewUiBinder.class);
+    interface IssueReportEditViewUiBinder extends UiBinder<Widget, ReportEditView> {}
+    private static IssueReportEditViewUiBinder ourUiBinder = GWT.create(IssueReportEditViewUiBinder.class);
 }

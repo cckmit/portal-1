@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.report.client.activity.create;
+package ru.protei.portal.ui.report.client.activity.edit;
 
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
@@ -50,7 +50,7 @@ import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateInte
 import static ru.protei.portal.ui.report.client.util.AccessUtil.availableReportTypes;
 import static ru.protei.portal.ui.report.client.util.AccessUtil.canEdit;
 
-public abstract class ReportCreateEditActivity implements Activity,
+public abstract class ReportEditActivity implements Activity,
         AbstractReportCreateEditActivity, AbstractIssueFilterModel, AbstractProjectFilterActivity {
 
     @PostConstruct
@@ -661,7 +661,7 @@ public abstract class ReportCreateEditActivity implements Activity,
     @Inject
     Lang lang;
     @Inject
-    AbstractReportCreateEditView view;
+    AbstractReportEditView view;
     @Inject
     ReportControllerAsync reportController;
     @Inject

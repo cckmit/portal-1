@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.report.client.activity.create;
+package ru.protei.portal.ui.report.client.activity.edit;
 
 public interface AbstractReportCreateEditActivity {
     void onReportTypeChanged();

@@ -58,6 +58,7 @@ public enum En_DateIntervalType {
         tmpIssueRangeTypes.add( PREVIOUS_AND_THIS_MONTH );
         tmpIssueRangeTypes.add( RELATIVE_LAST_DAY );
         tmpIssueRangeTypes.add( RELATIVE_LAST_WEEK );
+        tmpIssueRangeTypes.add( RELATIVE_LAST_MONTH );
         tmpIssueRangeTypes.add( RELATIVE_LAST_YEAR );
         issueRangeTypes = Collections.unmodifiableList(tmpIssueRangeTypes);
 

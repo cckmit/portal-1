@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.report.client.activity.create;
+package ru.protei.portal.ui.report.client.activity.edit;
 
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_ReportAdditionalParamType;
@@ -8,7 +8,7 @@ import ru.protei.portal.core.model.dict.En_ReportType;
 import java.util.List;
 import java.util.Set;
 
-public interface AbstractReportCreateEditView extends IsWidget {
+public interface AbstractReportEditView extends IsWidget {
 
     void setActivity(AbstractReportCreateEditActivity activity);
 
