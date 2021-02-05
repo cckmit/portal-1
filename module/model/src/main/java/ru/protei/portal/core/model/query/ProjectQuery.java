@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.query;
 
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.struct.Interval;
@@ -19,7 +20,7 @@ public class ProjectQuery extends BaseQuery {
 
     private List<Long> caseIds;
 
-    private Set<En_RegionState> states;
+    private Set<CaseState> states;
 
     private Set<EntityOption> regions;
 
@@ -64,7 +65,7 @@ public class ProjectQuery extends BaseQuery {
         super(searchString, sortField, sortDir);
     }
 
-    public ProjectQuery( Set<En_RegionState> state, String searchString, En_SortField sortField, En_SortDir sortDir ) {
+    public ProjectQuery( Set<CaseState> state, String searchString, En_SortField sortField, En_SortDir sortDir ) {
         super(searchString, sortField, sortDir);
         this.states = state;
     }
@@ -93,11 +94,11 @@ public class ProjectQuery extends BaseQuery {
         this.caseIds = caseIds;
     }
 
-    public Set<En_RegionState> getStates() {
+    public Set<CaseState> getStates() {
         return states;
     }
 
-    public void setStates(Set<En_RegionState> state) {
+    public void setStates(Set<CaseState> state) {
         this.states = state;
     }
 

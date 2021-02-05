@@ -3,14 +3,13 @@ package ru.protei.portal.ui.common.client.activity.projectfilter;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
-import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -26,7 +25,7 @@ public interface AbstractProjectFilterView extends IsWidget {
 
     HasValue< String > searchPattern();
 
-    HasValue< Set< En_RegionState > > states();
+    HasValue< Set< CaseState> > states();
 
     HasValue<Set<ProductDirectionInfo>> direction();
 
@@ -52,6 +51,4 @@ public interface AbstractProjectFilterView extends IsWidget {
 
     void resetFilter();
     void clearFooterStyle();
-
-    void fillStatesButtons(Map<En_RegionState, String> iconsColorsMap);
 }

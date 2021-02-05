@@ -19,9 +19,14 @@ import ru.protei.portal.core.model.dto.RegionInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.DateRangeUtils;
-import ru.protei.portal.core.model.query.*;
+import ru.protei.portal.core.model.query.LocationQuery;
+import ru.protei.portal.core.model.query.PersonQuery;
+import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.Interval;
-import ru.protei.portal.core.model.view.*;
+import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonProjectMemberView;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
@@ -401,7 +406,7 @@ public class ProjectServiceImpl implements ProjectService {
         Result<List<CaseLink>> createdLinksResult
                 = caseLinkService.createLinks(token, links, En_CaseType.PROJECT);
 
-        long stateId = project.getState().getId();
+        long stateId = project.getStateId();
 
         addStateHistory(token, projectId, stateId, caseStateDAO.get(stateId).getState());
 
@@ -563,7 +568,7 @@ public class ProjectServiceImpl implements ProjectService {
             throw new RollbackTransactionException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        if (project.getState() != En_RegionState.PAUSED) {
+        if (!project.getStateId().equals(CrmConstants.State.PAUSED)) {
             caseObject.setPauseDate(null);
         }
 
@@ -680,7 +685,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         caseObject.setId(project.getId());
 
-        caseObject.setStateId(project.getState().getId());
+        caseObject.setStateId(project.getStateId());
 
         caseObject.setName(project.getName());
         caseObject.setInfo(project.getDescription());

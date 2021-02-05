@@ -1,10 +1,8 @@
-package ru.protei.portal.ui.common.client.widget.selector.state;
+package ru.protei.portal.ui.common.client.widget.selector.project.state;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.ent.CaseState;
-import ru.protei.portal.ui.common.client.lang.En_RegionStateLang;
-import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.lang.ProjectStateLang;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.form.FormPopupSingleSelector;
@@ -29,7 +27,7 @@ public class ProjectStateFormSelector extends FormPopupSingleSelector<CaseState>
     protected SelectorItem<CaseState> makeSelectorItem( CaseState element, String elementHtml ) {
         PopupSelectorItem<CaseState> item = new PopupSelectorItem();
         item.setName( elementHtml );
-        item.setStyle( "region-state-item" );
+        item.setStyle( "project-state-item" );
         if (element != null) {
             item.setTitle( getStateName(element) );
             item.setIcon( getStateIcon(element) + " selector" );
@@ -40,17 +38,11 @@ public class ProjectStateFormSelector extends FormPopupSingleSelector<CaseState>
     }
 
     public String getStateName( CaseState state ) {
-        if ( state == null )
-            return lang.errUnknownResult();
-
-        return regionStateLang.getStateName( En_RegionState.forId( state.getId() ) );
+        return projectStateLang.getStateName( state );
     }
 
     public String getStateIcon( CaseState state ) {
-        if ( state == null )
-            return "fa fa-unknown";
-
-        return regionStateLang.getStateIcon( En_RegionState.forId( state.getId() ) );
+        return projectStateLang.getStateIcon( state );
     }
 
     public void setDefaultValue( String value ) {
@@ -58,9 +50,7 @@ public class ProjectStateFormSelector extends FormPopupSingleSelector<CaseState>
     }
 
     @Inject
-    Lang lang;
-    @Inject
-    En_RegionStateLang regionStateLang;
+    ProjectStateLang projectStateLang;
 
     private String defaultValue;
 }
