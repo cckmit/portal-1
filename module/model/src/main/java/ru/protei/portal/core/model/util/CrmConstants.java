@@ -203,6 +203,9 @@ public class CrmConstants {
         long SOLVED_DUPLICATED = 9;
         long BLOCKED = 38;
         long DEVELOPMENT = 26;
+        long UNKNOWN = 22;
+        long PRESALE = 24;
+        long FINISHED = 32;
     }
 
     public interface Department {

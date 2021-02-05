@@ -21,7 +21,6 @@ import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.UiConstants;
-import ru.protei.portal.ui.common.client.lang.En_RegionStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
@@ -32,7 +31,7 @@ import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitWithImageMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.region.RegionFormSelector;
-import ru.protei.portal.ui.common.client.widget.selector.state.ProjectStateFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.project.state.ProjectStateFormSelector;
 import ru.protei.portal.ui.common.client.widget.sla.SlaInput;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
@@ -56,7 +55,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         products.setModel(productModel);
         company.setDefaultValue(lang.selectIssueCompany());
 
-        projectState.setDefaultValue(regionStateLang.getStateName(En_RegionState.UNKNOWN));
+        projectState.setDefaultValue(lang.projectStateUnknown());
         projectRegion.setDefaultValue(lang.selectOfficialRegion());
         customerType.setDefaultValue(lang.selectCustomerType());
 
@@ -399,8 +398,6 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     @Inject
     @UiField
     Lang lang;
-    @Inject
-    En_RegionStateLang regionStateLang;
 
     @Inject
     ProductModel productModel;

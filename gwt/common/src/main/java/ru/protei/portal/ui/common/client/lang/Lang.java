@@ -876,33 +876,33 @@ public interface Lang extends Messages, ContactItemLang {
 
     String regions();
 
-    String regionState();
-
     String regionDistrict();
 
-    String regionStateUnknown();
+    String projectState();
 
-    String regionStateMarketing();
+    String projectStateUnknown();
 
-    String regionStatePresale();
+    String projectStateMarketing();
 
-    String regionStateProjecting();
+    String projectStatePresale();
 
-    String regionStateDevelopment();
+    String projectStateProjecting();
 
-    String regionStateDeployment();
+    String projectStateDevelopment();
 
-    String regionStateTesting();
+    String projectStateDeployment();
 
-    String regionStateSupport();
+    String projectStateTesting();
 
-    String regionStateFinished();
+    String projectStateSupport();
 
-    String regionStateCanceled();
+    String projectStateFinished();
+
+    String projectStateCanceled();
+
+    String projectStatePaused();
 
     String regionNotSpecified();
-
-    String regionStatePaused();
 
     String projects();
 
@@ -923,8 +923,6 @@ public interface Lang extends Messages, ContactItemLang {
     String projectHeadManager();
 
     String projectDeployManagers();
-
-    String projectState();
 
     String projectRegion();
 

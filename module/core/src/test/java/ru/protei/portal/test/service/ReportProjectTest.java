@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.Project;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Report;
@@ -26,6 +27,8 @@ import java.io.ByteArrayOutputStream;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+
+import static ru.protei.portal.core.model.util.CrmConstants.State.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {CoreConfigurationContext.class,
@@ -52,7 +55,7 @@ public class ReportProjectTest extends BaseServiceTest {
 
         project1.setName(REPORT_PROJECT_TEST + " : Test_Project 1");
         project1.setDescription(REPORT_PROJECT_TEST);
-        project1.setState(En_RegionState.PRESALE);
+        project1.setStateId(PRESALE);
         project1.setCustomerType(En_CustomerType.STATE_BUDGET);
         project1.setCustomer(company1);
         project1.setTeam(Collections.singletonList(personProjectMemberView));
@@ -68,7 +71,7 @@ public class ReportProjectTest extends BaseServiceTest {
 
         project2.setName(REPORT_PROJECT_TEST + " : Test_Project 2");
         project2.setDescription(REPORT_PROJECT_TEST);
-        project2.setState(En_RegionState.FINISHED);
+        project2.setStateId(FINISHED);
         project2.setCustomerType(En_CustomerType.STATE_BUDGET);
         project2.setCustomer(company1);
         project2.setTeam(Collections.singletonList(personProjectMemberView));
@@ -83,7 +86,7 @@ public class ReportProjectTest extends BaseServiceTest {
 
         project3.setName(REPORT_PROJECT_TEST + " : Test_Project 3");
         project3.setDescription(REPORT_PROJECT_TEST);
-        project3.setState(En_RegionState.PRESALE);
+        project3.setStateId(PRESALE);
         project3.setCustomerType(En_CustomerType.STATE_BUDGET);
         project3.setCustomer(company2);
         project3.setTeam(Collections.singletonList(personProjectMemberView));
@@ -98,7 +101,7 @@ public class ReportProjectTest extends BaseServiceTest {
 
         ProjectQuery query = new ProjectQuery();
         query.setSearchString(REPORT_PROJECT_TEST);
-        query.setStates(new HashSet<>(Collections.singletonList(En_RegionState.FINISHED)));
+        query.setStates(new HashSet<>(Collections.singletonList(new CaseState(FINISHED))));
         Report report = new Report();
         report.setQuery(serializeAsJson(query));
         report.setLocale("ru");
@@ -126,7 +129,7 @@ public class ReportProjectTest extends BaseServiceTest {
 
         ProjectQuery query = new ProjectQuery();
         query.setSearchString(REPORT_PROJECT_TEST);
-        query.setStates(new HashSet<>(Collections.singletonList(En_RegionState.UNKNOWN)));
+        query.setStates(new HashSet<>(Collections.singletonList(new CaseState(UNKNOWN))));
         Report report = new Report();
         report.setQuery(serializeAsJson(query));
         report.setLocale("ru");
@@ -154,7 +157,7 @@ public class ReportProjectTest extends BaseServiceTest {
 
         ProjectQuery query = new ProjectQuery();
         query.setSearchString(REPORT_PROJECT_TEST);
-        query.setStates(new HashSet<>(Collections.singletonList(En_RegionState.PRESALE)));
+        query.setStates(new HashSet<>(Collections.singletonList(new CaseState(PRESALE))));
         Report report = new Report();
         report.setQuery(serializeAsJson(query));
         report.setLocale("ru");
@@ -203,7 +206,7 @@ public class ReportProjectTest extends BaseServiceTest {
 
         ProjectQuery query = new ProjectQuery();
         query.setSearchString(REPORT_PROJECT_TEST);
-        query.setStates(new HashSet<>(Collections.singletonList(En_RegionState.UNKNOWN)));
+        query.setStates(new HashSet<>(Collections.singletonList(new CaseState(UNKNOWN))));
         Report report = new Report();
         report.setQuery(serializeAsJson(query));
         report.setLocale("ru");

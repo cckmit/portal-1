@@ -149,11 +149,11 @@
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
                 <#if stateChanged>
                     <@changeTo
-                    old="${EnumLangUtil.getRegionState(oldState, lang)!'?'}"
-                    new="${EnumLangUtil.getRegionState(newState, lang)}"
+                    old="${EnumLangUtil.getProjectState(oldState, lang)!'?'}"
+                    new="${EnumLangUtil.getProjectState(newState, lang)}"
                     />
                 <#else>
-                    ${EnumLangUtil.getRegionState(newState, lang)}
+                    ${EnumLangUtil.getProjectState(newState, lang)}
                 </#if>
             </td>
         </tr>

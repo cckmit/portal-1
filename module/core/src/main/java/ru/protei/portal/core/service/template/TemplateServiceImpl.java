@@ -8,7 +8,6 @@ import org.springframework.web.util.HtmlUtils;
 import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.model.dict.En_ExpiringProjectTSVPeriod;
-import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.dto.ReportDto;
@@ -502,10 +501,10 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("newDescription", HtmlUtils.htmlEscape(newProjectState.getDescription()));
 
         templateModel.put("stateChanged", event.isStateChanged());
-        templateModel.put("oldState", getNullOrElse(oldProjectState, Project::getState));
-        templateModel.put("newState", newProjectState.getState());
+        templateModel.put("oldState", getNullOrElse(oldProjectState, Project::getStateName));
+        templateModel.put("newState", newProjectState.getStateName());
 
-        templateModel.put("showPauseDate", newProjectState.getState() == En_RegionState.PAUSED);
+        templateModel.put("showPauseDate", Objects.equals(newProjectState.getStateId(), CrmConstants.State.PAUSED));
         templateModel.put("pauseDateChanged", event.isPauseDateChanged());
         templateModel.put("oldPauseDate", getNullOrElse(getNullOrElse(oldProjectState, Project::getPauseDate), new SimpleDateFormat("dd.MM.yyyy")::format));
         templateModel.put("newPauseDate", getNullOrElse(newProjectState.getPauseDate(), new SimpleDateFormat("dd.MM.yyyy")::format));

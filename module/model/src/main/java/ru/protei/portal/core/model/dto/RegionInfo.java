@@ -1,7 +1,5 @@
 package ru.protei.portal.core.model.dto;
 
-import ru.protei.portal.core.model.dict.En_RegionState;
-
 import java.io.Serializable;
 
 /**
@@ -18,11 +16,6 @@ public class RegionInfo implements Serializable {
      * Название региона
      */
     public String name;
-
-    /**
-     * Состояние региона
-     */
-    public En_RegionState state;
 
     /**
      * Дополнительная детальная информация о состоянии
@@ -48,14 +41,6 @@ public class RegionInfo implements Serializable {
 
     public void setName( String name ) {
         this.name = name;
-    }
-
-    public En_RegionState getState() {
-        return state;
-    }
-
-    public void setState( En_RegionState state ) {
-        this.state = state;
     }
 
     public String getDetails() {
