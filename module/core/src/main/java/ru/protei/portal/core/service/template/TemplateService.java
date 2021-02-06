@@ -113,6 +113,6 @@ public interface TemplateService {
                                      Collection<String> recipients, String urlTemplate);
 
     PreparedTemplate getEducationRequestNotificationSubject(EducationEntry educationEntry);
-    PreparedTemplate getEducationRequestNotificationBody(Collection<String> recipients, EducationEntry educationEntry, String typeName);
-    PreparedTemplate getEducationRequestApproveNotificationBody(Collection<String> recipients, EducationEntry educationEntry, String typeName, String approved);
+    PreparedTemplate getEducationRequestNotificationBody(Collection<String> recipients, EducationEntry educationEntry, EnumLangUtil enumLangUtil);
+    PreparedTemplate getEducationRequestApproveNotificationBody(Collection<String> recipients, EducationEntry educationEntry, String typeName, EnumLangUtil enumLangUtil);
 }

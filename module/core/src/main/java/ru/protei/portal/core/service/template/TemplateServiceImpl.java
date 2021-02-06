@@ -949,14 +949,14 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getEducationRequestNotificationBody(Collection<String> recipients, EducationEntry educationEntry, String typeName) {
+    public PreparedTemplate getEducationRequestNotificationBody(Collection<String> recipients, EducationEntry educationEntry, EnumLangUtil enumLangUtil) {
         String participants = educationEntry.getAttendanceList().stream()
                 .map(EducationEntryAttendance::getWorkerName)
                 .collect(Collectors.joining(", "));
 
         Map<String, Object> model = new HashMap<>();
         model.put("title", educationEntry.getTitle());
-        model.put("type", typeName);
+        model.put("type", educationEntry.getType());
         model.put("coins", educationEntry.getCoins());
         model.put("link", educationEntry.getLink());
         model.put("location", educationEntry.getLocation());
@@ -964,6 +964,7 @@ public class TemplateServiceImpl implements TemplateService {
         model.put("description", educationEntry.getDescription());
         model.put("participants", participants);
         model.put("recipients", recipients);
+        model.put("EnumLangUtil", enumLangUtil);
         PreparedTemplate template = new PreparedTemplate("notification/email/education.request.body.%s.ftl");
         template.setModel(model);
         template.setTemplateConfiguration(templateConfiguration);
@@ -972,14 +973,14 @@ public class TemplateServiceImpl implements TemplateService {
 
     @Override
     public PreparedTemplate getEducationRequestApproveNotificationBody(Collection<String> recipients, EducationEntry educationEntry,
-                                                                       String typeName, String approved) {
+                                                                       String approved, EnumLangUtil enumLangUtil) {
         String participants = educationEntry.getAttendanceList().stream()
                 .map(EducationEntryAttendance::getWorkerName)
                 .collect(Collectors.joining(", "));
 
         Map<String, Object> model = new HashMap<>();
         model.put("title", educationEntry.getTitle());
-        model.put("type", typeName);
+        model.put("type", educationEntry.getType());
         model.put("coins", educationEntry.getCoins());
         model.put("link", educationEntry.getLink());
         model.put("location", educationEntry.getLocation());
@@ -988,6 +989,7 @@ public class TemplateServiceImpl implements TemplateService {
         model.put("participants", participants);
         model.put("approved", approved);
         model.put("recipients", recipients);
+        model.put("EnumLangUtil", enumLangUtil);
         PreparedTemplate template = new PreparedTemplate("notification/email/education.request.approve.body.%s.ftl");
         template.setModel(model);
         template.setTemplateConfiguration(templateConfiguration);

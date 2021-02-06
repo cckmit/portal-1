@@ -10,16 +10,14 @@ public class EducationRequestApproveEvent extends ApplicationEvent {
     private Person initiator;
     private EducationEntry educationEntry;
     private List<Long> workersApproved;
-    private String typeName;
     private Person headOfDepartment;
 
     public EducationRequestApproveEvent(Object source, Person initiator, Person headOfDepartment,
-                                        EducationEntry educationEntry, List<Long> workersApproved, String typeName) {
+                                        EducationEntry educationEntry, List<Long> workersApproved) {
         super(source);
         this.initiator = initiator;
         this.educationEntry = educationEntry;
         this.workersApproved = workersApproved;
-        this.typeName = typeName;
         this.headOfDepartment = headOfDepartment;
     }
 
@@ -37,10 +35,6 @@ public class EducationRequestApproveEvent extends ApplicationEvent {
 
     public boolean isCreateEvent() {
         return true;
-    }
-
-    public String getTypeName() {
-        return typeName;
     }
 
     public Person getHeadOfDepartment() {

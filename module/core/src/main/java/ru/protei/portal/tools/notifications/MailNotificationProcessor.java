@@ -1125,7 +1125,6 @@ public class MailNotificationProcessor {
     @EventListener
     public void onEducationRequest(EducationRequestEvent event) {
         EducationEntry educationEntry = event.getEducationEntry();
-        String typeName = event.getTypeName();
         Person headOfDepartment = event.getHeadOfDepartment();
         Person initiator = event.getInitiator();
 
@@ -1152,7 +1151,8 @@ public class MailNotificationProcessor {
             return;
         }
 
-        PreparedTemplate bodyTemplate = templateService.getEducationRequestNotificationBody(recipients, educationEntry, typeName);
+        PreparedTemplate bodyTemplate = templateService.getEducationRequestNotificationBody(recipients,
+                educationEntry,  new EnumLangUtil(lang));
         if (bodyTemplate == null) {
             log.error("Failed to prepare body template for education request notification");
             return;
@@ -1173,7 +1173,6 @@ public class MailNotificationProcessor {
     @EventListener
     public void onEducationRequestApprove(EducationRequestApproveEvent event) {
         EducationEntry educationEntry = event.getEducationEntry();
-        String typeName = event.getTypeName();
         Person headOfDepartment = event.getHeadOfDepartment();
         Person initiator = event.getInitiator();
         List<Long> workersApproved = event.getWorkersApproved();
@@ -1208,7 +1207,7 @@ public class MailNotificationProcessor {
 
 
         PreparedTemplate bodyTemplate = templateService.getEducationRequestApproveNotificationBody(recipients,
-                educationEntry, typeName, approved);
+                educationEntry, approved, new EnumLangUtil(lang));
         if (bodyTemplate == null) {
             log.error("Failed to prepare body template for education request approve notification");
             return;

@@ -17,54 +17,11 @@
 <@set name="_educationEntryDescription" value="${educationEntryDescription}"/>
 <@set name="_educationEntryParticipants" value="${educationEntryParticipants}"/>
 
+
 <#noparse>
     <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
-        <style>
-            .markdown * {
-                box-sizing: border-box;
-            }
-
-            .markdown p,
-            .markdown blockquote,
-            .markdown ul,
-            .markdown ol,
-            .markdown dl,
-            .markdown pre {
-                font-size: 14px !important;
-            }
-
-            .markdown p {
-                margin-bottom: 0;
-                margin-top: 0;
-            }
-
-            .markdown table {
-                display: block;
-                width: 100%;
-                overflow: auto;
-                border-spacing: 0;
-                border-collapse: collapse;
-                padding: 2px;
-                font-family: sans-serif;
-                font-size: 14px;
-            }
-
-            .markdown table tr {
-                background-color: #fff;
-                border-top: 1px solid #c6cbd1;
-            }
-
-            .markdown table th {
-                font-weight: normal;
-            }
-
-            .markdown table th, .markdown table td {
-                padding: 6px 13px;
-                border: 1px solid #dfe2e5;
-            }
-        </style>
     </head>
 
     <body>
@@ -84,7 +41,7 @@
                     ${_educationEntryType}
                 </td>
                 <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                    ${type}
+                    ${EnumLangUtil.educationTypeLang(type, lang)}
                 </td>
             </tr>
             <tr>

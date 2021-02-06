@@ -7,15 +7,12 @@ import ru.protei.portal.core.model.ent.Person;
 public class EducationRequestEvent extends ApplicationEvent {
     private Person initiator;
     private EducationEntry educationEntry;
-    private String typeName;
     private Person headOfDepartment;
 
-    public EducationRequestEvent(Object source, Person initiator, Person headOfDepartment,
-                                 EducationEntry educationEntry, String typeName) {
+    public EducationRequestEvent(Object source, Person initiator, Person headOfDepartment, EducationEntry educationEntry) {
         super(source);
         this.initiator = initiator;
         this.educationEntry = educationEntry;
-        this.typeName = typeName;
         this.headOfDepartment = headOfDepartment;
     }
 
@@ -29,10 +26,6 @@ public class EducationRequestEvent extends ApplicationEvent {
 
     public boolean isCreateEvent() {
         return true;
-    }
-
-    public String getTypeName() {
-        return typeName;
     }
 
     public Person getHeadOfDepartment() {

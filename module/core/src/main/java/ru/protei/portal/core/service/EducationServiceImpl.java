@@ -117,7 +117,7 @@ public class EducationServiceImpl implements EducationService {
         jdbcManyRelationsHelper.fill(entry, "attendanceList");
 
         return ok(entry).publishEvent(new EducationRequestEvent(this, getInitiator(token.getPersonId()),
-                getHeadOfDepartment(token.getPersonId()), entry, makeTypeName(entry.getType(), "ru")));
+                getHeadOfDepartment(token.getPersonId()), entry));
     }
 
     private Person getInitiator(Long personId) {
@@ -155,17 +155,6 @@ public class EducationServiceImpl implements EducationService {
         }
 
         return headPerson;
-    }
-
-    private String makeTypeName(EducationEntryType type, String locale) {
-        String langKey = "";
-        switch (type) {
-            case CONFERENCE: langKey = "educationConference"; break;
-            case COURSE: langKey = "educationCourse"; break;
-            case LITERATURE:  langKey = "educationLiterature"; break;
-        }
-        Lang.LocalizedLang localizedLang = getLang().getFor(Locale.forLanguageTag(locale));
-        return localizedLang.get(langKey);
     }
 
     private Lang getLang() {
@@ -284,7 +273,7 @@ public class EducationServiceImpl implements EducationService {
 
         if (!workersApproved.isEmpty()) {
             okResult.publishEvent(new EducationRequestApproveEvent(this, getInitiator(token.getPersonId()),
-                    getHeadOfDepartment(token.getPersonId()), entry, workersApproved, makeTypeName(entry.getType(), "ru")));
+                    getHeadOfDepartment(token.getPersonId()), entry, workersApproved));
         }
 
         return okResult;
