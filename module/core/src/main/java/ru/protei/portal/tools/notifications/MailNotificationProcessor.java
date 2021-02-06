@@ -14,6 +14,7 @@ import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.mail.MailMessageFactory;
 import ru.protei.portal.core.mail.MailSendChannel;
+import ru.protei.portal.core.model.dict.EducationEntryType;
 import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dto.ReportCaseQuery;
 import ru.protei.portal.core.model.dto.ReportDto;
@@ -49,6 +50,7 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
 import static java.util.stream.Collectors.partitioningBy;
+import static ru.protei.portal.config.PortalConfigData.*;
 import static ru.protei.portal.core.event.ReservedIpReleaseRemainingEvent.*;
 import static ru.protei.portal.core.model.dict.En_CaseLink.CRM;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
@@ -1134,9 +1136,7 @@ public class MailNotificationProcessor {
             recipients.add(new PlainContactInfoFacade(headOfDepartment.getContactInfo()).getEmail());
         }
 
-        Set<String> recipientsFromConfig = Arrays.stream(config.data().getMailNotificationConfig().getCrmEducationRequestRecipients())
-                .filter(Strings::isNotEmpty)
-                .collect(Collectors.toSet());
+        Set<String> recipientsFromConfig = getRecipientsFromConfigOnCreateRequest(educationEntry.getType());
         if (isNotEmpty(recipientsFromConfig)) {
             recipients.addAll(recipientsFromConfig);
         }
@@ -1183,9 +1183,7 @@ public class MailNotificationProcessor {
             recipients.add(new PlainContactInfoFacade(headOfDepartment.getContactInfo()).getEmail());
         }
 
-        Set<String> recipientsFromConfig = Arrays.stream(config.data().getMailNotificationConfig().getCrmEducationRequestApprovedRecipients())
-                .filter(Strings::isNotEmpty)
-                .collect(Collectors.toSet());
+        Set<String> recipientsFromConfig = getRecipientsFromConfigOnApproveParticipants(educationEntry.getType());
         if (isNotEmpty(recipientsFromConfig)) {
             recipients.addAll(recipientsFromConfig);
         }
@@ -1223,6 +1221,36 @@ public class MailNotificationProcessor {
                 log.error("Failed to make MimeMessage mail={}, e={}", email, e);
             }
         });
+    }
+
+    private Set<String> getRecipientsFromConfigOnCreateRequest(EducationEntryType type) {
+        MailNotificationConfig config = this.config.data().getMailNotificationConfig();
+        String[] recipients;
+        switch (type) {
+            case COURSE: recipients = config.getCrmEducationRequestCourseRecipients(); break;
+            case CONFERENCE: recipients = config.getCrmEducationRequestConferenceRecipients(); break;
+            case LITERATURE: recipients = config.getCrmEducationRequestLiteratureRecipients(); break;
+            default: return new HashSet<>();
+        }
+
+        return Arrays.stream(recipients)
+                .filter(Strings::isNotEmpty)
+                .collect(Collectors.toSet());
+    }
+
+    private Set<String> getRecipientsFromConfigOnApproveParticipants(EducationEntryType type) {
+        MailNotificationConfig config = this.config.data().getMailNotificationConfig();
+        String[] recipients;
+        switch (type) {
+            case COURSE: recipients = config.getCrmEducationRequestApprovedCourseRecipients(); break;
+            case CONFERENCE: recipients = config.getCrmEducationRequestApprovedConferenceRecipients(); break;
+            case LITERATURE: recipients = config.getCrmEducationRequestApprovedLiteratureRecipients(); break;
+            default: return new HashSet<>();
+        }
+
+        return Arrays.stream(recipients)
+                .filter(Strings::isNotEmpty)
+                .collect(Collectors.toSet());
     }
 
     // -----

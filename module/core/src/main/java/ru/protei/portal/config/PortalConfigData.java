@@ -230,8 +230,12 @@ public class PortalConfigData {
         private final String[] crmRoomReservationNotificationsRecipients;
         private final String[] crmIpReservationNotificationsRecipients;
         private final String[] crmBirthdaysNotificationsRecipients;
-        private final String[] crmEducationRequestRecipients;
-        private final String[] crmEducationRequestApprovedRecipients;
+        private final String[] crmEducationRequestCourseRecipients;
+        private final String[] crmEducationRequestConferenceRecipients;
+        private final String[] crmEducationRequestLiteratureRecipients;
+        private final String[] crmEducationRequestApprovedCourseRecipients;
+        private final String[] crmEducationRequestApprovedConferenceRecipients;
+        private final String[] crmEducationRequestApprovedLiteratureRecipients;
 
         public MailNotificationConfig(PropertiesWrapper properties) throws ConfigException {
             super(properties);
@@ -245,8 +249,12 @@ public class PortalConfigData {
             crmRoomReservationNotificationsRecipients = properties.getProperty("crm.room_reservation.recipients", "").split(",");
             crmIpReservationNotificationsRecipients = properties.getProperty("crm.ip_reservation.recipients", "").split(",");
             crmBirthdaysNotificationsRecipients = properties.getProperty("crm.birthdays.recipients", "").split(",");
-            crmEducationRequestRecipients = properties.getProperty("crm.education.request.recipients", "").split(",");
-            crmEducationRequestApprovedRecipients = properties.getProperty("crm.education.request.approved.recipients", "").split(",");
+            crmEducationRequestCourseRecipients = properties.getProperty("crm.education.request.course.recipients", "").split(",");
+            crmEducationRequestConferenceRecipients = properties.getProperty("crm.education.request.conference.recipients", "").split(",");
+            crmEducationRequestLiteratureRecipients = properties.getProperty("crm.education.request.literature.recipients", "").split(",");
+            crmEducationRequestApprovedCourseRecipients = properties.getProperty("crm.education.request.approved.course.recipients", "").split(",");
+            crmEducationRequestApprovedConferenceRecipients = properties.getProperty("crm.education.request.approved.conference.recipients", "").split(",");
+            crmEducationRequestApprovedLiteratureRecipients = properties.getProperty("crm.education.request.approved.literature.recipients", "").split(",");
         }
 
         public String getCrmCaseUrl() {
@@ -288,12 +296,28 @@ public class PortalConfigData {
         public String[] getCrmBirthdaysNotificationsRecipients() { return crmBirthdaysNotificationsRecipients;
         }
 
-        public String[] getCrmEducationRequestRecipients() {
-            return crmEducationRequestRecipients;
+        public String[] getCrmEducationRequestCourseRecipients() {
+            return crmEducationRequestCourseRecipients;
         }
 
-        public String[] getCrmEducationRequestApprovedRecipients() {
-            return crmEducationRequestApprovedRecipients;
+        public String[] getCrmEducationRequestConferenceRecipients() {
+            return crmEducationRequestConferenceRecipients;
+        }
+
+        public String[] getCrmEducationRequestLiteratureRecipients() {
+            return crmEducationRequestLiteratureRecipients;
+        }
+
+        public String[] getCrmEducationRequestApprovedCourseRecipients() {
+            return crmEducationRequestApprovedCourseRecipients;
+        }
+
+        public String[] getCrmEducationRequestApprovedConferenceRecipients() {
+            return crmEducationRequestApprovedConferenceRecipients;
+        }
+
+        public String[] getCrmEducationRequestApprovedLiteratureRecipients() {
+            return crmEducationRequestApprovedLiteratureRecipients;
         }
     }
 
