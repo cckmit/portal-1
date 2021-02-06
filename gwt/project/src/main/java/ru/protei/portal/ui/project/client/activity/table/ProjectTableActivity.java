@@ -10,9 +10,9 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ProjectAccessType;
 import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.ProjectQuery;
-import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -27,12 +27,12 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.searchCaseNumber;
+import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.toDateRange;
 import static ru.protei.portal.ui.project.client.util.AccessUtil.getAccessType;
 
 /**
@@ -137,7 +137,10 @@ public abstract class ProjectTableActivity
 
     @Override
     public void onProjectFilterChanged() {
-        loadTable();
+       boolean isValid = filterView.isCommentCreationRangeTypeValid() && filterView.isCommentCreationRangeValid();
+       if (isValid) {
+           loadTable();
+       }
     }
 
     @Override
@@ -232,6 +235,7 @@ public abstract class ProjectTableActivity
             query.setInitiatorCompanyIds(filterView.initiatorCompanies().getValue().stream()
                     .map(entityOption -> entityOption.getId()).collect(Collectors.toSet()));
         }
+        query.setCommentCreationRange(toDateRange(filterView.commentCreationRange().getValue()));
         return query;
     }
 

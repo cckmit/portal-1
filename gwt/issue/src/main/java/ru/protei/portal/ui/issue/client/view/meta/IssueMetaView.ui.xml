@@ -24,20 +24,20 @@
                     <issuestate:IssueStateFormSelector ui:field="state"
                                                        validation="true"
                                                        header="{lang.issueState}"
-                                                       mandatory="false"/>
+                                                       mandatory="false" fixedStrategy="false"/>
                 </div>
                 <div class="col-md-6">
                     <issueimportance:ImportanceFormSelector ui:field="importance"
                                                             validation="true"
                                                             header="{lang.issueImportance}"
-                                                            mandatory="false"/>
+                                                            mandatory="false" fixedStrategy="false"/>
                 </div>
             </div>
             <g:HTMLPanel ui:field="pauseDateContainer" styleName="row">
                 <div class="col-md-12">
                     <div class="form-group form-group-default date-picker" ui:field="approvalDateContainer">
                         <label class="fade" ui:field="approvalDateLabel"><ui:text from="{lang.issuePauseDateValidity}"/></label>
-                        <datepicker:SinglePicker ui:field="pauseDate" type="DATE" formatValue="dd-MM-yyyy" mandatory="true"/>
+                        <datepicker:SinglePicker ui:field="pauseDate" type="DATE" formatValue="dd-MM-yyyy" mandatory="true" styleName="clearfix"/>
                     </div>
                 </div>
             </g:HTMLPanel>
@@ -47,14 +47,14 @@
                                                  validation="false"
                                                  header="{lang.issueProduct}"
                                                  hasNullValue="true"
-                                                 mandatory="false"/>
+                                                 mandatory="false" fixedStrategy="false"/>
                 </div>
             </g:HTMLPanel>
             <g:HTMLPanel ui:field="deadlineContainer" styleName="row">
                 <div class="col-md-12">
                     <div class="form-group form-group-default date-picker">
                         <label class="fade"><ui:text from="{lang.issueDeadline}"/></label>
-                        <datepicker:SinglePicker ui:field="deadline" type="DATE" formatValue="dd-MM-yyyy"/>
+                        <datepicker:SinglePicker ui:field="deadline" type="DATE" formatValue="dd-MM-yyyy" styleName="clearfix"/>
                     </div>
                 </div>
             </g:HTMLPanel>
@@ -65,7 +65,7 @@
                                                  header="{lang.issueWorkTrigger}"
                                                  hasNullValue="false"
                                                  mandatory="false"
-                                                 searchEnabled="false"
+                                                 searchEnabled="false" fixedStrategy="false"
                     />
                 </div>
             </g:HTMLPanel>
@@ -82,7 +82,7 @@
                                                  validation="false"
                                                  header="{lang.issueCompany}"
                                                  hasNullValue="false"
-                                                 mandatory="false"/>
+                                                 mandatory="false" fixedStrategy="false"/>
                 </div>
             </div>
             <div class="row">
@@ -91,8 +91,7 @@
                                                validation="false"
                                                header="{lang.issueManager}"
                                                hasNullValue="true"
-                                               mandatory="false"
-                                               />
+                                               mandatory="false" fixedStrategy="false"/>
                 </div>
             </div>
         </div>
@@ -108,7 +107,7 @@
                                                  validation="false"
                                                  header="{lang.issueCompany}"
                                                  hasNullValue="false"
-                                                 mandatory="false"/>
+                                                 mandatory="false" fixedStrategy="false"/>
                 </div>
             </div>
             <g:HTMLPanel ui:field="initiatorContainer" styleName="row">
@@ -117,8 +116,7 @@
                                                validation="false"
                                                header="{lang.issueInitiator}"
                                                mandatory="false"
-                                               hasNullValue="true"
-                                               />
+                                               hasNullValue="true" fixedStrategy="false"/>
                 </div>
             </g:HTMLPanel>
             <div class="row">
@@ -126,7 +124,7 @@
                     <platform:PlatformFormSelector ui:field="platform"
                                                    validation="false"
                                                    header="{lang.siteFolderPlatform}"
-                                                   mandatory="false"/>
+                                                   mandatory="false" fixedStrategy="false"/>
                 </div>
             </div>
         </div>
@@ -192,7 +190,7 @@
                     </div>
                     <div class="col-md-6">
                         <timeElapsed:ElapsedTimeTypeFormSelector ui:field="timeElapsedType"
-                                                                 header="{lang.timeElapsedType}"/>
+                                                                 header="{lang.timeElapsedType}" fixedStrategy="false"/>
                     </div>
                 </div>
             </g:HTMLPanel>
@@ -213,7 +211,7 @@
                     <ui:text from="{lang.caseSubscription}"/>
                 </label>
                 <person:EmployeeMultiSelector ui:field="notifiers" styleName="case-subscribers"
-                                              buttonStyle="btn-info btn-xs"/>
+                                              buttonStyle="btn-info btn-xs" fixedStrategy="false"/>
             </g:HTMLPanel>
         </div>
 
@@ -226,7 +224,7 @@
                 <plan:PlanMultiSelector ui:field="plans"
                                         buttonStyle="btn-info btn-xs"
                                         styleName="case-plans"
-                                        hasNullValue="false"/>
+                                        hasNullValue="false" fixedStrategy="false"/>
             </div>
         </g:HTMLPanel>
         <g:HTMLPanel ui:field="otherPlansContainer" styleName="row form-group">

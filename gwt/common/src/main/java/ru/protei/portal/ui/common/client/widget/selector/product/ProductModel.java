@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
+
 public abstract class ProductModel implements Activity,
         AsyncSelectorModel<ProductShortView> {
 
@@ -61,7 +63,12 @@ public abstract class ProductModel implements Activity,
 
     public void setDirectionId(Long directionId) {
         cache.clearCache();
-        query.setDirectionId(directionId);
+        query.setDirectionIds(setOf(directionId));
+    }
+
+    public void setDirectionIds(Set<Long> directionIds) {
+        cache.clearCache();
+        query.setDirectionIds(directionIds);
     }
 
     public void setPlatformIds(Set<Long> platformIds) {

@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.dao.CaseFilterDAO;
 import ru.protei.portal.core.model.dao.PersonCaseFilterDAO;
 import ru.protei.portal.core.model.dao.PlanDAO;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
@@ -157,8 +158,8 @@ public class IssueFilterServiceImpl implements IssueFilterService {
         if (filter.getLoginId() == null) {
             filter.setLoginId(token.getUserLoginId());
         }
-        applyFilterByScope(token, filter);
 
+        filter.setParams(applyFilterByScope(token, filter.getParams()));
         filter.setName(filter.getName().trim());
 
         if (!isUniqueFilter(filter.getName(), filter.getLoginId(), filter.getType(), filter.getId())) {
@@ -195,13 +196,24 @@ public class IssueFilterServiceImpl implements IssueFilterService {
                 filter.getParams() == null;
     }
 
-    private void applyFilterByScope(AuthToken token, CaseFilter filter) {
+    private CaseQuery applyFilterByScope(AuthToken token, CaseQuery caseQuery) {
         Set<UserRole> roles = token.getRoles();
-        if (!policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
-            CaseQuery query = filter.getParams();
-            query.setCompanyIds(acceptAllowedCompanies(query.getCompanyIds(), token.getCompanyAndChildIds()));
-            query.setAllowViewPrivate(false);
+        if (policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
+            return caseQuery;
         }
+
+        Company company = companyService.getCompanyOmitPrivileges(token, token.getCompanyId()).getData();
+        if (company.getCategory() == En_CompanyCategory.SUBCONTRACTOR) {
+            caseQuery.setManagerCompanyIds(
+                    acceptAllowedCompanies(caseQuery.getManagerCompanyIds(), token.getCompanyAndChildIds()));
+        } else {
+            caseQuery.setCompanyIds(
+                    acceptAllowedCompanies(caseQuery.getCompanyIds(), token.getCompanyAndChildIds()));
+        }
+        caseQuery.setAllowViewPrivate(false);
+
+        log.info("applyFilterByScope(): CaseQuery modified: {}", caseQuery);
+        return caseQuery;
     }
 
     private List<Long> acceptAllowedCompanies( List<Long> companyIds, Collection<Long> allowedCompaniesIds ) {

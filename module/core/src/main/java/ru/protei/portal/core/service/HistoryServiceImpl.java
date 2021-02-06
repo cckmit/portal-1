@@ -27,7 +27,7 @@ public class HistoryServiceImpl implements HistoryService {
     public Result<Long> createHistory(AuthToken token, Long caseObjectId, En_HistoryAction action,
                                       En_HistoryType type, Long oldId, String oldValue, Long newId, String newValue) {
 
-        if (caseObjectId == null || type == null || action == null || (oldId == null && newId == null) || (oldValue == null && newValue == null)){
+        if (token == null || caseObjectId == null || type == null || action == null || (oldId == null && newId == null) || (oldValue == null && newValue == null)){
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 

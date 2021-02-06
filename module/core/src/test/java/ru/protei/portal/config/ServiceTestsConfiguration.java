@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import ru.protei.portal.api.struct.FileStorage;
@@ -191,6 +192,7 @@ public class ServiceTestsConfiguration {
     public LocationService getLocationService() { return new LocationServiceImpl(); }
 
     @Bean
+    @Lazy
     public ProjectService getProjectService() { return new ProjectServiceImpl(); }
 
     @Bean

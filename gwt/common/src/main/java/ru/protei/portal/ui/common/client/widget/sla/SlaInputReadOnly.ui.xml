@@ -3,7 +3,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel ui:field="root" styleName="form-group-attached">
+    <g:HTMLPanel ui:field="itemsContainer" styleName="form-group-attached">
         <div class="row clearfix">
             <div class="col-md-3">
                 <div class="form-group form-group-default">

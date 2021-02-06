@@ -238,12 +238,7 @@ public class DebugIds {
     }
 
     public interface IMPORTANCE_BUTTON {
-        String DEFAULT = "importance-button-";
-        String CRITICAL = "importance-button-critical";
-        String IMPORTANT = "importance-button-important";
-        String BASIC = "importance-button-basic";
-        String COSMETIC = "importance-button-cosmetic";
-        String MEDIUM = "importance-button-medium";
+        String PREFIX = "importance-button-";
     }
 
     public interface PRODUCT_TYPES_BUTTON {
@@ -340,6 +335,7 @@ public class DebugIds {
         String PLANS_SELECTOR = "issue-plans-selector";
         String DEADLINE_CONTAINER = "issue-deadline-container";
         String WORK_TRIGGER_SELECTOR = "issue-work-trigger-selector";
+        String SUBTASK_BUTTON = "issue-subtask-button";
 
         interface LABEL {
             String NAME = "issue-label-name";
@@ -458,6 +454,7 @@ public class DebugIds {
         String STATE_SELECTOR = "project-state-selector";
         String REGION_SELECTOR = "project-region-selector";
         String DIRECTION_SELECTOR = "project-direction-selector";
+        String PRODUCT_SELECTOR = "project-product-selector";
         String CUSTOMER_TYPE_SELECTOR = "project-customer-type-selector";
         String COMPANY_SELECTOR = "project-company-selector";
         String LINKS_BUTTON = "project-links-button";
@@ -468,6 +465,12 @@ public class DebugIds {
 
         String SAVE_BUTTON = "project-save-button";
         String CANCEL_BUTTON = "project-cancel-button";
+
+        String SUBCONTRACTOR_SELECTOR_ADD_BUTTON = "project-subcontractor-selector-add-button";
+        String SUBCONTRACTOR_SELECTOR_CLEAR_BUTTON = "project-subcontractor-selector-clear-button";
+        String SUBCONTRACTOR_SELECTOR_ITEM_CONTAINER = "project-subcontractor-selector-item-container";
+        String SUBCONTRACTOR_SELECTOR_LABEL = "project-subcontractor-selector-label";
+
     }
 
     public interface PROJECT_PREVIEW {
@@ -574,6 +577,7 @@ public class DebugIds {
         String SAVE_BUTTON = "product-save-button";
         String CANCEL_BUTTON = "product-cancel-button";
         String DIRECTION = "product-direction";
+        String DIRECTIONS = "product-directions";
         String DIRECTION_LABEL = "product-direction-label";
         String COMMON_MANAGER = "product-common-manager";
 
@@ -858,7 +862,7 @@ public class DebugIds {
         String DATE_VALID_CONTAINER = "contract-date-valid-container";
         String COST_WITH_CURRENCY_CONTAINER = "contract-cost-with-currency-container";
         String PROJECT_SELECTOR = "contract-project-selector";
-        String DIRECTION_SELECTOR = "contract-direction-selector";
+        String DIRECTION_INPUT = "contract-direction-input";
         String ORGANIZATION_SELECTOR = "contract-organization-selector";
         String CURATOR_SELECTOR = "contract-curator-selector";
         String MANAGER_SELECTOR = "contract-manager-selector";
@@ -1088,5 +1092,11 @@ public class DebugIds {
             String EMPLOYEE = "duty-log-filter-employee-selector";
             String TYPE = "duty-log-filter-type-selector";
         }
+    }
+
+    public interface GROUP {
+        String ROOT = "group-root";
+        String CONTAINER = "group-container";
+        String ITEM = "group-item";
     }
 }

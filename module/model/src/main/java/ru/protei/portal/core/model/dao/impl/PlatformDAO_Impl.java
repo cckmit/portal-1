@@ -12,6 +12,11 @@ import ru.protei.winter.jdbc.JdbcHelper;
 public class PlatformDAO_Impl extends PortalBaseJdbcDAO<Platform> implements PlatformDAO {
 
     @Override
+    public void removeByProjectId(Long projectId) {
+        removeByCondition("platform.project_id = ?", projectId);
+    }
+
+    @Override
     @SqlConditionBuilder
     public SqlCondition createSqlCondition(PlatformQuery query) {
         return new SqlCondition().build((condition, args) -> {

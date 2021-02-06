@@ -5,17 +5,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dao.PersonShortViewDAO;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.query.PersonQuery;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
-import ru.protei.portal.core.utils.SimpleProfiler;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 /**
  * Сервис управления person
@@ -57,9 +60,12 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public Result< List< PersonShortView > > shortViewList( AuthToken authToken, PersonQuery query) {
-        query = processQueryByPolicyScope(authToken, query);
-        List<PersonShortView> personList = personShortViewDAO.getPersonsShortView(query);
+    public Result< List< PersonShortView > > shortViewList(AuthToken authToken, PersonQuery query) {
+        Result<PersonQuery> fillQueryByScopeResult = fillQueryByScope(authToken, query);
+        if (fillQueryByScopeResult.isError()) {
+            return error(En_ResultStatus.INTERNAL_ERROR);
+        }
+        List<PersonShortView> personList = personShortViewDAO.getPersonsShortView(fillQueryByScopeResult.getData());
         return ok(personList);
     }
 
@@ -98,24 +104,40 @@ public class PersonServiceImpl implements PersonService {
         return ok(person);
     }
 
-    private PersonQuery processQueryByPolicyScope(AuthToken token, PersonQuery personQuery ) {
+    private Result<PersonQuery> fillQueryByScope(AuthToken token, PersonQuery personQuery) {
         Set<UserRole> roles = token.getRoles();
-        if (policyService.hasGrantAccessFor( roles, En_Privilege.COMPANY_VIEW )) {
-            return personQuery;
+        if (policyService.hasGrantAccessFor(roles, En_Privilege.COMPANY_VIEW)) {
+            return ok(personQuery);
         }
+
+        Company company = companyService.getCompanyOmitPrivileges(token, token.getCompanyId()).getData();
+        Result<List<EntityOption>> result = company.getCategory() == En_CompanyCategory.SUBCONTRACTOR ?
+                companyService.companyOptionListBySubcontractorIds(token.getCompanyAndChildIds(), false) :
+                companyService.subcontractorOptionListByCompanyIds(token.getCompanyAndChildIds(), false);
+        if (result.isError()) {
+            log.error("fillQueryByScope(): failed to get companies with result = {}", result);
+            return error(result.getStatus());
+        }
+
+        Set<Long> allowedCompanies = stream(new HashSet<Long>() {{
+            addAll(token.getCompanyAndChildIds());
+            addAll(result.getData().stream().map(EntityOption::getId).collect(Collectors.toSet()));
+        }}).collect(Collectors.toSet());
 
         if (personQuery.getCompanyIds() != null) {
-            personQuery.getCompanyIds().retainAll(token.getCompanyAndChildIds());
+            personQuery.getCompanyIds().retainAll(allowedCompanies);
         }
 
-        log.info("processQueryByPolicyScope(): PersonQuery modified: {}", personQuery);
-        return personQuery;
+        log.info("fillQueryByScope(): PersonQuery modified: {}", personQuery);
+        return ok(personQuery);
     }
 
     @Autowired
     AuthService authService;
     @Autowired
     PolicyService policyService;
+    @Autowired
+    CompanyService companyService;
     @Autowired
     PersonShortViewDAO personShortViewDAO;
     private static final Logger log = LoggerFactory.getLogger(PersonServiceImpl.class);

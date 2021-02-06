@@ -7,5 +7,5 @@ public interface AbstractProjectPreviewActivity {
     void onFullScreenPreviewClicked();
     void onGoToProjectClicked();
 
-    void onProductLinkClicked();
+    void onProductLinkClicked(Long id);
 }

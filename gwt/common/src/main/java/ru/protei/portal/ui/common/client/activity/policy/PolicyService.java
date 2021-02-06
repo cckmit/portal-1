@@ -86,6 +86,14 @@ public abstract class PolicyService implements Activity {
         return profile.getCompany();
     }
 
+    public boolean isSubcontractorCompany() {
+        if (profile == null || profile.getCompany() == null || profile.getCompany().getCategory() == null) {
+            return false;
+        }
+
+        return Objects.equals(En_CompanyCategory.SUBCONTRACTOR, profile.getCompany().getCategory());
+    }
+
     public boolean personBelongsToHomeCompany() {
 
         if (profile == null || profile.getCompany() == null || profile.getCompany().getCategory() == null) {

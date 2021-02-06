@@ -8,7 +8,9 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
+import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.struct.Pair;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
@@ -27,10 +29,12 @@ import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.toSet;
 import static ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditView.*;
 import static ru.protei.portal.ui.product.client.view.edit.ProductEditView.HISTORY_VERSION;
 
@@ -130,7 +134,8 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.children().setValue(null);
         view.aliases().setValue(null);
         view.aliasesVisibility().setVisible(type.equals(En_DevUnitType.PRODUCT));
-        view.directionVisibility().setVisible(!En_DevUnitType.COMPONENT.equals(type));
+        view.directionContainerVisibility().setVisible(!En_DevUnitType.COMPONENT.equals(type));
+        view.directionSelectorVisibility(En_DevUnitType.COMPLEX == type);
 
         setMutableState(view, type);
         String trim = view.name().getValue().trim();
@@ -191,7 +196,10 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.info().setValue(devUnit.getInfo());
 
         currType = isNew ? En_DevUnitType.COMPLEX : devUnit.getType();
-        view.type().setValue(currType);
+        Set<ProductDirectionInfo> directions = devUnit.getProductDirections() == null ? null
+                : new HashSet<>(toSet(devUnit.getProductDirections(), DevUnit::toProductDirectionInfo));
+        view.setTypeAndDirections(currType, directions);
+        view.directionSelectorVisibility(currType == En_DevUnitType.COMPLEX);
         view.typeVisibility().setVisible(isNew);
         view.setTypeImage(isNew || devUnit.getType() == null  ? null : devUnit.getType().getImgSrc(), typeLang.getName(devUnit.getType()));
         view.setTypeImageVisibility(!isNew);
@@ -212,8 +220,6 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
                 .map(DevUnit::toProductShortView)
                 .collect(Collectors.toSet())
         );
-
-        view.direction().setValue(devUnit.getProductDirection() == null ? null : devUnit.getProductDirection().toProductDirectionInfo());
 
         view.wikiLink().setValue(devUnit.getWikiLink());
 
@@ -243,9 +249,11 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         product.setInfo(view.info().getValue().trim());
 
         boolean isCreate = product.getId() == null;
+        final Pair<En_DevUnitType, Set<ProductDirectionInfo>> typeAndDirections = view.getTypeAndDirections();
         if (isCreate) {
-            product.setType(view.type().getValue());
+            product.setType(typeAndDirections.getA());
         }
+        product.setProductDirections(toSet(typeAndDirections.getB(), DevUnit::fromProductDirectionInfo));
 
         product.setSubscriptions(view.productSubscriptions().getValue().stream()
                 .map( Subscription::toProductSubscription )
@@ -264,8 +272,6 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
                 .collect(Collectors.toList()) : null
         );
 
-        product.setProductDirection(DevUnit.fromProductDirectionInfo(view.direction().getValue()));
-
         product.setWikiLink(view.wikiLink().getValue());
         product.setCdrDescription(view.cdrDescription().getValue());
         product.setConfiguration(view.configuration().getValue());
@@ -282,7 +288,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
     private boolean isValid() {
         return view.nameValidator().isValid() &&
-                view.type().getValue() != null &&
+                view.getTypeAndDirections().getA() != null &&
                 isNameUnique;
     }
 

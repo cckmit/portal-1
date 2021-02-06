@@ -1,7 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.dict.En_WorkTrigger;
 import ru.protei.portal.core.model.struct.AuditableObject;
@@ -57,6 +56,9 @@ public class CaseObject extends AuditableObject {
     @JdbcColumn(name = "IMPORTANCE")
     private Integer impLevel;
 
+    @JdbcJoinedColumn(localColumn = "IMPORTANCE", remoteColumn = "id", table = "importance_level", mappedColumn = "code")
+    private String importanceCode;
+
     @JdbcColumn(name = CREATOR)
     private Long creatorId;
 
@@ -75,7 +77,7 @@ public class CaseObject extends AuditableObject {
     @JdbcColumn(name = "initiator_company")
     private Long initiatorCompanyId;
 
-    @JdbcJoinedObject( localColumn = "initiator_company", remoteColumn = "id", updateLocalColumn = false )
+    @JdbcJoinedObject( localColumn = INITIATOR_COMPANY, remoteColumn = "id", updateLocalColumn = false )
     private Company initiatorCompany;
 
     @JdbcColumn(name = "product_id")
@@ -159,6 +161,9 @@ public class CaseObject extends AuditableObject {
 
     // not db column
     private String jiraUrl;
+
+    // not db column
+    private List<String> jiraProjects;
 
 //    Проставляется относительно авторизованного пользователя
     private boolean isFavorite;
@@ -275,6 +280,11 @@ public class CaseObject extends AuditableObject {
 
     public void setImpLevel(Integer impLevel) {
         this.impLevel = impLevel;
+    }
+
+    public void setImportanceLevel(ImportanceLevel importanceLevel) {
+        this.impLevel = importanceLevel == null ? null : importanceLevel.getId();
+        this.importanceCode = importanceLevel == null ? null : importanceLevel.getCode();
     }
 
     public Long getCreatorId() {
@@ -451,10 +461,6 @@ public class CaseObject extends AuditableObject {
         this.extAppType = extAppType;
     }
 
-    public En_ImportanceLevel getImportanceLevel() {
-        return En_ImportanceLevel.getById(this.impLevel);
-    }
-
     public Set<Person> getNotifiers() {
         return notifiers;
     }
@@ -509,6 +515,14 @@ public class CaseObject extends AuditableObject {
 
     public void setJiraUrl(String jiraUrl) {
         this.jiraUrl = jiraUrl;
+    }
+
+    public List<String> getJiraProjects() {
+        return jiraProjects;
+    }
+
+    public void setJiraProjects(List<String> jiraProjects) {
+        this.jiraProjects = jiraProjects;
     }
 
     public EntityOption toEntityOption() {
@@ -571,6 +585,10 @@ public class CaseObject extends AuditableObject {
         this.workTrigger = workTrigger;
     }
 
+    public String getImportanceCode() {
+        return importanceCode;
+    }
+
     @Override
     public String getAuditType() {
         return "CaseObject";
@@ -590,6 +608,7 @@ public class CaseObject extends AuditableObject {
         String PLATFORM_ID = "platform_id";
         String DEADLINE = "deadline";
         String WORK_TRIGGER = "work_trigger";
+        String INITIATOR_COMPANY = "initiator_company";
     }
 
     public static final int NOT_DELETED = 0;
@@ -608,6 +627,7 @@ public class CaseObject extends AuditableObject {
                 ", stateId=" + stateId +
                 ", stateName='" + stateName + '\'' +
                 ", impLevel=" + impLevel +
+                ", importanceCode='" + importanceCode + '\'' +
                 ", creatorId=" + creatorId +
                 ", creator=" + creator +
                 ", creatorIp='" + creatorIp + '\'' +
@@ -637,12 +657,13 @@ public class CaseObject extends AuditableObject {
                 ", managerCompanyId=" + managerCompanyId +
                 ", managerCompanyName='" + managerCompanyName + '\'' +
                 ", plans=" + plans +
+                ", deadline=" + deadline +
+                ", workTrigger=" + workTrigger +
                 ", timeElapsedType=" + timeElapsedType +
                 ", caseObjectMetaJira=" + caseObjectMetaJira +
                 ", jiraUrl='" + jiraUrl + '\'' +
+                ", jiraProjects=" + jiraProjects +
                 ", isFavorite=" + isFavorite +
-                ", deadline=" + deadline +
-                ", workTrigger=" + workTrigger +
                 '}';
     }
 }

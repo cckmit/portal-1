@@ -329,7 +329,7 @@ public class TemplateServiceImplTest {
     private CaseObject createNewCaseObject( Person person, Long timeElapsed ) {
         CaseObject caseObject = CaseCommentServiceTest.createNewCaseObject( person );
         caseObject.setTimeElapsed( timeElapsed );
-        caseObject.setImpLevel( En_ImportanceLevel.BASIC.getId() );
+        caseObject.setImpLevel( CrmConstants.ImportanceLevel.BASIC );
 
         return caseObject;
     }

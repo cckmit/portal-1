@@ -254,6 +254,10 @@ public abstract class Selector<T>
 
     public abstract void fillSelectorView(DisplayOption selectedValue);
 
+    public void setFixedStrategy(boolean isFixedStrategy) {
+        popup.setFixedStrategy(isFixedStrategy);
+    }
+
     @Override
     protected void onLoad() {
         if ( selectorModel != null ) {

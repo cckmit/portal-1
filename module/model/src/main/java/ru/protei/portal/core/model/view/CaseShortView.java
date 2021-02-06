@@ -11,8 +11,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-import static ru.protei.portal.core.model.ent.CaseObject.Columns.DEADLINE;
-import static ru.protei.portal.core.model.ent.CaseObject.Columns.WORK_TRIGGER;
+import static ru.protei.portal.core.model.ent.CaseObject.Columns.*;
 
 /**
  * Сокращенное представление кейса
@@ -49,6 +48,9 @@ public class CaseShortView implements Serializable, Identifiable {
 
     @JdbcColumn(name = "IMPORTANCE")
     private Integer impLevel;
+
+    @JdbcJoinedColumn(localColumn = "IMPORTANCE", remoteColumn = "id", table = "importance_level", mappedColumn = "code")
+    private String importanceCode;
 
     @JdbcColumn(name = "private_flag")
     private boolean privateCase;
@@ -101,6 +103,12 @@ public class CaseShortView implements Serializable, Identifiable {
     @JdbcColumn(name = WORK_TRIGGER)
     @JdbcEnumerated(EnumType.ID)
     private En_WorkTrigger workTrigger;
+
+    @JdbcJoinedColumn( table="company", localColumn = "initiator_company", remoteColumn = "id", mappedColumn = "auto_open_issue")
+    private Boolean autoOpenIssue;
+
+    @JdbcColumn(name = EXT_APP)
+    private String extAppType;
 
     // ManyToMany via CaseTagService
     private List<CaseTag> tags;
@@ -172,8 +180,8 @@ public class CaseShortView implements Serializable, Identifiable {
         return impLevel;
     }
 
-    public void setImpLevel( Integer impLevel ) {
-        this.impLevel = impLevel;
+    public String getImportanceCode() {
+        return importanceCode;
     }
 
     public Long getInitiatorId() {
@@ -348,6 +356,22 @@ public class CaseShortView implements Serializable, Identifiable {
         this.workTrigger = workTrigger;
     }
 
+    public Boolean getAutoOpenIssue() {
+        return autoOpenIssue;
+    }
+
+    public void setAutoOpenIssue(Boolean autoOpenIssue) {
+        this.autoOpenIssue = autoOpenIssue;
+    }
+
+    public String getExtAppType() {
+        return extAppType;
+    }
+
+    public void setExtAppType(String extAppType) {
+        this.extAppType = extAppType;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (id != null) {
@@ -384,11 +408,13 @@ public class CaseShortView implements Serializable, Identifiable {
                 ", pauseDate=" + pauseDate +
                 ", managerCompanyId=" + managerCompanyId +
                 ", managerCompanyName='" + managerCompanyName + '\'' +
+                ", deadline=" + deadline +
+                ", workTrigger=" + workTrigger +
+                ", autoOpenIssue=" + autoOpenIssue +
+                ", extAppType='" + extAppType + '\'' +
                 ", tags=" + tags +
                 ", isFavorite=" + isFavorite +
                 ", isPublicAttachmentExist=" + isPublicAttachmentExist +
-                ", deadline=" + deadline +
-                ", workTrigger=" + workTrigger +
                 '}';
     }
 }

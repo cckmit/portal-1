@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.EnableAsync;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.config.PortalConfig;
@@ -102,10 +103,10 @@ public class RedmineTestConfiguration {
     }
 
     @Bean
+    @Lazy
     public ProjectService getProjectService() {
         return new ProjectServiceImpl();
     }
-
 
     @Bean
     public CaseService getCaseService() {

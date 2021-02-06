@@ -11,13 +11,13 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.ent.Attachment;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.CaseObjectMeta;
-import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
+import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.NumberUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.casetag.taglist.AbstractCaseTagListActivity;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -29,23 +29,16 @@ import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.util.ClipboardUtils;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.PasteInfo;
-import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
-import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.common.shared.model.HandleOnError;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.issue.client.view.edit.IssueInfoWidget;
 import ru.protei.portal.ui.issue.client.view.edit.IssueNameDescriptionEditWidget;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Objects;
+import java.util.*;
 import java.util.logging.Logger;
 
 import static ru.protei.portal.core.model.helper.CaseCommentUtils.addImageInMessage;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.core.model.helper.CollectionUtils.size;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.util.CaseStateUtil.isTerminalState;
 
@@ -207,7 +200,7 @@ public abstract class IssueEditActivity implements
     }
 
     @Event
-    public void onIssueMetaChanged( IssueEvents.IssueMetaChanged event ) {
+    public void onIssueMetaChanged(IssueEvents.IssueMetaChanged event) {
         if (issue == null) {
             return;
         }
@@ -216,6 +209,11 @@ public abstract class IssueEditActivity implements
                 fireEvent(new CaseCommentEvents.DisableNewComment());
             }
         }
+        boolean isCreatingSubtaskAllowed = isCreatingSubtaskAllowed(
+                event.meta.getStateId(),
+                issue.getInitiatorCompany().getAutoOpenIssue(),
+                issue.getExtAppType());
+        view.createSubtaskButtonVisibility().setVisible(isCreatingSubtaskAllowed);
     }
 
     @Event
@@ -230,6 +228,21 @@ public abstract class IssueEditActivity implements
 
         issue.setFavorite(event.isFavorite);
         view.setFavoriteButtonActive(event.isFavorite);
+    }
+
+    @Event
+    public void onIssueLinkChanged(CaseLinkEvents.Changed event) {
+
+        if (!En_CaseType.CRM_SUPPORT.equals(event.caseType)) return;
+
+        CaseLink caseLink = event.caseLink;
+        if (En_BundleType.PARENT_FOR.equals(caseLink.getBundleType())) {
+            fireEvent(new IssueEvents.IssueStateUpdated(caseLink.getCaseId()));
+        }
+        if (En_BundleType.SUBTASK.equals(caseLink.getBundleType())) {
+            fireEvent(new IssueEvents.IssueNotifiersUpdated(caseLink.getCaseId()));
+            fireEvent(new IssueEvents.ChangeIssue(NumberUtils.parseLong(caseLink.getRemoteId())));
+        }
     }
 
     @Override
@@ -337,6 +350,11 @@ public abstract class IssueEditActivity implements
                     .withSuccess(result -> onSuccessChangeFavoriteState(issue, view))
             );
         }
+    }
+
+    @Override
+    public void onCreateSubtaskClicked() {
+        fireEvent(new IssueEvents.CreateSubtask(issue.getCaseNumber()));
     }
 
     private void fireIssueChanged(Long issueId) {
@@ -464,7 +482,7 @@ public abstract class IssueEditActivity implements
 
         view.setCreatedBy(lang.createBy(transliteration(issue.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(issue.getCreated())));
         view.nameVisibility().setVisible(true);
-        view.setName(makeName(issue.getName(), issue.getJiraUrl(), issue.getExtAppType()));
+        view.setName(makeName(issue.getName(), issue.getJiraUrl(), issue.getExtAppType(), issue.getJiraProjects()));
         view.setIntegration(makeIntegrationName(issue));
 
         view.setCaseNumber( issue.getCaseNumber() );
@@ -486,6 +504,12 @@ public abstract class IssueEditActivity implements
 
         view.nameAndDescriptionEditButtonVisibility().setVisible(!readOnly && selfIssue);
         view.setFavoriteButtonActive(issue.isFavorite());
+
+        boolean isCreatingSubtaskAllowed = isCreatingSubtaskAllowed(
+                issue.getStateId(),
+                issue.getInitiatorCompany().getAutoOpenIssue(),
+                issue.getExtAppType());
+        view.createSubtaskButtonVisibility().setVisible(isCreatingSubtaskAllowed);
     }
 
     private void viewModeIsPreview( boolean isPreviewMode){
@@ -494,18 +518,19 @@ public abstract class IssueEditActivity implements
         view.setPreviewStyles(isPreviewMode);
     }
 
-    private String makeName( String issueName, String jiraUrl, String extAppType ) {
-        issueName = (issueName == null ? "" : issueName);
-        jiraUrl = En_ExtAppType.JIRA.getCode().equals( extAppType ) ? jiraUrl : "";
+    private String makeName( String issueName, String jiraUrl, String extAppType, List<String> jiraProjects ) {
 
-        if (jiraUrl.isEmpty() || !issueName.startsWith( "CLM" )) {
+        if (issueName == null) return "";
+
+        jiraUrl = En_ExtAppType.JIRA.getCode().equals( extAppType ) ? jiraUrl : "";
+        if (StringUtils.isEmpty(jiraUrl) || stream(jiraProjects).noneMatch(issueName::startsWith)) {
             return SimpleHtmlSanitizer.sanitizeHtml(issueName).asString();
         } else {
-            String idCLM = issueName.split( " " )[0];
-            String remainingName = "&nbsp;" + issueName.substring( idCLM.length() );
+            String idJiraProject = issueName.split( " " )[0];
+            String remainingName = "&nbsp;" + issueName.substring( idJiraProject.length() );
 
-            return "<a href='"+ jiraUrl + idCLM +"' target='_blank'>"+idCLM+"</a>"
-                    + "<label>"+ SimpleHtmlSanitizer.sanitizeHtml(remainingName).asString() +"</label>";
+            return "<a href='"+ jiraUrl + idJiraProject +"' target='_blank'>" + idJiraProject + "</a>"
+                    + "<label>" + SimpleHtmlSanitizer.sanitizeHtml(remainingName).asString() + "</label>";
         }
     }
 
@@ -561,6 +586,13 @@ public abstract class IssueEditActivity implements
             return null;
         }
         return name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
+    }
+
+    private boolean isCreatingSubtaskAllowed(Long stateId, boolean isAutoOpenIssue, String extAppType) {
+        return policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT) &&
+                !isTerminalState(stateId) && CrmConstants.State.CREATED != stateId &&
+                !isAutoOpenIssue &&
+                En_ExtAppType.forCode(extAppType) == null;
     }
 
     @Inject

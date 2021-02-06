@@ -20,6 +20,7 @@ import ru.protei.winter.jdbc.JdbcHelper;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,6 +32,8 @@ import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
 
 public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements ProjectDAO {
 
+    public static final String LEFT_OUTER_JOIN_PROJECT_TO_PRODUCT = " left outer join project_to_product ptp on ptp.project_id = CO.id";
+    public static final String LEFT_JOIN_CASE_COMMENT = " LEFT JOIN case_comment cc ON CO.id = cc.CASE_ID";
 
     @Override
     public Collection<Project> selectScheduledPauseTime( long greaterThanTime ) {
@@ -68,6 +71,15 @@ public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements Proje
                 .withDistinct(true)
                 .withSort(TypeConverters.createSort(query))
                 .withOffset(query.getOffset());
+
+        if (isNotEmpty(query.getDirections())) {
+            parameters.withDistinct(true);
+            parameters.withJoins(LEFT_OUTER_JOIN_PROJECT_TO_PRODUCT);
+        }
+        if (query.getCommentCreationRange() != null) {
+            parameters.withDistinct(true);
+            parameters.withJoins(LEFT_JOIN_CASE_COMMENT);
+        }
         if (query.limit > 0) {
             parameters = parameters.withLimit(query.getLimit());
         }
@@ -172,14 +184,14 @@ public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements Proje
                         .collect(toList());
 
                 if (productDirectionIds.remove(null)) {
-                    condition.append(" and (product_id is null");
+                    condition.append(" and (ptp.product_id is null");
                     if (!productDirectionIds.isEmpty()) {
-                        condition.append(" or product_id in ")
+                        condition.append(" or ptp.product_id in ")
                                 .append(makeInArg(productDirectionIds, false));
                     }
                     condition.append(")");
                 } else {
-                    condition.append(" and product_id in ")
+                    condition.append(" and ptp.product_id in ")
                             .append(makeInArg(productDirectionIds, false));
                 }
             }
@@ -235,6 +247,10 @@ public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements Proje
                 condition.append(" and CO.deleted = ").append(query.getDeleted());
             }
 
+            if (isNotEmpty(query.getSubcontractorIds())) {
+                condition.append(" and project.id in (select project_to_company.project_id from project_to_company where project_to_company.company_id in")
+                        .append(makeInArg(query.getSubcontractorIds(), false)).append(")");
+            }
             if (!isEmpty(query.getTechnicalSupportExpiresInDays())) {
                 condition.append(
                         query.getTechnicalSupportExpiresInDays().stream().map(interval -> {
@@ -243,8 +259,23 @@ public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements Proje
                             return "(project.technical_support_validity >= ? and project.technical_support_validity < ?)";
                         }).collect(Collectors.joining(" or ", " and( ", " ) ")));
             }
+            if (query.getActive()) {
+                condition.append(" and (project.technical_support_validity >= ? or project.work_completion_date >= ?)");
+                args.add(new Date());
+                args.add(new Date());
+            }
+
+            if (query.getCommentCreationRange() != null) {
+                Interval interval = makeInterval(query.getCommentCreationRange());
+                if (interval.from != null) {
+                    condition.append( " and cc.created >= ?" );
+                    args.add(interval.from );
+                }
+                if (interval.to != null) {
+                    condition.append( " and cc.created < ?" );
+                    args.add( interval.to );
+                }
+            }
         }));
     }
-
-
 }

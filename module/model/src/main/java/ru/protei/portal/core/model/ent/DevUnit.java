@@ -2,16 +2,19 @@ package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
-import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.model.view.ProductShortViewSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 /**
  * Created by michael on 23.05.16.
@@ -72,7 +75,7 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
 
     private List<DevUnit> children;
 
-    private DevUnit productDirection;
+    private Set<DevUnit> productDirections;
 
     /**
      * Псевдонимы для поиска
@@ -231,7 +234,13 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
 
     @Override
     public ProductShortView toProductShortView() {
-        return new ProductShortView(this.id, this.name, this.stateId, CollectionUtils.isEmpty(this.aliases) ? "" : this.aliases.stream().collect(Collectors.joining(", ")));
+        return new ProductShortView(
+                this.id,
+                this.name,
+                this.stateId,
+                isEmpty(this.aliases) ? "" : joining(this.aliases, ", "),
+                this.devUnitType,
+                this.productDirections == null? null : toSet(this.productDirections, DevUnit::toProductDirectionInfo));
     }
 
     public ProductDirectionInfo toProductDirectionInfo() {
@@ -302,12 +311,12 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
         this.aliases = aliases;
     }
 
-    public DevUnit getProductDirection() {
-        return productDirection;
+    public Set<DevUnit> getProductDirections() {
+        return productDirections;
     }
 
-    public void setProductDirection(DevUnit productDirection) {
-        this.productDirection = productDirection;
+    public void setProductDirections(Set<DevUnit> productDirections) {
+        this.productDirections = productDirections;
     }
 
     public Long getCommonManagerId() {
@@ -347,7 +356,7 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
                 ", commonManagerName='" + commonManagerName + '\'' +
                 ", parents=" + parents +
                 ", children=" + children +
-                ", productDirection=" + productDirection +
+                ", productDirections=" + productDirections +
                 ", aliases=" + aliases +
                 '}';
     }

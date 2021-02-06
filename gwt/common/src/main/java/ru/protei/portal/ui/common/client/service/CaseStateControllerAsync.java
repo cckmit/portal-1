@@ -20,4 +20,6 @@ public interface CaseStateControllerAsync {
     void getCaseStateWithoutCompaniesOmitPrivileges(Long id, AsyncCallback<CaseState> callback);
 
     void saveCaseState(CaseState state, AsyncCallback<CaseState> callback);
+
+    void getCaseStateByCaseId(Long caseId, AsyncCallback<CaseState> callback);
 }

@@ -2,6 +2,8 @@ package ru.protei.portal.core.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,7 +11,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.event.ProcessNewReportsEvent;
-import ru.protei.portal.core.exception.ResultStatusException;
+import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.ReportDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ReportCaseQuery;
@@ -17,6 +19,7 @@ import ru.protei.portal.core.model.dto.ReportContractQuery;
 import ru.protei.portal.core.model.dto.ReportDto;
 import ru.protei.portal.core.model.dto.ReportProjectQuery;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -42,6 +45,7 @@ import static ru.protei.portal.core.model.helper.StringUtils.isNotBlank;
 
 public class ReportServiceImpl implements ReportService {
 
+    private static Logger log = LoggerFactory.getLogger(ReportServiceImpl.class);
     private final static String LOCALE_RU = Locale.forLanguageTag("ru").toString();
     private final static DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 
@@ -63,6 +67,8 @@ public class ReportServiceImpl implements ReportService {
     PolicyService policyService;
     @Autowired
     EventPublisherService publisherService;
+    @Autowired
+    CompanyService companyService;
     @Autowired
     ObjectMapper objectMapper;
     @Autowired
@@ -398,7 +404,7 @@ public class ReportServiceImpl implements ReportService {
             }
             throw new IllegalStateException("No switch branch matched for En_ReportType");
         } catch (IOException e) {
-            throw new ResultStatusException(En_ResultStatus.INTERNAL_ERROR, e);
+            throw new RollbackTransactionException(En_ResultStatus.INTERNAL_ERROR, e);
         }
     }
 
@@ -445,7 +451,7 @@ public class ReportServiceImpl implements ReportService {
         try {
             return objectMapper.writeValueAsString(query);
         } catch (JsonProcessingException e) {
-            throw new ResultStatusException(En_ResultStatus.INTERNAL_ERROR, e);
+            throw new RollbackTransactionException(En_ResultStatus.INTERNAL_ERROR, e);
         }
     }
 
@@ -456,11 +462,20 @@ public class ReportServiceImpl implements ReportService {
             case CASE_TIME_ELAPSED:
             case CASE_RESOLUTION_TIME: {
                 if (!hasGrantAccess(token, reportType)) {
-                    report.setReportType( En_ReportType.CASE_OBJECTS);
+                    report.setReportType(En_ReportType.CASE_OBJECTS);
                     CaseQuery caseQuery = (CaseQuery) query;
-                    caseQuery.setCompanyIds(acceptAllowedCompanies(caseQuery.getCompanyIds(), token.getCompanyAndChildIds()));
-                    caseQuery.setManagerOrInitiatorCondition(true);
+
+                    Company company = companyService.getCompanyOmitPrivileges(token, token.getCompanyId()).getData();
+                    if (company.getCategory() == En_CompanyCategory.SUBCONTRACTOR) {
+                        caseQuery.setManagerCompanyIds(
+                                acceptAllowedCompanies(caseQuery.getManagerCompanyIds(), token.getCompanyAndChildIds()));
+                    } else {
+                        caseQuery.setCompanyIds(
+                                acceptAllowedCompanies(caseQuery.getCompanyIds(), token.getCompanyAndChildIds()));
+                    }
                     caseQuery.setAllowViewPrivate(false);
+
+                    log.info("applyFilterByScope(): CaseQuery modified: {}", caseQuery);
                     return caseQuery;
                 }
                 break;

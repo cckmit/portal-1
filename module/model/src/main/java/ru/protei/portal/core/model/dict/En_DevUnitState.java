@@ -20,6 +20,11 @@ public enum En_DevUnitState {
 
 
     public static En_DevUnitState forId (int state) {
-        return state == DEPRECATED.getId() ? DEPRECATED : ACTIVE;
+        if (state == ACTIVE.getId())
+            return ACTIVE;
+        else if (state == DEPRECATED.getId())
+            return DEPRECATED;
+        else
+            return null;
     }
 }

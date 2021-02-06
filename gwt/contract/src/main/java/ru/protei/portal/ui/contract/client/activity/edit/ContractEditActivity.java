@@ -31,7 +31,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.struct.Vat.NoVat;
 import static ru.protei.portal.ui.common.client.util.DateUtils.*;
@@ -182,6 +182,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
     private void fillProject(ProjectInfo project) {
         view.project().setValue(project, true);
+        refreshProjectSpecificFields(project);
     }
 
     private void refreshProjectSpecificFields(ProjectInfo project) {
@@ -189,7 +190,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
             clearProjectSpecificFields();
             return;
         }
-        view.direction().setValue(project.getProductDirection() == null ? null : new ProductDirectionInfo(project.getProductDirection()));
+        view.setDirections(joining(project.getProductDirection(), ", ", EntityOption::getDisplayText));
 
         PersonShortView manager = project.getManager() == null ? null : new PersonShortView(project.getManager());
         view.projectManager().setValue(manager);
@@ -199,7 +200,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     }
 
     private void clearProjectSpecificFields() {
-        view.direction().setValue(null);
+        view.setDirections("");
         view.projectManager().setValue(null);
     }
 
@@ -230,9 +231,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.setOrganization(contract.getOrganizationName());
         view.contractor().setValue(contract.getContractor());
         view.contractorEnabled().setEnabled(contract.getOrganizationId() != null);
-        view.contractSignManager().setValue(contract.getContractSignManagerId() == null
-                ? null
-                : new PersonShortView(contract.getContractSignManagerShortName(), contract.getContractSignManagerId()));
+        view.contractSignManager().setValue(createPersonOrNull(contract.getContractSignManagerId(), contract.getContractSignManagerShortName()));
 
         En_ContractKind kind = getContractKind(view.contractParent().getValue());
         view.setKind(kind);
@@ -293,12 +292,6 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         contract.setProjectId(view.project().getValue() == null ? null : view.project().getValue().getId());
         contract.setContractor(view.contractor().getValue());
         contract.setContractSignManagerId(getPersonIdOrNull(view.contractSignManager().getValue()));
-
-        if (contract.getProjectId() == null) {
-            contract.setCaseDirectionId(getProductIdOrNull(view.direction().getValue()));
-        } else {
-            contract.setCaseDirectionId(null);
-        }
 
         return contract;
     }

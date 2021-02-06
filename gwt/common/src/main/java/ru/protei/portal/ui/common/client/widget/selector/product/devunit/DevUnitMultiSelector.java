@@ -13,27 +13,30 @@ import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 /**
  * Мультиселектор продуктов
  */
-public class DevUnitMultiSelector extends InputPopupMultiSelector<ProductShortView>
-{
+public class DevUnitMultiSelector extends InputPopupMultiSelector<ProductShortView> {
 
     @Inject
-    public void init(ProductModel model, Lang lang) {
+    public void init( ProductModel model, Lang lang ) {
         this.model = model;
-        setAsyncModel(model);
-        setAddName(lang.buttonAdd());
-        setClearName(lang.buttonClear());
+        setAsyncModel( model );
+        setAddName( lang.buttonAdd() );
+        setClearName( lang.buttonClear() );
         model.setUnitState( En_DevUnitState.ACTIVE );
-
-        setItemRenderer(option -> (option.getName() + (HelperFunc.isEmpty(option.getAliases()) ? "" : " (" + option.getAliases() + ")")));
-        setNullItem(() -> new ProductShortView( CrmConstants.Product.UNDEFINED, lang.productWithout(), 0 ));
+        setItemRenderer( option -> makeOptionName( option ) );
+        setNullItem( () -> new ProductShortView( CrmConstants.Product.UNDEFINED, lang.productWithout(), 0 ) );
     }
 
-    public void setTypes(En_DevUnitType... enDevUnitTypes) {
-        model.setUnitTypes(enDevUnitTypes);
+    public void setTypes( En_DevUnitType... enDevUnitTypes ) {
+        model.setUnitTypes( enDevUnitTypes );
     }
 
-    public void setState(En_DevUnitState enDevUnitState) {
-        model.setUnitState(enDevUnitState);
+    public void setState( En_DevUnitState enDevUnitState ) {
+        model.setUnitState( enDevUnitState );
+    }
+
+    protected String makeOptionName( ProductShortView productShortView ) {
+        return productShortView.getName()
+                + (HelperFunc.isEmpty( productShortView.getAliases() ) ? "" : " (" + productShortView.getAliases() + ")");
     }
 
     private ProductModel model;

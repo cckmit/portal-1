@@ -9,6 +9,9 @@ import ru.protei.portal.ui.common.client.view.filter.IssueFilterCollapseView;
 import ru.protei.portal.ui.issue.client.activity.create.AbstractIssueCreateActivity;
 import ru.protei.portal.ui.issue.client.activity.create.AbstractIssueCreateView;
 import ru.protei.portal.ui.issue.client.activity.create.IssueCreateActivity;
+import ru.protei.portal.ui.issue.client.activity.create.subtask.AbstractSubtaskCreateActivity;
+import ru.protei.portal.ui.issue.client.activity.create.subtask.AbstractSubtaskCreateView;
+import ru.protei.portal.ui.issue.client.activity.create.subtask.SubtaskCreateActivity;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
 import ru.protei.portal.ui.issue.client.activity.edit.IssueEditActivity;
@@ -20,6 +23,7 @@ import ru.protei.portal.ui.issue.client.activity.table.AbstractIssueTableView;
 import ru.protei.portal.ui.issue.client.activity.table.IssueTableFilterActivity;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 import ru.protei.portal.ui.issue.client.view.create.IssueCreateView;
+import ru.protei.portal.ui.issue.client.view.create.subtask.SubtaskCreateView;
 import ru.protei.portal.ui.issue.client.view.edit.IssueEditView;
 import ru.protei.portal.ui.issue.client.view.meta.IssueMetaView;
 import ru.protei.portal.ui.issue.client.view.table.IssueTableView;
@@ -47,6 +51,9 @@ public class IssueClientModule extends AbstractGinModule {
 
         bind( AbstractIssueMetaView.class ).to( IssueMetaView.class );
         bind( AbstractIssueCollapseFilterView.class ).to(IssueFilterCollapseView.class).in(Singleton.class);
+
+        bind( AbstractSubtaskCreateActivity.class ).to( SubtaskCreateActivity.class ).asEagerSingleton();
+        bind( AbstractSubtaskCreateView.class ).to( SubtaskCreateView.class ).in( Singleton.class );
     }
 }
 

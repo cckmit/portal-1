@@ -19,13 +19,17 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_BundleType;
 import ru.protei.portal.core.model.dict.En_CaseLink;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.enterabletextbox.EnterableTextBox;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
 
 public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHandlers<CaseLink> {
 
@@ -48,6 +52,7 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
         };
 
         setInputTextHandler();
+        bundleTypeSelector.setModel(bundleTypeModel);
     }
 
     @Override
@@ -57,6 +62,7 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
 
         fillOptionsToTypeSelector();
         setValueToTypeSelector(En_CaseLink.CRM);
+        updateBundleTypeSelector();
     }
 
     @Override
@@ -69,8 +75,9 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
         }
     }
 
-    public void resetValueAndShow(UIObject target) {
+    public void resetValueAndShow(En_CaseType caseType, UIObject target) {
         this.relative = target;
+        this.caseType = caseType;
 
         showRelativeTo(target);
 
@@ -96,9 +103,15 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
             return;
         }
 
+        En_BundleType bundleType = bundleTypeSelector.getValue();
+        if (bundleType == null) {
+            return;
+        }
+
         CaseLink caseLink = new CaseLink();
         caseLink.setRemoteId(remoteId);
         caseLink.setType(type);
+        caseLink.setBundleType(bundleType);
         ValueChangeEvent.fire(this, caseLink);
 
         hide();
@@ -120,6 +133,12 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
 
     @UiHandler("typeSelector")
     public void typeSelectorChanged(ValueChangeEvent<En_CaseLink> event) {
+        remoteIdInput.setFocus(true);
+        updateBundleTypeSelector();
+    }
+
+    @UiHandler("bundleTypeSelector")
+    public void bundleTypeSelectorChanged(ValueChangeEvent<En_BundleType> event) {
         remoteIdInput.setFocus(true);
     }
 
@@ -150,11 +169,24 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
         }
     }
 
+    private void updateBundleTypeSelector() {
+        bundleTypeModel.fill(
+                En_CaseType.CRM_SUPPORT.equals(caseType) &&
+                        En_CaseLink.CRM.equals(typeSelector.getValue()) &&
+                        policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW) ?
+                        listOf(En_BundleType.values()) :
+                        listOf(En_BundleType.LINKED_WITH));
+        bundleTypeSelector.setValue(En_BundleType.LINKED_WITH);
+    }
+
     @UiField
     HTMLPanel root;
     @Inject
     @UiField(provided = true)
     CaseLinkTypeSelector typeSelector;
+    @Inject
+    @UiField(provided = true)
+    CaseLinkBundleTypeSelector bundleTypeSelector;
     @UiField
     EnterableTextBox remoteIdInput;
     @Inject
@@ -162,8 +194,11 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
     Lang lang;
     @Inject
     PolicyService policyService;
+    @Inject
+    CaseLinkBundleTypeModel bundleTypeModel;
 
     private UIObject relative;
+    private En_CaseType caseType;
     private ResizeHandler resizeHandler;
     private Window.ScrollHandler windowScrollHandler;
     private HandlerRegistration resizeHandlerReg;

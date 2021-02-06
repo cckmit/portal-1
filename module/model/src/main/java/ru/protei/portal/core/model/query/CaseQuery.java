@@ -3,9 +3,9 @@ package ru.protei.portal.core.model.query;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.ent.ImportanceLevel;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.DateRange;
@@ -14,7 +14,6 @@ import ru.protei.portal.core.model.struct.Pair;
 import java.util.*;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
-import static ru.protei.portal.core.model.helper.CollectionUtils.toSet;
 
 /**
  * Created by Mike on 02.11.2016.
@@ -96,8 +95,6 @@ public class CaseQuery extends BaseQuery {
 
     private Boolean isCheckImportanceHistory;
 
-    private Boolean managerOrInitiatorCondition;
-
     private Long planId;
 
     private List<Integer> timeElapsedTypeIds;
@@ -154,7 +151,6 @@ public class CaseQuery extends BaseQuery {
         setCustomerSearch(query.isCustomerSearch());
         setLocal(query.getLocal());
         setCreatorIds(query.getCreatorIds());
-        setManagerOrInitiatorCondition(query.getManagerOrInitiatorCondition());
         setPlanId(query.getPlanId());
         setPersonIdToIsFavorite(query.getPersonIdToIsFavorite());
         setTimeElapsedTypeIds(query.getTimeElapsedTypeIds());
@@ -239,12 +235,8 @@ public class CaseQuery extends BaseQuery {
 
     public void setImportanceIds(List<Integer> importanceIds) { this.importanceIds = importanceIds; }
 
-    public void setImportances(Iterable<En_ImportanceLevel> importances) {
-        this.importanceIds = importances == null ? null : toList( importances, importanceLevel -> importanceLevel.getId() );
-    }
-
-    public Set<En_ImportanceLevel> getImportances() {
-        return this.importanceIds == null ? null : toSet( importanceIds, id1 -> En_ImportanceLevel.getById( id1 ) );
+    public void setImportanceLevels(Iterable<ImportanceLevel> importances) {
+        this.importanceIds = importances == null ? null : toList( importances, importanceLevel -> importanceLevel.getId().intValue() );
     }
 
     public Date getCreatedFrom() { return createdFrom; }
@@ -379,14 +371,6 @@ public class CaseQuery extends BaseQuery {
         this.managerCompanyIds = managerCompanyIds;
     }
 
-    public Boolean getManagerOrInitiatorCondition() {
-        return managerOrInitiatorCondition;
-    }
-
-    public void setManagerOrInitiatorCondition(Boolean managerOrInitiatorCondition) {
-        this.managerOrInitiatorCondition = managerOrInitiatorCondition;
-    }
-
     public Long getPlanId() {
         return planId;
     }
@@ -450,7 +434,6 @@ public class CaseQuery extends BaseQuery {
                 CollectionUtils.isNotEmpty(caseTagsNames) ||
                 local != null ||
                 isCheckImportanceHistory != null ||
-                managerOrInitiatorCondition != null ||
                 planId != null ||
                 personIdToIsFavorite != null ||
                 CollectionUtils.isNotEmpty(timeElapsedTypeIds) ||
@@ -492,7 +475,6 @@ public class CaseQuery extends BaseQuery {
                 ", local=" + local +
                 ", creatorIds=" + creatorIds +
                 ", isCheckImportanceHistory=" + isCheckImportanceHistory +
-                ", managerOrInitiatorCondition=" + managerOrInitiatorCondition +
                 ", planId=" + planId +
                 ", timeElapsedTypeIds=" + timeElapsedTypeIds +
                 ", workTriggersIds=" + workTriggersIds +
@@ -531,7 +513,6 @@ public class CaseQuery extends BaseQuery {
                 Objects.equals(caseTagsNames, caseQuery.caseTagsNames) &&
                 Objects.equals(local, caseQuery.local) &&
                 Objects.equals(creatorIds, caseQuery.creatorIds) &&
-                Objects.equals(managerOrInitiatorCondition, caseQuery.managerOrInitiatorCondition) &&
                 Objects.equals(planId, caseQuery.planId) &&
                 Objects.equals(personIdToIsFavorite, caseQuery.personIdToIsFavorite) &&
                 Objects.equals(timeElapsedTypeIds, caseQuery.timeElapsedTypeIds) &&
@@ -545,7 +526,7 @@ public class CaseQuery extends BaseQuery {
                 type, stateIds, importanceIds, allowViewPrivate, viewPrivate, createdRange, modifiedRange,
                 searchStringAtComments, searchCasenoString, commentAuthorIds, caseTagsIds, caseTagsNames,
                 customerSearch, findRecordByCaseComments, local,
-                creatorIds, managerOrInitiatorCondition, planId, personIdToIsFavorite,
+                creatorIds, planId, personIdToIsFavorite,
                 timeElapsedTypeIds, workTriggersIds, overdueDeadlines);
     }
 }

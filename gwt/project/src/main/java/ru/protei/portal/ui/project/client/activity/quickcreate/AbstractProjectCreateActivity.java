@@ -7,4 +7,5 @@ public interface AbstractProjectCreateActivity {
     void onSaveClicked();
     void onResetClicked();
     void onDirectionChanged();
+    void onProductChanged();
 }

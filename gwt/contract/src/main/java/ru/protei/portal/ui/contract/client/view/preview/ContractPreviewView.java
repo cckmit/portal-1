@@ -64,8 +64,8 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     }
 
     @Override
-    public void setDirection(String value) {
-        this.direction.setInnerHTML(value);
+    public void setDirections(String value) {
+        this.directions.setInnerHTML(value);
     }
 
     @Override
@@ -160,7 +160,7 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     @UiField
     SpanElement description;
     @UiField
-    SpanElement direction;
+    SpanElement directions;
     @UiField
     ImageElement state;
     @UiField

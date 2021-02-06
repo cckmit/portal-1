@@ -4,7 +4,6 @@ import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_ContractKind;
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
-import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.ent.ContractSpecification;
@@ -66,7 +65,7 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasValue<PersonShortView> projectManager();
 
-    HasValue<ProductDirectionInfo> direction();
+    void setDirections(String value);
 
     void setOrganization(String organization);
 

@@ -6,7 +6,6 @@ import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
@@ -38,14 +37,12 @@ public class IssueColumn extends ClickColumn<CaseShortView> {
     }
 
     private Node makePrimaryBlock(CaseShortView value) {
-
-        En_ImportanceLevel importance = En_ImportanceLevel.getById(value.getImpLevel());
         boolean isPrivate = value.isPrivateCase();
         Long number = value.getCaseNumber();
         String name = value.getName();
 
         DivElement div = Document.get().createDivElement();
-        div.appendChild(makeSpan(ImportanceStyleProvider.getImportanceIcon(importance), ""));
+        div.appendChild(makeSpan(ImportanceStyleProvider.getImportanceIcon(value.getImportanceCode()), ""));
         div.appendChild(makeSpan("label label-" + CaseStateUtils.makeStyleName(value.getStateName()), value.getStateName()));
         if (isPrivate) div.appendChild(makeSpan("fa fa-fw fa-lock text-danger", ""));
         div.appendChild(makeSpan("font-weight-bold", String.valueOf(number)));

@@ -21,10 +21,11 @@ import java.util.List;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
 import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
-import static ru.protei.portal.core.model.util.ContractStateUtil.getClosedContractStates;
 import static ru.protei.portal.core.model.util.ContractStateUtil.getOpenedContractStates;
 
 public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements ContractDAO {
+
+    public static final String LEFT_OUTER_JOIN_PROJECT_TO_PRODUCT = " left outer join project_to_product ptp on ptp.project_id = contract.project_id";
 
     @Override
     public SearchResult<Contract> getSearchResult(ContractQuery query) {
@@ -40,6 +41,9 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
     @Override
     public int countByQuery(ContractQuery query) {
         SqlCondition where = createSqlCondition(query);
+        if (query.getDirectionId() != null) {
+            return getObjectsCount(where.condition, where.args, LEFT_OUTER_JOIN_PROJECT_TO_PRODUCT, true);
+        }
         return getObjectsCount(where.condition, where.args);
     }
 
@@ -64,6 +68,12 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
                 .withDistinct(true)
                 .withSort(TypeConverters.createSort(query))
                 .withOffset(query.getOffset());
+
+        if (query.getDirectionId() != null) {
+            parameters.withDistinct(true);
+            parameters.withJoins(LEFT_OUTER_JOIN_PROJECT_TO_PRODUCT);
+        }
+
         if (query.limit > 0) {
             parameters = parameters.withLimit(query.getLimit());
         }
@@ -112,8 +122,7 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
             }
 
             if (query.getDirectionId() != null) {
-                condition.append(" and (CO.product_id = ? or P.product_id = ?)");
-                args.add(query.getDirectionId());
+                condition.append(" and (ptp.product_id = ?)");
                 args.add(query.getDirectionId());
             }
 

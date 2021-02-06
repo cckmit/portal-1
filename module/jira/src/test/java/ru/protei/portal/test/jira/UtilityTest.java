@@ -39,7 +39,7 @@ public class UtilityTest {
 
 //        System.out.println(mergeState.toString());
 
-        Assert.assertEquals("{\"issueType\":null,\"sla-severity\":null,\"cid\":[1,2,3],\"aid\":[\"4\",\"7\"],\"clmId\":null}", mergeState.toString());
+        Assert.assertEquals("{\"issueType\":null,\"sla-severity\":null,\"cid\":[1,2,3],\"aid\":[\"4\",\"7\"],\"projectId\":null}", mergeState.toString());
 
     }
 
@@ -51,15 +51,15 @@ public class UtilityTest {
         Assert.assertEquals("10", state.slaSeverity());
 
         String json = state.toString();
-        Assert.assertEquals("{\"issueType\":\"Error\",\"sla-severity\":\"10\",\"cid\":[],\"aid\":[],\"clmId\":null}", json);
+        Assert.assertEquals("{\"issueType\":\"Error\",\"sla-severity\":\"10\",\"cid\":[],\"aid\":[],\"projectId\":null}", json);
     }
 
     @Test
     public void testClmId () {
-        JiraExtAppData state = JiraExtAppData.fromJSON("{\"clmId\":\"CLM-12345678\"}");
-        Assert.assertEquals("CLM-12345678", state.clmId());
+        JiraExtAppData state = JiraExtAppData.fromJSON("{\"projectId\":\"CLM-12345678\"}");
+        Assert.assertEquals("CLM-12345678", state.projectId());
 
         String json = state.toString();
-        Assert.assertEquals("{\"issueType\":null,\"sla-severity\":null,\"cid\":[],\"aid\":[],\"clmId\":\"CLM-12345678\"}", json);
+        Assert.assertEquals("{\"issueType\":null,\"sla-severity\":null,\"cid\":[],\"aid\":[],\"projectId\":\"CLM-12345678\"}", json);
     }
 }

@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.query;
 
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.struct.DateRange;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,6 +18,7 @@ public class CaseCommentQuery extends BaseQuery {
     private Boolean viewPrivate = null;
     private String remoteId;
     private List<CommentType> commentTypes;
+    private DateRange creationRange;
 
     public CaseCommentQuery() {
         this(null, null, En_SortField.creation_date, En_SortDir.ASC);
@@ -125,6 +127,14 @@ public class CaseCommentQuery extends BaseQuery {
     }
 
     public enum CommentType {
-        CASE_STATE, IMPORTANCE, TIME_ELAPSED, TEXT
+        CASE_STATE, IMPORTANCE, MANAGER, TIME_ELAPSED, TEXT
+    }
+
+    public DateRange getCreationRange() {
+        return creationRange;
+    }
+
+    public void setCreationRange(DateRange creationRange) {
+        this.creationRange = creationRange;
     }
 }

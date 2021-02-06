@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.RoomReservationNotificationEvent;
-import ru.protei.portal.core.exception.ResultStatusException;
+import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.RoomReservableDAO;
 import ru.protei.portal.core.model.dao.RoomReservationDAO;
@@ -93,7 +93,7 @@ public class RoomReservationServiceImpl implements RoomReservationService {
             .map(reservation -> {
                 Long id = persistReservation(reservation, new PersonShortView(token.getPersonId()));
                 if (id == null) {
-                    throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+                    throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
                 }
                 return id;
             })

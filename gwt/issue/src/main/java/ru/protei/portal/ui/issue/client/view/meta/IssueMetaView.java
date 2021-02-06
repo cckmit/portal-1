@@ -13,11 +13,11 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.dict.En_WorkTrigger;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.ImportanceLevel;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
@@ -27,6 +27,7 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
 import ru.protei.portal.ui.common.client.view.selector.ElapsedTimeTypeFormSelector;
 import ru.protei.portal.ui.common.client.widget.issueimportance.ImportanceFormSelector;
 import ru.protei.portal.ui.common.client.widget.issuestate.IssueStateFormSelector;
@@ -80,12 +81,12 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
-    public  HasValue<En_ImportanceLevel> importance( ) {
+    public HasValue<ImportanceLevel> importance( ) {
         return importance;
     }
 
     @Override
-    public void fillImportanceOptions(List<En_ImportanceLevel> options) {
+    public void fillImportanceOptions(List<ImportanceLevel> options) {
         importance.fillOptions(options);
     }
 
@@ -115,6 +116,16 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @Override
     public Company getCompany() {
         return Company.fromEntityOption(company.getValue());
+    }
+
+    @Override
+    public void setCompanyModel(AsyncSelectorModel companyModel) {
+        company.setAsyncModel(companyModel);
+    }
+
+    @Override
+    public void setManagerCompanyModel(AsyncSelectorModel companyModel) {
+        managerCompany.setAsyncModel(companyModel);
     }
 
     @Override
@@ -328,6 +339,11 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @Override
     public void setInitiatorBorderBottomVisible(boolean isVisible) {
         initiatorContainer.setStyleName("add-border-bottom", isVisible);
+    }
+
+    @Override
+    public void setProductBorderBottomVisible(boolean isVisible) {
+        productContainer.setStyleName("add-border-bottom", isVisible);
     }
 
     @Override
@@ -548,7 +564,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @UiHandler("importance")
-    public void onImportanceChanged(ValueChangeEvent<En_ImportanceLevel> event) {
+    public void onImportanceChanged(ValueChangeEvent<ImportanceLevel> event) {
         activity.onImportanceChanged();
     }
 

@@ -9,6 +9,7 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.*;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.ContractQuery;
@@ -25,8 +26,12 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ReportControllerAsync;
 import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidget;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
+import ru.protei.portal.ui.common.client.widget.selector.company.CustomerCompanyModel;
+import ru.protei.portal.ui.common.client.widget.selector.company.SubcontractorCompanyModel;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
+import ru.protei.portal.ui.common.shared.model.Profile;
 
 import java.util.Date;
 import java.util.Objects;
@@ -63,6 +68,7 @@ public abstract class ReportCreateActivity implements Activity,
         issueFilterWidget.resetFilter(null);
         projectFilterView.resetFilter();
         contractFilterView.resetFilter();
+        updateCompanyModels(event.profile);
     }
 
     @Event(Type.FILL_CONTENT)
@@ -96,9 +102,12 @@ public abstract class ReportCreateActivity implements Activity,
     }
 
     private void presetCompanyAtFilter() {
-        if (!policyService.hasSystemScopeForPrivilege(En_Privilege.COMPANY_VIEW)) {
-            issueFilterWidget.getIssueFilterParams().presetCompany(policyService.getProfile().getCompany());
-            issueFilterWidget.getIssueFilterParams().presetManagerCompany(policyService.getProfile().getCompany());
+        if(!policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW)){
+            if (policyService.isSubcontractorCompany()) {
+                issueFilterWidget.getIssueFilterParams().presetManagerCompany(policyService.getProfile().getCompany());
+            } else {
+                issueFilterWidget.getIssueFilterParams().presetCompany(policyService.getProfile().getCompany());
+            }
         }
     }
 
@@ -154,6 +163,9 @@ public abstract class ReportCreateActivity implements Activity,
             }
             case PROJECT: {
                 ProjectQuery query = getProjectQuery();
+                if (!validateProjectQuery(query)) {
+                    return null;
+                }
                 return new ReportProjectQuery(report, query);
             }
             case CONTRACT: {
@@ -201,9 +213,9 @@ public abstract class ReportCreateActivity implements Activity,
             case CASE_TIME_ELAPSED:
             case CASE_RESOLUTION_TIME: {
                 view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
-                view.additionalParams().setValue(null);
                 view.scheduledTypeContainerVisibility().setVisible(isScheduledEnabled(reportType));
                 view.additionalParamsVisibility().setVisible(reportType == En_ReportType.CASE_OBJECTS);
+                view.additionalParams().setValue(null);
                 issueFilterWidget.updateFilterType(En_CaseFilterType.valueOf(reportType.name()));
                 validateDateRanges(reportType);
                 applyIssueFilterVisibilityByPrivileges();
@@ -292,6 +304,21 @@ public abstract class ReportCreateActivity implements Activity,
         return true;
     }
 
+    private boolean validateProjectQuery(ProjectQuery query) {
+        if (query == null) {
+            return false;
+        }
+        boolean dateRangeValid = validateProjectCommentCreationRange(query.getCommentCreationRange(), false);
+
+        if (!dateRangeValid) {
+            fireEvent(new NotifyEvents.Show(lang.reportNotValidPeriod(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
+        return true;
+    }
+
+
     private boolean isValidMaxPeriod(DateRange dateRange) {
         if (dateRange != null && dateRange.getIntervalType() == En_DateIntervalType.FIXED &&
                 dateRange.getTo() != null && dateRange.getFrom() != null) {
@@ -332,12 +359,24 @@ public abstract class ReportCreateActivity implements Activity,
         return typeValid && rangeValid;
     }
 
+    private boolean validateProjectCommentCreationRange(DateRange dateRange, boolean isMandatory) {
+        boolean typeValid = validateTypeRange(dateRange, isMandatory);
+        boolean rangeValid = typeValid ? validateDateRange(dateRange) : true;
+
+        validateProjectCommentCreation(typeValid, rangeValid);
+        return typeValid && rangeValid;
+    }
+
     private void validateCreatedRange(boolean isTypeValid, boolean isRangeValid) {
         issueFilterWidget.getIssueFilterParams().setCreatedRangeValid(isTypeValid, isRangeValid);
     }
 
     private void validateModifiedRange(boolean isTypeValid, boolean isRangeValid) {
         issueFilterWidget.getIssueFilterParams().setModifiedRangeValid(isTypeValid, isRangeValid);
+    }
+
+    private void validateProjectCommentCreation(boolean isTypeValid, boolean isRangeValid) {
+        projectFilterView.setCommentCreationRangeValid(isTypeValid, isRangeValid);
     }
 
     private void applyIssueFilterVisibilityByPrivileges() {
@@ -380,6 +419,7 @@ public abstract class ReportCreateActivity implements Activity,
         }
         query.setInitiatorCompanyIds(projectFilterView.initiatorCompanies().getValue().stream()
                 .map(entityOption -> entityOption.getId()).collect(Collectors.toSet()));
+        query.setCommentCreationRange(toDateRange(projectFilterView.commentCreationRange().getValue()));
         return query;
     }
     
@@ -402,6 +442,21 @@ public abstract class ReportCreateActivity implements Activity,
         return query;
     }
 
+    private void updateCompanyModels(Profile profile) {
+        Company userCompany = profile.getCompany();
+        subcontractorCompanyModel.setCompanyId(userCompany.getId());
+        subcontractorCompanyModel.setActive(false);
+        customerCompanyModel.setSubcontractorId(userCompany.getId());
+        customerCompanyModel.setActive(false);
+
+        issueFilterWidget.setInitiatorCompaniesModel(isSubcontractorCompany(userCompany) ? customerCompanyModel : companyModel);
+        issueFilterWidget.setManagerCompaniesModel(profile.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW) || isSubcontractorCompany(userCompany) ? companyModel : subcontractorCompanyModel);
+    }
+
+    private boolean isSubcontractorCompany(Company userCompany) {
+        return userCompany.getCategory() == En_CompanyCategory.SUBCONTRACTOR;
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -419,6 +474,13 @@ public abstract class ReportCreateActivity implements Activity,
     AbstractProjectFilterView projectFilterView;
     @Inject
     AbstractContractFilterView contractFilterView;
+
+    @Inject
+    CompanyModel companyModel;
+    @Inject
+    CustomerCompanyModel customerCompanyModel;
+    @Inject
+    SubcontractorCompanyModel subcontractorCompanyModel;
 
     private boolean isSaving;
     private AppEvents.InitDetails initDetails;

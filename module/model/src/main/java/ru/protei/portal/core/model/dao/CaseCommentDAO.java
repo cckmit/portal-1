@@ -1,14 +1,11 @@
 package ru.protei.portal.core.model.dao;
 
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
-import ru.protei.portal.core.model.dto.CaseResolutionTimeReportDto;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by michael on 20.05.16.
@@ -31,9 +28,7 @@ public interface CaseCommentDAO extends PortalBaseDAO<CaseComment> {
 
     boolean checkExistsByRemoteIdAndRemoteLinkId(String remoteId, Long remoteLinkId);
 
-    List<CaseComment> getLastNotNullTextCommentsForReport(List<Long> caseId);
+    List<CaseComment> getLastNotNullTextPartialCommentsForReport(List<Long> caseId);
 
-    List<CaseResolutionTimeReportDto> reportCaseResolutionTime(Date from, Date to, List<Long> terminatedStates,
-                                                               List<Long> companiesIds, Set<Long> productIds, List<Long> managersIds, List<Integer> importanceIds,
-                                                               List<Long> tagsIds);
+    List<CaseComment> getPartialCommentsForReport(CaseCommentQuery query);
 }

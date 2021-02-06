@@ -27,7 +27,8 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.contract.client.activity.table.AbstractContractTableActivity;
 import ru.protei.portal.ui.contract.client.activity.table.AbstractContractTableView;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
 import static ru.protei.portal.core.model.util.ContractSupportService.getContractKind;
 import static ru.protei.portal.ui.common.shared.util.HtmlUtils.sanitizeHtml;
 
@@ -209,9 +210,9 @@ public class ContractTableView extends Composite implements AbstractContractTabl
         public void fillColumnValue(Element cell, Contract contract) {
             Element root = DOM.createDiv();
             StringBuilder sb = new StringBuilder();
-            if (contract.getDirectionId() != null) {
+            if (isNotEmpty(contract.getProductDirections())) {
                 sb.append("<b>")
-                        .append(sanitizeHtml(contract.getDirectionName()))
+                        .append(joining(contract.getProductDirections(), ", ", direction -> sanitizeHtml(direction.getName())))
                         .append("</b>")
                         .append(" ");
             }

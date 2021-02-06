@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.query;
 
+import ru.protei.portal.core.model.dict.En_BundleType;
 import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
@@ -11,22 +12,28 @@ public class CaseLinkQuery extends BaseQuery {
     private String remoteId;
     private En_CaseLink type;
     private Boolean withCrosslink;
+    private En_BundleType bundleType;
 
     public CaseLinkQuery() {}
 
     public CaseLinkQuery(Long caseId, Boolean showOnlyPublic, String remoteId) {
-        this(null, null, null, caseId, showOnlyPublic, remoteId);
+        this(null, null, null, caseId, showOnlyPublic, remoteId, null);
     }
 
     public CaseLinkQuery(Long caseId, Boolean showOnlyPublic) {
-        this(null, null, null, caseId, showOnlyPublic, null);
+        this(null, null, null, caseId, showOnlyPublic, null, null);
     }
 
-    public CaseLinkQuery(String searchString, En_SortField sortField, En_SortDir sortDir, Long caseId, Boolean showOnlyPublic, String remoteId) {
+    public CaseLinkQuery(Long caseId, En_BundleType bundleType) {
+        this(null, null, null, caseId, null, null, bundleType);
+    }
+
+    public CaseLinkQuery(String searchString, En_SortField sortField, En_SortDir sortDir, Long caseId, Boolean showOnlyPublic, String remoteId, En_BundleType bundleType) {
         super(searchString, sortField, sortDir);
         this.caseId = caseId;
         this.showOnlyPublic = showOnlyPublic;
         this.remoteId = remoteId;
+        this.bundleType = bundleType;
     }
 
     public En_CaseLink getType() {
@@ -67,5 +74,13 @@ public class CaseLinkQuery extends BaseQuery {
 
     public void setWithCrosslink(Boolean withCrosslink) {
         this.withCrosslink = withCrosslink;
+    }
+
+    public En_BundleType getBundleType() {
+        return bundleType;
+    }
+
+    public void setBundleType(En_BundleType bundleType) {
+        this.bundleType = bundleType;
     }
 }

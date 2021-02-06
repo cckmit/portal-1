@@ -5,14 +5,15 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.dict.En_WorkTrigger;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.ImportanceLevel;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.*;
+import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
@@ -45,7 +46,7 @@ public interface AbstractIssueMetaView extends IsWidget {
     void updateManagersCompanyFilter(Long managerCompanyId);
     void setStateFilter(Selector.SelectorFilter<CaseState> filter);
     void setPlatformFilter(Selector.SelectorFilter<PlatformOption> filter);
-    void fillImportanceOptions(List<En_ImportanceLevel> options);
+    void fillImportanceOptions(List<ImportanceLevel> options);
 
     void setTimeElapsedType(En_TimeElapsedType timeElapsedType);
 
@@ -80,10 +81,11 @@ public interface AbstractIssueMetaView extends IsWidget {
     HasVisibility jiraSlaSelectorVisibility();
 
     void setInitiatorBorderBottomVisible(boolean isVisible);
+    void setProductBorderBottomVisible(boolean isVisible);
 
     HasValue<En_TimeElapsedType> timeElapsedType();
     HasValue<CaseState> state();
-    HasValue<En_ImportanceLevel> importance();
+    HasValue<ImportanceLevel> importance();
 
     HasValue<ProductShortView> product();
 
@@ -143,4 +145,7 @@ public interface AbstractIssueMetaView extends IsWidget {
 
     HasVisibility workTriggerVisibility();
     HasValue<En_WorkTrigger> workTrigger();
+
+    void setCompanyModel(AsyncSelectorModel companyModel);
+    void setManagerCompanyModel(AsyncSelectorModel companyModel);
 }

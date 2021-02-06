@@ -14,7 +14,8 @@ import ru.protei.portal.core.event.CaseNameAndDescriptionEvent;
 import ru.protei.portal.core.event.CaseObjectMetaEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_ExtAppType;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.dict.En_HistoryAction;
+import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
@@ -73,6 +74,15 @@ public final class CommonServiceImpl implements CommonService {
 
     @Autowired
     PlatformDAO platformDAO;
+
+    @Autowired
+    HistoryDAO historyDAO;
+
+    @Autowired
+    CaseStateDAO caseStateDAO;
+
+    @Autowired
+    ImportanceLevelDAO importanceLevelDAO;
 
     @Override
     public Result<Long> saveAttachment( Attachment attachment, Person author, HttpInputSource httpInputSource, Long fileSize, String contentType, CaseObject caseObject ) {
@@ -149,26 +159,31 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public Result<Long> createAndStoreStateComment( Date created, Long authorId, Long stateId, Long caseId) {
-        final CaseComment statusComment = new CaseComment();
-        statusComment.setCreated(created);
-        statusComment.setAuthorId(authorId);
-        statusComment.setCaseStateId(stateId);
-        statusComment.setCaseId(caseId);
-        Long id = caseCommentDAO.persist( statusComment );
-        if(id == null) return error( En_ResultStatus.NOT_CREATED, "State comment do not created." );
+    public Result<Long> createAndStoreStateHistory(Date created, Long authorId, Long stateId, Long caseId) {
+        Long id = addStateHistory(created, authorId, caseId, stateId, caseStateDAO.get(stateId).getState());
+        if(id == null) return error( En_ResultStatus.NOT_CREATED, "State history do not created." );
         return ok(id);
     }
 
     @Override
-    public Result<Long> createAndStoreImportanceComment( Date created, Long authorId, Integer importance, Long caseId) {
-        final CaseComment stateChangeMessage = new CaseComment();
-        stateChangeMessage.setCreated(created);
-        stateChangeMessage.setAuthorId(authorId);
-        stateChangeMessage.setCaseImpLevel(importance);
-        stateChangeMessage.setCaseId(caseId);
-        Long id = caseCommentDAO.persist( stateChangeMessage );
+    public Result<Long> updateAndStoreStateHistory(Date updated, Long authorId, Long oldStateId, Long caseObjectId, Long newStateId) {
+        Long id = changeStateHistory(updated, authorId, caseObjectId, oldStateId, caseStateDAO.get(oldStateId).getState(),
+                newStateId, caseStateDAO.get(newStateId).getState());
+        if(id == null) return error( En_ResultStatus.NOT_UPDATED, "State history do not updated." );
+        return ok(id);
+    }
+
+    @Override
+    public Result<Long> createAndStoreImportanceHistory(Date created, Long authorId, Integer importance, Long caseId) {
+        Long id = addImportanceHistory(created, authorId, caseId, importanceLevelDAO.get(importance));
         if(id == null) return error( En_ResultStatus.NOT_CREATED, "Importance comment do not created." );
+        return ok(id);
+    }
+
+    @Override
+    public Result<Long> updateAndStoreImportanceHistory(Date updated, Long authorId, Integer oldImportance, Long caseId, Integer newImportance) {
+        Long id = changeImportanceHistory(updated, authorId, caseId, importanceLevelDAO.get(oldImportance), importanceLevelDAO.get(newImportance));
+        if(id == null) return error( En_ResultStatus.NOT_UPDATED, "Importance comment do not updated." );
         return ok(id);
     }
 
@@ -191,7 +206,8 @@ public final class CommonServiceImpl implements CommonService {
         caseObjectDAO.merge( object );
         logger.debug( "Updated case state for case with id {}, old={}, new={}", object.getId(), oldMeta.getStateId(), object.getStateId());
 
-        Result<Long> stateCommentId = createAndStoreStateComment( creationOn, author.getId(), redmineStatusEntry.getLocalStatusId().longValue(), object.getId() );
+        Result<Long> stateCommentId = updateAndStoreStateHistory( creationOn, author.getId(),
+                oldMeta.getStateId(), object.getId(), redmineStatusEntry.getLocalStatusId().longValue() );
         if (stateCommentId.isError()) {
             logger.error( "State comment for the issue {} not saved!", object.getId() );
             return stateCommentId;
@@ -223,9 +239,10 @@ public final class CommonServiceImpl implements CommonService {
 
         object.setImpLevel( priorityMapEntry.getLocalPriorityId() );
         caseObjectDAO.merge( object );
-        logger.debug( "Updated case priority for case with id {}, old={}, new={}", object.getId(), En_ImportanceLevel.find( oldMeta.getImpLevel() ), En_ImportanceLevel.find( object.getImpLevel() ) );
+        logger.debug( "Updated case priority for case with id {}, old={}, new={}", object.getId(), oldMeta.getImportanceCode(), object.getImportanceCode() );
 
-        Result<Long> importanceCommentId = createAndStoreImportanceComment( journal.getCreatedOn(), author.getId(), priorityMapEntry.getLocalPriorityId(), object.getId() );
+        Result<Long> importanceCommentId = updateAndStoreImportanceHistory( journal.getCreatedOn(), author.getId(),
+                oldMeta.getImpLevel(), object.getId(), priorityMapEntry.getLocalPriorityId());
         if (importanceCommentId.isError()) {
             logger.error( "Importance comment for the issue {} not saved!", object.getId() );
             return importanceCommentId;
@@ -341,6 +358,40 @@ public final class CommonServiceImpl implements CommonService {
         PlatformQuery query = new PlatformQuery();
         query.setCompanyId(companyId);
         return platformDAO.listByQuery(query);
+    }
+
+    private Long addStateHistory(Date date, Long personId, Long caseId, Long stateId, String stateName) {
+        return createHistory(date, personId, caseId, En_HistoryAction.ADD, En_HistoryType.CASE_STATE, null, null, stateId, stateName);
+    }
+
+    private Long changeStateHistory(Date date, Long personId, Long caseId, Long oldStateId, String oldStateName, Long newStateId, String newStateName) {
+        return createHistory(date, personId, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_STATE, oldStateId, oldStateName, newStateId, newStateName);
+    }
+
+    private Long addImportanceHistory(Date date, Long personId, Long caseId, ImportanceLevel importanceLevel) {
+        return createHistory(date, personId, caseId, En_HistoryAction.ADD, En_HistoryType.CASE_IMPORTANCE, null, null,
+                importanceLevel.getId().longValue(), importanceLevel.getCode());
+    }
+
+    private Long changeImportanceHistory(Date date, Long personId, Long caseId, ImportanceLevel oldImportanceLevel, ImportanceLevel newImportanceLevel) {
+        return createHistory(date, personId, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_IMPORTANCE,
+                oldImportanceLevel.getId().longValue(), oldImportanceLevel.getCode(), newImportanceLevel.getId().longValue(), newImportanceLevel.getCode());
+    }
+
+    private Long createHistory(Date date, Long personId, Long caseObjectId, En_HistoryAction action,
+                               En_HistoryType type, Long oldId, String oldValue, Long newId, String newValue) {
+        History history = new History();
+        history.setInitiatorId(personId);
+        history.setDate(date);
+        history.setCaseObjectId(caseObjectId);
+        history.setAction(action);
+        history.setType(type);
+        history.setOldId(oldId);
+        history.setOldValue(oldValue);
+        history.setNewId(newId);
+        history.setNewValue(newValue);
+
+        return historyDAO.persist(history);
     }
 
     private CaseComment createAndStoreComment(Date creationDate, String text, Person author, Long caseId) {

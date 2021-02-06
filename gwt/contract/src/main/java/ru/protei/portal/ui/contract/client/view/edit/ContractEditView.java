@@ -3,6 +3,7 @@ package ru.protei.portal.ui.contract.client.view.edit;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.LabelElement;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -13,7 +14,6 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.ContractSpecification;
 import ru.protei.portal.core.model.ent.Contractor;
@@ -32,6 +32,7 @@ import ru.protei.portal.ui.common.client.widget.project.ProjectWidget;
 import ru.protei.portal.ui.common.client.widget.selector.contract.ContractFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.state.ContractStateSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.type.ContractTypeSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeCustomFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionFormSelector;
@@ -180,8 +181,8 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
-    public HasValue<ProductDirectionInfo> direction() {
-        return direction;
+    public void setDirections(String value) {
+        directions.setInnerText(value);
     }
 
     @Override
@@ -311,52 +312,25 @@ public class ContractEditView extends Composite implements AbstractContractEditV
 
         numberLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.NUMBER);
         number.ensureDebugId(DebugIds.CONTRACT.NUMBER_INPUT);
-
-//        typeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.TYPE);
         type.ensureDebugId(DebugIds.CONTRACT.TYPE_SELECTOR);
-
-//        stateLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.STATE);
         state.setEnsureDebugId(DebugIds.CONTRACT.STATE_SELECTOR);
-
-//        contractParentLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.PARENT);
         contractParent.setEnsureDebugId(DebugIds.CONTRACT.PARENT_SELECTOR);
-
         descriptionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.DESCRIPTION);
         description.ensureDebugId(DebugIds.CONTRACT.DESCRIPTION_INPUT);
-
         dateSigningLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.DATE_SIGNING);
         dateSigning.setEnsureDebugId(DebugIds.CONTRACT.DATE_SIGNING_CONTAINER);
-
         dateValidLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.DATE_VALID);
-//        dateValid.ensureDebugId(DebugIds.CONTRACT.DATE_VALID_CONTAINER);
-
         costWithCurrencyLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.COST_WITH_CURRENCY);
         costWithCurrency.setEnsureDebugId(DebugIds.CONTRACT.COST_WITH_CURRENCY_CONTAINER);
-
-//        projectLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.PROJECT);
         projectWidget.setEnsureDebugId(DebugIds.CONTRACT.PROJECT_SELECTOR);
-
-//        directionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.DIRECTION);
-        direction.setEnsureDebugId(DebugIds.CONTRACT.DIRECTION_SELECTOR);
-
-//        organizationLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.ORGANIZATION);
+        directions.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.DIRECTION_INPUT);
         organization.setEnsureDebugId(DebugIds.CONTRACT.ORGANIZATION_SELECTOR);
-
-//        curatorLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.CURATOR);
         curator.setEnsureDebugId(DebugIds.CONTRACT.CURATOR_SELECTOR);
-
-//        projectManagerLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.MANAGER);
         projectManager.setEnsureDebugId(DebugIds.CONTRACT.MANAGER_SELECTOR);
-
-//        contractSignManagerLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.CONTRACT_SIGN_MANAGER);
         contractSignManager.setEnsureDebugId(DebugIds.CONTRACT.CONTRACT_SIGN_MANAGER_SELECTOR);
-
-//        contractorLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.CONTRACTOR);
         contractorWidget.setEnsureDebugId(DebugIds.CONTRACT.CONTRACTOR_SELECTOR);
-
         addDate.ensureDebugId(DebugIds.CONTRACT.ADD_DATES_BUTTON);
         specificationList.setEnsureDebugId(DebugIds.CONTRACT.ADD_SPECIFICATIONS_BUTTON);
-
         saveButton.ensureDebugId(DebugIds.CONTRACT.SAVE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.CONTRACT.CANCEL_BUTTON);
     }
@@ -413,9 +387,8 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Inject
     @UiField(provided = true)
     ProjectWidget projectWidget;
-    @Inject
-    @UiField(provided = true)
-    ProductDirectionFormSelector direction;
+    @UiField
+    SpanElement directions;
     @Inject
     @UiField(provided = true)
     EmployeeFormSelector projectManager;

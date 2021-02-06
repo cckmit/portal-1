@@ -19,6 +19,8 @@ public class CrmConstants {
 
     public static final List<String> CONFIG_EXTENSIONS = Arrays.asList(".config", ".cfg", ".properties", ".xml", ".json");
 
+    public static final List<String> PROTEI_DOMAINS = Arrays.asList("@protei.ru", "@sigurd-it.ru", "@neo-s.com");
+
     public interface Session {
         String AUTH_TOKEN = "session-auth-token";
         String FILE_ITEM = "file-item";
@@ -29,6 +31,7 @@ public class CrmConstants {
 
     public interface Header {
         String USER_AGENT = "User-Agent";
+        String X_REAL_IP = "X-Real-IP";
     }
 
     public interface Product {
@@ -82,6 +85,8 @@ public class CrmConstants {
         String CONTRACTOR_KPP = "^\\d{9}$";
         String CONTRACTOR_NAME = "^.{1,100}$";
         String CONTRACTOR_FULL_NAME = "^.{1,250}$";
+        String RUS_PHONE_NUMBER_PATTERN = "^((\\+7|8)[0-9]{9,10}|[0-9]{6,7})$"; // [+7 или 8] + [3 код региона] + [6-7 номер] ИЛИ [6-7 номер]
+        String WORK_PHONE_NUMBER_PATTERN = "^\\d*#?\\d+$";
     }
 
     public interface Time {
@@ -121,7 +126,15 @@ public class CrmConstants {
     }
 
     public interface ImportanceLevel {
-        List<Integer> commonImportanceLevelIds = Arrays.asList(1,2,3,4);
+        String IMPORTANCE_LEVEL = "importance-level";
+        String BASIC_NAME = "basic";
+
+        Integer CRITICAL = 1;
+        Integer IMPORTANT = 2;
+        Integer BASIC = 3;
+        Integer COSMETIC = 4;
+
+        List<Integer> commonImportanceLevelIds = Arrays.asList(CRITICAL,IMPORTANT,BASIC,COSMETIC);
     }
 
     public interface Company {
@@ -187,6 +200,8 @@ public class CrmConstants {
         long SOLVED_NOT_A_PROBLEM = 7;
         long SOLVED_FIXED = 8;
         long SOLVED_DUPLICATED = 9;
+        long BLOCKED = 38;
+        long DEVELOPMENT = 26;
     }
 
     public interface Department {
@@ -201,5 +216,12 @@ public class CrmConstants {
 
     public interface Platform {
         int PARAMETERS_MAX_LENGTH = 256;
+    }
+
+    public interface AutoOpen {
+        long NO_DELAY = 0;
+        long DELAY_STARTUP = 60;
+        long DELAY_RUNTIME = 180;
+        int DELAY_RANDOM = 120;
     }
 }

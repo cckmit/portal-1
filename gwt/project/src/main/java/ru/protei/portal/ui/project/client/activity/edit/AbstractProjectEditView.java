@@ -30,8 +30,8 @@ public interface AbstractProjectEditView extends IsWidget {
     HasText description();
     HasValue<En_RegionState> state();
     HasValue<EntityOption> region();
-    HasValue<ProductDirectionInfo> direction();
-    HasValue<ProductShortView> product();
+    HasValue<Set<ProductDirectionInfo>> directions();
+    HasValue<Set<ProductShortView>> products();
 
     HasValue<EntityOption> company();
 
@@ -56,6 +56,8 @@ public interface AbstractProjectEditView extends IsWidget {
 
     HasVisibility addLinkButtonVisibility();
 
+    HasVisibility slaVisibility();
+
     HasValue<Date> technicalSupportValidity();
 
     HasValue<List<ProjectSla>> slaInput();
@@ -72,7 +74,7 @@ public interface AbstractProjectEditView extends IsWidget {
 
     HasValidable slaValidator();
 
-    void updateProductDirection(Long directionId);
+    void updateProductModel(Set<Long> directionIds);
 
     void showComments(boolean isShow);
     void showDocuments(boolean isShow);
@@ -82,4 +84,7 @@ public interface AbstractProjectEditView extends IsWidget {
     HasValue<Date> pauseDate();
 
     HasValue<Set<PlanOption>> plans();
+
+
+    HasValue<Set<EntityOption>> subcontractors();
 }

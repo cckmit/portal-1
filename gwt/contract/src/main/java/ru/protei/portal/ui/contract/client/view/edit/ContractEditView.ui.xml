@@ -118,10 +118,10 @@
 
                             <project:ProjectWidget ui:field="projectWidget" validation="true"
                                                    addStyleNames="form-group form-group-default"/>
-                            <productdirection:ProductDirectionFormSelector ui:field="direction" hideNullValue="true"
-                                                                           enabled="false"
-                                                                           defaultValue="{lang.contractSelectDirection}"
-                                                                           header="{lang.contractDirection}"/>
+                            <div class="form-group form-group-default">
+                                <label class="fade"><ui:text from="{lang.contractDirection}"/></label>
+                                <span ui:field="directions"></span>
+                            </div>
                         </div>
                         <div class="form-group m-t-10 m-b-10">
                             <label>

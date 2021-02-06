@@ -15,6 +15,7 @@ import ru.protei.winter.jdbc.annotations.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Договор
@@ -80,25 +81,10 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     private String curatorShortName;
 
     /**
-     * Направление
+     * Продуктовые направления
      */
-    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "product_id", sqlTableAlias = "P")
-    private Long directionId;
-
-    @JdbcJoinedColumn(joinPath = {
-            @JdbcJoinPath(localColumn = "project_id", remoteColumn = "id", table = "case_object"),
-            @JdbcJoinPath(localColumn = "product_id", remoteColumn = "id", table = "dev_unit")
-    }, mappedColumn = "UNIT_NAME")
-    private String directionName;
-
-    @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "product_id", sqlTableAlias = "CO")
-    private Long caseDirectionId;
-
-    @JdbcJoinedColumn(joinPath = {
-            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object"),
-            @JdbcJoinPath(localColumn = "product_id", remoteColumn = "id", table = "dev_unit")
-    }, mappedColumn = "UNIT_NAME")
-    private String caseDirectionName;
+    @JdbcManyToMany(localColumn = "project_id", linkTable = "project_to_product", localLinkColumn = "project_id", remoteLinkColumn = "product_id")
+    private Set<DevUnit> productDirections;
 
     /**
      * Текущее состояние договора
@@ -258,14 +244,6 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
         this.curatorId = curatorId;
     }
 
-    public Long getDirectionId() {
-        return directionId;
-    }
-
-    public void setDirectionId(Long directionId) {
-        this.directionId = directionId;
-    }
-
     public Integer getStateId() {
         return stateId;
     }
@@ -328,10 +306,6 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
 
     public String getCuratorShortName() {
         return curatorShortName;
-    }
-
-    public String getDirectionName() {
-        return directionName;
     }
 
     public Date getDateSigning() {
@@ -426,12 +400,12 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
         this.projectCustomerType = projectCustomerType;
     }
 
-    public Long getCaseDirectionId() {
-        return caseDirectionId;
+    public Set<DevUnit> getProductDirections() {
+        return productDirections;
     }
 
-    public String getCaseDirectionName() {
-        return caseDirectionName;
+    public void setProductDirections(Set<DevUnit> productDirections) {
+        this.productDirections = productDirections;
     }
 
     public Long getContractSignManagerId() {
@@ -444,10 +418,6 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
 
     public void setContractSignManagerId(Long contractSignManagerId) {
         this.contractSignManagerId = contractSignManagerId;
-    }
-
-    public void setCaseDirectionId( Long caseDirectionId ) {
-        this.caseDirectionId = caseDirectionId;
     }
 
     public Long getContractorId() {
@@ -493,10 +463,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
                 ", contractSignManagerShortName='" + contractSignManagerShortName + '\'' +
                 ", curatorId=" + curatorId +
                 ", curatorShortName='" + curatorShortName + '\'' +
-                ", directionId=" + directionId +
-                ", directionName='" + directionName + '\'' +
-                ", caseDirectionId=" + caseDirectionId +
-                ", caseDirectionName='" + caseDirectionName + '\'' +
+                ", productDirections=" + productDirections +
                 ", stateId=" + stateId +
                 ", description='" + description + '\'' +
                 ", number='" + number + '\'' +

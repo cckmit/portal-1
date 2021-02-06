@@ -1,0 +1,24 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-fk-case_object_id-on-history-table" author="porubov">
+        <delete tableName="history">
+            <where>case_object_id not in (select id from case_object)</where>
+        </delete>
+
+        <addForeignKeyConstraint constraintName="fk_history_case_object_id_to_case_object"
+                                 baseTableName="history" baseColumnNames="case_object_id"
+                                 referencedTableName="case_object" referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="NO ACTION"/>
+    </changeSet>
+
+    <changeSet id="add-index-value_type-on-history-table" author="porubov">
+        <createIndex tableName="history" indexName="idx_history_value_type">
+            <column name="value_type"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

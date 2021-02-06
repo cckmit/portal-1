@@ -13,19 +13,27 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.config.*;
 import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.core.mail.VirtualMailSendChannel;
+import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.model.dao.CompanySubscriptionDAO;
+import ru.protei.portal.core.model.dao.ImportanceLevelDAO;
+import ru.protei.portal.core.model.dict.En_CaseStateUsageInCompanies;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.service.*;
-import ru.protei.portal.core.service.events.CaseSubscriptionService;
+import ru.protei.portal.core.service.AssemblerService;
+import ru.protei.portal.core.service.AssemblerServiceImpl;
+import ru.protei.portal.core.service.CaseCommentService;
 import ru.protei.portal.core.service.events.EventAssemblerService;
 import ru.protei.portal.test.service.BaseServiceTest;
 import ru.protei.portal.tools.notifications.NotificationConfiguration;
 
 import javax.mail.internet.MimeMessage;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static ru.protei.portal.core.model.dict.En_CaseType.CRM_SUPPORT;
 import static ru.protei.portal.core.model.ent.CaseObject.Columns.CASE_NAME;
 import static ru.protei.portal.core.model.ent.CaseObject.Columns.INFO;
 import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
@@ -55,19 +63,10 @@ public class MailNotificationProcessorTest extends BaseServiceTest {
     }
 
     @Autowired
-    CaseService caseService;
-
-    @Autowired
     CaseCommentService caseCommentService;
 
     @Autowired
-    CompanyService companyService;
-
-    @Autowired
     MailSendChannel sendChannel;
-
-    @Autowired
-    CompanySubscriptionDAO subscriptionDAO;
 
     @Autowired
     EventAssemblerService eventAssemblerService;
@@ -76,9 +75,13 @@ public class MailNotificationProcessorTest extends BaseServiceTest {
     PortalConfig portalConfig;
 
     @Autowired
-    CaseSubscriptionService subscriptionService;
+    CaseStateDAO caseStateDAO;
+
     @Autowired
     CompanySubscriptionDAO companySubscriptionDAO;
+
+    @Autowired
+    private ImportanceLevelDAO importanceLevelDAO;
 
     private static final Long CASE_ID = 222L;
     private static final long COMPANY_ID = 1L;
@@ -112,10 +115,20 @@ public class MailNotificationProcessorTest extends BaseServiceTest {
         when(companySubscriptionDAO.listByCompanyId( COMPANY_ID )).thenReturn( listOf(subscription) );
         when(personDAO.get( PERSON_ID )).thenReturn( initiator );
 
-        En_CaseType caseType = En_CaseType.CRM_SUPPORT;
         CaseObject object = createNewCaseObject(initiator);
         object.setInitiatorCompany( company );
         object.setInitiator( initiator );
+
+        CaseState caseState = new CaseState();
+        caseState.setId(object.getStateId());
+        caseState.setUsageInCompanies(En_CaseStateUsageInCompanies.ALL);
+        caseState.setCompanies(new ArrayList<>());
+
+        ImportanceLevel importanceLevel = new ImportanceLevel(object.getImpLevel(), "");
+
+        CompanyImportanceItem companyImportanceItem = new CompanyImportanceItem(object.getInitiatorCompanyId(), object.getImpLevel(), 0);
+
+        object.setImportanceLevel(importanceLevel);
 
         CaseObjectMeta meta = new CaseObjectMeta(object);
         meta.setId( CASE_ID );
@@ -128,6 +141,11 @@ public class MailNotificationProcessorTest extends BaseServiceTest {
         when( caseObjectMetaDAO.get( CASE_ID ) ).thenReturn( meta );
         when( caseObjectMetaNotifiersDAO.get( CASE_ID ) ).thenReturn( metaNotifiers );
         when( personDAO.getPersons( any() ) ).thenReturn( listOf( initiator ) );
+        when( caseStateDAO.getAllByCaseType(CRM_SUPPORT) ).thenReturn(Collections.singletonList(caseState));
+        when( caseStateDAO.get(any()) ).thenReturn(caseState);
+        when( companyImportanceItemDAO.getSortedImportanceLevels(meta.getInitiatorCompanyId()) ).thenReturn(Collections.singletonList(companyImportanceItem));
+        when( historyDAO.persist(any()) ).thenReturn(0L);
+        when( importanceLevelDAO.get(meta.getImpLevel()) ).thenReturn(importanceLevel);
 
         Assert.assertTrue("CaseObject must be created",
                 caseService.createCaseObject(getAuthToken(), new CaseObjectCreateRequest(object)).isOk());
@@ -176,6 +194,8 @@ public class MailNotificationProcessorTest extends BaseServiceTest {
 
         when( caseCommentDAO.get( commentId ) ).thenReturn( comment );
         when( caseCommentDAO.persist( any() ) ).thenReturn( commentId );
+
+        companyImportanceItemDAO.persist(new CompanyImportanceItem(company.getId(), object.getImpLevel(), 0));
 
         Assert.assertTrue( "CaseComment must be created",
                 caseCommentService.addCaseComment( getAuthToken(), En_CaseType.CRM_SUPPORT, comment ).isOk() );

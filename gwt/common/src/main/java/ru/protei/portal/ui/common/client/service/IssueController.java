@@ -22,15 +22,17 @@ public interface IssueController extends RemoteService {
 
     SearchResult<CaseShortView> getIssues(CaseQuery query) throws RequestFailedException;
 
-    CaseObject getIssue( long id ) throws RequestFailedException;
+    CaseObject getIssue(long id) throws RequestFailedException;
+
+    CaseObjectMetaNotifiers getIssueMetaNotifiers(long id) throws RequestFailedException;
 
     void saveIssueNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest) throws RequestFailedException;
 
-    CaseObjectMeta updateIssueMeta( CaseObjectMeta caseMeta ) throws RequestFailedException;
+    CaseObjectMeta updateIssueMeta(CaseObjectMeta caseMeta) throws RequestFailedException;
 
-    CaseObjectMetaNotifiers updateIssueMetaNotifiers( CaseObjectMetaNotifiers caseMetaNotifiers ) throws RequestFailedException;
+    CaseObjectMetaNotifiers updateIssueMetaNotifiers(CaseObjectMetaNotifiers caseMetaNotifiers) throws RequestFailedException;
 
-    CaseObjectMetaJira updateIssueMetaJira( CaseObjectMetaJira caseMetaJira ) throws RequestFailedException;
+    CaseObjectMetaJira updateIssueMetaJira(CaseObjectMetaJira caseMetaJira) throws RequestFailedException;
 
     CaseInfo getIssueShortInfo(Long caseNumber) throws RequestFailedException;
 
@@ -43,4 +45,6 @@ public interface IssueController extends RemoteService {
     Long removeFavoriteState(Long personId, Long issueId) throws RequestFailedException;
 
     Long addFavoriteState(Long personId, Long issueId) throws RequestFailedException;
+
+    UiResult<Long> createSubtask(CaseObjectCreateRequest createRequest, Long parentCaseId) throws RequestFailedException;
 }

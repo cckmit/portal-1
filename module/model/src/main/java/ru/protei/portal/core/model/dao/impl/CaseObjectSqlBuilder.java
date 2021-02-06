@@ -1,8 +1,6 @@
 package ru.protei.portal.core.model.dao.impl;
 
-import ru.protei.portal.core.model.dict.En_Gender;
-import ru.protei.portal.core.model.dict.En_TimeElapsedType;
-import ru.protei.portal.core.model.dict.En_WorkTrigger;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -13,6 +11,7 @@ import ru.protei.portal.core.model.util.sqlcondition.Condition;
 import ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -72,43 +71,37 @@ public class CaseObjectSqlBuilder {
                 condition.append(" and caseno in " + makeInArg(query.getCaseNumbers(), false));
             }
 
-            boolean isInitiatorCompaniesNotEmpty = isNotEmpty(query.getCompanyIds());
+            if (isNotEmpty(query.getCompanyIds())) {
+                condition.append(" and initiator_company in " + makeInArg(query.getCompanyIds(), false));
+            }
 
-            if (isInitiatorCompaniesNotEmpty) {
-                condition.append(" and (initiator_company in " + makeInArg(query.getCompanyIds(), false));
-
-                if (isNotEmpty(query.getInitiatorIds())) {
-                    condition.append(" and initiator in " + makeInArg(query.getInitiatorIds(), false));
-                }
+            if (isNotEmpty(query.getInitiatorIds())) {
+                condition.append(" and initiator in " + makeInArg(query.getInitiatorIds(), false));
             }
 
             if (isNotEmpty(query.getManagerCompanyIds())) {
-                String logicOperator = isInitiatorCompaniesNotEmpty && Boolean.TRUE.equals(query.getManagerOrInitiatorCondition()) ? " or " : " and ";
-
-                condition.append(logicOperator + "manager_company_id in " + makeInArg(query.getManagerCompanyIds(), false));
-
-                if (isNotEmpty(query.getManagerIds())) {
-                    List<Long> managerIds = new ArrayList<>(query.getManagerIds());
-                    boolean isWithoutManager = managerIds.remove(CrmConstants.Employee.UNDEFINED);
-
-                    if (!isWithoutManager) {
-                        condition
-                                .append(" and manager IN ")
-                                .append(makeInArg(managerIds, false));
-                    } else if (managerIds.isEmpty()) {
-                        condition.append(" and (manager IS NULL or (SELECT person.sex FROM person WHERE person.id = manager) = ?)");
-                        args.add(En_Gender.UNDEFINED.getCode());
-                    } else {
-                        condition
-                                .append(" and (manager IN ")
-                                .append(makeInArg(managerIds, false))
-                                .append(" or manager IS NULL or (SELECT person.sex FROM person WHERE person.id = manager) = ?)");
-                        args.add(En_Gender.UNDEFINED.getCode());
-                    }
-                }
+                condition.append(" and manager_company_id in " + makeInArg(query.getManagerCompanyIds(), false));
             }
 
-            condition.append(isInitiatorCompaniesNotEmpty ? ")" : "");
+            if (isNotEmpty(query.getManagerIds())) {
+                List<Long> managerIds = new ArrayList<>(query.getManagerIds());
+                boolean isWithoutManager = managerIds.remove(CrmConstants.Employee.UNDEFINED);
+
+                if (!isWithoutManager) {
+                    condition
+                            .append(" and manager IN ")
+                            .append(makeInArg(managerIds, false));
+                } else if (managerIds.isEmpty()) {
+                    condition.append(" and (manager IS NULL or (SELECT person.sex FROM person WHERE person.id = manager) = ?)");
+                    args.add(En_Gender.UNDEFINED.getCode());
+                } else {
+                    condition
+                            .append(" and (manager IN ")
+                            .append(makeInArg(managerIds, false))
+                            .append(" or manager IS NULL or (SELECT person.sex FROM person WHERE person.id = manager) = ?)");
+                    args.add(En_Gender.UNDEFINED.getCode());
+                }
+            }
 
             if (isNotEmpty(query.getProductIds())) {
                 if (query.getProductIds().remove(CrmConstants.Product.UNDEFINED)) {
@@ -141,7 +134,11 @@ public class CaseObjectSqlBuilder {
                     condition.append( " and importance in " ).append( importantces );
                 } else {
                     condition.append( " and (importance in " ).append( importantces )
-                            .append( " or case_comment.cimp_level in " ).append( importantces )
+                            .append(" or (history.new_id in " ).append( importantces )
+                                .append(" and history.value_type = ").append(En_HistoryType.CASE_IMPORTANCE.getId())
+                                .append(" and history.action_type in ")
+                                    .append(makeInArg(Arrays.asList(En_HistoryAction.ADD.getId(), En_HistoryAction.CHANGE.getId()), false))
+                                .append(")")
                             .append( ")" );
                 }
             }

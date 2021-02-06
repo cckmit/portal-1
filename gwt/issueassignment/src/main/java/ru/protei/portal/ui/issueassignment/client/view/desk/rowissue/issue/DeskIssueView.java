@@ -11,7 +11,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -51,11 +50,11 @@ public class DeskIssueView extends Composite implements AbstractDeskIssueView {
     }
 
     @Override
-    public void setImportance(En_ImportanceLevel importance) {
-        if (importance == null) {
+    public void setImportance(String importanceCode) {
+        if (importanceCode == null) {
             this.importance.setClassName("hide");
         } else {
-            this.importance.setClassName(ImportanceStyleProvider.getImportanceIcon(importance));
+            this.importance.setClassName(ImportanceStyleProvider.getImportanceIcon(importanceCode));
         }
     }
 

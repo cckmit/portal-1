@@ -8,7 +8,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.model.dict.En_DateIntervalType;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.CaseObjectReportRequest;
@@ -28,9 +27,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static org.junit.Assert.assertTrue;
-import static ru.protei.portal.core.model.dict.En_ImportanceLevel.*;
-import static ru.protei.portal.core.model.helper.CollectionUtils.find;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.util.CrmConstants.ImportanceLevel.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {CoreConfigurationContext.class,
@@ -53,7 +51,7 @@ public class ReportCaseTest extends BaseServiceTest {
     public void writeReport() throws Exception {
         initData();
 
-        CaseQuery caseQuery = makeCaseQuery(BASIC, IMPORTANT, CRITICAL);
+        CaseQuery caseQuery = makeCaseQuery(listOf(BASIC, IMPORTANT, CRITICAL));
         Report report = makeReport( caseQuery );
 
         assertTrue( "Expected not empty report", writeReport( report ) );
@@ -61,12 +59,12 @@ public class ReportCaseTest extends BaseServiceTest {
 
     @Test
     public void withoutImportanceHistory() throws Exception {
-        List<En_ImportanceLevel> importances = listOf( BASIC, IMPORTANT, CRITICAL );
+        List<Integer> importances = listOf(BASIC, IMPORTANT, CRITICAL);
 
         List<CaseObject> initCases = initData();
-        List<CaseObject> cases = filterToList( initCases, caseObject -> importances.contains( caseObject.getImportanceLevel() ));
+        List<CaseObject> cases = filterToList( initCases, caseObject -> importances.contains( caseObject.getImpLevel() ));
 
-        CaseQuery caseQuery = makeCaseQuery();
+        CaseQuery caseQuery = makeCaseQuery(Collections.emptyList());
         caseQuery.setCheckImportanceHistory(false);
 
         List<CaseObjectReportRequest> caseObjectComments = ((ReportCaseImpl) reportCase).processChunk( caseQuery, new Report() );
@@ -82,7 +80,7 @@ public class ReportCaseTest extends BaseServiceTest {
     public void withImportanceHistory() throws Exception {
         List<CaseObject> cases = initData();
 
-        CaseQuery caseQuery = makeCaseQuery(IMPORTANT, CRITICAL);
+        CaseQuery caseQuery = makeCaseQuery(listOf(IMPORTANT, CRITICAL));
         caseQuery.setCheckImportanceHistory(true);
 
         List<CaseObjectReportRequest> caseObjectComments = ((ReportCaseImpl) reportCase).processChunk( caseQuery, new Report() );
@@ -100,21 +98,21 @@ public class ReportCaseTest extends BaseServiceTest {
         authService.makeThreadAuthToken( makeUserLogin( person ) );
         CaseObject caseObject1 = makeCaseObject( person );
         cases.add( caseObject1 );
-        caseObject1.setImpLevel( BASIC.getId() );
+        caseObject1.setImpLevel( BASIC );
         caseService.updateCaseObjectMeta( getAuthToken(), new CaseObjectMeta(caseObject1) );
-        caseObject1.setImpLevel( IMPORTANT.getId() );
+        caseObject1.setImpLevel( IMPORTANT);
         caseService.updateCaseObjectMeta( getAuthToken(), new CaseObjectMeta(caseObject1) );
-        caseObject1.setImpLevel( COSMETIC.getId() );
+        caseObject1.setImpLevel( COSMETIC );
         caseService.updateCaseObjectMeta( getAuthToken(), new CaseObjectMeta(caseObject1) );
 
         CaseObject caseObject2 = makeCaseObject( person );
         cases.add( caseObject2 );
-        caseObject2.setImpLevel( IMPORTANT.getId() );
+        caseObject2.setImpLevel( IMPORTANT );
         caseService.updateCaseObjectMeta( getAuthToken(), new CaseObjectMeta(caseObject2) );
 
         CaseObject caseObject3 = makeCaseObject( person );
         cases.add( caseObject3 );
-        caseObject3.setImpLevel( CRITICAL.getId() );
+        caseObject3.setImpLevel( CRITICAL );
         caseService.updateCaseObjectMeta( getAuthToken(), new CaseObjectMeta(caseObject3) );
 
         return cases;
@@ -153,7 +151,7 @@ public class ReportCaseTest extends BaseServiceTest {
         }
     }
 
-    private CaseQuery makeCaseQuery( En_ImportanceLevel... importances ) {
+    private CaseQuery makeCaseQuery( List<Integer> importances ) {
         CaseQuery caseQuery = new CaseQuery();
 
         Date from = new Date();
@@ -175,7 +173,7 @@ public class ReportCaseTest extends BaseServiceTest {
         to = cal.getTime();
 
         caseQuery.setCreatedRange(new DateRange(En_DateIntervalType.FIXED, from, to ));
-        caseQuery.setImportanceIds( toList( importances, En_ImportanceLevel::getId ) );
+        caseQuery.setImportanceIds( importances );
 
         return caseQuery;
     }

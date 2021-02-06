@@ -41,6 +41,10 @@ public class CustomContactInfoFacade {
         return contactInfo.getItems(En_ContactItemType.GENERAL_PHONE);
     }
 
+    public ContactItem getFirstPublicEmail () {
+        return contactInfo.findFirst(En_ContactItemType.EMAIL, En_ContactDataAccess.PUBLIC);
+    }
+
     public String findItemValue (En_ContactItemType type, En_ContactDataAccess accessType) {
         ContactItem item = contactInfo.findFirst(type, accessType);
         return  item == null ? null : item.value();

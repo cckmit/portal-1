@@ -183,13 +183,15 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
     }
 
     protected void showValue( T value) {
-        this.text.setInnerHTML(selectedValueRenderer.render(value));
+        text.setInnerHTML(selectedValueRenderer.render(value));
+        text.setTitle(selector.makeElementName(value));
     }
 
     @Override
     protected SelectorItem<T> makeSelectorItem( T element, String elementHtml ) {
         PopupSelectorItem<T> item = new PopupSelectorItem<>();
         item.setName(elementHtml);
+        item.setTitle(selector.makeElementName(element));
         return item;
     }
 

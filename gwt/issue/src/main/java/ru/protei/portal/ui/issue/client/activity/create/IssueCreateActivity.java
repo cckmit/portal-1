@@ -2,6 +2,7 @@ package ru.protei.portal.ui.issue.client.activity.create;
 
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
@@ -12,6 +13,7 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.TransliterationUtils;
@@ -19,11 +21,13 @@ import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.view.*;
 import ru.protei.portal.ui.common.client.activity.casetag.taglist.AbstractCaseTagListActivity;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.common.DefaultSlaValues;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
+import ru.protei.portal.ui.common.client.widget.selector.company.CustomerCompanyModel;
+import ru.protei.portal.ui.common.client.widget.selector.company.SubcontractorCompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductWithChildrenModel;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
@@ -79,6 +83,19 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         productModel.setUnitTypes(En_DevUnitType.PRODUCT);
         productWithChildrenModel.setUnitTypes(En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
+
+        companyModel.showDeprecated(false);
+    }
+
+    @Event
+    public void onAuthSuccess(AuthEvents.Success event) {
+        Company userCompany = event.profile.getCompany();
+        customerCompanyModel.setSubcontractorId(userCompany.getId());
+        customerCompanyModel.setActive(true);
+        subcontractorCompanyModel.setCompanyId(userCompany.getId());
+        subcontractorCompanyModel.setActive(true);
+        issueMetaView.setCompanyModel(isSubcontractorCompany(userCompany) ? customerCompanyModel : companyModel);
+        issueMetaView.setManagerCompanyModel(event.profile.hasSystemScopeForPrivilege(En_Privilege.ISSUE_CREATE) ? subcontractorCompanyModel : companyModel);
     }
 
     @Event
@@ -152,7 +169,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         }
 
         lockSave();
-        issueService.createIssue(createRequest, new FluentCallback<UiResult<Long>>()
+        issueController.createIssue(createRequest, new FluentCallback<UiResult<Long>>()
                 .withError(throwable -> unlockSave())
                 .withSuccess(createIssueResult -> {
                     unlockSave();
@@ -183,7 +200,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Override
     public void removeAttachment(Attachment attachment) {
-        attachmentService.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, attachment.getId(), new FluentCallback<Long>()
+        attachmentController.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, attachment.getId(), new FluentCallback<Long>()
                 .withError((throwable, defaultErrorHandler, status) -> {
                     if (En_ResultStatus.NOT_FOUND.equals(status)) {
                         fireEvent(new NotifyEvents.Show(lang.fileNotFoundError(), NotifyEvents.NotifyType.ERROR));
@@ -213,7 +230,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         fillInitiatorValue(issueMetaView, companyOption);
 
-        companyService.getCompanyUnsafe(companyOption.getId(), new FluentCallback<Company>()
+        companyController.getCompanyOmitPrivileges(companyOption.getId(), new FluentCallback<Company>()
                 .withSuccess(company -> {
                     setCurrentCompany(company);
                     requestPlatforms(company.getId(), platformOptions -> {
@@ -227,7 +244,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
                                 requestSla(
                                         issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId(),
-                                        slaList -> fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue().getId()))
+                                        slaList -> fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue()))
                                 );
 
                                 updateSubscriptions(issueMetaView.getManagerCompany().getId(), companyOption.getId());
@@ -239,6 +256,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.setPlatformFilter(platformOption -> companyOption.getId().equals(platformOption.getCompanyId()));
 
         updateCompanyCaseStates(companyOption.getId());
+
+        subcontractorCompanyModel.setCompanyId(companyOption.getId());
     }
 
     @Override
@@ -271,7 +290,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Override
     public void onImportanceChanged() {
-        fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue().getId()));
+        fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue()));
     }
 
     @Override
@@ -287,8 +306,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     public void onStateChange() {
         issueMetaView.pauseDate().setValue(null);
         issueMetaView.pauseDateContainerVisibility().setVisible(CrmConstants.State.PAUSED == issueMetaView.state().getValue().getId());
-        setManagerCompanyEnabled(issueMetaView, issueMetaView.state().getValue().getId());
-
         boolean stateValid = isPauseDateValid(issueMetaView.state().getValue().getId(), issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime());
         issueMetaView.setPauseDateValid(stateValid);
 
@@ -305,7 +322,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     public void onPlatformChanged() {
         requestSla(
                 issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId(),
-                slaList -> fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue().getId()))
+                slaList -> fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue()))
         );
 
         if (isCompanyWithAutoOpenIssues(currentCompany)) {
@@ -352,7 +369,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     private void updateSubscriptions(Long... companyIds) {
-        companyService.getCompanyWithParentCompanySubscriptions(
+        companyController.getCompanyWithParentCompanySubscriptions(
                 new HashSet<>(Arrays.asList(companyIds)),
                 new ShortRequestCallback<List<CompanySubscription>>()
                         .setOnSuccess(subscriptions -> {
@@ -406,6 +423,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     private void fillMetaView(CaseObjectMeta caseObjectMeta, Set<Person> notifiers, En_TimeElapsedType timeElapsedType, Set<PlanOption> planOptions) {
         issueMetaView.companyEnabled().setEnabled(true);
+        issueMetaView.initiatorEnabled().setEnabled(!policyService.isSubcontractorCompany());
         issueMetaView.productEnabled().setEnabled(isProductEnabled(caseObjectMeta.getInitiatorCompany()));
         issueMetaView.caseSubscriptionContainer().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW));
         issueMetaView.stateEnabled().setEnabled(true);
@@ -417,7 +435,13 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         issueMetaView.setCaseMetaNotifiers(notifiers);
 
-        issueMetaView.importance().setValue(caseObjectMeta.getImportance());
+        importanceService.getImportanceLevel(CrmConstants.ImportanceLevel.BASIC, new FluentCallback<ImportanceLevel>()
+                .withSuccess(value -> {
+                    issueMetaView.importance().setValue(value);
+                    requestSla(caseObjectMeta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, value)));
+                })
+        );
+
         fillImportanceSelector(caseObjectMeta.getInitiatorCompanyId());
         fillStateSelector(caseObjectMeta.getStateId());
         issueMetaView.pauseDate().setValue(caseObjectMeta.getPauseDate() == null ? null : new Date(caseObjectMeta.getPauseDate()));
@@ -426,6 +450,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.setCompany(caseObjectMeta.getInitiatorCompany());
 
         setCurrentCompany(caseObjectMeta.getInitiatorCompany());
+        subcontractorCompanyModel.setCompanyId(caseObjectMeta.getInitiatorCompanyId());
 
         issueMetaView.setInitiator(caseObjectMeta.getInitiator());
 
@@ -439,7 +464,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         fillManagerInfoContainer(issueMetaView, caseObjectMeta);
 
         issueMetaView.slaContainerVisibility().setVisible(isSystemScope());
-        requestSla(caseObjectMeta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, caseObjectMeta.getImpLevel())));
 
         issueMetaView.setPlanCreatorId(policyService.getProfile().getId());
 
@@ -461,7 +485,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         fillInitiatorValue(issueMetaView, initiatorCompany);
 
-        companyService.getCompanyUnsafe(initiatorCompany.getId(), new FluentCallback<Company>()
+        companyController.getCompanyOmitPrivileges(initiatorCompany.getId(), new FluentCallback<Company>()
                 .withSuccess(company -> {
                     setCurrentCompany(company);
                     requestPlatforms(company.getId(), platforms -> {
@@ -471,7 +495,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
                                 requestSla(
                                         issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId(),
-                                        slaList -> fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue().getId()))
+                                        slaList -> fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue()))
                                 );
 
                                 updateSubscriptions(caseObjectMeta.getManagerCompanyId(), caseObjectMeta.getInitiatorCompanyId());
@@ -531,7 +555,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     private void updateCompanyCaseStates(Long companyId) {
-        companyService.getCompanyCaseStates(companyId, new ShortRequestCallback<List<CaseState>>()
+        companyController.getCompanyCaseStates(companyId, new ShortRequestCallback<List<CaseState>>()
                 .setOnSuccess(caseStates -> {
                     issueMetaView.setStateFilter(caseStateFilter.makeFilter(caseStates));
                     fireEvent(new CaseStateEvents.UpdateSelectorOptions());
@@ -592,17 +616,22 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
 
     private void fillManagerInfoContainer(final AbstractIssueMetaView issueMetaView, CaseObjectMeta caseObjectMeta) {
-        issueMetaView.managerEnabled().setEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_MANAGER_EDIT));
-        setManagerCompanyEnabled(issueMetaView, caseObjectMeta.getStateId());
+        issueMetaView.managerCompanyEnabled().setEnabled(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_CREATE));
+        issueMetaView.managerEnabled().setEnabled(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_CREATE) || policyService.isSubcontractorCompany());
 
         if (caseObjectMeta.getManagerCompanyId() != null) {
             issueMetaView.setManagerCompany(new EntityOption(caseObjectMeta.getManagerCompanyName(), caseObjectMeta.getManagerCompanyId()));
             issueMetaView.updateManagersCompanyFilter(caseObjectMeta.getManagerCompanyId());
         } else {
-            homeCompanyService.getHomeCompany(CrmConstants.Company.HOME_COMPANY_ID, company -> {
-                issueMetaView.setManagerCompany(company);
-                issueMetaView.updateManagersCompanyFilter(company.getId());
-            });
+            if (policyService.isSubcontractorCompany()) {
+                issueMetaView.setManagerCompany(policyService.getUserCompany().toEntityOption());
+                issueMetaView.updateManagersCompanyFilter(policyService.getUserCompany().getId());
+            } else {
+                homeCompanyService.getHomeCompany(CrmConstants.Company.HOME_COMPANY_ID, company -> {
+                    issueMetaView.setManagerCompany(company);
+                    issueMetaView.updateManagersCompanyFilter(company.getId());
+                });
+            }
         }
 
         issueMetaView.setManager(caseObjectMeta.getManager());
@@ -615,16 +644,21 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         }
 
         if (platformId == null) {
-            slaList = DefaultSlaValues.getList();
+            slaList.clear();
             issueMetaView.setValuesContainerWarning(true);
             issueMetaView.setSlaTimesContainerTitle(lang.projectSlaDefaultValues());
             slaConsumer.accept(slaList);
             return;
         }
 
-        slaService.getSlaByPlatformId(platformId, new FluentCallback<List<ProjectSla>>()
+        slaController.getSlaByPlatformId(platformId, new FluentCallback<List<ProjectSla>>()
                 .withSuccess(result -> {
-                    slaList = result.isEmpty() ? DefaultSlaValues.getList() : result;
+                    if (result.isEmpty()) {
+                        slaList.clear();
+                    } else {
+                        slaList = result;
+                    }
+
                     issueMetaView.setValuesContainerWarning(result.isEmpty());
                     issueMetaView.setSlaTimesContainerTitle(result.isEmpty() ? lang.projectSlaDefaultValues() : lang.projectSlaSetValuesByManager());
                     slaConsumer.accept(slaList);
@@ -632,10 +666,14 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         );
     }
 
-    private ProjectSla getSlaByImportanceLevel(List<ProjectSla> slaList, final int importanceLevelId) {
+    private ProjectSla getSlaByImportanceLevel(List<ProjectSla> slaList, final ImportanceLevel importanceLevel) {
+        if (CollectionUtils.isEmpty(slaList)) {
+            return makeDefaultProjectSla(importanceLevel);
+        }
+
         return slaList
                 .stream()
-                .filter(sla -> Objects.equals(importanceLevelId, sla.getImportanceLevelId()))
+                .filter(sla -> Objects.equals(importanceLevel.getId(), sla.getImportanceLevelId()))
                 .findAny()
                 .orElse(new ProjectSla());
     }
@@ -649,9 +687,13 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     private CaseObject initCaseObject() {
         CaseObject caseObject = new CaseObject();
         caseObject.setStateId(CrmConstants.State.CREATED);
-        caseObject.setImpLevel(En_ImportanceLevel.BASIC.getId());
+        caseObject.setImpLevel(CrmConstants.ImportanceLevel.BASIC);
         caseObject.setPrivateCase(true);
-        caseObject.setInitiatorCompany(policyService.getUserCompany());
+        if (policyService.isSubcontractorCompany()) {
+            homeCompanyService.getHomeCompany(CrmConstants.Company.HOME_COMPANY_ID, company -> caseObject.setInitiatorCompany(Company.fromEntityOption(company)));
+        } else {
+            caseObject.setInitiatorCompany(policyService.getUserCompany());
+        }
         caseObject.setWorkTrigger(En_WorkTrigger.NONE);
 
         return caseObject;
@@ -659,15 +701,15 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     private void fillImportanceSelector(Long id) {
         issueMetaView.fillImportanceOptions(new ArrayList<>());
-        companyService.getImportanceLevels(id, new FluentCallback<List<En_ImportanceLevel>>()
+        importanceService.getImportanceLevels(id, new FluentCallback<List<ImportanceLevel>>()
                 .withSuccess(importanceLevelList -> {
                     issueMetaView.fillImportanceOptions(importanceLevelList);
                     checkImportanceSelectedValue(importanceLevelList);
                 }));
     }
 
-    private void checkImportanceSelectedValue(List<En_ImportanceLevel> importanceLevels) {
-        if (!importanceLevels.contains(issueMetaView.importance().getValue())){
+    private void checkImportanceSelectedValue(List<ImportanceLevel> importanceLevels) {
+        if (!importanceLevels.contains(issueMetaView.importance().getValue())) {
             issueMetaView.importance().setValue(null);
         }
     }
@@ -684,7 +726,9 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         caseObject.setName(view.name().getValue());
         caseObject.setInfo(view.description().getValue());
         caseObject.setPrivateCase(view.isPrivate().getValue());
-        caseObject.setStateId(issueMetaView.state().getValue().getId());
+        CaseState caseState = issueMetaView.state().getValue();
+        caseObject.setStateId(caseState.getId());
+        caseObject.setStateName(caseState.getState());
         caseObject.setImpLevel(issueMetaView.importance().getValue().getId());
         caseObject.setPauseDate(issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime());
 
@@ -873,10 +917,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     private void setCustomerVisibility(AbstractIssueMetaView issueMetaView, boolean isVisible) {
         issueMetaView.deadlineContainerVisibility().setVisible(isVisible);
         issueMetaView.workTriggerVisibility().setVisible(isVisible);
-    }
-
-    private void setManagerCompanyEnabled(AbstractIssueMetaView issueMetaView, Long stateId) {
-        issueMetaView.managerCompanyEnabled().setEnabled(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT) && stateId == CrmConstants.State.REQUEST_TO_PARTNER);
+        issueMetaView.setProductBorderBottomVisible(!isVisible);
     }
 
     private void updateProductsFilter(final AbstractIssueMetaView issueMetaView, Long companyId, Long platformId) {
@@ -902,6 +943,10 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         }
 
         if (isCompanyWithAutoOpenIssues(company)) {
+            return true;
+        }
+
+        if (policyService.isSubcontractorCompany()) {
             return true;
         }
 
@@ -934,10 +979,17 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         metaView.setManagerMandatory(isStateWithRestrictions);
     }
 
+    private boolean isSubcontractorCompany(Company userCompany) {
+        return userCompany.getCategory() == En_CompanyCategory.SUBCONTRACTOR;
+    }
+
+    private ProjectSla makeDefaultProjectSla(ImportanceLevel importanceLevel) {
+        return new ProjectSla(importanceLevel.getId(), importanceLevel.getReactionTime(),
+                importanceLevel.getTemporarySolutionTime(), importanceLevel.getFullSolutionTime());
+    }
+
     @Inject
     Lang lang;
-    @Inject
-    TextRenderControllerAsync textRenderController;
     @Inject
     LocalStorageService localStorageService;
     @Inject
@@ -947,27 +999,41 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     AbstractIssueCreateView view;
     @Inject
     AbstractIssueMetaView issueMetaView;
-    @Inject
-    SLAControllerAsync slaService;
 
     @Inject
     PolicyService policyService;
     @Inject
     HomeCompanyService homeCompanyService;
+
     @Inject
-    AttachmentControllerAsync attachmentService;
+    TextRenderControllerAsync textRenderController;
     @Inject
-    CompanyControllerAsync companyService;
+    SLAControllerAsync slaController;
     @Inject
-    IssueControllerAsync issueService;
+    AttachmentControllerAsync attachmentController;
+    @Inject
+    CompanyControllerAsync companyController;
+    @Inject
+    IssueControllerAsync issueController;
     @Inject
     SiteFolderControllerAsync siteFolderController;
     @Inject
     CaseStateControllerAsync caseStateController;
+
     @Inject
     ProductModel productModel;
     @Inject
     ProductWithChildrenModel productWithChildrenModel;
+
+    @Inject
+    CompanyModel companyModel;
+    @Inject
+    SubcontractorCompanyModel subcontractorCompanyModel;
+    @Inject
+    CustomerCompanyModel customerCompanyModel;
+
+    @Inject
+    ImportanceLevelControllerAsync importanceService;
 
     @ContextAware
     CaseObjectCreateRequest createRequest;

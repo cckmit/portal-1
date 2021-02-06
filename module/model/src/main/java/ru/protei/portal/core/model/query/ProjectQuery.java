@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.query;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -13,6 +14,7 @@ import java.util.*;
  * Запрос по проектам
  */
 public class ProjectQuery extends BaseQuery {
+
     private En_CaseType type = En_CaseType.PROJECT;
 
     private List<Long> caseIds;
@@ -43,11 +45,17 @@ public class ProjectQuery extends BaseQuery {
 
     private Set<Long> initiatorCompanyIds;
 
+    private DateRange commentCreationRange;
+
     private Long pauseDateGreaterThan;
 
     private Integer deleted;
 
+    private Set<Long> subcontractorIds;
+
     private List<Interval> technicalSupportExpiresInDays;
+
+    private boolean isActive;
 
     public ProjectQuery() {
         sortField = En_SortField.case_name;
@@ -191,6 +199,14 @@ public class ProjectQuery extends BaseQuery {
         this.initiatorCompanyIds = initiatorCompanyIds;
     }
 
+    public DateRange getCommentCreationRange() {
+        return commentCreationRange;
+    }
+
+    public void setCommentCreationRange(DateRange commentCreationRange) {
+        this.commentCreationRange = commentCreationRange;
+    }
+
     public void setType(En_CaseType type) {
         this.type = type;
     }
@@ -219,6 +235,22 @@ public class ProjectQuery extends BaseQuery {
         this.technicalSupportExpiresInDays = technicalSupportExpiresInDays;
     }
 
+    public Set<Long> getSubcontractorIds() {
+        return subcontractorIds;
+    }
+
+    public void setSubcontractorIds(Set<Long> subcontractorIds) {
+        this.subcontractorIds = subcontractorIds;
+    }
+
+    public boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
     @Override
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
@@ -230,13 +262,16 @@ public class ProjectQuery extends BaseQuery {
                 CollectionUtils.isNotEmpty(directions) ||
                 CollectionUtils.isNotEmpty(productIds) ||
                 CollectionUtils.isNotEmpty(initiatorCompanyIds) ||
+                CollectionUtils.isNotEmpty(subcontractorIds) ||
+                commentCreationRange != null ||
                 customerType != null ||
                 createdFrom != null ||
                 createdTo != null ||
                 platformIndependentProject != null ||
                 pauseDateGreaterThan != null ||
                 deleted != null ||
-                CollectionUtils.isNotEmpty(technicalSupportExpiresInDays);
+                CollectionUtils.isNotEmpty(technicalSupportExpiresInDays) ||
+                isActive;
     }
 
     @Override
@@ -257,9 +292,12 @@ public class ProjectQuery extends BaseQuery {
                 ", createdTo=" + createdTo +
                 ", platformIndependentProject=" + platformIndependentProject +
                 ", initiatorCompanyIds=" + initiatorCompanyIds +
+                ", commentCreationRange=" + commentCreationRange +
                 ", pauseDateGreaterThan=" + pauseDateGreaterThan +
                 ", deleted=" + deleted +
+                ", subcontractorIds=" + subcontractorIds +
                 ", technicalSupportExpiresInDays=" + technicalSupportExpiresInDays +
+                ", isActive=" + isActive +
                 '}';
     }
 
@@ -282,16 +320,19 @@ public class ProjectQuery extends BaseQuery {
                 Objects.equals(createdTo, that.createdTo) &&
                 Objects.equals(platformIndependentProject, that.platformIndependentProject) &&
                 Objects.equals(initiatorCompanyIds, that.initiatorCompanyIds) &&
+                Objects.equals(commentCreationRange, that.commentCreationRange) &&
                 Objects.equals(pauseDateGreaterThan, that.pauseDateGreaterThan) &&
                 Objects.equals(deleted, that.deleted) &&
-                Objects.equals(technicalSupportExpiresInDays, that.technicalSupportExpiresInDays);
+                Objects.equals(subcontractorIds, that.subcontractorIds) &&
+                Objects.equals(technicalSupportExpiresInDays, that.technicalSupportExpiresInDays) &&
+                Objects.equals(isActive, that.isActive);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(caseIds, states, regions, headManagers, caseMembers, directions,
                 districtIds, memberId, productIds, customerType, createdFrom, createdTo,
-                platformIndependentProject, initiatorCompanyIds, pauseDateGreaterThan, deleted,
-                technicalSupportExpiresInDays);
+                platformIndependentProject, initiatorCompanyIds, commentCreationRange, pauseDateGreaterThan, deleted,
+                subcontractorIds, technicalSupportExpiresInDays, isActive);
     }
 }

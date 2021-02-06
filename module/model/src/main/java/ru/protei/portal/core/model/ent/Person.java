@@ -227,6 +227,9 @@ public class Person extends AuditableObject {
 
 
     public List<ContactItem> getContactItems() {
+        if (contactItems == null) {
+            contactItems = new ArrayList<>();
+        }
         return contactItems;
     }
 

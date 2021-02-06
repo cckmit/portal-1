@@ -810,16 +810,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueCopiedToClipboard();
 
-    String criticalImportance();
-
-    String importantImportance();
-
-    String basicImportance();
-
-    String cosmeticImportance();
-
-    String mediumImportance();
-
     String dataPageNumber( String p0 );
 
     String dashboard();
@@ -914,6 +904,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String projectDirection();
 
+    String projectDirections();
+
     String projectInfo();
 
     String projectManagers();
@@ -935,6 +927,8 @@ public interface Lang extends Messages, ContactItemLang {
     String projectCustomerCompany();
 
     String projectDescription();
+
+    String projectProduct();
 
     String projectProducts();
 
@@ -981,6 +975,8 @@ public interface Lang extends Messages, ContactItemLang {
     String projectSlaNotValid();
 
     String projectTeamRole();
+
+    String projectCommentCreationDate();
 
     String inputProjectName();
 
@@ -1802,7 +1798,11 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeWorkPhone();
 
+    String employeeWorkPhonePlaceHolder();
+
     String employeeMobilePhone();
+
+    String employeeMobilePhonePlaceHolder();
 
     String employeeEmail();
 
@@ -2209,6 +2209,8 @@ public interface Lang extends Messages, ContactItemLang {
     String reportMissingProduct();
 
     String reportMissingPeriod();
+
+    String reportNotValidPeriod();
 
     String reportPeriodNotSelected();
 
@@ -3201,6 +3203,28 @@ public interface Lang extends Messages, ContactItemLang {
     String overdueDeadlines();
 
     String fileNotFoundError();
+
+    String projectSubcontractors();
+
+    String subtaskCreate();
+
+    String errNotAllowedCompanyWithAutoOpenIssue();
+
+    String errSaveSubtaskFieldsInvalid();
+
+    String errNotFoundParent();
+
+    String errNotAllowedParentState();
+
+    String parentFor();
+
+    String subtask();
+
+    String errInvalidCaseUpdateSubtaskNotClosed();
+
+    String errNotAllowedIntegrationIssue();
+
+    String help();
 
     String contractTypeAdditionalAgreement();
 

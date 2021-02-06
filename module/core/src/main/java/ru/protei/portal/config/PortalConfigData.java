@@ -43,6 +43,7 @@ public class PortalConfigData {
     private final UiConfig uiConfig;
     private final MailCommentConfig mailCommentConfig;
     private final NRPEConfig nrpeConfig;
+    private final AutoOpenConfig autoOpenConfig;
 
     private final String loginSuffixConfig;
     private final boolean taskSchedulerEnabled;
@@ -70,6 +71,7 @@ public class PortalConfigData {
         uiConfig = new UiConfig(wrapper);
         mailCommentConfig = new MailCommentConfig(wrapper);
         nrpeConfig = new NRPEConfig(wrapper);
+        autoOpenConfig = new AutoOpenConfig(wrapper);
 
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
         taskSchedulerEnabled = wrapper.getProperty("task.scheduler.enabled", Boolean.class,false);
@@ -160,6 +162,10 @@ public class PortalConfigData {
         return nrpeConfig;
     }
 
+    public AutoOpenConfig getAutoOpenConfig() {
+        return autoOpenConfig;
+    }
+
     public boolean isTaskSchedulerEnabled() {
         return taskSchedulerEnabled;
     }
@@ -174,6 +180,7 @@ public class PortalConfigData {
             crmUrlFiles = properties.getProperty( "crm.url.files", "http://newportal/crm/" );
             isProductionServer = properties.getProperty( "is.production.server", Boolean.class, false );
             systemId = properties.getProperty( "system.id", "" );
+            systemUserId = properties.getProperty("system.user.id", Long.class, null);
         }
         public String getCrmUrlInternal() {
             return crmUrlInternal;
@@ -199,12 +206,17 @@ public class PortalConfigData {
             return systemId;
         }
 
+        public Long getSystemUserId() {
+            return systemUserId;
+        }
+
         private final String crmUrlInternal;
         private final String crmUrlExternal;
         private final String crmUrlCurrent;
         private final String crmUrlFiles;
         private final Boolean isProductionServer;
         private final String systemId;
+        private final Long systemUserId;
     }
 
     public static class MailNotificationConfig extends CommonConfig {
@@ -570,6 +582,7 @@ public class PortalConfigData {
         private final long liveTime;
         private final long hangInterval;
         private final String storagePath;
+        private final int projectLimitCommentsNumber;
 
         public ReportConfig(PropertiesWrapper properties) throws ConfigException {
             try {
@@ -578,6 +591,7 @@ public class PortalConfigData {
                 this.liveTime = DurationUtils.getDuration(properties.getProperty("report.live_time_duration", "3d"), TimeUnit.MILLISECONDS);
                 this.hangInterval = TimeUnit.SECONDS.toMillis(properties.getProperty("report.hang_interval_sec", Integer.class, 30 * 60));
                 this.storagePath = properties.getProperty("report.storage.path", "reports");
+                this.projectLimitCommentsNumber = properties.getProperty("report.project.limit_comments_number", Integer.class, 30);
             } catch (IncorrectDurationException e) {
                 throw new ConfigException(e);
             }
@@ -601,6 +615,10 @@ public class PortalConfigData {
 
         public String getStoragePath() {
             return storagePath;
+        }
+
+        public int getProjectLimitCommentsNumber() {
+            return projectLimitCommentsNumber;
         }
     }
 
@@ -750,10 +768,17 @@ public class PortalConfigData {
 
         private final String jiraUrl;
         private final int queueLimit;
+        private final List<String> jiraProjects;
 
         public JiraConfig(PropertiesWrapper properties) throws ConfigException {
             jiraUrl = properties.getProperty("jira.url",  "");
             queueLimit = properties.getProperty("integration.jira.queue.limit", Integer.class, 0);
+            String temp = properties.getProperty("jira.projects", "");
+            if (isNotEmpty(temp)) {
+                jiraProjects = Arrays.stream(temp.split(",")).collect(Collectors.toList());
+            } else {
+                jiraProjects = new ArrayList<>();
+            }
         }
 
         public String getJiraUrl() {
@@ -762,6 +787,10 @@ public class PortalConfigData {
 
         public int getQueueLimit() {
             return queueLimit;
+        }
+
+        public List<String> getJiraProjects() {
+            return jiraProjects;
         }
     }
 
@@ -902,6 +931,24 @@ public class PortalConfigData {
 
         public List<String> getAdminMails() {
             return adminMails;
+        }
+    }
+
+    public static class AutoOpenConfig {
+        final Boolean enable;
+        final Boolean enableDelay;
+
+        public AutoOpenConfig(PropertiesWrapper properties) {
+            this.enable = properties.getProperty("autoopen.enable", Boolean.class, false);
+            this.enableDelay = properties.getProperty("autoopen.delay.enable", Boolean.class, true);
+        }
+
+        public Boolean getEnable() {
+            return enable;
+        }
+
+        public Boolean getEnableDelay() {
+            return enableDelay;
         }
     }
 

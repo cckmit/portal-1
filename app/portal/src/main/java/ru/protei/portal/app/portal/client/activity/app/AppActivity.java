@@ -10,9 +10,10 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.app.portal.client.service.AppServiceAsync;
+import ru.protei.portal.ui.common.client.service.AppServiceAsync;
 import ru.protei.portal.app.portal.client.widget.locale.LocaleImage;
 import ru.protei.portal.core.model.util.TransliterationUtils;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.PageService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
@@ -70,11 +71,12 @@ public abstract class AppActivity
         } );
 
         startPingServerTimer();
+        view.showHelp(policyService.personBelongsToHomeCompany());
     }
 
     @Event
     public void onInitExternalLinks(AppEvents.InitExternalLinks event) {
-        view.setExternalLinks(configStorage.getConfigData().externalLinksHtml);
+        view.setExternalLinks(event.ExternalLinksHtml);
     }
 
     @Event
@@ -164,6 +166,8 @@ public abstract class AppActivity
     Lang lang;
     @Inject
     ConfigStorage configStorage;
+    @Inject
+    PolicyService policyService;
 
     String initialToken;
     private AppEvents.Init init;

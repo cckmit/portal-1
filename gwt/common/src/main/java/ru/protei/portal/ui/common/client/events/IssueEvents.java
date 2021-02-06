@@ -194,5 +194,28 @@ public class IssueEvents {
         public boolean isFavorite;
         public Long issueId;
     }
+
+    public static class IssueStateUpdated {
+        public IssueStateUpdated(Long issueId) {
+            this.issueId = issueId;
+        }
+        public Long issueId;
+    }
+
+    public static class IssueNotifiersUpdated {
+        public IssueNotifiersUpdated(Long issueId) {
+            this.issueId = issueId;
+        }
+        public Long issueId;
+    }
+
+    public static class CreateSubtask {
+
+        public CreateSubtask(Long caseNumber) {
+            this.caseNumber = caseNumber;
+        }
+
+        public Long caseNumber;
+    }
 }
 

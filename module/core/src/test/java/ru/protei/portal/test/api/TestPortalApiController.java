@@ -20,17 +20,17 @@ import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoObjectMapperProvider;
 import ru.protei.portal.core.controller.api.PortalApiController;
-import ru.protei.portal.core.model.dict.En_CaseLink;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_CompanyCategory;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.CaseTagInfo;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.*;
+import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.youtrack.YtFieldDescriptor;
 import ru.protei.portal.core.model.youtrack.dto.issue.YtIssueComment;
 import ru.protei.portal.core.model.youtrack.dto.user.YtUser;
@@ -55,8 +55,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -371,6 +370,32 @@ public class TestPortalApiController extends BaseServiceTest {
     }
 
     @Test
+    @Transactional
+    public void updateProductState() throws Exception {
+        DevUnit product = createProduct("TestPortalApiController#updateProductState");
+        Long productId = devUnitDAO.persist(product);
+
+        Assert.assertEquals(updateProductState(productId, 1), 1);
+        Assert.assertEquals(updateProductState(productId, 2), 2);
+
+        updateProductWithIncorrectParam("/incorrect_id/1");
+        updateProductWithIncorrectParam(productId + "/incorrect_state");
+    }
+
+    private int updateProductState(Long productId, int state) throws Exception {
+        createPostResultAction("/api/products/updateState/" + productId + "/" + state, null)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())));
+
+        return devUnitDAO.get(productId).getState().getId();
+    }
+
+    private void updateProductWithIncorrectParam(String params) throws Exception {
+        createPostResultAction("/api/products/updateState/" + params, null)
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     public void getCaseListByCompanyIdEmptyResult() throws Exception {
         CaseApiQuery caseApiQuery = new CaseApiQuery();
         caseApiQuery.setCompanyIds(Collections.singletonList(companyDAO.getMaxId() + 1));
@@ -511,7 +536,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         Assert.assertTrue("Case numbers list must be empty", caseNumbersFromDB.isEmpty());
 
-        removeAllCaseObjectsAndLinksAndComments();
+        removeAllCaseObjectsAndLinksAndCommentsAndHistory();
     }
 
     @Test
@@ -565,7 +590,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         Assert.assertTrue("Invalid list of case numbers", compareLists(caseNumbersFromDB, caseNumbersCreated));
 
-        removeAllCaseObjectsAndLinksAndComments();
+        removeAllCaseObjectsAndLinksAndCommentsAndHistory();
     }
 
     @Test
@@ -592,7 +617,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         Assert.assertTrue("Case link must be removed!", caseNumbersFromDB.isEmpty());
 
-        removeAllCaseObjectsAndLinksAndComments();
+        removeAllCaseObjectsAndLinksAndCommentsAndHistory();
     }
 
     @Test
@@ -618,7 +643,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         Assert.assertTrue("List must contain only unique numbers", compareLists(caseNumbersCreated, caseNumbersFromDB));
 
-        removeAllCaseObjectsAndLinksAndComments();
+        removeAllCaseObjectsAndLinksAndCommentsAndHistory();
     }
 
 
@@ -648,7 +673,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         Assert.assertTrue("Case numbers list must be empty", caseNumbersFromDB.isEmpty());
 
-        removeAllCaseObjectsAndLinksAndComments();
+        removeAllCaseObjectsAndLinksAndCommentsAndHistory();
     }
 
     @Test
@@ -702,7 +727,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         Assert.assertTrue("Invalid list of project numbers", compareLists(projectNumbersFromDB, projectNumbersCreated));
 
-        removeAllCaseObjectsAndLinksAndComments();
+        removeAllCaseObjectsAndLinksAndCommentsAndHistory();
     }
 
     @Test
@@ -729,7 +754,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         Assert.assertTrue("Case link must be removed!", projectNumbersFromDB.isEmpty());
 
-        removeAllCaseObjectsAndLinksAndComments();
+        removeAllCaseObjectsAndLinksAndCommentsAndHistory();
     }
 
     @Test
@@ -754,7 +779,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         Assert.assertTrue("List must contain only unique numbers", compareLists(projectNumbersCreated, projectNumbersFromDB));
 
-        removeAllCaseObjectsAndLinksAndComments();
+        removeAllCaseObjectsAndLinksAndCommentsAndHistory();
     }
 
 
@@ -820,7 +845,7 @@ public class TestPortalApiController extends BaseServiceTest {
         Assert.assertTrue("DB List must contain crm numbers. crmNumbersCreatedAfterRemove = " + crmNumbersCreatedAfterRemove + " and crmAndProjectNumbersFromDB = " + crmAndProjectNumbersFromDB, crmAndProjectNumbersFromDB.containsAll(crmNumbersCreatedAfterRemove));
         Assert.assertEquals("DB List must contain 4 numbers. crmAndProjectNumbersFromDB = " + crmAndProjectNumbersFromDB, 4, crmAndProjectIdsFromDB.size());
 
-        removeAllCaseObjectsAndLinksAndComments();
+        removeAllCaseObjectsAndLinksAndCommentsAndHistory();
     }
 
     @Test
@@ -852,7 +877,7 @@ public class TestPortalApiController extends BaseServiceTest {
         caseNumbersFromDB = findAllCaseNumbersByYoutrackId(NEW_YOUTRACK_ID);
         Assert.assertEquals("Wrong quantity of numbers with new link", CASE_COUNT, caseNumbersFromDB.size());
 
-        removeAllCaseObjectsAndLinksAndComments();
+        removeAllCaseObjectsAndLinksAndCommentsAndHistory();
     }
 
     @Test
@@ -877,7 +902,7 @@ public class TestPortalApiController extends BaseServiceTest {
         caseNumbersFromDB = findAllCaseNumbersByYoutrackId(NEW_YOUTRACK_ID);
         Assert.assertEquals("Wrong quantity of numbers with old link", 0, caseNumbersFromDB.size());
 
-        removeAllCaseObjectsAndLinksAndComments();
+        removeAllCaseObjectsAndLinksAndCommentsAndHistory();
     }
 
     @Test
@@ -905,7 +930,7 @@ public class TestPortalApiController extends BaseServiceTest {
             Assert.assertTrue("Project must contain new comment", isListContainCommentByRemoteId(caseCommentList.getData(), ytIssueComment.id));
         }
 
-        removeAllCaseObjectsAndLinksAndComments();
+        removeAllCaseObjectsAndLinksAndCommentsAndHistory();
     }
 
     @Test
@@ -939,7 +964,7 @@ public class TestPortalApiController extends BaseServiceTest {
             Assert.assertTrue("Project must contain new comment", updatedTextWithoutTag.equals(findCaseCommentByRemoteId(caseCommentList.getData(), ytIssueComment.id).getText()));
         }
 
-        removeAllCaseObjectsAndLinksAndComments();
+        removeAllCaseObjectsAndLinksAndCommentsAndHistory();
     }
 
     @Test
@@ -970,7 +995,7 @@ public class TestPortalApiController extends BaseServiceTest {
             Assert.assertFalse("Project must not contain comment", isListContainCommentByRemoteId(caseCommentList.getData(), ytIssueComment.id));
         }
 
-        removeAllCaseObjectsAndLinksAndComments();
+        removeAllCaseObjectsAndLinksAndCommentsAndHistory();
     }
 
     @Test
@@ -1165,6 +1190,141 @@ public class TestPortalApiController extends BaseServiceTest {
         personDAO.removeByKey(person.getId());
     }
 
+    @Test
+    @Transactional
+    public void createCompany() throws Exception {
+        Company company = new Company();
+        company.setCname("Gazprom");
+        company.setCategoryId(1);
+
+        company.setGroupId(null);
+
+        company.setParentCompanyId(1L);
+        company.setParentCompanyName("НТЦ Протей");
+
+        List<ContactItem> contactInfo = new ArrayList<>();
+        contactInfo.add(new ContactItem("data", En_ContactItemType.EMAIL));
+        contactInfo.add(new ContactItem("data", En_ContactItemType.ADDRESS));
+        contactInfo.add(new ContactItem("data", En_ContactItemType.ADDRESS_LEGAL));
+        contactInfo.add(new ContactItem("data", En_ContactItemType.FAX));
+        contactInfo.add(new ContactItem("data", En_ContactItemType.MOBILE_PHONE));
+        contactInfo.add(new ContactItem("data", En_ContactItemType.GENERAL_PHONE));
+        contactInfo.add(new ContactItem("data", En_ContactItemType.WEB_SITE));
+        company.setContactInfo(new ContactInfo(contactInfo));
+
+        company.setInfo("Company information");
+        company.setHidden(true);
+
+        company.setArchived(false);
+        company.setAutoOpenIssue(true);
+
+        createPostResultAction("/api/companies/create", company)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data.cname", is(company.getCname())))
+                .andExpect(jsonPath("$.data.categoryId", is(company.getCategoryId())))
+                .andExpect(jsonPath("$.data.groupId", is(company.getGroupId())))
+
+                .andExpect(jsonPath("$.data.parentCompanyId", is(company.getParentCompanyId().intValue())))
+                .andExpect(jsonPath("$.data.parentCompanyName", is(company.getParentCompanyName())))
+
+                .andExpect(jsonPath("$.data.contactItems[0].v", is(company.getContactInfo().getItems().get(0).value())))
+                .andExpect(jsonPath("$.data.contactItems[1].v", is(company.getContactInfo().getItems().get(1).value())))
+                .andExpect(jsonPath("$.data.contactItems[2].v", is(company.getContactInfo().getItems().get(2).value())))
+                .andExpect(jsonPath("$.data.contactItems[3].v", is(company.getContactInfo().getItems().get(3).value())))
+                .andExpect(jsonPath("$.data.contactItems[4].v", is(company.getContactInfo().getItems().get(4).value())))
+                .andExpect(jsonPath("$.data.contactItems[5].v", is(company.getContactInfo().getItems().get(5).value())))
+                .andExpect(jsonPath("$.data.contactItems[6].v", is(company.getContactInfo().getItems().get(6).value())))
+
+                .andExpect(jsonPath("$.data.info", is(company.getInfo())))
+                .andExpect(jsonPath("$.data.hidden", is(company.getHidden())))
+                .andExpect(jsonPath("$.data.archived", is(company.isArchived())))
+                .andExpect(jsonPath("$.data.autoOpenIssue", is(company.getAutoOpenIssue())));
+    }
+
+    @Test
+    @Transactional
+    public void updateCompanyState() throws Exception {
+        Company company = new Company();
+        Long companyId = 12345L;
+        company.setCname("Protei");
+        company.setId(companyId);
+
+        createPostResultAction("/api/companies/create", company)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data.id", is(company.getId().intValue())));
+
+        Assert.assertTrue(updateCompanyState(companyId, true));
+        Assert.assertFalse(updateCompanyState(companyId, false));
+
+        updateCompanyWithIncorrectParam("/incorrect_id/false");
+        updateCompanyWithIncorrectParam(companyId + "/incorrect_state");
+    }
+
+    private boolean updateCompanyState(Long companyId, boolean isArchived) throws Exception {
+        createPostResultAction("/api/companies/updateState/" + companyId + "/" + isArchived, null)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())));
+
+        return companyDAO.get(companyId).isArchived();
+    }
+
+    private void updateCompanyWithIncorrectParam(String params) throws Exception {
+        createPostResultAction("/api/companies/updateState/" + params, null)
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Transactional
+    public void createPlatform() throws Exception {
+        Platform platform = new Platform();
+        platform.setName("name");
+        platform.setParams("params");
+        platform.setManagerId(1L);
+        platform.setCompanyId(1L);
+        platform.setComment("comment");
+
+        createPostResultAction("/api/platforms/create", platform)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data.name", is(platform.getName())))
+                .andExpect(jsonPath("$.data.params", is(platform.getParams())))
+                .andExpect(jsonPath("$.data.manager.id", is(platform.getManagerId().intValue())))
+                .andExpect(jsonPath("$.data.companyId", is(platform.getCompanyId().intValue())))
+                .andExpect(jsonPath("$.data.comment", is(platform.getComment())));
+    }
+
+    @Test
+    @Transactional
+    public void deletePlatform() throws Exception {
+        Platform platform = new Platform();
+        platform.setName("Platform to delete");
+
+        ResultActions result = createPostResultAction("/api/platforms/create", platform)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data.id", notNullValue()));
+
+        String platformId = getPlatformId(result.andReturn().getResponse().getContentAsString());
+
+        createPostResultAction("/api/platforms/delete/" + platformId, null)
+                .andExpect(status().isOk());
+
+        createPostResultAction("/api/platforms/delete/12345", null)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.NOT_FOUND.toString())));
+
+        createPostResultAction("/api/platforms/delete/incorrect_id", null)
+                .andExpect(status().isBadRequest());
+    }
+
+    private String getPlatformId (String strResult) {
+        int idIndex = strResult.indexOf("id");
+        strResult = strResult.substring(idIndex);
+        return strResult.substring(strResult.indexOf(":") + 1, strResult.indexOf(","));
+    }
+
     private boolean compareLists (List<Long> list1, List<Long> list2){
         Collections.sort(list1);
         Collections.sort(list2);
@@ -1194,7 +1354,7 @@ public class TestPortalApiController extends BaseServiceTest {
                 .collect(Collectors.toList());
     }
 
-    private void removeAllCaseObjectsAndLinksAndComments() {
+    private void removeAllCaseObjectsAndLinksAndCommentsAndHistory() {
         List<Long> caseIds = caseObjectDAO.getAll().stream().map(CaseObject::getId).collect(Collectors.toList());
 
         caseIds.forEach(caseId -> {
@@ -1203,6 +1363,9 @@ public class TestPortalApiController extends BaseServiceTest {
                     .forEach(caseComment -> caseCommentDAO.remove(caseComment));
             caseLinkDAO.getListByQuery(query)
                     .forEach(caseLink -> caseLinkDAO.remove(caseLink));
+            historyDAO.removeByCaseId(caseId);
+            projectToProductDAO.removeAllProductsFromProject(caseId);
+            platformDAO.removeByProjectId(caseId);
             caseObjectDAO.removeByKey(caseId);
         });
     }

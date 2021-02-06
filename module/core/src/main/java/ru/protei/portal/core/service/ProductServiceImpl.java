@@ -54,7 +54,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Result<SearchResult<DevUnit>> getProducts( AuthToken token, ProductQuery query) {
-        if ( query.getDirectionId() != null && !checkIfDirection(query.getDirectionId()) ) {
+        if ( isNotEmpty(query.getDirectionIds()) && !checkIfAllDirections(query.getDirectionIds()) ) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -65,16 +65,19 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Result<List<ProductShortView>> shortViewList( AuthToken token, ProductQuery query ) {
-        if ( query.getDirectionId() != null && !checkIfDirection(query.getDirectionId()) ) {
+        if ( isNotEmpty(query.getDirectionIds()) && !checkIfAllDirections(query.getDirectionIds()) ) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        return makeListProductShortView( devUnitDAO.listByQuery(query) );
+        final List<DevUnit> devUnits = devUnitDAO.listByQuery(query);
+        devUnits.forEach(devUnit -> devUnit.setProductDirections(new HashSet<>(devUnitDAO.getProductDirections(devUnit.getId()))));
+
+        return makeListProductShortView(devUnits);
     }
 
     @Override
     public Result<List<ProductShortView>> productsShortViewListWithChildren(AuthToken token, ProductQuery query) {
-        if (query.getDirectionId() != null && !checkIfDirection(query.getDirectionId())) {
+        if ( isNotEmpty(query.getDirectionIds()) && !checkIfAllDirections(query.getDirectionIds()) ) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -143,7 +146,7 @@ public class ProductServiceImpl implements ProductService {
 
         product.setParents(devUnitDAO.getParents(id));
         product.setChildren(devUnitDAO.getChildren(Collections.singleton(id)));
-        product.setProductDirection(devUnitDAO.getProductDirection(id));
+        product.setProductDirections(new HashSet<>(emptyIfNull(devUnitDAO.getProductDirections(id))));
 
         return ok(product);
     }
@@ -262,14 +265,12 @@ public class ProductServiceImpl implements ProductService {
                 .collect(Collectors.toList());
     }
 
-    private boolean checkIfDirection(Long directionId) {
-        DevUnit direction = devUnitDAO.get(directionId);
-
-        if (direction == null) {
+    private boolean checkIfAllDirections(Set<Long> directionId) {
+        List<DevUnit> directions = devUnitDAO.getListByKeys(directionId);
+        if (isEmpty(directions)) {
             return false;
         }
-
-        return direction.isDirection();
+        return directions.stream().allMatch(DevUnit::isDirection);
     }
 
     private boolean validateFields(DevUnit product) {
@@ -295,11 +296,13 @@ public class ProductServiceImpl implements ProductService {
 
         devUnitChildRefDAO.removeProductDirection(product.getId());
 
-        if (product.getProductDirection() == null) {
+        if (isEmpty(product.getProductDirections())) {
             return;
         }
 
-        devUnitChildRefDAO.persist(new DevUnitChildRef(product.getProductDirection().getId(), product.getId()));
+        product.getProductDirections().stream().filter(Objects::nonNull).forEach(direction ->
+                devUnitChildRefDAO.persist(new DevUnitChildRef(direction.getId(), product.getId()))
+        );
     }
 
     private void saveParents(DevUnit product) {

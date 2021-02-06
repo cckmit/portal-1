@@ -6,23 +6,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
+import ru.protei.portal.core.model.dao.DevUnitDAO;
 import ru.protei.portal.core.model.dao.ProjectDAO;
 import ru.protei.portal.core.model.dao.ReportDAO;
+import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.Report;
-import ru.protei.portal.core.model.dto.Project;
+import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
-import ru.protei.portal.core.model.struct.ReportProjectWithLastComment;
+import ru.protei.portal.core.model.struct.ReportProjectWithComments;
 import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.EnumLangUtil;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -37,6 +38,8 @@ public class ReportProjectImpl implements ReportProject {
     PortalConfig config;
     @Autowired
     ProjectDAO projectDAO;
+    @Autowired
+    DevUnitDAO devUnitDAO;
     @Autowired
     CaseCommentDAO caseCommentDAO;
     @Autowired
@@ -56,7 +59,8 @@ public class ReportProjectImpl implements ReportProject {
 
         if (count < 1) {
             log.debug("writeReport : reportId={} has no corresponding projects", report.getId());
-            ReportWriter<ReportProjectWithLastComment> writer = new ExcelReportWriter(localizedLang, new EnumLangUtil(lang));
+            ReportWriter<ReportProjectWithComments> writer = new ExcelReportWriter(localizedLang, new EnumLangUtil(lang),
+                    query.getCommentCreationRange() != null, config.data().reportConfig().getProjectLimitCommentsNumber());
             writer.createSheet();
             writer.collect(buffer);
             return true;
@@ -64,7 +68,8 @@ public class ReportProjectImpl implements ReportProject {
 
         log.debug("writeReport : reportId={} has {} projects to process", report.getId(), count);
 
-        try (ReportWriter<ReportProjectWithLastComment> writer = new ExcelReportWriter(localizedLang, new EnumLangUtil(lang))) {
+        try (ReportWriter<ReportProjectWithComments> writer = new ExcelReportWriter(localizedLang, new EnumLangUtil(lang),
+                query.getCommentCreationRange() != null, config.data().reportConfig().getProjectLimitCommentsNumber())) {
             int sheetNumber = writer.createSheet();
             if (writeReport(writer, sheetNumber, report.getId(), query, count, isCancel)) {
                 writer.collect(buffer);
@@ -78,7 +83,7 @@ public class ReportProjectImpl implements ReportProject {
         }
     }
 
-    private boolean writeReport(ReportWriter<ReportProjectWithLastComment> writer,
+    private boolean writeReport(ReportWriter<ReportProjectWithComments> writer,
                                 int sheetNumber,
                                 Long reportId,
                                 ProjectQuery query,
@@ -97,7 +102,7 @@ public class ReportProjectImpl implements ReportProject {
             int amount = offset + step < limit ? step : limit - offset;
             query.setOffset(offset);
             query.setLimit(amount);
-            List<ReportProjectWithLastComment> data = createData(query);
+            List<ReportProjectWithComments> data = createData(query);
             try {
                 writer.write(sheetNumber, data);
             } catch (Throwable th) {
@@ -110,24 +115,38 @@ public class ReportProjectImpl implements ReportProject {
         return true;
     }
 
-    public List<ReportProjectWithLastComment> createData(ProjectQuery query) {
+    public List<ReportProjectWithComments> createData(ProjectQuery query) {
         List<Project> projects = projectDAO.getProjects(query);
         if (projects.isEmpty()) {
             return new ArrayList<>();
         }
 
         jdbcManyRelationsHelper.fill(projects, "locations");
+        projects.forEach(project -> project.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(project.getId()))));
 
         List<Long> ids = projects.stream().map(Project::getId).collect(Collectors.toList());
         List<CaseComment> lastNotNullTextCommentsForReport = caseCommentDAO
-                .getLastNotNullTextCommentsForReport(ids);
-        Map<Long, CaseComment> CaseIdToCaseComment = lastNotNullTextCommentsForReport
+                .getLastNotNullTextPartialCommentsForReport(ids);
+        Map<Long, CaseComment> caseIdToLastCaseComment = lastNotNullTextCommentsForReport
                 .stream().collect(Collectors.toMap(CaseComment::getCaseId, Function.identity()));
 
+        Map<Long, List<CaseComment>> caseIdToCaseComment;
+        if (query.getCommentCreationRange() != null) {
+            CaseCommentQuery caseCommentQuery = new CaseCommentQuery();
+            caseCommentQuery.setCaseObjectIds(ids);
+            caseCommentQuery.setCreationRange(query.getCommentCreationRange());
+            caseCommentQuery.setSortDir(En_SortDir.DESC);
+            caseCommentQuery.setSortField(En_SortField.creation_date);
+            List<CaseComment> caseComments = caseCommentDAO.getPartialCommentsForReport(caseCommentQuery);
+            caseIdToCaseComment = caseComments.stream().collect(Collectors.groupingBy(CaseComment::getCaseId));
+        } else {
+            caseIdToCaseComment = null;
+        }
+
         return projects.stream().map(project ->
-                new ReportProjectWithLastComment(
-                        project,
-                        CaseIdToCaseComment.get(project.getId())))
-                .collect(Collectors.toList());
+                new ReportProjectWithComments(project,
+                        caseIdToLastCaseComment.get(project.getId()),
+                        caseIdToCaseComment != null ? caseIdToCaseComment.get(project.getId()) : null)
+                ).collect(Collectors.toList());
     }
 }

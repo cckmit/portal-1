@@ -25,7 +25,7 @@ public interface AbstractEmployeePreviewView extends IsWidget {
 
     void setIP(String ip);
 
-    void setLogin(String login);
+    void setLogins(String logins);
 
     HasVisibility birthdayContainerVisibility();
 

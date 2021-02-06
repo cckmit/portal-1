@@ -2,7 +2,6 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -67,6 +66,18 @@ public interface CompanyControllerAsync {
     void getCompanyOptionList(CompanyQuery query, AsyncCallback<List<EntityOption>> callback);
 
     /**
+     * Получение списка сокращенного представления компании-субподрядчика через проекты (name,id)
+     * @param callback
+     */
+    void getSubcontractorOptionList(Long companyId, boolean isActive, AsyncCallback<List<EntityOption>> callback);
+
+    /**
+     * Получение списка сокращенного представления компании-инициатора через проекты (name,id)
+     * @param callback
+     */
+    void getInitiatorOptionList(Long subcontractorId, boolean isActive, AsyncCallback<List<EntityOption>> callback);
+
+    /**
      * Получение списка сокращенного представления компании (name,id) игнорируя область видимости и привилегии
      * @param callback
      */
@@ -99,9 +110,9 @@ public interface CompanyControllerAsync {
 
     void updateState(Long id, boolean isArchived, AsyncCallback<Boolean> async);
 
-    void getImportanceLevels(Long id, AsyncCallback<List<En_ImportanceLevel>> async);
-
     void getAllHomeCompanies(AsyncCallback<List<EntityOption>> async);
 
-    void getCompanyUnsafe(long id, AsyncCallback<Company> async);
+    void getCompanyOmitPrivileges(long id, AsyncCallback<Company> async);
+
+    void getCompanyImportanceItems(Long companyId, AsyncCallback<List<CompanyImportanceItem>> async);
 }
