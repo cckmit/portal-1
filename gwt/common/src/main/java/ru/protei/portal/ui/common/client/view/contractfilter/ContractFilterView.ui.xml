@@ -77,6 +77,10 @@
                                                     header="{lang.contractCurator}"
                                                     addStyleNames="form-group col-md-4 resize-md-12"
                                                     firedEmployeesVisible="true"/>
+                <div class="form-group col-md-4 resize-md-12">
+                    <label><ui:text from="{lang.contractDeliveryNumber}"/></label>
+                    <g:TextBox ui:field="deliveryNumber" styleName="form-control"/>
+                </div>
             </div>
         </div>
         <div ui:field="footer" class="card-footer text-right">

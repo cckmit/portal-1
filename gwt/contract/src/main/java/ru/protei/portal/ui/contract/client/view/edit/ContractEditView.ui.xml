@@ -120,7 +120,14 @@
                                                    addStyleNames="form-group form-group-default"/>
                             <div class="form-group form-group-default">
                                 <label class="fade"><ui:text from="{lang.contractDirection}"/></label>
-                                <span ui:field="directions"></span>
+                                <span ui:field="directions"/>
+                            </div>
+
+                            <div class="form-group form-group-default">
+                                <label class="fade">
+                                    <ui:text from="{lang.contractDeliveryNumber}"/>
+                                </label>
+                                <g:TextBox ui:field="deliveryNumber" styleName="form-control"/>
                             </div>
                         </div>
                         <div class="form-group m-t-10 m-b-10">

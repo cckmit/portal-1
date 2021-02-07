@@ -176,6 +176,11 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
+    public HasValue<String> deliveryNumber() {
+        return deliveryNumber;
+    }
+
+    @Override
     public HasEnabled contractorEnabled() {
         return contractorWidget;
     }
@@ -427,6 +432,8 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     HTMLPanel datesTableContainer;
     @UiField
     Button addDate;
+    @UiField
+    TextBox deliveryNumber;
 
     private AbstractContractEditActivity activity;
 

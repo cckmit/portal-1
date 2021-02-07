@@ -21,6 +21,7 @@ import java.util.List;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
 import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
+import static ru.protei.portal.core.model.helper.HelperFunc.makeLikeArg;
 import static ru.protei.portal.core.model.util.ContractStateUtil.getOpenedContractStates;
 
 public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements ContractDAO {
@@ -104,6 +105,11 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
             if (CollectionUtils.isNotEmpty(query.getTypes())) {
                 String inArg = HelperFunc.makeInArg(query.getTypes(), type -> String.valueOf(type.getId()));
                 condition.append(" and contract.contract_type in ").append(inArg);
+            }
+
+            if (StringUtils.isNotEmpty(query.getDeliveryNumber())) {
+                condition.append(" and contract.delivery_number like ?");
+                args.add(makeLikeArg(query.getDeliveryNumber(), true));
             }
 
             if (CollectionUtils.isNotEmpty(query.getCaseTagsIds())) {

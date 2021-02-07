@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.query;
 import ru.protei.portal.core.model.dict.En_ContractKind;
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.DateRange;
 
 import java.util.Date;
@@ -39,6 +40,8 @@ public class ContractQuery extends BaseQuery {
     private List<String> refKeys;
 
     private Date openStateDate;
+
+    private String deliveryNumber;
 
     public Long getDirectionId() {
         return directionId;
@@ -152,6 +155,14 @@ public class ContractQuery extends BaseQuery {
         this.openStateDate = openStateDate;
     }
 
+    public String getDeliveryNumber() {
+        return deliveryNumber;
+    }
+
+    public void setDeliveryNumber(String deliveryNumber) {
+        this.deliveryNumber = deliveryNumber;
+    }
+
     @Override
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
@@ -160,6 +171,7 @@ public class ContractQuery extends BaseQuery {
                 dateValidRange != null ||
                 kind != null ||
                 openStateDate != null ||
+                StringUtils.isNotEmpty(deliveryNumber) ||
                 isNotEmpty(types) ||
                 isNotEmpty(states) ||
                 isNotEmpty(caseTagsIds) ||
@@ -188,6 +200,7 @@ public class ContractQuery extends BaseQuery {
                 ", curatorIds=" + curatorIds +
                 ", refKeys=" + refKeys +
                 ", openStateDate=" + openStateDate +
+                ", deliveryNumber=" + deliveryNumber +
                 '}';
     }
 }

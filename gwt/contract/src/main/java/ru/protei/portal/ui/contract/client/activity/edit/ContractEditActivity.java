@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.ContractDate;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.Money;
 import ru.protei.portal.core.model.struct.MoneyWithCurrencyWithVat;
 import ru.protei.portal.core.model.util.ContractSupportService;
@@ -236,6 +237,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         En_ContractKind kind = getContractKind(view.contractParent().getValue());
         view.setKind(kind);
 
+        view.deliveryNumber().setValue(contract.getDeliveryNumber());
+
         if (contract.getProjectId() == null) {
             view.project().setValue(null);
             clearProjectSpecificFields();
@@ -293,6 +296,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         contract.setContractor(view.contractor().getValue());
         contract.setContractSignManagerId(getPersonIdOrNull(view.contractSignManager().getValue()));
 
+        contract.setDeliveryNumber(view.deliveryNumber().getValue());
         return contract;
     }
 
@@ -390,20 +394,12 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         return option == null ? null : option.getId();
     }
 
-    private Long getProductIdOrNull(ProductDirectionInfo option) {
-        return option == null ? null : option.id;
-    }
-
     private EntityOption createOptionOrNull(Long id, String name) {
         return id == null ? null : new EntityOption(name, id);
     }
 
     private PersonShortView createPersonOrNull(Long id, String name) {
         return id == null ? null : new PersonShortView(name, id);
-    }
-
-    private ProductDirectionInfo createProductOrNull(Long id, String name) {
-        return id == null ? null : new ProductDirectionInfo(id, name);
     }
 
     private boolean hasPrivileges(Long contractId) {

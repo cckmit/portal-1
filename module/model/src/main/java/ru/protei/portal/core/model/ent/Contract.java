@@ -173,6 +173,16 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     @JdbcJoinedObject( localColumn = "contractor_id", remoteColumn = "id", sqlTableAlias = "C")
     private Contractor contractor;
 
+    @JdbcColumn(name = "delivery_number")
+    private String deliveryNumber;
+
+    public String getDeliveryNumber() {
+        return deliveryNumber;
+    }
+
+    public void setDeliveryNumber(String deliveryNumber) {
+        this.deliveryNumber = deliveryNumber;
+    }
 
     @Override
     public String getAuditType() {
@@ -485,6 +495,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
                 ", projectCustomerType=" + projectCustomerType +
                 ", contractorId=" + contractorId +
                 ", contractor=" + contractor +
+                ", deliveryNumber=" + deliveryNumber +
                 '}';
     }
 

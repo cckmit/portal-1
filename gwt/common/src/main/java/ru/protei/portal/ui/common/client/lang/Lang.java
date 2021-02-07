@@ -3277,4 +3277,6 @@ public interface Lang extends Messages, ContactItemLang {
     String contractTypeContractForService();
 
     String contractTypeAgreement();
+
+    String contractDeliveryNumber();
 }
