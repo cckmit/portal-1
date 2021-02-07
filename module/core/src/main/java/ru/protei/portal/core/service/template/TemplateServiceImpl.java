@@ -952,7 +952,7 @@ public class TemplateServiceImpl implements TemplateService {
     public PreparedTemplate getEducationRequestCreateNotificationBody(Collection<String> recipients, EducationEntry educationEntry,
                                                                       EnumLangUtil enumLangUtil) {
         Map<String, Object> model = fillEducationRequestModel(recipients, educationEntry, enumLangUtil);
-        PreparedTemplate template = new PreparedTemplate("notification/email/education.request.body.%s.ftl");
+        PreparedTemplate template = new PreparedTemplate("notification/email/education.request.create.body.%s.ftl");
         template.setModel(model);
         template.setTemplateConfiguration(templateConfiguration);
         return template;
@@ -991,19 +991,13 @@ public class TemplateServiceImpl implements TemplateService {
         model.put("coins", educationEntry.getCoins());
         model.put("link", educationEntry.getLink());
         model.put("location", educationEntry.getLocation());
-        model.put("dates", getDateInterval(educationEntry));
+        model.put("dateStart", educationEntry.getDateStart());
+        model.put("dateEnd", educationEntry.getDateEnd());
         model.put("description", educationEntry.getDescription());
         model.put("participants", participants);
         model.put("recipients", recipients);
         model.put("EnumLangUtil", enumLangUtil);
         return model;
-    }
-
-    private String getDateInterval(EducationEntry educationEntry) {
-        if (educationEntry.getDateStart() != null && educationEntry.getDateEnd() != null) {
-            return dateFormat.format(educationEntry.getDateStart()) + " - " + dateFormat.format(educationEntry.getDateEnd());
-        }
-        return "";
     }
 
     private <T, R> R getNullOrElse(T value, Function<T, R> orElseFunction) {

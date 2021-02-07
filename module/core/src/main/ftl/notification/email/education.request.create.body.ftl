@@ -73,7 +73,9 @@
                     ${_educationEntryDates}
                 </td>
                 <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                    ${dates}
+                    ${(dateStart??)?then(dateStart?date, '?')}
+                    ${(dateStart??)?then(' - ', '')}
+                    ${(dateEnd??)?then(dateEnd?date, '')}
                 </td>
             </tr>
             <tr>
