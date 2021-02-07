@@ -1153,14 +1153,14 @@ public class MailNotificationProcessor {
 
         PreparedTemplate subjectTemplate = templateService.getEducationRequestNotificationSubject(educationEntry);
         if (subjectTemplate == null) {
-            log.error("Failed to prepare subject template for education request={}", educationEntry);
+            log.error("Failed to prepare subject template for create education request={}", educationEntry);
             return;
         }
 
-        PreparedTemplate bodyTemplate = templateService.getEducationRequestNotificationBody(recipients,
+        PreparedTemplate bodyTemplate = templateService.getEducationRequestCreateNotificationBody(recipients,
                 educationEntry, new EnumLangUtil(lang));
         if (bodyTemplate == null) {
-            log.error("Failed to prepare body template for education request={}", educationEntry);
+            log.error("Failed to prepare body template for create education request={}", educationEntry);
             return;
         }
 
@@ -1169,7 +1169,7 @@ public class MailNotificationProcessor {
                 String body = bodyTemplate.getText(email, null, false);
                 String subject = subjectTemplate.getText(email, null, false);
 
-                // sendMail(email, subject, body, getFromPortalAddress());
+                sendMail(email, subject, body, getFromPortalAddress());
             } catch (Exception e) {
                 log.error("Failed to make MimeMessage mail={}, e={}", email, e);
             }
@@ -1205,7 +1205,7 @@ public class MailNotificationProcessor {
 
         PreparedTemplate subjectTemplate = templateService.getEducationRequestNotificationSubject(educationEntry);
         if (subjectTemplate == null) {
-            log.error("Failed to prepare subject template for education request approve={}", educationEntry);
+            log.error("Failed to prepare subject template for approve education request={}", educationEntry);
             return;
         }
 
@@ -1216,7 +1216,58 @@ public class MailNotificationProcessor {
         PreparedTemplate bodyTemplate = templateService.getEducationRequestApproveNotificationBody(recipients,
                 educationEntry, approved, new EnumLangUtil(lang));
         if (bodyTemplate == null) {
-            log.error("Failed to prepare body template for education request approve={}", educationEntry);
+            log.error("Failed to prepare body template for approve education request={}", educationEntry);
+            return;
+        }
+
+        recipients.forEach(email -> {
+            try {
+                String body = bodyTemplate.getText(email, null, false);
+                String subject = subjectTemplate.getText(email, null, false);
+
+                sendMail(email, subject, body, getFromPortalAddress());
+            } catch (Exception e) {
+                log.error("Failed to make MimeMessage mail={}, e={}", email, e);
+            }
+        });
+    }
+
+    @EventListener
+    public void onEducationRequestDecline(EducationRequestDeclineEvent event) {
+        EducationEntry educationEntry = event.getEducationEntry();
+        Set<Person> headsOfDepartments = event.getHeadsOfDepartments();
+        List<Person> declineParticipants = event.getDeclineParticipants();
+
+        Set<String> recipients = new HashSet<>();
+
+        if (isNotEmpty(headsOfDepartments)) {
+            headsOfDepartments.forEach(person ->
+                    recipients.add(new PlainContactInfoFacade(person.getContactInfo()).getEmail()));
+        }
+
+        if (isNotEmpty(declineParticipants)) {
+            declineParticipants.forEach(person ->
+                    recipients.add(new PlainContactInfoFacade(person.getContactInfo()).getEmail()));
+        }
+
+        if (isEmpty(recipients)) {
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.getEducationRequestNotificationSubject(educationEntry);
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for decline education request={}", educationEntry);
+            return;
+        }
+
+        String declined = declineParticipants.stream()
+                .map(Person::getDisplayShortName)
+                .collect(Collectors.joining(", "));
+
+        PreparedTemplate bodyTemplate = templateService.getEducationRequestDeclineNotificationBody(recipients,
+                educationEntry, declined, new EnumLangUtil(lang));
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for decline education request={}", educationEntry);
             return;
         }
 

@@ -949,22 +949,9 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getEducationRequestNotificationBody(Collection<String> recipients, EducationEntry educationEntry, EnumLangUtil enumLangUtil) {
-        String participants = educationEntry.getAttendanceList().stream()
-                .map(EducationEntryAttendance::getWorkerName)
-                .collect(Collectors.joining(", "));
-
-        Map<String, Object> model = new HashMap<>();
-        model.put("title", educationEntry.getTitle());
-        model.put("type", educationEntry.getType());
-        model.put("coins", educationEntry.getCoins());
-        model.put("link", educationEntry.getLink());
-        model.put("location", educationEntry.getLocation());
-        model.put("dates", getDateInterval(educationEntry));
-        model.put("description", educationEntry.getDescription());
-        model.put("participants", participants);
-        model.put("recipients", recipients);
-        model.put("EnumLangUtil", enumLangUtil);
+    public PreparedTemplate getEducationRequestCreateNotificationBody(Collection<String> recipients, EducationEntry educationEntry,
+                                                                      EnumLangUtil enumLangUtil) {
+        Map<String, Object> model = fillEducationRequestModel(recipients, educationEntry, enumLangUtil);
         PreparedTemplate template = new PreparedTemplate("notification/email/education.request.body.%s.ftl");
         template.setModel(model);
         template.setTemplateConfiguration(templateConfiguration);
@@ -974,6 +961,26 @@ public class TemplateServiceImpl implements TemplateService {
     @Override
     public PreparedTemplate getEducationRequestApproveNotificationBody(Collection<String> recipients, EducationEntry educationEntry,
                                                                        String approved, EnumLangUtil enumLangUtil) {
+        Map<String, Object> model = fillEducationRequestModel(recipients, educationEntry, enumLangUtil);
+        model.put("approved", approved);
+        PreparedTemplate template = new PreparedTemplate("notification/email/education.request.approve.body.%s.ftl");
+        template.setModel(model);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getEducationRequestDeclineNotificationBody(Collection<String> recipients, EducationEntry educationEntry,
+                                                                       String declined, EnumLangUtil enumLangUtil) {
+        Map<String, Object> model = fillEducationRequestModel(recipients, educationEntry, enumLangUtil);
+        model.put("declined", declined);
+        PreparedTemplate template = new PreparedTemplate("notification/email/education.request.decline.body.%s.ftl");
+        template.setModel(model);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    private Map<String, Object> fillEducationRequestModel(Collection<String> recipients, EducationEntry educationEntry, EnumLangUtil enumLangUtil) {
         String participants = educationEntry.getAttendanceList().stream()
                 .map(EducationEntryAttendance::getWorkerName)
                 .collect(Collectors.joining(", "));
@@ -987,13 +994,9 @@ public class TemplateServiceImpl implements TemplateService {
         model.put("dates", getDateInterval(educationEntry));
         model.put("description", educationEntry.getDescription());
         model.put("participants", participants);
-        model.put("approved", approved);
         model.put("recipients", recipients);
         model.put("EnumLangUtil", enumLangUtil);
-        PreparedTemplate template = new PreparedTemplate("notification/email/education.request.approve.body.%s.ftl");
-        template.setModel(model);
-        template.setTemplateConfiguration(templateConfiguration);
-        return template;
+        return model;
     }
 
     private String getDateInterval(EducationEntry educationEntry) {

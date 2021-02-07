@@ -10,6 +10,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.event.EducationRequestApproveEvent;
 import ru.protei.portal.core.event.EducationRequestCreateEvent;
+import ru.protei.portal.core.event.EducationRequestDeclineEvent;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
@@ -309,6 +310,15 @@ public class EducationServiceImpl implements EducationService {
 
             okResult.publishEvent(new EducationRequestApproveEvent(this, getParticipants(approvedAttendanceList),
                     getHeadsOfDepartments(approvedAttendanceList), entry));
+        }
+
+        if (!workersDeclined.isEmpty()) {
+            List<EducationEntryAttendance> declinedAttendanceList = entry.getAttendanceList().stream()
+                    .filter(e -> workersDeclined.contains(e.getWorkerId()))
+                    .collect(Collectors.toList());
+
+            okResult.publishEvent(new EducationRequestDeclineEvent(this, getParticipants(declinedAttendanceList),
+                    getHeadsOfDepartments(declinedAttendanceList), entry));
         }
 
         return okResult;
