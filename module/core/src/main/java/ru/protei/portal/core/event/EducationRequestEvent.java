@@ -4,16 +4,18 @@ import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.model.ent.EducationEntry;
 import ru.protei.portal.core.model.ent.Person;
 
+import java.util.Set;
+
 public class EducationRequestEvent extends ApplicationEvent {
     private Person initiator;
     private EducationEntry educationEntry;
-    private Person headOfDepartment;
+    private Set<Person> headsOfDepartments;
 
-    public EducationRequestEvent(Object source, Person initiator, Person headOfDepartment, EducationEntry educationEntry) {
+    public EducationRequestEvent(Object source, Person initiator, Set<Person> headsOfDepartments, EducationEntry educationEntry) {
         super(source);
         this.initiator = initiator;
         this.educationEntry = educationEntry;
-        this.headOfDepartment = headOfDepartment;
+        this.headsOfDepartments = headsOfDepartments;
     }
 
     public Person getInitiator() {
@@ -28,7 +30,7 @@ public class EducationRequestEvent extends ApplicationEvent {
         return true;
     }
 
-    public Person getHeadOfDepartment() {
-        return headOfDepartment;
+    public Set<Person> getHeadsOfDepartments() {
+        return headsOfDepartments;
     }
 }

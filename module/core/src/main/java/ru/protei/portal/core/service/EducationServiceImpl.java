@@ -117,7 +117,7 @@ public class EducationServiceImpl implements EducationService {
         jdbcManyRelationsHelper.fill(entry, "attendanceList");
 
         return ok(entry).publishEvent(new EducationRequestEvent(this, getInitiator(token.getPersonId()),
-                getHeadOfDepartment(token.getPersonId()), entry));
+                getHeadsOfDepartments(entry.getAttendanceList()), entry));
     }
 
     private Person getInitiator(Long personId) {
@@ -126,35 +126,44 @@ public class EducationServiceImpl implements EducationService {
         return initiator;
     }
 
-    private Person getHeadOfDepartment(Long personId) {
-        WorkerEntry initiatorWorkerEntry = workerEntryDAO.getByPersonId(personId);
-        if (initiatorWorkerEntry == null) {
-            return null;
-        }
-        CompanyDepartment department = companyDepartmentDAO.get(initiatorWorkerEntry.getDepartmentId());
-        if (department == null) {
-            return null;
+    private Set<Person> getHeadsOfDepartments(List<EducationEntryAttendance> attendanceList) {
+        Set<Person> headSet = new HashSet<>();
+        if (CollectionUtils.isEmpty(attendanceList)) {
+            return headSet;
         }
 
-        Person headPerson = null;
+        for (EducationEntryAttendance entry : attendanceList) {
+            Long workerId = entry.getWorkerId();
+            WorkerEntry workerEntry = workerEntryDAO.get(workerId);
+            if (workerEntry == null) {
+                continue;
+            }
+            CompanyDepartment department = companyDepartmentDAO.get(workerEntry.getDepartmentId());
+            if (department == null) {
+                continue;
+            }
 
-        PersonShortView head = department.getHead();
-        if (head != null) {
-            headPerson = personDAO.get(head.getId());
-        }
+            Person headPerson = null;
 
-        if (headPerson == null) {
-            PersonShortView parentHead = department.getParentHead();
-            if (parentHead != null) {
-                headPerson = personDAO.get(parentHead.getId());
+            PersonShortView head = department.getHead();
+            if (head != null) {
+                headPerson = personDAO.get(head.getId());
+            }
+
+            if (headPerson == null) {
+                PersonShortView parentHead = department.getParentHead();
+                if (parentHead != null) {
+                    headPerson = personDAO.get(parentHead.getId());
+                }
+            }
+
+            if (headPerson != null) {
+                jdbcManyRelationsHelper.fill(headPerson, Company.Fields.CONTACT_ITEMS);
+                headSet.add(headPerson);
             }
         }
 
-        if (headPerson != null) {
-            jdbcManyRelationsHelper.fill(headPerson, Company.Fields.CONTACT_ITEMS);
-        }
-
-        return headPerson;
+        return headSet;
     }
 
     private Lang getLang() {
@@ -272,8 +281,12 @@ public class EducationServiceImpl implements EducationService {
         Result<EducationEntry> okResult = ok(entry);
 
         if (!workersApproved.isEmpty()) {
+            List<EducationEntryAttendance> approvedAttendanceList = entry.getAttendanceList().stream()
+                    .filter(e -> workersApproved.contains(e.getWorkerId()))
+                    .collect(Collectors.toList());
+
             okResult.publishEvent(new EducationRequestApproveEvent(this, getInitiator(token.getPersonId()),
-                    getHeadOfDepartment(token.getPersonId()), entry, workersApproved));
+                    getHeadsOfDepartments(approvedAttendanceList), entry, workersApproved));
         }
 
         return okResult;

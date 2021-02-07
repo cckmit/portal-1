@@ -1127,13 +1127,14 @@ public class MailNotificationProcessor {
     @EventListener
     public void onEducationRequest(EducationRequestEvent event) {
         EducationEntry educationEntry = event.getEducationEntry();
-        Person headOfDepartment = event.getHeadOfDepartment();
+        Set<Person> headsOfDepartments = event.getHeadsOfDepartments();
         Person initiator = event.getInitiator();
 
         Set<String> recipients = new HashSet<>();
 
-        if (headOfDepartment != null) {
-            recipients.add(new PlainContactInfoFacade(headOfDepartment.getContactInfo()).getEmail());
+        if (isNotEmpty(headsOfDepartments)) {
+            headsOfDepartments.forEach(person ->
+                    recipients.add(new PlainContactInfoFacade(person.getContactInfo()).getEmail()));
         }
 
         Set<String> recipientsFromConfig = getRecipientsFromConfigOnCreateRequest(educationEntry.getType());
@@ -1173,14 +1174,15 @@ public class MailNotificationProcessor {
     @EventListener
     public void onEducationRequestApprove(EducationRequestApproveEvent event) {
         EducationEntry educationEntry = event.getEducationEntry();
-        Person headOfDepartment = event.getHeadOfDepartment();
+        Set<Person> headsOfDepartments = event.getHeadsOfDepartments();
         Person initiator = event.getInitiator();
         List<Long> workersApproved = event.getWorkersApproved();
 
         Set<String> recipients = new HashSet<>();
 
-        if (headOfDepartment != null) {
-            recipients.add(new PlainContactInfoFacade(headOfDepartment.getContactInfo()).getEmail());
+        if (isNotEmpty(headsOfDepartments)) {
+            headsOfDepartments.forEach(person ->
+                    recipients.add(new PlainContactInfoFacade(person.getContactInfo()).getEmail()));
         }
 
         Set<String> recipientsFromConfig = getRecipientsFromConfigOnApproveParticipants(educationEntry.getType());
