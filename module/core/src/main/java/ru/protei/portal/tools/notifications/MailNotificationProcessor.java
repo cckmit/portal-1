@@ -1125,7 +1125,7 @@ public class MailNotificationProcessor {
     // ----------------------
 
     @EventListener
-    public void onEducationRequest(EducationRequestEvent event) {
+    public void onEducationRequestCreate(EducationRequestCreateEvent event) {
         EducationEntry educationEntry = event.getEducationEntry();
         Set<Person> headsOfDepartments = event.getHeadsOfDepartments();
         List<Person> participants = event.getParticipants();
@@ -1169,7 +1169,7 @@ public class MailNotificationProcessor {
                 String body = bodyTemplate.getText(email, null, false);
                 String subject = subjectTemplate.getText(email, null, false);
 
-                sendMail(email, subject, body, getFromPortalAddress());
+                // sendMail(email, subject, body, getFromPortalAddress());
             } catch (Exception e) {
                 log.error("Failed to make MimeMessage mail={}, e={}", email, e);
             }
@@ -1180,13 +1180,17 @@ public class MailNotificationProcessor {
     public void onEducationRequestApprove(EducationRequestApproveEvent event) {
         EducationEntry educationEntry = event.getEducationEntry();
         Set<Person> headsOfDepartments = event.getHeadsOfDepartments();
-        Person initiator = event.getInitiator();
-        List<Long> workersApproved = event.getWorkersApproved();
+        List<Person> approvedParticipants = event.getApprovedParticipants();
 
         Set<String> recipients = new HashSet<>();
 
         if (isNotEmpty(headsOfDepartments)) {
             headsOfDepartments.forEach(person ->
+                    recipients.add(new PlainContactInfoFacade(person.getContactInfo()).getEmail()));
+        }
+
+        if (isNotEmpty(approvedParticipants)) {
+            approvedParticipants.forEach(person ->
                     recipients.add(new PlainContactInfoFacade(person.getContactInfo()).getEmail()));
         }
 
@@ -1201,20 +1205,18 @@ public class MailNotificationProcessor {
 
         PreparedTemplate subjectTemplate = templateService.getEducationRequestNotificationSubject(educationEntry);
         if (subjectTemplate == null) {
-            log.error("Failed to prepare subject template for education request approve initiator={}", initiator);
+            log.error("Failed to prepare subject template for education request approve={}", educationEntry);
             return;
         }
 
-        String approved = educationEntry.getAttendanceList().stream()
-                .filter(entry -> workersApproved.contains(entry.getWorkerId()))
-                .map(EducationEntryAttendance::getWorkerName)
+        String approved = approvedParticipants.stream()
+                .map(Person::getDisplayShortName)
                 .collect(Collectors.joining(", "));
-
 
         PreparedTemplate bodyTemplate = templateService.getEducationRequestApproveNotificationBody(recipients,
                 educationEntry, approved, new EnumLangUtil(lang));
         if (bodyTemplate == null) {
-            log.error("Failed to prepare body template for education request approve notification");
+            log.error("Failed to prepare body template for education request approve={}", educationEntry);
             return;
         }
 

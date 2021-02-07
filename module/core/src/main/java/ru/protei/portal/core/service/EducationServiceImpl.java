@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.event.EducationRequestApproveEvent;
-import ru.protei.portal.core.event.EducationRequestEvent;
+import ru.protei.portal.core.event.EducationRequestCreateEvent;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
@@ -116,7 +116,7 @@ public class EducationServiceImpl implements EducationService {
 
         jdbcManyRelationsHelper.fill(entry, "attendanceList");
 
-        return ok(entry).publishEvent(new EducationRequestEvent(this, getParticipants(entry.getAttendanceList()),
+        return ok(entry).publishEvent(new EducationRequestCreateEvent(this, getParticipants(entry.getAttendanceList()),
                 getHeadsOfDepartments(entry.getAttendanceList()), entry));
     }
 
@@ -307,8 +307,8 @@ public class EducationServiceImpl implements EducationService {
                     .filter(e -> workersApproved.contains(e.getWorkerId()))
                     .collect(Collectors.toList());
 
-            okResult.publishEvent(new EducationRequestApproveEvent(this, getInitiator(token.getPersonId()),
-                    getHeadsOfDepartments(approvedAttendanceList), entry, workersApproved));
+            okResult.publishEvent(new EducationRequestApproveEvent(this, getParticipants(approvedAttendanceList),
+                    getHeadsOfDepartments(approvedAttendanceList), entry));
         }
 
         return okResult;

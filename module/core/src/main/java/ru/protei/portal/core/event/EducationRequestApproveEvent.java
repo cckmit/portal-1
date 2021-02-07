@@ -8,30 +8,24 @@ import java.util.List;
 import java.util.Set;
 
 public class EducationRequestApproveEvent extends ApplicationEvent {
-    private Person initiator;
+    private List<Person> approvedParticipants;
     private EducationEntry educationEntry;
-    private List<Long> workersApproved;
     private Set<Person> headsOfDepartments;
 
-    public EducationRequestApproveEvent(Object source, Person initiator, Set<Person> headsOfDepartments,
-                                        EducationEntry educationEntry, List<Long> workersApproved) {
+    public EducationRequestApproveEvent(Object source, List<Person> approvedParticipants, Set<Person> headsOfDepartments,
+                                        EducationEntry educationEntry) {
         super(source);
-        this.initiator = initiator;
+        this.approvedParticipants = approvedParticipants;
         this.educationEntry = educationEntry;
-        this.workersApproved = workersApproved;
         this.headsOfDepartments = headsOfDepartments;
     }
 
-    public Person getInitiator() {
-        return initiator;
+    public List<Person> getApprovedParticipants() {
+        return approvedParticipants;
     }
 
     public EducationEntry getEducationEntry() {
         return educationEntry;
-    }
-
-    public List<Long> getWorkersApproved() {
-        return workersApproved;
     }
 
     public boolean isCreateEvent() {

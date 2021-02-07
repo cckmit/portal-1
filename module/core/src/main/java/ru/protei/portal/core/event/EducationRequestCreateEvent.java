@@ -7,13 +7,13 @@ import ru.protei.portal.core.model.ent.Person;
 import java.util.List;
 import java.util.Set;
 
-public class EducationRequestEvent extends ApplicationEvent {
+public class EducationRequestCreateEvent extends ApplicationEvent {
     private List<Person> participants;
     private EducationEntry educationEntry;
     private Set<Person> headsOfDepartments;
 
-    public EducationRequestEvent(Object source, List<Person> participants, Set<Person> headsOfDepartments,
-                                 EducationEntry educationEntry) {
+    public EducationRequestCreateEvent(Object source, List<Person> participants, Set<Person> headsOfDepartments,
+                                       EducationEntry educationEntry) {
         super(source);
         this.participants = participants;
         this.educationEntry = educationEntry;
