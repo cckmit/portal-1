@@ -116,8 +116,30 @@ public class EducationServiceImpl implements EducationService {
 
         jdbcManyRelationsHelper.fill(entry, "attendanceList");
 
-        return ok(entry).publishEvent(new EducationRequestEvent(this, getInitiator(token.getPersonId()),
+        return ok(entry).publishEvent(new EducationRequestEvent(this, getParticipants(entry.getAttendanceList()),
                 getHeadsOfDepartments(entry.getAttendanceList()), entry));
+    }
+
+    private List<Person> getParticipants(List<EducationEntryAttendance> attendanceList) {
+        List<Person> participants = new ArrayList<>();
+        if (CollectionUtils.isEmpty(attendanceList)) {
+            return participants;
+        }
+
+        for (EducationEntryAttendance entry : attendanceList) {
+            Long workerId = entry.getWorkerId();
+            WorkerEntry workerEntry = workerEntryDAO.get(workerId);
+            if (workerEntry == null) {
+                continue;
+            }
+            Person person = personDAO.get(workerEntry.getPersonId());
+            if (person != null) {
+                jdbcManyRelationsHelper.fill(person, Company.Fields.CONTACT_ITEMS);
+                participants.add(person);
+            }
+        }
+
+        return participants;
     }
 
     private Person getInitiator(Long personId) {

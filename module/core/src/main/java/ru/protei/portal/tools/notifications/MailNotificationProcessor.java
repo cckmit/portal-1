@@ -1128,12 +1128,17 @@ public class MailNotificationProcessor {
     public void onEducationRequest(EducationRequestEvent event) {
         EducationEntry educationEntry = event.getEducationEntry();
         Set<Person> headsOfDepartments = event.getHeadsOfDepartments();
-        Person initiator = event.getInitiator();
+        List<Person> participants = event.getParticipants();
 
         Set<String> recipients = new HashSet<>();
 
         if (isNotEmpty(headsOfDepartments)) {
             headsOfDepartments.forEach(person ->
+                    recipients.add(new PlainContactInfoFacade(person.getContactInfo()).getEmail()));
+        }
+
+        if (isNotEmpty(participants)) {
+            participants.forEach(person ->
                     recipients.add(new PlainContactInfoFacade(person.getContactInfo()).getEmail()));
         }
 
@@ -1148,14 +1153,14 @@ public class MailNotificationProcessor {
 
         PreparedTemplate subjectTemplate = templateService.getEducationRequestNotificationSubject(educationEntry);
         if (subjectTemplate == null) {
-            log.error("Failed to prepare subject template for education request initiator={}", initiator);
+            log.error("Failed to prepare subject template for education request={}", educationEntry);
             return;
         }
 
         PreparedTemplate bodyTemplate = templateService.getEducationRequestNotificationBody(recipients,
-                educationEntry,  new EnumLangUtil(lang));
+                educationEntry, new EnumLangUtil(lang));
         if (bodyTemplate == null) {
-            log.error("Failed to prepare body template for education request notification");
+            log.error("Failed to prepare body template for education request={}", educationEntry);
             return;
         }
 
