@@ -8,10 +8,9 @@
     <g:HTMLPanel tag="li" ui:field="root" styleName="timeline-block left">
         <ul class="list-inline">
             <li ui:field="owner" class="name"/>
+            <g:Anchor styleName="issue-link m-r-5" ui:field="remoteLink" href="#" visible="false"/>
             <li ui:field="date" class="date-time"/>
-            <g:Anchor styleName="issue-link" ui:field="remoteLink" href="#"/>
             <i ui:field="privateType"/>
-            <li ui:field="info" class="info hide p-l-5 p-r-5"/>
             <div class="d-inline">
                 <popup:EditTimeElapsedTypePopup ui:field="timeElapsedTypePopup" visible="false"/>
             </div>

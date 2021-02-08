@@ -160,14 +160,6 @@ public abstract class CaseCommentItemsListActivity implements Activity, Abstract
             return;
         }
 
-        if (caseComment.getCaseStateId() != null) {
-            caseComment.setText(null);
-            caseCommentController.saveCaseComment(caseType, caseComment, new FluentCallback<CaseComment>()
-                    .withSuccess(comment -> itemView.setMessage(null))
-            );
-            return;
-        }
-
         caseCommentController.removeCaseComment(caseType, caseComment, new FluentCallback<Long>()
                 .withSuccess(result -> {
                     Collection<Attachment> commentAttachments = itemView.attachmentContainer().getAll();
@@ -365,10 +357,6 @@ public abstract class CaseCommentItemsListActivity implements Activity, Abstract
 
     private String transliteration(String input) {
         return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
-    }
-
-    private String makeManagerInfo(String managerShortName, String managerCompanyName) {
-        return transliteration(managerShortName + " (" + managerCompanyName + ")");
     }
 
     private List<Long> extractIds(Collection<CaseAttachment> list){

@@ -260,8 +260,6 @@ public class CaseCommentItemView
     @UiField
     LIElement owner;
     @UiField
-    LIElement info;
-    @UiField
     LIElement options;
     @UiField
     ImageElement icon;
