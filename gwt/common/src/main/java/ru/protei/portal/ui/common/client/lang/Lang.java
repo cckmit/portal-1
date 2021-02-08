@@ -428,6 +428,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contactGeneratePassword();
 
+    String contactHasCrmAccount();
+
     String product();
 
     String products();

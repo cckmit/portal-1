@@ -88,6 +88,8 @@ public class Person extends AuditableObject {
     @JdbcColumn(name = "locale")
     private String locale;
 
+    private boolean hasCrmAccount;
+
     public static Person fromPersonShortView( PersonShortView personShortView ){
         if(personShortView == null)
             return null;
@@ -353,6 +355,14 @@ public class Person extends AuditableObject {
         if (contactItems != null) {
             contactItems.removeIf((info) -> !info.isItemOf(En_ContactItemType.EMAIL));
         }
+    }
+
+    public boolean isHasCrmAccount() {
+        return hasCrmAccount;
+    }
+
+    public void setHasCrmAccount(boolean hasCrmAccount) {
+        this.hasCrmAccount = hasCrmAccount;
     }
 
     @Override

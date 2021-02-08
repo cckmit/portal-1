@@ -6,7 +6,9 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.UserLoginShortView;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.query.UserLoginShortViewQuery;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -16,9 +18,17 @@ import ru.protei.portal.ui.common.client.events.ContactEvents;
 import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
 import ru.protei.portal.ui.common.client.util.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.ContactControllerAsync;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
 
 /**
  * Активность превью контакта
@@ -90,6 +100,9 @@ public abstract class ContactPreviewActivity implements Activity, AbstractContac
         view.setAddress( infoFacade.getFactAddress() );
         view.setHomeAddress( infoFacade.getHomeAddress() );
         view.setBirthday( value.getBirthday() != null ? DateFormatter.formatDateMonth(value.getBirthday()) : "" );
+
+        requestLogins(value.getId());
+
         view.setGenderImage( AvatarUtils.getAvatarUrlByGender(value.getGender()));
         view.setInfo( value.getInfo() );
     }
@@ -113,6 +126,15 @@ public abstract class ContactPreviewActivity implements Activity, AbstractContac
         } );
     }
 
+    private void requestLogins(Long personId) {
+        UserLoginShortViewQuery accountQuery = new UserLoginShortViewQuery();
+        accountQuery.setPersonIds(new HashSet<>(Collections.singleton(personId)));
+        accountService.getUserLoginShortViewList(accountQuery, new FluentCallback<List<UserLoginShortView>>()
+                .withSuccess(userLoginShortViews ->
+                        view.setLogins(
+                                joining(userLoginShortViews, ", ", UserLoginShortView::getUlogin))));
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -120,6 +142,8 @@ public abstract class ContactPreviewActivity implements Activity, AbstractContac
 
     @Inject
     ContactControllerAsync contactService;
+    @Inject
+    AccountControllerAsync accountService;
 
     @Inject
     PolicyService policyService;

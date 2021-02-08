@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.contact.client.view.table;
 
+import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
@@ -26,9 +27,20 @@ public abstract class ContactTableViewBase extends Composite {
                 Element root = DOM.createDiv();
                 cell.appendChild(root);
 
+                if (value.isHasCrmAccount()) {
+                    AnchorElement a = DOM.createAnchor().cast();
+                    a.addClassName("far fa-user fa-md");
+                    a.setTitle(lang.contactHasCrmAccount());
+                    root.appendChild(a);
+                }
+
                 Element fioElement = DOM.createDiv();
                 fioElement.setInnerHTML(value.getDisplayName());
                 root.appendChild(fioElement);
+
+                if (value.isHasCrmAccount()) {
+                    fioElement.setClassName("contact-fio");
+                }
 
                 if (value.isFired() || value.isDeleted()) {
                     root.addClassName("fired");
