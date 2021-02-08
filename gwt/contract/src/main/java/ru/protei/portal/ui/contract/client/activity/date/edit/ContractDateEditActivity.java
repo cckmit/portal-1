@@ -138,6 +138,9 @@ public abstract class ContractDateEditActivity implements Activity,
     }
 
     private boolean validate() {
+        if ( value.getType() != null ) {
+            return true;
+        }
         return true;
     }
 

@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.contract.client.activity.date.table;
 
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.ent.ContractDate;
 
@@ -15,5 +16,5 @@ public interface AbstractContractDateTableView extends IsWidget {
 
     void removeRow(ContractDate value);
 
-    void refresh();
+    HasVisibility costOverflowWarningVisibility();
 }

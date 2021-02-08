@@ -484,7 +484,6 @@ public class ContractServiceImpl implements ContractService {
 
         ContractQuery query = new ContractQuery();
         query.setOpenStateDate(apiQuery.getOpenStateDate());
-        query.setOpenStateDate(apiQuery.getOpenStateDate());
         query.setOrganizationIds(apiQuery.getOrganizationIds());
         query.setStates(apiQuery.getStates());
         SearchResult<Contract> result = contractDAO.getSearchResult(query);
@@ -697,8 +696,8 @@ public class ContractServiceImpl implements ContractService {
         contract1C.setDateSigning(saveDateFormat.format(contract.getDateSigning()));
         contract1C.setName(contract.getNumber().trim()+ " от " + showDateFormat.format(contract.getDateSigning()));
 
-        List<ContractAdditionalProperty1C> additionalProperty1CS = new ArrayList<>();
-        // TODO:: need to fix (another branch)
+        // PORTAL-1566 p.7 (freezed)
+//        List<ContractAdditionalProperty1C> additional1СProperties = new ArrayList<>();
 //        ContractAdditionalProperty1C dirProperty = new ContractAdditionalProperty1C(contract.getDirectionName());
 //        additionalProperty1CS.add(dirProperty);
 //        contract1C.setAdditionalProperties(additionalProperty1CS);

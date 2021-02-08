@@ -6,6 +6,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.AbstractColumn;
 import ru.brainworm.factory.widget.table.client.TableWidget;
@@ -14,7 +15,6 @@ import ru.brainworm.factory.widget.table.client.helper.StaticTextColumn;
 import ru.protei.portal.core.model.dict.En_ContractDatesType;
 import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -61,8 +61,8 @@ public class ContractDateTableView extends Composite implements AbstractContract
     }
 
     @Override
-    public void refresh() {
-        table.refresh();
+    public HasVisibility costOverflowWarningVisibility() {
+        return costOverflowWarning;
     }
 
     private void initTable() {
@@ -112,6 +112,8 @@ public class ContractDateTableView extends Composite implements AbstractContract
     TableWidget<ContractDate> table;
     @UiField
     Lang lang;
+    @UiField
+    HTMLPanel costOverflowWarning;
 
     @Inject
     En_ContractDatesTypeLang datesTypeLang;
