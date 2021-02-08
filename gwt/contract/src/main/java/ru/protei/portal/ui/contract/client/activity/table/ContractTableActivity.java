@@ -11,7 +11,6 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.ent.Contract;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.activity.contractfilter.AbstractContractFilterActivity;

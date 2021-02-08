@@ -19,7 +19,7 @@ public class EmployeeCustomFormSelector extends FormPopupSingleSelector<PersonSh
         this.model = model;
         setAsyncModel(model);
         setFilter(personView -> !personView.isFired());
-        setItemRenderer(value -> value == null ? defaultValue : value.getDisplayName());
+        setItemRenderer(value -> value == null ? defaultValue : value.getName());
     }
 
     @Override

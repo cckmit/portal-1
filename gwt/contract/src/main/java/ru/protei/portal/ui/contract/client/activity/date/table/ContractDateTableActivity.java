@@ -26,6 +26,11 @@ public abstract class ContractDateTableActivity implements AbstractContractDateT
         view.setData(event.contractDates);
     }
 
+    @Event
+    public void onRefreshClicked(ContractDateEvents.Refresh event) {
+        view.refresh();
+    }
+
     @Override
     public void onEditClicked(ContractDate value) {
         fireEvent(new ContractDateEvents.ShowEdit(value));
@@ -40,7 +45,6 @@ public abstract class ContractDateTableActivity implements AbstractContractDateT
         event.contractDates.remove(value);
         view.removeRow(value);
     }
-
 
     @Inject
     Lang lang;

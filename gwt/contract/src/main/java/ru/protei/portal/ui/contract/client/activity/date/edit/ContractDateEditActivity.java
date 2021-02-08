@@ -5,6 +5,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_ContractDatesType;
+import ru.protei.portal.core.model.dict.En_Currency;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.struct.Money;
@@ -14,8 +15,7 @@ import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDe
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.ContractDateEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-
-import java.util.function.Consumer;
+import ru.protei.portal.ui.common.client.util.DateUtils;
 
 
 public abstract class ContractDateEditActivity implements Activity,
@@ -32,7 +32,6 @@ public abstract class ContractDateEditActivity implements Activity,
     @Event
     public void onInit(ContractDateEvents.Init event) {
         this.init = event;
-        view.setCostChangeListener(money -> view.moneyPercent().setValue(calculatePercent(money)));
     }
 
     @Event
@@ -40,10 +39,7 @@ public abstract class ContractDateEditActivity implements Activity,
         this.value = event.value;
         boolean isAllowedEdit = policyService.hasPrivilegeFor(En_Privilege.CONTRACT_EDIT);
 
-        if (value == null) {
-            value = new ContractDate();
-        }
-        fillView(value);
+        fillView();
 
         dialogView.removeButtonVisibility().setVisible(false);
         dialogView.saveButtonVisibility().setVisible(isAllowedEdit);
@@ -60,6 +56,10 @@ public abstract class ContractDateEditActivity implements Activity,
         if (!validate()) {
             return;
         }
+
+        fillDto();
+        dialogView.hidePopup();
+        fireEvent(new ContractDateEvents.Refresh());
     }
 
     @Override
@@ -67,9 +67,43 @@ public abstract class ContractDateEditActivity implements Activity,
         dialogView.hidePopup();
     }
 
-    private void fillView(ContractDate value) {
+    @Override
+    public void onDateChanged() {
+        boolean isDateNotPresent = view.date().getValue() == null;
+        view.notifyFlagEnabled().setEnabled(isDateNotPresent);
+        if (isDateNotPresent) {
+            view.notifyFlag().setValue(false);
+        }
+    }
+
+    @Override
+    public void onPercentChanged() {
+        Money cost = calculateCost(view.moneyPercent().getValue());
+        MoneyWithCurrency mwc = view.moneyWithCurrency().getValue();
+        mwc.setMoney(cost);
+        view.moneyWithCurrency().setValue(mwc);
+    }
+
+    @Override
+    public void onCostChanged() {
+        MoneyWithCurrency mwc = view.moneyWithCurrency().getValue();
+        Money cost = mwc != null ? mwc.getMoney() : null;
+        view.moneyPercent().setValue(calculatePercent(cost));
+    }
+
+    @Override
+    public void onCalendarDaysChanged() {
+        view.date().setValue(DateUtils.addDays(init.dateSignedSupplier.get(), view.calendarDays().getValue()));
+    }
+
+    @Override
+    public void onTypeChanged() {
+       view.setMoneyFieldsEnabled(isTypeWithPayment(view.type().getValue()));
+    }
+
+    private void fillView() {
         view.type().setValue(value.getType());
-        view.date().setValue(value.getDate());
+        view.date().setValue(value. getDate());
         view.costType().setValue(value.getCostType());
         view.notifyFlag().setValue(value.isNotify());
         view.notifyFlagEnabled().setEnabled(value.getDate() != null);
@@ -82,18 +116,29 @@ public abstract class ContractDateEditActivity implements Activity,
                 return cost == null;
             }
         });
+        view.setMoneyFieldsEnabled(isTypeWithPayment(value.getType()));
         view.moneyWithCurrency().setValue(new MoneyWithCurrency(value.getCost(), value.getCurrency()));
-        view.moneyWithCurrencyEnabled().setEnabled(isTypeWithPayment(value.getType()));
         view.moneyPercent().setValue(calculatePercent(value.getCost()));
-        view.moneyPercentEnabled().setEnabled(isTypeWithPayment(value.getType()));
-        view.calendarDaysEnabled().setEnabled(init.dateSignedSupplier.get() != null);
-    }
-    private boolean validate() {
-        return true;
+        view.setCalendarDaysEnabled(init.dateSignedSupplier.get() != null);
+        view.calendarDays().setValue(DateUtils.getDaysBetween(init.dateSignedSupplier.get(), value.getDate()));
     }
 
-    private boolean isNew( ContractDate value ) {
-        return value!=null && value.getId() == null;
+    private void fillDto() {
+        value.setType(view.type().getValue());
+        value.setDate(view.date().getValue());
+        value.setCostType(view.costType().getValue());
+        value.setNotify(view.notifyFlag().getValue());
+        value.setComment(view.comment().getValue());
+
+        MoneyWithCurrency mwc = view.moneyWithCurrency().getValue();
+        Money cost = mwc != null ? mwc.getMoney() : null;
+        En_Currency currency = mwc != null ? mwc.getCurrency() : null;
+        value.setCost(cost);
+        value.setCurrency(currency);
+    }
+
+    private boolean validate() {
+        return true;
     }
 
     private boolean isTypeWithPayment(En_ContractDatesType type) {

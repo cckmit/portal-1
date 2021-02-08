@@ -139,9 +139,11 @@
                             <person:EmployeeCustomFormSelector hasNullValue="false" ui:field="curator"
                                                                defaultValue="{lang.selectAccountPerson}"
                                                                header="{lang.contractCurator}"/>
-                            <person:EmployeeFormSelector ui:field="projectManager" enabled="false"
-                                                         defaultValue="{lang.selectAccountPerson}"
-                                                         header="{lang.contractProjectManager}"/>
+                            <div class="form-group form-group-default">
+                                <label class="fade"><ui:text from="{lang.contractProjectManager}"/></label>
+                                <span ui:field="projectManager"/>
+                            </div>
+
                             <person:EmployeeFormSelector ui:field="contractSignManager"
                                                          defaultValue="{lang.selectAccountPerson}"
                                                          header="{lang.contractContractSignManager}"/>
@@ -180,20 +182,16 @@
             </div>
 
             <g:HTMLPanel styleName="container-fluid padding-15">
-                <tab:TabWidget styleName="" ui:field="tabs">
+                <tab:TabWidget styleName="" ui:field="tabs" tabContentStyleName="tab-content bg-white">
                     <tab:pane.TabWidgetPane tabName="{lang.contractDeliveryAndPaymentsPeriodHeader}">
-                        <g:HTMLPanel>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="form-group col-md-12">
-                                        <div class="pull-right">
-                                            <g:Button ui:field="addDate" styleName="btn btn-xs btn-info"
-                                                      text="{lang.buttonAdd}"/>
-                                        </div>
-                                    </div>
-                                    <g:HTMLPanel ui:field="datesTableContainer" styleName="col-md-12"/>
+                        <g:HTMLPanel styleName="row">
+                            <div class="form-group col-md-12">
+                                <div class="pull-right">
+                                    <g:Button ui:field="addDate" styleName="btn btn-xs btn-info"
+                                              text="{lang.buttonAdd}"/>
                                 </div>
                             </div>
+                            <g:HTMLPanel ui:field="datesTableContainer" styleName="col-md-12"/>
                         </g:HTMLPanel>
                     </tab:pane.TabWidgetPane>
 

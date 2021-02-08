@@ -29,17 +29,15 @@ public interface AbstractContractDateEditView extends IsWidget {
 
     HasValue<MoneyWithCurrency> moneyWithCurrency();
 
-    HasEnabled moneyWithCurrencyEnabled();
-
     HasValue<Double> moneyPercent();
 
-    HasEnabled moneyPercentEnabled();
-
-    void setCostChangeListener(Consumer<Money> onCostChanged);
+    void setMoneyFieldsEnabled(boolean isEnabled);
 
     void setMoneyValidationFunction(Function<Money, Boolean> validationFunction);
 
     HasValue<ContractCostType> costType();
 
-    HasEnabled calendarDaysEnabled();
+    HasValue<Long> calendarDays();
+
+    void setCalendarDaysEnabled(boolean isEnabled);
 }

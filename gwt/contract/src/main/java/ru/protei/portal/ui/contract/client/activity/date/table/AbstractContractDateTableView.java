@@ -14,4 +14,6 @@ public interface AbstractContractDateTableView extends IsWidget {
     void showEditableColumns(boolean isVisible);
 
     void removeRow(ContractDate value);
+
+    void refresh();
 }

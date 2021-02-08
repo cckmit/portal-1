@@ -127,6 +127,7 @@ public class UiConstants {
 
         String SHOW = "show";
         String HIDE = "hide";
+        String DISABLED = "disabled";
         String HAS_ERROR = "has-error";
         String INACTIVE = "inactive";
         String REQUIRED = "required";

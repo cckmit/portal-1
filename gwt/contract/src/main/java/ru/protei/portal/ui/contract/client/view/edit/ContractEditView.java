@@ -32,10 +32,8 @@ import ru.protei.portal.ui.common.client.widget.project.ProjectWidget;
 import ru.protei.portal.ui.common.client.widget.selector.contract.ContractFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.state.ContractStateSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.type.ContractTypeSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeCustomFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeFormSelector;
-import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionFormSelector;
 import ru.protei.portal.ui.common.client.widget.tab.TabWidget;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableLongBox;
@@ -161,8 +159,8 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
-    public HasValue<PersonShortView> projectManager() {
-        return projectManager;
+    public void setProjectManager(String value) {
+        projectManager.setInnerText(value);
     }
 
     @Override
@@ -331,7 +329,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         directions.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.DIRECTION_INPUT);
         organization.setEnsureDebugId(DebugIds.CONTRACT.ORGANIZATION_SELECTOR);
         curator.setEnsureDebugId(DebugIds.CONTRACT.CURATOR_SELECTOR);
-        projectManager.setEnsureDebugId(DebugIds.CONTRACT.MANAGER_SELECTOR);
+        projectManager.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.MANAGER_FIELD);
         contractSignManager.setEnsureDebugId(DebugIds.CONTRACT.CONTRACT_SIGN_MANAGER_SELECTOR);
         contractorWidget.setEnsureDebugId(DebugIds.CONTRACT.CONTRACTOR_SELECTOR);
         addDate.ensureDebugId(DebugIds.CONTRACT.ADD_DATES_BUTTON);
@@ -394,9 +392,8 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     ProjectWidget projectWidget;
     @UiField
     SpanElement directions;
-    @Inject
-    @UiField(provided = true)
-    EmployeeFormSelector projectManager;
+    @UiField
+    SpanElement projectManager;
     @Inject
     @UiField(provided = true)
     EmployeeFormSelector contractSignManager;

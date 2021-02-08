@@ -17,11 +17,11 @@
             </div>
             <div class="row">
                 <div class="col-md-6">
-                    <div class="form-group form-group-default">
+                    <div class="form-group form-group-default" ui:field="calendarDayContainer">
                         <label class="fade">
                             <ui:text from="{lang.contractDateCalendarDay}"/>
                         </label>
-                        <g:IntegerBox ui:field="calendarDay" styleName="form-control"/>
+                        <g:LongBox ui:field="calendarDay" styleName="form-control"/>
                     </div>
                 </div>
 
@@ -41,7 +41,7 @@
             <div class="row">
                 <form:FormPopupSingleSelector ui:field="costType" header="{lang.contractDateCostType}" styleName="col-md-3"/>
                 <div class="col-md-3">
-                    <div class="form-group form-group-default">
+                    <div class="form-group form-group-default" ui:field="moneyPercentContainer">
                         <label class="fade">
                             <ui:text from="{lang.percent}"/>
                         </label>
@@ -51,7 +51,7 @@
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="form-group form-group-default">
+                    <div class="form-group form-group-default" ui:field="moneyWithCurrencyContainer">
                         <label class="fade">
                             <ui:text from="{lang.contractCost}"/>
                         </label>

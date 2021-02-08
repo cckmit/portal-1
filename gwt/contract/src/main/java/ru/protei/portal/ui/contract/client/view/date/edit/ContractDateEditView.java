@@ -1,8 +1,11 @@
 package ru.protei.portal.ui.contract.client.view.date.edit;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
@@ -23,9 +26,9 @@ import ru.protei.portal.ui.contract.client.widget.selector.ContractDatesTypeSele
 import java.util.Date;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.DISABLED;
 
 public class ContractDateEditView extends Composite implements AbstractContractDateEditView {
 
@@ -73,17 +76,6 @@ public class ContractDateEditView extends Composite implements AbstractContractD
 
     @Override
     public HasValue<MoneyWithCurrency> moneyWithCurrency() {
-        MoneyWithCurrency mwc = moneyWithCurrency.getValue();
-        Money cost = mwc != null ? mwc.getMoney() : null;
-
-        if (onCostChanged != null) {
-            onCostChanged.accept(cost);
-        }
-        return moneyWithCurrency;
-    }
-
-    @Override
-    public HasEnabled moneyWithCurrencyEnabled() {
         return moneyWithCurrency;
     }
 
@@ -93,13 +85,11 @@ public class ContractDateEditView extends Composite implements AbstractContractD
     }
 
     @Override
-    public HasEnabled moneyPercentEnabled() {
-        return moneyPercent;
-    }
-
-    @Override
-    public void setCostChangeListener(Consumer<Money> onCostChanged) {
-        this.onCostChanged = onCostChanged;
+    public void setMoneyFieldsEnabled(boolean isEnabled) {
+        moneyPercent.setEnabled(isEnabled);
+        moneyWithCurrency.setEnabled(isEnabled);
+        setEnabledContainer(moneyPercentContainer, isEnabled);
+        setEnabledContainer(moneyWithCurrencyContainer, isEnabled);
     }
 
     @Override
@@ -113,8 +103,47 @@ public class ContractDateEditView extends Composite implements AbstractContractD
     }
 
     @Override
-    public HasEnabled calendarDaysEnabled() {
+    public HasValue<Long> calendarDays() {
         return calendarDay;
+    }
+
+    @Override
+    public void setCalendarDaysEnabled(boolean isEnabled) {
+        calendarDay.setEnabled(isEnabled);
+        setEnabledContainer(calendarDayContainer, isEnabled);
+    }
+
+    @UiHandler("calendarDay")
+    public void onCalendarDaysChanged(ValueChangeEvent<Long> event) {
+        activity.onCalendarDaysChanged();
+    }
+
+    @UiHandler("type")
+    public void onTypeChanged(ValueChangeEvent<En_ContractDatesType> event) {
+        activity.onTypeChanged();
+    }
+
+    @UiHandler("moneyPercent")
+    public void onPercentChanged(ValueChangeEvent<Double> event) {
+        activity.onPercentChanged();
+    }
+
+    @UiHandler("moneyWithCurrency")
+    public void onCostChanged(ValueChangeEvent<MoneyWithCurrency> event) {
+        activity.onCostChanged();
+    }
+
+    @UiHandler("date")
+    public void onDateChanged(ValueChangeEvent<Date> event) {
+        activity.onDateChanged();
+    }
+
+    private void setEnabledContainer(DivElement container, boolean isEnabled) {
+        if (isEnabled) {
+            container.removeClassName(DISABLED);
+            return;
+        }
+        container.addClassName(DISABLED);
     }
 
     private void ensureDebugIds() {
@@ -146,14 +175,19 @@ public class ContractDateEditView extends Composite implements AbstractContractD
     @UiField
     HTMLPanel root;
     @UiField
-    IntegerBox calendarDay;
+    LongBox calendarDay;
     @UiField
     FormPopupSingleSelector<ContractCostType> costType;
+    @UiField
+    DivElement moneyPercentContainer;
+    @UiField
+    DivElement moneyWithCurrencyContainer;
+    @UiField
+    DivElement calendarDayContainer;
 
     @Inject
     ContractCostTypeLang costTypeLang;
 
-    private Consumer<Money> onCostChanged;
     private AbstractContractDateEditActivity activity;
 
     interface ContractDateEditViewUiBinder extends UiBinder<Widget, ContractDateEditView> {}

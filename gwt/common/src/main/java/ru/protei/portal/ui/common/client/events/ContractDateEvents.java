@@ -29,8 +29,6 @@ public class ContractDateEvents {
     }
 
     public static class ShowEdit {
-        public ShowEdit() {}
-
         public ShowEdit(ContractDate value) {
             this.value = value;
         }
@@ -38,21 +36,7 @@ public class ContractDateEvents {
         public ContractDate value;
     }
 
-    public static class Created {
-        public Created( ContractDate value) {
-            this.value = value;
-        }
-
-        public ContractDate value;
-    }
-
-    public static class Changed {
-        public Changed( ContractDate value) {
-            this.value = value;
-        }
-
-        public ContractDate value;
-    }
+    public static class Refresh {}
 
     public static class Removed {
         public Removed(ContractDate value) {

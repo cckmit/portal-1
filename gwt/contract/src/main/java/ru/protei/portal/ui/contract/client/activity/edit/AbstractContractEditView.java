@@ -57,6 +57,8 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasValue<ProjectInfo> project();
 
+    void setProjectManager(String value);
+
     HasValue<PersonShortView> contractSignManager();
 
     HasValue<Contractor> contractor();
@@ -64,8 +66,6 @@ public interface AbstractContractEditView extends IsWidget {
     HasValue<String> deliveryNumber();
 
     HasEnabled contractorEnabled();
-
-    HasValue<PersonShortView> projectManager();
 
     void setDirections(String value);
 

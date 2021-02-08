@@ -60,6 +60,11 @@ public class ContractDateTableView extends Composite implements AbstractContract
         table.removeRow(value);
     }
 
+    @Override
+    public void refresh() {
+        table.refresh();
+    }
+
     private void initTable() {
         StaticTextColumn<ContractDate> dateColumn = new StaticTextColumn<ContractDate>(lang.contractDateColumn()) {
             @Override
@@ -86,7 +91,7 @@ public class ContractDateTableView extends Composite implements AbstractContract
         StaticColumn<ContractDate> commentColumn = new StaticColumn<ContractDate>(lang.contractCommentColumn()) {
             @Override
             public void fillColumnValue(Element element, ContractDate value) {
-                element.setInnerHTML("<small><i>" + StringUtils.nullIfEmpty(value.getComment()) + "</i></small>");
+                element.setInnerHTML("<small><i>" + StringUtils.emptyIfNull(value.getComment()) + "</i></small>");
             }
         };
         table.addColumn(commentColumn.header, commentColumn.values);
