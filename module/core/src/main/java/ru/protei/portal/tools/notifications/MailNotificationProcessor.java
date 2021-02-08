@@ -678,12 +678,12 @@ public class MailNotificationProcessor {
                     true,
                     event.getContent(),
                     filename,
-                    getFromPortalAddress()
+                    getFromReportAddress()
             );
         } else {
             sendMailToRecipients(Collections.singletonList(fetchNotificationEntryFromPerson(report.getCreator())),
                     bodyTemplate, subjectTemplate,
-                    true, getFromPortalAddress());
+                    true, getFromReportAddress());
         }
     }
 
@@ -1203,6 +1203,10 @@ public class MailNotificationProcessor {
 
     private String getFromAbsenceAddress() {
         return config.data().smtp().getFromAddressAbsenceAlias() + " <" + config.data().smtp().getFromAddressAbsence() + ">";
+    }
+
+    private String getFromReportAddress() {
+        return config.data().smtp().getFromAddressReportAlias() + " <" + config.data().smtp().getFromAddressReport() + ">";
     }
 
     private List<String> getNotifiersAddresses(Collection<NotificationEntry> notifiers) {
