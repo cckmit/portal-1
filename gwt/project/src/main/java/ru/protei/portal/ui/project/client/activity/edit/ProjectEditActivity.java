@@ -9,11 +9,9 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.dto.Project;
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.CompanyImportanceItem;
-import ru.protei.portal.core.model.ent.DevUnit;
-import ru.protei.portal.core.model.ent.ProjectSla;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
@@ -33,10 +31,10 @@ import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.dict.En_RegionState.PAUSED;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 import static ru.protei.portal.ui.project.client.util.AccessUtil.*;
+import static ru.protei.portal.core.model.util.CrmConstants.State.*;
 
 /**
  * Активность карточки создания и редактирования проектов
@@ -173,7 +171,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
     @Override
     public void onStateChanged() {
-        view.pauseDateContainerVisibility().setVisible( PAUSED == view.state().getValue() );
+        view.pauseDateContainerVisibility().setVisible( view.state().getValue().getId().equals(PAUSED) );
     }
 
     @Override
@@ -201,7 +199,8 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     private void fillView(Project project) {
         view.setNumber( isNew( project ) ? null : project.getId().intValue() );
         view.name().setValue( isNew( project ) ? "" : project.getName());
-        view.state().setValue( isNew( project ) ? En_RegionState.UNKNOWN : project.getState() );
+        CaseState caseState = new CaseState( isNew( project ) ? UNKNOWN : project.getStateId() );
+        view.state().setValue( caseState );
         view.directions().setValue(isEmpty(project.getProductDirectionEntityOptionList())? null : toSet(project.getProductDirectionEntityOptionList(), option -> new ProductDirectionInfo(option)));
         view.productEnabled().setEnabled(isNotEmpty(project.getProductDirectionEntityOptionList()));
         view.team().setValue( project.getTeam() == null ? null : new HashSet<>( project.getTeam() ) );
@@ -217,7 +216,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         if (isNew( project )) view.setHideNullValue(true);
         view.customerType().setValue(project.getCustomerType());
         view.updateProductModel( toSet(project.getProductDirectionEntityOptionList(), EntityOption::getId));
-        view.pauseDateContainerVisibility().setVisible( PAUSED == project.getState() );
+        view.pauseDateContainerVisibility().setVisible( Objects.equals(project.getStateId(), PAUSED) );
         view.pauseDate().setValue( project.getPauseDate() == null ? null : new Date( project.getPauseDate() ) );
 
         if (customer != null && isNotEmpty(project.getProjectSlas())) {
@@ -265,6 +264,8 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
             show.isPrivateVisible = canAccessProjectPrivateElements(policyService, En_Privilege.PROJECT_VIEW, project.getTeam());
             show.isPrivateCase = false;
             show.isNewCommentEnabled = canAccessProject(policyService, actionPrivilege, project.getTeam());
+            show.initiatorCompanyId = project.getCustomerId();
+            show.isMentionEnabled = policyService.hasSystemScopeForPrivilege(En_Privilege.PROJECT_VIEW);
             fireEvent(show);
         }
 
@@ -325,11 +326,12 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     private Project fillProject(Project project) {
         project.setName(view.name().getValue());
         project.setDescription(view.description().getText());
-        project.setState(view.state().getValue());
-        project.setPauseDate( (PAUSED != view.state().getValue()) ? null : view.pauseDate().getValue().getTime() );
+        Long stateId = view.state().getValue().getId();
+        project.setStateId(stateId);
+        project.setPauseDate((!Objects.equals(stateId, PAUSED)) ? null : view.pauseDate().getValue().getTime());
         project.setCustomer(Company.fromEntityOption(view.company().getValue()));
         project.setCustomerType(view.customerType().getValue());
-        project.setProducts( toSet(view.products().getValue(), DevUnit::fromProductShortView));
+        project.setProducts(toSet(view.products().getValue(), DevUnit::fromProductShortView));
         project.setTechnicalSupportValidity(view.technicalSupportValidity().getValue());
         project.setWorkCompletionDate(view.workCompletionDate().getValue());
         project.setPurchaseDate(view.purchaseDate().getValue());
@@ -388,7 +390,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
             return false;
         }
 
-        if (PAUSED.equals( view.state().getValue() )) {
+        if ( view.state().getValue().getId().equals(PAUSED) ) {
             Date pauseDate = view.pauseDate().getValue();
             if (pauseDate == null) {
                 fireEvent(new NotifyEvents.Show(lang.errSaveProjectPauseDate(), NotifyEvents.NotifyType.ERROR));

@@ -1,0 +1,132 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-color-column-in-case_state-table" author="novikov_a">
+        <addColumn tableName="case_state">
+            <column name="color" type="VARCHAR(9)" defaultValue="#e6e6e6">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add-color-values-in-case_state-table" author="novikov_a">
+        <update tableName="case_state">
+            <column name="color" value="#ef5350"/>
+            <where>id = 1</where>
+        </update>
+        <update tableName="case_state">
+            <column name="color" value="#42a5f5"/>
+            <where>id in (2,30,31,35,36)</where>
+        </update>
+        <update tableName="case_state">
+            <column name="color" value="#868686"/>
+            <where>id in (4,33,37)</where>
+        </update>
+        <update tableName="case_state">
+            <column name="color" value="#607D8B"/>
+            <where>id = 5</where>
+        </update>
+        <update tableName="case_state">
+            <column name="color" value="#00bcd4"/>
+            <where>id = 16</where>
+        </update>
+        <update tableName="case_state">
+            <column name="color" value="#4caf50"/>
+            <where>id = 17</where>
+        </update>
+        <update tableName="case_state">
+            <column name="color" value="#906094"/>
+            <where>id in (19,20)</where>
+        </update>
+        <update tableName="case_state">
+            <column name="color" value="#333"/>
+            <where>id = 22</where>
+        </update>
+        <update tableName="case_state">
+            <column name="color" value="#580505"/>
+            <where>id in (23,28)</where>
+        </update>
+        <update tableName="case_state">
+            <column name="color" value="#88027b"/>
+            <where>id = 24</where>
+        </update>
+        <update tableName="case_state">
+            <column name="color" value="#0e00b9"/>
+            <where>id = 25</where>
+        </update>
+        <update tableName="case_state">
+            <column name="color" value="#00a5b9"/>
+            <where>id = 26</where>
+        </update>
+        <update tableName="case_state">
+            <column name="color" value="#b9ae00"/>
+            <where>id = 27</where>
+        </update>
+        <update tableName="case_state">
+            <column name="color" value="#6acc39"/>
+            <where>id = 29</where>
+        </update>
+        <update tableName="case_state">
+            <column name="color" value="#bf6400"/>
+            <where>id = 32</where>
+        </update>
+        <update tableName="case_state">
+            <column name="color" value="#133aadcf"/>
+            <where>id = 34</where>
+        </update>
+        <update tableName="case_state">
+            <column name="color" value="#000000"/>
+            <where>id = 38</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="drop-default-color-value-in-case_state-table" author="novikov_a">
+        <dropDefaultValue tableName="case_state" columnName="color"/>
+    </changeSet>
+
+    <changeSet id="add-color-column-in-importance_level-table" author="novikov_a">
+        <addColumn tableName="importance_level">
+            <column name="color" type="VARCHAR(9)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add-color-values-in-importance_level-table" author="novikov_a">
+        <update tableName="importance_level">
+            <column name="color" value="#e30000"/>
+            <where>id = 1</where>
+        </update>
+        <update tableName="importance_level">
+            <column name="color" value="#fed74a"/>
+            <where>id = 2</where>
+        </update>
+        <update tableName="importance_level">
+            <column name="color" value="#b7e281"/>
+            <where>id = 3</where>
+        </update>
+        <update tableName="importance_level">
+            <column name="color" value="#e6e6e6"/>
+            <where>id = 4</where>
+        </update>
+        <update tableName="importance_level">
+            <column name="color" value="#eeff00"/>
+            <where>id = 5</where>
+        </update>
+        <update tableName="importance_level">
+            <column name="color" value="#960000"/>
+            <where>id = 6</where>
+        </update>
+        <update tableName="importance_level">
+            <column name="color" value="#fcd64a"/>
+            <where>id = 7</where>
+        </update>
+        <update tableName="importance_level">
+            <column name="color" value="#e5e5e5"/>
+            <where>id = 8</where>
+        </update>
+    </changeSet>
+</databaseChangeLog>

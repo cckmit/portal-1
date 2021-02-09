@@ -241,6 +241,13 @@ public class DebugIds {
         String PREFIX = "importance-button-";
     }
 
+    public interface PRIVACY_TYPE_BUTTON {
+        String DEFAULT = "privacy-type-button-";
+        String PUBLIC = "privacy-type-button-public";
+        String PRIVATE_CUSTOMER = "privacy-type-button-private-customer";
+        String PRIVATE = "privacy-type-button-private";
+    }
+
     public interface PRODUCT_TYPES_BUTTON {
         String DEFAULT = "product-types-button-";
         String COMPONENT = "product-types-button-component";
@@ -866,11 +873,13 @@ public class DebugIds {
         String ORGANIZATION_SELECTOR = "contract-organization-selector";
         String CURATOR_SELECTOR = "contract-curator-selector";
         String MANAGER_SELECTOR = "contract-manager-selector";
+        String MANAGER_FIELD = "contract-manager-field";
         String CONTRACTOR_SELECTOR = "contract-contractor-selector";
         String ADD_DATES_BUTTON = "contract-add-dates-button";
         String ADD_SPECIFICATIONS_BUTTON = "contract-add-specifications-button";
         String SAVE_BUTTON = "contract-save-button";
         String CANCEL_BUTTON = "contract-cancel-button";
+        String CONTRACT_SIGN_MANAGER_SELECTOR = "contract-contract-sign-manager-selector";
 
         interface LABEL {
             String COMMON_HEADER = "contract-common-header";
@@ -891,6 +900,7 @@ public class DebugIds {
             String CURATOR = "contract-curator-label";
             String MANAGER = "contract-manager-label";
             String CONTRACTOR = "contract-contractor-label";
+            String CONTRACT_SIGN_MANAGER = "contract-contract-sign-manager-label";
         }
 
         interface DATE_ITEM {

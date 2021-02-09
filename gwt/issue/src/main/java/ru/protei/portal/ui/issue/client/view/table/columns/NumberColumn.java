@@ -39,6 +39,7 @@ public class NumberColumn extends ClickColumn<CaseShortView> {
         if ( value.getImportanceCode() != null ) {
             com.google.gwt.dom.client.Element i = DOM.createElement( "i" );
             i.addClassName(ImportanceStyleProvider.getImportanceIcon(value.getImportanceCode()) + " center");
+            i.getStyle().setBackgroundColor(value.getImportanceColor());
             divElement.appendChild( i );
         }
 

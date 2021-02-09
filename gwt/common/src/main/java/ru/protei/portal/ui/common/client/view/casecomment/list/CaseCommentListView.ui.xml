@@ -4,7 +4,9 @@
              xmlns:timefield='urn:import:ru.protei.portal.ui.common.client.widget.timefield'
              xmlns:timeElapsed='urn:import:ru.protei.portal.ui.common.client.view.selector'
              xmlns:commentArea="urn:import:ru.protei.portal.ui.common.client.widget.mentioningtextarea"
-             xmlns:fileuploader="urn:import:ru.protei.portal.ui.common.client.widget.uploader.impl">
+             xmlns:fileuploader="urn:import:ru.protei.portal.ui.common.client.widget.uploader.impl"
+             xmlns:privacyType="urn:import:ru.protei.portal.ui.common.client.widget.privacytype"
+>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -59,7 +61,7 @@
                                     </div>
 
                                     <div class="col-md-3 p-l-0">
-                                        <g:CheckBox ui:field="privateComment" styleName="checkbox check-danger" text="{lang.commentSetPrivate}"/>
+                                        <privacyType:PrivacyTypeButtonSelector ui:field="privacyType" styleName="btn-group btn-group-justified"/>
                                     </div>
                                 </div>
 

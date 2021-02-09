@@ -93,6 +93,11 @@
   border-radius: 4px;
   min-height: 20px;
 
+  &.private-customer-message {
+    background-color: #FEFBF5;
+    border-color: #f9edbb;
+  }
+
   &.private-message {
     background-color: #fef6dd;
     border-color: #f9d35b;
@@ -104,11 +109,6 @@
 
   .message-text {
     white-space: pre-wrap;
-  }
-
-  .private-btn {
-    height: 35px;
-    line-height: 35px;
   }
 }
 
@@ -126,6 +126,10 @@
   border-right-color: #fef6dd;
 }
 
+.chats .message.private-customer-message:after {
+  border-right-color: #FEFBF5;
+}
+
 .chats .message:after {
   left: -13px;
   border-right-color: #fff
@@ -133,6 +137,10 @@
 
 .chats .message.private-message:before {
   border-right-color: #f9d35b
+}
+
+.chats .message.private-customer-message:before {
+  border-right-color: #f9edbb
 }
 
 .chats {
@@ -252,9 +260,22 @@
   border-left-color: #f9d35b;
 }
 
+.chats .right .message.private-customer-message:after,
+.chats .right .message.private-customer-message:before {
+  left: auto;
+  right: -14px;
+  border-right-color: transparent;
+  border-left-color: #f9edbb;
+}
+
 .chats .right .message.private-message:after {
   right: -13px;
   border-left-color: #fef6dd;
+}
+
+.chats .right .message.private-customer-message:after {
+  right: -13px;
+  border-left-color: #FEFBF5;
 }
 
 .chats {

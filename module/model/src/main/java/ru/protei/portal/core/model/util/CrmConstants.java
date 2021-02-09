@@ -74,7 +74,7 @@ public class CrmConstants {
     public interface Masks {
         String EMAIL = "^[-a-zA-Z0-9_\\.]+@[-a-zA-Z0-9_\\.]+\\.\\w{2,4}$";
         String ONLY_DIGITS = "^\\d*$";
-        String MONEY = "^(\\d+([\\.,]\\d{1,2})?|.{0})$";
+        String MONEY = "^(\\d+(\\s*\\d+)*([\\.,]\\d{1,2})?|.{0})$";
         String ONE_OR_MORE_SPACES = "\\s+";
         String ROUND_AND_SQUARE_BRACKETS = "[()\\[\\]]+";
         String IP = "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
@@ -123,6 +123,7 @@ public class CrmConstants {
     public interface Jira {
         String INFO_LINK = "jiraInfo";
         String WORKFLOW_IMAGE = "./images/jira-workflow.jpg";
+        String NO_EXTENDED_PRIVACY_PROJECT = "CLM";
     }
 
     public interface ImportanceLevel {
@@ -202,6 +203,9 @@ public class CrmConstants {
         long SOLVED_DUPLICATED = 9;
         long BLOCKED = 38;
         long DEVELOPMENT = 26;
+        long UNKNOWN = 22;
+        long PRESALE = 24;
+        long FINISHED = 32;
     }
 
     public interface Department {

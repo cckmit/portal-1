@@ -2,7 +2,6 @@ package ru.protei.portal.ui.common.client.lang;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_ContractState;
-import ru.protei.portal.core.model.dict.En_RegionState;
 
 public class En_ContractStateLang {
     public String getName(En_ContractState value) {
@@ -22,6 +21,10 @@ public class En_ContractStateLang {
                 return lang.contractWaitingCopiesFromCustomer();
             case CANCELLED:
                 return lang.contractCancelled();
+            case EDS_SIGNED:
+                return lang.contractEDSSigned();
+            case SIGNED_ON_SITE:
+                return lang.contractSignedOnSite();
         }
         return lang.unknownField();
     }

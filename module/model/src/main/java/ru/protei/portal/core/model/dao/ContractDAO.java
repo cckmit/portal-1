@@ -17,7 +17,5 @@ public interface ContractDAO extends PortalBaseDAO<Contract> {
 
     List<Contract> getByProjectId(Long projectId);
 
-    List<Contract> getByApiQuery(ContractApiQuery apiQuery);
-
     boolean mergeRefKey(Long contractId, String refKey);
 }

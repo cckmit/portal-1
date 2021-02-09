@@ -43,8 +43,20 @@ public class MentioningTextArea extends DndAutoResizeTextArea implements TextAre
         userLoginModel.setPersonFirstId(personId);
     }
 
+    public void setInitiatorCompanyId(Long initiatorCompanyId) {
+        userLoginModel.setInitiatorCompanyId(initiatorCompanyId);
+    }
+
+    public void setIsMentionEnabled(Boolean isMentionEnabled) {
+        this.isMentionEnabled = isMentionEnabled;
+    }
+
     private void onKeyDown(KeyDownEvent event, ArrowSelectableSelectorPopup selectorPopup,
                            Timer changeTimer) {
+
+        if (!isMentionEnabled) {
+            return;
+        }
 
         if (event.getNativeKeyCode() != KeyCodes.KEY_DOWN) {
             changeTimer.schedule(200);
@@ -145,6 +157,7 @@ public class MentioningTextArea extends DndAutoResizeTextArea implements TextAre
     private final UserLoginModel userLoginModel;
     private final UserLoginSelector userLoginSelector;
     private final Timer changeTimer;
+    private boolean isMentionEnabled = true;
 
     private PossibleLoginInfo possibleLoginInfo;
 

@@ -40,6 +40,7 @@ import java.util.stream.Stream;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.event.ReservedIpReleaseRemainingEvent.*;
 import static ru.protei.portal.core.model.dict.En_ResultStatus.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeDateWithOffset;
@@ -499,7 +500,7 @@ public class IpReservationServiceImpl implements IpReservationService {
             log.info("notifyOwnersAboutReleaseIp(): notification for owner {} to release IPs: entries to be notified: {}",
                     ownerId, notificationEntries);
             publisherService.publishEvent(new ReservedIpReleaseRemainingEvent(
-                    this, reservedIpsByOwners.get(ownerId), releaseDateStart, releaseDateEnd, notificationEntries));
+                    this, reservedIpsByOwners.get(ownerId), releaseDateStart, releaseDateEnd, notificationEntries, Recipient.OWNER_IP));
             notificationSentAmount++;
         }
 
@@ -535,7 +536,8 @@ public class IpReservationServiceImpl implements IpReservationService {
         }
 
         log.info("notifyAdminsAboutExpiredReleaseDates(): notification for expired release date IPs: entries to be notified: {}", notificationEntries);
-        publisherService.publishEvent(new ReservedIpReleaseRemainingEvent(this, reservedIps, null, today, notificationEntries));
+        publisherService.publishEvent(new ReservedIpReleaseRemainingEvent(
+                this, reservedIps, null, today, notificationEntries, Recipient.ADMIN));
 
         log.info("notifyAdminsAboutExpiredReleaseDates(): done");
         return ok();

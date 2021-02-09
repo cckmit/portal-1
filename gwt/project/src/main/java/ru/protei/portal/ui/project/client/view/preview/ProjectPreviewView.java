@@ -10,11 +10,11 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_RegionState;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.lang.En_RegionStateLang;
+import ru.protei.portal.ui.common.client.lang.ProjectStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.sla.SlaInputReadOnly;
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewActivity;
@@ -49,10 +49,15 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     public void setCreatedBy(String value ) { this.createdBy.setInnerHTML( value ); }
 
     @Override
-    public void setState( long value) {
-        En_RegionState regionState = En_RegionState.forId( value );
-        this.iconState.setClassName(regionStateLang.getStateIcon( regionState )+ " fa-lg");
-        this.state.setInnerText( regionStateLang.getStateName( regionState ) );
+    public void setState( String value ) {
+        CaseState state = new CaseState( value );
+        this.iconState.setClassName(projectStateLang.getStateIcon( state )+ " fa-lg");
+        this.state.setInnerText( projectStateLang.getStateName( state ) );
+    }
+
+    @Override
+    public void setStateIconColor(String color) {
+        this.iconState.getStyle().setColor(color);
     }
 
     @Override
@@ -316,7 +321,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @UiField
     DivElement subcontractors;
     @Inject
-    En_RegionStateLang regionStateLang;
+    ProjectStateLang projectStateLang;
 
     AbstractProjectPreviewActivity activity;
 

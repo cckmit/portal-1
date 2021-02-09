@@ -51,22 +51,22 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
      * Менеджер
      */
     @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "MANAGER", sqlTableAlias = "P")
-    private Long managerId;
+    private Long projectManagerId;
 
     @JdbcJoinedColumn(mappedColumn = "displayShortName", joinPath = {
             @JdbcJoinPath(localColumn = "project_id", remoteColumn = "id", table = "case_object"),
             @JdbcJoinPath(localColumn = "MANAGER", remoteColumn = "id", table = "person")
     })
-    private String managerShortName;
+    private String projectManagerShortName;
 
     @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "MANAGER", sqlTableAlias = "CO")
-    private Long caseManagerId;
+    private Long contractSignManagerId;
 
     @JdbcJoinedColumn(joinPath = {
             @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object"),
             @JdbcJoinPath(localColumn = "MANAGER", remoteColumn = "id", table = "person")
     }, mappedColumn = "displayShortName")
-    private String caseManagerShortName;
+    private String contractSignManagerShortName;
 
     /**
      * Куратор договора
@@ -151,7 +151,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     @JdbcColumn(name = "parent_contract_id")
     private Long parentContractId;
 
-    // winter не поддерживает JdbcJoinedObject на ту же сущность во избежание рекурсии
+    // winter не поддерживает JdbcJoinedObj ect на ту же сущность во избежание рекурсии
     private String parentContractNumber;
 
     @JdbcOneToMany(table = "contract", localColumn = "id", remoteColumn = "parent_contract_id")
@@ -173,6 +173,16 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     @JdbcJoinedObject( localColumn = "contractor_id", remoteColumn = "id", sqlTableAlias = "C")
     private Contractor contractor;
 
+    @JdbcColumn(name = "delivery_number")
+    private String deliveryNumber;
+
+    public String getDeliveryNumber() {
+        return deliveryNumber;
+    }
+
+    public void setDeliveryNumber(String deliveryNumber) {
+        this.deliveryNumber = deliveryNumber;
+    }
 
     @Override
     public String getAuditType() {
@@ -228,12 +238,12 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
         this.modified = modified;
     }
 
-    public Long getManagerId() {
-        return managerId;
+    public Long getProjectManagerId() {
+        return projectManagerId;
     }
 
-    public void setManagerId(Long managerId) {
-        this.managerId = managerId;
+    public void setProjectManagerId(Long projectManagerId) {
+        this.projectManagerId = projectManagerId;
     }
 
     public Long getCuratorId() {
@@ -300,8 +310,8 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
         this.contractType = contractType;
     }
 
-    public String getManagerShortName() {
-        return managerShortName;
+    public String getProjectManagerShortName() {
+        return projectManagerShortName;
     }
 
     public String getCuratorShortName() {
@@ -408,16 +418,16 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
         this.productDirections = productDirections;
     }
 
-    public Long getCaseManagerId() {
-        return caseManagerId;
+    public Long getContractSignManagerId() {
+        return contractSignManagerId;
     }
 
-    public String getCaseManagerShortName() {
-        return caseManagerShortName;
+    public String getContractSignManagerShortName() {
+        return contractSignManagerShortName;
     }
 
-    public void setCaseManagerId( Long caseManagerId ) {
-        this.caseManagerId = caseManagerId;
+    public void setContractSignManagerId(Long contractSignManagerId) {
+        this.contractSignManagerId = contractSignManagerId;
     }
 
     public Long getContractorId() {
@@ -457,10 +467,10 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
                 ", creatorId=" + creatorId +
                 ", created=" + created +
                 ", modified=" + modified +
-                ", managerId=" + managerId +
-                ", managerShortName='" + managerShortName + '\'' +
-                ", caseManagerId=" + caseManagerId +
-                ", caseManagerShortName='" + caseManagerShortName + '\'' +
+                ", projectManagerId=" + projectManagerId +
+                ", projectManagerShortName='" + projectManagerShortName + '\'' +
+                ", contractSignManager=" + contractSignManagerId +
+                ", contractSignManagerShortName='" + contractSignManagerShortName + '\'' +
                 ", curatorId=" + curatorId +
                 ", curatorShortName='" + curatorShortName + '\'' +
                 ", productDirections=" + productDirections +
@@ -485,6 +495,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
                 ", projectCustomerType=" + projectCustomerType +
                 ", contractorId=" + contractorId +
                 ", contractor=" + contractor +
+                ", deliveryNumber=" + deliveryNumber +
                 '}';
     }
 
@@ -492,4 +503,5 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     public EntityOption toEntityOption() {
         return new EntityOption(getNumber(), getId());
     }
+
 }

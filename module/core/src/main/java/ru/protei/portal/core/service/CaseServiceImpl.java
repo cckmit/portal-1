@@ -114,7 +114,7 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     HistoryService historyService;
-    
+
     @Autowired
     PolicyService policyService;
 
@@ -965,8 +965,8 @@ public class CaseServiceImpl implements CaseService {
         stateChangeMessage.setCaseId(caseId);
         stateChangeMessage.setTimeElapsed(timeElapsed);
         stateChangeMessage.setTimeElapsedType(timeElapsedType != null ? timeElapsedType : En_TimeElapsedType.NONE);
-        stateChangeMessage.setPrivateComment(true);
         stateChangeMessage.setText(CrmConstants.Comment.TIME_ELAPSED_DEFAULT_COMMENT);
+        stateChangeMessage.setPrivacyType(En_CaseCommentPrivacyType.PRIVATE);
         return caseCommentDAO.persist(stateChangeMessage);
     }
 
@@ -1027,7 +1027,7 @@ public class CaseServiceImpl implements CaseService {
 
         List<Long> initiatorAllowedCompanies = new ArrayList<>();
         if (company.getCategory() == En_CompanyCategory.SUBCONTRACTOR) {
-            Result<List<EntityOption>> result = companyService.companyOptionListBySubcontractorIds(token.getCompanyAndChildIds(), true);
+            Result<List<EntityOption>> result = companyService.companyOptionListBySubcontractorIds(token, token.getCompanyAndChildIds(), true);
             if (result.isError()) {
                 log.error("fillCaseObjectByScope(): failed to get companies by subcontractors with result {}", result);
                 return error(result.getStatus());
@@ -1046,7 +1046,7 @@ public class CaseServiceImpl implements CaseService {
         if (company.getCategory() == En_CompanyCategory.SUBCONTRACTOR) {
             managerAllowedCompanies.addAll(token.getCompanyAndChildIds());
         } else {
-            Result<List<EntityOption>> result = companyService.subcontractorOptionListByCompanyIds(token.getCompanyAndChildIds(), true);
+            Result<List<EntityOption>> result = companyService.subcontractorOptionListByCompanyIds(token, token.getCompanyAndChildIds(), true);
             if (result.isError()) {
                 log.error("fillCaseObjectByScope(): failed to get subcontractors by companies with result {}", result);
                 return error(result.getStatus());
@@ -1101,7 +1101,7 @@ public class CaseServiceImpl implements CaseService {
     }
 
     private void applyStateBasedOnManager(CaseObjectMeta caseMeta) {
-        if (CrmConstants.State.CREATED == caseMeta.getStateId() && caseMeta.getManager() != null) {
+        if (CrmConstants.State.CREATED == caseMeta.getStateId() && caseMeta.getManagerId() != null) {
             caseMeta.setStateId(CrmConstants.State.OPENED);
         }
     }

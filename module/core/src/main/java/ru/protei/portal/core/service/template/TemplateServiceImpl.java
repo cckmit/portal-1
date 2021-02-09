@@ -8,7 +8,6 @@ import org.springframework.web.util.HtmlUtils;
 import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.model.dict.En_ExpiringProjectTSVPeriod;
-import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.dto.ReportDto;
@@ -502,10 +501,10 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("newDescription", HtmlUtils.htmlEscape(newProjectState.getDescription()));
 
         templateModel.put("stateChanged", event.isStateChanged());
-        templateModel.put("oldState", getNullOrElse(oldProjectState, Project::getState));
-        templateModel.put("newState", newProjectState.getState());
+        templateModel.put("oldState", getNullOrElse(oldProjectState, Project::getStateName));
+        templateModel.put("newState", newProjectState.getStateName());
 
-        templateModel.put("showPauseDate", newProjectState.getState() == En_RegionState.PAUSED);
+        templateModel.put("showPauseDate", Objects.equals(newProjectState.getStateId(), CrmConstants.State.PAUSED));
         templateModel.put("pauseDateChanged", event.isPauseDateChanged());
         templateModel.put("oldPauseDate", getNullOrElse(getNullOrElse(oldProjectState, Project::getPauseDate), new SimpleDateFormat("dd.MM.yyyy")::format));
         templateModel.put("newPauseDate", getNullOrElse(newProjectState.getPauseDate(), new SimpleDateFormat("dd.MM.yyyy")::format));
@@ -772,6 +771,29 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
+    public PreparedTemplate getReservedIpNotificationWithInstructionBody(List<ReservedIp> reservedIps, Collection<String> recipients, String portalUrl) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("reservedIps", reservedIps);
+        templateModel.put("recipients", recipients);
+        templateModel.put("linkToPortal", portalUrl);
+
+        BeansWrapper wrapper = BeansWrapper.getDefaultInstance();
+        TemplateHashModel staticModels = wrapper.getStaticModels();
+        try {
+            TemplateHashModel htmlUtils =
+                    (TemplateHashModel) staticModels.get("org.springframework.web.util.HtmlUtils");
+            templateModel.put("HtmlUtils", htmlUtils);
+        } catch (Exception ex) {
+            log.error("getReservedIpNotificationWithInstructionBody: error at 'staticModels.get(org.springframework.web.util.HtmlUtils)'");
+        }
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/reserved.ip.instruction.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
     public PreparedTemplate getReservedIpRemainingNotificationSubject(Date releaseDateStart, Date releaseDateEnd) {
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put( "releaseDateStart", releaseDateStart != null ?
@@ -931,7 +953,7 @@ public class TemplateServiceImpl implements TemplateService {
                     mailComment.put( "created", comment.getCreated() );
                     mailComment.put( "author", comment.getAuthor() );
                     mailComment.put( "text", escapeTextAndRenderHTML(comment.getText(), textMarkup) );
-                    mailComment.put( "isPrivateComment", comment.isPrivateComment() );
+                    mailComment.put( "privacyType", comment.getPrivacyType().name() );
                     mailComment.put( "added", isNew );
                     if (isChanged) {
                         CaseComment oldComment = changed.get( changed.indexOf( comment ) );

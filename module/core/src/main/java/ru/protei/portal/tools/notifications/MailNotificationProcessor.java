@@ -48,6 +48,7 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
 import static java.util.stream.Collectors.partitioningBy;
+import static ru.protei.portal.core.event.ReservedIpReleaseRemainingEvent.*;
 import static ru.protei.portal.core.model.dict.En_CaseLink.CRM;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
@@ -835,6 +836,7 @@ public class MailNotificationProcessor {
         Date releaseDateStart = event.getReleaseDateStart();
         Date releaseDateEnd = event.getReleaseDateEnd();
         List<NotificationEntry> notifiers = event.getNotificationEntryList();
+        Recipient recipientType = event.getRecipientType();
 
         if (isEmpty(notifiers)) {
             log.info("Failed to send release reserved IPs remaining notification: empty notifiers set");
@@ -847,8 +849,15 @@ public class MailNotificationProcessor {
             return;
         }
 
-        List<String> recipients = getNotifiersAddresses(notifiers);
+        if (Recipient.ADMIN.equals(recipientType)) {
+            sendReleaseIpRemainingNotificationToAdmins(reservedIps, notifiers, subjectTemplate);
+        } else {
+            sendReleaseIpRemainingNotificationToOwners(reservedIps, notifiers, subjectTemplate);
+        }
+    }
 
+    private void sendReleaseIpRemainingNotificationToAdmins(List<ReservedIp> reservedIps, List<NotificationEntry> notifiers, PreparedTemplate subjectTemplate) {
+        List<String> recipients = getNotifiersAddresses(notifiers);
         PreparedTemplate bodyTemplate = templateService.getReservedIpNotificationBody(reservedIps, recipients);
 
         if (bodyTemplate == null) {
@@ -857,6 +866,40 @@ public class MailNotificationProcessor {
         }
 
         sendMailToRecipients(notifiers, bodyTemplate, subjectTemplate, true, getFromPortalAddress());
+    }
+
+    private void sendReleaseIpRemainingNotificationToOwners(List<ReservedIp> reservedIps, List<NotificationEntry> notifiers, PreparedTemplate subjectTemplate) {
+        Map<Boolean, List<NotificationEntry>> partitionNotifiers = notifiers.stream().collect(partitioningBy(this::isProteiRecipient));
+        final boolean IS_INTERNAL_CRM_RECIPIENT = true;
+
+        List<NotificationEntry> internalCrmNotifiers = partitionNotifiers.get( IS_INTERNAL_CRM_RECIPIENT );
+        List<NotificationEntry> externalCrmNotifiers = partitionNotifiers.get( !IS_INTERNAL_CRM_RECIPIENT );
+
+        String internalCrmPortalUrl = getPortalUrl( IS_INTERNAL_CRM_RECIPIENT );
+        String externalCrmPortalUrl = getPortalUrl( !IS_INTERNAL_CRM_RECIPIENT );
+
+        List<String> internalCrmRecipients = getNotifiersAddresses(internalCrmNotifiers);
+        List<String> externalCrmRecipients = getNotifiersAddresses(externalCrmNotifiers);
+
+        if (!internalCrmNotifiers.isEmpty()) {
+            PreparedTemplate bodyTemplate = templateService.getReservedIpNotificationWithInstructionBody(reservedIps, internalCrmRecipients, internalCrmPortalUrl);
+
+            if (bodyTemplate == null) {
+                log.error("Failed to prepare body template for release reserved IPs notification to internal crm recipients");
+            } else {
+                sendMailToRecipients(internalCrmNotifiers, bodyTemplate, subjectTemplate, true, getFromPortalAddress());
+            }
+        }
+
+        if (!externalCrmNotifiers.isEmpty()) {
+            PreparedTemplate bodyTemplate = templateService.getReservedIpNotificationWithInstructionBody(reservedIps, externalCrmRecipients, externalCrmPortalUrl);
+
+            if (bodyTemplate == null) {
+                log.error("Failed to prepare body template for release reserved IPs notification to external crm recipients");
+            } else {
+                sendMailToRecipients(externalCrmNotifiers, bodyTemplate, subjectTemplate, true, getFromPortalAddress());
+            }
+        }
     }
 
     @EventListener
@@ -1099,6 +1142,16 @@ public class MailNotificationProcessor {
                 log.error("Failed to make MimeMessage", e);
             }
         });
+    }
+
+    private String getPortalUrl(boolean isProteiRecipient) {
+        String baseUrl = "";
+        if (isProteiRecipient) {
+            baseUrl = config.data().getMailNotificationConfig().getCrmUrlInternal();
+        } else {
+            baseUrl = config.data().getMailNotificationConfig().getCrmUrlExternal();
+        }
+        return baseUrl + config.data().getMailNotificationConfig().getCrmReservedIpsUrl();
     }
 
     private void sendMailToRecipientWithAttachment(NotificationEntry recipients, PreparedTemplate bodyTemplate,

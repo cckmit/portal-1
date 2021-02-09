@@ -138,6 +138,7 @@ public class MigrateFreq implements MigrateAction {
                     c.setText((String) row.get("strComment"));
                     c.setVroomId(null);
                     c.setOldId((Long) row.get("nID"));
+                    c.setPrivacyType(En_CaseCommentPrivacyType.PUBLIC);
                     return c;
                 });
 

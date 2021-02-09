@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledEmployeeRegistrationEvent;
 import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
 import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_MigrationEntry;
 import ru.protei.portal.core.model.ent.*;
@@ -263,6 +264,7 @@ public class EmployeeRegistrationYoutrackSynchronizerImpl implements EmployeeReg
         stateChange.setCaseStateId(newState);
         stateChange.setOriginalAuthorName(issueStateChange.getAuthorFullName());
         stateChange.setOriginalAuthorFullName(issueStateChange.getAuthorFullName());
+        stateChange.setPrivacyType(En_CaseCommentPrivacyType.PUBLIC);
         return stateChange;
     }
 
@@ -314,6 +316,7 @@ public class EmployeeRegistrationYoutrackSynchronizerImpl implements EmployeeReg
                 caseComment.setOriginalAuthorName(comment.getOriginalAuthorName());
                 caseComment.setOriginalAuthorFullName(comment.getOriginalAuthorFullName());
                 caseComment.setText(comment.getText());
+                caseComment.setPrivacyType(En_CaseCommentPrivacyType.PUBLIC);
                 commentsToAdd.add(caseComment);
                 log.debug("parseAndUpdateComments(): create new comment: YT: {}, PORTAL: {}", comment, caseComment);
                 continue;

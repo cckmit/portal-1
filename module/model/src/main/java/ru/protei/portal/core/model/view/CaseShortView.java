@@ -52,6 +52,9 @@ public class CaseShortView implements Serializable, Identifiable {
     @JdbcJoinedColumn(localColumn = "IMPORTANCE", remoteColumn = "id", table = "importance_level", mappedColumn = "code")
     private String importanceCode;
 
+    @JdbcJoinedColumn(localColumn = "IMPORTANCE", remoteColumn = "id", table = "importance_level", mappedColumn = "color")
+    private String importanceColor;
+
     @JdbcColumn(name = "private_flag")
     private boolean privateCase;
 
@@ -182,6 +185,10 @@ public class CaseShortView implements Serializable, Identifiable {
 
     public String getImportanceCode() {
         return importanceCode;
+    }
+
+    public String getImportanceColor() {
+        return importanceColor;
     }
 
     public Long getInitiatorId() {

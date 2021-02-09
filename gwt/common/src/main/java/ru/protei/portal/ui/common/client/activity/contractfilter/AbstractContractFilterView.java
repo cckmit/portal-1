@@ -51,4 +51,6 @@ public interface AbstractContractFilterView extends IsWidget {
     HasValue<DateIntervalWithType> dateValidRange();
 
     HasValue<Set<PersonShortView>> curators();
+
+    HasValue<String> deliveryNumber();
 }

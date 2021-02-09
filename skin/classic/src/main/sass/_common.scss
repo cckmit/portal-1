@@ -1388,53 +1388,6 @@ td.info {
   opacity: 0;
 }
 
-/**** STATES ****/
-.state-created {
-  color: #ef5350 !important;
-}
-
-.state-opened,
-.state-workaround,
-.state-info_request,
-.state-request_to_nx,
-.state-request_to_customer {
-  color: $info_color !important;
-}
-
-.state-active {
-  color: $info_light_color !important;
-}
-
-.state-development,
-.state-customer_pending {
-  color: #133aadcf !important;
-}
-
-.state-done {
-  color: #4caf50 !important;
-}
-
-.state-local_test,
-.state-customer_test {
-  color: #906094 !important;
-}
-
-.state-verified {
-  color: #607D8B !important;
-}
-
-.state-canceled,
-.state-paused,
-.state-request_to_partner {
-  color: #868686 !important;
-}
-
-.state-blocked {
-  color: black;
-}
-
-/****************/
-
 .none-vertical-align {
   vertical-align: 0 !important;
 }
@@ -1984,7 +1937,6 @@ a {
       content: "C";
       color: #333333;
     }
-    background-color: #e6e6e6;
   }
 
   &.basic {
@@ -1992,7 +1944,6 @@ a {
       content: "B";
       color: #333333;
     }
-    background-color: #b7e281;
   }
 
   &.important {
@@ -2000,7 +1951,6 @@ a {
       content: "I";
       color: #333333;
     }
-    background-color: #fed74a;
   }
 
   &.critical {
@@ -2008,7 +1958,6 @@ a {
       content: "C";
       color: #ffffff;
     }
-    background-color: #e30000;
   }
 
   &.medium {
@@ -2016,7 +1965,6 @@ a {
       content: "M";
       color: #333333;
     }
-    background-color: #eeff00 !important;
   }
 
   &.emergency {
@@ -2024,7 +1972,6 @@ a {
       content: "E";
       color: #ffffff;
     }
-    background-color: #960000 !important;
   }
 
   &.high {
@@ -2032,7 +1979,6 @@ a {
       content: "H";
       color: #333333;
     }
-    background-color: #fcd64a !important;
   }
 
   &.low {
@@ -2040,7 +1986,6 @@ a {
       content: "L";
       color: #333333;
     }
-    background-color: #e5e5e5 !important;
   }
 
   &.center {
@@ -2064,6 +2009,10 @@ a {
       font-size: 12px;
     }
   }
+}
+
+.privacy-level {
+  font-size: 13px;
 }
 
 .importance-btn-group {
@@ -5327,4 +5276,8 @@ table {
   .dropdown-menu ul > li > a {
     padding: 3px 10px;
   }
+}
+
+.b-r-0 {
+  border-radius: 0 !important;
 }

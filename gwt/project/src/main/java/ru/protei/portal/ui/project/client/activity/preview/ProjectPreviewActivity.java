@@ -114,7 +114,8 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.setHeader( lang.projectHeader(value.getId().toString()) );
         view.setName( value.getName() );
         view.setCreatedBy(lang.createBy(value.getCreator().getDisplayShortName(), DateFormatter.formatDateTime(value.getCreated())));
-        view.setState( value.getState().getId() );
+        view.setState( value.getStateName() );
+        view.setStateIconColor( project.getStateColor() );
         view.setDirections(joining(value.getProductDirectionEntityOptionList(), ", ", EntityOption::getDisplayText));
         view.setDescription( value.getDescription() == null ? "" : value.getDescription() );
         view.setRegion( value.getRegion() == null ? "" : value.getRegion().getDisplayText() );
@@ -176,6 +177,8 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         showComments.isPrivateVisible = canAccessProjectPrivateElements(policyService, En_Privilege.PROJECT_VIEW, value.getTeam());
         showComments.isPrivateCase = false;
         showComments.isNewCommentEnabled = canAccessProject(policyService, En_Privilege.PROJECT_EDIT, value.getTeam());
+        showComments.initiatorCompanyId = project.getCustomerId();
+        showComments.isMentionEnabled = policyService.hasSystemScopeForPrivilege(En_Privilege.PROJECT_VIEW);
         fireEvent(showComments);
 
         fireEvent(new ProjectEvents.ShowProjectDocuments(view.getDocumentsContainer(), project.getId(), false));

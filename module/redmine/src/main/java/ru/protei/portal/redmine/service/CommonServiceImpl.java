@@ -324,7 +324,6 @@ public final class CommonServiceImpl implements CommonService {
     @Override
     public Result<ExternalCaseAppData> getExternalCaseAppData( long caseId ) {
         ExternalCaseAppData appData = externalCaseAppDAO.get( caseId );
-        if (appData == null) return error( En_ResultStatus.NOT_FOUND, "Not found ExternalCaseAppData by id=" + caseId );
         return ok( appData );
     }
 

@@ -42,7 +42,7 @@ public class IssueColumn extends ClickColumn<CaseShortView> {
         String name = value.getName();
 
         DivElement div = Document.get().createDivElement();
-        div.appendChild(makeSpan(ImportanceStyleProvider.getImportanceIcon(value.getImportanceCode()), ""));
+        div.appendChild(makeSpan(ImportanceStyleProvider.getImportanceIcon(value.getImportanceCode()), "", value.getImportanceColor()));
         div.appendChild(makeSpan("label label-" + CaseStateUtils.makeStyleName(value.getStateName()), value.getStateName()));
         if (isPrivate) div.appendChild(makeSpan("fa fa-fw fa-lock text-danger", ""));
         div.appendChild(makeSpan("font-weight-bold", String.valueOf(number)));
@@ -69,6 +69,12 @@ public class IssueColumn extends ClickColumn<CaseShortView> {
         SpanElement span = Document.get().createSpanElement();
         span.setClassName(className);
         span.setInnerText(text);
+        return span;
+    }
+
+    private SpanElement makeSpan(String className, String text, String bgColor) {
+        SpanElement span = makeSpan(className, text);
+        span.getStyle().setBackgroundColor(bgColor);
         return span;
     }
 

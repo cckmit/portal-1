@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class ImportanceBtnGroupMulti extends ToggleBtnGroupMulti<ImportanceLevel> implements SelectorWithModel<ImportanceLevel> {
     @Inject
-    public void init(ImportanceModel importanceModel) {
+    public void init(ImportanceBtnGroupModel importanceModel) {
         importanceModel.subscribe(this);
     }
 
@@ -26,7 +26,8 @@ public class ImportanceBtnGroupMulti extends ToggleBtnGroupMulti<ImportanceLevel
                     ImportanceStyleProvider.getImportanceIcon(level.getCode()) + " center",
                     "btn btn-default no-border " + level.toString().toLowerCase(),
                     level.getCode(),
-                    level
+                    level, null,
+                    level.getColor()
             );
             setEnsureDebugId(level, DebugIdsHelper.IMPORTANCE_BUTTON.byCode(level.getCode()));
         }

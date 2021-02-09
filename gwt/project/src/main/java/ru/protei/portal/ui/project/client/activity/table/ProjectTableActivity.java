@@ -22,6 +22,7 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -265,6 +266,8 @@ public abstract class ProjectTableActivity
     AbstractPagerView pagerView;
     @Inject
     RegionControllerAsync regionService;
+    @Inject
+    CaseStateControllerAsync caseStateService;
     @Inject
     TableAnimation animation;
     @Inject

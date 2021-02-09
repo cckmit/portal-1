@@ -15,9 +15,11 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dict.lang.En_1CParamType;
 import ru.protei.portal.core.model.enterprise1c.annotation.UrlName1C;
 import ru.protei.portal.core.model.enterprise1c.dto.Contract1C;
+import ru.protei.portal.core.model.enterprise1c.dto.ContractAdditionalProperty1C;
 import ru.protei.portal.core.model.enterprise1c.dto.Country1C;
 import ru.protei.portal.core.model.enterprise1c.Response1C;
 import ru.protei.portal.core.model.enterprise1c.dto.Contractor1C;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.util.ContractorUtils;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -27,6 +29,7 @@ import java.lang.reflect.Field;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -126,6 +129,7 @@ public class Api1CImpl implements Api1C{
     @Override
     public Result<Contract1C> saveContract(Contract1C contract, String homeCompanyName) {
         log.debug("saveContract(): contract={}, homeCompanyName={}", contract, homeCompanyName);
+        prepareContractProperties(contract, homeCompanyName);
 
         if (!validateContract(contract)){
             log.warn("saveContract(): contract is not valid");
@@ -173,6 +177,18 @@ public class Api1CImpl implements Api1C{
         }
 
         return ok(checkResident(contractor, homeCompanyName));
+    }
+
+    private void prepareContractProperties(Contract1C contract, String homeCompanyName) {
+        if (CollectionUtils.isNotEmpty(contract.getAdditionalProperties())) {
+            for (int i = 0; i < contract.getAdditionalProperties().size(); i++) {
+                ContractAdditionalProperty1C property = contract.getAdditionalProperties().get(0);
+                // lineNumber – порядковый номер свойства в списке
+                property.setLineNumber(String.valueOf(i+1));
+                // ключи статические, определяются по компании
+                property.setPropertyKey(getDirPropertyKey(homeCompanyName));
+            }
+        }
     }
 
     private boolean checkResident(Contractor1C contractor, String homeCompanyName){
@@ -398,6 +414,19 @@ public class Api1CImpl implements Api1C{
             log.error("urlEncode(): failed to url encode | text={}", text, e);
             return text;
         }
+    }
+
+    // todo : выяснить зачем сравнение по названиями и переделать эти костыли =)
+    private String getDirPropertyKey(String homeCompanyName) {
+        if (CrmConstants.Company.PROTEI_ST_HOME_COMPANY_NAME.equals(homeCompanyName)) {
+            return ContractAdditionalProperty1C.DIRECTION_PROPERTY_KEY_PROTEI_ST;
+        }
+
+        if (CrmConstants.Company.MAIN_HOME_COMPANY_NAME.equals(homeCompanyName)) {
+            return ContractAdditionalProperty1C.DIRECTION_PROPERTY_KEY_PROTEI;
+        }
+
+        return null;
     }
 
     private String getBaseUrl(String homeCompanyName) {

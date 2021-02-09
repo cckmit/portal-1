@@ -810,6 +810,12 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueCopiedToClipboard();
 
+    String privacyTypePublic();
+
+    String privacyTypePrivateCustomers();
+
+    String privacyTypePrivate();
+
     String dataPageNumber( String p0 );
 
     String dashboard();
@@ -870,33 +876,33 @@ public interface Lang extends Messages, ContactItemLang {
 
     String regions();
 
-    String regionState();
-
     String regionDistrict();
 
-    String regionStateUnknown();
+    String projectState();
 
-    String regionStateMarketing();
+    String projectStateUnknown();
 
-    String regionStatePresale();
+    String projectStateMarketing();
 
-    String regionStateProjecting();
+    String projectStatePresale();
 
-    String regionStateDevelopment();
+    String projectStateProjecting();
 
-    String regionStateDeployment();
+    String projectStateDevelopment();
 
-    String regionStateTesting();
+    String projectStateDeployment();
 
-    String regionStateSupport();
+    String projectStateTesting();
 
-    String regionStateFinished();
+    String projectStateSupport();
 
-    String regionStateCanceled();
+    String projectStateFinished();
+
+    String projectStateCanceled();
+
+    String projectStatePaused();
 
     String regionNotSpecified();
-
-    String regionStatePaused();
 
     String projects();
 
@@ -917,8 +923,6 @@ public interface Lang extends Messages, ContactItemLang {
     String projectHeadManager();
 
     String projectDeployManagers();
-
-    String projectState();
 
     String projectRegion();
 
@@ -2046,8 +2050,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractTypeWorkContract();
 
-    String contractTypeHardwareSoftwareService();
-
     String contractTypeRequest();
 
     String goToContracts();
@@ -2110,7 +2112,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractProjectNotDefined();
 
-    String contractManager();
+    String contractProjectManager();
 
     String contractCost();
 
@@ -3188,6 +3190,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errRemoteAccessParametersLengthExceeded(int maxLength);
 
+    String errAccessParametersLengthExceeded(int maxLength);
+
     String workTriggerNone();
 
     String workTriggerPSGO();
@@ -3227,4 +3231,58 @@ public interface Lang extends Messages, ContactItemLang {
     String errNotAllowedIntegrationIssue();
 
     String help();
+
+    String contractTypeAdditionalAgreement();
+
+    String contractContractSignManager();
+
+    String contractDateColumn();
+
+    String contractCostColumn();
+
+    String contractCommentColumn();
+
+    String contractInAmount(String cost);
+
+    String contractDateType();
+
+    String contractDateComment();
+
+    String contractDateCalendarDay();
+
+    String contractDateDate();
+
+    String contractDateEditHeader();
+
+    String contractDatePercent();
+
+    String contractDatesBaseSection();
+
+    String contractDatesCostSection();
+
+    String contractDatesAdvanceSection();
+
+    String contractDateCostType();
+
+    String contractCostTypeServices();
+
+    String contractCostTypeSoftware();
+
+    String contractCostTypeEquipment();
+
+    String contractValidDay();
+
+    String contractValidDate();
+
+    String contractEDSSigned();
+
+    String contractSignedOnSite();
+
+    String contractTypeContract();
+
+    String contractTypeContractForService();
+
+    String contractTypeAgreement();
+
+    String contractDeliveryNumber();
 }

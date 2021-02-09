@@ -5,7 +5,7 @@
              xmlns:productdirection="urn:import:ru.protei.portal.ui.common.client.widget.selector.productdirection"
              xmlns:devunit="urn:import:ru.protei.portal.ui.common.client.widget.selector.product.devunit"
              xmlns:cutomertype='urn:import:ru.protei.portal.ui.common.client.widget.selector.customertype'
-             xmlns:state="urn:import:ru.protei.portal.ui.common.client.widget.selector.state"
+             xmlns:state="urn:import:ru.protei.portal.ui.common.client.widget.selector.project.state"
              xmlns:region="urn:import:ru.protei.portal.ui.common.client.widget.selector.region"
              xmlns:team="urn:import:ru.protei.portal.ui.project.client.view.widget.team"
              xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
@@ -93,7 +93,7 @@
                         <div class="form-group form-group-attached">
                             <div class="row clearfix reset-no-padding">
                                 <div class="col-md-12">
-                                    <state:RegionStateFormSelector ui:field="projectState" validation="false"
+                                    <state:ProjectStateFormSelector ui:field="projectState" validation="false"
                                                                    header="{lang.projectState}"
                                                                    hasNullValue="true"
                                                                    mandatory="false"/>

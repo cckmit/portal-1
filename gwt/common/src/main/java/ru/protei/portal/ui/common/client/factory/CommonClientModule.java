@@ -51,7 +51,6 @@ import ru.protei.portal.ui.common.client.activity.workerposition.edit.WorkerPosi
 import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
-import ru.protei.portal.ui.common.client.eventbridge.ServerEventBridge;
 import ru.protei.portal.ui.common.client.service.HomeCompanyService;
 import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemView;
 import ru.protei.portal.ui.common.client.view.casecomment.list.CaseCommentListView;
@@ -77,9 +76,10 @@ import ru.protei.portal.ui.common.client.view.pathitem.list.PathItemListView;
 import ru.protei.portal.ui.common.client.view.projectsearch.ProjectSearchView;
 import ru.protei.portal.ui.common.client.view.workerposition.edit.WorkerPositionEditView;
 import ru.protei.portal.ui.common.client.widget.employeeregstate.EmployeeRegistrationStateModel;
-import ru.protei.portal.ui.common.client.widget.issuestate.StateModel;
+import ru.protei.portal.ui.common.client.widget.issuestate.StateOptionsModel;
 import ru.protei.portal.ui.common.client.widget.issuestate.StateSelectorModel;
 import ru.protei.portal.ui.common.client.widget.privilege.list.PrivilegeModel;
+import ru.protei.portal.ui.common.client.widget.selector.contract.ContractModel;
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeModel;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionModel;
@@ -119,7 +119,7 @@ public class CommonClientModule extends AbstractGinModule {
         bind( AbstractContactItemView.class ).to( ContactItemView.class );
 
         bind( EmployeeModel.class ).asEagerSingleton();
-        bind( StateModel.class ).asEagerSingleton();
+        bind( StateOptionsModel.class ).asEagerSingleton();
         bind( StateSelectorModel.class ).asEagerSingleton();
         bind( EmployeeRegistrationStateModel.class ).asEagerSingleton();
 
@@ -187,6 +187,8 @@ public class CommonClientModule extends AbstractGinModule {
 
         bind( ProjectSearchActivity.class ).asEagerSingleton();
         bind(AbstractProjectSearchView.class ).to( ProjectSearchView.class ).in( Singleton.class );
+
+        bind(ContractModel.class).asEagerSingleton();
     }
 }
 
