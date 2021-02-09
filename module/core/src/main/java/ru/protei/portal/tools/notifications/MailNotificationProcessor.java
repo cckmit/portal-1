@@ -1,6 +1,7 @@
 package ru.protei.portal.tools.notifications;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.mail.MailMessageFactory;
 import ru.protei.portal.core.mail.MailSendChannel;
+import ru.protei.portal.core.model.dict.EducationEntryType;
 import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dto.ReportCaseQuery;
 import ru.protei.portal.core.model.dto.ReportDto;
@@ -48,6 +50,7 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
 import static java.util.stream.Collectors.partitioningBy;
+import static ru.protei.portal.config.PortalConfigData.*;
 import static ru.protei.portal.core.event.ReservedIpReleaseRemainingEvent.*;
 import static ru.protei.portal.core.model.dict.En_CaseLink.CRM;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
@@ -1115,6 +1118,202 @@ public class MailNotificationProcessor {
         } catch (Exception e) {
             log.error("Failed to make MimeMessage mail={}, e={}", notificationEntry.getAddress(), e);
         }
+    }
+
+    // ----------------------
+    // Education notification
+    // ----------------------
+
+    @EventListener
+    public void onEducationRequestCreate(EducationRequestCreateEvent event) {
+        EducationEntry educationEntry = event.getEducationEntry();
+        Set<Person> headsOfDepartments = event.getHeadsOfDepartments();
+        List<Person> participants = event.getParticipants();
+
+        Set<String> recipients = new HashSet<>();
+
+        if (isNotEmpty(headsOfDepartments)) {
+            headsOfDepartments.forEach(person ->
+                    recipients.add(new PlainContactInfoFacade(person.getContactInfo()).getEmail()));
+        }
+
+        if (isNotEmpty(participants)) {
+            participants.forEach(person ->
+                    recipients.add(new PlainContactInfoFacade(person.getContactInfo()).getEmail()));
+        }
+
+        Set<String> recipientsFromConfig = getRecipientsFromConfigOnCreateRequest(educationEntry.getType());
+        if (isNotEmpty(recipientsFromConfig)) {
+            recipients.addAll(recipientsFromConfig);
+        }
+
+        if (isEmpty(recipients)) {
+            log.warn("Failed to send education request notification: empty recipients set");
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.getEducationRequestNotificationSubject(educationEntry);
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for create education request={}", educationEntry);
+            return;
+        }
+
+        PreparedTemplate bodyTemplate = templateService.getEducationRequestCreateNotificationBody(recipients,
+                educationEntry, new EnumLangUtil(lang));
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for create education request={}", educationEntry);
+            return;
+        }
+
+        recipients.forEach(entry -> {
+            try {
+                String body = bodyTemplate.getText(entry, null, false);
+                String subject = subjectTemplate.getText(entry, null, false);
+
+                sendMail(entry, subject, body, getFromPortalAddress());
+            } catch (Exception e) {
+                log.error("Failed to make MimeMessage mail={}, e={}", entry, e);
+            }
+        });
+    }
+
+    @EventListener
+    public void onEducationRequestApprove(EducationRequestApproveEvent event) {
+        EducationEntry educationEntry = event.getEducationEntry();
+        Set<Person> headsOfDepartments = event.getHeadsOfDepartments();
+        List<Person> approvedParticipants = event.getApprovedParticipants();
+
+        Set<String> recipients = new HashSet<>();
+
+        if (isNotEmpty(headsOfDepartments)) {
+            headsOfDepartments.forEach(person ->
+                    recipients.add(new PlainContactInfoFacade(person.getContactInfo()).getEmail()));
+        }
+
+        if (isNotEmpty(approvedParticipants)) {
+            approvedParticipants.forEach(person ->
+                    recipients.add(new PlainContactInfoFacade(person.getContactInfo()).getEmail()));
+        }
+
+        Set<String> recipientsFromConfig = getRecipientsFromConfigOnApproveParticipants(educationEntry.getType());
+        if (isNotEmpty(recipientsFromConfig)) {
+            recipients.addAll(recipientsFromConfig);
+        }
+
+        if (isEmpty(recipients)) {
+            log.warn("Failed to send education request notification: empty recipients set");
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.getEducationRequestNotificationSubject(educationEntry);
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for approve education request={}", educationEntry);
+            return;
+        }
+
+        String approved = approvedParticipants.stream()
+                .map(Person::getDisplayShortName)
+                .collect(Collectors.joining(", "));
+
+        PreparedTemplate bodyTemplate = templateService.getEducationRequestApproveNotificationBody(recipients,
+                educationEntry, approved, new EnumLangUtil(lang));
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for approve education request={}", educationEntry);
+            return;
+        }
+
+        recipients.forEach(entry -> {
+            try {
+                String body = bodyTemplate.getText(entry, null, false);
+                String subject = subjectTemplate.getText(entry, null, false);
+
+                sendMail(entry, subject, body, getFromPortalAddress());
+            } catch (Exception e) {
+                log.error("Failed to make MimeMessage mail={}, e={}", entry, e);
+            }
+        });
+    }
+
+    @EventListener
+    public void onEducationRequestDecline(EducationRequestDeclineEvent event) {
+        EducationEntry educationEntry = event.getEducationEntry();
+        Set<Person> headsOfDepartments = event.getHeadsOfDepartments();
+        List<Person> declineParticipants = event.getDeclineParticipants();
+
+        Set<String> recipients = new HashSet<>();
+
+        if (isNotEmpty(headsOfDepartments)) {
+            headsOfDepartments.forEach(person ->
+                    recipients.add(new PlainContactInfoFacade(person.getContactInfo()).getEmail()));
+        }
+
+        if (isNotEmpty(declineParticipants)) {
+            declineParticipants.forEach(person ->
+                    recipients.add(new PlainContactInfoFacade(person.getContactInfo()).getEmail()));
+        }
+
+        if (isEmpty(recipients)) {
+            log.warn("Failed to send education request notification: empty recipients set");
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.getEducationRequestNotificationSubject(educationEntry);
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for decline education request={}", educationEntry);
+            return;
+        }
+
+        String declined = declineParticipants.stream()
+                .map(Person::getDisplayShortName)
+                .collect(Collectors.joining(", "));
+
+        PreparedTemplate bodyTemplate = templateService.getEducationRequestDeclineNotificationBody(recipients,
+                educationEntry, declined, new EnumLangUtil(lang));
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for decline education request={}", educationEntry);
+            return;
+        }
+
+        recipients.forEach(entry -> {
+            try {
+                String body = bodyTemplate.getText(entry, null, false);
+                String subject = subjectTemplate.getText(entry, null, false);
+
+                sendMail(entry, subject, body, getFromPortalAddress());
+            } catch (Exception e) {
+                log.error("Failed to make MimeMessage mail={}, e={}", entry, e);
+            }
+        });
+    }
+
+    private Set<String> getRecipientsFromConfigOnCreateRequest(EducationEntryType type) {
+        MailNotificationConfig config = this.config.data().getMailNotificationConfig();
+        String[] recipients;
+        switch (type) {
+            case COURSE: recipients = config.getCrmEducationRequestCourseRecipients(); break;
+            case CONFERENCE: recipients = config.getCrmEducationRequestConferenceRecipients(); break;
+            case LITERATURE: recipients = config.getCrmEducationRequestLiteratureRecipients(); break;
+            default: return new HashSet<>();
+        }
+
+        return Arrays.stream(recipients)
+                .filter(Strings::isNotEmpty)
+                .collect(Collectors.toSet());
+    }
+
+    private Set<String> getRecipientsFromConfigOnApproveParticipants(EducationEntryType type) {
+        MailNotificationConfig config = this.config.data().getMailNotificationConfig();
+        String[] recipients;
+        switch (type) {
+            case COURSE: recipients = config.getCrmEducationRequestApprovedCourseRecipients(); break;
+            case CONFERENCE: recipients = config.getCrmEducationRequestApprovedConferenceRecipients(); break;
+            case LITERATURE: recipients = config.getCrmEducationRequestApprovedLiteratureRecipients(); break;
+            default: return new HashSet<>();
+        }
+
+        return Arrays.stream(recipients)
+                .filter(Strings::isNotEmpty)
+                .collect(Collectors.toSet());
     }
 
     // -----

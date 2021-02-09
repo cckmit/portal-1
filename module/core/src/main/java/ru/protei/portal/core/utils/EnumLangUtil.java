@@ -284,4 +284,19 @@ public class EnumLangUtil {
         }
         return "";
     }
+
+    public String educationTypeLang(EducationEntryType type, String langCode) {
+        if (type == null) {
+            return "";
+        }
+        if (localizedLang == null) {
+            localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
+        }
+        switch (type) {
+            case COURSE: return localizedLang.get("educationCourse");
+            case CONFERENCE: return localizedLang.get("educationConference");
+            case LITERATURE: return localizedLang.get("educationLiterature");
+        }
+        return "";
+    }
 }
