@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.struct.Money;
 import ru.protei.portal.ui.common.client.events.ContractDateEvents;
@@ -43,6 +44,11 @@ public abstract class ContractDateTableActivity implements AbstractContractDateT
     public void onRefreshClicked(ContractDateEvents.Refresh event) {
         view.setData(showTable.contractDates);
         showCostOverflowWarning(showTable.contractDates);
+    }
+
+    @Event
+    public void contractDateAdded(ContractDateEvents.Added event) {
+        view.addRow(event.value);
     }
 
     @Override

@@ -25,9 +25,18 @@ public abstract class ContractDateEditActivity implements Activity,
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
+        view.setMoneyValidationFunction(cost -> {
+            boolean isCostEnabled = isTypeWithPayment(view.type().getValue());
+            if (isCostEnabled) {
+                return cost != null && cost.getFull() >= 0;
+            } else {
+                return cost == null;
+            }
+        });
         dialogView.setActivity(this);
         dialogView.getBodyContainer().add(view.asWidget());
         dialogView.setHeader(lang.contractDateEditHeader());
+        dialogView.removeButtonVisibility().setVisible(false);
     }
 
     @Event
@@ -37,12 +46,11 @@ public abstract class ContractDateEditActivity implements Activity,
 
     @Event
     public void onShow(ContractDateEvents.ShowEdit event) {
-        this.value = event.value;
+        isNew = event.value == null;
+        value = isNew ? new ContractDate() : event.value;
+
         boolean isAllowedEdit = policyService.hasPrivilegeFor(En_Privilege.CONTRACT_EDIT);
-
         fillView();
-
-        dialogView.removeButtonVisibility().setVisible(false);
         dialogView.saveButtonVisibility().setVisible(isAllowedEdit);
         dialogView.showPopup();
     }
@@ -61,6 +69,10 @@ public abstract class ContractDateEditActivity implements Activity,
 
         fillDto();
         dialogView.hidePopup();
+        if (isNew) {
+            fireEvent(new ContractDateEvents.Added(value));
+            return;
+        }
         fireEvent(new ContractDateEvents.Refresh());
     }
 
@@ -71,17 +83,14 @@ public abstract class ContractDateEditActivity implements Activity,
 
     @Override
     public void onDateChanged() {
-        boolean isDatePresent = view.date().getValue() != null;
-        view.notifyFlagEnabled().setEnabled(isDatePresent);
-        if (!isDatePresent) {
-            view.notifyFlag().setValue(false);
-        }
         view.calendarDays().setValue(DateUtils.getDaysBetween(init.dateSignedSupplier.get(), view.date().getValue()));
+        checkNotifyFlagState();
     }
 
     @Override
     public void onCalendarDaysChanged() {
-        view.date().setValue(DateUtils.addDays(init.dateSignedSupplier.get(), view.calendarDays().getValue()), false);
+        view.date().setValue(DateUtils.addDays(init.dateSignedSupplier.get(), view.calendarDays().getValue()));
+        checkNotifyFlagState();
     }
 
     @Override
@@ -101,8 +110,7 @@ public abstract class ContractDateEditActivity implements Activity,
 
     @Override
     public void onTypeChanged() {
-        value.setType(view.type().getValue());
-        view.setMoneyFieldsEnabled(isTypeWithPayment(value.getType()));
+        view.setMoneyFieldsEnabled(isTypeWithPayment(view.type().getValue()));
     }
 
     private void fillView() {
@@ -112,14 +120,7 @@ public abstract class ContractDateEditActivity implements Activity,
         view.notifyFlag().setValue(value.isNotify());
         view.notifyFlagEnabled().setEnabled(value.getDate() != null);
         view.comment().setValue(value.getComment());
-        view.setMoneyValidationFunction(cost -> {
-            boolean isCostEnabled = isTypeWithPayment(value.getType());
-            if (isCostEnabled) {
-                return cost != null && cost.getFull() >= 0;
-            } else {
-                return cost == null;
-            }
-        });
+
         view.setMoneyFieldsEnabled(isTypeWithPayment(value.getType()));
         view.moneyWithCurrency().setValue(new MoneyWithCurrency(value.getCost(), value.getCurrency()));
         view.moneyPercent().setValue(calculatePercent(value.getCost()));
@@ -146,6 +147,14 @@ public abstract class ContractDateEditActivity implements Activity,
             return true;
         }
         return false;
+    }
+
+    private void checkNotifyFlagState() {
+        boolean isDatePresent = view.date().getValue() != null;
+        view.notifyFlagEnabled().setEnabled(isDatePresent);
+        if (!isDatePresent) {
+            view.notifyFlag().setValue(false);
+        }
     }
 
     private boolean isTypeWithPayment(En_ContractDatesType type) {
@@ -180,6 +189,7 @@ public abstract class ContractDateEditActivity implements Activity,
     @Inject
     PolicyService policyService;
 
+    private boolean isNew = false;
     private ContractDate value;
     private ContractDateEvents.Init init;
 }

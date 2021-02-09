@@ -67,6 +67,11 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         requestContract(event.id, this::fillView);
     }
 
+    @Event
+    public void onAddedContractData(ContractDateEvents.Added event) {
+        contract.getContractDates().add(event.value);
+    }
+
     @Override
     public void onSaveClicked() {
         fillDto();
@@ -164,9 +169,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
     @Override
     public void onAddDateClicked() {
-        ContractDate date = new ContractDate();
-        contract.getContractDates().add(date);
-        fireEvent(new ContractDateEvents.ShowEdit(date));
+        fireEvent(new ContractDateEvents.ShowEdit());
     }
 
     private void requestContract(Long contractId, Consumer<Contract> consumer) {

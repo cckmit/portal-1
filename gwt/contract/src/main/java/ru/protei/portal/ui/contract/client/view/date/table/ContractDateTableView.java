@@ -66,6 +66,11 @@ public class ContractDateTableView extends Composite implements AbstractContract
         return costOverflowWarning;
     }
 
+    @Override
+    public void addRow(ContractDate value) {
+        table.addRow(value);
+    }
+
     private void initTable() {
         StaticTextColumn<ContractDate> dateColumn = new StaticTextColumn<ContractDate>(lang.contractDateColumn()) {
             @Override
