@@ -9,8 +9,14 @@ import ru.protei.portal.ui.common.client.widget.selector.input.InputPopupMultiSe
 public class ContractStatesMultiSelector extends InputPopupMultiSelector<En_ContractState> {
 
     @Inject
-    public void init(ContractStatesModel model, Lang lang, En_ContractStateLang stateLang) {
-        setModel(model);
+    public void init(Lang lang, En_ContractStateLang stateLang) {
+        setModel(elementIndex -> {
+            try {
+                return En_ContractState.values()[elementIndex];
+            } catch (IndexOutOfBoundsException e) {
+                return null;
+            }
+        });
         setAddName(lang.buttonAdd());
         setClearName(lang.buttonClear());
         setItemRenderer(stateLang::getName);

@@ -154,8 +154,11 @@ public class EnumLangUtil {
             case SUPPLY_CONTRACT: return localizedLang.get("contractTypeSupplyContract");
             case SUPPLY_FRAMEWORK_CONTRACT: return localizedLang.get("contractTypeSupplyFrameworkContract");
             case WORK_CONTRACT: return localizedLang.get("contractTypeWorkContract");
-            case HARDWARE_SOFTWARE_SERVICE: return localizedLang.get("contractTypeHardwareSoftwareService");
             case REQUEST: return localizedLang.get("contractTypeRequest");
+            case ADDITIONAL_AGREEMENT: return localizedLang.get("contractTypeAdditionalAgreement");
+            case CONTRACT: return localizedLang.get("contractTypeContract");
+            case CONTRACT_FOR_SERVICE: return localizedLang.get("contractTypeContractForService");
+            case AGREEMENT: return localizedLang.get("contractTypeAgreement");
         }
         return "";
     }
@@ -174,6 +177,8 @@ public class EnumLangUtil {
             case WAIT_ORIGINAL: return localizedLang.get("contractStateWaitOriginal");
             case WAITING_COPIES_FROM_CUSTOMER: return localizedLang.get("contractWaitingCopiesFromCustomer");
             case CANCELLED: return localizedLang.get("contractCancelled");
+            case EDS_SIGNED: return localizedLang.get("contractEdsSigned");
+            case SIGNED_ON_SITE: return localizedLang.get("contractSignedOnSite");
         }
         return "";
     }

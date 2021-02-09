@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.enterprise1c.dto.Contract1C;
+import ru.protei.portal.core.model.enterprise1c.dto.ContractAdditionalProperty1C;
 import ru.protei.portal.core.model.enterprise1c.dto.Contractor1C;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -480,7 +481,14 @@ public class ContractServiceImpl implements ContractService {
         if (apiQuery == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
-        List<Contract> contracts = contractDAO.getByApiQuery(apiQuery);
+
+        ContractQuery query = new ContractQuery();
+        query.setOpenStateDate(apiQuery.getOpenStateDate());
+        query.setOrganizationIds(apiQuery.getOrganizationIds());
+        query.setStates(apiQuery.getStates());
+        SearchResult<Contract> result = contractDAO.getSearchResult(query);
+        List<Contract> contracts = result.getResults();
+
         jdbcManyRelationsHelper.fill(contracts, "contractDates");
         contracts.forEach(contract -> contract.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(contract.getProjectId()))));
         return ok(contracts);
@@ -522,7 +530,7 @@ public class ContractServiceImpl implements ContractService {
         caseObject.setInfo(contract.getDescription());
         caseObject.setName(contract.getNumber());
         caseObject.setStateId(contract.getState().getId());
-        caseObject.setManagerId(contract.getCaseManagerId());
+        caseObject.setManagerId(contract.getContractSignManagerId());
         caseObject.setInitiatorId(contract.getCuratorId());
 
         return caseObject;
@@ -688,6 +696,12 @@ public class ContractServiceImpl implements ContractService {
         contract1C.setContractorKey(contract.getContractor().getRefKey());
         contract1C.setDateSigning(saveDateFormat.format(contract.getDateSigning()));
         contract1C.setName(contract.getNumber().trim()+ " от " + showDateFormat.format(contract.getDateSigning()));
+
+        // PORTAL-1566 p.7 (freezed)
+//        List<ContractAdditionalProperty1C> additional1СProperties = new ArrayList<>();
+//        ContractAdditionalProperty1C dirProperty = new ContractAdditionalProperty1C(contract.getDirectionName());
+//        additionalProperty1CS.add(dirProperty);
+//        contract1C.setAdditionalProperties(additionalProperty1CS);
 
         return contract1C;
     }

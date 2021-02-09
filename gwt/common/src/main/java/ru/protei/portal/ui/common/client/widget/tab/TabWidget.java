@@ -22,6 +22,10 @@ public class TabWidget extends Tab {
         popup.setAddButton(false);
     }
 
+    public void setTabContentStyleName(String styleName) {
+        tabContent.setStyleName(styleName);
+    }
+
     @Override
     public void onTabClicked(String tabName) {
         onTabSelected(tabName);

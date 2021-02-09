@@ -120,8 +120,8 @@ public class ContractReminderServiceImpl implements ContractReminderService {
 
     private Set<Long> makePersonIdListForNotification(Contract contract) {
         Set<Long> personIdList = new HashSet<>();
-        if (contract.getManagerId() != null) {
-            personIdList.add(contract.getManagerId());
+        if (contract.getProjectManagerId() != null) {
+            personIdList.add(contract.getProjectManagerId());
         }
         if (contract.getCuratorId() != null) {
             personIdList.add(contract.getCuratorId());
