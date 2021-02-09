@@ -67,6 +67,11 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         requestContract(event.id, this::fillView);
     }
 
+    @Event
+    public void onAddedContractData(ContractDateEvents.Added event) {
+        contract.getContractDates().add(event.value);
+    }
+
     @Override
     public void onSaveClicked() {
         fillDto();
@@ -127,7 +132,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
             return;
         }
         Money money = cost.getMoney();
-//        getValidationCostError();
+        // TODO: нужно вызывать функцию проверки суммы в сроках поставок и оплат
     }
 
     @Override
@@ -164,12 +169,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
     @Override
     public void onAddDateClicked() {
-        ContractDate date = new ContractDate();
-        if (contract.getContractDates() == null) {
-            contract.setContractDates(new ArrayList<>());
-        }
-        contract.getContractDates().add(date);
-        fireEvent(new ContractDateEvents.ShowEdit(date));
+        fireEvent(new ContractDateEvents.ShowEdit());
     }
 
     private void requestContract(Long contractId, Consumer<Contract> consumer) {
@@ -242,6 +242,9 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         } else {
             fireEvent(new CaseTagEvents.ShowList(view.tagsContainer(), En_CaseType.CONTRACT, contract.getId(), false, a -> tagListActivity = a));
             fireEvent(new ContractEvents.ShowConciseTable(view.expenditureContractsContainer(), contract.getId()));
+        }
+        if (contract.getContractDates() == null) {
+            contract.setContractDates(new ArrayList<>());
         }
         fireEvent(new ContractDateEvents.ShowTable(view.getContractDateTableContainer(), contract.getContractDates()));
     }

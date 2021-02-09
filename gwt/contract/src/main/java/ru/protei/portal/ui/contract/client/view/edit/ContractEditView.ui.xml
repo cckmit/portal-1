@@ -59,7 +59,7 @@
                                     <ui:text from="{lang.contractDateSigning}"/>
                                 </label>
                                 <single:SinglePicker ui:field="dateSigning" type="DATE" formatValue="dd.MM.yyyy"
-                                                     styleName=""/>
+                                                     styleName="" mandatory="false"/>
                             </div>
                         </div>
                     </div>
@@ -171,7 +171,7 @@
                                         </label>
                                         <single:SinglePicker ui:field="dateValidDate" type="DATE"
                                                              formatValue="dd.MM.yyyy"
-                                                             styleName=""/>
+                                                             styleName="" mandatory="false"/>
                                     </div>
                                 </div>
 

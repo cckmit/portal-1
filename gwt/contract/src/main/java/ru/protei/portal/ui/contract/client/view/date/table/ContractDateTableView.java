@@ -46,6 +46,7 @@ public class ContractDateTableView extends Composite implements AbstractContract
     @Override
     public void setData(List<ContractDate> values) {
         table.clearRows();
+        if (values == null) return;
         values.forEach(value -> table.addRow(value));
     }
 
@@ -63,6 +64,11 @@ public class ContractDateTableView extends Composite implements AbstractContract
     @Override
     public HasVisibility costOverflowWarningVisibility() {
         return costOverflowWarning;
+    }
+
+    @Override
+    public void addRow(ContractDate value) {
+        table.addRow(value);
     }
 
     private void initTable() {
