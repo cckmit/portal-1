@@ -1148,7 +1148,7 @@ public class MailNotificationProcessor {
         }
 
         if (isEmpty(recipients)) {
-            log.info("Failed to send education request notification: empty recipients set");
+            log.warn("Failed to send education request notification: empty recipients set");
             return;
         }
 
@@ -1201,7 +1201,7 @@ public class MailNotificationProcessor {
         }
 
         if (isEmpty(recipients)) {
-            log.info("Failed to send education request notification: empty recipients set");
+            log.warn("Failed to send education request notification: empty recipients set");
             return;
         }
 
@@ -1253,7 +1253,7 @@ public class MailNotificationProcessor {
         }
 
         if (isEmpty(recipients)) {
-            log.info("Failed to send education request notification: empty recipients set");
+            log.warn("Failed to send education request notification: empty recipients set");
             return;
         }
 
