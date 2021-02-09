@@ -876,20 +876,49 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getBirthdaysNotificationBody(List<EmployeeShortView> employees, Collection<String> recipients) {
+    public PreparedTemplate getBirthdaysNotificationBody(List<EmployeeShortView> employees, Collection<String> recipients,
+                                                         EnumLangUtil enumLangUtil) {
         Map<String, Object> model = new HashMap<>();
-        model.put("employees", employees.stream().collect(Collectors.groupingBy(
+        LinkedHashMap<Date, TreeSet<EmployeeShortView>> dateToEmployeesMap = employees.stream().collect(groupingBy(
                 employee -> DateUtils.resetYear(employee.getBirthday()),
                 LinkedHashMap::new,
                 Collectors.toCollection(() -> new TreeSet<>(
                         Comparator.comparing(EmployeeShortView::getDisplayName)
-                )))));
+                ))));
+        model.put("employees", dateToEmployeesMap);
+        model.put("daysOfWeek", makeDaysOfWeek(dateToEmployeesMap));
         model.put("recipients", recipients);
+        model.put("EnumLangUtil", enumLangUtil);
 
         PreparedTemplate template = new PreparedTemplate("notification/email/birthdays.body.%s.ftl");
         template.setModel(model);
         template.setTemplateConfiguration(templateConfiguration);
         return template;
+    }
+
+    private List<Integer> makeDaysOfWeek(LinkedHashMap<Date, TreeSet<EmployeeShortView>> dateToEmployeesMap) {
+        List<Integer> daysOfWeek = new ArrayList<>();
+        Calendar calendar = Calendar.getInstance();
+        int currentYear = calendar.get(Calendar.YEAR);
+        int currentMonth = calendar.get(Calendar.MONTH);
+
+        // устанавливаем датам рождения текущие годы, чтобы получить день недели
+        // частный случай - если сейчас уже 2021 год, а день рождения был в конце декабря 2020,
+        // тогда устанавливаем год на 1 меньше, чтобы получить правильный день недели
+        Set<Date> dates = dateToEmployeesMap.keySet();
+        for (Date date : dates) {
+            calendar.setTime(date);
+            if (currentMonth == Calendar.DECEMBER && date.getMonth() == Calendar.JANUARY) {
+                calendar.set(Calendar.YEAR, currentYear + 1);
+            } else if (currentMonth == Calendar.JANUARY && date.getMonth() == Calendar.DECEMBER) {
+                calendar.set(Calendar.YEAR, currentYear - 1);
+            } else {
+                calendar.set(Calendar.YEAR, currentYear);
+            }
+
+            daysOfWeek.add(calendar.get(Calendar.DAY_OF_WEEK));
+        }
+        return daysOfWeek;
     }
 
     @Override

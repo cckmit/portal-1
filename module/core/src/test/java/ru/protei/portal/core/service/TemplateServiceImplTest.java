@@ -107,7 +107,7 @@ public class TemplateServiceImplTest {
         PreparedTemplate subjectTemplate = templateService.getBirthdaysNotificationSubject(from, to);
         PreparedTemplate bodyTemplate = templateService.getBirthdaysNotificationBody(
                 employees,
-                notifiers.stream().map(NotificationEntry::getAddress).collect( Collectors.toList()));
+                notifiers.stream().map(NotificationEntry::getAddress).collect( Collectors.toList()), new EnumLangUtil(lang));
 
         assertNotNull( subjectTemplate );
         assertNotNull( bodyTemplate );

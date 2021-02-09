@@ -532,7 +532,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         query.setSortField(En_SortField.birthday);
         query.setSortDir(En_SortDir.ASC);
         List<EmployeeShortView> employees = employeeShortViewDAO.getEmployees(query);
-        sortEmployeesFromDecemberToJanuary(employees);
+        employees = getSortedEmployeesFromDecemberToJanuary(employees);
 
         if (CollectionUtils.isEmpty(employees)) {
             log.info("notifyAboutBirthdays(): employees birthdays list is empty for period {} - {}", from, to);
@@ -554,14 +554,14 @@ public class EmployeeServiceImpl implements EmployeeService {
         return ok();
     }
 
-    private void sortEmployeesFromDecemberToJanuary(List<EmployeeShortView> employees) {
+    private List<EmployeeShortView> getSortedEmployeesFromDecemberToJanuary(List<EmployeeShortView> employees) {
         if (employees.stream().anyMatch(e -> e.getBirthday().getMonth() == Calendar.DECEMBER)
                 && employees.stream().anyMatch(e -> e.getBirthday().getMonth() == Calendar.JANUARY)) {
             ArrayList<EmployeeShortView> sortedList = new ArrayList<>(employees);
             sortedList.sort(Comparator.comparingInt((EmployeeShortView value) -> value.getBirthday().getMonth()).reversed());
-            employees.clear();
-            employees.addAll(sortedList);
+            return sortedList;
         }
+        return employees;
     }
 
     private List<NotificationEntry> makeNotificationListFromConfiguration() {

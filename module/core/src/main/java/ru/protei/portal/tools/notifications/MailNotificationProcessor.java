@@ -1044,7 +1044,8 @@ public class MailNotificationProcessor {
 
         List<String> recipients = getNotifiersAddresses(event.getNotifiers());
 
-        PreparedTemplate bodyTemplate = templateService.getBirthdaysNotificationBody( event.getEmployees(), recipients );
+        PreparedTemplate bodyTemplate = templateService.getBirthdaysNotificationBody( event.getEmployees(), recipients,
+                new EnumLangUtil(lang));
         if (bodyTemplate == null) {
             log.error("Failed to prepare body template for release PersonCaseFilter notification");
             return;

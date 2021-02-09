@@ -25,7 +25,7 @@ public class DateUtils {
     public static Date resetYear(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
-        calendar.set(Calendar.YEAR, 0);
+        calendar.set(Calendar.YEAR, 2000); // 2000, чтобы не менялась эра при вызове в Calendar.setTime(data)
         return calendar.getTime();
     }
 }

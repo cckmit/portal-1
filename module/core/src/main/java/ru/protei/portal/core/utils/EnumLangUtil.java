@@ -2,6 +2,7 @@ package ru.protei.portal.core.utils;
 
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dict.*;
+import sun.util.calendar.BaseCalendar;
 
 import java.util.Locale;
 
@@ -206,7 +207,7 @@ public class EnumLangUtil {
             case PSGO:
                 return localizedLang.get("workTriggerPSGO");
             case NEW_REQUIREMENTS:
-                return  localizedLang.get("workTriggerNewRequirements");
+                return localizedLang.get("workTriggerNewRequirements");
             case PRE_COMMISSIONING_CONTRACT:
                 return localizedLang.get("workTriggerPreCommissioningContract");
             case NEW_PRE_COMMISSIONING_REQUIREMENTS:
@@ -281,6 +282,22 @@ public class EnumLangUtil {
                 return localizedLang.get("dutyTypeSORM");
             case COV:
                 return localizedLang.get("dutyTypeCOV");
+        }
+        return "";
+    }
+
+    public String dayOfWeekLang(int dayOfWeekNumber, String langCode) {
+        if (localizedLang == null) {
+            localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
+        }
+        switch (dayOfWeekNumber) {
+            case BaseCalendar.SUNDAY: return localizedLang.get("sunday");
+            case BaseCalendar.MONDAY: return localizedLang.get("monday");
+            case BaseCalendar.TUESDAY: return localizedLang.get("tuesday");
+            case BaseCalendar.WEDNESDAY: return localizedLang.get("wednesday");
+            case BaseCalendar.THURSDAY: return localizedLang.get("thursday");
+            case BaseCalendar.FRIDAY: return localizedLang.get("friday");
+            case BaseCalendar.SATURDAY: return localizedLang.get("saturday");
         }
         return "";
     }
