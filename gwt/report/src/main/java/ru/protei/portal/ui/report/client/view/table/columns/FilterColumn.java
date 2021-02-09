@@ -303,7 +303,7 @@ public class FilterColumn extends StaticColumn<ReportDto> {
 
         // managers
         if (isNotEmpty(contractQuery.getManagerIds())) {
-            element.appendChild(makeArraySelectedElement(lang.contractManager(), contractQuery.getManagerIds()));
+            element.appendChild(makeArraySelectedElement(lang.contractProjectManager(), contractQuery.getManagerIds()));
         }
     }
 

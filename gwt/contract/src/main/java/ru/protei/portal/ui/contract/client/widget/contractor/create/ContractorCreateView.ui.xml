@@ -6,54 +6,48 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin">
-        <div class="card-body">
+    <g:HTMLPanel ui:field="root" styleName="m-t-20">
+        <div class="form-group-attached">
+            <div class="form-group form-group-default">
+                <label>
+                    <ui:text from="{lang.contractOrganization}"/>
+                </label>
+                <div>
+                    <span ui:field="contractOrganization"/>
+                </div>
+            </div>
             <div class="row">
-                <div class="form-group col-md-12">
-                    <label>
-                        <ui:text from="{lang.contractOrganization}"/>
-                    </label>
-                    <div>
-                        <span ui:field="contractOrganization"/>
+                <div class="col-6">
+                    <div class="form-group form-group-default">
+                        <label>
+                            <ui:text from="{lang.contractContractorInn}"/>
+                        </label>
+                        <validablefield:ValidableTextBox ui:field="contractorInn" styleName="form-control"/>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group form-group-default">
+                        <label>
+                            <ui:text from="{lang.contractContractorKpp}"/>
+                        </label>
+                        <validablefield:ValidableTextBox ui:field="contractorKpp" styleName="form-control"/>
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="form-group col-md-6">
-                    <label>
-                        <ui:text from="{lang.contractContractorInn}"/>
-                    </label>
-                    <validablefield:ValidableTextBox ui:field="contractorInn" styleName="form-control"/>
-                </div>
-                <div class="form-group col-md-6">
-                    <label>
-                        <ui:text from="{lang.contractContractorKpp}"/>
-                    </label>
-                    <validablefield:ValidableTextBox ui:field="contractorKpp" styleName="form-control"/>
-                </div>
+            <div class="form-group form-group-default">
+                <label>
+                    <ui:text from="{lang.contractContractorName}"/>
+                </label>
+                <validablefield:ValidableTextBox ui:field="contractorName" styleName="form-control"/>
             </div>
-            <div class="row">
-                <div class="form-group col-md-12">
-                    <label>
-                        <ui:text from="{lang.contractContractorName}"/>
-                    </label>
-                    <validablefield:ValidableTextBox ui:field="contractorName" styleName="form-control"/>
-                </div>
-                <div class="form-group col-md-12">
-                    <label>
-                        <ui:text from="{lang.contractContractorFullName}"/>
-                    </label>
-                    <validablefield:ValidableTextBox ui:field="contractorFullName" styleName="form-control"/>
-                </div>
+            <div class="form-group form-group-default">
+                <label>
+                    <ui:text from="{lang.contractContractorFullName}"/>
+                </label>
+                <validablefield:ValidableTextBox ui:field="contractorFullName" styleName="form-control"/>
             </div>
-            <div class="row">
-                <div class="form-group col-md-12">
-                    <label>
-                        <ui:text from="{lang.contractContractorCountry}"/>
-                    </label>
-                    <contractor:country.ContractorCountrySelector ui:field="contractorCountry"/>
-                </div>
-            </div>
+
+            <contractor:country.ContractorCountrySelector ui:field="contractorCountry" header="{lang.contractContractorCountry}"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

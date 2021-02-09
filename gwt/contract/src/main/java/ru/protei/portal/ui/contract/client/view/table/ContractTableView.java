@@ -19,6 +19,7 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
+import ru.protei.portal.ui.common.client.common.MoneyRenderer;
 import ru.protei.portal.ui.common.client.lang.En_ContractKindLang;
 import ru.protei.portal.ui.common.client.lang.En_ContractStateLang;
 import ru.protei.portal.ui.common.client.lang.En_ContractTypeLang;
@@ -159,7 +160,7 @@ public class ContractTableView extends Composite implements AbstractContractTabl
             StringBuilder sb = new StringBuilder();
             sb.append("<b>")
                     .append(sanitizeHtml(contractTypeLang.getName(contract.getContractType())))
-                    .append(" ")
+                    .append(" № ")
                     .append(sanitizeHtml(contract.getNumber()))
                     .append("</b>");
             sb.append("<br/>");
@@ -239,11 +240,9 @@ public class ContractTableView extends Composite implements AbstractContractTabl
                     .append(sanitizeHtml(contract.getOrganizationName()))
                     .append("<br/>");
             sb.append("<b>")
-                    .append(lang.contractManager())
+                    .append(lang.contractProjectManager())
                     .append(":</b> ")
-                    .append(contract.getProjectId() == null
-                            ? sanitizeHtml(contract.getCaseManagerShortName())
-                            : sanitizeHtml(contract.getManagerShortName()))
+                    .append(sanitizeHtml(contract.getProjectManagerShortName()))
                     .append("<br/>");
             sb.append("<b>")
                     .append(lang.contractCurator())
@@ -264,7 +263,7 @@ public class ContractTableView extends Composite implements AbstractContractTabl
             Element root = DOM.createDiv();
             StringBuilder sb = new StringBuilder();
             if (contract.getCost() != null) {
-                sb.append(contract.getCost().toString()).append(" ");
+                sb.append(MoneyRenderer.getInstance().render(contract.getCost())).append(" ");
                 if (contract.getCurrency() != null) {
                     sb.append(contract.getCurrency().getCode()).append(" ");
                 }
