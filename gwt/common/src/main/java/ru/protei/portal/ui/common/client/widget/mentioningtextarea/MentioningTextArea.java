@@ -21,7 +21,7 @@ public class MentioningTextArea extends DndAutoResizeTextArea implements TextAre
         this.userLoginSelector = userLoginSelector;
         this.changeTimer = initTimer(userLoginModel, userLoginSelector);
 
-        ArrowSelectableSelectorPopup selectorPopup = new ArrowSelectableSelectorPopup(this);
+        ArrowSelectableSelectorPopup selectorPopup = new ArrowSelectableSelectorPopup(this, "arrow-selectable");
 
         initUserLoginSelector(userLoginModel, userLoginSelector, selectorPopup);
 

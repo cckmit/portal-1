@@ -10,12 +10,24 @@ import ru.protei.portal.ui.common.client.selector.popup.SelectorPopupWithSearch;
 import static java.util.Optional.of;
 
 public class ArrowSelectableSelectorPopup extends SelectorPopupWithSearch {
-    public ArrowSelectableSelectorPopup(TextAreaHandler textAreaHandler) {
-        childContainer.addStyleName("arrow-selectable");
-        childContainer.addDomHandler(event -> textAreaHandler.focusTextArea(), MouseOverEvent.getType());
+    public ArrowSelectableSelectorPopup(TextAreaHandler textAreaHandler, String styleName) {
+        childContainer.addStyleName(styleName);
+        childContainer.addDomHandler(event -> {
+            search.setFocus(true);
+            textAreaHandler.focusTextArea();
+        }, MouseOverEvent.getType());
         childContainer.addDomHandler(event -> onKeyDown(event, childContainer, textAreaHandler), KeyDownEvent.getType());
     }
 
+    public ArrowSelectableSelectorPopup(TextAreaHandler textAreaHandler) {
+        childContainer.addDomHandler(event -> {
+            search.setFocus(true);
+            textAreaHandler.focusTextArea();
+        }, MouseOverEvent.getType());
+        childContainer.addDomHandler(event -> onKeyDown(event, childContainer, textAreaHandler), KeyDownEvent.getType());
+    }
+
+    @Override
     public void focus() {
         focusWidget(getNext(childContainer, null));
     }
@@ -23,6 +35,7 @@ public class ArrowSelectableSelectorPopup extends SelectorPopupWithSearch {
     private void onKeyDown(KeyDownEvent event, ComplexPanel childContainer, TextAreaHandler textAreaHandler) {
         if (KeyCodes.KEY_ESCAPE == event.getNativeKeyCode()) {
             event.preventDefault();
+            search.setFocus(true);
             textAreaHandler.focusTextArea();
             return;
         }
@@ -31,6 +44,7 @@ public class ArrowSelectableSelectorPopup extends SelectorPopupWithSearch {
             event.preventDefault();
 
             if (focusWidget(getPrevious(childContainer, currentWidget)) == null) {
+                search.setFocus(true);
                 textAreaHandler.focusTextArea();
             }
 
@@ -45,6 +59,7 @@ public class ArrowSelectableSelectorPopup extends SelectorPopupWithSearch {
 
 //            Если нажали не на Enter, а продолжили ввод, то переводим фокус обратно
         if (KeyCodes.KEY_ENTER != event.getNativeKeyCode()) {
+            search.setFocus(true);
             textAreaHandler.focusTextArea();
             textAreaHandler.onValueChanged();
         }
@@ -81,7 +96,7 @@ public class ArrowSelectableSelectorPopup extends SelectorPopupWithSearch {
             return null;
         }
 
-        currentWidget.getElement().getFirstChildElement().focus();
+        currentWidget.getElement().focus();
 
         return currentWidget;
     }
