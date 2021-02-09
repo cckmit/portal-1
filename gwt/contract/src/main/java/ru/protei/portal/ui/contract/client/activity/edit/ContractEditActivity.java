@@ -165,9 +165,6 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     @Override
     public void onAddDateClicked() {
         ContractDate date = new ContractDate();
-        if (contract.getContractDates() == null) {
-            contract.setContractDates(new ArrayList<>());
-        }
         contract.getContractDates().add(date);
         fireEvent(new ContractDateEvents.ShowEdit(date));
     }
@@ -242,6 +239,9 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         } else {
             fireEvent(new CaseTagEvents.ShowList(view.tagsContainer(), En_CaseType.CONTRACT, contract.getId(), false, a -> tagListActivity = a));
             fireEvent(new ContractEvents.ShowConciseTable(view.expenditureContractsContainer(), contract.getId()));
+        }
+        if (contract.getContractDates() == null) {
+            contract.setContractDates(new ArrayList<>());
         }
         fireEvent(new ContractDateEvents.ShowTable(view.getContractDateTableContainer(), contract.getContractDates()));
     }
