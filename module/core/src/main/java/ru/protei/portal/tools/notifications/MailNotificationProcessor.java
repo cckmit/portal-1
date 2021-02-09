@@ -1148,6 +1148,7 @@ public class MailNotificationProcessor {
         }
 
         if (isEmpty(recipients)) {
+            log.info("Failed to send education request notification: empty recipients set");
             return;
         }
 
@@ -1164,14 +1165,14 @@ public class MailNotificationProcessor {
             return;
         }
 
-        recipients.forEach(email -> {
+        recipients.forEach(entry -> {
             try {
-                String body = bodyTemplate.getText(email, null, false);
-                String subject = subjectTemplate.getText(email, null, false);
+                String body = bodyTemplate.getText(entry, null, false);
+                String subject = subjectTemplate.getText(entry, null, false);
 
-                sendMail(email, subject, body, getFromPortalAddress());
+                sendMail(entry, subject, body, getFromPortalAddress());
             } catch (Exception e) {
-                log.error("Failed to make MimeMessage mail={}, e={}", email, e);
+                log.error("Failed to make MimeMessage mail={}, e={}", entry, e);
             }
         });
     }
@@ -1200,6 +1201,7 @@ public class MailNotificationProcessor {
         }
 
         if (isEmpty(recipients)) {
+            log.info("Failed to send education request notification: empty recipients set");
             return;
         }
 
@@ -1220,14 +1222,14 @@ public class MailNotificationProcessor {
             return;
         }
 
-        recipients.forEach(email -> {
+        recipients.forEach(entry -> {
             try {
-                String body = bodyTemplate.getText(email, null, false);
-                String subject = subjectTemplate.getText(email, null, false);
+                String body = bodyTemplate.getText(entry, null, false);
+                String subject = subjectTemplate.getText(entry, null, false);
 
-                sendMail(email, subject, body, getFromPortalAddress());
+                sendMail(entry, subject, body, getFromPortalAddress());
             } catch (Exception e) {
-                log.error("Failed to make MimeMessage mail={}, e={}", email, e);
+                log.error("Failed to make MimeMessage mail={}, e={}", entry, e);
             }
         });
     }
@@ -1251,6 +1253,7 @@ public class MailNotificationProcessor {
         }
 
         if (isEmpty(recipients)) {
+            log.info("Failed to send education request notification: empty recipients set");
             return;
         }
 
@@ -1271,14 +1274,14 @@ public class MailNotificationProcessor {
             return;
         }
 
-        recipients.forEach(email -> {
+        recipients.forEach(entry -> {
             try {
-                String body = bodyTemplate.getText(email, null, false);
-                String subject = subjectTemplate.getText(email, null, false);
+                String body = bodyTemplate.getText(entry, null, false);
+                String subject = subjectTemplate.getText(entry, null, false);
 
-                sendMail(email, subject, body, getFromPortalAddress());
+                sendMail(entry, subject, body, getFromPortalAddress());
             } catch (Exception e) {
-                log.error("Failed to make MimeMessage mail={}, e={}", email, e);
+                log.error("Failed to make MimeMessage mail={}, e={}", entry, e);
             }
         });
     }

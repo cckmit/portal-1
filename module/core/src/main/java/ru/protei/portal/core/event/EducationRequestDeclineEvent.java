@@ -28,10 +28,6 @@ public class EducationRequestDeclineEvent extends ApplicationEvent {
         return educationEntry;
     }
 
-    public boolean isCreateEvent() {
-        return true;
-    }
-
     public Set<Person> getHeadsOfDepartments() {
         return headsOfDepartments;
     }

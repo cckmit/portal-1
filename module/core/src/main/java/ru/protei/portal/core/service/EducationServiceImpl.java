@@ -3,7 +3,6 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
@@ -117,11 +116,11 @@ public class EducationServiceImpl implements EducationService {
 
         jdbcManyRelationsHelper.fill(entry, "attendanceList");
 
-        return ok(entry).publishEvent(new EducationRequestCreateEvent(this, getParticipants(entry.getAttendanceList()),
-                getHeadsOfDepartments(entry.getAttendanceList()), entry));
+        return ok(entry).publishEvent(new EducationRequestCreateEvent(this, makeParticipants(entry.getAttendanceList()),
+                makeHeadsOfDepartments(entry.getAttendanceList()), entry));
     }
 
-    private List<Person> getParticipants(List<EducationEntryAttendance> attendanceList) {
+    private List<Person> makeParticipants(List<EducationEntryAttendance> attendanceList) {
         List<Person> participants = new ArrayList<>();
         if (CollectionUtils.isEmpty(attendanceList)) {
             return participants;
@@ -143,13 +142,7 @@ public class EducationServiceImpl implements EducationService {
         return participants;
     }
 
-    private Person getInitiator(Long personId) {
-        Person initiator = personDAO.get(personId);
-        jdbcManyRelationsHelper.fill(initiator, Company.Fields.CONTACT_ITEMS);
-        return initiator;
-    }
-
-    private Set<Person> getHeadsOfDepartments(List<EducationEntryAttendance> attendanceList) {
+    private Set<Person> makeHeadsOfDepartments(List<EducationEntryAttendance> attendanceList) {
         Set<Person> headSet = new HashSet<>();
         if (CollectionUtils.isEmpty(attendanceList)) {
             return headSet;
@@ -187,13 +180,6 @@ public class EducationServiceImpl implements EducationService {
         }
 
         return headSet;
-    }
-
-    private Lang getLang() {
-        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasenames("Lang");
-        messageSource.setDefaultEncoding("UTF-8");
-        return new Lang(messageSource);
     }
 
     @Override
@@ -303,22 +289,22 @@ public class EducationServiceImpl implements EducationService {
 
         Result<EducationEntry> okResult = ok(entry);
 
-        if (!workersApproved.isEmpty()) {
-            List<EducationEntryAttendance> approvedAttendanceList = entry.getAttendanceList().stream()
+        if (CollectionUtils.isNotEmpty(workersApproved)) {
+            List<EducationEntryAttendance> approvedAttendanceList = stream(entry.getAttendanceList())
                     .filter(e -> workersApproved.contains(e.getWorkerId()))
                     .collect(Collectors.toList());
 
-            okResult.publishEvent(new EducationRequestApproveEvent(this, getParticipants(approvedAttendanceList),
-                    getHeadsOfDepartments(approvedAttendanceList), entry));
+            okResult.publishEvent(new EducationRequestApproveEvent(this, makeParticipants(approvedAttendanceList),
+                    makeHeadsOfDepartments(approvedAttendanceList), entry));
         }
 
-        if (!workersDeclined.isEmpty()) {
-            List<EducationEntryAttendance> declinedAttendanceList = entry.getAttendanceList().stream()
+        if (CollectionUtils.isNotEmpty(workersDeclined)) {
+            List<EducationEntryAttendance> declinedAttendanceList = stream(entry.getAttendanceList())
                     .filter(e -> workersDeclined.contains(e.getWorkerId()))
                     .collect(Collectors.toList());
 
-            okResult.publishEvent(new EducationRequestDeclineEvent(this, getParticipants(declinedAttendanceList),
-                    getHeadsOfDepartments(declinedAttendanceList), entry));
+            okResult.publishEvent(new EducationRequestDeclineEvent(this, makeParticipants(declinedAttendanceList),
+                    makeHeadsOfDepartments(declinedAttendanceList), entry));
         }
 
         return okResult;
