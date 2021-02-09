@@ -14,6 +14,7 @@ import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDe
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.ContractDateEvents;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.util.DateUtils;
 
@@ -54,6 +55,7 @@ public abstract class ContractDateEditActivity implements Activity,
     @Override
     public void onSaveClicked() {
         if (!validate()) {
+            fireEvent(new NotifyEvents.Show(lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR));
             return;
         }
 
@@ -69,11 +71,17 @@ public abstract class ContractDateEditActivity implements Activity,
 
     @Override
     public void onDateChanged() {
-        boolean isDateNotPresent = view.date().getValue() == null;
-        view.notifyFlagEnabled().setEnabled(isDateNotPresent);
-        if (isDateNotPresent) {
+        boolean isDatePresent = view.date().getValue() != null;
+        view.notifyFlagEnabled().setEnabled(isDatePresent);
+        if (!isDatePresent) {
             view.notifyFlag().setValue(false);
         }
+        view.calendarDays().setValue(DateUtils.getDaysBetween(init.dateSignedSupplier.get(), view.date().getValue()));
+    }
+
+    @Override
+    public void onCalendarDaysChanged() {
+        view.date().setValue(DateUtils.addDays(init.dateSignedSupplier.get(), view.calendarDays().getValue()), false);
     }
 
     @Override
@@ -92,13 +100,9 @@ public abstract class ContractDateEditActivity implements Activity,
     }
 
     @Override
-    public void onCalendarDaysChanged() {
-        view.date().setValue(DateUtils.addDays(init.dateSignedSupplier.get(), view.calendarDays().getValue()));
-    }
-
-    @Override
     public void onTypeChanged() {
-       view.setMoneyFieldsEnabled(isTypeWithPayment(view.type().getValue()));
+        value.setType(view.type().getValue());
+        view.setMoneyFieldsEnabled(isTypeWithPayment(value.getType()));
     }
 
     private void fillView() {
@@ -138,10 +142,10 @@ public abstract class ContractDateEditActivity implements Activity,
     }
 
     private boolean validate() {
-        if ( value.getType() != null ) {
+        if ( view.type().getValue() != null ) {
             return true;
         }
-        return true;
+        return false;
     }
 
     private boolean isTypeWithPayment(En_ContractDatesType type) {

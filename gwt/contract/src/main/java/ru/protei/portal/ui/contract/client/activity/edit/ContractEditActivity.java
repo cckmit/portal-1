@@ -127,7 +127,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
             return;
         }
         Money money = cost.getMoney();
-//        getValidationCostError();
+        // TODO: нужно вызывать функцию проверки суммы в сроках поставок и оплат
     }
 
     @Override

@@ -9,7 +9,7 @@ public class ContractFormSelector extends FormPopupSingleSelector<EntityOption> 
 
     @Inject
     public void init(ContractModel model, Lang lang) {
-        setModel(model);
+        setAsyncModel(model);
         setItemRenderer(value -> {
             if (value == null) {
                 return defaultValue == null ? lang.selectValue() : defaultValue;
