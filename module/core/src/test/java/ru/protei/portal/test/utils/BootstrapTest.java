@@ -2,6 +2,7 @@ package ru.protei.portal.test.utils;
 
 import org.junit.Assert;
 import org.junit.Test;
+import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
 import ru.protei.portal.core.model.dict.En_HistoryAction;
 import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.portal.core.model.ent.CaseComment;
@@ -104,6 +105,7 @@ public class BootstrapTest {
         comment.setId(id);
         comment.setCreated(now);
         comment.setCaseId(caseId);
+        comment.setPrivacyType(En_CaseCommentPrivacyType.PUBLIC);
         return comment;
     }
 
