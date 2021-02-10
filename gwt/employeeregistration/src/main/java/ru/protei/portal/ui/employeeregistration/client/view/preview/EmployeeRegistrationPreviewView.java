@@ -9,10 +9,19 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_CommentOrHistoryType;
+import ru.protei.portal.ui.common.client.lang.En_CommentOrHistoryTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.util.CaseStateUtils;
+import ru.protei.portal.ui.common.client.widget.tab.multi.MultiTabWidget;
 import ru.protei.portal.ui.employeeregistration.client.activity.preview.AbstractEmployeeRegistrationPreviewActivity;
 import ru.protei.portal.ui.employeeregistration.client.activity.preview.AbstractEmployeeRegistrationPreviewView;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.COMMENT;
+import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.HISTORY;
 
 
 public class EmployeeRegistrationPreviewView extends Composite implements AbstractEmployeeRegistrationPreviewView {
@@ -20,6 +29,11 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     @Inject
     public void init() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+
+        multiTabWidget.setTabToNameRenderer(type -> commentOrHistoryTypeLang.getName(type));
+        multiTabWidget.addTabs(Arrays.asList(COMMENT, HISTORY));
+
+        multiTabWidget.setOnTabClickHandler(selectedTabs -> activity.selectedTabsChanged(selectedTabs));
     }
 
     @Override
@@ -99,11 +113,6 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     }
 
     @Override
-    public HasWidgets getCommentsContainer() {
-        return commentContainer;
-    }
-
-    @Override
     public void setDepartment(String value) {
         department.setInnerText(value);
     }
@@ -136,6 +145,21 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     @Override
     public void setCompany(String company) {
         this.company.setInnerText(company);
+    }
+
+    @Override
+    public HasWidgets getItemsContainer() {
+        return multiTabWidget.getContainer();
+    }
+
+    @Override
+    public void selectTabs(List<En_CommentOrHistoryType> tabs) {
+        multiTabWidget.selectTabs(tabs);
+    }
+
+    @Override
+    public List<En_CommentOrHistoryType> getSelectedTabs() {
+        return multiTabWidget.getSelectedTabs();
     }
 
     @UiHandler( "fullName" )
@@ -194,7 +218,7 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     @UiField
     SpanElement caseState;
     @UiField
-    HTMLPanel commentContainer;
+    MultiTabWidget<En_CommentOrHistoryType> multiTabWidget;
     @UiField
     SpanElement curators;
     @UiField
@@ -210,6 +234,8 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     @Inject
     @UiField
     Lang lang;
+    @Inject
+    En_CommentOrHistoryTypeLang commentOrHistoryTypeLang;
     @UiField
     Element createdBy;
     @UiField

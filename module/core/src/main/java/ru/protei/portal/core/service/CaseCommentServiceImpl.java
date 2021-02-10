@@ -66,6 +66,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     AuthService authService;
     @Autowired
     HistoryService historyService;
+    @Autowired
+    HistoryDAO historyDAO;
 
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
@@ -661,7 +663,9 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             return error(caseCommentListResult.getStatus());
         }
 
-        Result<List<History>> historyListResult = historyService.getHistoryListByCaseId(token, caseObjectId);
+        Result<List<History>> historyListResult = En_CaseType.EMPLOYEE_REGISTRATION.equals(caseType) ?
+                historyService.getHistoryListWithEmployeeRegistrationHistory(token, caseObjectId) :
+                historyService.getHistoryListByCaseId(token, caseObjectId);
 
         if (historyListResult.isError()) {
             return error(historyListResult.getStatus());

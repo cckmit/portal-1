@@ -8,9 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledEmployeeRegistrationEvent;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
-import ru.protei.portal.core.model.dict.En_CaseLink;
-import ru.protei.portal.core.model.dict.En_MigrationEntry;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -27,6 +25,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
+import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 
 public class EmployeeRegistrationYoutrackSynchronizerImpl implements EmployeeRegistrationYoutrackSynchronizer {
     private final Logger log = LoggerFactory.getLogger( EmployeeRegistrationYoutrackSynchronizerImpl.class);
@@ -44,6 +43,12 @@ public class EmployeeRegistrationYoutrackSynchronizerImpl implements EmployeeReg
     private CaseObjectDAO caseObjectDAO;
     @Autowired
     private CaseLinkDAO caseLinkDAO;
+    @Autowired
+    private CaseStateDAO caseStateDAO;
+    @Autowired
+    private HistoryDAO historyDAO;
+    @Autowired
+    private EmployeeRegistrationHistoryDAO employeeRegistrationHistoryDAO;
     @Autowired
     private CaseAttachmentDAO caseAttachmentDAO;
     @Autowired
@@ -93,7 +98,6 @@ public class EmployeeRegistrationYoutrackSynchronizerImpl implements EmployeeReg
             log.warn("scheduleSynchronization(): bad youtrack configuration: project set is empty. Employee registration youtrack synchronizer not started");
             return;
         }
-
     }
 
     @Override
@@ -122,6 +126,10 @@ public class EmployeeRegistrationYoutrackSynchronizerImpl implements EmployeeReg
             return;
         }
 
+        Map<Long, String> stateIdToName = caseStateDAO.getAll()
+                .stream()
+                .collect(Collectors.toMap(CaseState::getId, CaseState::getState));
+
         log.debug("synchronizeAll(): synchronize updates for {}",  Arrays.toString(updatedIssueIds.toArray()));
 
         EmployeeRegistrationQuery query = new EmployeeRegistrationQuery();
@@ -129,7 +137,7 @@ public class EmployeeRegistrationYoutrackSynchronizerImpl implements EmployeeReg
         List<EmployeeRegistration> employeeRegistrations = employeeRegistrationDAO.getListByQuery(query);
 
         for (EmployeeRegistration employeeRegistration : employeeRegistrations) {
-            synchronizeEmployeeRegistration(employeeRegistration, lastUpdate.getTime());
+            synchronizeEmployeeRegistration(employeeRegistration, stateIdToName, lastUpdate.getTime());
         }
 
         migrationEntry.setLastUpdate(synchronizationStarted);
@@ -145,7 +153,7 @@ public class EmployeeRegistrationYoutrackSynchronizerImpl implements EmployeeReg
         return issueIds;
     }
 
-    private void synchronizeEmployeeRegistration(EmployeeRegistration employeeRegistration, long lastYtSynchronization) {
+    private void synchronizeEmployeeRegistration(EmployeeRegistration employeeRegistration, Map<Long, String> stateIdToName, long lastYtSynchronization) {
         log.debug("synchronizeEmployeeRegistration(): start synchronizing employee registration={}", employeeRegistration);
         Long oldState = employeeRegistration.getStateId();
 
@@ -156,7 +164,7 @@ public class EmployeeRegistrationYoutrackSynchronizerImpl implements EmployeeReg
         if (CollectionUtils.isEmpty(issues))
             return;
 
-        updateIssues(employeeRegistration, lastYtSynchronization, issues);
+        updateIssues(employeeRegistration, stateIdToName, lastYtSynchronization, issues);
 
         if (!saveEmployeeRegistration(employeeRegistration))
             log.warn("synchronizeEmployeeRegistration(): failed to execute DB merge for employee registration={}", employeeRegistration);
@@ -169,7 +177,7 @@ public class EmployeeRegistrationYoutrackSynchronizerImpl implements EmployeeReg
         }
     }
 
-    private void updateIssues(EmployeeRegistration employeeRegistration, long lastYtSynchronization, Collection<CaseLink> caseLinks) {
+    private void updateIssues(EmployeeRegistration employeeRegistration, Map<Long, String> stateIdToName, long lastYtSynchronization, Collection<CaseLink> caseLinks) {
 
         List<Long> caseStates = new ArrayList<>();
 
@@ -182,7 +190,7 @@ public class EmployeeRegistrationYoutrackSynchronizerImpl implements EmployeeReg
 
             caseStates.add(ytIssue.getState().getId());
 
-            parseStateChanges(employeeRegistration.getId(), lastYtSynchronization, caseLink.getId(), ytIssueStateChanges);
+            parseStateChanges(employeeRegistration.getId(), stateIdToName, lastYtSynchronization, caseLink.getId(), ytIssueStateChanges);
             parseAndUpdateComments(employeeRegistration.getId(), lastYtSynchronization, caseLink.getId(), ytIssue.getComments());
             parseAndUpdateAttachments(employeeRegistration.getId(), lastYtSynchronization, caseLink.getId(), ytIssue.getAttachments());
         }
@@ -215,57 +223,74 @@ public class EmployeeRegistrationYoutrackSynchronizerImpl implements EmployeeReg
         return caseObjectDAO.merge(caseObject) && employeeRegistrationDAO.merge(employeeRegistration);
     }
 
-    private void parseStateChanges(Long caseId, long lastYtSynchronization, Long caseLinkId, List<YouTrackIssueStateChange> issueStateChanges) {
+    private void parseStateChanges(Long caseId, Map<Long, String> stateIdToName, long lastYtSynchronization, Long caseLinkId, List<YouTrackIssueStateChange> issueStateChanges) {
+        log.info("parseStateChanges(): caseId={}, lastYtSynchronization={}, caseLinkId={}, issueStateChangesSize={}", caseId, lastYtSynchronization, caseLinkId, size(issueStateChanges));
+
         if (CollectionUtils.isEmpty(issueStateChanges)) {
             return;
         }
-        List<CaseComment> stateChanges = new LinkedList<>();
-        for (YouTrackIssueStateChange issueStateChange : issueStateChanges) {
-            if (issueStateChange == null || issueStateChange.getTimestamp() == null) continue;
-            if (issueStateChange.getTimestamp() < lastYtSynchronization) continue;
 
-            CaseComment stateChange = parseStateChange(caseId, caseLinkId, issueStateChange);
-            if (stateChange == null) {
+        List<EmployeeRegistrationHistory> stateChanges = new LinkedList<>();
+
+        for (YouTrackIssueStateChange issueStateChange : issueStateChanges) {
+            if (issueStateChange == null) {
+                log.info("parseStateChanges(): issueStateChange is null");
                 continue;
             }
 
-            stateChanges.add(stateChange);
-            log.debug("parseStateChanges(): create new state change: YT: {}, PORTAL: {}", issueStateChanges, stateChange);
+            if (issueStateChange.getTimestamp() == null) {
+                log.info("parseStateChanges(): timestamp is null");
+                continue;
+            }
+
+            if (issueStateChange.getTimestamp() < lastYtSynchronization) {
+                log.info("parseStateChanges(): timestamp is less than lastYtSynchronization");
+                continue;
+            }
+
+            if (issueStateChange.getAddedCaseStateId() == null) {
+                log.info("parseStateChanges(): newState is null");
+                continue;
+            }
+
+            History historyStateChange = parseStateChange(caseId, caseLinkId, stateIdToName, issueStateChange);
+
+            Long historyId = historyDAO.persist(historyStateChange);
+
+            stateChanges.add(createEmployeeRegistrationHistory(historyId, caseLinkId, issueStateChange.getAuthorFullName()));
+            log.debug("parseStateChanges(): create new state change: YT: {}, PORTAL: {}", issueStateChanges, historyStateChange);
         }
-        caseCommentDAO.persistBatch(stateChanges);
+
+        employeeRegistrationHistoryDAO.persistBatch(stateChanges);
     }
 
-    private CaseComment parseStateChange(Long caseId, Long caseLinkId, YouTrackIssueStateChange issueStateChange) {
+    private EmployeeRegistrationHistory createEmployeeRegistrationHistory(Long historyId, Long caseLinkId, String originalAuthorName) {
+        EmployeeRegistrationHistory employeeRegistrationHistory = new EmployeeRegistrationHistory();
+
+        employeeRegistrationHistory.setHistoryId(historyId);
+        employeeRegistrationHistory.setRemoteLinkId(caseLinkId);
+        employeeRegistrationHistory.setOriginalAuthorName(originalAuthorName);
+
+        return employeeRegistrationHistory;
+    }
+
+    private History parseStateChange(Long caseId, Long caseLinkId, Map<Long, String> stateIdToName, YouTrackIssueStateChange issueStateChange) {
+        log.info("parseStateChange(): issueStateChange={}", issueStateChange);
 
         Long newState = issueStateChange.getAddedCaseStateId();
-        if (newState == null) {
-            return null;
-        }
-
         Long timestamp = issueStateChange.getTimestamp();
-        if (timestamp == null) {
-            return null;
-        }
 
-        /* Чтобы предотвратить создание комментария об одном и том же изменении дважды,
-           в качестве remoteId указываем дату изменения. По связке номера задачи и даты изменения можно отличать изменения */
+        History lastHistory = historyDAO.getLastHistoryForEmployeeRegistration(caseId, caseLinkId, En_HistoryType.CASE_STATE);
 
-        String remoteId = String.valueOf(timestamp);
-        if (caseCommentDAO.checkExistsByRemoteIdAndRemoteLinkId(remoteId, caseLinkId)) {
-            return null;
-        }
+        Long oldState = lastHistory == null ? null : lastHistory.getNewId();
 
-        CaseComment stateChange = new CaseComment();
-        stateChange.setRemoteId(remoteId);
-        stateChange.setCaseId(caseId);
-        stateChange.setCreated(new Date(timestamp));
-        stateChange.setRemoteLinkId(caseLinkId);
-        stateChange.setAuthorId(YOUTRACK_USER_ID);
-        stateChange.setCaseStateId(newState);
-        stateChange.setOriginalAuthorName(issueStateChange.getAuthorFullName());
-        stateChange.setOriginalAuthorFullName(issueStateChange.getAuthorFullName());
-        stateChange.setPrivacyType(En_CaseCommentPrivacyType.PUBLIC);
-        return stateChange;
+        String oldStateName = oldState == null ? null : stateIdToName.get(oldState);
+        En_HistoryAction historyAction = oldState == null ? En_HistoryAction.ADD : En_HistoryAction.CHANGE;
+
+        return new History(
+                YOUTRACK_USER_ID, new Date(timestamp), caseId, historyAction,
+                En_HistoryType.CASE_STATE, oldState, oldStateName, newState, stateIdToName.get(newState)
+        );
     }
 
     private void parseAndUpdateComments(Long caseId, long lastYtSynchronization, Long caseLinkId, List<CaseComment> comments) {

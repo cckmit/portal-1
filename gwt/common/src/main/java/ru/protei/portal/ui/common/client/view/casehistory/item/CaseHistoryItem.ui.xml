@@ -4,7 +4,9 @@
     <g:HTMLPanel styleName="case-history-item">
         <div class="row">
             <div class="col-md-12">
-                <span ui:field="historyType" class="case-history-item-history-type"/>
+                <span ui:field="historyType" class="float-left"/>
+                <g:Anchor ui:field="historyTypeLink" styleName="m-l-10 float-left" href="javascript:void(0);" visible="false"/>
+                <span class="float-left m-r-10">:</span>
                 <g:HTMLPanel ui:field="addedValueContainer" tag="span"
                              styleName="case-history-item-added-value font-weight-bold"/>
                 <g:HTMLPanel ui:field="changedValueContainer" tag="span" styleName="case-history-item-changed-value">

@@ -151,15 +151,6 @@ public class CaseComment extends AuditableObject {
      * Use {@link History} mechanism instead
      */
     @Deprecated
-    public void setCaseStateId(Long caseStateId) {
-        this.caseStateId = caseStateId;
-    }
-
-    /**
-     * This method will be removed soon (PORTAL-1604).
-     * Use {@link History} mechanism instead
-     */
-    @Deprecated
     public String getCaseStateName() {
         return caseStateName;
     }

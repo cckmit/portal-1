@@ -4,10 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasVisibility;
-import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.*;
 
 import static ru.protei.portal.test.client.DebugIds.CASE_HISTORY.ITEM.*;
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
@@ -31,7 +28,13 @@ public class CaseHistoryItem extends Composite {
     }
 
     public void setHistoryType(String historyType) {
-        this.historyType.setInnerText(historyType + ":");
+        this.historyType.setInnerText(historyType);
+    }
+
+    public void setLinkedHistoryType(String linkName, String href) {
+        historyTypeLink.setText(linkName);
+        historyTypeLink.setHref(href);
+        historyTypeLink.setVisible(true);
     }
 
     public HasWidgets addedValueContainer() {
@@ -66,6 +69,9 @@ public class CaseHistoryItem extends Composite {
 
     @UiField
     SpanElement historyType;
+
+    @UiField
+    Anchor historyTypeLink;
 
     @UiField
     HTMLPanel oldValueContainer;

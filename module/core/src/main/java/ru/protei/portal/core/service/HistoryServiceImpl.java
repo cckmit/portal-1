@@ -3,10 +3,7 @@ package ru.protei.portal.core.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.model.dao.CaseStateDAO;
-import ru.protei.portal.core.model.dao.CaseTagDAO;
-import ru.protei.portal.core.model.dao.HistoryDAO;
-import ru.protei.portal.core.model.dao.ImportanceLevelDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_HistoryAction;
 import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -16,17 +13,22 @@ import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.core.model.query.HistoryQuery;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
 
 public class HistoryServiceImpl implements HistoryService {
 
     @Autowired
     HistoryDAO historyDAO;
+
+    @Autowired
+    EmployeeRegistrationHistoryDAO employeeRegistrationHistoryDAO;
 
     @Autowired
     CaseTagDAO caseTagDAO;
@@ -83,13 +85,41 @@ public class HistoryServiceImpl implements HistoryService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        Result<List<History>> historyListResult = listHistories(token, new HistoryQuery(caseId));
+        return listHistories(token, new HistoryQuery(caseId));
+    }
+
+    @Override
+    public Result<List<History>> getHistoryListWithEmployeeRegistrationHistory(AuthToken token, Long caseId) {
+        Result<List<History>> historyListResult = getHistoryListByCaseId(token, caseId);
 
         if (historyListResult.isError()) {
             return error(historyListResult.getStatus());
         }
 
-        return ok(fillHistoriesWithColors(historyListResult.getData()));
+        return ok(fillHistoriesWithEmployeeRegistrationHistories(historyListResult.getData()));
+    }
+
+    private List<History> fillHistoriesWithEmployeeRegistrationHistories(List<History> histories) {
+        if (histories.isEmpty()) {
+            return histories;
+        }
+
+        List<Long> historyIds = toList(histories, History::getId);
+
+        Map<Long, EmployeeRegistrationHistory> historyIdToEmployeeRegistration =
+                employeeRegistrationHistoryDAO.getListByHistoryIds(historyIds)
+                        .stream()
+                        .collect(Collectors.toMap(EmployeeRegistrationHistory::getHistoryId, Function.identity()));
+
+        if (historyIdToEmployeeRegistration.isEmpty()) {
+            return histories;
+        }
+
+        histories.forEach(history ->
+                history.setEmployeeRegistrationHistory(historyIdToEmployeeRegistration.get(history.getId()))
+        );
+
+        return histories;
     }
 
     private List<History> fillHistoriesWithColors(List<History> histories) {

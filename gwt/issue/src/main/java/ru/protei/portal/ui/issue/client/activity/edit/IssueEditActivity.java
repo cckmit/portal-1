@@ -23,7 +23,6 @@ import ru.protei.portal.ui.common.client.activity.casetag.taglist.AbstractCaseTa
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
-import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentControllerAsync;
@@ -39,17 +38,14 @@ import ru.protei.portal.ui.issue.client.view.edit.IssueNameDescriptionEditWidget
 import java.util.*;
 import java.util.logging.Logger;
 
-import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.COMMENT;
-import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.HISTORY;
 import static ru.protei.portal.core.model.helper.CaseCommentUtils.addImageInMessage;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.util.CaseStateUtil.isTerminalState;
 import static ru.protei.portal.core.model.util.CrmConstants.Jira.NO_EXTENDED_PRIVACY_PROJECT;
-import static ru.protei.portal.ui.common.client.common.UiConstants.ISSUE_COMMENTS_TAB_SELECTED;
-import static ru.protei.portal.ui.common.client.common.UiConstants.ISSUE_HISTORIES_TAB_SELECTED;
-import static ru.protei.portal.ui.common.client.common.UiConstants.ISSUE_TABS.SELECTED_BY_DEFAULT;
 import static ru.protei.portal.ui.common.client.util.AttachmentUtils.getRemoveErrorHandler;
+import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.getCommentAndHistorySelectedTabs;
+import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.saveCommentAndHistorySelectedTabs;
 
 public abstract class IssueEditActivity implements
         AbstractIssueEditActivity,
@@ -108,7 +104,6 @@ public abstract class IssueEditActivity implements
         backHandler = event.backHandler != null ? event.backHandler : () -> fireEvent(new Back());
 
         viewModeIsPreview(false);
-        issueInfoWidget.selectTabs(getSelectedTabsOrDefault());
         container.clear();
         Window.scrollTo(0, 0);
 
@@ -126,7 +121,6 @@ public abstract class IssueEditActivity implements
         backHandler = event.backHandler != null ? event.backHandler : () -> fireEvent(new Back());
 
         viewModeIsPreview(true);
-        issueInfoWidget.selectTabs(getSelectedTabsOrDefault());
         container.clear();
         requestIssue(event.issueCaseNumber, container);
     }
@@ -142,7 +136,6 @@ public abstract class IssueEditActivity implements
         backHandler = () -> fireEvent(new IssueEvents.Show(false));
 
         viewModeIsPreview(false);
-        issueInfoWidget.selectTabs(getSelectedTabsOrDefault());
         container.clear();
         requestIssue(event.issueCaseNumber, container);
     }
@@ -260,7 +253,7 @@ public abstract class IssueEditActivity implements
 
     @Override
     public void selectedTabsChanged(List<En_CommentOrHistoryType> selectedTabs) {
-        saveToLocalStorage(selectedTabs);
+        saveCommentAndHistorySelectedTabs(localStorageService, selectedTabs);
         fireEvent(new CommentAndHistoryEvents.ShowItems(selectedTabs));
     }
 
@@ -364,25 +357,6 @@ public abstract class IssueEditActivity implements
         fireEvent(new IssueEvents.CreateSubtask(issue.getCaseNumber()));
     }
 
-    private void saveToLocalStorage(List<En_CommentOrHistoryType> selectedTabs) {
-        localStorageService.set(ISSUE_COMMENTS_TAB_SELECTED, String.valueOf(selectedTabs.contains(COMMENT)));
-        localStorageService.set(ISSUE_HISTORIES_TAB_SELECTED, String.valueOf(selectedTabs.contains(HISTORY)));
-    }
-
-    private List<En_CommentOrHistoryType> getSelectedTabsOrDefault() {
-        List<En_CommentOrHistoryType> selectedTabs = new ArrayList<>();
-
-        if (localStorageService.getBooleanOrDefault(ISSUE_COMMENTS_TAB_SELECTED, false)) {
-            selectedTabs.add(COMMENT);
-        }
-
-        if (localStorageService.getBooleanOrDefault(UiConstants.ISSUE_HISTORIES_TAB_SELECTED, false)) {
-            selectedTabs.add(HISTORY);
-        }
-
-        return selectedTabs.isEmpty() ? SELECTED_BY_DEFAULT : selectedTabs;
-    }
-
     private void fireIssueChanged(Long issueId) {
         if (issueId == null) {
             return;
@@ -459,18 +433,18 @@ public abstract class IssueEditActivity implements
     }
 
     private void showCommentsAndHistories(CaseObject issue) {
-        CommentAndHistoryEvents.Show show = new CommentAndHistoryEvents.Show( issueInfoWidget.getItemsContainer(),
+        CommentAndHistoryEvents.Show showCommentsEvent = new CommentAndHistoryEvents.Show( issueInfoWidget.getItemsContainer(),
                 issue.getId(), En_CaseType.CRM_SUPPORT, hasAccess() && !isReadOnly(), issue.getCreatorId() );
-        show.isElapsedTimeEnabled = policyService.hasPrivilegeFor( En_Privilege.ISSUE_WORK_TIME_VIEW );
-        show.isPrivateVisible = !issue.isPrivateCase() && policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW );
-        show.isPrivateCase = issue.isPrivateCase();
-        show.isNewCommentEnabled = !isTerminalState(issue.getStateId());
-        show.textMarkup =  CaseTextMarkupUtil.recognizeTextMarkup( issue );
-        show.initiatorCompanyId = issue.getInitiatorCompany().getId();
-        show.isMentionEnabled = policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
-        show.extendedPrivacyType =  selectExtendedPrivacyType( issue );
-        show.typesToShow = issueInfoWidget.getSelectedTabs();
-        fireEvent( show );
+        showCommentsEvent.isElapsedTimeEnabled = policyService.hasPrivilegeFor( En_Privilege.ISSUE_WORK_TIME_VIEW );
+        showCommentsEvent.isPrivateVisible = !issue.isPrivateCase() && policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW );
+        showCommentsEvent.isPrivateCase = issue.isPrivateCase();
+        showCommentsEvent.isNewCommentEnabled = !isTerminalState(issue.getStateId());
+        showCommentsEvent.textMarkup =  CaseTextMarkupUtil.recognizeTextMarkup( issue );
+        showCommentsEvent.initiatorCompanyId = issue.getInitiatorCompany().getId();
+        showCommentsEvent.isMentionEnabled = policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
+        showCommentsEvent.extendedPrivacyType =  selectExtendedPrivacyType( issue );
+        showCommentsEvent.typesToShow = issueInfoWidget.getSelectedTabs();
+        fireEvent( showCommentsEvent );
     }
 
     private boolean selectExtendedPrivacyType(CaseObject issue) {
@@ -521,6 +495,8 @@ public abstract class IssueEditActivity implements
 
         issueInfoWidget.attachmentsListContainer().clear();
         issueInfoWidget.attachmentsListContainer().add(issue.getAttachments());
+
+        issueInfoWidget.selectTabs(getCommentAndHistorySelectedTabs(localStorageService));
 
         boolean isAttachmentsEmpty = isEmpty(issue.getAttachments());
 

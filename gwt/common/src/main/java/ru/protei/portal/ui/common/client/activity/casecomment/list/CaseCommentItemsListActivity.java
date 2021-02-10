@@ -250,13 +250,15 @@ public abstract class CaseCommentItemsListActivity implements Activity, Abstract
         List<String> textList = new ArrayList<>();
 
         for (CaseComment comment : comments) {
-            AbstractCaseCommentItemView itemView = makeCommentView(comment);
-            if (StringUtils.isNotEmpty(comment.getText())) {
-                views.add(itemView);
-                textList.add(comment.getText());
-                itemViewToModel.put(itemView, comment);
-                commentsContainer.insert(itemView.asWidget(), 0);
+            if (comment.getText() == null) {
+                continue;
             }
+
+            AbstractCaseCommentItemView itemView = makeCommentView(comment);
+            views.add(itemView);
+            textList.add(comment.getText());
+            itemViewToModel.put(itemView, comment);
+            commentsContainer.insert(itemView.asWidget(), 0);
         }
 
         textRenderController.render(textMarkup, textList, true, new FluentCallback<List<String>>()

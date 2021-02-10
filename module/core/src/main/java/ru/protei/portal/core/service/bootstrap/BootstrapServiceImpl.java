@@ -58,6 +58,7 @@ import java.util.stream.Collectors;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
 import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.condition;
 import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
 
@@ -156,6 +157,124 @@ public class BootstrapServiceImpl implements BootstrapService {
          *  end Спринт */
 
         log.info( "bootstrapApplication(): BootstrapService complete."  );
+
+        /**
+         * begin Спринт 67 */
+
+        if (!bootstrapAppDAO.isActionExists("migrateEmployeeRegistrationHistory")) {
+            this.migrateEmployeeRegistrationHistory();
+            bootstrapAppDAO.createAction("migrateEmployeeRegistrationHistory");
+        }
+
+        if (!bootstrapAppDAO.isActionExists("removeStateImportanceManagerComments")) {
+            this.removeStateImportanceManagerComments();
+            bootstrapAppDAO.createAction("removeStateImportanceManagerComments");
+        }
+
+        /**
+         *  end Спринт */
+    }
+
+    private void migrateEmployeeRegistrationHistory() {
+        List<Long> employeeRegistrationIds = toList(employeeRegistrationDAO.getAll(), EmployeeRegistration::getId);
+
+        if (!employeeRegistrationIds.isEmpty()) {
+            historyDAO.removeByCondition("history.case_object_id IN " + HelperFunc.makeInArg(employeeRegistrationIds, false));
+        }
+
+        CaseCommentQuery caseCommentQuery = new CaseCommentQuery();
+        caseCommentQuery.setCaseObjectIds(employeeRegistrationIds);
+
+        Map<Long, List<CaseComment>> caseIdToComments = caseCommentDAO.getCaseComments(caseCommentQuery)
+                .stream()
+                .collect(Collectors.toMap(CaseComment::getCaseId, Arrays::asList, CollectionUtils::mergeLists));
+
+        for (Map.Entry<Long, List<CaseComment>> nextEntry : caseIdToComments.entrySet()) {
+            List<CaseComment> caseComments = getStateCommentsSortedByDate(nextEntry.getValue());
+
+            if (isEmpty(caseComments)) {
+                continue;
+            }
+
+            Map<Long, CaseComment> remoteLinkIdToLastComment = new HashMap<>();
+
+            for (CaseComment caseComment : caseComments) {
+                History history = historyFromComments(caseComment, remoteLinkIdToLastComment.get(caseComment.getRemoteLinkId()));
+                Long historyId = historyDAO.persist(history);
+
+                EmployeeRegistrationHistory employeeRegistrationHistory
+                        = createEmployeeRegistrationHistory(historyId, caseComment);
+
+                employeeRegistrationHistoryDAO.persist(employeeRegistrationHistory);
+
+                remoteLinkIdToLastComment.put(caseComment.getRemoteLinkId(), caseComment);
+            }
+        }
+    }
+
+    private void removeStateImportanceManagerComments() {
+        Condition removeRedundantCommentsCondition = condition()
+                .and("case_comment.comment_text").isNull(true)
+                .and(condition()
+                        .or("case_comment.CSTATE_ID").not().isNull(true)
+                        .or("case_comment.cimp_level").not().isNull(true)
+                        .or("case_comment.cmanager_id").not().isNull(true)
+                        .or(
+                                condition()
+                                        .and("case_comment.CSTATE_ID").isNull(true)
+                                        .and("case_comment.cimp_level").isNull(true)
+                                        .and("case_comment.cmanager_id").isNull(true)
+                                        .and("case_comment.time_elapsed").isNull(true))
+                );
+
+        caseCommentDAO.removeByCondition(removeRedundantCommentsCondition.getSqlCondition());
+    }
+
+    private EmployeeRegistrationHistory createEmployeeRegistrationHistory(Long historyId, CaseComment caseComment) {
+        EmployeeRegistrationHistory employeeRegistrationHistory = new EmployeeRegistrationHistory();
+
+        employeeRegistrationHistory.setHistoryId(historyId);
+        employeeRegistrationHistory.setRemoteLinkId(caseComment.getRemoteLinkId());
+        employeeRegistrationHistory.setOriginalAuthorName(
+                caseComment.getOriginalAuthorFullName() != null ?
+                        caseComment.getOriginalAuthorFullName() :
+                        caseComment.getOriginalAuthorName()
+        );
+
+        return employeeRegistrationHistory;
+    }
+
+    private History historyFromComments(CaseComment caseComment, CaseComment lastComment) {
+        History history = new History();
+
+        history.setCaseObjectId(caseComment.getCaseId());
+        history.setDate(caseComment.getCreated());
+        history.setType(En_HistoryType.CASE_STATE);
+        history.setAction(lastComment == null ? En_HistoryAction.ADD : En_HistoryAction.CHANGE);
+        history.setOldId(lastComment == null ? null : lastComment.getCaseStateId());
+        history.setOldValue(lastComment == null ? null : lastComment.getCaseStateName());
+        history.setNewId(caseComment.getCaseStateId());
+        history.setNewValue(caseComment.getCaseStateName());
+        history.setInitiatorId(caseComment.getAuthorId());
+
+        return history;
+    }
+
+    private List<CaseComment> getStateCommentsSortedByDate(List<CaseComment> comments) {
+        return stream(comments)
+                .filter(caseComment -> caseComment.getCaseStateId() != null)
+                .sorted(this::compareCommentsByDate)
+                .collect(toList());
+    }
+
+    private int compareCommentsByDate(CaseComment comment1, CaseComment comment2) {
+        if (comment1.getCreated().before(comment2.getCreated())) {
+            return -1;
+        } else if (comment2.getCreated().before(comment1.getCreated())) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 
     private void normalizeEmails() {
@@ -1205,6 +1324,8 @@ public class BootstrapServiceImpl implements BootstrapService {
     @Autowired
     HistoryDAO historyDAO;
     @Autowired
+    EmployeeRegistrationHistoryDAO employeeRegistrationHistoryDAO;
+    @Autowired
     PlanDAO planDAO;
     @Autowired
     PersonAbsenceDAO personAbsenceDAO;
@@ -1220,6 +1341,10 @@ public class BootstrapServiceImpl implements BootstrapService {
     ContactItemDAO contactItemDAO;
     @Autowired
     CaseCommentDAO caseCommentDAO;
+    @Autowired
+    EmployeeRegistrationDAO employeeRegistrationDAO;
+    @Autowired
+    CaseStateDAO caseStateDAO;
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 

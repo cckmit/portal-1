@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EmployeeShortView;
+import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.CaseHistoryEvents;
@@ -60,7 +61,7 @@ public abstract class CaseHistoryItemsListActivity implements AbstractCaseHistor
         }
 
         String lastHistoryDate = null;
-        Long lastHistoryAuthorId = null;
+        String lastHistoryAuthorName = null;
         CaseHistoryItemsContainer lastHistoryItemsContainer = null;
 
         List<CaseHistoryItemsContainer> currentHistoryItemsContainers = new LinkedList<>();
@@ -71,7 +72,7 @@ public abstract class CaseHistoryItemsListActivity implements AbstractCaseHistor
             History nextHistory = historyListIterator.previous();
             String nextHistoryDate = DateFormatter.formatDateTime(nextHistory.getDate());
 
-            if (!nextHistoryDate.equals(lastHistoryDate) && nextHistory.getInitiatorId().equals(lastHistoryAuthorId)) {
+            if (!nextHistoryDate.equals(lastHistoryDate) && nextHistory.getInitiatorName().equals(lastHistoryAuthorName)) {
                 lastHistoryItemsContainer = caseHistoryItemsContainerProvider.get();
                 lastHistoryItemsContainer.initWithoutInitiatorMode();
 
@@ -82,14 +83,14 @@ public abstract class CaseHistoryItemsListActivity implements AbstractCaseHistor
                 currentHistoryItemsContainers.add(0, lastHistoryItemsContainer);
             }
 
-            if (!nextHistory.getInitiatorId().equals(lastHistoryAuthorId)) {
-                lastHistoryAuthorId = nextHistory.getInitiatorId();
+            if (!nextHistory.getInitiatorName().equals(lastHistoryAuthorName)) {
+                lastHistoryAuthorName = nextHistory.getInitiatorName();
 
                 lastHistoryDate = nextHistoryDate;
 
                 lastHistoryItemsContainer = caseHistoryItemsContainerProvider.get();
                 lastHistoryItemsContainer.setDate(nextHistoryDate);
-                lastHistoryItemsContainer.setInitiator(transliteration(nextHistory.getInitiatorFullName()));
+                lastHistoryItemsContainer.setInitiator(transliteration(lastHistoryAuthorName));
 
                 currentHistoryItemsContainers.add(0, lastHistoryItemsContainer);
             }
@@ -127,6 +128,10 @@ public abstract class CaseHistoryItemsListActivity implements AbstractCaseHistor
         historyItem.changeContainerVisibility().setVisible(En_HistoryAction.CHANGE.equals(history.getAction()));
         historyItem.removedValueContainerVisibility().setVisible(En_HistoryAction.REMOVE.equals(history.getAction()));
         historyItem.setHistoryType(historyType);
+
+        if (history.getLinkName() != null) {
+            historyItem.setLinkedHistoryType(history.getLinkName(), caseLinkProvider.getLink(history.getLinkType(), history.getLinkName()));
+        }
 
         if (En_HistoryAction.ADD.equals(history.getAction())) {
             historyItem.addedValueContainer().add(makeItem(
@@ -221,6 +226,9 @@ public abstract class CaseHistoryItemsListActivity implements AbstractCaseHistor
     private Provider<CaseHistoryTagItemView> caseHistoryTagItemViewProvider;
     @Inject
     private Provider<CaseHistorySimpleItemView> caseHistorySimpleItemViewProvider;
+
+    @Inject
+    private CaseLinkProvider caseLinkProvider;
 
     @Inject
     private PolicyService policyService;

@@ -97,7 +97,7 @@ public abstract class CommentAndHistoryListActivity
         tempAttachments.clear();
         unlockSave();
 
-        view.message().setValue(makeCommentText(null), true);
+        view.message().setValue(makeCommentText(), true);
         view.attachmentContainer().clear();
         view.clearItemsContainer();
         view.clearTimeElapsed();
@@ -517,9 +517,9 @@ public abstract class CommentAndHistoryListActivity
         });
     }
 
-    private String makeCommentText(String commentText){
+    private String makeCommentText() {
         String text = storage.get(makeStorageKey(caseId));
-        return isEmpty(text) ? commentText : text;
+        return isEmpty(text) ? null : text;
     }
 
     private String makeStorageKey(Long id){
@@ -537,7 +537,7 @@ public abstract class CommentAndHistoryListActivity
     }
 
     private void reloadItems(En_CaseType caseType, Long caseId, List<En_CommentOrHistoryType> typesToShow) {
-        if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
+        if (isCommentWithHistoryCase(caseType)) {
             caseCommentController.getCommentsAndHistories(caseType, caseId, new FluentCallback<CommentsAndHistories>()
                     .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR)))
                     .withSuccess(commentsAndHistories -> {
@@ -562,6 +562,18 @@ public abstract class CommentAndHistoryListActivity
                     }
                 })
         );
+    }
+
+    private boolean isCommentWithHistoryCase(En_CaseType caseType) {
+        if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
+            return true;
+        }
+
+        if (En_CaseType.EMPLOYEE_REGISTRATION.equals(caseType)) {
+            return true;
+        }
+
+        return false;
     }
 
     private void displayItems(List<En_CommentOrHistoryType> typesToShow) {

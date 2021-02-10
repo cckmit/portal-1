@@ -7,21 +7,26 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_CommentOrHistoryType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
+import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.*;
 import ru.protei.portal.ui.common.client.service.EmployeeRegistrationControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
+import java.util.List;
 import java.util.Objects;
 
 import static ru.protei.portal.core.model.helper.StringUtils.join;
+import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.getCommentAndHistorySelectedTabs;
+import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.saveCommentAndHistorySelectedTabs;
 
 public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmployeeRegistrationPreviewActivity, Activity {
 
@@ -43,7 +48,6 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
         loadDetails(event.id);
 
         employeeRegistrationId = event.id;
-        view.showFullScreen(false);
     }
 
     @Event
@@ -87,6 +91,12 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
         fireEvent(new EmployeeRegistrationEvents.Show(true));
     }
 
+    @Override
+    public void selectedTabsChanged(List<En_CommentOrHistoryType> selectedTabs) {
+        saveCommentAndHistorySelectedTabs(localStorageService, selectedTabs);
+        fireEvent(new CommentAndHistoryEvents.ShowItems(selectedTabs));
+    }
+
     private void loadDetails(Long id) {
         employeeRegistrationController.getEmployeeRegistration(id, new RequestCallback<EmployeeRegistration>() {
             @Override
@@ -127,6 +137,9 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
         view.setCompany(StringUtils.emptyIfNull(value.getCompanyName()));
         view.setDepartment(StringUtils.emptyIfNull(value.getDepartment()));
 
+        List<En_CommentOrHistoryType> selectedTabs = getCommentAndHistorySelectedTabs(localStorageService);
+        view.selectTabs(selectedTabs);
+
         if (value.getEmploymentType() == null) {
             view.setEmploymentType("");
         } else {
@@ -144,12 +157,15 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
                 .withCaseId(value.getId())
                 .readOnly());
 
-        fireEvent(new CommentAndHistoryEvents.Show(view.getCommentsContainer(),
+        CommentAndHistoryEvents.Show showItemsEvent = new CommentAndHistoryEvents.Show(view.getItemsContainer(),
                 value.getId(),
                 En_CaseType.EMPLOYEE_REGISTRATION,
                 policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_REGISTRATION_VIEW),
-                value.getCreatorId())
-        );
+                value.getCreatorId());
+
+        showItemsEvent.typesToShow = selectedTabs;
+
+        fireEvent(showItemsEvent);
     }
 
     private HasWidgets fullScreenContainer;
@@ -160,6 +176,8 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
     private EmployeeRegistrationControllerAsync employeeRegistrationController;
     @Inject
     private PolicyService policyService;
+    @Inject
+    LocalStorageService localStorageService;
 
     @Inject
     private En_EmployeeEquipmentLang equipmentLang;

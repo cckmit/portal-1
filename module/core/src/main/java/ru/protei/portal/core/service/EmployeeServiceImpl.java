@@ -422,7 +422,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             }
         }
 
-        if (portalConfig.data().legacySysConfig().isImportEmployeesEnabled()) {
+        if (portalConfig.data().legacySysConfig().isExportEnabled()) {
             if (!fireEmployeeInOldPortal(personFromDb)) {
                 log.warn("fireEmployee(): fail to migrate employee to old portal. Person={}", personFromDb);
                 return error(En_ResultStatus.EMPLOYEE_MIGRATION_FAILED);
@@ -478,7 +478,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             }
         }
 
-        if (portalConfig.data().legacySysConfig().isImportEmployeesEnabled()) {
+        if (portalConfig.data().legacySysConfig().isExportEnabled()) {
             if (!updateEmployeeInOldPortal(personId)) {
                 log.warn("updateEmployeeWorkers(): fail to migrate employee to old portal. personId={}", personId);
                 return error(En_ResultStatus.EMPLOYEE_MIGRATION_FAILED);

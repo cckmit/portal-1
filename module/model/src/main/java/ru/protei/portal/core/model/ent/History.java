@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_HistoryAction;
 import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.winter.jdbc.annotations.*;
@@ -52,7 +53,22 @@ public class History implements Serializable {
 
     private String newColor;
 
+    private EmployeeRegistrationHistory employeeRegistrationHistory;
+
     public History() {
+    }
+
+    public History(Long initiatorId, Date date, Long caseObjectId, En_HistoryAction action,
+                   En_HistoryType type, Long oldId, String oldValue, Long newId, String newValue) {
+        this.initiatorId = initiatorId;
+        this.date = date;
+        this.caseObjectId = caseObjectId;
+        this.action = action;
+        this.type = type;
+        this.oldId = oldId;
+        this.oldValue = oldValue;
+        this.newId = newId;
+        this.newValue = newValue;
     }
 
     public Long getId() {
@@ -71,16 +87,20 @@ public class History implements Serializable {
         return initiatorShortName;
     }
 
-    public void setInitiatorShortName(String initiatorShortName) {
-        this.initiatorShortName = initiatorShortName;
-    }
-
     public String getInitiatorFullName() {
         return initiatorFullName;
     }
 
-    public void setInitiatorFullName(String initiatorFullName) {
-        this.initiatorFullName = initiatorFullName;
+    public String getInitiatorName() {
+        if (employeeRegistrationHistory == null) {
+            return initiatorFullName;
+        }
+
+        if (employeeRegistrationHistory.getOriginalAuthorName() == null) {
+            return initiatorFullName;
+        }
+
+        return employeeRegistrationHistory.getOriginalAuthorName();
     }
 
     public void setInitiatorId(Long initiatorId) {
@@ -165,6 +185,30 @@ public class History implements Serializable {
 
     public void setNewColor(String newColor) {
         this.newColor = newColor;
+    }
+
+    public EmployeeRegistrationHistory getEmployeeRegistrationHistory() {
+        return employeeRegistrationHistory;
+    }
+
+    public void setEmployeeRegistrationHistory(EmployeeRegistrationHistory employeeRegistrationHistory) {
+        this.employeeRegistrationHistory = employeeRegistrationHistory;
+    }
+
+    public String getLinkName() {
+        if (employeeRegistrationHistory == null) {
+            return null;
+        }
+
+        return employeeRegistrationHistory.getRemoteId();
+    }
+
+    public En_CaseLink getLinkType() {
+        if (employeeRegistrationHistory == null) {
+            return null;
+        }
+
+        return employeeRegistrationHistory.getType();
     }
 
     @Override

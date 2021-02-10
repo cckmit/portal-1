@@ -1,0 +1,35 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="create-employee_registration_history-table" author="fomin">
+        <createTable tableName="employee_registration_history">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="history_id" type="bigint">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="remote_link_id" type="bigint"/>
+            <column name="original_author_name" type="VARCHAR(256)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-remote-link-foreign-key" author="fomin">
+        <addForeignKeyConstraint baseTableName="employee_registration_history"
+                                 baseColumnNames="remote_link_id"
+                                 constraintName="remote_link_id-to-case_link-fk"
+                                 referencedTableName="case_link"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="add-history-id-foreign-key" author="fomin">
+        <addForeignKeyConstraint baseTableName="employee_registration_history"
+                                 baseColumnNames="history_id"
+                                 constraintName="history_id-to-case_link-fk"
+                                 referencedTableName="history"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>

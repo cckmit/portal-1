@@ -60,6 +60,25 @@ public class HistoryDAO_Impl extends PortalBaseJdbcDAO<History> implements Histo
     }
 
     @Override
+    public History getLastHistoryForEmployeeRegistration(Long caseObjectId, Long caseLinkId, En_HistoryType historyType) {
+        List<History> historyResult = getSearchResult(query()
+                .where("history.case_object_id").equal(caseObjectId)
+                .and("history.value_type").equal(historyType.getId())
+                .and("history.id").in(
+                        query()
+                                .select("employee_registration_history.history_id")
+                                .from("employee_registration_history")
+                                .where("employee_registration_history.remote_link_id")
+                                .equal(caseLinkId).asQuery())
+                .asQuery()
+                .sort(En_SortDir.DESC, "history.date")
+                .limit(1).build()
+        ).getResults();
+
+        return getFirst(historyResult);
+    }
+
+    @Override
     public void removeByCaseId(Long caseId) {
         Condition condition = condition().and("case_object_id").equal(caseId);
         removeByCondition(condition.getSqlCondition(), condition.getSqlParameters());
