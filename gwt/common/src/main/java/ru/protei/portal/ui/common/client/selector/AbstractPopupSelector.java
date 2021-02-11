@@ -10,12 +10,9 @@ import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.selector.pageable.*;
 import ru.protei.portal.ui.common.client.selector.popup.PopupHandler;
 import ru.protei.portal.ui.common.client.selector.popup.SelectorPopupWithSearch;
-import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
-import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.TextAreaHandler;
 import ru.protei.portal.ui.common.client.selector.popup.item.SelectorItemHandler;
 
 import java.util.Iterator;
-import java.util.function.Supplier;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 
@@ -171,20 +168,10 @@ public abstract class AbstractPopupSelector<T> extends Composite
 
     public SelectorPopup getPopup() {
         if (popup == null) {
-            setPopup( makeSelectorPopup() );
+            setPopup( new SelectorPopupWithSearch() );
             setSearchEnabled( true );
         }
         return popup;
-    }
-
-    private SelectorPopup makeSelectorPopup() {
-        return new ArrowSelectableSelectorPopup(new TextAreaHandler() {
-            @Override
-            public void focusTextArea() {}
-
-            @Override
-            public void onValueChanged() {}
-        });
     }
 
     public void setPopup(SelectorPopup popup) {
@@ -209,7 +196,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
     protected abstract SelectorItem<T> makeSelectorItem( T element, String elementHtml );
 
     /**
-     * Логика селектора
+     * Логинка селектора
      */
     protected abstract AbstractPageableSelector<T> getSelector();
 

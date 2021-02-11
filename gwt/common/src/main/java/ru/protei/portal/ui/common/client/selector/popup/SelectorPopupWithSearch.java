@@ -17,7 +17,6 @@ import ru.protei.portal.ui.common.client.events.HasAddHandlers;
 import ru.protei.portal.ui.common.client.events.InputEvent;
 import ru.protei.portal.ui.common.client.selector.SearchHandler;
 import ru.protei.portal.ui.common.client.selector.SelectorPopup;
-import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.composite.popper.PopperComposite;
 
@@ -43,8 +42,6 @@ public class SelectorPopupWithSearch extends PopperComposite
                 popupHandler.onPopupHide(this);
             }
         });
-
-        search.addDomHandler(this::onKeyDown, KeyDownEvent.getType());
     }
 
     @Override
@@ -169,18 +166,6 @@ public class SelectorPopupWithSearch extends PopperComposite
 
     public void setSearchAutoFocus( boolean isSearchAutoFocus ) {
         this.isSearchAutoFocus = isSearchAutoFocus;
-    }
-
-    public void focus() {}
-
-    private void onKeyDown(KeyDownEvent event) {
-        if (event.getNativeKeyCode() != KeyCodes.KEY_DOWN) {
-            return;
-        }
-
-        event.preventDefault();
-
-        focus();
     }
 
     private void addPagingHandler() {
