@@ -11,8 +11,8 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel ui:field="root">
-        <ul class="chats case-history p-b-0">
-            <g:HTMLPanel tag="li" ui:field="newMessage" styleName="left new-message">
+        <ul class="chats case-history p-b-0 p-t-0">
+            <g:HTMLPanel tag="li" ui:field="newMessage" styleName="left new-message p-t-10">
                 <g:HTMLPanel ui:field="messageBlock">
 
                     <div ui:field="newCommentUserImage" class="image">

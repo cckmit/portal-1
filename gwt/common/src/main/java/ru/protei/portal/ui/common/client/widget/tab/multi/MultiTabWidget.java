@@ -59,10 +59,6 @@ public class MultiTabWidget<T> extends Composite implements MultiTabHandler<T> {
         tabs.forEach(this::selectTab);
     }
 
-    public List<T> getSelectedTabs() {
-        return selectedTabs;
-    }
-
     private void deselectAllTabs() {
         selectedTabs.clear();
         tabNameToNavItem.values().forEach(MultiTabWidgetNavItem::setInactive);

@@ -5,7 +5,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel tag="li" ui:field="root" styleName="timeline-block left">
+    <g:HTMLPanel tag="li" ui:field="root" styleName="timeline-block left" visible="false">
         <ul class="list-inline">
             <li ui:field="owner" class="name"/>
             <g:Anchor styleName="issue-link m-r-5" ui:field="remoteLink" href="#" visible="false"/>

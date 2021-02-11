@@ -230,7 +230,7 @@ public class EmployeeRegistrationYoutrackSynchronizerImpl implements EmployeeReg
             return;
         }
 
-        List<EmployeeRegistrationHistory> stateChanges = new LinkedList<>();
+        List<EmployeeRegistrationHistory> employeeRegistrationHistories = new ArrayList<>(issueStateChanges.size());
 
         for (YouTrackIssueStateChange issueStateChange : issueStateChanges) {
             if (issueStateChange == null) {
@@ -257,11 +257,11 @@ public class EmployeeRegistrationYoutrackSynchronizerImpl implements EmployeeReg
 
             Long historyId = historyDAO.persist(historyStateChange);
 
-            stateChanges.add(createEmployeeRegistrationHistory(historyId, caseLinkId, issueStateChange.getAuthorFullName()));
+            employeeRegistrationHistories.add(createEmployeeRegistrationHistory(historyId, caseLinkId, issueStateChange.getAuthorFullName()));
             log.debug("parseStateChanges(): create new state change: YT: {}, PORTAL: {}", issueStateChanges, historyStateChange);
         }
 
-        employeeRegistrationHistoryDAO.persistBatch(stateChanges);
+        employeeRegistrationHistoryDAO.persistBatch(employeeRegistrationHistories);
     }
 
     private EmployeeRegistrationHistory createEmployeeRegistrationHistory(Long historyId, Long caseLinkId, String originalAuthorName) {

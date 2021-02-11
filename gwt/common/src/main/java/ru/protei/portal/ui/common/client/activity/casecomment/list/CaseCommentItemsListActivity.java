@@ -84,6 +84,7 @@ public abstract class CaseCommentItemsListActivity implements Activity, Abstract
         CaseComment caseComment = event.caseComment;
 
         AbstractCaseCommentItemView itemView = makeCommentView(caseComment);
+        itemView.setVisible(event.isVisible);
         itemViewToModel.put( itemView, caseComment );
         commentsContainer.insert(itemView.asWidget(), 0);
         renderTextAsync(caseComment.getText(), textMarkup, itemView::setMessage);
@@ -96,6 +97,7 @@ public abstract class CaseCommentItemsListActivity implements Activity, Abstract
         CaseComment comment = event.caseComment;
 
         AbstractCaseCommentItemView newView = makeCommentView( comment );
+        newView.setVisible(event.isVisible);
         AbstractCaseCommentItemView oldView = findItemViewByCommentId( comment.getId() );
 
         if (oldView != null) {
@@ -140,14 +142,12 @@ public abstract class CaseCommentItemsListActivity implements Activity, Abstract
 
     @Event
     public void onShow(CaseCommentItemEvents.Show event) {
-        isVisibleByDefault = true;
-        itemViewToModel.keySet().forEach(itemView -> itemView.setVisible(isVisibleByDefault));
+        itemViewToModel.keySet().forEach(itemView -> itemView.setVisible(true));
     }
 
     @Event
     public void onHide(CaseCommentItemEvents.Hide event) {
-        isVisibleByDefault = false;
-        itemViewToModel.keySet().forEach(itemView -> itemView.setVisible(isVisibleByDefault));
+        itemViewToModel.keySet().forEach(itemView -> itemView.setVisible(false));
     }
 
     @Override
@@ -275,7 +275,6 @@ public abstract class CaseCommentItemsListActivity implements Activity, Abstract
     private AbstractCaseCommentItemView makeCommentView(CaseComment value) {
         AbstractCaseCommentItemView itemView = commentItemViewProvider.get();
         itemView.setActivity(this);
-        itemView.setVisible(isVisibleByDefault);
 
         if (value.getAuthorId().equals(profile.getId())) {
             itemView.setIcon(AvatarUtils.getAvatarUrl(profile));
@@ -459,9 +458,7 @@ public abstract class CaseCommentItemsListActivity implements Activity, Abstract
     private boolean isModifyEnabled;
     private Long caseId;
 
-    private boolean isVisibleByDefault;
-
     private WorkTimeFormatter workTimeFormatter;
 
-    private final Map<AbstractCaseCommentItemView, CaseComment> itemViewToModel = new HashMap<>();
+    private final Map<AbstractCaseCommentItemView, CaseComment> itemViewToModel = new LinkedHashMap<>();
 }

@@ -38,6 +38,8 @@ import ru.protei.portal.ui.common.client.widget.timefield.TimeTextBox;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.PasteInfo;
 
+import java.util.Iterator;
+
 import static ru.protei.portal.core.model.util.CrmConstants.Style.HIDE;
 
 /**
@@ -264,6 +266,25 @@ public class CommentAndHistoryListView
     @Override
     public HasValue<En_CaseCommentPrivacyType> privacyType() {
         return privacyType;
+    }
+
+    @Override
+    public void restyleFirstVisibleItemContainer() {
+        removeZeroMarginFromAllContainers(itemsContainer);
+        addZeroMarginToFirstVisibleContainer(itemsContainer);
+    }
+
+    private void addZeroMarginToFirstVisibleContainer(FlowPanel itemsContainer) {
+        for (Widget nextWidget : itemsContainer) {
+            if (nextWidget.isVisible()) {
+                nextWidget.addStyleName("m-t-0");
+                break;
+            }
+        }
+    }
+
+    private void removeZeroMarginFromAllContainers(FlowPanel itemsContainer) {
+        itemsContainer.forEach(nextWidget -> nextWidget.removeStyleName("m-t-0"));
     }
 
     private void ensureDebugIds() {

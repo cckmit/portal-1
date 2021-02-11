@@ -2,7 +2,7 @@ package ru.protei.portal.ui.employeeregistration.client.activity.preview;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
-import ru.protei.portal.core.model.dict.En_CommentOrHistoryType;
+import ru.protei.portal.core.model.dict.En_MultiTabWidgetTabs;
 
 import java.util.List;
 
@@ -49,9 +49,7 @@ public interface AbstractEmployeeRegistrationPreviewView extends IsWidget {
 
     HasWidgets getItemsContainer();
 
-    void selectTabs(List<En_CommentOrHistoryType> tabs);
-
-    List<En_CommentOrHistoryType> getSelectedTabs();
+    void selectTabs(List<En_MultiTabWidgetTabs> tabs);
 
     void showFullScreen(boolean isFullScreen);
 

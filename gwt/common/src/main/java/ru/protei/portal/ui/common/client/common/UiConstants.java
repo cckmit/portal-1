@@ -1,12 +1,12 @@
 package ru.protei.portal.ui.common.client.common;
 
-import ru.protei.portal.core.model.dict.En_CommentOrHistoryType;
+import ru.protei.portal.core.model.dict.En_MultiTabWidgetTabs;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.COMMENT;
-import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.HISTORY;
+import static ru.protei.portal.core.model.dict.En_MultiTabWidgetTabs.COMMENT;
+import static ru.protei.portal.core.model.dict.En_MultiTabWidgetTabs.HISTORY;
 
 /**
  * Системные константы приложения
@@ -162,8 +162,8 @@ public class UiConstants {
         int LINKS_MAX_HEIGHT = 120;
     }
 
-    public interface ISSUE_TABS {
-        List<En_CommentOrHistoryType> SELECTED_BY_DEFAULT = Arrays.asList(COMMENT, HISTORY);
+    public interface MULTI_TAB_TABS {
+        List<En_MultiTabWidgetTabs> SELECTED_BY_DEFAULT = Arrays.asList(COMMENT, HISTORY);
     }
 
     /**
@@ -175,6 +175,6 @@ public class UiConstants {
     public static final String LINKS_PANEL_VISIBILITY = "case-link-panel-body";
     public static final String ISSUE_CREATE_PREVIEW_DISPLAYED = "issue_create_is_preview_displayed";
     public static final String ATTACHMENTS_PANEL_VISIBILITY = "attachments-panel-body";
-    public static final String ISSUE_COMMENTS_TAB_SELECTED = "issue-comments-tab-selected";
-    public static final String ISSUE_HISTORIES_TAB_SELECTED = "issue-histories-tab-selected";
+    public static final String MULTI_TAB_COMMENTS_SELECTED = "multi-tab-comments-selected";
+    public static final String MULTI_TAB_HISTORY_SELECTED = "multi-tab-history-selected";
 }

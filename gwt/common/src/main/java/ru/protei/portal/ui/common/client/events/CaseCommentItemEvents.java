@@ -56,11 +56,13 @@ public class CaseCommentItemEvents {
     }
 
     public static class CreateComment {
-        public CreateComment(CaseComment caseComment) {
+        public CreateComment(CaseComment caseComment, boolean isVisible) {
             this.caseComment = caseComment;
+            this.isVisible = isVisible;
         }
 
         public CaseComment caseComment;
+        public boolean isVisible;
     }
 
     public static class EditComment {
@@ -79,11 +81,13 @@ public class CaseCommentItemEvents {
      * Сохранение комментария из пуш-уведомления
      */
     public static class SaveOrUpdateClientComment {
-        public SaveOrUpdateClientComment(CaseComment caseComment) {
+        public SaveOrUpdateClientComment(CaseComment caseComment, boolean isVisible) {
             this.caseComment = caseComment;
+            this.isVisible = isVisible;
         }
 
         public CaseComment caseComment;
+        public boolean isVisible;
     }
 
     /**

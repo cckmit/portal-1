@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.ent.CommentsAndHistories.CommentOrHistory;
 import ru.protei.portal.core.model.event.CaseCommentRemovedClientEvent;
 import ru.protei.portal.core.model.event.CaseCommentSavedClientEvent;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -31,12 +32,15 @@ import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.COMMENT;
-import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.HISTORY;
+import static java.util.Collections.singletonList;
+import static ru.protei.portal.core.model.dict.En_MultiTabWidgetTabs.COMMENT;
+import static ru.protei.portal.core.model.dict.En_MultiTabWidgetTabs.HISTORY;
 import static ru.protei.portal.core.model.helper.CaseCommentUtils.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
+import static ru.protei.portal.ui.common.client.common.DateFormatter.formatDateTime;
 import static ru.protei.portal.ui.common.client.util.AttachmentUtils.getRemoveErrorHandler;
+import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.getCommentAndHistorySelectedTabs;
 
 /**
  * Активность списка комментариев
@@ -118,7 +122,7 @@ public abstract class CommentAndHistoryListActivity
         view.setInitiatorCompanyId(event.initiatorCompanyId);
         view.setMentionEnabled(event.isMentionEnabled);
 
-        reloadItems(caseType, caseId, event.typesToShow);
+        reloadItems(caseType, caseId);
     }
 
     @Event
@@ -133,6 +137,7 @@ public abstract class CommentAndHistoryListActivity
         if (Objects.equals( policyService.getProfileId(), event.getPersonId() )) return;
 
         fireEvent(new CaseCommentItemEvents.RemoveClientComment(event.getCaseCommentID()));
+        view.restyleFirstVisibleItemContainer();
     }
 
     @Event
@@ -148,7 +153,8 @@ public abstract class CommentAndHistoryListActivity
 
                     renderTextAsync(comment.getText(), textMarkup, converted -> {
                         comment.setText(converted);
-                        fireEvent(new CaseCommentItemEvents.SaveOrUpdateClientComment(comment));
+                        fireEvent(new CaseCommentItemEvents.SaveOrUpdateClientComment(comment, isCommentVisible()));
+                        view.restyleFirstVisibleItemContainer();
                     });
                 })
         );
@@ -209,7 +215,7 @@ public abstract class CommentAndHistoryListActivity
         }
 
         removeAttachment(event.attachment.getId(), () -> {
-            fireEvent(new AttachmentEvents.Remove(caseId, Collections.singletonList(event.attachment)));
+            fireEvent(new AttachmentEvents.Remove(caseId, singletonList(event.attachment)));
             reloadItems(caseType, caseId);
         });
     }
@@ -310,28 +316,51 @@ public abstract class CommentAndHistoryListActivity
         view.setCommentPlaceholder(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW) ?
                 lang.commentAddMessageMentionPlaceholder() : lang.commentAddMessagePlaceholder());
 
-        List<CommentsAndHistories.CommentOrHistory> sortedCommentOrHistoryList
-                = commentsAndHistories.getSortedCommentOrHistoryList();
+        List<CommentOrHistory> commentOrHistoryList
+                = getSortedCommentOrHistoryList(commentsAndHistories.getCommentOrHistoryList());
 
         List<History> histories = new ArrayList<>();
         List<CaseComment> comments = new ArrayList<>();
 
-        for (CommentsAndHistories.CommentOrHistory commentOrHistory : sortedCommentOrHistoryList) {
-            if (COMMENT.equals(commentOrHistory.getType())) {
+        for (CommentOrHistory commentOrHistory : commentOrHistoryList) {
+            if (commentOrHistory.getCaseComment() != null) {
                 flushHistories(histories);
-                comments.add(commentsAndHistories.getComment(commentOrHistory.getId()));
+                comments.add(commentOrHistory.getCaseComment());
                 continue;
             }
 
-            if (HISTORY.equals(commentOrHistory.getType())) {
+            if (commentOrHistory.getHistory() != null) {
                 flushComments(comments);
-                histories.add(commentsAndHistories.getHistory(commentOrHistory.getId()));
+                histories.add(commentOrHistory.getHistory());
                 continue;
             }
         }
 
         flushHistories(histories);
         flushComments(comments);
+    }
+
+    private List<CommentOrHistory> getSortedCommentOrHistoryList(List<CommentOrHistory> commentOrHistoryList) {
+        return commentOrHistoryList
+                .stream()
+                .sorted(this::compareCommentOrHistoryItems)
+                .collect(Collectors.toList());
+    }
+
+    private int compareCommentOrHistoryItems(CommentOrHistory commentOrHistory1, CommentOrHistory commentOrHistory2) {
+        if (commentOrHistory1.getCaseComment() != null && commentOrHistory2.getCaseComment() != null) {
+            return commentOrHistory1.getDate().before(commentOrHistory2.getDate()) ? -1 : 1;
+        }
+
+        if (commentOrHistory1.getHistory() != null && commentOrHistory2.getHistory() != null) {
+            return commentOrHistory1.getDate().before(commentOrHistory2.getDate()) ? -1 : 1;
+        }
+
+        if (formatDateTime(commentOrHistory1.getDate()).equals(formatDateTime(commentOrHistory2.getDate()))) {
+            return commentOrHistory1.getHistory() != null ? -1 : 1;
+        }
+
+        return commentOrHistory1.getDate().before(commentOrHistory2.getDate()) ? -1 : 1;
     }
 
     private void flushHistories(List<History> histories) {
@@ -462,7 +491,8 @@ public abstract class CommentAndHistoryListActivity
             commentCompleteEditConsumer.accept(comment, tempAttachments);
         } else {
             fireEvent(new AttachmentEvents.Add(caseId, tempAttachments));
-            fireEvent(new CaseCommentItemEvents.CreateComment(caseComment));
+            fireEvent(new CaseCommentItemEvents.CreateComment(caseComment, isCommentVisible()));
+            view.restyleFirstVisibleItemContainer();
         }
 
         comment = null;
@@ -472,6 +502,14 @@ public abstract class CommentAndHistoryListActivity
         tempAttachments.clear();
         view.getPrivacyVisibility().setVisible(isPrivateVisible);
         view.privacyType().setValue(En_CaseCommentPrivacyType.PUBLIC);
+    }
+
+    private boolean isCommentVisible() {
+        if (!isCommentWithHistoryCase(caseType)) {
+            return true;
+        }
+
+        return getCommentAndHistorySelectedTabs(storage).contains(COMMENT);
     }
 
     private void lockSave() {
@@ -533,19 +571,12 @@ public abstract class CommentAndHistoryListActivity
     }
 
     private void reloadItems(En_CaseType caseType, Long caseId) {
-        reloadItems(caseType, caseId, new ArrayList<>());
-    }
-
-    private void reloadItems(En_CaseType caseType, Long caseId, List<En_CommentOrHistoryType> typesToShow) {
         if (isCommentWithHistoryCase(caseType)) {
             caseCommentController.getCommentsAndHistories(caseType, caseId, new FluentCallback<CommentsAndHistories>()
                     .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR)))
                     .withSuccess(commentsAndHistories -> {
                         fillView(commentsAndHistories);
-
-                        if (!typesToShow.isEmpty()) {
-                            displayItems(typesToShow);
-                        }
+                        displayItems(getCommentAndHistorySelectedTabs(storage));
                     })
             );
 
@@ -556,10 +587,7 @@ public abstract class CommentAndHistoryListActivity
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR)))
                 .withSuccess(comments -> {
                     fillView(comments);
-
-                    if (!typesToShow.isEmpty()) {
-                        displayItems(typesToShow);
-                    }
+                    displayItems(singletonList(COMMENT));
                 })
         );
     }
@@ -576,7 +604,7 @@ public abstract class CommentAndHistoryListActivity
         return false;
     }
 
-    private void displayItems(List<En_CommentOrHistoryType> typesToShow) {
+    private void displayItems(List<En_MultiTabWidgetTabs> typesToShow) {
         hideCommentItems();
         hideHistoryItems();
 
@@ -591,6 +619,8 @@ public abstract class CommentAndHistoryListActivity
                 showHistoryItems();
             }
         });
+
+        view.restyleFirstVisibleItemContainer();
     }
 
     private void showCommentItems() {

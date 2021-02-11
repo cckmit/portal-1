@@ -32,6 +32,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.getFirst;
+
 public abstract class CaseHistoryItemsListActivity implements AbstractCaseHistoryItemActivity, Activity {
     @Event
     public void onFill(CaseHistoryEvents.Fill event) {
@@ -40,14 +42,12 @@ public abstract class CaseHistoryItemsListActivity implements AbstractCaseHistor
 
     @Event
     public void onShow(CaseHistoryEvents.Show event) {
-        isVisibleByDefault = true;
-        historyItemsContainers.forEach(historyItemsContainer -> historyItemsContainer.setVisible(isVisibleByDefault));
+        historyItemsContainers.forEach(historyItemsContainer -> historyItemsContainer.setVisible(true));
     }
 
     @Event
     public void onHide(CaseHistoryEvents.Hide event) {
-        isVisibleByDefault = false;
-        historyItemsContainers.forEach(historyItemsContainer -> historyItemsContainer.setVisible(isVisibleByDefault));
+        historyItemsContainers.forEach(historyItemsContainer -> historyItemsContainer.setVisible(false));
     }
 
     @Event
@@ -98,10 +98,7 @@ public abstract class CaseHistoryItemsListActivity implements AbstractCaseHistor
             addHistoryItem(nextHistory, lastHistoryItemsContainer);
         }
 
-        currentHistoryItemsContainers.forEach(itemsContainer -> {
-            itemsContainer.setVisible(isVisibleByDefault);
-            historyContainer.insert(itemsContainer, 0);
-        });
+        currentHistoryItemsContainers.forEach(itemsContainer -> historyContainer.insert(itemsContainer, 0));
 
         historyItemsContainers.addAll(currentHistoryItemsContainers);
     }
@@ -235,7 +232,5 @@ public abstract class CaseHistoryItemsListActivity implements AbstractCaseHistor
     @Inject
     private Lang lang;
 
-    private boolean isVisibleByDefault;
-
-    private final List<CaseHistoryItemsContainer> historyItemsContainers = new ArrayList<>();
+    private final List<CaseHistoryItemsContainer> historyItemsContainers = new LinkedList<>();
 }

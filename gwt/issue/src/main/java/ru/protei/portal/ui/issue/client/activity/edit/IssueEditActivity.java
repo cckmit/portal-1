@@ -252,7 +252,7 @@ public abstract class IssueEditActivity implements
     }
 
     @Override
-    public void selectedTabsChanged(List<En_CommentOrHistoryType> selectedTabs) {
+    public void selectedTabsChanged(List<En_MultiTabWidgetTabs> selectedTabs) {
         saveCommentAndHistorySelectedTabs(localStorageService, selectedTabs);
         fireEvent(new CommentAndHistoryEvents.ShowItems(selectedTabs));
     }
@@ -443,7 +443,6 @@ public abstract class IssueEditActivity implements
         showCommentsEvent.initiatorCompanyId = issue.getInitiatorCompany().getId();
         showCommentsEvent.isMentionEnabled = policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
         showCommentsEvent.extendedPrivacyType =  selectExtendedPrivacyType( issue );
-        showCommentsEvent.typesToShow = issueInfoWidget.getSelectedTabs();
         fireEvent( showCommentsEvent );
     }
 

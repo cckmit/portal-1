@@ -1,68 +1,61 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_CommentOrHistoryType;
-
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 public class CommentsAndHistories implements Serializable {
-    private List<CommentOrHistory> sortedCommentOrHistoryList;
+    private List<CommentOrHistory> commentOrHistoryList = new ArrayList<>();
 
-    private Map<Long, CaseComment> idToComment;
-    private Map<Long, History> idToHistory;
+    public List<CommentOrHistory> getCommentOrHistoryList() {
+        return commentOrHistoryList;
+    }
+
+    public void setComments(List<CaseComment> comments) {
+        commentOrHistoryList.addAll(stream(comments)
+                .map(CommentOrHistory::new)
+                .collect(Collectors.toList())
+        );
+    }
+
+    public void setHistories(List<History> histories) {
+        commentOrHistoryList.addAll(stream(histories)
+                .map(CommentOrHistory::new)
+                .collect(Collectors.toList())
+        );
+    }
 
     public static class CommentOrHistory implements Serializable {
-        private Long id;
-        private En_CommentOrHistoryType type;
+        private Date date;
+        private CaseComment caseComment;
+        private History history;
 
         public CommentOrHistory() {}
 
-        public CommentOrHistory(Long id, En_CommentOrHistoryType type) {
-            this.id = id;
-            this.type = type;
-        }
-
         public CommentOrHistory(CaseComment caseComment) {
-            this.id = caseComment.getId();
-            this.type = En_CommentOrHistoryType.COMMENT;
+            this.date = caseComment.getCreated();
+            this.caseComment = caseComment;
         }
 
         public CommentOrHistory(History history) {
-            this.id = history.getId();
-            this.type = En_CommentOrHistoryType.HISTORY;
+            this.date = history.getDate();
+            this.history = history;
         }
 
-        public Long getId() {
-            return id;
+        public CaseComment getCaseComment() {
+            return caseComment;
         }
 
-        public En_CommentOrHistoryType getType() {
-            return type;
+        public History getHistory() {
+            return history;
         }
-    }
 
-    public List<CommentOrHistory> getSortedCommentOrHistoryList() {
-        return sortedCommentOrHistoryList;
-    }
-
-    public void setSortedCommentOrHistoryList(List<CommentOrHistory> sortedCommentOrHistoryList) {
-        this.sortedCommentOrHistoryList = sortedCommentOrHistoryList;
-    }
-
-    public CaseComment getComment(Long id) {
-        return idToComment.get(id);
-    }
-
-    public History getHistory(Long id) {
-        return idToHistory.get(id);
-    }
-
-    public void setIdToComment(Map<Long, CaseComment> idToComment) {
-        this.idToComment = idToComment;
-    }
-
-    public void setIdToHistory(Map<Long, History> idToHistory) {
-        this.idToHistory = idToHistory;
+        public Date getDate() {
+            return date;
+        }
     }
 }

@@ -10,6 +10,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 
 import static com.google.gwt.dom.client.Style.TextDecoration.LINE_THROUGH;
 import static com.google.gwt.dom.client.Style.TextDecoration.NONE;
+import static ru.protei.portal.ui.common.client.util.ColorUtils.makeContrastColor;
 
 public class CaseHistoryImportanceItemView extends Composite {
     public CaseHistoryImportanceItemView() {
@@ -23,6 +24,7 @@ public class CaseHistoryImportanceItemView extends Composite {
 
     public void setColor(String color) {
         icon.getStyle().setBackgroundColor(color);
+        icon.getStyle().setColor(makeContrastColor(color));
     }
 
     @UiField

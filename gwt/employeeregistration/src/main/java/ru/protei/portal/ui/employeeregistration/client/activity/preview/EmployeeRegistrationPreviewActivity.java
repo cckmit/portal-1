@@ -7,7 +7,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_CommentOrHistoryType;
+import ru.protei.portal.core.model.dict.En_MultiTabWidgetTabs;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -92,7 +92,7 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
     }
 
     @Override
-    public void selectedTabsChanged(List<En_CommentOrHistoryType> selectedTabs) {
+    public void selectedTabsChanged(List<En_MultiTabWidgetTabs> selectedTabs) {
         saveCommentAndHistorySelectedTabs(localStorageService, selectedTabs);
         fireEvent(new CommentAndHistoryEvents.ShowItems(selectedTabs));
     }
@@ -137,7 +137,7 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
         view.setCompany(StringUtils.emptyIfNull(value.getCompanyName()));
         view.setDepartment(StringUtils.emptyIfNull(value.getDepartment()));
 
-        List<En_CommentOrHistoryType> selectedTabs = getCommentAndHistorySelectedTabs(localStorageService);
+        List<En_MultiTabWidgetTabs> selectedTabs = getCommentAndHistorySelectedTabs(localStorageService);
         view.selectTabs(selectedTabs);
 
         if (value.getEmploymentType() == null) {
@@ -157,15 +157,11 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
                 .withCaseId(value.getId())
                 .readOnly());
 
-        CommentAndHistoryEvents.Show showItemsEvent = new CommentAndHistoryEvents.Show(view.getItemsContainer(),
+        fireEvent(new CommentAndHistoryEvents.Show(view.getItemsContainer(),
                 value.getId(),
                 En_CaseType.EMPLOYEE_REGISTRATION,
                 policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_REGISTRATION_VIEW),
-                value.getCreatorId());
-
-        showItemsEvent.typesToShow = selectedTabs;
-
-        fireEvent(showItemsEvent);
+                value.getCreatorId()));
     }
 
     private HasWidgets fullScreenContainer;
