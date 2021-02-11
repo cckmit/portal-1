@@ -36,11 +36,17 @@ public class CaseComment extends AuditableObject {
     @JdbcJoinedColumn(localColumn = "cstate_id", table = "case_state", remoteColumn = "id", mappedColumn = "STATE")
     private String caseStateName;
 
+    @JdbcJoinedColumn(localColumn = "cstate_id", table = "case_state", remoteColumn = "id", mappedColumn = "color")
+    private String caseStateColor;
+
     @JdbcColumn(name="cimp_level")
     private Integer caseImpLevel;
 
     @JdbcJoinedColumn(localColumn = "cimp_level", remoteColumn = "id", table = "importance_level", mappedColumn = "code")
-    private String importanceCode;
+    private String caseImpCode;
+
+    @JdbcJoinedColumn(localColumn = "cimp_level", remoteColumn = "id", table = "importance_level", mappedColumn = "color")
+    private String caseImpColor;
 
     @JdbcColumn(name="cmanager_id")
     private Long caseManagerId;
@@ -171,6 +177,14 @@ public class CaseComment extends AuditableObject {
         this.caseStateName = caseStateName;
     }
 
+    public String getCaseStateColor() {
+        return caseStateColor;
+    }
+
+    public void setCaseStateColor(String caseStateColor) {
+        this.caseStateColor = caseStateColor;
+    }
+
     public Integer getCaseImpLevel() {
         return caseImpLevel;
     }
@@ -179,8 +193,20 @@ public class CaseComment extends AuditableObject {
         this.caseImpLevel = caseImpLevel;
     }
 
-    public String getImportanceCode() {
-        return importanceCode;
+    public String getCaseImpCode() {
+        return caseImpCode;
+    }
+
+    public void setCaseImpCode(String caseImpCode) {
+        this.caseImpCode = caseImpCode;
+    }
+
+    public String getCaseImpColor() {
+        return caseImpColor;
+    }
+
+    public void setCaseImpColor(String caseImpColor) {
+        this.caseImpColor = caseImpColor;
     }
 
     public Long getCaseManagerId() {

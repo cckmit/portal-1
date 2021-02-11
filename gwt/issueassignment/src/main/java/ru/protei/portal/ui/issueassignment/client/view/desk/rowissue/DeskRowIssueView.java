@@ -41,7 +41,7 @@ public class DeskRowIssueView extends Composite implements AbstractDeskRowIssueV
     private AbstractDeskIssueView makeIssueView(CaseShortView issue) {
         AbstractDeskIssueView view = issueViewProvider.get();
         view.setImportance(issue.getImportanceCode());
-        view.setState(issue.getStateName());
+        view.setState(issue.getStateName(), issue.getStateColor());
         view.setPrivacy(issue.isPrivateCase());
         view.setNumber(issue.getCaseNumber());
         view.setName(issue.getName());

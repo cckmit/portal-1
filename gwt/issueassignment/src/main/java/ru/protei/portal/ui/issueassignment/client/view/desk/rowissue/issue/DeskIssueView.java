@@ -14,7 +14,6 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.common.client.widget.stringselectpopup.StringSelectPopup;
 import ru.protei.portal.ui.issueassignment.client.activity.desk.rowissue.issue.AbstractDeskIssueView;
 
@@ -59,11 +58,11 @@ public class DeskIssueView extends Composite implements AbstractDeskIssueView {
     }
 
     @Override
-    public void setState(String state) {
+    public void setState(String state, String color) {
         if (state == null) {
             this.state.setClassName("hide");
         } else {
-            this.state.setClassName("label label-" + CaseStateUtils.makeStyleName(state));
+            this.state.getStyle().setBackgroundColor(color);
             this.state.setInnerText(state);
         }
     }

@@ -8,7 +8,6 @@ import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 
 /**
  * Колонка "Номер"
@@ -49,7 +48,8 @@ public class NumberColumn extends ClickColumn<CaseShortView> {
         divElement.appendChild( numberElement );
 
         com.google.gwt.dom.client.Element stateElement = DOM.createElement("p");
-        stateElement.addClassName("label label-" + CaseStateUtils.makeStyleName(value.getStateName()));
+        stateElement.addClassName("label");
+        stateElement.getStyle().setBackgroundColor(value.getStateColor());
         stateElement.setInnerText(value.getStateName());
 
         if (!isPauseDateValid(value.getStateId(), value.getPauseDate())) {

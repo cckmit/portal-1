@@ -127,7 +127,6 @@ public class CrmConstants {
     }
 
     public interface ImportanceLevel {
-        String IMPORTANCE_LEVEL = "importance-level";
         String BASIC_NAME = "basic";
 
         Integer CRITICAL = 1;
@@ -216,6 +215,7 @@ public class CrmConstants {
         String ADDED = "added";
         String UPDATED = "updated";
         String HIDE = "hide";
+        String IMPORTANCE_LEVEL = "importance-level";
     }
 
     public interface Platform {
