@@ -25,6 +25,7 @@ import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.struct.ReplaceLoginWithUsernameInfo;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
+import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.CaseCommentService;
@@ -42,11 +43,13 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.*;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.partitioningBy;
 import static ru.protei.portal.core.event.ReservedIpReleaseRemainingEvent.*;
 import static ru.protei.portal.core.model.dict.En_CaseLink.CRM;
@@ -1044,7 +1047,19 @@ public class MailNotificationProcessor {
 
         List<String> recipients = getNotifiersAddresses(event.getNotifiers());
 
-        PreparedTemplate bodyTemplate = templateService.getBirthdaysNotificationBody( event.getEmployees(), recipients,
+        LinkedHashMap<Date, TreeSet<EmployeeShortView>> dateToEmployeesMap = CollectionUtils.stream(event.getEmployees())
+                .peek(employee -> employee.setBirthday(selectDateThisYear(employee.getBirthday())))
+                .sorted(Comparator.comparing(EmployeeShortView::getBirthday))
+                .collect(groupingBy(
+                        EmployeeShortView::getBirthday,
+                        LinkedHashMap::new,
+                        Collectors.toCollection(() -> new TreeSet<>(
+                                Comparator.comparing(EmployeeShortView::getDisplayName)
+                        ))));
+
+        List<DayOfWeek> dayOfWeeks = makeDaysOfWeek(dateToEmployeesMap);
+
+        PreparedTemplate bodyTemplate = templateService.getBirthdaysNotificationBody( dateToEmployeesMap, dayOfWeeks, recipients,
                 new EnumLangUtil(lang));
         if (bodyTemplate == null) {
             log.error("Failed to prepare body template for release PersonCaseFilter notification");
@@ -1384,6 +1399,34 @@ public class MailNotificationProcessor {
 
     private List<NotificationEntry> filterNotificationEntries(Collection<NotificationEntry> entries, Predicate<NotificationEntry> notificationEntryPredicate) {
         return stream(entries).filter(notificationEntryPredicate).collect(Collectors.toList());
+    }
+
+    private Date selectDateThisYear(Date date) {
+        // устанавливаем датам рождения текущие годы, чтобы получить день недели
+        // один из частных случаев - если сейчас уже 2021 год, а день рождения был в конце декабря 2020,
+        // тогда устанавливаем год на 1 меньше, чтобы получить правильный день недели
+        Date now = new Date();
+        if (now.getMonth() == Calendar.DECEMBER && date.getMonth() == Calendar.JANUARY) {
+            date.setYear(now.getYear() + 1);
+        } else if (now.getMonth() == Calendar.JANUARY && date.getMonth() == Calendar.DECEMBER) {
+            date.setYear(now.getYear() - 1);
+        } else {
+            date.setYear(now.getYear());
+        }
+        return date;
+    }
+
+    private List<DayOfWeek> makeDaysOfWeek(LinkedHashMap<Date, TreeSet<EmployeeShortView>> dateToEmployeesMap) {
+        List<DayOfWeek> daysOfWeek = new ArrayList<>();
+
+        Set<Date> dates = dateToEmployeesMap.keySet();
+        for (Date date : dates) {
+            Instant instant = date.toInstant();
+            ZonedDateTime zdt = instant.atZone(ZoneId.systemDefault());
+            LocalDate localDate = zdt.toLocalDate();
+            daysOfWeek.add(localDate.getDayOfWeek());
+        }
+        return daysOfWeek;
     }
 
     private class MimeMessageHeadersFacade {

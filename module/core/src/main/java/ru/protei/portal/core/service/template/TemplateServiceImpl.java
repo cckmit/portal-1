@@ -24,7 +24,6 @@ import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.renderer.HTMLRenderer;
-import ru.protei.portal.core.utils.DateUtils;
 import ru.protei.portal.core.utils.EnumLangUtil;
 import ru.protei.portal.core.utils.LinkData;
 import ru.protei.portal.core.utils.WorkTimeFormatter;
@@ -35,6 +34,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -876,17 +876,11 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getBirthdaysNotificationBody(List<EmployeeShortView> employees, Collection<String> recipients,
-                                                         EnumLangUtil enumLangUtil) {
+    public PreparedTemplate getBirthdaysNotificationBody(LinkedHashMap<Date, TreeSet<EmployeeShortView>> dateToEmployeesMap,
+                                                         List<DayOfWeek> dayOfWeeks, Collection<String> recipients, EnumLangUtil enumLangUtil) {
         Map<String, Object> model = new HashMap<>();
-        LinkedHashMap<Date, TreeSet<EmployeeShortView>> dateToEmployeesMap = employees.stream().collect(groupingBy(
-                employee -> DateUtils.resetYear(employee.getBirthday()),
-                LinkedHashMap::new,
-                Collectors.toCollection(() -> new TreeSet<>(
-                        Comparator.comparing(EmployeeShortView::getDisplayName)
-                ))));
         model.put("employees", dateToEmployeesMap);
-        model.put("daysOfWeek", makeDaysOfWeek(dateToEmployeesMap));
+        model.put("daysOfWeek", dayOfWeeks);
         model.put("recipients", recipients);
         model.put("EnumLangUtil", enumLangUtil);
 
@@ -894,31 +888,6 @@ public class TemplateServiceImpl implements TemplateService {
         template.setModel(model);
         template.setTemplateConfiguration(templateConfiguration);
         return template;
-    }
-
-    private List<Integer> makeDaysOfWeek(LinkedHashMap<Date, TreeSet<EmployeeShortView>> dateToEmployeesMap) {
-        List<Integer> daysOfWeek = new ArrayList<>();
-        Calendar calendar = Calendar.getInstance();
-        int currentYear = calendar.get(Calendar.YEAR);
-        int currentMonth = calendar.get(Calendar.MONTH);
-
-        // устанавливаем датам рождения текущие годы, чтобы получить день недели
-        // частный случай - если сейчас уже 2021 год, а день рождения был в конце декабря 2020,
-        // тогда устанавливаем год на 1 меньше, чтобы получить правильный день недели
-        Set<Date> dates = dateToEmployeesMap.keySet();
-        for (Date date : dates) {
-            calendar.setTime(date);
-            if (currentMonth == Calendar.DECEMBER && date.getMonth() == Calendar.JANUARY) {
-                calendar.set(Calendar.YEAR, currentYear + 1);
-            } else if (currentMonth == Calendar.JANUARY && date.getMonth() == Calendar.DECEMBER) {
-                calendar.set(Calendar.YEAR, currentYear - 1);
-            } else {
-                calendar.set(Calendar.YEAR, currentYear);
-            }
-
-            daysOfWeek.add(calendar.get(Calendar.DAY_OF_WEEK));
-        }
-        return daysOfWeek;
     }
 
     @Override

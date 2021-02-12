@@ -12,9 +12,8 @@ import ru.protei.portal.core.utils.EnumLangUtil;
 import ru.protei.portal.core.utils.LinkData;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.time.DayOfWeek;
+import java.util.*;
 
 /**
  * Сервис формирования шаблонов
@@ -103,7 +102,7 @@ public interface TemplateService {
     String getProjectPauseTimeNotificationBody( String subscriberName, Long aLong, String displayNam, String projectUrl, Date pauseTimeDate ) throws IOException, TemplateException;
 
     PreparedTemplate getBirthdaysNotificationSubject(Date from, Date to);
-    PreparedTemplate getBirthdaysNotificationBody(List<EmployeeShortView> employees, Collection<String> recipients, EnumLangUtil enumLangUtil);
+    PreparedTemplate getBirthdaysNotificationBody(LinkedHashMap<Date, TreeSet<EmployeeShortView>> employees, List<DayOfWeek> dayOfWeeks, Collection<String> recipients, EnumLangUtil enumLangUtil);
 
     PreparedTemplate getNRPENonAvailableIpsNotificationSubject();
     PreparedTemplate getNRPENonAvailableIpsNotificationBody(List<String> nonAvailableIps, Collection<String> recipients);
