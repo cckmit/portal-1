@@ -101,7 +101,7 @@ public abstract class StateModel implements Activity, AsyncSelectorModel<CaseSta
 
         if (En_CaseStateWorkflow.NO_WORKFLOW.equals(workflow)) {
             if (currentCaseState != null && isTerminalState(currentCaseState.getId())) {
-                return Collections.singletonList(currentCaseState);
+                return Collections.singletonList(caseStatesList.stream().filter(state -> state.equals(currentCaseState)).findFirst().orElse(currentCaseState));
             } else {
                 return new ArrayList<>(caseStatesList);
             }
