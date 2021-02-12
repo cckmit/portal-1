@@ -35,6 +35,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.util.CaseStateWorkflowUtil.recognizeWorkflow;
 
 /**
  *
@@ -107,6 +108,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
                         metaView.state().setValue(caseState);
                         meta.setStateId(caseState.getId());
                         meta.setStateName(caseState.getState());
+                        meta.setStateColor(caseState.getColor());
                         fireEvent(new IssueEvents.IssueStateChanged(event.issueId, caseState.getId()));
                     }}));
     }
@@ -126,12 +128,13 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         CaseState caseState = metaView.state().getValue();
         if (CrmConstants.State.CREATED == caseState.getId() && meta.getManager() != null){
             fireEvent(new NotifyEvents.Show(lang.errSaveIssueNeedUnselectManager(), NotifyEvents.NotifyType.ERROR));
-            metaView.state().setValue(new CaseState(meta.getStateId(), meta.getStateName()));
+            metaView.state().setValue(new CaseState(meta.getStateId(), meta.getStateName(), meta.getStateColor()));
             return;
         }
 
         meta.setStateId(caseState.getId());
         meta.setStateName(caseState.getState());
+        meta.setStateColor(caseState.getColor());
         meta.setPauseDate((CrmConstants.State.PAUSED != meta.getStateId() || metaView.pauseDate().getValue() == null) ? null : metaView.pauseDate().getValue().getTime());
 
         metaView.pauseDateContainerVisibility().setVisible(CrmConstants.State.PAUSED == meta.getStateId());
@@ -436,6 +439,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
                 .withSuccess(caseMetaUpdated -> {
                     meta.setStateId(caseMetaUpdated.getStateId());
                     meta.setStateName(caseMetaUpdated.getStateName());
+                    meta.setStateColor(caseMetaUpdated.getStateColor());
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fillView( caseMetaUpdated );
                     if(runAfterUpdate!=null) runAfterUpdate.run();
@@ -543,6 +547,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
                 })
         );
 
+        metaView.setStateWorkflow(recognizeWorkflow(meta.getExtAppType()));
         metaView.state().setValue(new CaseState(meta.getStateId(), meta.getStateName(), meta.getStateColor(), meta.getStateInfo()));
         metaView.pauseDate().setValue(meta.getPauseDate() == null ? null : new Date(meta.getPauseDate()));
         metaView.pauseDateContainerVisibility().setVisible(CrmConstants.State.PAUSED == meta.getStateId());

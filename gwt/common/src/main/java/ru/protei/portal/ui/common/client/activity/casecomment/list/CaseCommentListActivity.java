@@ -472,11 +472,11 @@ public abstract class CaseCommentListActivity
         }
 
         if ( isStateChangeComment ) {
-            itemView.setStatus( value.getCaseStateName() );
+            itemView.setStatus( value.getCaseStateName(), value.getCaseStateColor() );
         }
 
         if ( isImportanceChangeComment ) {
-            itemView.setImportanceLevel( value.getImportanceCode() );
+            itemView.setImportanceLevel( value.getCaseImpCode(), value.getCaseImpColor() );
         }
 
         if ( isManagerChangeComment ) {

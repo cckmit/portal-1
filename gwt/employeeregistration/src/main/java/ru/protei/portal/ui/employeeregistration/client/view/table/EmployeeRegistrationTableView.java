@@ -109,7 +109,7 @@ public class EmployeeRegistrationTableView extends Composite implements Abstract
                 cell.setInnerHTML(StringUtils.join(
                         "<div>",
                         "<p class='number-size'>", String.valueOf(value.getId()), "</p>",
-                        "<p class='label label-", CaseStateUtils.makeStyleName(value.getStateName()), "'>", value.getStateName(), "</p>",
+                        "<p class='label' style='background-color:", value.getStateColor() , "'>", value.getStateName(), "</p>",
                         "</div>"
                 ).toString());
             }

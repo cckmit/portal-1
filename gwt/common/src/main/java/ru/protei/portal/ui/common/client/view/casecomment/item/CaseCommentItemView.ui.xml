@@ -16,7 +16,7 @@
                 <g:Label ui:field="timeElapsed" styleName="time-label" title="{lang.issueCommentElapsedTimeTypeChange}"/>
                 <popup:EditTimeElapsedTypePopup ui:field="timeElapsedTypePopup" visible="false" />
             </div>
-            <li ui:field="status"/>
+            <li ui:field="status" class="status"/>
             <li ui:field="options">
                 <span class="options">
                     <g:Anchor href="javascript:;" ui:field="reply">

@@ -12,7 +12,7 @@ public interface AbstractDeskIssueView extends IsWidget {
 
     void setImportance(String importanceCode);
 
-    void setState(String state);
+    void setState(String state, String color);
 
     void setPrivacy(boolean isPrivate);
 

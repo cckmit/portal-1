@@ -51,7 +51,7 @@ public class BootstrapTest {
                 CaseComment::getCaseStateId, CaseComment::getCaseStateName));
         commentToHistoryMigrationMap.put(IMPORTANCE, new BootstrapServiceImpl.CommentToHistoryMigration(IMPORTANCE, CASE_IMPORTANCE,
                 caseComment -> (long) caseComment.getCaseImpLevel(),
-                CaseComment::getImportanceCode));
+                CaseComment::getCaseImpCode));
         commentToHistoryMigrationMap.put(MANAGER, new BootstrapServiceImpl.CommentToHistoryMigration(MANAGER, CASE_MANAGER,
                 CaseComment::getCaseManagerId, CaseComment::getCaseManagerShortName));
 

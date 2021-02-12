@@ -1,10 +1,10 @@
 package ru.protei.portal.ui.common.client.widget.issuestate;
 
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
-import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.common.client.widget.form.FormPopupSingleSelector;
 
 /**
@@ -15,29 +15,25 @@ public class IssueStateFormSelector extends FormPopupSingleSelector<CaseState> {
     @Inject
     public void init( StateModel model ) {
         setSearchEnabled( false );
-        setAsyncModel( model );
+        setStateModel( model );
         setItemRenderer( value -> value == null ? defaultValue : value.getInfo() );
         setValueRenderer( value -> value == null ? defaultValue :
-                         "<i class='fas fa-circle m-r-5 state-" + makeCaseStateStyle(value) +
-                         "' style='color:" + makeCaseStateColor(value) + "'></i>" + value.getState());
+                "<i class='fas" + (En_CaseStateWorkflow.NO_WORKFLOW.equals(stateModel.getWorkflow()) ? " fa-circle" : " fa-dot-circle") +
+                        " m-r-5' style='color:" + makeCaseStateColor(value) + "'></i>" + value.getState());
     }
 
     @Override
-    protected SelectorItem<CaseState> makeSelectorItem(CaseState element, String elementHtml ) {
+    protected SelectorItem<CaseState> makeSelectorItem(CaseState element, String elementHtml) {
         PopupSelectorItem<CaseState> item = new PopupSelectorItem();
-        item.setName( makeCaseStateName(element));
-        item.setTitle( makeCaseStateTitle(element));
-        item.setIcon( "fas fa-circle m-r-5 state-" + makeCaseStateStyle(element) );
-        item.setIconColor( makeCaseStateColor(element) );
+        item.setName(makeCaseStateName(element));
+        item.setTitle(makeCaseStateTitle(element));
+        item.setIcon(En_CaseStateWorkflow.NO_WORKFLOW.equals(stateModel.getWorkflow()) ? "fas fa-circle m-r-5" : "fas fa-dot-circle m-r-5");
+        item.setIconColor(makeCaseStateColor(element));
         return item;
     }
 
     private String makeCaseStateName(CaseState caseState) {
         return caseState == null ? defaultValue : caseState.getState();
-    }
-
-    private String makeCaseStateStyle(CaseState caseState) {
-        return caseState == null ? "" : CaseStateUtils.makeStyleName(caseState.getState());
     }
 
     private String makeCaseStateTitle(CaseState caseState) {
@@ -52,5 +48,17 @@ public class IssueStateFormSelector extends FormPopupSingleSelector<CaseState> {
         this.defaultValue = value;
     }
 
+    @Override
+    public void setValue(CaseState value) {
+        super.setValue(value);
+        stateModel.setCurrentCaseState(value);
+    }
+
+    public void setStateModel(StateModel model) {
+        this.stateModel = model;
+        setAsyncModel( model );
+    }
+
     private String defaultValue;
+    private StateModel stateModel;
 }
