@@ -24,7 +24,6 @@ import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.renderer.HTMLRenderer;
-import ru.protei.portal.core.utils.DateUtils;
 import ru.protei.portal.core.utils.EnumLangUtil;
 import ru.protei.portal.core.utils.LinkData;
 import ru.protei.portal.core.utils.WorkTimeFormatter;
@@ -35,6 +34,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -876,15 +876,13 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getBirthdaysNotificationBody(List<EmployeeShortView> employees, Collection<String> recipients) {
+    public PreparedTemplate getBirthdaysNotificationBody(LinkedHashMap<Date, TreeSet<EmployeeShortView>> dateToEmployeesMap,
+                                                         List<DayOfWeek> dayOfWeeks, Collection<String> recipients, EnumLangUtil enumLangUtil) {
         Map<String, Object> model = new HashMap<>();
-        model.put("employees", employees.stream().collect(Collectors.groupingBy(
-                employee -> DateUtils.resetYear(employee.getBirthday()),
-                LinkedHashMap::new,
-                Collectors.toCollection(() -> new TreeSet<>(
-                        Comparator.comparing(EmployeeShortView::getDisplayName)
-                )))));
+        model.put("employees", dateToEmployeesMap);
+        model.put("daysOfWeek", dayOfWeeks);
         model.put("recipients", recipients);
+        model.put("EnumLangUtil", enumLangUtil);
 
         PreparedTemplate template = new PreparedTemplate("notification/email/birthdays.body.%s.ftl");
         template.setModel(model);
