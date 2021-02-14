@@ -529,8 +529,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         query.setFired(false);
         query.setDeleted(false);
         query.setBirthdayInterval(new Interval(from, to));
-        query.setSortField(En_SortField.birthday);
-        query.setSortDir(En_SortDir.ASC);
         List<EmployeeShortView> employees = employeeShortViewDAO.getEmployees(query);
 
         if (CollectionUtils.isEmpty(employees)) {
