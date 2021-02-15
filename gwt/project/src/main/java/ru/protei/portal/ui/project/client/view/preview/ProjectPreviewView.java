@@ -150,9 +150,12 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     }
 
     @Override
-    public void setPlatform(String value, String link) {
-        platform.setText(value);
-        platform.setHref(link);
+    public void setPlatforms(Map<String, String> platformToLink) {
+        for (Map.Entry<String, String> entry: platformToLink.entrySet()) {
+            platforms.add(new Anchor(entry.getKey(), entry.getValue(), "_blank"));
+            if (platformToLink.size() > 1)
+                platforms.getElement().appendChild(DOM.createElement("br"));
+        }
     }
 
     @Override
@@ -245,7 +248,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         documents.ensureDebugId(DebugIds.PROJECT_PREVIEW.DOCUMENTS_CONTAINER);
         commentsContainer.ensureDebugId(DebugIds.PROJECT_PREVIEW.COMMENTS_CONTAINER);
         contracts.ensureDebugId(DebugIds.PROJECT_PREVIEW.CONTRACTS_CONTAINER);
-        platform.ensureDebugId(DebugIds.PROJECT_PREVIEW.PLATFORM_LABEL);
+        platforms.ensureDebugId(DebugIds.PROJECT_PREVIEW.PLATFORMS_LABEL);
         technicalSupportValidity.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.TECHNICAL_SUPPORT_VALIDITY_CONTAINER);
         workCompletionDate.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.WORK_COMPLETION_DATE);
         purchaseDate.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.PURCHASE_DATE);
@@ -261,7 +264,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @UiField
     HTMLPanel contracts;
     @UiField
-    Anchor platform;
+    HTMLPanel platforms;
     @UiField
     DivElement description;
     @UiField

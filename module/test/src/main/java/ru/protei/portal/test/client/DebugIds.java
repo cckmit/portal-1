@@ -496,7 +496,7 @@ public class DebugIds {
         String DOCUMENTS_CONTAINER = "project-preview-documents-container";
         String COMMENTS_CONTAINER = "project-preview-comments-container";
         String CONTRACTS_CONTAINER = "project-preview-contracts-container";
-        String PLATFORM_LABEL = "project-preview-platform-label";
+        String PLATFORMS_LABEL = "project-preview-platforms-label";
         String TECHNICAL_SUPPORT_VALIDITY_CONTAINER = "project-preview-technical-support-validity-container";
         String WORK_COMPLETION_DATE = "project-preview-work-completion-date";
         String PURCHASE_DATE = "project-preview-purchase-date";

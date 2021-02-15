@@ -46,7 +46,7 @@ public interface AbstractProjectPreviewView extends IsWidget {
 
     void setContracts(Map<String, String> contractNumberToLink);
 
-    void setPlatform(String value, String link);
+    void setPlatforms(Map<String, String> platformToLink);
 
     void isFullScreen(boolean isFullScreen);
 
