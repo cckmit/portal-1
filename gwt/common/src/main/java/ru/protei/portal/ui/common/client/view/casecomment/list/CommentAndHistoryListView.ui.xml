@@ -1,0 +1,98 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
+             xmlns:timefield='urn:import:ru.protei.portal.ui.common.client.widget.timefield'
+             xmlns:timeElapsed='urn:import:ru.protei.portal.ui.common.client.view.selector'
+             xmlns:commentArea="urn:import:ru.protei.portal.ui.common.client.widget.mentioningtextarea"
+             xmlns:fileuploader="urn:import:ru.protei.portal.ui.common.client.widget.uploader.impl"
+             xmlns:privacyType="urn:import:ru.protei.portal.ui.common.client.widget.privacytype"
+>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel ui:field="root">
+        <ul class="chats case-history p-b-0 p-t-0">
+            <g:HTMLPanel tag="li" ui:field="newMessage" styleName="left new-message p-t-10">
+                <g:HTMLPanel ui:field="messageBlock">
+
+                    <div ui:field="newCommentUserImage" class="image">
+                        <img alt="" src="./images/user-icon-m.svg" ui:field="icon"/>
+                    </div>
+
+                    <div class="message">
+
+                        <g:HTMLPanel ui:field="newCommentContainer" visible="true">
+                            <commentArea:MentioningTextArea
+                                    ui:field="comment"
+                                    styleName="form-control form-group message-input resize-vertical"
+                                    enablePasteImage="true"
+                                    minRows="5" maxRows="20"/>
+
+                            <div class="card-body p-t-0 p-b-0">
+
+                                <div class="row">
+                                    <div class="col-md-12 p-0 p-b-5">
+                                        <fileuploader:AttachmentUploader ui:field="fileUploader" styleName="pull-left">
+                                            <div ui:field="filesUpload" class="attach-add-btn">
+                                                <i class="fas fa-paperclip"/>
+                                                <ui:text from='{lang.addAttachmentBtn}'/>
+                                                <i class="fas fa-circle-notch fa-spin icon-verifiable"/>
+                                            </div>
+                                        </fileuploader:AttachmentUploader>
+                                        <div class="text-muted pull-right">
+                                            <small ui:field="markupLabel"/>
+                                            <g:Anchor styleName="far fa-question-circle" ui:field="markupLink" target="_blank"/>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-3 p-l-0">
+                                        <g:Button styleName="btn btn-complete btn-block btn-sm" ui:field="send" text="{lang.commentSendMessage}"/>
+                                    </div>
+
+                                    <timeElapsed:ElapsedTimeTypeSelector ui:field="timeElapsedType" addStyleNames="col-md-4 p-l-0" fixedStrategy="false"/>
+
+                                    <div class="col-md-2 p-l-0">
+                                        <timefield:TimeTextBox ui:field="timeElapsed"
+                                                               styleName="form-control time-elapsed" notNull="false"/>
+                                    </div>
+
+                                    <div class="col-md-3 p-l-0">
+                                        <privacyType:PrivacyTypeButtonSelector ui:field="privacyType" styleName="btn-group btn-group-justified"/>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <attachment:AttachmentList ui:field="attachmentList" simpleMode="true"
+                                                               styleName="inline-block attachment-list-simple"/>
+                                </div>
+                            </div>
+
+                            <div ui:field="commentPreviewContainer" class="message-preview hide">
+                                <div class="message-preview-label"><ui:text from='{lang.commentPreview}'/>
+                                    <g:ToggleButton ui:field="isDisplayPreview" styleName="btn show-preview-btn p-t-3"
+                                                    title="{lang.commentPreviewIsDisplay}"/>
+                                </div>
+                                <div ui:field="commentPreview" class="message-preview-content markdown"/>
+                            </div>
+                        </g:HTMLPanel>
+
+                        <g:HTMLPanel ui:field="newCommentDisabledContainer" visible="false">
+                            <span class="fa-stack fa-2x align-middle">
+                                <i class="far fa-circle fa-stack-2x"/>
+                                <i class="fas fa-lock fa-stack-1x"/>
+                            </span>
+                            <div class="d-inline-block align-middle">
+                                <h5 class="m-0"><ui:text from="{lang.commentNewDisabled}"/></h5>
+                                <h6 class="m-0 text-muted"><ui:text from="{lang.commentNewDisabledReasonTerminal}"/></h6>
+                            </div>
+                        </g:HTMLPanel>
+                    </div>
+                </g:HTMLPanel>
+            </g:HTMLPanel>
+            <g:FlowPanel ui:field="itemsContainer" styleName="timeline" tag="section"/>
+        </ul>
+    </g:HTMLPanel>
+</ui:UiBinder>

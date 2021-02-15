@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.ent.CommentsAndHistories;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
 import ru.protei.portal.core.model.struct.ReplaceLoginWithUsernameInfo;
@@ -125,6 +126,8 @@ public interface CaseCommentService {
     Result<List<String>> replaceLoginWithUsername(AuthToken token, List<String> texts);
 
     Result<List<ReplaceLoginWithUsernameInfo<CaseComment>>> replaceLoginWithUsername(List<CaseComment> comments);
+
+    Result<CommentsAndHistories> getCommentsAndHistories(AuthToken token, En_CaseType caseType, long caseObjectId);
 
     interface ReplacementMapper<T> {
         /**

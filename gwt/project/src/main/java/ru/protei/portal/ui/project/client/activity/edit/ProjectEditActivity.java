@@ -254,7 +254,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
                 : En_Privilege.PROJECT_EDIT;
 
         if (!isNew(project)) {
-            CaseCommentEvents.Show show = new CaseCommentEvents.Show(
+            CommentAndHistoryEvents.Show show = new CommentAndHistoryEvents.Show(
                 view.getCommentsContainer(),
                 project.getId(),
                 En_CaseType.PROJECT,

@@ -2,6 +2,9 @@ package ru.protei.portal.ui.employeeregistration.client.activity.preview;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.core.model.dict.En_CommentOrHistoryType;
+
+import java.util.List;
 
 public interface AbstractEmployeeRegistrationPreviewView extends IsWidget {
     void setActivity(AbstractEmployeeRegistrationPreviewActivity activity);
@@ -44,9 +47,11 @@ public interface AbstractEmployeeRegistrationPreviewView extends IsWidget {
 
     void setCompany(String company);
 
-    void showFullScreen(boolean isFullScreen);
+    HasWidgets getItemsContainer();
 
-    HasWidgets getCommentsContainer();
+    void selectTabs(List<En_CommentOrHistoryType> tabs);
+
+    void showFullScreen(boolean isFullScreen);
 
     void setDepartment(String value);
 }

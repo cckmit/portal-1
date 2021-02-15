@@ -72,14 +72,12 @@ public class CaseCommentServiceTest extends BaseServiceTest {
 
     @Test
     public void getCaseCommentListTest () {
-
         Company company = makeCustomerCompany();
         Person person = makePerson(company);
         authService.makeThreadAuthToken(makeUserLogin(person));
         CaseObject caseObject = makeCaseObject(caseType, person);
 
         makeCaseComment(person, caseObject.getId(), "Test message");
-        makeCaseComment(person, caseObject.getId(), null, (long) CrmConstants.State.CREATED);
 
         List<CaseComment> comments = caseCommentDAO.getCaseComments(new CaseCommentQuery(caseObject.getId()));
         Assert.assertNotNull(comments);
