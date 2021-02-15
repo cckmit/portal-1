@@ -9,9 +9,11 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
+import ru.protei.portal.ui.common.client.columns.DynamicColumn;
 import ru.protei.portal.ui.common.client.common.LabelValuePairBuilder;
 import ru.protei.portal.ui.common.client.common.EmailRender;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.util.AvatarUtils;
 
 public abstract class ContactTableViewBase extends Composite {
 
@@ -27,20 +29,9 @@ public abstract class ContactTableViewBase extends Composite {
                 Element root = DOM.createDiv();
                 cell.appendChild(root);
 
-                if (value.isHasCrmAccount()) {
-                    AnchorElement a = DOM.createAnchor().cast();
-                    a.addClassName("far fa-user fa-md");
-                    a.setTitle(lang.contactHasCrmAccount());
-                    root.appendChild(a);
-                }
-
                 Element fioElement = DOM.createDiv();
                 fioElement.setInnerHTML(value.getDisplayName());
                 root.appendChild(fioElement);
-
-                if (value.isHasCrmAccount()) {
-                    fioElement.setClassName("contact-fio");
-                }
 
                 if (value.isFired() || value.isDeleted()) {
                     root.addClassName("fired");
@@ -121,5 +112,26 @@ public abstract class ContactTableViewBase extends Composite {
                 cell.setInnerHTML(html);
             }
         };
+    }
+
+    protected DynamicColumn<Person> getGenderColumn(Lang lang) {
+        return new DynamicColumn<>(null, "column-img", value -> {
+            String html = "<img src='" + AvatarUtils.getAvatarUrlByGender(value.getGender()) + "'></img>";
+
+            if (value.isHasCrmAccount()) {
+                html += "<i class=\"fa fa-user-circle\" style=\"\n" +
+                        "    color: #fff;\n" +
+                        "    position: absolute;\n" +
+                        "    right: 10px;\n" +
+                        "    bottom: 10px;\n" +
+                        "    border: 2px solid #fff;\n" +
+                        "    border-radius: 50%;\n" +
+                        "    color: #10cfbd;\n" +
+                        "    background-color: white;\n\"" +
+                        "    title=\"" + lang.contactHasCrmAccount() + "\"></i>";
+            }
+
+            return html;
+        });
     }
 }
