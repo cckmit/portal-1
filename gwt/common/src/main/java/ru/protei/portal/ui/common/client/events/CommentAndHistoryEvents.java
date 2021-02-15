@@ -3,13 +3,9 @@ package ru.protei.portal.ui.common.client.events;
 import com.google.gwt.user.client.ui.HasWidgets;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
-import ru.protei.portal.core.model.dict.En_MultiTabWidgetTabs;
+import ru.protei.portal.core.model.dict.En_CommentOrHistoryType;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-
-import static ru.protei.portal.core.model.dict.En_MultiTabWidgetTabs.COMMENT;
 
 public class CommentAndHistoryEvents {
 
@@ -59,10 +55,10 @@ public class CommentAndHistoryEvents {
     }
 
     public static class ShowItems {
-        public ShowItems(List<En_MultiTabWidgetTabs> typesToShow) {
+        public ShowItems(List<En_CommentOrHistoryType> typesToShow) {
             this.typesToShow = typesToShow;
         }
 
-        public List<En_MultiTabWidgetTabs> typesToShow;
+        public List<En_CommentOrHistoryType> typesToShow;
     }
 }

@@ -9,8 +9,8 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_MultiTabWidgetTabs;
-import ru.protei.portal.ui.common.client.lang.En_MultiTabWidgetTabsLang;
+import ru.protei.portal.core.model.dict.En_CommentOrHistoryType;
+import ru.protei.portal.ui.common.client.lang.En_CommentOrHistoryTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.common.client.widget.tab.multi.MultiTabWidget;
@@ -20,8 +20,8 @@ import ru.protei.portal.ui.employeeregistration.client.activity.preview.Abstract
 import java.util.Arrays;
 import java.util.List;
 
-import static ru.protei.portal.core.model.dict.En_MultiTabWidgetTabs.COMMENT;
-import static ru.protei.portal.core.model.dict.En_MultiTabWidgetTabs.HISTORY;
+import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.COMMENT;
+import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.HISTORY;
 
 
 public class EmployeeRegistrationPreviewView extends Composite implements AbstractEmployeeRegistrationPreviewView {
@@ -153,7 +153,7 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     }
 
     @Override
-    public void selectTabs(List<En_MultiTabWidgetTabs> tabs) {
+    public void selectTabs(List<En_CommentOrHistoryType> tabs) {
         multiTabWidget.selectTabs(tabs);
     }
 
@@ -213,7 +213,7 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     @UiField
     SpanElement caseState;
     @UiField
-    MultiTabWidget<En_MultiTabWidgetTabs> multiTabWidget;
+    MultiTabWidget<En_CommentOrHistoryType> multiTabWidget;
     @UiField
     SpanElement curators;
     @UiField
@@ -230,7 +230,7 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     @UiField
     Lang lang;
     @Inject
-    En_MultiTabWidgetTabsLang commentOrHistoryTypeLang;
+    En_CommentOrHistoryTypeLang commentOrHistoryTypeLang;
     @UiField
     Element createdBy;
     @UiField

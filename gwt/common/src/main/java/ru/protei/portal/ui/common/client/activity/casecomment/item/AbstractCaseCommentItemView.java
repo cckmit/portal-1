@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.common.client.activity.casecomment.item;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
@@ -15,7 +14,7 @@ import java.util.function.Consumer;
  */
 public interface AbstractCaseCommentItemView extends IsWidget {
 
-    void setActivity( AbstractCaseCommentItemActivity activity );
+    void setActivity( AbstractCaseCommentItemListActivity activity );
 
     void setTimeElapsedTypeChangeHandler(Consumer<ValueChangeEvent<En_TimeElapsedType>> editTimeElapsedType);
 
@@ -38,6 +37,8 @@ public interface AbstractCaseCommentItemView extends IsWidget {
     void hideOptions();
 
     void setIcon( String iconSrc );
+
+    void setIsDefaultIcon(boolean isDefaultIcon);
 
     void setRemoteLinkNumber(String number);
 

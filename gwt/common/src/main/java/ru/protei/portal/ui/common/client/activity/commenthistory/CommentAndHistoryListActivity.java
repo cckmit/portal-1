@@ -33,8 +33,8 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
-import static ru.protei.portal.core.model.dict.En_MultiTabWidgetTabs.COMMENT;
-import static ru.protei.portal.core.model.dict.En_MultiTabWidgetTabs.HISTORY;
+import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.COMMENT;
+import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.HISTORY;
 import static ru.protei.portal.core.model.helper.CaseCommentUtils.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
@@ -604,7 +604,7 @@ public abstract class CommentAndHistoryListActivity
         return false;
     }
 
-    private void displayItems(List<En_MultiTabWidgetTabs> typesToShow) {
+    private void displayItems(List<En_CommentOrHistoryType> typesToShow) {
         hideCommentItems();
         hideHistoryItems();
 

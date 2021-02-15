@@ -16,12 +16,11 @@ import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemActivity;
+import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemListActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.throttler.Throttler;
 import ru.protei.portal.ui.common.client.throttler.ThrottlerFactory;
-import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
@@ -45,7 +44,7 @@ public class CaseCommentItemView
     }
 
     @Override
-    public void setActivity( AbstractCaseCommentItemActivity activity ) {
+    public void setActivity( AbstractCaseCommentItemListActivity activity ) {
         this.activity = activity;
         attachList.setActivity(activity);
     }
@@ -115,6 +114,11 @@ public class CaseCommentItemView
     @Override
     public void setIcon( String iconSrc ) {
         this.icon.setSrc( iconSrc );
+    }
+
+    @Override
+    public void setIsDefaultIcon(boolean isDefaultIcon) {
+        iconContainer.setStyleName("image", !isDefaultIcon);
     }
 
     @Override
@@ -263,6 +267,8 @@ public class CaseCommentItemView
     LIElement options;
     @UiField
     ImageElement icon;
+    @UiField
+    HTMLPanel iconContainer;
     @Inject
     @UiField(provided = true)
     EditTimeElapsedTypePopup timeElapsedTypePopup;
@@ -275,7 +281,7 @@ public class CaseCommentItemView
     Throttler removeUpdatedTimer = ThrottlerFactory.makeDelayedAntiRapidThrottler( 1 * SECOND, ()-> root.getElement().removeClassName( CrmConstants.Style.UPDATED ) );
     Throttler removeAddedTimer = ThrottlerFactory.makeDelayedAntiRapidThrottler( 1 * SECOND,  () -> root.getElement().removeClassName( CrmConstants.Style.ADDED ) );
 
-    private AbstractCaseCommentItemActivity activity;
+    private AbstractCaseCommentItemListActivity activity;
 
     private static int SECOND = (int) CrmConstants.Time.SEC;
 

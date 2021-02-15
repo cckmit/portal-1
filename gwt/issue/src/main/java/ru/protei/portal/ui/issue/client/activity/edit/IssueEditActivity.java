@@ -252,7 +252,7 @@ public abstract class IssueEditActivity implements
     }
 
     @Override
-    public void selectedTabsChanged(List<En_MultiTabWidgetTabs> selectedTabs) {
+    public void selectedTabsChanged(List<En_CommentOrHistoryType> selectedTabs) {
         saveCommentAndHistorySelectedTabs(localStorageService, selectedTabs);
         fireEvent(new CommentAndHistoryEvents.ShowItems(selectedTabs));
     }
@@ -433,17 +433,17 @@ public abstract class IssueEditActivity implements
     }
 
     private void showCommentsAndHistories(CaseObject issue) {
-        CommentAndHistoryEvents.Show showCommentsEvent = new CommentAndHistoryEvents.Show( issueInfoWidget.getItemsContainer(),
+        CommentAndHistoryEvents.Show showCommentsAndHistoriesEvent = new CommentAndHistoryEvents.Show( issueInfoWidget.getCommentAndHistoryListContainer(),
                 issue.getId(), En_CaseType.CRM_SUPPORT, hasAccess() && !isReadOnly(), issue.getCreatorId() );
-        showCommentsEvent.isElapsedTimeEnabled = policyService.hasPrivilegeFor( En_Privilege.ISSUE_WORK_TIME_VIEW );
-        showCommentsEvent.isPrivateVisible = !issue.isPrivateCase() && policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW );
-        showCommentsEvent.isPrivateCase = issue.isPrivateCase();
-        showCommentsEvent.isNewCommentEnabled = !isTerminalState(issue.getStateId());
-        showCommentsEvent.textMarkup =  CaseTextMarkupUtil.recognizeTextMarkup( issue );
-        showCommentsEvent.initiatorCompanyId = issue.getInitiatorCompany().getId();
-        showCommentsEvent.isMentionEnabled = policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
-        showCommentsEvent.extendedPrivacyType =  selectExtendedPrivacyType( issue );
-        fireEvent( showCommentsEvent );
+        showCommentsAndHistoriesEvent.isElapsedTimeEnabled = policyService.hasPrivilegeFor( En_Privilege.ISSUE_WORK_TIME_VIEW );
+        showCommentsAndHistoriesEvent.isPrivateVisible = !issue.isPrivateCase() && policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW );
+        showCommentsAndHistoriesEvent.isPrivateCase = issue.isPrivateCase();
+        showCommentsAndHistoriesEvent.isNewCommentEnabled = !isTerminalState(issue.getStateId());
+        showCommentsAndHistoriesEvent.textMarkup =  CaseTextMarkupUtil.recognizeTextMarkup( issue );
+        showCommentsAndHistoriesEvent.initiatorCompanyId = issue.getInitiatorCompany().getId();
+        showCommentsAndHistoriesEvent.isMentionEnabled = policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
+        showCommentsAndHistoriesEvent.extendedPrivacyType =  selectExtendedPrivacyType( issue );
+        fireEvent( showCommentsAndHistoriesEvent );
     }
 
     private boolean selectExtendedPrivacyType(CaseObject issue) {

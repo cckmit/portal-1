@@ -1,10 +1,10 @@
 package ru.protei.portal.ui.common.client.lang;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_MultiTabWidgetTabs;
+import ru.protei.portal.core.model.dict.En_CommentOrHistoryType;
 
-public class En_MultiTabWidgetTabsLang {
-    public String getName(En_MultiTabWidgetTabs type) {
+public class En_CommentOrHistoryTypeLang {
+    public String getName(En_CommentOrHistoryType type) {
         switch (type) {
             case COMMENT: return lang.comments();
             case HISTORY: return lang.caseHistory();

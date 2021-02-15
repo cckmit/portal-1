@@ -7,7 +7,7 @@ import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemVi
 /**
  * Абстрактная активность одного комментария
  */
-public interface AbstractCaseCommentItemActivity extends Activity {
+public interface AbstractCaseCommentItemListActivity extends Activity {
 
     void onRemoveClicked( AbstractCaseCommentItemView itemView );
 

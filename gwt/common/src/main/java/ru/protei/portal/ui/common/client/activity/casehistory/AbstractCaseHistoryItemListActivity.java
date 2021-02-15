@@ -1,4 +1,4 @@
 package ru.protei.portal.ui.common.client.activity.casehistory;
 
-public interface AbstractCaseHistoryItemActivity {
+public interface AbstractCaseHistoryItemListActivity {
 }

@@ -1,12 +1,12 @@
 package ru.protei.portal.ui.common.client.common;
 
-import ru.protei.portal.core.model.dict.En_MultiTabWidgetTabs;
+import ru.protei.portal.core.model.dict.En_CommentOrHistoryType;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static ru.protei.portal.core.model.dict.En_MultiTabWidgetTabs.COMMENT;
-import static ru.protei.portal.core.model.dict.En_MultiTabWidgetTabs.HISTORY;
+import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.COMMENT;
+import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.HISTORY;
 
 /**
  * Системные константы приложения
@@ -163,7 +163,7 @@ public class UiConstants {
     }
 
     public interface MULTI_TAB_TABS {
-        List<En_MultiTabWidgetTabs> SELECTED_BY_DEFAULT = Arrays.asList(COMMENT, HISTORY);
+        List<En_CommentOrHistoryType> SELECTED_BY_DEFAULT = Arrays.asList(COMMENT, HISTORY);
     }
 
     /**

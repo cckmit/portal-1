@@ -27,14 +27,11 @@ import ru.protei.portal.ui.common.client.view.casehistory.item.importance.CaseHi
 import ru.protei.portal.ui.common.client.view.casehistory.item.simple.CaseHistorySimpleItemView;
 import ru.protei.portal.ui.common.client.view.casehistory.item.tag.CaseHistoryTagItemView;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.getFirst;
-
-public abstract class CaseHistoryItemsListActivity implements AbstractCaseHistoryItemActivity, Activity {
+public abstract class CaseHistoryItemListActivity implements AbstractCaseHistoryItemListActivity, Activity {
     @Event
     public void onFill(CaseHistoryEvents.Fill event) {
         fillView(event.histories, event.historyContainer);

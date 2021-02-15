@@ -7,6 +7,7 @@ import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.Attachment;
@@ -14,10 +15,9 @@ import ru.protei.portal.core.model.ent.CaseAttachment;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.util.TransliterationUtils;
-import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemActivity;
+import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemListActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
 import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
-public abstract class CaseCommentItemsListActivity implements Activity, AbstractCaseCommentItemActivity {
+public abstract class CaseCommentItemListActivity implements Activity, AbstractCaseCommentItemListActivity {
     @Inject
     public void init(Lang lang) {
         workTimeFormatter = new WorkTimeFormatter(lang);
@@ -278,9 +278,11 @@ public abstract class CaseCommentItemsListActivity implements Activity, Abstract
 
         if (value.getAuthorId().equals(profile.getId())) {
             itemView.setIcon(AvatarUtils.getAvatarUrl(profile));
+            itemView.setIsDefaultIcon(En_Gender.UNDEFINED.equals(profile.getGender()));
         } else {
             itemView.timeElapsedVisibility().setVisible(false);
             itemView.setIcon(AvatarUtils.getAvatarUrl(value.getAuthor()));
+            itemView.setIsDefaultIcon(En_Gender.UNDEFINED.equals(value.getAuthor().getGender()));
         }
 
         itemView.setDate(DateFormatter.formatDateTime(value.getCreated()));

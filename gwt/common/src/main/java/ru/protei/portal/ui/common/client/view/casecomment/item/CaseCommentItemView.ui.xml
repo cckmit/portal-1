@@ -34,9 +34,9 @@
 
         <div ui:field="messageBlock" class="hide">
             <div class="meta">
-                <div class="timeline-point image">
+                <g:HTMLPanel styleName="timeline-point" ui:field="iconContainer">
                     <img alt="" src="./images/user-icon-m.svg" ui:field="icon"/>
-                </div>
+                </g:HTMLPanel>
             </div>
 
             <div class="message" ui:field="messageContainer">

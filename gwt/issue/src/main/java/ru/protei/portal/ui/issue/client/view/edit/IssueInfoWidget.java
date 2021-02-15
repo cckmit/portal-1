@@ -9,10 +9,10 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
-import ru.protei.portal.core.model.dict.En_MultiTabWidgetTabs;
+import ru.protei.portal.core.model.dict.En_CommentOrHistoryType;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.UiConstants;
-import ru.protei.portal.ui.common.client.lang.En_MultiTabWidgetTabsLang;
+import ru.protei.portal.ui.common.client.lang.En_CommentOrHistoryTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
 import ru.protei.portal.ui.common.client.widget.accordion.AccordionWidget;
@@ -27,8 +27,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static ru.protei.portal.core.model.dict.En_MultiTabWidgetTabs.COMMENT;
-import static ru.protei.portal.core.model.dict.En_MultiTabWidgetTabs.HISTORY;
+import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.COMMENT;
+import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.HISTORY;
 
 public class IssueInfoWidget extends Composite {
 
@@ -51,11 +51,11 @@ public class IssueInfoWidget extends Composite {
         attachmentListContainer.setActivity(activity);
     }
 
-    public HasWidgets getItemsContainer() {
+    public HasWidgets getCommentAndHistoryListContainer() {
         return multiTabWidget.getContainer();
     }
 
-    public void selectTabs(List<En_MultiTabWidgetTabs> tabs) {
+    public void selectTabs(List<En_CommentOrHistoryType> tabs) {
         multiTabWidget.selectTabs(tabs);
     }
 
@@ -109,7 +109,7 @@ public class IssueInfoWidget extends Composite {
     Lang lang;
 
     @UiField
-    MultiTabWidget<En_MultiTabWidgetTabs> multiTabWidget;
+    MultiTabWidget<En_CommentOrHistoryType> multiTabWidget;
     @Inject
     @UiField(provided = true)
     FullViewAttachmentList attachmentListContainer;
@@ -119,7 +119,7 @@ public class IssueInfoWidget extends Composite {
     @UiField(provided = true)
     AccordionWidget accordionWidget;
     @Inject
-    En_MultiTabWidgetTabsLang commentOrHistoryTypeLang;
+    En_CommentOrHistoryTypeLang commentOrHistoryTypeLang;
 
     @Inject
     TextRenderControllerAsync textRenderController;
