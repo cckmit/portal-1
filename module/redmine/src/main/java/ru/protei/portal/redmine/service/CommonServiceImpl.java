@@ -13,10 +13,7 @@ import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseNameAndDescriptionEvent;
 import ru.protei.portal.core.event.CaseObjectMetaEvent;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_ExtAppType;
-import ru.protei.portal.core.model.dict.En_HistoryAction;
-import ru.protei.portal.core.model.dict.En_HistoryType;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
@@ -399,6 +396,7 @@ public final class CommonServiceImpl implements CommonService {
         comment.setAuthor(author);
         comment.setText(text);
         comment.setCaseId(caseId);
+        comment.setPrivacyType(En_CaseCommentPrivacyType.PUBLIC);
         caseCommentDAO.persist(comment);
         return comment;
     }

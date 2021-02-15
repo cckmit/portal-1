@@ -1,0 +1,35 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="migrate-scheduled-report-DAILY-CASE_OBJECTS" author="porubov">
+        <update tableName="report">
+            <column name="case_query" valueComputed="JSON_REMOVE(JSON_REPLACE(case_query, '$.modifiedRange', JSON_OBJECT('intervalType', 'RELATIVE_LAST_DAY')), '$.createdRange')"/>
+            <where>scheduled_type = 'DAILY' and type = 'CASE_OBJECTS'</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="migrate-scheduled-report-WEEKLY-CASE_OBJECTS" author="porubov">
+        <update tableName="report">
+            <column name="case_query" valueComputed="JSON_REMOVE(JSON_REPLACE(case_query, '$.modifiedRange', JSON_OBJECT('intervalType', 'RELATIVE_LAST_WEEK')), '$.createdRange')"/>
+            <where>scheduled_type = 'WEEKLY' and type = 'CASE_OBJECTS'</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="migrate-scheduled-report-DAILY-CASE_TIME_ELAPSED" author="porubov">
+        <update tableName="report">
+            <column name="case_query" valueComputed="JSON_REPLACE(case_query, '$.createdRange', JSON_OBJECT('intervalType', 'RELATIVE_LAST_DAY'))"/>
+            <where>scheduled_type = 'DAILY' and type = 'CASE_TIME_ELAPSED'</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="migrate-scheduled-report-WEEKLY-CASE_TIME_ELAPSED" author="porubov">
+        <update tableName="report">
+            <column name="case_query" valueComputed="JSON_REPLACE(case_query, '$.createdRange', JSON_OBJECT('intervalType', 'RELATIVE_LAST_WEEK'))"/>
+            <where>scheduled_type = 'WEEKLY' and type = 'CASE_TIME_ELAPSED'</where>
+        </update>
+    </changeSet>
+
+</databaseChangeLog>

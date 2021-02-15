@@ -31,7 +31,7 @@ public interface AbstractEmployeeRegistrationPreviewView extends IsWidget {
 
     void setCreatedBy(String created);
 
-    void setState(String state);
+    void setState(String state, String color);
 
     void setPhoneOfficeTypeList( String phoneOfficeTypeList );
 

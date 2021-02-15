@@ -152,7 +152,7 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
             view.setEmploymentType(employmentType);
         }
 
-        view.setState(value.getStateName());
+        view.setState(value.getStateName(), value.getStateColor());
 
         fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
                 .withCaseType(En_CaseType.EMPLOYEE_REGISTRATION)

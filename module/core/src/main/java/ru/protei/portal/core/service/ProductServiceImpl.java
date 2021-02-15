@@ -116,6 +116,19 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public Result<List<ProductDirectionInfo>> productDirectionList(AuthToken token, List<Long> productDirectionIds) {
+
+        List<DevUnit> list = devUnitDAO.getListByKeys(productDirectionIds);
+
+        if (list == null)
+            return error(En_ResultStatus.GET_DATA_ERROR);
+
+        List<ProductDirectionInfo> result = list.stream().map(DevUnit::toProductDirectionInfo).collect(Collectors.toList());
+
+        return ok(result);
+    }
+
+    @Override
     public Result<DevUnitInfo> getProductInfo( AuthToken authToken, Long productId ) {
         DevUnit devUnit = devUnitDAO.get( productId );
         if (devUnit == null) return error( En_ResultStatus.NOT_FOUND );

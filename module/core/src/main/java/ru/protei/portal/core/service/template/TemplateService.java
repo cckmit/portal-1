@@ -12,9 +12,8 @@ import ru.protei.portal.core.utils.EnumLangUtil;
 import ru.protei.portal.core.utils.LinkData;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.time.DayOfWeek;
+import java.util.*;
 
 /**
  * Сервис формирования шаблонов
@@ -82,6 +81,8 @@ public interface TemplateService {
 
     PreparedTemplate getReservedIpNotificationBody(List<ReservedIp> reservedIps, Collection<String> recipients);
 
+    PreparedTemplate getReservedIpNotificationWithInstructionBody(List<ReservedIp> reservedIps, Collection<String> recipients, String portalUrl);
+
     PreparedTemplate getReservedIpRemainingNotificationSubject(Date releaseDateStart, Date releaseDateEnd);
 
     PreparedTemplate getPersonCaseFilterNotificationSubject();
@@ -101,7 +102,7 @@ public interface TemplateService {
     String getProjectPauseTimeNotificationBody( String subscriberName, Long aLong, String displayNam, String projectUrl, Date pauseTimeDate ) throws IOException, TemplateException;
 
     PreparedTemplate getBirthdaysNotificationSubject(Date from, Date to);
-    PreparedTemplate getBirthdaysNotificationBody(List<EmployeeShortView> employees, Collection<String> recipients);
+    PreparedTemplate getBirthdaysNotificationBody(LinkedHashMap<Date, TreeSet<EmployeeShortView>> employees, List<DayOfWeek> dayOfWeeks, Collection<String> recipients, EnumLangUtil enumLangUtil);
 
     PreparedTemplate getNRPENonAvailableIpsNotificationSubject();
     PreparedTemplate getNRPENonAvailableIpsNotificationBody(List<String> nonAvailableIps, Collection<String> recipients);
@@ -109,4 +110,9 @@ public interface TemplateService {
     PreparedTemplate getExpiringTechnicalSupportValidityNotificationSubject();
     PreparedTemplate getExpiringTechnicalSupportValidityNotificationBody(ExpiringProjectTSVNotificationEvent event,
                                      Collection<String> recipients, String urlTemplate);
+
+    PreparedTemplate getEducationRequestNotificationSubject(EducationEntry educationEntry);
+    PreparedTemplate getEducationRequestCreateNotificationBody(Collection<String> recipients, EducationEntry educationEntry, EnumLangUtil enumLangUtil);
+    PreparedTemplate getEducationRequestApproveNotificationBody(Collection<String> recipients, EducationEntry educationEntry, String typeName, EnumLangUtil enumLangUtil);
+    PreparedTemplate getEducationRequestDeclineNotificationBody(Collection<String> recipients, EducationEntry educationEntry, String declined, EnumLangUtil enumLangUtil);
 }

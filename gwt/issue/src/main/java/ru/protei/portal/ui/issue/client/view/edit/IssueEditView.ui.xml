@@ -43,8 +43,8 @@
                     <g:HTMLPanel ui:field="tagsContainer" styleName="clearfix"/>
 
                     <g:HTMLPanel ui:field="numberPanel">
-                        <h5 class="number-copy-panel no-margin">
-                            <g:Anchor ui:field="copyNumber" styleName="copy-issue-number" >
+                        <h5 class="copy-panel no-margin">
+                            <g:Anchor ui:field="copyNumber" styleName="copy-button" >
                                 <i class="far fa-clone"/>
                             </g:Anchor>
                             <span ui:field="number"/>

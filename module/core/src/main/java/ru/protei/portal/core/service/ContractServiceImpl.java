@@ -10,8 +10,10 @@ import ru.protei.portal.core.client.enterprise1c.api.Api1C;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.enterprise1c.dto.Contract1C;
+import ru.protei.portal.core.model.enterprise1c.dto.ContractAdditionalProperty1C;
 import ru.protei.portal.core.model.enterprise1c.dto.Contractor1C;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -19,6 +21,8 @@ import ru.protei.portal.core.model.query.ContractApiQuery;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.struct.ContractorQuery;
 import ru.protei.portal.core.model.util.ContractorUtils;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -34,6 +38,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
@@ -68,11 +73,17 @@ public class ContractServiceImpl implements ContractService {
     HistoryService historyService;
     @Autowired
     PortalConfig config;
+    @Autowired
+    CompanyService companyService;
+    @Autowired
+    PersonService personService;
+    @Autowired
+    ProductService productService;
 
     @Override
     public Result<SearchResult<Contract>> getContracts( AuthToken token, ContractQuery query) {
         if (!hasGrantAccessFor(token, En_Privilege.CONTRACT_VIEW)) {
-            query.setManagerIds(CollectionUtils.singleValueList(token.getPersonId()));
+            query.setManagerIds(singleValueList(token.getPersonId()));
         }
         SearchResult<Contract> sr = contractDAO.getSearchResult(query);
         sr.getResults().forEach(contract -> contract.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(contract.getProjectId()))));
@@ -480,9 +491,71 @@ public class ContractServiceImpl implements ContractService {
         if (apiQuery == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
-        List<Contract> contracts = contractDAO.getByApiQuery(apiQuery);
+
+        ContractQuery query = new ContractQuery();
+        query.setOpenStateDate(apiQuery.getOpenStateDate());
+        query.setOrganizationIds(apiQuery.getOrganizationIds());
+        query.setStates(apiQuery.getStates());
+        SearchResult<Contract> result = contractDAO.getSearchResult(query);
+        List<Contract> contracts = result.getResults();
+
         jdbcManyRelationsHelper.fill(contracts, "contractDates");
+        contracts.forEach(contract -> contract.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(contract.getProjectId()))));
         return ok(contracts);
+    }
+
+    @Override
+    public Result<SelectorsParams> getSelectorsParams(AuthToken token, ContractQuery query) {
+        log.debug( "getSelectorsParams(): ContractQuery={} ", query );
+        SelectorsParams selectorsParams = new SelectorsParams();
+
+        List<Long> contractorIds = new ArrayList<>(emptyIfNull(query.getContractorIds()));
+        if (!CollectionUtils.isEmpty(contractorIds)) {
+            List<Contractor> contractors = contractorDAO.getListByKeys(contractorIds);
+            if (contractors != null) {
+                selectorsParams.setContractors(contractors);
+            } else {
+                return error(En_ResultStatus.GET_DATA_ERROR, "Error at ContractorIds" );
+            }
+        }
+
+        List<Long> organisationIds = new ArrayList<>(emptyIfNull(query.getOrganizationIds()));
+        if (!CollectionUtils.isEmpty(organisationIds)) {
+            Result<List<EntityOption>> result = companyService.companyOptionListByIds(token, organisationIds);
+            if (result.isOk()) {
+                selectorsParams.setCompanyEntityOptions(result.getData());
+            } else {
+                return error(result.getStatus(), "Error at OrganisationIds" );
+            }
+        }
+
+        if (query.getDirectionId() != null) {
+            Result<List<ProductDirectionInfo>> result = productService.productDirectionList( token, Collections.singletonList(query.getDirectionId()));
+            if (result.isOk()) {
+                selectorsParams.setProductDirectionInfos(result.getData());
+            } else {
+                return error(result.getStatus(), "Error at getDirectionId" );
+            }
+        }
+
+        List<Long> personIds = collectPersonIds(query);
+        if (!CollectionUtils.isEmpty(personIds)) {
+            Result<List<PersonShortView>> result = personService.shortViewListByIds( personIds );
+            if (result.isOk()) {
+                selectorsParams.setPersonShortViews(result.getData());
+            } else {
+                return error(result.getStatus(), "Error at getPersonIds" );
+            }
+        }
+
+        return ok(selectorsParams);
+    }
+
+    private List<Long> collectPersonIds(ContractQuery caseQuery){
+        ArrayList<Long> personsIds = new ArrayList<>();
+        personsIds.addAll(emptyIfNull(caseQuery.getManagerIds()));
+        personsIds.addAll(emptyIfNull(caseQuery.getCuratorIds()));
+        return personsIds;
     }
 
     private Result<Long> createStateHistory(AuthToken token, Long contractId, En_HistoryAction action,
@@ -521,7 +594,7 @@ public class ContractServiceImpl implements ContractService {
         caseObject.setInfo(contract.getDescription());
         caseObject.setName(contract.getNumber());
         caseObject.setStateId(contract.getState().getId());
-        caseObject.setManagerId(contract.getCaseManagerId());
+        caseObject.setManagerId(contract.getContractSignManagerId());
         caseObject.setInitiatorId(contract.getCuratorId());
 
         return caseObject;
@@ -687,6 +760,12 @@ public class ContractServiceImpl implements ContractService {
         contract1C.setContractorKey(contract.getContractor().getRefKey());
         contract1C.setDateSigning(saveDateFormat.format(contract.getDateSigning()));
         contract1C.setName(contract.getNumber().trim()+ " от " + showDateFormat.format(contract.getDateSigning()));
+
+        // PORTAL-1566 p.7 (freezed)
+//        List<ContractAdditionalProperty1C> additional1СProperties = new ArrayList<>();
+//        ContractAdditionalProperty1C dirProperty = new ContractAdditionalProperty1C(contract.getDirectionName());
+//        additionalProperty1CS.add(dirProperty);
+//        contract1C.setAdditionalProperties(additionalProperty1CS);
 
         return contract1C;
     }

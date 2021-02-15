@@ -142,19 +142,9 @@ public abstract class AbstractPageableSelector<T> implements Selector<T> {
 
     protected ru.protei.portal.ui.common.client.widget.selector.base.Selector.SelectorFilter<T> filter = null;
 
-    protected SelectorItemRenderer<T> selectorItemRenderer = new SelectorItemRenderer<T>() {
-        @Override
-        public String getElementName(T t) {
-            return String.valueOf(t);
-        }
-    };
+    protected SelectorItemRenderer<T> selectorItemRenderer = String::valueOf;
 
-    protected SelectorModel<T> selectorModel = new SelectorModel<T>() {
-        @Override
-        public T get(int elementIndex) {
-            return null;
-        }
-    };
+    protected SelectorModel<T> selectorModel = elementIndex -> null;
 
     private Supplier<T> selectorNullItem = () -> null;
 

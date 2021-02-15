@@ -23,6 +23,7 @@ import ru.protei.portal.core.model.query.LocationQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.Interval;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -107,6 +108,8 @@ public class ProjectServiceImpl implements ProjectService {
     HistoryDAO historyDAO;
     @Autowired
     CaseStateDAO caseStateDAO;
+    @Autowired
+    CompanyService companyService;
 
     @EventListener
     @Async(BACKGROUND_TASKS)
@@ -403,7 +406,7 @@ public class ProjectServiceImpl implements ProjectService {
         Result<List<CaseLink>> createdLinksResult
                 = caseLinkService.createLinks(token, links, En_CaseType.PROJECT);
 
-        long stateId = project.getState().getId();
+        long stateId = project.getStateId();
 
         addStateHistory(token, projectId, stateId, caseStateDAO.get(stateId).getState());
 
@@ -524,6 +527,30 @@ public class ProjectServiceImpl implements ProjectService {
         return ok(true);
     }
 
+    @Override
+    public Result<SelectorsParams> getSelectorsParams(AuthToken token, ProjectQuery query) {
+        log.debug( "getSelectorsParams(): projectQuery={} ", query );
+        SelectorsParams selectorsParams = new SelectorsParams();
+
+        List<Long> companyIds = collectCompanyIds(query);
+        if (!isEmpty(companyIds)) {
+            Result<List<EntityOption>> result = companyService.companyOptionListByIds( token, filterToList(companyIds, Objects::nonNull ));
+            if (result.isOk()) {
+                selectorsParams.setCompanyEntityOptions(result.getData());
+            } else {
+                return error(result.getStatus(), "Error at getCompanyIds" );
+            }
+        }
+
+        return ok(selectorsParams);
+    }
+
+    private List<Long> collectCompanyIds(ProjectQuery projectQuery) {
+        List<Long> companyIds = new ArrayList<>();
+        companyIds.addAll(emptyIfNull(projectQuery.getInitiatorCompanyIds()));
+        return companyIds;
+    }
+
     private boolean updateCaseObjectPart(AuthToken token, Project project) {
         CaseObject caseObject = caseObjectDAO.get( project.getId() );
         jdbcManyRelationsHelper.fillAll( caseObject );
@@ -541,7 +568,7 @@ public class ProjectServiceImpl implements ProjectService {
             throw new RollbackTransactionException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        if (project.getState() != En_RegionState.PAUSED) {
+        if (!project.getStateId().equals(CrmConstants.State.PAUSED)) {
             caseObject.setPauseDate(null);
         }
 
@@ -658,7 +685,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         caseObject.setId(project.getId());
 
-        caseObject.setStateId(project.getState().getId());
+        caseObject.setStateId(project.getStateId());
 
         caseObject.setName(project.getName());
         caseObject.setInfo(project.getDescription());

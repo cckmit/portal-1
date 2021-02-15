@@ -11,8 +11,6 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ProjectAccessType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dto.Project;
-import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
@@ -30,9 +28,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
@@ -87,8 +83,6 @@ public abstract class ProjectTableActivity
         );
 
         this.preScroll = event.preScroll;
-
-        fillProjectStatesButtons();
 
         loadTable();
     }
@@ -254,26 +248,6 @@ public abstract class ProjectTableActivity
                     fireEvent(new ProjectEvents.Show(false));
                 })
         );
-    }
-
-    private void fillProjectStatesButtons() {
-        Map<En_RegionState, String> iconsColorsMap = new HashMap<>();
-
-        caseStateService.getCaseStates(En_CaseType.PROJECT, new AsyncCallback<List<CaseState>>() {
-            @Override
-            public void onFailure(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(List<CaseState> caseStates) {
-                for (CaseState state : caseStates) {
-                    iconsColorsMap.put(En_RegionState.forId(state.getId()), state.getColor());
-                }
-
-                filterView.fillStatesButtons(iconsColorsMap);
-            }
-        });
     }
 
     private void loadTable() {

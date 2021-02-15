@@ -18,7 +18,6 @@ public class EmployeeRegistrationStateOptionList extends OptionList<CaseState> i
     public void fillOptions(List<CaseState> states) {
         clearOptions();
         states.forEach(state ->
-                addOption(state.getState(), state,
-                        "inline m-r-5 option-" + CaseStateUtils.makeStyleName(state.getState())));
+                addOption(state.getState(), state, "inline m-r-5", null, state.getColor()));
     }
 }

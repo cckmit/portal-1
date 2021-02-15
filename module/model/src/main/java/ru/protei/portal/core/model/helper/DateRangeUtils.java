@@ -3,8 +3,7 @@ package ru.protei.portal.core.model.helper;
 import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.struct.Interval;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
+import java.time.*;
 import java.util.Date;
 
 public class DateRangeUtils {
@@ -118,35 +117,57 @@ public class DateRangeUtils {
         return interval;
     }
 
+    public static Interval makeRelativeLastDay() {
+        Interval interval = new Interval();
+        LocalDateTime local = LocalDateTime.now();
+        ZoneOffset currentOffsetForMyZone =  ZoneId.systemDefault().getRules().getOffset(local);
+        interval.from = Date.from(local.minusDays(1).toInstant(currentOffsetForMyZone));
+        interval.to = Date.from(local.toInstant(currentOffsetForMyZone));
+        return interval;
+    }
+
+    public static Interval makeRelativeLastWeek() {
+        Interval interval = new Interval();
+        LocalDateTime local = LocalDateTime.now();
+        ZoneOffset currentOffsetForMyZone =  ZoneId.systemDefault().getRules().getOffset(local);
+        interval.from = Date.from(local.minusWeeks(1).toInstant(currentOffsetForMyZone));
+        interval.to = Date.from(local.toInstant(currentOffsetForMyZone));
+        return interval;
+    }
+
     public static Interval makeRelativeLastMonth() {
         Interval interval = new Interval();
-        LocalDate local = LocalDate.now();
-        interval.from = Date.from(local.minusMonths(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
-        interval.to = null;
+        LocalDateTime local = LocalDateTime.now();
+        ZoneOffset currentOffsetForMyZone =  ZoneId.systemDefault().getRules().getOffset(local);
+        interval.from = Date.from(local.minusMonths(1).toInstant(currentOffsetForMyZone));
+        interval.to = Date.from(local.toInstant(currentOffsetForMyZone));
         return interval;
     }
 
     public static Interval makeRelativeLastThreeMonths() {
         Interval interval = new Interval();
-        LocalDate local = LocalDate.now();
-        interval.from = Date.from(local.minusMonths(3).atStartOfDay(ZoneId.systemDefault()).toInstant());
-        interval.to = null;
+        LocalDateTime local = LocalDateTime.now();
+        ZoneOffset currentOffsetForMyZone =  ZoneId.systemDefault().getRules().getOffset(local);
+        interval.from = Date.from(local.minusMonths(3).toInstant(currentOffsetForMyZone));
+        interval.to = Date.from(local.toInstant(currentOffsetForMyZone));
         return interval;
     }
 
     public static Interval makeRelativeLastHalfYear() {
         Interval interval = new Interval();
-        LocalDate local = LocalDate.now();
-        interval.from = Date.from(local.minusMonths(6).atStartOfDay(ZoneId.systemDefault()).toInstant());
-        interval.to = null;
+        LocalDateTime local = LocalDateTime.now();
+        ZoneOffset currentOffsetForMyZone =  ZoneId.systemDefault().getRules().getOffset(local);
+        interval.from = Date.from(local.minusMonths(6).toInstant(currentOffsetForMyZone));
+        interval.to = Date.from(local.toInstant(currentOffsetForMyZone));
         return interval;
     }
 
     public static Interval makeRelativeLastYear() {
         Interval interval = new Interval();
-        LocalDate local = LocalDate.now();
-        interval.from = Date.from(local.minusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
-        interval.to = null;
+        LocalDateTime local = LocalDateTime.now();
+        ZoneOffset currentOffsetForMyZone =  ZoneId.systemDefault().getRules().getOffset(local);
+        interval.from = Date.from(local.minusYears(1).toInstant(currentOffsetForMyZone));
+        interval.to = Date.from(local.toInstant(currentOffsetForMyZone));
         return interval;
     }
 
@@ -168,6 +189,8 @@ public class DateRangeUtils {
             case THIS_YEAR  : return makeThisYear();
             case LAST_YEAR  : return makeLastYear();
             case THIS_WEEK_AND_BEYOND       : return makeThisWeekAndBeyond();
+            case RELATIVE_LAST_DAY        : return makeRelativeLastDay();
+            case RELATIVE_LAST_WEEK        : return makeRelativeLastWeek();
             case RELATIVE_LAST_MONTH        : return makeRelativeLastMonth();
             case RELATIVE_LAST_THREE_MONTHS : return makeRelativeLastThreeMonths();
             case RELATIVE_LAST_HALF_YEAR    : return makeRelativeLastHalfYear();

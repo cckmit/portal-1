@@ -302,7 +302,6 @@ public class CaseComment extends AuditableObject {
                 ", caseId=" + caseId +
                 ", author=" + author +
                 ", replyTo=" + replyTo +
-                ", text='" + text + '\'' +
                 ", oldId=" + oldId +
                 ", caseAttachments=" + caseAttachments +
                 ", timeElapsed=" + timeElapsed +

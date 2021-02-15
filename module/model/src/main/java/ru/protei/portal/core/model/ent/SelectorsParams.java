@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.PlanOption;
@@ -18,6 +19,10 @@ public class SelectorsParams implements Serializable {
     private List<CaseTag> caseTags;
 
     private PlanOption planOption;
+
+    private List<Contractor> contractors;
+
+    private List<ProductDirectionInfo> productDirectionInfos;
 
     public List<CaseTag> getCaseTags() {
         return caseTags;
@@ -57,5 +62,21 @@ public class SelectorsParams implements Serializable {
 
     public void setPlanOption(PlanOption planOption) {
         this.planOption = planOption;
+    }
+
+    public List<Contractor> getContractors() {
+        return contractors;
+    }
+
+    public void setContractors(List<Contractor> contractors) {
+        this.contractors = contractors;
+    }
+
+    public List<ProductDirectionInfo> getProductDirectionInfos() {
+        return productDirectionInfos;
+    }
+
+    public void setProductDirectionInfos(List<ProductDirectionInfo> productDirectionInfos) {
+        this.productDirectionInfos = productDirectionInfos;
     }
 }

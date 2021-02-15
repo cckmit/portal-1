@@ -96,7 +96,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
 
         List<Long> companyIds = collectCompanyIds(caseQuery);
         if (!isEmpty(companyIds)) {
-            Result<List<EntityOption>> result = companyService.companyOptionListByIds( filterToList(companyIds, Objects::nonNull ));
+            Result<List<EntityOption>> result = companyService.companyOptionListByIds( token, filterToList(companyIds, Objects::nonNull ));
             if (result.isOk()) {
                 selectorsParams.setCompanyEntityOptions(result.getData());
             } else {
@@ -175,7 +175,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
 
     @Override
     @Transactional
-    public Result<Long> removeIssueFilter(Long id ) {
+    public Result<Long> removeIssueFilter(AuthToken token, Long id ) {
         log.debug( "removeIssueFilter(): id={} ", id );
 
         if (personCaseFilterDAO.isUsed(id)) {
@@ -218,7 +218,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
 
     private List<Long> acceptAllowedCompanies( List<Long> companyIds, Collection<Long> allowedCompaniesIds ) {
         if( companyIds == null ) return new ArrayList<>( allowedCompaniesIds );
-        ArrayList allowedCompanies = new ArrayList( companyIds );
+        ArrayList<Long> allowedCompanies = new ArrayList<>( companyIds );
         allowedCompanies.retainAll( allowedCompaniesIds );
         return allowedCompanies.isEmpty() ? new ArrayList<>( allowedCompaniesIds ) : allowedCompanies;
     }

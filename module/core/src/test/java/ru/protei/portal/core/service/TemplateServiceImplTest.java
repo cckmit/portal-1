@@ -22,6 +22,7 @@ import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.model.dao.EmployeeShortViewDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
@@ -40,9 +41,11 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.groupingBy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
@@ -105,9 +108,21 @@ public class TemplateServiceImplTest {
          assertNotNull( event );
 
         PreparedTemplate subjectTemplate = templateService.getBirthdaysNotificationSubject(from, to);
-        PreparedTemplate bodyTemplate = templateService.getBirthdaysNotificationBody(
-                employees,
-                notifiers.stream().map(NotificationEntry::getAddress).collect( Collectors.toList()));
+
+        LinkedHashMap<Date, TreeSet<EmployeeShortView>> dateToEmployeesMap = CollectionUtils.stream(event.getEmployees())
+                .peek(employee -> employee.setBirthday(selectDateThisYear(employee.getBirthday())))
+                .sorted(Comparator.comparing(EmployeeShortView::getBirthday))
+                .collect(groupingBy(
+                        EmployeeShortView::getBirthday,
+                        LinkedHashMap::new,
+                        Collectors.toCollection(() -> new TreeSet<>(
+                                Comparator.comparing(EmployeeShortView::getDisplayName)
+                        ))));
+
+        List<DayOfWeek> dayOfWeeks = makeDaysOfWeek(dateToEmployeesMap);
+
+        PreparedTemplate bodyTemplate = templateService.getBirthdaysNotificationBody(dateToEmployeesMap, dayOfWeeks,
+                notifiers.stream().map(NotificationEntry::getAddress).collect( Collectors.toList()), new EnumLangUtil(lang));
 
         assertNotNull( subjectTemplate );
         assertNotNull( bodyTemplate );
@@ -160,7 +175,7 @@ public class TemplateServiceImplTest {
 
         NotificationEntry entry = createNewNotificationEntry();
 
-        String body = bodyTemplate.getText( entry.getAddress(), entry.getLangCode(), true );
+        String body = bodyTemplate.getText( entry.getAddress(), entry.getLangCode(), true);
 
         assertNotNull( body );
     }
@@ -209,7 +224,7 @@ public class TemplateServiceImplTest {
 
         NotificationEntry entry = createNewNotificationEntry();
 
-        String body = bodyTemplate.getText( entry.getAddress(), entry.getLangCode(), true );
+        String body = bodyTemplate.getText( entry.getAddress(), entry.getLangCode(), true);
 
         assertNotNull( "Expected html from template", body );
 
@@ -283,7 +298,7 @@ public class TemplateServiceImplTest {
         assertNotNull( bodyTemplate );
         NotificationEntry entry = createNewNotificationEntry();
 
-        String body = bodyTemplate.getText( entry.getAddress(), entry.getLangCode(), true );
+        String body = bodyTemplate.getText( entry.getAddress(), entry.getLangCode(), true);
 
         assertNotNull( "Expected html from template", body );
 
@@ -350,6 +365,30 @@ public class TemplateServiceImplTest {
         return result;
     }
 
+    private Date selectDateThisYear(Date date) {
+        Date now = new Date();
+        if (now.getMonth() == Calendar.DECEMBER && date.getMonth() == Calendar.JANUARY) {
+            date.setYear(now.getYear() + 1);
+        } else if (now.getMonth() == Calendar.JANUARY && date.getMonth() == Calendar.DECEMBER) {
+            date.setYear(now.getYear() - 1);
+        } else {
+            date.setYear(now.getYear());
+        }
+        return date;
+    }
+
+    private List<DayOfWeek> makeDaysOfWeek(LinkedHashMap<Date, TreeSet<EmployeeShortView>> dateToEmployeesMap) {
+        List<DayOfWeek> daysOfWeek = new ArrayList<>();
+
+        Set<Date> dates = dateToEmployeesMap.keySet();
+        for (Date date : dates) {
+            Instant instant = date.toInstant();
+            ZonedDateTime zdt = instant.atZone(ZoneId.systemDefault());
+            LocalDate localDate = zdt.toLocalDate();
+            daysOfWeek.add(localDate.getDayOfWeek());
+        }
+        return daysOfWeek;
+    }
 
     @Autowired
     TemplateService templateService;

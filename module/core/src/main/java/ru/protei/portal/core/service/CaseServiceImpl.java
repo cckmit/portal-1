@@ -1027,7 +1027,7 @@ public class CaseServiceImpl implements CaseService {
 
         List<Long> initiatorAllowedCompanies = new ArrayList<>();
         if (company.getCategory() == En_CompanyCategory.SUBCONTRACTOR) {
-            Result<List<EntityOption>> result = companyService.companyOptionListBySubcontractorIds(token.getCompanyAndChildIds(), true);
+            Result<List<EntityOption>> result = companyService.companyOptionListBySubcontractorIds(token, token.getCompanyAndChildIds(), true);
             if (result.isError()) {
                 log.error("fillCaseObjectByScope(): failed to get companies by subcontractors with result {}", result);
                 return error(result.getStatus());
@@ -1046,7 +1046,7 @@ public class CaseServiceImpl implements CaseService {
         if (company.getCategory() == En_CompanyCategory.SUBCONTRACTOR) {
             managerAllowedCompanies.addAll(token.getCompanyAndChildIds());
         } else {
-            Result<List<EntityOption>> result = companyService.subcontractorOptionListByCompanyIds(token.getCompanyAndChildIds(), true);
+            Result<List<EntityOption>> result = companyService.subcontractorOptionListByCompanyIds(token, token.getCompanyAndChildIds(), true);
             if (result.isError()) {
                 log.error("fillCaseObjectByScope(): failed to get subcontractors by companies with result {}", result);
                 return error(result.getStatus());

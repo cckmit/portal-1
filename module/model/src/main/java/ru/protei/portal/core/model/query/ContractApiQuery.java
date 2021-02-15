@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import ru.protei.portal.core.model.dict.En_ContractState;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -18,11 +19,13 @@ import java.util.List;
 )
 public class ContractApiQuery implements Serializable {
 
-    @JsonProperty("refKeys")
     private List<String> refKeys;
 
-    @JsonProperty("openStateDate")
     private Date openStateDate;
+
+    private List<En_ContractState> states;
+
+    private List<Long> organizationIds;
 
     public ContractApiQuery() {
     }
@@ -43,11 +46,29 @@ public class ContractApiQuery implements Serializable {
         this.openStateDate = openStateDate;
     }
 
+    public List<En_ContractState> getStates() {
+        return states;
+    }
+
+    public void setStates(List<En_ContractState> states) {
+        this.states = states;
+    }
+
+    public List<Long> getOrganizationIds() {
+        return organizationIds;
+    }
+
+    public void setOrganizationIds(List<Long> organizationIds) {
+        this.organizationIds = organizationIds;
+    }
+
     @Override
     public String toString() {
         return "ContractApiQuery{" +
                 "refKeys=" + refKeys +
                 ", openStateDate=" + openStateDate +
+                ", states=" + states +
+                ", organizationIds=" + organizationIds +
                 '}';
     }
 }

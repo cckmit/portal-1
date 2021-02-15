@@ -808,7 +808,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String appNavHeader();
 
-    String issueCopiedToClipboard();
+    String copiedToClipboardSuccessfully();
 
     String privacyTypePublic();
 
@@ -876,33 +876,33 @@ public interface Lang extends Messages, ContactItemLang {
 
     String regions();
 
-    String regionState();
-
     String regionDistrict();
 
-    String regionStateUnknown();
+    String projectState();
 
-    String regionStateMarketing();
+    String projectStateUnknown();
 
-    String regionStatePresale();
+    String projectStateMarketing();
 
-    String regionStateProjecting();
+    String projectStatePresale();
 
-    String regionStateDevelopment();
+    String projectStateProjecting();
 
-    String regionStateDeployment();
+    String projectStateDevelopment();
 
-    String regionStateTesting();
+    String projectStateDeployment();
 
-    String regionStateSupport();
+    String projectStateTesting();
 
-    String regionStateFinished();
+    String projectStateSupport();
 
-    String regionStateCanceled();
+    String projectStateFinished();
+
+    String projectStateCanceled();
+
+    String projectStatePaused();
 
     String regionNotSpecified();
-
-    String regionStatePaused();
 
     String projects();
 
@@ -923,8 +923,6 @@ public interface Lang extends Messages, ContactItemLang {
     String projectHeadManager();
 
     String projectDeployManagers();
-
-    String projectState();
 
     String projectRegion();
 
@@ -1750,6 +1748,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String siteFolderAppName();
 
+    String siteFolderCopyPreviewLink();
+
     String issueLinkIncorrectCrmNumberFormat();
 
     String issueLinkIncorrectCrmCaseNotFound( long p0 );
@@ -2052,8 +2052,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractTypeWorkContract();
 
-    String contractTypeHardwareSoftwareService();
-
     String contractTypeRequest();
 
     String goToContracts();
@@ -2116,7 +2114,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractProjectNotDefined();
 
-    String contractManager();
+    String contractProjectManager();
 
     String contractCost();
 
@@ -2874,6 +2872,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String thisWeekAndBeyondInterval();
 
+    String relativeLastDayInterval();
+
+    String relativeLastWeekInterval();
+
     String relativeLastMonthInterval();
 
     String relativeLastThreeMonthsInterval();
@@ -3233,4 +3235,58 @@ public interface Lang extends Messages, ContactItemLang {
     String errNotAllowedIntegrationIssue();
 
     String help();
+
+    String contractTypeAdditionalAgreement();
+
+    String contractContractSignManager();
+
+    String contractDateColumn();
+
+    String contractCostColumn();
+
+    String contractCommentColumn();
+
+    String contractInAmount(String cost);
+
+    String contractDateType();
+
+    String contractDateComment();
+
+    String contractDateCalendarDay();
+
+    String contractDateDate();
+
+    String contractDateEditHeader();
+
+    String contractDatePercent();
+
+    String contractDatesBaseSection();
+
+    String contractDatesCostSection();
+
+    String contractDatesAdvanceSection();
+
+    String contractDateCostType();
+
+    String contractCostTypeServices();
+
+    String contractCostTypeSoftware();
+
+    String contractCostTypeEquipment();
+
+    String contractValidDay();
+
+    String contractValidDate();
+
+    String contractEDSSigned();
+
+    String contractSignedOnSite();
+
+    String contractTypeContract();
+
+    String contractTypeContractForService();
+
+    String contractTypeAgreement();
+
+    String contractDeliveryNumber();
 }

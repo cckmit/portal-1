@@ -2,14 +2,14 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
-import ru.protei.portal.core.model.util.UiResult;
-import ru.protei.portal.core.model.query.ProjectQuery;
-import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.dto.RegionInfo;
+import ru.protei.portal.core.model.ent.SelectorsParams;
+import ru.protei.portal.core.model.query.ProjectQuery;
+import ru.protei.portal.core.model.struct.DistrictInfo;
+import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -46,4 +46,6 @@ public interface RegionController extends RemoteService {
     ProjectInfo getProjectInfo(Long id) throws RequestFailedException;
 
     PersonShortView getProjectLeader(Long projectId) throws RequestFailedException;
+
+    SelectorsParams getSelectorsParams(ProjectQuery query) throws RequestFailedException;
 }

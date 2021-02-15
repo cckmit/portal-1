@@ -24,7 +24,7 @@ public class ImportanceBtnGroupMulti extends ToggleBtnGroupMulti<ImportanceLevel
         for (ImportanceLevel level : importanceLevelList) {
             addBtnWithIconAndTooltip(
                     ImportanceStyleProvider.getImportanceIcon(level.getCode()) + " center",
-                    "btn btn-default no-border " + level.toString().toLowerCase(),
+                    "btn btn-default no-border",
                     level.getCode(),
                     level, null,
                     level.getColor()

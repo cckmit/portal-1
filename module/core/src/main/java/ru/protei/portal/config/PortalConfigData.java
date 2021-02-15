@@ -225,10 +225,17 @@ public class PortalConfigData {
         private final String contractUrl;
         private final String crmDocumentPreviewUrl;
         private final String crmEmployeeRegistrationUrl;
+        private final String crmReservedIpsUrl;
         private final String[] crmEmployeeRegistrationNotificationsRecipients;
         private final String[] crmRoomReservationNotificationsRecipients;
         private final String[] crmIpReservationNotificationsRecipients;
         private final String[] crmBirthdaysNotificationsRecipients;
+        private final String[] crmEducationRequestCourseRecipients;
+        private final String[] crmEducationRequestConferenceRecipients;
+        private final String[] crmEducationRequestLiteratureRecipients;
+        private final String[] crmEducationRequestApprovedCourseRecipients;
+        private final String[] crmEducationRequestApprovedConferenceRecipients;
+        private final String[] crmEducationRequestApprovedLiteratureRecipients;
 
         public MailNotificationConfig(PropertiesWrapper properties) throws ConfigException {
             super(properties);
@@ -237,10 +244,17 @@ public class PortalConfigData {
             contractUrl = properties.getProperty( "crm.contract.url", "#contracts/contract:id=%d;" );
             crmDocumentPreviewUrl = properties.getProperty( "crm.document.url.preview", "#doc_preview:id=%d");
             crmEmployeeRegistrationUrl = properties.getProperty( "crm.employee_registration.url");
+            crmReservedIpsUrl = properties.getProperty("crm.reserved_ips.url", "#reserved_ips");
             crmEmployeeRegistrationNotificationsRecipients = properties.getProperty( "crm.employee_registration.recipients", "" ).split(",");
             crmRoomReservationNotificationsRecipients = properties.getProperty("crm.room_reservation.recipients", "").split(",");
             crmIpReservationNotificationsRecipients = properties.getProperty("crm.ip_reservation.recipients", "").split(",");
             crmBirthdaysNotificationsRecipients = properties.getProperty("crm.birthdays.recipients", "").split(",");
+            crmEducationRequestCourseRecipients = properties.getProperty("crm.education.request.course.recipients", "").split(",");
+            crmEducationRequestConferenceRecipients = properties.getProperty("crm.education.request.conference.recipients", "").split(",");
+            crmEducationRequestLiteratureRecipients = properties.getProperty("crm.education.request.literature.recipients", "").split(",");
+            crmEducationRequestApprovedCourseRecipients = properties.getProperty("crm.education.request.approved.course.recipients", "").split(",");
+            crmEducationRequestApprovedConferenceRecipients = properties.getProperty("crm.education.request.approved.conference.recipients", "").split(",");
+            crmEducationRequestApprovedLiteratureRecipients = properties.getProperty("crm.education.request.approved.literature.recipients", "").split(",");
         }
 
         public String getCrmCaseUrl() {
@@ -263,6 +277,10 @@ public class PortalConfigData {
             return crmEmployeeRegistrationUrl;
         }
 
+        public String getCrmReservedIpsUrl() {
+            return crmReservedIpsUrl;
+        }
+
         public String[] getCrmEmployeeRegistrationNotificationsRecipients() {
             return crmEmployeeRegistrationNotificationsRecipients;
         }
@@ -277,6 +295,30 @@ public class PortalConfigData {
 
         public String[] getCrmBirthdaysNotificationsRecipients() { return crmBirthdaysNotificationsRecipients;
         }
+
+        public String[] getCrmEducationRequestCourseRecipients() {
+            return crmEducationRequestCourseRecipients;
+        }
+
+        public String[] getCrmEducationRequestConferenceRecipients() {
+            return crmEducationRequestConferenceRecipients;
+        }
+
+        public String[] getCrmEducationRequestLiteratureRecipients() {
+            return crmEducationRequestLiteratureRecipients;
+        }
+
+        public String[] getCrmEducationRequestApprovedCourseRecipients() {
+            return crmEducationRequestApprovedCourseRecipients;
+        }
+
+        public String[] getCrmEducationRequestApprovedConferenceRecipients() {
+            return crmEducationRequestApprovedConferenceRecipients;
+        }
+
+        public String[] getCrmEducationRequestApprovedLiteratureRecipients() {
+            return crmEducationRequestApprovedLiteratureRecipients;
+        }
     }
 
     public static class SmtpConfig {
@@ -286,9 +328,11 @@ public class PortalConfigData {
         private final String fromAddressCrm;
         private final String fromAddressPortal;
         private final String fromAddressAbsence;
+        private final String fromAddressReport;
         private final String fromAddressCrmAlias;
         private final String fromAddressPortalAlias;
         private final String fromAddressAbsenceAlias;
+        private final String fromAddressReportAlias;
         private final boolean blockExternalRecipients;
         private final String messageIdPattern;
 
@@ -298,9 +342,11 @@ public class PortalConfigData {
             fromAddressCrm = properties.getProperty("smtp.from.crm", "CRM");
             fromAddressPortal = properties.getProperty("smtp.from.portal", "PORTAL");
             fromAddressAbsence = properties.getProperty("smtp.from.absence", "ABSENCE");
+            fromAddressReport = properties.getProperty("smtp.from.report", "REPORT");
             fromAddressCrmAlias = properties.getProperty("smtp.from.crm.alias", "CRM");
             fromAddressPortalAlias = properties.getProperty("smtp.from.portal.alias", "DO_NOT_REPLY");
             fromAddressAbsenceAlias = properties.getProperty("smtp.from.absence.alias", "DO_NOT_REPLY");
+            fromAddressReportAlias = properties.getProperty("smtp.from.report.alias", "DO_NOT_REPLY");
             defaultCharset = properties.getProperty("smtp.charset", "utf-8");
             blockExternalRecipients = properties.getProperty("smtp.block_external_recipients", Boolean.class, false);
             messageIdPattern = properties.getProperty("smtp.message_id_pattern", "%id%@smtp.protei.ru");
@@ -334,6 +380,10 @@ public class PortalConfigData {
             return fromAddressAbsence;
         }
 
+        public String getFromAddressReport() {
+            return fromAddressReport;
+        }
+
         public String getMessageIdPattern() {
             return messageIdPattern;
         }
@@ -348,6 +398,10 @@ public class PortalConfigData {
 
         public String getFromAddressAbsenceAlias() {
             return fromAddressAbsenceAlias;
+        }
+
+        public String getFromAddressReportAlias() {
+            return fromAddressReportAlias;
         }
     }
 

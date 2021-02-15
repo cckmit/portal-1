@@ -6,6 +6,7 @@ import com.google.gwt.regexp.shared.RegExp;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 
 /**
@@ -29,5 +30,13 @@ public class IssueFilterUtils {
 
         return null;
 
+    }
+
+    public static String makeSearchStringFromCaseNumber(List<Long> caseNumbers) {
+        if (caseNumbers == null) {
+            return null;
+        }
+
+        return stream(caseNumbers).map(String::valueOf).collect(Collectors.joining(","));
     }
 }

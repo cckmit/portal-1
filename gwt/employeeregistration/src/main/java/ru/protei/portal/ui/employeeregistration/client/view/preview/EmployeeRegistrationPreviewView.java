@@ -102,12 +102,12 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     }
 
     @Override
-    public void setState(String state) {
+    public void setState(String state, String color) {
         if (state == null) {
             this.caseState.setClassName("");
             this.caseState.setInnerText("");
         } else {
-            this.caseState.setClassName("small label label-" + CaseStateUtils.makeStyleName(state));
+            this.caseState.getStyle().setBackgroundColor(color);
             this.caseState.setInnerText(state);
         }
     }

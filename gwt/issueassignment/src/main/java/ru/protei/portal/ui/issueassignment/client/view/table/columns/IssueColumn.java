@@ -10,7 +10,7 @@ import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.util.CaseStateUtils;
+
 
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 
@@ -42,8 +42,8 @@ public class IssueColumn extends ClickColumn<CaseShortView> {
         String name = value.getName();
 
         DivElement div = Document.get().createDivElement();
-        div.appendChild(makeSpan(ImportanceStyleProvider.getImportanceIcon(value.getImportanceCode()), ""));
-        div.appendChild(makeSpan("label label-" + CaseStateUtils.makeStyleName(value.getStateName()), value.getStateName()));
+        div.appendChild(makeSpan(ImportanceStyleProvider.getImportanceIcon(value.getImportanceCode()), "", value.getImportanceColor()));
+        div.appendChild(makeSpan("label", value.getStateName(), value.getStateColor()));
         if (isPrivate) div.appendChild(makeSpan("fa fa-fw fa-lock text-danger", ""));
         div.appendChild(makeSpan("font-weight-bold", String.valueOf(number)));
         div.appendChild(makeSpan("word-break-word", name));
@@ -69,6 +69,12 @@ public class IssueColumn extends ClickColumn<CaseShortView> {
         SpanElement span = Document.get().createSpanElement();
         span.setClassName(className);
         span.setInnerText(text);
+        return span;
+    }
+
+    private SpanElement makeSpan(String className, String text, String bgColor) {
+        SpanElement span = makeSpan(className, text);
+        span.getStyle().setBackgroundColor(bgColor);
         return span;
     }
 

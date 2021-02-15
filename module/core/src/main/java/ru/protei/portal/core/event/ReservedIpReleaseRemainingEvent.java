@@ -11,24 +11,43 @@ public class ReservedIpReleaseRemainingEvent extends ApplicationEvent {
 
     public ReservedIpReleaseRemainingEvent(Object source, List<ReservedIp> reservedIps,
                                            Date releaseDateStart, Date releaseDateEnd,
-                                           List<NotificationEntry> notificationEntryList) {
+                                           List<NotificationEntry> notificationEntryList, Recipient recipientType) {
         super(source);
         this.reservedIps = reservedIps;
         this.releaseDateStart = releaseDateStart;
         this.releaseDateEnd = releaseDateEnd;
         this.notificationEntryList = notificationEntryList;
+        this.recipientType = recipientType;
     }
 
-    public List<ReservedIp> getReservedIpList() { return reservedIps; }
+    public List<ReservedIp> getReservedIpList() {
+        return reservedIps;
+    }
 
-    public Date getReleaseDateStart() { return releaseDateStart; }
+    public Date getReleaseDateStart() {
+        return releaseDateStart;
+    }
 
-    public Date getReleaseDateEnd() { return releaseDateEnd; }
+    public Date getReleaseDateEnd() {
+        return releaseDateEnd;
+    }
 
-    public List<NotificationEntry> getNotificationEntryList() { return notificationEntryList; }
+    public List<NotificationEntry> getNotificationEntryList() {
+        return notificationEntryList;
+    }
+
+    public Recipient getRecipientType() {
+        return recipientType;
+    }
 
     private final List<ReservedIp> reservedIps;
     private final Date releaseDateStart;
     private final Date releaseDateEnd;
     private final List<NotificationEntry> notificationEntryList;
+    private final Recipient recipientType;
+
+    public enum Recipient {
+        ADMIN,
+        OWNER_IP
+    }
 }

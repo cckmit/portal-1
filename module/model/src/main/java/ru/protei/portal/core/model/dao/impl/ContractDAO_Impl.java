@@ -21,6 +21,7 @@ import java.util.List;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
 import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
+import static ru.protei.portal.core.model.helper.HelperFunc.makeLikeArg;
 import static ru.protei.portal.core.model.util.ContractStateUtil.getOpenedContractStates;
 
 public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements ContractDAO {
@@ -50,42 +51,6 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
     @Override
     public List<Contract> getByProjectId(Long projectId) {
         return getListByCondition("contract.project_id = ?", projectId);
-    }
-
-    @Override
-    public List<Contract> getByApiQuery(ContractApiQuery apiQuery) {
-
-        SqlCondition where = new SqlCondition().build(((condition, args) -> {
-            condition.append("1=1");
-
-            if (isNotEmpty(apiQuery.getRefKeys())) {
-                String inArg = makeInArg(apiQuery.getRefKeys(), s -> "'" + s + "'");
-                condition.append(" AND contract.ref_key IN ").append(inArg);
-            }
-
-            if (apiQuery.getOpenStateDate() != null) {
-                condition.append(" AND contract.id IN (");
-                  condition.append(" SELECT DISTINCT hww.case_object_id FROM (");
-                    condition.append(" SELECT");
-                      condition.append(" hw.*,");
-                      condition.append(" ROW_NUMBER() OVER (PARTITION BY hw.case_object_id ORDER BY hw.date DESC) AS rownumber");
-                    condition.append(" FROM history AS hw WHERE 1=1");
-                    condition.append(" AND hw.case_object_id IN (SELECT ch.id FROM contract AS ch)");
-                    condition.append(" AND hw.date <= ?");
-                  condition.append(" ) hww");
-                  condition.append(" WHERE 1=1");
-                    condition.append(" AND hww.rownumber = 1");
-                    condition.append(" AND hww.new_id IN ").append(makeInArg(getOpenedContractStates(), s -> String.valueOf(s.getId())));
-                condition.append(")");
-                args.add(apiQuery.getOpenStateDate());
-            }
-        }));
-
-        JdbcQueryParameters parameters = new JdbcQueryParameters()
-            .withCondition(where.condition, where.args)
-            .withDistinct(true);
-
-        return getList(parameters);
     }
 
     @Override
@@ -140,6 +105,11 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
             if (CollectionUtils.isNotEmpty(query.getTypes())) {
                 String inArg = HelperFunc.makeInArg(query.getTypes(), type -> String.valueOf(type.getId()));
                 condition.append(" and contract.contract_type in ").append(inArg);
+            }
+
+            if (StringUtils.isNotEmpty(query.getDeliveryNumber())) {
+                condition.append(" and contract.delivery_number like ?");
+                args.add(makeLikeArg(query.getDeliveryNumber(), true));
             }
 
             if (CollectionUtils.isNotEmpty(query.getCaseTagsIds())) {
@@ -225,6 +195,28 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
                         args.add(interval.to);
                     }
                 }
+            }
+
+            if (isNotEmpty(query.getRefKeys())) {
+                String inArg = makeInArg(query.getRefKeys(), s -> "'" + s + "'");
+                condition.append(" AND contract.ref_key IN ").append(inArg);
+            }
+
+            if (query.getOpenStateDate() != null) {
+                condition.append(" AND contract.id IN (");
+                condition.append(" SELECT DISTINCT hww.case_object_id FROM (");
+                condition.append(" SELECT");
+                condition.append(" hw.*,");
+                condition.append(" ROW_NUMBER() OVER (PARTITION BY hw.case_object_id ORDER BY hw.date DESC) AS rownumber");
+                condition.append(" FROM history AS hw WHERE 1=1");
+                condition.append(" AND hw.case_object_id IN (SELECT ch.id FROM contract AS ch)");
+                condition.append(" AND hw.date <= ?");
+                condition.append(" ) hww");
+                condition.append(" WHERE 1=1");
+                condition.append(" AND hww.rownumber = 1");
+                condition.append(" AND hww.new_id IN ").append(makeInArg(getOpenedContractStates(), s -> String.valueOf(s.getId())));
+                condition.append(")");
+                args.add(query.getOpenStateDate());
             }
         }));
     }

@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.converter.MoneyJdbcConverter;
+import ru.protei.portal.core.model.dict.ContractCostType;
 import ru.protei.portal.core.model.dict.En_ContractDatesType;
 import ru.protei.portal.core.model.dict.En_Currency;
 import ru.protei.portal.core.model.struct.Money;
@@ -27,6 +28,10 @@ public class ContractDate implements Serializable {
     @JdbcColumn(name = "type")
     @JdbcEnumerated(EnumType.ID)
     private En_ContractDatesType type;
+
+    @JdbcColumn(name = "cost_type")
+    @JdbcEnumerated(EnumType.ID)
+    private ContractCostType costType;
 
     @JdbcColumn(name = "cost", converterType = ConverterType.CUSTOM, converter = MoneyJdbcConverter.class)
     private Money cost;
@@ -104,6 +109,14 @@ public class ContractDate implements Serializable {
         isNotify = notify;
     }
 
+    public ContractCostType getCostType() {
+        return costType;
+    }
+
+    public void setCostType(ContractCostType costType) {
+        this.costType = costType;
+    }
+
     @Override
     public String toString() {
         return "ContractDate{" +
@@ -112,6 +125,7 @@ public class ContractDate implements Serializable {
                 ", date=" + date +
                 ", comment='" + comment + '\'' +
                 ", type=" + type +
+                ", costType=" + costType +
                 ", cost=" + cost +
                 ", currency=" + currency +
                 ", isNotify=" + isNotify +

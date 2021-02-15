@@ -79,8 +79,18 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     }
 
     @Override
-    public void setManager(String value) {
-        this.manager.setInnerHTML(value);
+    public void setDeliveryNumber(String value) {
+        deliveryNumber.setInnerText(value);
+    }
+
+    @Override
+    public void setProjectManager(String value) {
+        this.projectManager.setInnerHTML(value);
+    }
+
+    @Override
+    public void setContractSignManager(String value) {
+        this.contractSignManager.setInnerHTML(value);
     }
 
     @Override
@@ -161,7 +171,7 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     @UiField
     SpanElement organization;
     @UiField
-    SpanElement manager;
+    SpanElement projectManager;
     @UiField
     SpanElement curator;
     @UiField
@@ -184,6 +194,10 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     HTMLPanel previewWrapperContainer;
     @UiField
     HTMLPanel tagsContainer;
+    @UiField
+    SpanElement contractSignManager;
+    @UiField
+    SpanElement deliveryNumber;
 
     private AbstractContractPreviewActivity activity;
 

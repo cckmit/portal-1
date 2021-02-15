@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.query;
 
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.struct.Interval;
@@ -19,7 +20,7 @@ public class ProjectQuery extends BaseQuery {
 
     private List<Long> caseIds;
 
-    private Set<En_RegionState> states;
+    private Set<CaseState> states;
 
     private Set<EntityOption> regions;
 
@@ -40,8 +41,6 @@ public class ProjectQuery extends BaseQuery {
     private Date createdFrom;
 
     private Date createdTo;
-
-    private Boolean platformIndependentProject;
 
     private Set<Long> initiatorCompanyIds;
 
@@ -66,7 +65,7 @@ public class ProjectQuery extends BaseQuery {
         super(searchString, sortField, sortDir);
     }
 
-    public ProjectQuery( Set<En_RegionState> state, String searchString, En_SortField sortField, En_SortDir sortDir ) {
+    public ProjectQuery( Set<CaseState> state, String searchString, En_SortField sortField, En_SortDir sortDir ) {
         super(searchString, sortField, sortDir);
         this.states = state;
     }
@@ -95,11 +94,11 @@ public class ProjectQuery extends BaseQuery {
         this.caseIds = caseIds;
     }
 
-    public Set<En_RegionState> getStates() {
+    public Set<CaseState> getStates() {
         return states;
     }
 
-    public void setStates(Set<En_RegionState> state) {
+    public void setStates(Set<CaseState> state) {
         this.states = state;
     }
 
@@ -157,14 +156,6 @@ public class ProjectQuery extends BaseQuery {
 
     public void setCreatedTo( Date createdTo ) {
         this.createdTo = createdTo;
-    }
-
-    public Boolean getPlatformIndependentProject() {
-        return platformIndependentProject;
-    }
-
-    public void setPlatformIndependentProject(Boolean platformIndependentProject) {
-        this.platformIndependentProject = platformIndependentProject;
     }
 
     public Set<EntityOption> getRegions() {
@@ -267,7 +258,6 @@ public class ProjectQuery extends BaseQuery {
                 customerType != null ||
                 createdFrom != null ||
                 createdTo != null ||
-                platformIndependentProject != null ||
                 pauseDateGreaterThan != null ||
                 deleted != null ||
                 CollectionUtils.isNotEmpty(technicalSupportExpiresInDays) ||
@@ -290,7 +280,6 @@ public class ProjectQuery extends BaseQuery {
                 ", customerType=" + customerType +
                 ", createdFrom=" + createdFrom +
                 ", createdTo=" + createdTo +
-                ", platformIndependentProject=" + platformIndependentProject +
                 ", initiatorCompanyIds=" + initiatorCompanyIds +
                 ", commentCreationRange=" + commentCreationRange +
                 ", pauseDateGreaterThan=" + pauseDateGreaterThan +
@@ -318,7 +307,6 @@ public class ProjectQuery extends BaseQuery {
                 customerType == that.customerType &&
                 Objects.equals(createdFrom, that.createdFrom) &&
                 Objects.equals(createdTo, that.createdTo) &&
-                Objects.equals(platformIndependentProject, that.platformIndependentProject) &&
                 Objects.equals(initiatorCompanyIds, that.initiatorCompanyIds) &&
                 Objects.equals(commentCreationRange, that.commentCreationRange) &&
                 Objects.equals(pauseDateGreaterThan, that.pauseDateGreaterThan) &&
@@ -332,7 +320,7 @@ public class ProjectQuery extends BaseQuery {
     public int hashCode() {
         return Objects.hash(caseIds, states, regions, headManagers, caseMembers, directions,
                 districtIds, memberId, productIds, customerType, createdFrom, createdTo,
-                platformIndependentProject, initiatorCompanyIds, commentCreationRange, pauseDateGreaterThan, deleted,
+                initiatorCompanyIds, commentCreationRange, pauseDateGreaterThan, deleted,
                 subcontractorIds, technicalSupportExpiresInDays, isActive);
     }
 }

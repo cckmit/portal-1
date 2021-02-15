@@ -20,7 +20,7 @@
                     <h5 ui:field="name"/>
 
                     <div class="m-b-5">
-                        <span ui:field="caseState"/>
+                        <span ui:field="caseState" class="small label"/>
                     </div>
 
                     <g:HTMLPanel ui:field="linksContainer"/>

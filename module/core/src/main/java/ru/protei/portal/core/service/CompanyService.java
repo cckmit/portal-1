@@ -26,23 +26,23 @@ public interface CompanyService {
 
     Result<List<EntityOption>> companyOptionList(AuthToken token, CompanyQuery query);
 
-    Result<List<EntityOption>> companyOptionListIgnorePrivileges(CompanyQuery query);
+    Result<List<EntityOption>> companyOptionListIgnorePrivileges(AuthToken token, CompanyQuery query);
 
-    Result<List<EntityOption>> companyOptionListByIds(List<Long> ids);
+    Result<List<EntityOption>> companyOptionListByIds(AuthToken token, List<Long> ids);
 
-    Result<List<EntityOption>> subcontractorOptionListByCompanyIds(Collection<Long> companyIds, boolean isActive);
+    Result<List<EntityOption>> subcontractorOptionListByCompanyIds(AuthToken token, Collection<Long> companyIds, boolean isActive);
 
-    Result<List<EntityOption>> companyOptionListBySubcontractorIds(Collection<Long> subcontractorIds, boolean isActive);
+    Result<List<EntityOption>> companyOptionListBySubcontractorIds(AuthToken token, Collection<Long> subcontractorIds, boolean isActive);
 
     @Privileged( En_Privilege.COMPANY_EDIT )
     @Auditable( En_AuditType.COMPANY_MODIFY )
     Result<?> updateState(AuthToken makeAuthToken, Long companyId, boolean isDeprecated);
 
-    Result<List<EntityOption>> groupOptionList();
+    Result<List<EntityOption>> groupOptionList(AuthToken token);
 
-    Result<List<CompanyGroup>> groupList(CompanyGroupQuery query);
+    Result<List<CompanyGroup>> groupList(AuthToken token, CompanyGroupQuery query);
 
-    Result<List<En_CompanyCategory>> categoryOptionList(boolean hasOfficial);
+    Result<List<En_CompanyCategory>> categoryOptionList(AuthToken token, boolean hasOfficial);
 
     @Privileged( En_Privilege.COMPANY_VIEW )
     Result<Company> getCompany( AuthToken token, Long id );
@@ -57,15 +57,15 @@ public interface CompanyService {
     @Auditable( En_AuditType.COMPANY_MODIFY )
     Result<Company> updateCompany( AuthToken token, Company company );
 
-    Result<Boolean> isCompanyNameExists( String name, Long excludeId);
+    Result<Boolean> isCompanyNameExists(AuthToken token, String name, Long excludeId);
 
-    Result<Boolean> isGroupNameExists( String name, Long excludeId);
+    Result<Boolean> isGroupNameExists(AuthToken token, String name, Long excludeId);
 
-    Result<List<CompanySubscription>> getCompanySubscriptions( Long companyId );
+    Result<List<CompanySubscription>> getCompanySubscriptions(AuthToken token, Long companyId );
 
     Result<List<CompanySubscription>> getCompanyWithParentCompanySubscriptions( AuthToken authToken, Set<Long> companyIds );
 
     Result<List<Company>> getAllHomeCompanies(AuthToken token);
 
-    Result<List<CompanyImportanceItem>> getCompanyImportanceItems(Long companyId);
+    Result<List<CompanyImportanceItem>> getCompanyImportanceItems(AuthToken token, Long companyId);
 }
