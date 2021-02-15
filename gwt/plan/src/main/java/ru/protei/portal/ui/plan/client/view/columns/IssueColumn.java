@@ -10,7 +10,6 @@ import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 
@@ -51,7 +50,7 @@ public class IssueColumn extends ClickColumn<CaseShortView> {
 
         DivElement div = Document.get().createDivElement();
         div.appendChild(makeSpan(ImportanceStyleProvider.getImportanceIcon(value.getImportanceCode()), "", value.getImportanceColor()));
-        div.appendChild(makeSpan("label label-" + CaseStateUtils.makeStyleName(value.getStateName()), value.getStateName()));
+        div.appendChild(makeSpan("label", value.getStateName(), value.getStateColor()));
         if (isPrivate) div.appendChild(makeSpan("fa fa-fw fa-lock text-danger", ""));
         div.appendChild(makeSpan("font-weight-bold", String.valueOf(number)));
         div.appendChild(makeSpan("word-break-word", name));

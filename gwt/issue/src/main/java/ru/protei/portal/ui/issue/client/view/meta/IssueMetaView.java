@@ -32,6 +32,7 @@ import ru.protei.portal.ui.common.client.view.selector.ElapsedTimeTypeFormSelect
 import ru.protei.portal.ui.common.client.widget.issueimportance.ImportanceFormSelector;
 import ru.protei.portal.ui.common.client.widget.issueimportance.ImportanceModel;
 import ru.protei.portal.ui.common.client.widget.issuestate.IssueStateFormSelector;
+import ru.protei.portal.ui.common.client.widget.issuestate.StateModel;
 import ru.protei.portal.ui.common.client.widget.jirasla.JiraSLASelector;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyFormSelector;
@@ -65,6 +66,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         company.setAsyncModel( companyModel );
         initiator.setAsyncModel( initiatorModel );
         manager.setAsyncModel( managerModel );
+        state.setStateModel( stateModel );
         notifiers.setItemRenderer( PersonShortView::getName );
         initView();
 
@@ -230,6 +232,11 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @Override
     public HasValue< PlatformOption> platform() {
         return platform;
+    }
+
+    @Override
+    public void setStateWorkflow(En_CaseStateWorkflow workflow) {
+        stateModel.setWorkflow(workflow);
     }
 
     @Override
@@ -755,6 +762,8 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     PersonModel initiatorModel;
     @Inject
     ImportanceModel importanceModel;
+    @Inject
+    StateModel stateModel;
 
     private AbstractIssueMetaActivity activity;
 

@@ -129,10 +129,16 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
     private Long stateId;
 
     @JdbcJoinedColumn(joinPath = {
-            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object"),
-            @JdbcJoinPath(localColumn = "STATE", remoteColumn = "id", table = "case_state")
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = "CO"),
+            @JdbcJoinPath(localColumn = "STATE", remoteColumn = "id", table = "case_state", sqlTableAlias = "CS")
     }, mappedColumn = "STATE")
     private String stateName;
+
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = "CO"),
+            @JdbcJoinPath(localColumn = "STATE", remoteColumn = "id", table = "case_state", sqlTableAlias = "CS")
+    }, mappedColumn = "color")
+    private String stateColor;
 
     /**
      *  испытательный срок
@@ -315,6 +321,14 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
 
     public void setStateName(String stateName) {
         this.stateName = stateName;
+    }
+
+    public String getStateColor() {
+        return stateColor;
+    }
+
+    public void setStateColor(String stateColor) {
+        this.stateColor = stateColor;
     }
 
     public Long getCreatorId() {

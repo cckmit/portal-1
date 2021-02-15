@@ -90,34 +90,33 @@ public class CaseCommentItemView
     }
 
     @Override
-    public void setStatus(String value) {
-        String styleName = CaseStateUtils.makeStyleName(value);
-        if ( root.getStyleName().contains("right")) {
+    public void setStatus(String value, String color) {
+        if (root.getStyleName().contains("right")) {
             owner.removeClassName("name");
             owner.addClassName("status");
-            owner.addClassName("case-" + styleName);
+            owner.getStyle().setColor(color);
             owner.setInnerText(value);
             info.setInnerText(lang.issueCommentChangeStatusTo());
             info.removeClassName("hide");
         } else {
-            this.status.addClassName("case-" + styleName);
-            this.status.setInnerText(value);
+            status.getStyle().setColor(color);
+            status.setInnerText(value);
             info.setInnerText(lang.issueCommentChangeStatusTo());
             info.removeClassName("hide");
         }
     }
 
     @Override
-    public void setImportanceLevel(String importanceCode) {
+    public void setImportanceLevel(String importanceCode, String color) {
         if (root.getStyleName().contains("right")) {
             owner.removeClassName("name");
             owner.addClassName("status");
-            owner.addClassName("case-importance-" + importanceCode.toLowerCase());
+            owner.getStyle().setColor(color);
             owner.setInnerText(importanceCode);
             info.setInnerText(lang.issueCommentChangeImportanceTo());
             info.removeClassName("hide");
         } else {
-            status.addClassName("case-importance-" + importanceCode.toLowerCase());
+            status.getStyle().setColor(color);
             status.setInnerText(importanceCode);
             info.setInnerText(lang.issueCommentChangeImportanceTo());
             info.removeClassName("hide");
@@ -127,8 +126,7 @@ public class CaseCommentItemView
     @Override
     public void setManagerInfo(String managerInfo) {
         if (root.getStyleName().contains("right")) {
-            owner.removeClassName("name");
-            owner.addClassName("status");
+            owner.removeClassName("status");
             owner.addClassName("name");
             owner.setInnerText(managerInfo);
             info.setInnerText(lang.issueCommentChangeManagerTo());

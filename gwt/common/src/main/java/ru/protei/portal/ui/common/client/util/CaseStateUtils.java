@@ -64,8 +64,4 @@ public class CaseStateUtils {
     public static Map<Long, String> getJiraStatusComments() {
         return jiraStatusComments;
     }
-
-    public static String makeStyleName(String state) {
-        return state.replaceAll(" ", "_").toLowerCase();
-    }
 }

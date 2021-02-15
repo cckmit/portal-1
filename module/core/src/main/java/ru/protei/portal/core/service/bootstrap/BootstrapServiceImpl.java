@@ -901,7 +901,7 @@ public class BootstrapServiceImpl implements BootstrapService {
                 CaseComment::getCaseStateId, CaseComment::getCaseStateName));
         commentToHistoryMigrationMap.put(IMPORTANCE, new CommentToHistoryMigration(IMPORTANCE, En_HistoryType.CASE_IMPORTANCE,
                 caseComment -> (long) caseComment.getCaseImpLevel(),
-                CaseComment::getImportanceCode));
+                CaseComment::getCaseImpCode));
         commentToHistoryMigrationMap.put(MANAGER, new CommentToHistoryMigration(MANAGER, En_HistoryType.CASE_MANAGER,
                 CaseComment::getCaseManagerId, CaseComment::getCaseManagerShortName));
 
