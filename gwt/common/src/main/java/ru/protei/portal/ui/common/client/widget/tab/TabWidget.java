@@ -87,7 +87,7 @@ public class TabWidget extends Tab {
         navItem.setTabName(pane.getTabName());
         navItem.setTabIcon(pane.getTabIcon());
         navItem.setActivity(this);
-        navItem.setInActive();
+        navItem.setInactive();
         return navItem;
     }
 

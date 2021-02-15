@@ -151,7 +151,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             fireEvent(new IssueEvents.IssueStateChanged(meta.getId(), meta.getStateId()));
             fireEvent(new IssueEvents.IssueMetaChanged(meta));
             onParentIssueChanged(meta.getId());
-            fireEvent(new CaseHistoryEvents.Reload(meta.getId()));
+            fireEvent(new CommentAndHistoryEvents.Reload());
         });
     }
 
@@ -161,7 +161,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         onCaseMetaChanged(meta, () -> {
             fireEvent(new IssueEvents.IssueImportanceChanged(meta.getId()));
             fireEvent(new IssueEvents.IssueMetaChanged(meta));
-            fireEvent(new CaseHistoryEvents.Reload(meta.getId()));
+            fireEvent(new CommentAndHistoryEvents.Reload());
         });
 
         if (!isJiraIssue()) {
@@ -186,7 +186,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             fireEvent(new IssueEvents.IssueManagerChanged(meta.getId()));
             fireEvent(new IssueEvents.IssueMetaChanged(meta));
             onParentIssueChanged(meta.getId());
-            fireEvent(new CaseHistoryEvents.Reload(meta.getId()));
+            fireEvent(new CommentAndHistoryEvents.Reload());
         } );
     }
 
@@ -374,7 +374,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
                 .withSuccess(updatedPlans -> {
                     metaView.ownerPlans().setValue(updatedPlans);
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new CaseHistoryEvents.Reload(meta.getId()));
+                    fireEvent(new CommentAndHistoryEvents.Reload());
                 })
         );
     }

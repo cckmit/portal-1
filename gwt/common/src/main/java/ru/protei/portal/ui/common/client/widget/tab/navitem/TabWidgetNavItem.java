@@ -26,7 +26,7 @@ public class TabWidgetNavItem extends Composite {
         anchor.addStyleName("active show");
     }
 
-    public void setInActive() {
+    public void setInactive() {
         anchor.removeStyleName("active show");
     }
 

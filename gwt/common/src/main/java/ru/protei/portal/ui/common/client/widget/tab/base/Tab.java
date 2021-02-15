@@ -116,7 +116,7 @@ public abstract class Tab extends Composite implements HasWidgets, TabHandler {
 
     private void setNavItemSelected(String tabName) {
         for (Map.Entry<String, TabWidgetNavItem> entry : tabNameToNavItem.entrySet()) {
-            entry.getValue().setInActive();
+            entry.getValue().setInactive();
             if (Objects.equals(tabName, entry.getKey())) {
                 entry.getValue().setActive();
             }
@@ -125,7 +125,7 @@ public abstract class Tab extends Composite implements HasWidgets, TabHandler {
 
     private void setPaneSelected(String tabName) {
         for (Map.Entry<String, TabWidgetPane> entry : tabNameToPane.entrySet()) {
-            entry.getValue().setInActive();
+            entry.getValue().setInactive();
             if (Objects.equals(tabName, entry.getKey())) {
                 entry.getValue().setActive();
             }

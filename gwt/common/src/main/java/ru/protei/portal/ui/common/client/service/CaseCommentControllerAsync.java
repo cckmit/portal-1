@@ -4,6 +4,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.ent.CommentsAndHistories;
 
 import java.util.List;
 
@@ -18,4 +19,6 @@ public interface CaseCommentControllerAsync {
     void updateCaseTimeElapsedType(Long caseCommentId, En_TimeElapsedType type, AsyncCallback<Boolean> async);
 
     void getCaseComment( Long commentId, AsyncCallback<CaseComment> async );
+
+    void getCommentsAndHistories(En_CaseType caseType, Long caseId, AsyncCallback<CommentsAndHistories> async);
 }

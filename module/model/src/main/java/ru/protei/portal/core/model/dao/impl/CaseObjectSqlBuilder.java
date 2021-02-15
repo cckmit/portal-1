@@ -191,31 +191,6 @@ public class CaseObjectSqlBuilder {
                 args.add(HelperFunc.makeLikeArg(query.getSearchCasenoString(), true));
             }
 
-            if (query.isFindRecordByCaseComments()) {
-                condition.append(" and case_object.id in (SELECT case_comment.case_id FROM case_comment " +
-                        "WHERE 2=2");
-
-                if ( modified != null ) {
-                    if (modified.from != null) {
-                        condition.append( " and case_comment.created >= ?" );
-                        args.add( modified.from );
-                    }
-                    if (modified.to != null) {
-                        condition.append( " and case_comment.created < ?" );
-                        args.add( modified.to );
-                    }
-                }
-
-                if ( query.getStateIds() != null ) {
-                    condition.append( " and case_comment.cstate_id in " + makeInArg(query.getStateIds()));
-                }
-                if ( query.getManagerIds() != null ) {
-                    condition.append( " and manager in " +  makeInArg(query.getManagerIds()));
-                }
-
-                condition.append(")");
-            }
-
             if (isNotEmpty(query.getCreatorIds())) {
                 condition
                         .append(" and case_object.CREATOR in ")
