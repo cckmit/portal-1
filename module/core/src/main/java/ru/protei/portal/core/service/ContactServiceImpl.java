@@ -10,9 +10,13 @@ import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.UserLogin;
+import ru.protei.portal.core.model.ent.UserLoginShortView;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.ContactQuery;
+import ru.protei.portal.core.model.query.UserLoginShortViewQuery;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -20,13 +24,12 @@ import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
+import static java.util.stream.Collectors.*;
 
 /**
  * Реализация сервиса управления контактами
@@ -52,13 +55,34 @@ public class ContactServiceImpl implements ContactService {
     @Autowired
     CompanyGroupHomeDAO companyGroupHomeDAO;
     @Autowired
+    UserLoginShortViewDAO userLoginShortViewDAO;
+    @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
 
     @Override
     public Result<SearchResult<Person>> getContactsSearchResult( AuthToken token, ContactQuery query) {
         SearchResult<Person> sr = personDAO.getContactsSearchResult(query);
-        jdbcManyRelationsHelper.fill(sr.getResults(), Person.Fields.CONTACT_ITEMS);
+        List<Person> persons = sr.getResults();
+
+        persons.forEach(person -> {
+            List<UserLogin> logins = userLoginDAO.findByPersonId(person.getId());
+            if (CollectionUtils.isNotEmpty(logins)) {
+                person.setLogins(logins.stream().map(UserLogin::getUlogin)
+                                       .collect(joining(", ")));
+            }
+        });
+
+        UserLoginShortViewQuery userLoginsQuery = new UserLoginShortViewQuery();
+        userLoginsQuery.setPersonIds(persons.stream().map(Person::getId).collect(toSet()));
+
+        Set<Long> personWithAccountIds = userLoginShortViewDAO.getSearchResult(userLoginsQuery).getResults()
+                                                              .stream().map(UserLoginShortView::getPersonId)
+                                                              .collect(toSet());
+
+        persons.forEach(person -> person.setHasAccount(personWithAccountIds.contains(person.getId())));
+
+        jdbcManyRelationsHelper.fill(persons, Person.Fields.CONTACT_ITEMS);
         return ok(sr);
     }
 

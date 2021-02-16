@@ -428,7 +428,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contactGeneratePassword();
 
-    String contactHasCrmAccount();
+    String contactHasAccount();
 
     String product();
 

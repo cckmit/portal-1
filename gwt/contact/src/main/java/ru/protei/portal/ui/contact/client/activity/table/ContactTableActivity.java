@@ -10,9 +10,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.ent.UserLoginShortView;
 import ru.protei.portal.core.model.query.ContactQuery;
-import ru.protei.portal.core.model.query.UserLoginShortViewQuery;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -20,7 +18,6 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
 import ru.protei.portal.ui.common.client.service.ContactControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.contact.client.activity.filter.AbstractContactFilterActivity;
@@ -29,8 +26,6 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.StringUtils.*;
 import static ru.protei.portal.core.model.util.AlternativeKeyboardLayoutTextService.*;
@@ -151,22 +146,7 @@ public abstract class ContactTableActivity
                         restoreScroll();
                     }
 
-                    List<Person> persons = sr.getResults();
-
-                    UserLoginShortViewQuery loginQuery = new UserLoginShortViewQuery();
-                    loginQuery.setPersonIds(persons.stream().map(Person::getId)
-                                                   .collect(Collectors.toSet()));
-
-                    accountService.getUserLoginShortViewList(loginQuery, new FluentCallback<List<UserLoginShortView>>()
-                            .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR)))
-                            .withSuccess(userLoginShortViews -> {
-                            Set<Long> personWithAccountIds = userLoginShortViews.stream().map(UserLoginShortView::getPersonId)
-                                                                                .collect(Collectors.toSet());
-
-                            persons.forEach(person -> person.setHasCrmAccount(personWithAccountIds.contains(person.getId())));
-                            asyncCallback.onSuccess(persons);
-                        })
-                    );
+                    asyncCallback.onSuccess(sr.getResults());
                 })
         );
     }
@@ -232,8 +212,6 @@ public abstract class ContactTableActivity
 
     @Inject
     ContactControllerAsync contactService;
-    @Inject
-    AccountControllerAsync accountService;
 
     @Inject
     TableAnimation animation;

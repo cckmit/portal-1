@@ -88,7 +88,9 @@ public class Person extends AuditableObject {
     @JdbcColumn(name = "locale")
     private String locale;
 
-    private boolean hasCrmAccount;
+    private String logins;
+
+    private boolean hasAccount;
 
     public static Person fromPersonShortView( PersonShortView personShortView ){
         if(personShortView == null)
@@ -357,12 +359,20 @@ public class Person extends AuditableObject {
         }
     }
 
-    public boolean isHasCrmAccount() {
-        return hasCrmAccount;
+    public String getLogins() {
+        return logins;
     }
 
-    public void setHasCrmAccount(boolean hasCrmAccount) {
-        this.hasCrmAccount = hasCrmAccount;
+    public void setLogins(String logins) {
+        this.logins = logins;
+    }
+
+    public boolean isHasAccount() {
+        return hasAccount;
+    }
+
+    public void setHasAccount(boolean hasAccount) {
+        this.hasAccount = hasAccount;
     }
 
     @Override
@@ -391,6 +401,8 @@ public class Person extends AuditableObject {
                 ", oldId=" + oldId +
                 ", relations='" + relations + '\'' +
                 ", locale='" + locale + '\'' +
+                ", logins='" + logins + '\'' +
+                ", hasAccount=" + hasAccount +
                 '}';
     }
 

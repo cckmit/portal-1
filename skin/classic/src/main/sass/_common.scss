@@ -642,6 +642,7 @@ label.bordered:after {
             white-space: pre-line;
             overflow: hidden;
             text-overflow: ellipsis;
+            position: relative;
           }
         }
       }
@@ -5273,6 +5274,12 @@ table {
     margin-right: 7px;
 }
 
-.contacts table tbody tr td > div {
-  position: relative;
+.account-icon {
+  color: #10cfbd;
+  background-color: white;
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  border: 2px solid #fff;
+  border-radius: 50%;
 }

@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.contact.client.view.table;
 
-import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
@@ -118,17 +117,10 @@ public abstract class ContactTableViewBase extends Composite {
         return new DynamicColumn<>(null, "column-img", value -> {
             String html = "<img src='" + AvatarUtils.getAvatarUrlByGender(value.getGender()) + "'></img>";
 
-            if (value.isHasCrmAccount()) {
-                html += "<i class=\"fa fa-user-circle\" style=\"\n" +
-                        "    color: #fff;\n" +
-                        "    position: absolute;\n" +
-                        "    right: 10px;\n" +
-                        "    bottom: 10px;\n" +
-                        "    border: 2px solid #fff;\n" +
-                        "    border-radius: 50%;\n" +
-                        "    color: #10cfbd;\n" +
-                        "    background-color: white;\n\"" +
-                        "    title=\"" + lang.contactHasCrmAccount() + "\"></i>";
+            if (value.isHasAccount()) {
+                html += "<i class=\"fa fa-user-circle account-icon\" " +
+                        "   title=\"" + lang.contactHasAccount() + "\">" +
+                        "</i>";
             }
 
             return html;
