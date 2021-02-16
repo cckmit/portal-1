@@ -120,8 +120,6 @@ public class Project extends AuditableObject {
     @JdbcOneToMany( table = "platform", localColumn = "id", remoteColumn = "project_id" )
     private List<Platform> platforms;
 
-    private List<String> platformsNames;
-
     @JdbcColumn(name = "technical_support_validity")
     private Date technicalSupportValidity;
 
@@ -379,14 +377,6 @@ public class Project extends AuditableObject {
         this.managerName = managerName;
     }
 
-    public List<String> getPlatformsNames() {
-        return platformsNames;
-    }
-
-    public void setPlatformsNames(List<String> platformsNames) {
-        this.platformsNames = platformsNames;
-    }
-
     public List<Platform> getPlatforms() {
         return platforms;
     }
@@ -494,7 +484,6 @@ public class Project extends AuditableObject {
                 ", creator=" + creator +
                 ", managerId=" + managerId +
                 ", managerName='" + managerName + '\'' +
-                ", platformsNames='" + platformsNames +
                 ", platformsIds=" + platforms.stream().map(Platform::getId).collect(Collectors.toList()) +
                 ", technicalSupportValidity=" + technicalSupportValidity +
                 ", workCompletionDate=" + workCompletionDate +

@@ -229,12 +229,7 @@ public class ProjectServiceImpl implements ProjectService {
             return error(En_ResultStatus.NOT_FOUND, "Project was not found");
         }
 
-        List<Platform> platforms = platformDAO.getByProjectId(id);
-
-        if (platforms != null) {
-            project.setPlatforms(platforms);
-            project.setPlatformsNames(platforms.stream().map(Platform::getName).collect(toList()));
-        }
+        project.setPlatforms(platformDAO.getByProjectId(id));
 
         jdbcManyRelationsHelper.fillAll( project );
         project.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(project.getId())));
