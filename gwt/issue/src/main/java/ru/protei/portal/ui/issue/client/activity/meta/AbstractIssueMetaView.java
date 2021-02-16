@@ -56,6 +56,8 @@ public interface AbstractIssueMetaView extends IsWidget {
 
     HasVisibility timeElapsedHeaderVisibility();
 
+    void setStateWorkflow(En_CaseStateWorkflow workflow);
+
     HasValidable stateValidator();
     HasValidable importanceValidator();
     HasValidable companyValidator();

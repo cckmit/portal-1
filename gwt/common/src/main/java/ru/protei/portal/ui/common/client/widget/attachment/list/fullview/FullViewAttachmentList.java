@@ -56,7 +56,6 @@ public class FullViewAttachmentList extends Composite implements HasAttachments,
         );
     }
 
-
     @Override
     public void add(Collection<Attachment> attachments) {
         if (CollectionUtils.isEmpty(attachments)) {

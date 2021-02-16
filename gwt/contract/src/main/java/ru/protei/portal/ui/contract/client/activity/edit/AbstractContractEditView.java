@@ -5,14 +5,12 @@ import ru.protei.portal.core.model.dict.En_ContractKind;
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.dto.ProjectInfo;
-import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.ent.ContractSpecification;
 import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.struct.MoneyWithCurrencyWithVat;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
-import ru.protei.portal.ui.contract.client.widget.contractdates.list.ContractDatesList;
 
 import java.util.Date;
 import java.util.List;
@@ -43,9 +41,7 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasValue<Long> dateValidDays();
 
-    ContractDatesList contractDatesList();
-
-    HasValue<List<ContractDate>> contractDates();
+    HasWidgets getContractDateTableContainer();
 
     HasValue<List<ContractSpecification>> contractSpecifications();
 
@@ -59,39 +55,27 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasValue<ProjectInfo> project();
 
+    void setProjectManager(String value);
+
+    HasValue<PersonShortView> contractSignManager();
+
     HasValue<Contractor> contractor();
+
+    HasValue<String> deliveryNumber();
 
     HasEnabled contractorEnabled();
 
-    HasValue<PersonShortView> manager();
-
-    HasValue<String> directions();
+    void setDirections(String value);
 
     void setOrganization(String organization);
-
-    HasValue<Boolean> secondContractCheckbox();
-
-    HasVisibility secondContractCheckboxVisibility();
-
-    HasVisibility secondContractVisibility();
-
-    HasValue<String> secondContractNumber();
-
-    HasValue<EntityOption> secondContractOrganization();
-
-    HasValue<Contractor> secondContractContractor();
-
-    HasEnabled secondContractContractorEnabled();
-
-    void setSecondContractOrganization(String organization);
-
-    HasWidgets expenditureContractsContainer();
-
-    HasVisibility expenditureContractsVisibility();
 
     HasVisibility tagsVisibility();
 
     HasVisibility tagsButtonVisibility();
 
     HasWidgets tagsContainer();
+
+    HasWidgets expenditureContractsContainer();
+
+    HasVisibility expenditureContractsVisibility();
 }

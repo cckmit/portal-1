@@ -1,0 +1,17 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel ui:field="root" tag="li" styleName="timeline-block row reset-no-padding form-group case-history-item-container" visible="false">
+        <div class="col-md-12 p-r-5">
+            <g:HTMLPanel tag="span" styleName="timeline-point case-history-icon" ui:field="historyIconContainer">
+                <span class="float-left case-history-time-icon fas fa-history fa-lg"/>
+            </g:HTMLPanel>
+            <g:HTMLPanel tag="span" styleName="float-left m-l-10 m-r-10 font-weight-bold case-history-initiator" ui:field="initiator"/>
+            <g:HTMLPanel tag="span" styleName="case-history-item-date" ui:field="date"/>
+        </div>
+        <g:HTMLPanel styleName="col-md-12" ui:field="itemsContainer"/>
+    </g:HTMLPanel>
+</ui:UiBinder>

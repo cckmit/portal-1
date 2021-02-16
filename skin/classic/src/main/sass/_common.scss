@@ -1417,126 +1417,6 @@ td.info {
   border-radius: .25em;
 }
 
-/*** LABELS OF STATES ***/
-.label-created,
-.label-draft_project,
-.option-created .option-name,
-.option-draft_project .option-name {
-  background-color: #ef5350;
-}
-
-.case-created {
-  color: #ef5350;
-  font-weight: bold;
-}
-
-.label-opened,
-.label-workaround,
-.label-info_request,
-.label-technical_project,
-.label-request_to_nx,
-.label-request_to_customer,
-.option-opened .option-name,
-.option-workaround .option-name,
-.option-info_request .option-name,
-.option-technical_project .option-name,
-.option-request_to_nx .option-name,
-.option-request_to_customer .option-name {
-  background-color: $info_color;
-}
-
-.case-opened, .case-workaround, .case-info_request,
-.case-request_to_nx, .case-request_to_customer {
-  color: $info_color;
-  font-weight: bold;
-}
-
-.label-active,
-.label-rkd_prototype,
-.option-active .option-name,
-.option-rkd_prototype .option-name {
-  background-color: $info_light_color;
-}
-
-.case-active {
-  color: $info_light_color;
-  font-weight: bold;
-}
-
-.label-development,
-.option-development .option-name,
-.label-customer_pending,
-.option-customer_pending .option-name {
-  background-color: #133aadcf;
-}
-
-.case-development,
-.case-customer_pending {
-  color: #133aadcf;
-  font-weight: bold;
-}
-
-.label-done,
-.label-rkd_product,
-.option-done .option-name,
-.option-rkd_product .option-name {
-  background-color: #4caf50;
-}
-
-.case-done {
-  color: #4caf50;
-  font-weight: bold;
-}
-
-.label-local_test,
-.label-customer_test,
-.option-local_test .option-name,
-.option-customer_test .option-name {
-  background-color: #906094;
-}
-
-.case-local_test,
-.case-customer_test {
-  color: #906094;
-  font-weight: bold;
-}
-
-.label-verified,
-.option-verified .option-name {
-  background-color: #607D8B;
-}
-
-.case-verified {
-  color: #607D8B;
-  font-weight: bold;
-}
-
-.label-canceled,
-.label-paused,
-.label-request_to_partner,
-.option-canceled .option-name,
-.option-paused .option-name,
-.option-request_to_partner .option-name {
-  background-color: #868686;
-}
-
-.case-canceled,
-.case-paused,
-.case-request_to_partner {
-  color: #868686;
-  font-weight: bold;
-}
-
-.label-blocked,
-.option-blocked .option-name {
-  background-color: black;
-}
-
-.case-blocked {
-  color: black;
-  font-weight: bold;
-}
-
 .option-name {
   display: inline-block;
   padding: .2em .6em .3em;
@@ -1548,6 +1428,8 @@ td.info {
   position: relative;
   top: -6px;
 }
+
+/*** REPORT STATES LABELS ***/
 
 .label-report-created,
 .option-report-created {
@@ -4803,8 +4685,43 @@ table {
 .case-history {
   list-style: none;
   padding: 0;
+  font-size: 13px;
+
   .case-history-item-date {
-    color: #999;
+    margin-left: 5px;
+  }
+
+  .case-history-item-container {
+    line-height: 24px;
+    margin-bottom: 10px;
+
+    &.without-initiator {
+      margin-top: 1em;
+
+      .case-history-icon {
+        display: none;
+      }
+
+      .case-history-initiator {
+        display: none;
+      }
+
+      .case-history-item-date {
+        margin-left: 2.8em;
+      }
+    }
+
+    > div {
+      padding-left: 1em;
+    }
+
+    .case-history-initiator {
+      margin-left: 2.8em;
+    }
+
+    .case-history-item .row div {
+      padding-left: 4em;
+    }
   }
 }
 
@@ -4817,19 +4734,25 @@ table {
   .nav-tabs ~ .tab-content {
     overflow: unset;
   }
+
+  .nav-tabs {
+    .nav-item {
+      a {
+        color: rgba(98, 98, 98, .7);
+
+        &.active.show {
+          color: #626262;
+        }
+
+        &:focus {
+          color: rgba(98, 98, 98, .7);
+        }
+      }
+    }
+  }
 }
 
-.history-item-history-type {
-  float: left;
-  margin-right: 10px;
-}
-
-.history-item-initiator {
-  float: left;
-  margin-right: 10px;
-}
-
-.history-item-added-value, .history-item-removed-value {
+.case-history-item-added-value, .case-history-item-removed-value {
   white-space: nowrap;
   float: left;
   max-width: 90%;
@@ -4837,17 +4760,29 @@ table {
   overflow: hidden;
 }
 
-.history-item-changed-value {
+.case-history-time-icon {
+  margin-top: 4px;
+}
+
+.case-history-item-removed-value {
+  text-decoration: line-through;
+}
+
+.case-history-state-item {
+  color: #5e5e5e;
+}
+
+.case-history-item-changed-value {
   float: left;
-  .history-item-old-value, .history-item-new-value {
+  .case-history-item-old-value, .case-history-item-new-value {
     white-space: nowrap;
     float: left;
-    max-width: 60%;
     text-overflow: ellipsis;
     overflow: hidden;
+    font-weight: bold;
   }
 
-  .history-arrow-icon {
+  .case-history-arrow-icon {
     float: left;
     margin-left: 5px;
     margin-right: 5px;
@@ -4855,6 +4790,18 @@ table {
   }
 }
 
+.case-history-tag-icon, .case-history-importance-icon {
+  display: inline-block;
+  border-radius: 2px;
+  width: 18px;
+  height: 19px;
+  text-align: center;
+  line-height: 22px;
+  font-size: 10px;
+  font-weight: bold;
+  position: relative;
+  bottom: 1px;
+}
 
 .fired {
   opacity: 0.5;
@@ -5286,6 +5233,44 @@ table {
   .dropdown-menu ul > li > a {
     padding: 3px 10px;
   }
+}
+
+.b-r-0 {
+  border-radius: 0 !important;
+}
+
+.chats.case-history {
+  .timeline {
+    padding-top: 0;
+    padding-bottom: 0;
+    &::before {
+      top: 25px;
+      height: calc(100% - 25px);
+      background-color: #ddd;
+    }
+    .timeline-point {
+      top: auto;
+      background-color: white;
+      border-color: #ddd;
+      left: -1px;
+      &.case-history-icon {
+        top: 5px;
+        width: 30px;
+        height: 30px;
+        background-color: white;
+        border-color: #ddd;
+        left: 4px;
+        .fas.fa-history {
+          margin-left: 4px;
+          margin-top: 7px
+        }
+      }
+    }
+  }
+}
+
+.project-platform {
+    margin-right: 7px;
 }
 
 .contacts table tbody tr td > div {

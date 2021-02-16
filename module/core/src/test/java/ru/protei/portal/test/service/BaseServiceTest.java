@@ -117,16 +117,11 @@ public class BaseServiceTest {
     }
 
     protected static CaseComment createNewComment( Person person, Long caseObjectId, String text ) {
-        return createNewComment( person, caseObjectId, text, null );
-    }
-
-    protected static CaseComment createNewComment( Person person, Long caseObjectId, String text, Long caseStateId ) {
         CaseComment comment = new CaseComment( text );
         comment.setCreated( new Date() );
         comment.setCaseId( caseObjectId );
         comment.setAuthorId( person.getId() );
         comment.setText( text );
-        if (caseStateId != null) comment.setCaseStateId( caseStateId );
         comment.setCaseAttachments( Collections.emptyList() );
         comment.setPrivacyType(En_CaseCommentPrivacyType.PUBLIC);
         return comment;
@@ -240,11 +235,7 @@ public class BaseServiceTest {
     }
 
     protected CaseComment makeCaseComment(Person person, Long caseObjectId, String text) {
-        return makeCaseComment(person, caseObjectId, text, null);
-    }
-
-    protected CaseComment makeCaseComment(Person person, Long caseObjectId, String text, Long caseStateId) {
-        CaseComment caseComment = createNewComment(person, caseObjectId, text, caseStateId);
+        CaseComment caseComment = createNewComment(person, caseObjectId, text);
         caseComment.setId(caseCommentDAO.persist(caseComment));
         caseComment.setPrivacyType(En_CaseCommentPrivacyType.PUBLIC);
         return caseComment;

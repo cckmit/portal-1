@@ -25,8 +25,7 @@ import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -121,7 +120,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.setRegion( value.getRegion() == null ? "" : value.getRegion().getDisplayText() );
         view.setCompany(value.getCustomer() == null ? "" : value.getCustomer().getCname());
         view.setContracts(emptyIfNull(value.getContracts()).stream().collect(Collectors.toMap(EntityOption::getDisplayText, contract -> LinkUtils.makePreviewLink(Contract.class, contract.getId()))));
-        view.setPlatform(value.getPlatformName() == null ? "" : value.getPlatformName(), LinkUtils.makePreviewLink(Platform.class, value.getPlatformId()));
+        view.setPlatforms(value.getPlatforms() == null ? Collections.emptyList() : value.getPlatforms());
         view.setSubcontractors(stream(value.getSubcontractors()).map(Company::getCname).collect(Collectors.joining(", ")));
 
         if( isNotEmpty(value.getTeam()) ) {
@@ -167,7 +166,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
             view.getLinksContainer().clear();
         }
 
-        CaseCommentEvents.Show showComments = new CaseCommentEvents.Show(
+        CommentAndHistoryEvents.Show showComments = new CommentAndHistoryEvents.Show(
             view.getCommentsContainer(),
             value.getId(),
             En_CaseType.PROJECT,

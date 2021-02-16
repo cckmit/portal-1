@@ -40,7 +40,7 @@ public class TabWidgetPane extends Composite implements HasWidgets {
         root.addStyleName("active show");
     }
 
-    public void setInActive() {
+    public void setInactive() {
         root.removeStyleName("active show");
     }
 

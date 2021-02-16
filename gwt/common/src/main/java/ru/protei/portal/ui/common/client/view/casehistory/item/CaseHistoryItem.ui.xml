@@ -1,0 +1,22 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <g:HTMLPanel styleName="case-history-item">
+        <div class="row">
+            <div class="col-md-12">
+                <span ui:field="historyType" class="float-left"/>
+                <g:Anchor ui:field="historyTypeLink" styleName="m-l-10 float-left" href="javascript:void(0);" visible="false"/>
+                <span class="float-left m-r-10">:</span>
+                <g:HTMLPanel ui:field="addedValueContainer" tag="span"
+                             styleName="case-history-item-added-value font-weight-bold"/>
+                <g:HTMLPanel ui:field="changedValueContainer" tag="span" styleName="case-history-item-changed-value">
+                    <g:HTMLPanel ui:field="oldValueContainer" styleName="case-history-item-old-value" tag="span"/>
+                    <i class="fas fa-long-arrow-alt-right case-history-arrow-icon"/>
+                    <g:HTMLPanel ui:field="newValueContainer" styleName="case-history-item-new-value" tag="span"/>
+                </g:HTMLPanel>
+                <g:HTMLPanel ui:field="removedValueContainer" tag="span"
+                             styleName="case-history-item-removed-value font-weight-bold"/>
+            </div>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

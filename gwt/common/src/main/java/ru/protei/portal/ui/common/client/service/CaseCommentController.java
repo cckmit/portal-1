@@ -5,6 +5,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.ent.CommentsAndHistories;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import java.util.List;
@@ -16,6 +17,12 @@ public interface CaseCommentController extends RemoteService {
      * Получение списка комментариев
      */
     List<CaseComment> getCaseComments(En_CaseType caseType, Long caseId) throws RequestFailedException;
+
+    /**
+     * Получение списка комментариев и истории
+     */
+    CommentsAndHistories getCommentsAndHistories(En_CaseType caseType, Long caseId) throws RequestFailedException;
+
     CaseComment getCaseComment(Long commentId) throws RequestFailedException;
 
     /**

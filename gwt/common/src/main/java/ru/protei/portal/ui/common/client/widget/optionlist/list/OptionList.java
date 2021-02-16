@@ -65,7 +65,7 @@ public class OptionList<T>
         this.header.removeClassName(HIDE);
     }
 
-    public void addOption( String name, String info, String text, T value, String styleName, String title ) {
+    public void addOption( String name, String info, String text, T value, String styleName, String title, String color ) {
         if ( filter != null && !filter.isDisplayed( value ) ) {
             return;
         }
@@ -93,11 +93,14 @@ public class OptionList<T>
         if ( styleName != null ) {
             itemView.setStyleName( styleName );
         }
+        if ( color != null ) {
+            itemView.setNameBackgroundColor( color );
+        }
         container.add( itemView.asWidget() );
     }
 
     public void addOption(String name, String info, String text, T value, String styleName) {
-        addOption(name, info, text, value, styleName, null);
+        addOption(name, info, text, value, styleName, null, null);
     }
 
     public void addOption( String name, T value ) {
@@ -105,11 +108,15 @@ public class OptionList<T>
     }
 
     public void addOption(String name, T value, String styleName, String title) {
-        addOption(name, null, null, value, styleName, title);
+        addOption(name, null, null, value, styleName, title, null);
     }
 
     public void addOption( String name, T value, String styleName ) {
         addOption( name, null, null, value, styleName );
+    }
+
+    public void addOption(String name, T value, String styleName, String title, String color) {
+        addOption(name, null, null, value, styleName, title, color);
     }
 
     @Override

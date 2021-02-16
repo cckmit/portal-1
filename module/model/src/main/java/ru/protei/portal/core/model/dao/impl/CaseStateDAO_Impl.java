@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.dao.impl;
 import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseState;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 import ru.protei.winter.jdbc.JdbcSort;
 
@@ -34,5 +35,10 @@ public class CaseStateDAO_Impl extends PortalBaseJdbcDAO<CaseState> implements C
     @Override
     public CaseState getCaseStateByCaseId(Long caseId) {
         return getByCondition("id = (select STATE from case_object where id = ?)", caseId);
+    }
+
+    @Override
+    public List<CaseState> getCaseStatesByIds(List<Long> ids) {
+        return getListByCondition("case_state.id IN " + HelperFunc.makeInArg(ids));
     }
 }

@@ -39,7 +39,7 @@ public abstract class ProjectStateBtnGroupModel extends BaseSelectorModel<CaseSt
     }
 
     private void refreshOptions() {
-        caseStateController.getCaseStates(En_CaseType.PROJECT, new FluentCallback<List<CaseState>>()
+        caseStateController.getCaseStatesOmitPrivileges(En_CaseType.PROJECT, new FluentCallback<List<CaseState>>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR)))
                 .withSuccess(this::notifySubscribers));
     }

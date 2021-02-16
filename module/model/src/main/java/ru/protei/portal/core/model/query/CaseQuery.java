@@ -87,8 +87,6 @@ public class CaseQuery extends BaseQuery {
 
     private boolean customerSearch = false;
 
-    private boolean findRecordByCaseComments;
-
     private Integer local;
 
     private List<Long> creatorIds;
@@ -147,7 +145,6 @@ public class CaseQuery extends BaseQuery {
         setCommentAuthorIds(query.getCommentAuthorIds());
         setCaseTagsIds(query.getCaseTagsIds());
         setCaseTagsNames(query.getCaseTagsNames());
-        setFindRecordByCaseComments(query.isFindRecordByCaseComments());
         setCustomerSearch(query.isCustomerSearch());
         setLocal(query.getLocal());
         setCreatorIds(query.getCreatorIds());
@@ -323,14 +320,6 @@ public class CaseQuery extends BaseQuery {
         this.caseTagsNames = caseTagsNames;
     }
 
-    public boolean isFindRecordByCaseComments() {
-        return findRecordByCaseComments;
-    }
-
-    public void setFindRecordByCaseComments(boolean findRecordByCaseComments) {
-        this.findRecordByCaseComments = findRecordByCaseComments;
-    }
-
     public boolean isCustomerSearch() {
         return customerSearch;
     }
@@ -471,7 +460,6 @@ public class CaseQuery extends BaseQuery {
                 ", caseTagsIds=" + caseTagsIds +
                 ", caseTagsNames=" + caseTagsNames +
                 ", customerSearch=" + customerSearch +
-                ", findRecordByCaseComments=" + findRecordByCaseComments +
                 ", local=" + local +
                 ", creatorIds=" + creatorIds +
                 ", isCheckImportanceHistory=" + isCheckImportanceHistory +
@@ -490,7 +478,6 @@ public class CaseQuery extends BaseQuery {
         return allowViewPrivate == caseQuery.allowViewPrivate &&
                 searchStringAtComments == caseQuery.searchStringAtComments &&
                 customerSearch == caseQuery.customerSearch &&
-                findRecordByCaseComments == caseQuery.findRecordByCaseComments &&
                 Objects.equals(id, caseQuery.id) &&
                 Objects.equals(caseNumbers, caseQuery.caseNumbers) &&
                 Objects.equals(caseIds, caseQuery.caseIds) &&
@@ -525,8 +512,7 @@ public class CaseQuery extends BaseQuery {
         return Objects.hash(id, caseNumbers, caseIds, companyIds, managerCompanyIds, initiatorIds, productIds, locationIds, districtIds, managerIds,
                 type, stateIds, importanceIds, allowViewPrivate, viewPrivate, createdRange, modifiedRange,
                 searchStringAtComments, searchCasenoString, commentAuthorIds, caseTagsIds, caseTagsNames,
-                customerSearch, findRecordByCaseComments, local,
-                creatorIds, planId, personIdToIsFavorite,
+                customerSearch, local, creatorIds, planId, personIdToIsFavorite,
                 timeElapsedTypeIds, workTriggersIds, overdueDeadlines);
     }
 }

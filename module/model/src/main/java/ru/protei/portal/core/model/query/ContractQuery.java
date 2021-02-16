@@ -3,8 +3,10 @@ package ru.protei.portal.core.model.query;
 import ru.protei.portal.core.model.dict.En_ContractKind;
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.DateRange;
 
+import java.util.Date;
 import java.util.List;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
@@ -34,6 +36,12 @@ public class ContractQuery extends BaseQuery {
     private List<Long> parentContractIds;
 
     private List<Long> curatorIds;
+
+    private List<String> refKeys;
+
+    private Date openStateDate;
+
+    private String deliveryNumber;
 
     public Long getDirectionId() {
         return directionId;
@@ -131,6 +139,30 @@ public class ContractQuery extends BaseQuery {
         this.curatorIds = curatorIds;
     }
 
+    public List<String> getRefKeys() {
+        return refKeys;
+    }
+
+    public void setRefKeys(List<String> refKeys) {
+        this.refKeys = refKeys;
+    }
+
+    public Date getOpenStateDate() {
+        return openStateDate;
+    }
+
+    public void setOpenStateDate(Date openStateDate) {
+        this.openStateDate = openStateDate;
+    }
+
+    public String getDeliveryNumber() {
+        return deliveryNumber;
+    }
+
+    public void setDeliveryNumber(String deliveryNumber) {
+        this.deliveryNumber = deliveryNumber;
+    }
+
     @Override
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
@@ -138,6 +170,8 @@ public class ContractQuery extends BaseQuery {
                 dateSigningRange != null ||
                 dateValidRange != null ||
                 kind != null ||
+                openStateDate != null ||
+                StringUtils.isNotEmpty(deliveryNumber) ||
                 isNotEmpty(types) ||
                 isNotEmpty(states) ||
                 isNotEmpty(caseTagsIds) ||
@@ -145,7 +179,8 @@ public class ContractQuery extends BaseQuery {
                 isNotEmpty(contractorIds) ||
                 isNotEmpty(curatorIds) ||
                 isNotEmpty(organizationIds) ||
-                isNotEmpty(parentContractIds);
+                isNotEmpty(parentContractIds) ||
+                isNotEmpty(refKeys);
     }
 
     @Override
@@ -156,13 +191,16 @@ public class ContractQuery extends BaseQuery {
                 ", dateValidRange=" + dateValidRange +
                 ", kind=" + kind +
                 ", types=" + types +
-                ", states=" + states +
                 ", caseTagsIds=" + caseTagsIds +
+                ", states=" + states +
                 ", managerIds=" + managerIds +
                 ", contractorIds=" + contractorIds +
-                ", curatorIds=" + curatorIds +
                 ", organizationIds=" + organizationIds +
                 ", parentContractIds=" + parentContractIds +
+                ", curatorIds=" + curatorIds +
+                ", refKeys=" + refKeys +
+                ", openStateDate=" + openStateDate +
+                ", deliveryNumber=" + deliveryNumber +
                 '}';
     }
 }

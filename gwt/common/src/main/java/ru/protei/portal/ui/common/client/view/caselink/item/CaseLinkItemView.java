@@ -50,7 +50,7 @@ public class CaseLinkItemView extends Composite implements AbstractCaseLinkItemV
     @Override
     public void setState(CaseState value) {
         if (value == null) return;
-        state.addClassName("state-" + CaseStateUtils.makeStyleName(value.getState()));
+        state.getStyle().setColor(value.getColor());
         if (isCompletedState(value.getId())) {
             addStyleName("case-link-completed");
         }

@@ -63,6 +63,10 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     PolicyService policyService;
     @Autowired
     AuthService authService;
+    @Autowired
+    HistoryService historyService;
+    @Autowired
+    HistoryDAO historyDAO;
 
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
@@ -648,6 +652,30 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
         return ok(true).publishEvent( new CaseCommentEvent( this, ServiceModule.GENERAL, person.getId(), comment.getCaseId(), isEagerEvent,
                 null, comment, null) );
+    }
+
+    @Override
+    public Result<CommentsAndHistories> getCommentsAndHistories(AuthToken token, En_CaseType caseType, long caseObjectId) {
+        Result<List<CaseComment>> caseCommentListResult = getCaseCommentList(token, caseType, caseObjectId);
+
+        if (caseCommentListResult.isError()) {
+            return error(caseCommentListResult.getStatus());
+        }
+
+        Result<List<History>> historyListResult = En_CaseType.EMPLOYEE_REGISTRATION.equals(caseType) ?
+                historyService.getHistoryListWithEmployeeRegistrationHistory(token, caseObjectId) :
+                historyService.getHistoryListByCaseId(token, caseObjectId);
+
+        if (historyListResult.isError()) {
+            return error(historyListResult.getStatus());
+        }
+
+        CommentsAndHistories commentsAndHistories = new CommentsAndHistories();
+
+        commentsAndHistories.setComments(caseCommentListResult.getData());
+        commentsAndHistories.setHistories(historyListResult.getData());
+
+        return ok(commentsAndHistories);
     }
 
     private CaseComment createComment(CaseObject caseObject, Person person, String comment) {

@@ -514,6 +514,11 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public EmployeeRegistrationHistoryDAO getEmployeeRegistrationHistoryDAO() {
+        return new EmployeeRegistrationHistoryDAO_Impl();
+    }
+
+    @Bean
     public PlanToCaseObjectDAO getPlanToCaseObjectDAO() {
         return new PlanToCaseObjectDAO_Impl();
     }

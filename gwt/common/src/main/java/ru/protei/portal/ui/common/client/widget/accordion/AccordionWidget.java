@@ -138,7 +138,7 @@ public class AccordionWidget extends Tab {
         TabWidgetNavItem navItem = new TabWidgetNavItem();
         navItem.setTabName(pane.getTabName());
         navItem.setActivity(this);
-        navItem.setInActive();
+        navItem.setInactive();
         return navItem;
     }
 

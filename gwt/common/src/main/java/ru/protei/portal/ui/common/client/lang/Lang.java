@@ -960,7 +960,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String projectCreate();
 
-    String projectSiteFolder();
+    String projectSiteFolders();
 
     String productDirectionNotSpecified();
 
@@ -2054,8 +2054,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractTypeWorkContract();
 
-    String contractTypeHardwareSoftwareService();
-
     String contractTypeRequest();
 
     String goToContracts();
@@ -2118,7 +2116,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractProjectNotDefined();
 
-    String contractManager();
+    String contractProjectManager();
 
     String contractCost();
 
@@ -2285,8 +2283,6 @@ public interface Lang extends Messages, ContactItemLang {
     String issueCommentElapsedTimeTypeLabel();
 
     String issueCommentElapsedTimeTypeChange();
-
-    String timeElapsedInfo();
 
     String privateComment();
 
@@ -3241,4 +3237,58 @@ public interface Lang extends Messages, ContactItemLang {
     String errNotAllowedIntegrationIssue();
 
     String help();
+
+    String contractTypeAdditionalAgreement();
+
+    String contractContractSignManager();
+
+    String contractDateColumn();
+
+    String contractCostColumn();
+
+    String contractCommentColumn();
+
+    String contractInAmount(String cost);
+
+    String contractDateType();
+
+    String contractDateComment();
+
+    String contractDateCalendarDay();
+
+    String contractDateDate();
+
+    String contractDateEditHeader();
+
+    String contractDatePercent();
+
+    String contractDatesBaseSection();
+
+    String contractDatesCostSection();
+
+    String contractDatesAdvanceSection();
+
+    String contractDateCostType();
+
+    String contractCostTypeServices();
+
+    String contractCostTypeSoftware();
+
+    String contractCostTypeEquipment();
+
+    String contractValidDay();
+
+    String contractValidDate();
+
+    String contractEDSSigned();
+
+    String contractSignedOnSite();
+
+    String contractTypeContract();
+
+    String contractTypeContractForService();
+
+    String contractTypeAgreement();
+
+    String contractDeliveryNumber();
 }

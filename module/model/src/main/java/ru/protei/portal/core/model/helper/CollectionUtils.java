@@ -414,4 +414,18 @@ public class CollectionUtils {
         transform( iterable, result, mapper );
         return joining(result, delimiter);
     }
+
+    public static <T> List<T> mergeLists(List<T> list1, List<T> list2) {
+        List<T> resultList = new ArrayList<>();
+
+        if (list1 != null) {
+            resultList.addAll(list1);
+        }
+
+        if (list2 != null) {
+            resultList.addAll(list2);
+        }
+
+        return resultList;
+    }
 }
