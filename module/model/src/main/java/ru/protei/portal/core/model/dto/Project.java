@@ -117,13 +117,8 @@ public class Project extends AuditableObject {
             @JdbcJoinPath(localColumn = Columns.MANAGER, remoteColumn = "id", table = "person")}, mappedColumn = "displayShortName")
     private String managerName;
 
-    @JdbcJoinedColumn(joinPath = {
-            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
-            @JdbcJoinPath(localColumn = Columns.PLATFORM_ID, remoteColumn = "id", table = "platform")}, mappedColumn = "name")
-    private String platformName;
-
-    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Columns.PLATFORM_ID, table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
-    private Long platformId;
+    @JdbcOneToMany( table = "platform", localColumn = "id", remoteColumn = "project_id" )
+    private List<Platform> platforms;
 
     @JdbcColumn(name = "technical_support_validity")
     private Date technicalSupportValidity;
@@ -382,20 +377,12 @@ public class Project extends AuditableObject {
         this.managerName = managerName;
     }
 
-    public String getPlatformName() {
-        return platformName;
+    public List<Platform> getPlatforms() {
+        return platforms;
     }
 
-    public void setPlatformName(String platformName) {
-        this.platformName = platformName;
-    }
-
-    public Long getPlatformId() {
-        return platformId;
-    }
-
-    public void setPlatformId(Long platformId) {
-        this.platformId = platformId;
+    public void setPlatforms(List<Platform> platforms) {
+        this.platforms = platforms;
     }
 
     public Date getTechnicalSupportValidity() {
@@ -497,8 +484,7 @@ public class Project extends AuditableObject {
                 ", creator=" + creator +
                 ", managerId=" + managerId +
                 ", managerName='" + managerName + '\'' +
-                ", platformName='" + platformName + '\'' +
-                ", platformId=" + platformId +
+                ", platformsIds=" + platforms.stream().map(Platform::getId).collect(Collectors.toList()) +
                 ", technicalSupportValidity=" + technicalSupportValidity +
                 ", workCompletionDate=" + workCompletionDate +
                 ", purchaseDate=" + purchaseDate +
