@@ -4,6 +4,7 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.ent.ProjectSla;
 
 import java.util.List;
@@ -46,7 +47,7 @@ public interface AbstractProjectPreviewView extends IsWidget {
 
     void setContracts(Map<String, String> contractNumberToLink);
 
-    void setPlatforms(Map<String, String> platformToLink);
+    void setPlatforms(List<Platform> platforms);
 
     void isFullScreen(boolean isFullScreen);
 

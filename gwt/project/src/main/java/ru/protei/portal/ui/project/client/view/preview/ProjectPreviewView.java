@@ -11,11 +11,13 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CaseState;
+import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.ProjectStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.client.widget.sla.SlaInputReadOnly;
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewActivity;
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewView;
@@ -150,11 +152,12 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     }
 
     @Override
-    public void setPlatforms(Map<String, String> platformToLink) {
-        for (Map.Entry<String, String> entry: platformToLink.entrySet()) {
-            platforms.add(new Anchor(entry.getKey(), entry.getValue(), "_blank"));
-            if (platformToLink.size() > 1)
-                platforms.getElement().appendChild(DOM.createElement("br"));
+    public void setPlatforms(List<Platform> platformsList) {
+        for (Platform p: platformsList) {
+            String link = LinkUtils.makePreviewLink(Platform.class, p.getId());
+            Anchor a = new Anchor(p.getName(), link, "_blank");
+            a.setStyleName("project-platform");
+            platforms.add(a);
         }
     }
 

@@ -120,12 +120,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.setRegion( value.getRegion() == null ? "" : value.getRegion().getDisplayText() );
         view.setCompany(value.getCustomer() == null ? "" : value.getCustomer().getCname());
         view.setContracts(emptyIfNull(value.getContracts()).stream().collect(Collectors.toMap(EntityOption::getDisplayText, contract -> LinkUtils.makePreviewLink(Contract.class, contract.getId()))));
-
-        Map<String, String> platformToLink = new HashMap<>();
-        value.getPlatforms().forEach(platform -> platformToLink.put(platform.getName(),
-                                     LinkUtils.makePreviewLink(Platform.class, platform.getId())));
-        view.setPlatforms(platformToLink);
-
+        view.setPlatforms(value.getPlatforms() == null ? Collections.emptyList() : value.getPlatforms());
         view.setSubcontractors(stream(value.getSubcontractors()).map(Company::getCname).collect(Collectors.joining(", ")));
 
         if( isNotEmpty(value.getTeam()) ) {
