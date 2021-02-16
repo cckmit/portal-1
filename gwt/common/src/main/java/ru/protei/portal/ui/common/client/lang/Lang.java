@@ -958,7 +958,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String projectCreate();
 
-    String projectSiteFolder();
+    String projectSiteFolders();
 
     String productDirectionNotSpecified();
 
