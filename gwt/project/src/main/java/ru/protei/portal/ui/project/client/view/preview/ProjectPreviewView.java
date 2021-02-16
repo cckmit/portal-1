@@ -153,9 +153,11 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
 
     @Override
     public void setPlatforms(List<Platform> platformsList) {
-        for (Platform p: platformsList) {
-            String link = LinkUtils.makePreviewLink(Platform.class, p.getId());
-            Anchor a = new Anchor(p.getName(), link, "_blank");
+        platforms.clear();
+
+        for (Platform platform: platformsList) {
+            String link = LinkUtils.makePreviewLink(Platform.class, platform.getId());
+            Anchor a = new Anchor(platform.getName(), link, "_blank");
             a.setStyleName("project-platform");
             platforms.add(a);
         }
