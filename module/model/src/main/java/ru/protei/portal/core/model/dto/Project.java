@@ -117,7 +117,6 @@ public class Project extends AuditableObject {
             @JdbcJoinPath(localColumn = Columns.MANAGER, remoteColumn = "id", table = "person")}, mappedColumn = "displayShortName")
     private String managerName;
 
-    @JdbcOneToMany( table = "platform", localColumn = "id", remoteColumn = "project_id" )
     private List<Platform> platforms;
 
     @JdbcColumn(name = "technical_support_validity")
