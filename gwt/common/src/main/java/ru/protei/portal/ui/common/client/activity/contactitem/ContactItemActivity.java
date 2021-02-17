@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.ui.common.client.events.ContactItemEvents;
@@ -46,7 +47,7 @@ public abstract class ContactItemActivity implements Activity, AbstractContactIt
 
     private void addNewItems(HasWidgets parent, List<En_ContactItemType> allowedTypes, List<ContactItem> dataList){
         for(ContactItem ci: dataList) {
-            if (!allowedTypes.contains(ci.type()))
+            if (!allowedTypes.contains(ci.type()) || ci.accessType() == En_ContactDataAccess.INTERNAL)
                 continue;
 
             addNewItem(ci, parent, allowedTypes, dataList);
