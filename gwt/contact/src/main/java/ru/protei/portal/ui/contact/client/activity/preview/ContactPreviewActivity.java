@@ -100,9 +100,7 @@ public abstract class ContactPreviewActivity implements Activity, AbstractContac
         view.setAddress( infoFacade.getFactAddress() );
         view.setHomeAddress( infoFacade.getHomeAddress() );
         view.setBirthday( value.getBirthday() != null ? DateFormatter.formatDateMonth(value.getBirthday()) : "" );
-
-        requestLogins(value.getId());
-
+        view.setLogins( value.getLogins() );
         view.setGenderImage( AvatarUtils.getAvatarUrlByGender(value.getGender()));
         view.setInfo( value.getInfo() );
     }
@@ -124,15 +122,6 @@ public abstract class ContactPreviewActivity implements Activity, AbstractContac
                 fillView( value );
             }
         } );
-    }
-
-    private void requestLogins(Long personId) {
-        UserLoginShortViewQuery accountQuery = new UserLoginShortViewQuery();
-        accountQuery.setPersonIds(new HashSet<>(Collections.singleton(personId)));
-        accountService.getUserLoginShortViewList(accountQuery, new FluentCallback<List<UserLoginShortView>>()
-                .withSuccess(userLoginShortViews ->
-                        view.setLogins(
-                                joining(userLoginShortViews, ", ", UserLoginShortView::getUlogin))));
     }
 
     @Inject
