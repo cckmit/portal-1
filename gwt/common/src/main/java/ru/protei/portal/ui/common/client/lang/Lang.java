@@ -3289,4 +3289,12 @@ public interface Lang extends Messages, ContactItemLang {
     String contractTypeAgreement();
 
     String contractDeliveryNumber();
+
+    String commentReply();
+
+    String commentTimeElapsedTypeEdit();
+
+    String commentEdit();
+
+    String commentRemove();
 }

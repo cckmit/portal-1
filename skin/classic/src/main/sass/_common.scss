@@ -4729,6 +4729,12 @@ table {
   .chats {
     padding-left: 0;
     padding-right: 0;
+
+    section {
+      .message {
+        margin-bottom: 0;
+      }
+    }
   }
 
   .nav-tabs ~ .tab-content {

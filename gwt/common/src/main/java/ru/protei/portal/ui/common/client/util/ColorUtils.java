@@ -23,9 +23,16 @@ public class ColorUtils {
     }
 
     static public String makeContrastColor(String color) {
-        int colorBase = parseHexColor(color);
-        int colorThreshold = parseHexColor(COLOR_CONTRAST_THRESHOLD);
-        return colorBase > colorThreshold ? COLOR_BLACK : COLOR_WHITE;
+        int baseColor = parseHexColor(color);
+
+//        make RGB from baseColor
+        int red = (baseColor >> 16) & 255;
+        int green = (baseColor >> 8) & 255;
+        int blue = baseColor & 255;
+
+        double contrastFormulaResult = red * 0.299 + green * 0.587 + blue * 0.114;
+
+        return contrastFormulaResult > 186 ? COLOR_BLACK : COLOR_WHITE;
     }
 
     static private int parseHexColor(String color) {
@@ -44,7 +51,6 @@ public class ColorUtils {
     }
 
     private static final String COLOR_LIGHT_GRAY = "#e9edef";
-    private static final String COLOR_CONTRAST_THRESHOLD = "#898989";
     private static final String COLOR_BLACK = "#000000";
     private static final String COLOR_WHITE = "#FFFFFF";
 }

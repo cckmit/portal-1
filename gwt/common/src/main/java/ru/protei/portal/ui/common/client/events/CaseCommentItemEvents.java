@@ -19,7 +19,8 @@ import java.util.function.Function;
 public class CaseCommentItemEvents {
     public static class Init {
         public Init(En_CaseType caseType, Long caseId, En_TextMarkup textMarkup,
-                    boolean isPrivateVisible, boolean isElapsedTimeEnabled, boolean isModifyEnabled,
+                    boolean isPrivateVisible, boolean isElapsedTimeEnabled,
+                    boolean isModifyEnabled, FlowPanel commentsContainer,
                     Function<CaseComment, String> makeAllowEditValidationString,
                     Function<CaseComment, String> makeAllowRemoveValidationString) {
 
@@ -29,6 +30,7 @@ public class CaseCommentItemEvents {
             this.isPrivateVisible = isPrivateVisible;
             this.isElapsedTimeEnabled = isElapsedTimeEnabled;
             this.isModifyEnabled = isModifyEnabled;
+            this.commentsContainer = commentsContainer;
             this.makeAllowEditValidationString = makeAllowEditValidationString;
             this.makeAllowRemoveValidationString = makeAllowRemoveValidationString;
         }
@@ -39,6 +41,7 @@ public class CaseCommentItemEvents {
         public boolean isPrivateVisible;
         public boolean isElapsedTimeEnabled;
         public boolean isModifyEnabled;
+        public FlowPanel commentsContainer;
         public Function<CaseComment, String> makeAllowEditValidationString;
         public Function<CaseComment, String> makeAllowRemoveValidationString;
     }
@@ -46,12 +49,10 @@ public class CaseCommentItemEvents {
     public static class Clear {}
 
     public static class FillComments {
-        public FillComments(FlowPanel commentsContainer, List<CaseComment> comments) {
-            this.commentsContainer = commentsContainer;
+        public FillComments(List<CaseComment> comments) {
             this.comments = comments;
         }
 
-        public FlowPanel commentsContainer;
         public List<CaseComment> comments;
     }
 

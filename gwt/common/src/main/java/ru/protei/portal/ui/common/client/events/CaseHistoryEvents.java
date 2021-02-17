@@ -9,13 +9,19 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class CaseHistoryEvents {
-    public static class Fill {
-        public Fill(FlowPanel historyContainer, List<History> histories) {
+    public static class Init {
+        public Init(FlowPanel historyContainer) {
             this.historyContainer = historyContainer;
-            this.histories = histories;
         }
 
         public FlowPanel historyContainer;
+    }
+
+    public static class Fill {
+        public Fill(List<History> histories) {
+            this.histories = histories;
+        }
+
         public List<History> histories;
     }
 

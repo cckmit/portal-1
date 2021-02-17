@@ -92,10 +92,13 @@ public abstract class CommentAndHistoryListActivity
 
         fireEvent(new CaseCommentItemEvents.Init(
                 caseType, caseId, textMarkup,
-                isPrivateVisible, isElapsedTimeEnabled, isModifyEnabled,
+                isPrivateVisible, isElapsedTimeEnabled,
+                isModifyEnabled, view.commentsAndHistoriesContainer(),
                 comment -> makeAllowEditValidationString(comment, profile),
                 comment -> makeAllowRemoveValidationString(comment, profile)
         ));
+
+        fireEvent(new CaseHistoryEvents.Init(view.commentsAndHistoriesContainer()));
 
         comment = null;
         tempAttachments.clear();
@@ -301,7 +304,7 @@ public abstract class CommentAndHistoryListActivity
                 lang.commentAddMessageMentionPlaceholder() : lang.commentAddMessagePlaceholder());
 
         fireEvent(new CaseCommentItemEvents.Clear());
-        fireEvent(new CaseCommentItemEvents.FillComments(view.itemsContainer(), comments));
+        fireEvent(new CaseCommentItemEvents.FillComments(comments));
     }
 
     public void fillView(CommentsAndHistories commentsAndHistories) {
@@ -368,7 +371,7 @@ public abstract class CommentAndHistoryListActivity
             return;
         }
 
-        fireEvent(new CaseHistoryEvents.Fill(view.itemsContainer(), histories));
+        fireEvent(new CaseHistoryEvents.Fill(histories));
         histories.clear();
     }
 
@@ -377,7 +380,7 @@ public abstract class CommentAndHistoryListActivity
             return;
         }
 
-        fireEvent(new CaseCommentItemEvents.FillComments(view.itemsContainer(), comments));
+        fireEvent(new CaseCommentItemEvents.FillComments(comments));
         comments.clear();
     }
 

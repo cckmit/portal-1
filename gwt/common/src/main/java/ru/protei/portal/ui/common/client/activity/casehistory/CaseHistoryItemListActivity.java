@@ -33,8 +33,13 @@ import java.util.ListIterator;
 
 public abstract class CaseHistoryItemListActivity implements AbstractCaseHistoryItemListActivity, Activity {
     @Event
+    public void onInit(CaseHistoryEvents.Init event) {
+        this.historyContainer = event.historyContainer;
+    }
+
+    @Event
     public void onFill(CaseHistoryEvents.Fill event) {
-        fillView(event.histories, event.historyContainer);
+        fillView(event.histories, historyContainer);
     }
 
     @Event
@@ -229,5 +234,6 @@ public abstract class CaseHistoryItemListActivity implements AbstractCaseHistory
     @Inject
     private Lang lang;
 
+    private FlowPanel historyContainer;
     private final List<CaseHistoryItemsContainer> historyItemsContainers = new LinkedList<>();
 }
