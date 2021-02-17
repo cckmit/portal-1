@@ -3,16 +3,14 @@ package ru.protei.portal.ui.common.client.view.contractfilter;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.ToggleButton;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
@@ -166,6 +164,11 @@ public class ContractFilterView extends Composite implements AbstractContractFil
         return curators;
     }
 
+    @Override
+    public HasValue<String> deliveryNumber() {
+        return deliveryNumber;
+    }
+
     @UiHandler("resetBtn")
     public void onResetClicked(ClickEvent event) {
         if (activity != null) {
@@ -176,6 +179,11 @@ public class ContractFilterView extends Composite implements AbstractContractFil
 
     @UiHandler( "name" )
     public void onSearchChanged( ValueChangeEvent<String> event ) {
+        restartChangeTimer();
+    }
+
+    @UiHandler( "deliveryNumber" )
+    public void onDeliveryNumberChanged( KeyUpEvent event ) {
         restartChangeTimer();
     }
 
@@ -305,6 +313,8 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     @Inject
     @UiField(provided = true)
     EmployeeCustomMultiSelector curators;
+    @UiField
+    TextBox deliveryNumber;
 
     private AbstractContractFilterActivity activity;
 

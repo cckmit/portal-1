@@ -1,6 +1,6 @@
 package ru.protei.portal.ui.common.client.common;
 
-import static ru.protei.portal.core.model.util.CrmConstants.ImportanceLevel.IMPORTANCE_LEVEL;
+import static ru.protei.portal.core.model.util.CrmConstants.Style.IMPORTANCE_LEVEL;
 
 /**
  * Провайдер css-класса для иконки критичности

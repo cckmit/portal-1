@@ -25,6 +25,7 @@ import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
+import ru.protei.portal.ui.common.client.util.AttachmentUtils;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CustomerCompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.SubcontractorCompanyModel;
@@ -48,6 +49,7 @@ import static ru.protei.portal.core.model.helper.CaseCommentUtils.addImageInMess
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 import static ru.protei.portal.ui.common.client.common.UiConstants.ISSUE_CREATE_PREVIEW_DISPLAYED;
+import static ru.protei.portal.ui.common.client.util.AttachmentUtils.getRemoveErrorHandler;
 
 
 /**
@@ -201,19 +203,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     @Override
     public void removeAttachment(Attachment attachment) {
         attachmentController.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, attachment.getId(), new FluentCallback<Long>()
-                .withError((throwable, defaultErrorHandler, status) -> {
-                    if (En_ResultStatus.NOT_FOUND.equals(status)) {
-                        fireEvent(new NotifyEvents.Show(lang.fileNotFoundError(), NotifyEvents.NotifyType.ERROR));
-                        return;
-                    }
-
-                    if (En_ResultStatus.NOT_REMOVED.equals(status)) {
-                        fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR));
-                        return;
-                    }
-
-                    defaultErrorHandler.accept(throwable);
-                })
+                .withError(getRemoveErrorHandler(this, lang))
                 .withSuccess(result -> {
                     view.attachmentsListContainer().remove(attachment);
                     view.setCountOfAttachments(size(view.attachmentsListContainer().getAll()));
@@ -431,6 +421,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.timeElapsedEditContainerVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT));
         issueMetaView.timeElapsedHeaderVisibility().setVisible(false);
         setPlatformVisibility(issueMetaView, policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_EDIT));
+        issueMetaView.setStateWorkflow(En_CaseStateWorkflow.NO_WORKFLOW);
 
         issueMetaView.setCaseMetaNotifiers(notifiers);
 

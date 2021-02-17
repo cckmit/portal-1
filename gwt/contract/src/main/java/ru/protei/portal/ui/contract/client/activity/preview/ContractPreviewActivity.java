@@ -19,6 +19,7 @@ import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.ent.ContractSpecification;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.MoneyRenderer;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.En_ContractDatesTypeLang;
 import ru.protei.portal.ui.common.client.lang.En_ContractTypeLang;
@@ -106,7 +107,7 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
     }
 
     private void fillView( Contract value ) {
-        view.setHeader(sanitizeHtml(typeLang.getName(value.getContractType()) + " " + value.getNumber()));
+        view.setHeader(sanitizeHtml(typeLang.getName(value.getContractType()) + " № " + value.getNumber()));
         view.setState(value.getState() != null
                 ? "./images/contract_" + value.getState().name().toLowerCase() + ".png"
                 : null);
@@ -115,7 +116,8 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
         view.setDescription(sanitizeHtml(value.getDescription()));
         view.setContractor(value.getContractor() == null ? "" : sanitizeHtml(value.getContractor().getName()));
         view.setOrganization(sanitizeHtml(value.getOrganizationName()));
-        view.setManager(value.getProjectId() == null ? sanitizeHtml(value.getCaseManagerShortName()) : sanitizeHtml(value.getManagerShortName()));
+        view.setProjectManager(sanitizeHtml(value.getProjectManagerShortName()));
+        view.setContractSignManager(sanitizeHtml(value.getContractSignManagerShortName()));
         view.setCurator(sanitizeHtml(value.getCuratorShortName()));
         view.setDirections(joining(value.getProductDirections(), ", ", direction -> sanitizeHtml(direction.getName())));
         view.setDates(getAllDatesAsWidget(value.getContractDates()));
@@ -125,23 +127,24 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
                 .map(contract -> sanitizeHtml(typeLang.getName(contract.getContractType()) + " " + contract.getNumber()))
                 .collect(Collectors.joining(", ")));
         view.setProject(StringUtils.emptyIfNull(value.getProjectName()), LinkUtils.makePreviewLink(Project.class, value.getProjectId()));
+        view.setDeliveryNumber(StringUtils.emptyIfNull(value.getDeliveryNumber()));
 
         fireEvent(new CaseTagEvents.ShowList(view.getTagsContainer(), En_CaseType.CONTRACT, contractId, true, a -> {}));
-        CaseCommentEvents.Show caseCommentShowEvent = new CaseCommentEvents.Show(view.getCommentsContainer(), value.getId(), En_CaseType.CONTRACT, true, value.getCreatorId());
-        caseCommentShowEvent.initiatorCompanyId = value.getOrganizationId();
-        caseCommentShowEvent.isMentionEnabled = policyService.hasSystemScopeForPrivilege(En_Privilege.CONTRACT_VIEW);
-        fireEvent(caseCommentShowEvent);
+        fireEvent(new CommentAndHistoryEvents.Show(view.getCommentsContainer(), value.getId(), En_CaseType.CONTRACT, true, value.getCreatorId()));
     }
 
     private List<Widget> getAllDatesAsWidget(List<ContractDate> dates) {
         if ( dates == null ) return null;
         return dates.stream()
                 .map(p -> {
-                    HTMLPanel root = new HTMLPanel("span", "");
+                    HTMLPanel root = new HTMLPanel("div", "");
                     Element b = DOM.createElement("b");
                     b.setInnerText( datesTypeLang.getName(p.getType()));
                     root.getElement().appendChild(b);
-                    root.add(new InlineLabel(" - " + formatDate(p.getDate()) + (isNotEmpty(p.getComment()) ? " (" + p.getComment() + ")" : "")));
+                    root.add(new InlineLabel(" - " + formatDate(p.getDate())
+                            + (isNotEmpty(p.getComment()) ? " (" + p.getComment() + ")" : "")
+                            + ((p.getCost() != null) ? (". " + lang.contractCost() + " - " + MoneyRenderer.getInstance().render(p.getCost())
+                            + (p.getCurrency() != null ? p.getCurrency().getCode() : "")) : "")));
                     return root;
                 })
                 .collect(Collectors.toList());

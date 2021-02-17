@@ -10,6 +10,7 @@ import ru.protei.portal.core.event.EmployeeRegistrationProbationCuratorsEvent;
 import ru.protei.portal.core.event.EmployeeRegistrationProbationHeadOfDepartmentEvent;
 import ru.protei.portal.core.model.dao.EmployeeRegistrationDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.ent.Person;
@@ -120,6 +121,7 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
         CaseComment comment = new CaseComment(message);
         comment.setCaseId( caseId );
         comment.setOriginalAuthorName( getLangFor("reminder_system_name") );
+        comment.setPrivacyType( En_CaseCommentPrivacyType.PUBLIC );
         Result<Long> commentId = caseCommentService.addCommentOnSentReminder(comment);
 
         if (commentId.isError()) {

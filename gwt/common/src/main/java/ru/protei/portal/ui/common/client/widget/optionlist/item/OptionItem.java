@@ -40,6 +40,10 @@ public class OptionItem
         this.text.setText( text );
     }
 
+    public void setNameBackgroundColor( String color ) {
+        this.name.getElement().getStyle().setBackgroundColor( color );
+    }
+
     @Override
     public Boolean getValue() {
         return checkbox.getValue();

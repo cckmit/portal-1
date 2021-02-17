@@ -74,7 +74,7 @@ public class CrmConstants {
     public interface Masks {
         String EMAIL = "^[-a-zA-Z0-9_\\.]+@[-a-zA-Z0-9_\\.]+\\.\\w{2,4}$";
         String ONLY_DIGITS = "^\\d*$";
-        String MONEY = "^(\\d+([\\.,]\\d{1,2})?|.{0})$";
+        String MONEY = "^(\\d+(\\s*\\d+)*([\\.,]\\d{1,2})?|.{0})$";
         String ONE_OR_MORE_SPACES = "\\s+";
         String ROUND_AND_SQUARE_BRACKETS = "[()\\[\\]]+";
         String IP = "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
@@ -127,7 +127,6 @@ public class CrmConstants {
     }
 
     public interface ImportanceLevel {
-        String IMPORTANCE_LEVEL = "importance-level";
         String BASIC_NAME = "basic";
 
         Integer CRITICAL = 1;
@@ -216,6 +215,7 @@ public class CrmConstants {
         String ADDED = "added";
         String UPDATED = "updated";
         String HIDE = "hide";
+        String IMPORTANCE_LEVEL = "importance-level";
     }
 
     public interface Platform {

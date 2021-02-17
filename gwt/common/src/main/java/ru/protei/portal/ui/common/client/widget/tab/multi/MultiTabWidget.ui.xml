@@ -1,0 +1,9 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <g:HTMLPanel>
+        <g:HTMLPanel ui:field="navTabs" tag="ul"
+                     styleName="nav nav-tabs nav-tabs-simple d-none d-md-flex d-lg-flex d-xl-flex"/>
+
+        <g:HTMLPanel ui:field="tabContent" styleName="tab-content"/>
+    </g:HTMLPanel>
+</ui:UiBinder>

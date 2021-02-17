@@ -1,5 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:tab='urn:import:ru.protei.portal.ui.common.client.widget.tab'
 >
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -19,7 +20,7 @@
                     <h5 ui:field="name"/>
 
                     <div class="m-b-5">
-                        <span ui:field="caseState"/>
+                        <span ui:field="caseState" class="small label"/>
                     </div>
 
                     <g:HTMLPanel ui:field="linksContainer"/>
@@ -153,9 +154,11 @@
                         <span ui:field="resourceComment"/>
                     </div>
 
-                    <h5><ui:text from="{lang.comments}"/></h5>
-
-                    <g:HTMLPanel ui:field="commentContainer"/>
+                    <div class="m-t-10 row">
+                        <div class="col-md-12">
+                            <tab:multi.MultiTabWidget ui:field="multiTabWidget" styleName="issue-info-tab-widget"/>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

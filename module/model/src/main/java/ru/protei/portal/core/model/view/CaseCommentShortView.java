@@ -46,12 +46,6 @@ public class CaseCommentShortView {
     })
     private Integer companyCategoryId;
 
-    @JdbcColumn(name="cstate_id")
-    private Integer caseStateId;
-
-    @JdbcColumn(name="cimp_level")
-    private Integer caseImpLevel;
-
     @JdbcColumn(name="comment_text")
     private String text;
 
@@ -129,22 +123,6 @@ public class CaseCommentShortView {
         this.companyCategoryId = companyCategoryId;
     }
 
-    public Integer getCaseStateId() {
-        return caseStateId;
-    }
-
-    public void setCaseStateId(Integer caseStateId) {
-        this.caseStateId = caseStateId;
-    }
-
-    public Integer getCaseImpLevel() {
-        return caseImpLevel;
-    }
-
-    public void setCaseImpLevel(Integer caseImpLevel) {
-        this.caseImpLevel = caseImpLevel;
-    }
-
     public String getText() {
         return text;
     }
@@ -178,8 +156,6 @@ public class CaseCommentShortView {
                 ", companyId=" + companyId +
                 ", companyName='" + companyName + '\'' +
                 ", companyCategoryId=" + companyCategoryId +
-                ", caseStateId=" + caseStateId +
-                ", caseImpLevel=" + caseImpLevel +
                 ", text='" + text + '\'' +
                 '}';
     }

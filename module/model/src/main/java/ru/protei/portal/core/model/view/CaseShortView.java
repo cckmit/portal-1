@@ -46,6 +46,9 @@ public class CaseShortView implements Serializable, Identifiable {
     @JdbcJoinedColumn(mappedColumn = "STATE", table = "case_state", localColumn = "STATE", remoteColumn = "id" )
     private String stateName;
 
+    @JdbcJoinedColumn(localColumn = "STATE", remoteColumn = "id", table = "case_state", mappedColumn = "color")
+    private String stateColor;
+
     @JdbcColumn(name = "IMPORTANCE")
     private Integer impLevel;
 
@@ -179,16 +182,48 @@ public class CaseShortView implements Serializable, Identifiable {
         return stateId;
     }
 
+    public void setStateId(long stateId) {
+        this.stateId = stateId;
+    }
+
+    public String getStateName() {
+        return stateName;
+    }
+
+    public void setStateName(String stateName) {
+        this.stateName = stateName;
+    }
+
+    public String getStateColor() {
+        return stateColor;
+    }
+
+    public void setStateColor(String stateColor) {
+        this.stateColor = stateColor;
+    }
+
     public Integer getImpLevel() {
         return impLevel;
+    }
+
+    public void setImpLevel(Integer impLevel) {
+        this.impLevel = impLevel;
     }
 
     public String getImportanceCode() {
         return importanceCode;
     }
 
+    public void setImportanceCode(String importanceCode) {
+        this.importanceCode = importanceCode;
+    }
+
     public String getImportanceColor() {
         return importanceColor;
+    }
+
+    public void setImportanceColor(String importanceColor) {
+        this.importanceColor = importanceColor;
     }
 
     public Long getInitiatorId() {
@@ -309,10 +344,6 @@ public class CaseShortView implements Serializable, Identifiable {
 
     public void setPauseDate(Long pauseDate) {
         this.pauseDate = pauseDate;
-    }
-
-    public String getStateName() {
-        return stateName;
     }
 
     public List<CaseTag> getTags() {

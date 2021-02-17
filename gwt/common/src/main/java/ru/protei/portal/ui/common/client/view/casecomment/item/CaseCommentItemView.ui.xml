@@ -5,18 +5,15 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel tag="li" ui:field="root" styleName="left">
-        <ul class="list-inline m-b-10">
-            <li ui:field="date" class="date-time"/>
+    <g:HTMLPanel tag="li" ui:field="root" styleName="timeline-block left" visible="false">
+        <ul class="list-inline">
             <li ui:field="owner" class="name"/>
-            <g:Anchor styleName="issue-link" ui:field="remoteLink" href="#"/>
+            <g:Anchor styleName="issue-link m-r-5" ui:field="remoteLink" href="#" visible="false"/>
+            <li ui:field="date" class="date-time"/>
             <i ui:field="privateType"/>
-            <li ui:field="info" class="info hide p-l-5 p-r-5"/>
             <div class="d-inline">
-                <g:Label ui:field="timeElapsed" styleName="time-label" title="{lang.issueCommentElapsedTimeTypeChange}"/>
-                <popup:EditTimeElapsedTypePopup ui:field="timeElapsedTypePopup" visible="false" />
+                <popup:EditTimeElapsedTypePopup ui:field="timeElapsedTypePopup" visible="false"/>
             </div>
-            <li ui:field="status"/>
             <li ui:field="options">
                 <span class="options">
                     <g:Anchor href="javascript:;" ui:field="reply">
@@ -28,18 +25,26 @@
                     <g:Anchor href="javascript:;" ui:field="remove">
                         <i class="fas fa-trash"/>
                     </g:Anchor>
+                    <g:Anchor href="javascript:;" ui:field="timeElapsed">
+                        <i class="fas fa-clock"/>
+                    </g:Anchor>
                 </span>
             </li>
         </ul>
 
         <div ui:field="messageBlock" class="hide">
             <div class="meta">
-                <div class="image">
+                <g:HTMLPanel styleName="timeline-point" ui:field="iconContainer">
                     <img alt="" src="./images/user-icon-m.svg" ui:field="icon"/>
-                </div>
+                </g:HTMLPanel>
             </div>
 
             <div class="message" ui:field="messageContainer">
+                <g:HTMLPanel ui:field="timeElapsedInfoContainer" visible="false">
+                    <i class="far fa-clock m-r-5"/>
+                    <g:HTMLPanel ui:field="timeElapsedInfo" tag="i"/>
+                    <hr class="m-t-5"/>
+                </g:HTMLPanel>
                 <g:HTMLPanel ui:field="message" styleName="markdown"/>
                 <div class="attachment-block" ui:field="attachBlock">
                     <label style="font-size: 11px;font-weight: bold;">

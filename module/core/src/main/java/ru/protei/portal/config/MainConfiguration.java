@@ -83,9 +83,6 @@ import ru.protei.portal.schedule.PortalScheduleTasksImpl;
 import ru.protei.portal.tools.migrate.export.ActiveExportDataService;
 import ru.protei.portal.tools.migrate.export.DummyExportDataService;
 import ru.protei.portal.tools.migrate.export.ExportDataService;
-import ru.protei.portal.tools.migrate.imp.ImportDataService;
-import ru.protei.portal.tools.migrate.imp.ImportDataServiceImpl;
-import ru.protei.portal.tools.migrate.imp.MigrationRunner;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.portal.tools.migrate.sybase.SybConnProvider;
 import ru.protei.portal.tools.migrate.sybase.SybConnWrapperImpl;
@@ -529,6 +526,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public EmployeeRegistrationHistoryDAO getEmployeeRegistrationHistoryDAO() {
+        return new EmployeeRegistrationHistoryDAO_Impl();
+    }
+
+    @Bean
     public ProjectToProductDAO getProjectToProductDAO() {
         return new ProjectToProductDAO_Impl();
     }
@@ -893,16 +895,6 @@ public class MainConfiguration {
     @Bean
     public ExportDataService getExportDataService(@Autowired PortalConfig config) {
         return config.data().legacySysConfig().isExportEnabled() ? new ActiveExportDataService() : new DummyExportDataService();
-    }
-
-    @Bean
-    public MigrationRunner getImportDataRunner(@Autowired PortalConfig config) {
-        return config.data().legacySysConfig().isImportEnabled() ? new MigrationRunner() : null;
-    }
-
-    @Bean
-    public ImportDataService getImportDataService(@Autowired PortalConfig config) {
-        return new ImportDataServiceImpl();
     }
 
     @Bean

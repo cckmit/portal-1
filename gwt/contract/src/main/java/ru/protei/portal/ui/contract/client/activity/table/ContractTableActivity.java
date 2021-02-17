@@ -159,6 +159,7 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         query.setKind(filterView.kind().getValue());
         query.setDateSigningRange(toDateRange(filterView.dateSigningRange().getValue()));
         query.setDateValidRange(toDateRange(filterView.dateValidRange().getValue()));
+        query.setDeliveryNumber(filterView.deliveryNumber().getValue());
         return query;
     }
 

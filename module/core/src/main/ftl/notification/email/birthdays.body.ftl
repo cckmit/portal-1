@@ -37,9 +37,9 @@
         <#assign birthdays = employees?keys/>
         <#assign names_values = employees?values/>
         <#list birthdays as birthday>
-            <div class="date bordered">${birthday?string["dd MMMM"]}</div>
+        <#assign seq_index = birthday?index/>
+        <div class="date bordered">${birthday?string["dd MMMM"]} (${EnumLangUtil.dayOfWeekLang(daysOfWeek[seq_index], lang)})</div>
             <div class="name">
-                <#assign seq_index = birthday?index/>
                 <#assign names = names_values[seq_index]/>
                 <#list names as name>
                     ${name.displayName}<#sep><br></#sep>
