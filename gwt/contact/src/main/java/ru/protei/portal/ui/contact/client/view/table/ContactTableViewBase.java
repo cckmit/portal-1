@@ -5,12 +5,15 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
+import ru.protei.portal.ui.common.client.columns.DynamicColumn;
 import ru.protei.portal.ui.common.client.common.LabelValuePairBuilder;
 import ru.protei.portal.ui.common.client.common.EmailRender;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.util.AvatarUtils;
 
 public abstract class ContactTableViewBase extends Composite {
 
@@ -109,5 +112,19 @@ public abstract class ContactTableViewBase extends Composite {
                 cell.setInnerHTML(html);
             }
         };
+    }
+
+    protected DynamicColumn<Person> getGenderColumn(Lang lang) {
+        return new DynamicColumn<>(null, "column-img", value -> {
+            String html = "<img src='" + AvatarUtils.getAvatarUrlByGender(value.getGender()) + "'></img>";
+
+            if (CollectionUtils.isNotEmpty(value.getLogins())) {
+                html += "<i class=\"fa fa-user-circle account-icon\" " +
+                        "   title=\"" + lang.contactHasAccount() + "\">" +
+                        "</i>";
+            }
+
+            return html;
+        });
     }
 }

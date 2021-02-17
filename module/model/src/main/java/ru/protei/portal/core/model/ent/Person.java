@@ -88,6 +88,8 @@ public class Person extends AuditableObject {
     @JdbcColumn(name = "locale")
     private String locale;
 
+    private List<String> logins;
+
     public static Person fromPersonShortView( PersonShortView personShortView ){
         if(personShortView == null)
             return null;
@@ -355,6 +357,14 @@ public class Person extends AuditableObject {
         }
     }
 
+    public List<String> getLogins() {
+        return logins;
+    }
+
+    public void setLogins(List<String> logins) {
+        this.logins = logins;
+    }
+
     @Override
     public String toString() {
         return "Person{" +
@@ -381,6 +391,7 @@ public class Person extends AuditableObject {
                 ", oldId=" + oldId +
                 ", relations='" + relations + '\'' +
                 ", locale='" + locale + '\'' +
+                ", logins='" + logins + '\'' +
                 '}';
     }
 

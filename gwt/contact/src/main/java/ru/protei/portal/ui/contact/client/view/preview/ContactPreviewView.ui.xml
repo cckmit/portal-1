@@ -57,6 +57,10 @@
                         <b><ui:text from="{lang.birthday}: "/></b>
                         <span ui:field="birthday"/>
                     </div>
+                    <div class="small">
+                        <b><ui:text from="{lang.accountLogin}:"/></b>
+                        <span ui:field="logins"/>
+                    </div>
                 </div>
             </div>
         </div>

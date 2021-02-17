@@ -35,6 +35,9 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     public void setBirthday(String value) { this.birthday.setInnerText( value ); }
 
     @Override
+    public void setLogins(String value) { this.logins.setInnerText( value ); }
+
+    @Override
     public void setCompany ( String value ) { this.company.setText( value ); }
 
     @Override
@@ -97,6 +100,8 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     Anchor displayName;
     @UiField
     SpanElement birthday;
+    @UiField
+    SpanElement logins;
     @UiField
     SpanElement info;
     @UiField
