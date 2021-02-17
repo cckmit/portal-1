@@ -52,7 +52,7 @@ public interface AbstractCommentAndHistoryListView extends IsWidget {
 
     void setCommentPlaceholder(String placeholder);
 
-    FlowPanel itemsContainer();
+    FlowPanel commentsAndHistoriesContainer();
 
     HasVisibility getPrivacyVisibility();
 
