@@ -224,6 +224,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(company.getContactInfo());
 
+        // todo здесь будет добавлено новое поле для отправки
         infoFacade.setLegalAddress(view.legalAddress().getValue());
         infoFacade.setFactAddress(view.actualAddress().getValue());
         infoFacade.setWebSite(view.webSite().getText());

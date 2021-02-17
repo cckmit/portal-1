@@ -29,6 +29,8 @@ public interface AbstractCompanyEditView extends IsWidget {
 
     HasText companyNameErrorLabel();
 
+    HasText probationPeriodAddresses();
+
     HasVisibility companyNameErrorLabelVisibility();
 
     HasValue<EntityOption> parentCompany();

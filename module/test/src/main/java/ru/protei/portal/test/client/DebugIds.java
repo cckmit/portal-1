@@ -526,6 +526,7 @@ public class DebugIds {
         String COMMENT = "company-comment";
         String AUTO_OPEN_ISSUES = "company-auto-open-issues";
         String SUBSCRIPTIONS = "company-subscriptions";
+        String PROBATION_EMAILS = "company-probation-emails";
         interface GROUP {
             String ADD_BUTTON = "company-subscriptions-add-button";
 
