@@ -2,14 +2,11 @@ package ru.protei.portal.ui.common.client.view.casehistory.item.importance;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.SpanElement;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 
-import static com.google.gwt.dom.client.Style.TextDecoration.LINE_THROUGH;
-import static com.google.gwt.dom.client.Style.TextDecoration.NONE;
 import static ru.protei.portal.ui.common.client.util.ColorUtils.makeContrastColor;
 
 public class CaseHistoryImportanceItemView extends Composite {

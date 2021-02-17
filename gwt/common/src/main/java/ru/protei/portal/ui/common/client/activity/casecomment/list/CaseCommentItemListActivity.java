@@ -42,6 +42,8 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.ui.common.client.util.AvatarUtils.getAvatarUrl;
+import static ru.protei.portal.ui.common.client.util.AvatarUtils.isDefaultAvatar;
 
 public abstract class CaseCommentItemListActivity implements Activity, AbstractCaseCommentItemListActivity {
     @Inject
@@ -62,6 +64,7 @@ public abstract class CaseCommentItemListActivity implements Activity, AbstractC
         this.isElapsedTimeEnabled = event.isElapsedTimeEnabled;
         this.isModifyEnabled = event.isModifyEnabled;
         this.caseId = event.caseId;
+        this.commentsContainer = event.commentsContainer;
 
         this.makeAllowEditValidationString = event.makeAllowEditValidationString;
         this.makeAllowRemoveValidationString = event.makeAllowRemoveValidationString;
@@ -74,8 +77,6 @@ public abstract class CaseCommentItemListActivity implements Activity, AbstractC
 
     @Event
     public void onFillComments(CaseCommentItemEvents.FillComments event) {
-        this.commentsContainer = event.commentsContainer;
-
         fillView(commentsContainer, event.comments);
     }
 
@@ -276,14 +277,19 @@ public abstract class CaseCommentItemListActivity implements Activity, AbstractC
         AbstractCaseCommentItemView itemView = commentItemViewProvider.get();
         itemView.setActivity(this);
 
+        String avatarUrl;
+
         if (value.getAuthorId().equals(profile.getId())) {
-            itemView.setIcon(AvatarUtils.getAvatarUrl(profile));
-            itemView.setIsDefaultIcon(En_Gender.UNDEFINED.equals(profile.getGender()));
+            avatarUrl = getAvatarUrl(profile);
         } else {
             itemView.timeElapsedVisibility().setVisible(false);
-            itemView.setIcon(AvatarUtils.getAvatarUrl(value.getAuthor()));
-            itemView.setIsDefaultIcon(En_Gender.UNDEFINED.equals(value.getAuthor().getGender()));
+            avatarUrl = getAvatarUrl(value.getAuthor());
         }
+
+        itemView.setIcon(avatarUrl);
+        itemView.setIsDefaultIcon(
+                En_Gender.UNDEFINED.equals(value.getAuthor().getGender()) || isDefaultAvatar(avatarUrl)
+        );
 
         itemView.setDate(DateFormatter.formatDateTime(value.getCreated()));
         itemView.setOwner(getOwnerName(value));

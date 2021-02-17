@@ -9,6 +9,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import ru.protei.portal.ui.common.client.util.ColorUtils;
 
 import static ru.protei.portal.ui.common.client.util.ColorUtils.makeContrastColor;
+import static ru.protei.portal.ui.common.client.util.ColorUtils.makeSafeColor;
 
 public class CaseHistoryTagItemView extends Composite {
     public CaseHistoryTagItemView() {
@@ -21,8 +22,10 @@ public class CaseHistoryTagItemView extends Composite {
     }
 
     public void setColor(String color) {
-        icon.getStyle().setBackgroundColor(color);
-        icon.getStyle().setColor(makeContrastColor(color));
+        String safeColor = makeSafeColor(color);
+
+        icon.getStyle().setBackgroundColor(safeColor);
+        icon.getStyle().setColor(makeContrastColor(safeColor));
     }
 
     @UiField

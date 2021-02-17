@@ -16,16 +16,16 @@
             </div>
             <li ui:field="options">
                 <span class="options">
-                    <g:Anchor href="javascript:;" ui:field="reply">
+                    <g:Anchor href="javascript:;" ui:field="reply" title="{lang.commentReply}">
                         <i class="fas fa-reply"/>
                     </g:Anchor>
-                    <g:Anchor href="javascript:;" ui:field="edit">
+                    <g:Anchor href="javascript:;" ui:field="edit" title="{lang.commentEdit}">
                         <i class="fas fa-pencil-alt"/>
                     </g:Anchor>
-                    <g:Anchor href="javascript:;" ui:field="remove">
+                    <g:Anchor href="javascript:;" ui:field="remove" title="{lang.commentRemove}">
                         <i class="fas fa-trash"/>
                     </g:Anchor>
-                    <g:Anchor href="javascript:;" ui:field="timeElapsed">
+                    <g:Anchor href="javascript:;" ui:field="timeElapsed" title="{lang.commentTimeElapsedTypeEdit}">
                         <i class="fas fa-clock"/>
                     </g:Anchor>
                 </span>

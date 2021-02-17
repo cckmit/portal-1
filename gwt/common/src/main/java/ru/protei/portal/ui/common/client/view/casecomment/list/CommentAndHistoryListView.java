@@ -6,8 +6,6 @@ import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -37,8 +35,6 @@ import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeTextBox;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.PasteInfo;
-
-import java.util.Iterator;
 
 import static ru.protei.portal.core.model.util.CrmConstants.Style.HIDE;
 
@@ -163,12 +159,12 @@ public class CommentAndHistoryListView
 
     @Override
     public void clearItemsContainer() {
-        itemsContainer.clear();
+        commentsAndHistoriesContainer.clear();
     }
 
     @Override
     public void removeComment(IsWidget comment) {
-        itemsContainer.remove( comment.asWidget() );
+        commentsAndHistoriesContainer.remove( comment.asWidget() );
     }
 
     @Override
@@ -192,8 +188,8 @@ public class CommentAndHistoryListView
     }
 
     @Override
-    public FlowPanel itemsContainer() {
-        return itemsContainer;
+    public FlowPanel commentsAndHistoriesContainer() {
+        return commentsAndHistoriesContainer;
     }
 
     @UiHandler( "send" )
@@ -270,8 +266,8 @@ public class CommentAndHistoryListView
 
     @Override
     public void restyleFirstVisibleItemContainer() {
-        removeZeroMarginFromAllContainers(itemsContainer);
-        addZeroMarginToFirstVisibleContainer(itemsContainer);
+        removeZeroMarginFromAllContainers(commentsAndHistoriesContainer);
+        addZeroMarginToFirstVisibleContainer(commentsAndHistoriesContainer);
     }
 
     private void addZeroMarginToFirstVisibleContainer(FlowPanel itemsContainer) {
@@ -292,7 +288,7 @@ public class CommentAndHistoryListView
             return;
         }
 
-        itemsContainer.ensureDebugId(DebugIds.CASE_COMMENT.COMMENT_LIST.ITEMS_LIST);
+        commentsAndHistoriesContainer.ensureDebugId(DebugIds.CASE_COMMENT.COMMENT_LIST.ITEMS_LIST);
         newMessage.ensureDebugId(DebugIds.CASE_COMMENT.COMMENT_LIST.NEW_MESSAGE);
         newCommentUserImage.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CASE_COMMENT.COMMENT_LIST.USER_ICON);
         comment.ensureDebugId(DebugIds.CASE_COMMENT.COMMENT_LIST.TEXT_INPUT);
@@ -308,7 +304,7 @@ public class CommentAndHistoryListView
     @UiField(provided = true)
     MentioningTextArea comment;
     @UiField
-    FlowPanel itemsContainer;
+    FlowPanel commentsAndHistoriesContainer;
     @Inject
     @UiField(provided = true)
     PrivacyTypeButtonSelector privacyType;
