@@ -176,7 +176,11 @@ public class HistoryServiceImpl implements HistoryService {
         Map<Long, String> caseTagIdToColor =
                 caseTagDAO.getListByQuery(caseTagQuery)
                         .stream()
-                        .collect(Collectors.toMap(CaseTag::getId, CaseTag::getColor));
+                        .collect(
+                                HashMap::new,
+                                (map, caseTag) -> map.put(caseTag.getId(), caseTag.getColor()),
+                                HashMap::putAll
+                        );
 
         fillHistoriesWithSpecifiedColors(tagHistories, caseTagIdToColor);
     }
