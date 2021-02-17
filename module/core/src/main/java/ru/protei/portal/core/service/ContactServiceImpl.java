@@ -29,7 +29,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toSet;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
@@ -75,7 +74,7 @@ public class ContactServiceImpl implements ContactService {
         persons.forEach(person -> person.setLogins(userLoginShortViews.stream()
                .filter(userLoginShortView -> userLoginShortView.getPersonId().equals(person.getId()))
                .map(UserLoginShortView::getUlogin)
-               .collect(joining(", "))));
+               .collect(Collectors.toList())));
 
         jdbcManyRelationsHelper.fill(persons, Person.Fields.CONTACT_ITEMS);
         return ok(sr);
@@ -108,7 +107,7 @@ public class ContactServiceImpl implements ContactService {
         List<UserLogin> userLogins = userLoginDAO.findByPersonId(person.getId());
         if (CollectionUtils.isNotEmpty(userLogins)) {
             person.setLogins(userLogins.stream().map(UserLogin::getUlogin)
-                  .collect(joining(", ")));
+                  .collect(Collectors.toList()));
         }
 
         jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);

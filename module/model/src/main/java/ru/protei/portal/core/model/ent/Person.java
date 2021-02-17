@@ -88,7 +88,7 @@ public class Person extends AuditableObject {
     @JdbcColumn(name = "locale")
     private String locale;
 
-    private String logins;
+    private List<String> logins;
 
     public static Person fromPersonShortView( PersonShortView personShortView ){
         if(personShortView == null)
@@ -357,11 +357,11 @@ public class Person extends AuditableObject {
         }
     }
 
-    public String getLogins() {
+    public List<String> getLogins() {
         return logins;
     }
 
-    public void setLogins(String logins) {
+    public void setLogins(List<String> logins) {
         this.logins = logins;
     }
 
