@@ -24,12 +24,14 @@ import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toSet;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static java.util.stream.Collectors.*;
 
 /**
  * Реализация сервиса управления контактами
@@ -65,22 +67,14 @@ public class ContactServiceImpl implements ContactService {
         SearchResult<Person> sr = personDAO.getContactsSearchResult(query);
         List<Person> persons = sr.getResults();
 
-        persons.forEach(person -> {
-            List<UserLogin> logins = userLoginDAO.findByPersonId(person.getId());
-            if (CollectionUtils.isNotEmpty(logins)) {
-                person.setLogins(logins.stream().map(UserLogin::getUlogin)
-                                       .collect(joining(", ")));
-            }
-        });
-
         UserLoginShortViewQuery userLoginsQuery = new UserLoginShortViewQuery();
         userLoginsQuery.setPersonIds(persons.stream().map(Person::getId).collect(toSet()));
+        List<UserLoginShortView> userLoginShortViews = userLoginShortViewDAO.listByQuery(userLoginsQuery);
 
-        Set<Long> personWithAccountIds = userLoginShortViewDAO.getSearchResult(userLoginsQuery).getResults()
-                                                              .stream().map(UserLoginShortView::getPersonId)
-                                                              .collect(toSet());
-
-        persons.forEach(person -> person.setHasAccount(personWithAccountIds.contains(person.getId())));
+        persons.forEach(person -> person.setLogins(userLoginShortViews.stream()
+               .filter(userLoginShortView -> userLoginShortView.getPersonId().equals(person.getId()))
+               .map(UserLoginShortView::getUlogin)
+               .collect(Collectors.toList())));
 
         jdbcManyRelationsHelper.fill(persons, Person.Fields.CONTACT_ITEMS);
         return ok(sr);
@@ -108,6 +102,12 @@ public class ContactServiceImpl implements ContactService {
 
         if (personIsEmployee( person.getCompanyId() )) {
             return error( En_ResultStatus.NOT_AVAILABLE);
+        }
+
+        List<UserLogin> userLogins = userLoginDAO.findByPersonId(person.getId());
+        if (CollectionUtils.isNotEmpty(userLogins)) {
+            person.setLogins(userLogins.stream().map(UserLogin::getUlogin)
+                  .collect(Collectors.toList()));
         }
 
         jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);

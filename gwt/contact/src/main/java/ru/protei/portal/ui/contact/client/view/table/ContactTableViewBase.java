@@ -5,6 +5,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
@@ -117,7 +118,7 @@ public abstract class ContactTableViewBase extends Composite {
         return new DynamicColumn<>(null, "column-img", value -> {
             String html = "<img src='" + AvatarUtils.getAvatarUrlByGender(value.getGender()) + "'></img>";
 
-            if (value.isHasAccount()) {
+            if (CollectionUtils.isNotEmpty(value.getLogins())) {
                 html += "<i class=\"fa fa-user-circle account-icon\" " +
                         "   title=\"" + lang.contactHasAccount() + "\">" +
                         "</i>";
