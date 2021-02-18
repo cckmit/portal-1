@@ -4730,6 +4730,12 @@ table {
   .chats {
     padding-left: 0;
     padding-right: 0;
+
+    section {
+      .message {
+        margin-bottom: 0;
+      }
+    }
   }
 
   .nav-tabs ~ .tab-content {
@@ -4767,6 +4773,9 @@ table {
 
 .case-history-item-removed-value {
   text-decoration: line-through;
+  .case-tag {
+    text-decoration: line-through;
+  }
 }
 
 .case-history-state-item {
@@ -5272,6 +5281,9 @@ table {
 
 .project-platform {
     margin-right: 7px;
+}
+.case-history .case-tag {
+  font-size: inherit;
 }
 
 .account-icon {

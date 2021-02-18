@@ -92,7 +92,7 @@
                     </div>
                 </g:HTMLPanel>
             </g:HTMLPanel>
-            <g:FlowPanel ui:field="itemsContainer" styleName="timeline" tag="section"/>
+            <g:FlowPanel ui:field="commentsAndHistoriesContainer" styleName="timeline" tag="section"/>
         </ul>
     </g:HTMLPanel>
 </ui:UiBinder>
