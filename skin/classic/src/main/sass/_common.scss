@@ -4772,6 +4772,9 @@ table {
 
 .case-history-item-removed-value {
   text-decoration: line-through;
+  .case-tag {
+    text-decoration: line-through;
+  }
 }
 
 .case-history-state-item {
@@ -5273,4 +5276,8 @@ table {
       }
     }
   }
+}
+
+.case-history .case-tag {
+  font-size: inherit;
 }

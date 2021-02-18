@@ -6,7 +6,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import ru.protei.portal.ui.common.client.util.ColorUtils;
 
 import static ru.protei.portal.ui.common.client.util.ColorUtils.makeContrastColor;
 import static ru.protei.portal.ui.common.client.util.ColorUtils.makeSafeColor;
@@ -18,18 +17,14 @@ public class CaseHistoryTagItemView extends Composite {
 
     public void setName(String name) {
         this.name.setInnerText(name);
-        this.icon.setInnerText(name.substring(0, 1).toUpperCase());
     }
 
     public void setColor(String color) {
-        String safeColor = makeSafeColor(color);
+        String backgroundColor = makeSafeColor(color);
 
-        icon.getStyle().setBackgroundColor(safeColor);
-        icon.getStyle().setColor(makeContrastColor(safeColor));
+        name.getStyle().setBackgroundColor(backgroundColor);
+        name.getStyle().setColor(makeContrastColor(backgroundColor));
     }
-
-    @UiField
-    SpanElement icon;
 
     @UiField
     SpanElement name;
