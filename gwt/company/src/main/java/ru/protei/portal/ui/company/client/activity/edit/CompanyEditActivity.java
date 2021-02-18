@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -238,12 +239,23 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         company.setParentCompanyId(view.parentCompany().getValue() == null ? null : view.parentCompany().getValue().getId());
         company.setSubscriptions(new ArrayList<>(view.companySubscriptions().getValue()));
         company.setAutoOpenIssue(view.autoOpenIssues().getValue());
+        company.setContactInfo(makeFilteredContactInfo(company));
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(company.getContactInfo());
 
         infoFacade.setLegalAddress(view.legalAddress().getValue());
         infoFacade.setFactAddress(view.actualAddress().getValue());
         infoFacade.setWebSite(view.webSite().getText());
+    }
+
+    protected ContactInfo makeFilteredContactInfo(Company company) {
+        // перед сохранением компании удаляем ранее добавленные адреса, если поменяли категорию на отличную от "Домашняя компания"
+        ContactInfo contactInfo = company.getContactInfo();
+        if (!En_CompanyCategory.HOME.equals(company.getCategory())) {
+            contactInfo.getItems().removeIf(item -> En_ContactItemType.EMAIL.equals(item.type())
+                            && En_ContactDataAccess.INTERNAL.equals(item.accessType()));
+        }
+        return contactInfo;
     }
 
     private Selector.SelectorFilter<EntityOption> makeCompanyFilter(Long companyId) {
