@@ -81,10 +81,6 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         return webSite;
     }
 
-    public HasText probationPeriodAddresses() {
-        return probationPeriodAddresses;
-    }
-
     @Override
     public HasText comment() {
         return comment;
@@ -128,6 +124,11 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     @Override
     public HasWidgets emailsContainer() {
         return emailsContainer;
+    }
+
+    @Override
+    public HasWidgets probationEmailsContainer() {
+        return probationEmailsContainer;
     }
 
     @Override
@@ -194,7 +195,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         autoOpenIssues.ensureDebugId(DebugIds.COMPANY.AUTO_OPEN_ISSUES);
         subscriptions.ensureDebugId(DebugIds.COMPANY.SUBSCRIPTIONS);
         webSite.ensureDebugId(DebugIds.COMPANY.WEB_SITE);
-        webSite.ensureDebugId(DebugIds.COMPANY.PROBATION_EMAILS);
+        probationEmailsContainer.ensureDebugId(DebugIds.COMPANY.PROBATION_EMAILS);
         phonesContainer.ensureDebugId(DebugIds.COMPANY.PHONES);
         emailsContainer.ensureDebugId(DebugIds.COMPANY.EMAILS);
         actualAddress.ensureDebugId(DebugIds.COMPANY.ACTUAL_ADDRESS);
@@ -244,7 +245,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     CheckBox autoOpenIssues;
 
     @UiField
-    TextBox probationPeriodAddresses;
+    HTMLPanel probationEmailsContainer;
 
     @UiField
     HTMLPanel phonesContainer;

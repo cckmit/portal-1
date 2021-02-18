@@ -313,7 +313,7 @@ public class CompanyServiceImpl implements CompanyService {
             return error(En_ResultStatus.NOT_CREATED);
         }
 
-        contactItemDAO.saveOrUpdateBatch(company.getContactItems()); // todo контакты берутся из формы?
+        contactItemDAO.saveOrUpdateBatch(company.getContactItems());
         jdbcManyRelationsHelper.persist(company, Company.Fields.CONTACT_ITEMS);
 
         updateCompanySubscription(company.getId(), company.getSubscriptions());

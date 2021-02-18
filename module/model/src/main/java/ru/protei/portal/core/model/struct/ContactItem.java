@@ -51,6 +51,10 @@ public class ContactItem implements Serializable {
         this.itemType = type;
     }
 
+    public ContactItem (String value, En_ContactItemType type, En_ContactDataAccess access) {
+        this(type, access);
+        this.value = value;
+    }
 
     public Long id() {
         return this.id;

@@ -2,10 +2,10 @@ package ru.protei.portal.ui.company.client.activity.edit;
 
 import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
-import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Company;
@@ -23,6 +23,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,6 +42,17 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
         ALLOWED_EMAIL_TYPES = new ArrayList<>(1);
         ALLOWED_EMAIL_TYPES.add(En_ContactItemType.EMAIL);
+
+        ALLOWED_PHONE_DATA_ACCESS = new ArrayList<>(Arrays.asList(En_ContactDataAccess.values()));
+        ALLOWED_PHONE_DATA_ACCESS.add(null);
+
+        ALLOWED_EMAIL_DATA_ACCESS = new ArrayList<>(3);
+        ALLOWED_EMAIL_DATA_ACCESS.add(null);
+        ALLOWED_EMAIL_DATA_ACCESS.add(En_ContactDataAccess.PUBLIC);
+        ALLOWED_EMAIL_DATA_ACCESS.add(En_ContactDataAccess.PRIVATE);
+
+        ALLOWED_PROBATION_EMAIL_DATA_ACCESS = new ArrayList<>(1);
+        ALLOWED_PROBATION_EMAIL_DATA_ACCESS.add(En_ContactDataAccess.INTERNAL);
     }
 
     @PostConstruct
@@ -193,8 +205,12 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
         view.webSite().setText(infoFacade.getWebSite());
 
-        fireEvent(new ContactItemEvents.ShowList(view.phonesContainer(), company.getContactInfo().getItems(), ALLOWED_PHONE_TYPES));
-        fireEvent(new ContactItemEvents.ShowList(view.emailsContainer(), company.getContactInfo().getItems(), ALLOWED_EMAIL_TYPES));
+        fireEvent(new ContactItemEvents.ShowList(view.phonesContainer(), company.getContactInfo().getItems(),
+                ALLOWED_PHONE_TYPES, ALLOWED_PHONE_DATA_ACCESS));
+        fireEvent(new ContactItemEvents.ShowList(view.emailsContainer(), company.getContactInfo().getItems(),
+                ALLOWED_EMAIL_TYPES, ALLOWED_EMAIL_DATA_ACCESS));
+        fireEvent(new ContactItemEvents.ShowList(view.probationEmailsContainer(), company.getContactInfo().getItems(),
+                ALLOWED_EMAIL_TYPES, ALLOWED_PROBATION_EMAIL_DATA_ACCESS));
 
         view.tableContainer().clear();
         if (company.getId() != null && policyService.hasPrivilegeFor(En_Privilege.CONTACT_VIEW)) {
@@ -224,7 +240,6 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(company.getContactInfo());
 
-        // todo здесь будет добавлено новое поле для отправки
         infoFacade.setLegalAddress(view.legalAddress().getValue());
         infoFacade.setFactAddress(view.actualAddress().getValue());
         infoFacade.setWebSite(view.webSite().getText());
@@ -252,4 +267,8 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     private final List<En_ContactItemType> ALLOWED_PHONE_TYPES;
     private final List<En_ContactItemType> ALLOWED_EMAIL_TYPES;
+
+    private final List<En_ContactDataAccess> ALLOWED_PHONE_DATA_ACCESS;
+    private final List<En_ContactDataAccess> ALLOWED_EMAIL_DATA_ACCESS;
+    private final List<En_ContactDataAccess> ALLOWED_PROBATION_EMAIL_DATA_ACCESS;
 }
