@@ -5,11 +5,13 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -205,12 +207,11 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
         view.webSite().setText(infoFacade.getWebSite());
 
-        fireEvent(new ContactItemEvents.ShowList(view.phonesContainer(), company.getContactInfo().getItems(),
-                ALLOWED_PHONE_TYPES, ALLOWED_PHONE_DATA_ACCESS));
-        fireEvent(new ContactItemEvents.ShowList(view.emailsContainer(), company.getContactInfo().getItems(),
-                ALLOWED_EMAIL_TYPES, ALLOWED_EMAIL_DATA_ACCESS));
-        fireEvent(new ContactItemEvents.ShowList(view.probationEmailsContainer(), company.getContactInfo().getItems(),
-                ALLOWED_EMAIL_TYPES, ALLOWED_PROBATION_EMAIL_DATA_ACCESS));
+        view.probationEmailsContainerVisibility().setVisible(En_CompanyCategory.HOME.equals(company.getCategory()));
+        List<ContactItem> items = company.getContactInfo().getItems();
+        fireEvent(new ContactItemEvents.ShowList(view.phonesContainer(), items, ALLOWED_PHONE_TYPES, ALLOWED_PHONE_DATA_ACCESS));
+        fireEvent(new ContactItemEvents.ShowList(view.emailsContainer(), items, ALLOWED_EMAIL_TYPES, ALLOWED_EMAIL_DATA_ACCESS));
+        fireEvent(new ContactItemEvents.ShowList(view.probationEmailsContainer(), items, ALLOWED_EMAIL_TYPES, ALLOWED_PROBATION_EMAIL_DATA_ACCESS));
 
         view.tableContainer().clear();
         if (company.getId() != null && policyService.hasPrivilegeFor(En_Privilege.CONTACT_VIEW)) {

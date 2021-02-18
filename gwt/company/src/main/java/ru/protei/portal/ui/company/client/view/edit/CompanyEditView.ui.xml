@@ -74,14 +74,16 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <div class="row">
-                            <div class="form-group col-md-12">
-                                <label>
-                                    <ui:text from="{lang.companyProbationPeriodAddresses}"/>
-                                </label>
-                                <g:HTMLPanel ui:field="probationEmailsContainer"/>
+                        <g:HTMLPanel ui:field="probationEmailsGeneralContainer" visible="false">
+                            <div class="row">
+                                <div class="form-group col-md-12">
+                                    <label>
+                                        <ui:text from="{lang.companyProbationPeriodAddresses}"/>
+                                    </label>
+                                    <g:HTMLPanel ui:field="probationEmailsContainer"/>
+                                </div>
                             </div>
-                        </div>
+                        </g:HTMLPanel>
                         <div class="row">
                             <div class="form-group col-md-12">
                                 <list:CompanySubscriptionList ui:field="subscriptions"/>

@@ -42,6 +42,8 @@ public interface AbstractCompanyEditView extends IsWidget {
     HasWidgets emailsContainer();
     HasWidgets probationEmailsContainer();
 
+    HasVisibility probationEmailsContainerVisibility();
+
     HasWidgets tableContainer();
     HasWidgets siteFolderContainer();
 
