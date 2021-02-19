@@ -3064,8 +3064,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errDashboardTableNameEmpty();
 
-    String errContractOrganizationShouldBeDifferentFromParent();
-
     String topBrass();
 
     String archive();
