@@ -112,4 +112,9 @@ public class ContactItem implements Serializable {
     public boolean isPublicItem () {
         return this.accessType == En_ContactDataAccess.PUBLIC;
     }
+
+    @JsonIgnore
+    public boolean isInternalItem () {
+        return this.accessType == En_ContactDataAccess.INTERNAL;
+    }
 }
