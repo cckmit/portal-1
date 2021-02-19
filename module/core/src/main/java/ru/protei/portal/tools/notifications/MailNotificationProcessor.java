@@ -1146,17 +1146,7 @@ public class MailNotificationProcessor {
         Set<Person> headsOfDepartments = event.getHeadsOfDepartments();
         List<Person> participants = event.getParticipants();
 
-        Set<String> recipients = new HashSet<>();
-
-        if (isNotEmpty(headsOfDepartments)) {
-            headsOfDepartments.forEach(person ->
-                    recipients.add(new PlainContactInfoFacade(person.getContactInfo()).getEmail()));
-        }
-
-        if (isNotEmpty(participants)) {
-            participants.forEach(person ->
-                    recipients.add(new PlainContactInfoFacade(person.getContactInfo()).getEmail()));
-        }
+        Set<String> recipients = getRecipientsEmails(headsOfDepartments, participants);
 
         Set<String> recipientsFromConfig = getRecipientsFromConfigOnCreateRequest(educationEntry.getType());
         if (isNotEmpty(recipientsFromConfig)) {
@@ -1199,17 +1189,7 @@ public class MailNotificationProcessor {
         Set<Person> headsOfDepartments = event.getHeadsOfDepartments();
         List<Person> approvedParticipants = event.getApprovedParticipants();
 
-        Set<String> recipients = new HashSet<>();
-
-        if (isNotEmpty(headsOfDepartments)) {
-            headsOfDepartments.forEach(person ->
-                    recipients.add(new PlainContactInfoFacade(person.getContactInfo()).getEmail()));
-        }
-
-        if (isNotEmpty(approvedParticipants)) {
-            approvedParticipants.forEach(person ->
-                    recipients.add(new PlainContactInfoFacade(person.getContactInfo()).getEmail()));
-        }
+        Set<String> recipients = getRecipientsEmails(headsOfDepartments, approvedParticipants);
 
         Set<String> recipientsFromConfig = getRecipientsFromConfigOnApproveParticipants(educationEntry.getType());
         if (isNotEmpty(recipientsFromConfig)) {
@@ -1256,17 +1236,7 @@ public class MailNotificationProcessor {
         Set<Person> headsOfDepartments = event.getHeadsOfDepartments();
         List<Person> declineParticipants = event.getDeclineParticipants();
 
-        Set<String> recipients = new HashSet<>();
-
-        if (isNotEmpty(headsOfDepartments)) {
-            headsOfDepartments.forEach(person ->
-                    recipients.add(new PlainContactInfoFacade(person.getContactInfo()).getEmail()));
-        }
-
-        if (isNotEmpty(declineParticipants)) {
-            declineParticipants.forEach(person ->
-                    recipients.add(new PlainContactInfoFacade(person.getContactInfo()).getEmail()));
-        }
+        Set<String> recipients = getRecipientsEmails(headsOfDepartments, declineParticipants);
 
         if (isEmpty(recipients)) {
             log.warn("Failed to send education request notification: empty recipients set");
@@ -1330,6 +1300,25 @@ public class MailNotificationProcessor {
         return Arrays.stream(recipients)
                 .filter(Strings::isNotEmpty)
                 .collect(Collectors.toSet());
+    }
+
+    private Set<String> getRecipientsEmails(Set<Person> headsOfDepartments, List<Person> participants) {
+        Set<String> recipients = new HashSet<>();
+
+        if (isNotEmpty(headsOfDepartments)) {
+            CollectionUtils.stream(headsOfDepartments)
+                    .map(person -> new PlainContactInfoFacade(person.getContactInfo()).getEmail())
+                    .filter(Strings::isNotEmpty)
+                    .forEach(recipients::add);
+        }
+
+        if (isNotEmpty(participants)) {
+            CollectionUtils.stream(participants)
+                    .map(person -> new PlainContactInfoFacade(person.getContactInfo()).getEmail())
+                    .filter(Strings::isNotEmpty)
+                    .forEach(recipients::add);
+        }
+        return recipients;
     }
 
     // -----
