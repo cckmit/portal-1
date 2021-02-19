@@ -3,7 +3,6 @@ package ru.protei.portal.ui.contract.client.widget.contractspecification.item;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.*;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -22,13 +21,13 @@ import ru.protei.portal.core.model.struct.Money;
 import ru.protei.portal.core.model.struct.MoneyWithCurrency;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.events.InputEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.ValiableAutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.money.MoneyCurrencyWidget;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
-
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 
 public class ContractSpecificationItem
@@ -82,13 +81,13 @@ public class ContractSpecificationItem
     }
 
     @UiHandler( "clause" )
-    public void onChangeClause(KeyUpEvent event) {
+    public void onInputClause(InputEvent event) {
         value.setClause(clause.getValue());
         changeTimer.schedule(50);
     }
 
     @UiHandler( "text" )
-    public void onChangeText(KeyUpEvent event) {
+    public void onChangeText(ValueChangeEvent<String> event) {
         value.setText(text.getValue());
     }
 

@@ -94,7 +94,7 @@ public class ContractSpecificationList
             ContractSpecification remove = modelToView.remove( event.getTarget() );
             ContractSpecificationList.this.value.remove( remove );
         });
-        itemWidget.addValueChangeHandler(event -> isValidAllClause(event.getValue()));
+        itemWidget.addValueChangeHandler(event -> modelToView.keySet().stream().allMatch(this::isValidAllClause));
 
         modelToView.put( itemWidget, value );
         container.add( itemWidget );
