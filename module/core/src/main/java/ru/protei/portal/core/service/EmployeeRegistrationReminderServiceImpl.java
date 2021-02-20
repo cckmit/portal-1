@@ -81,7 +81,7 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
 
     @Override
     public Result<Boolean> notifyAboutProbationPeriod() {
-        List<EmployeeRegistration> probationExpires = employeeRegistrationDAO.getProbationExpireList( SEND_PROBATION_EXPIRES_TO_PROBATION_END_DAYS );
+        List<EmployeeRegistration> probationExpires = employeeRegistrationDAO.getProbationExpireList( 8 );
         log.info( "notifyAboutProbationPeriod(): {}", toList (probationExpires, EmployeeRegistration::getId ) );
 
         Map<Long, Person> idToPerson = collectPersonsForNotification( probationExpires );
