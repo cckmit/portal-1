@@ -127,14 +127,15 @@ public class ContractSpecification implements Serializable, Comparable<ContractS
 
     @Override
     public String toString() {
-        return "ContractDate{" +
+        return "ContractSpecification{" +
                 "id=" + id +
                 ", contractId=" + contractId +
-                ", clause=" + clause +
-                ", text=" + text +
+                ", clause='" + clause + '\'' +
+                ", text='" + text + '\'' +
                 ", quantity=" + quantity +
                 ", cost=" + cost +
                 ", currency=" + currency +
+                ", clauseNumbers=" + clauseNumbers +
                 '}';
     }
 }

@@ -68,8 +68,8 @@ public class ContractSpecificationList
 
     @Override
     public boolean isValid() {
-        return modelToView.keySet().stream().allMatch(item -> item.isValid()) &&
-                modelToView.keySet().stream().allMatch(item -> isValidAllClause(item));
+        return modelToView.keySet().stream().allMatch(ContractSpecificationItem::isValid) &&
+                modelToView.keySet().stream().allMatch(this::isValidAllClause);
     }
 
     @UiHandler( "add" )
@@ -94,7 +94,7 @@ public class ContractSpecificationList
             ContractSpecification remove = modelToView.remove( event.getTarget() );
             ContractSpecificationList.this.value.remove( remove );
         });
-        itemWidget.addValueChangeHandler(event -> isValidAllClause(event.getValue()));
+        itemWidget.addValueChangeHandler(event -> modelToView.keySet().stream().allMatch(this::isValidAllClause));
 
         modelToView.put( itemWidget, value );
         container.add( itemWidget );
@@ -110,7 +110,7 @@ public class ContractSpecificationList
             if (i == contractSpecification) {
                 break;
             }
-            if (contractSpecification.getClause().equals(i.getClause())) {
+            if (Objects.equals(contractSpecification.getClause(), i.getClause())) {
                 item.setError(true, lang.contractValidationContractSpecificationClauseDuplication());
                 return false;
             }
