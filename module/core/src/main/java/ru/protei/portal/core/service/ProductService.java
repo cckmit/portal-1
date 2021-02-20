@@ -56,6 +56,8 @@ public interface ProductService {
 
     Result<List<ProductDirectionInfo>> productDirectionList( AuthToken token, ProductDirectionQuery query );
 
+    Result<List<ProductDirectionInfo>> productDirectionList( AuthToken token, List<Long> productDirectionIds );
+
     @Privileged( En_Privilege.PRODUCT_VIEW )
     Result<DevUnitInfo> getProductInfo( AuthToken authToken, Long productId );
 

@@ -3,6 +3,7 @@ package ru.protei.portal.core.utils;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dict.*;
 
+import java.time.DayOfWeek;
 import java.util.Locale;
 
 public class EnumLangUtil {
@@ -286,6 +287,37 @@ public class EnumLangUtil {
                 return localizedLang.get("dutyTypeSORM");
             case COV:
                 return localizedLang.get("dutyTypeCOV");
+        }
+        return "";
+    }
+
+    public String educationTypeLang(EducationEntryType type, String langCode) {
+        if (type == null) {
+            return "";
+        }
+        if (localizedLang == null) {
+            localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
+        }
+        switch (type) {
+            case COURSE: return localizedLang.get("educationCourse");
+            case CONFERENCE: return localizedLang.get("educationConference");
+            case LITERATURE: return localizedLang.get("educationLiterature");
+        }
+        return "";
+    }
+
+    public String dayOfWeekLang(DayOfWeek dayOfWeek, String langCode) {
+        if (localizedLang == null) {
+            localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
+        }
+        switch (dayOfWeek) {
+            case SUNDAY: return localizedLang.get("sunday");
+            case MONDAY: return localizedLang.get("monday");
+            case TUESDAY: return localizedLang.get("tuesday");
+            case WEDNESDAY: return localizedLang.get("wednesday");
+            case THURSDAY: return localizedLang.get("thursday");
+            case FRIDAY: return localizedLang.get("friday");
+            case SATURDAY: return localizedLang.get("saturday");
         }
         return "";
     }

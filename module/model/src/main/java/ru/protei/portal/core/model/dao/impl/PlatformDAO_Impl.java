@@ -3,11 +3,14 @@ package ru.protei.portal.core.model.dao.impl;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.PlatformDAO;
 import ru.protei.portal.core.model.ent.Platform;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.winter.jdbc.JdbcHelper;
+
+import java.util.List;
 
 public class PlatformDAO_Impl extends PortalBaseJdbcDAO<Platform> implements PlatformDAO {
 
@@ -79,7 +82,7 @@ public class PlatformDAO_Impl extends PortalBaseJdbcDAO<Platform> implements Pla
     }
 
     @Override
-    public Platform getByProjectId(Long id) {
-        return (id == null ? null : getByCondition("project_id=?", id));
+    public List<Platform> getByProjectId(Long id) {
+        return (id == null ? null : partialGetListByCondition("project_id=?", CollectionUtils.listOf(id), "id", "name"));
     }
 }

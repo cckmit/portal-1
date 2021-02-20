@@ -108,6 +108,8 @@ public class ProjectServiceImpl implements ProjectService {
     HistoryDAO historyDAO;
     @Autowired
     CaseStateDAO caseStateDAO;
+    @Autowired
+    CompanyService companyService;
 
     @EventListener
     @Async(BACKGROUND_TASKS)
@@ -227,12 +229,7 @@ public class ProjectServiceImpl implements ProjectService {
             return error(En_ResultStatus.NOT_FOUND, "Project was not found");
         }
 
-        Platform platform = platformDAO.getByProjectId(id);
-
-        if (platform != null) {
-            project.setPlatformId(platform.getId());
-            project.setPlatformName(platform.getName());
-        }
+        project.setPlatforms(platformDAO.getByProjectId(id));
 
         jdbcManyRelationsHelper.fillAll( project );
         project.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(project.getId())));
@@ -523,6 +520,30 @@ public class ProjectServiceImpl implements ProjectService {
 
         log.info("notifyExpiringProjectTechnicalSupportValidity(): done");
         return ok(true);
+    }
+
+    @Override
+    public Result<SelectorsParams> getSelectorsParams(AuthToken token, ProjectQuery query) {
+        log.debug( "getSelectorsParams(): projectQuery={} ", query );
+        SelectorsParams selectorsParams = new SelectorsParams();
+
+        List<Long> companyIds = collectCompanyIds(query);
+        if (!isEmpty(companyIds)) {
+            Result<List<EntityOption>> result = companyService.companyOptionListByIds( token, filterToList(companyIds, Objects::nonNull ));
+            if (result.isOk()) {
+                selectorsParams.setCompanyEntityOptions(result.getData());
+            } else {
+                return error(result.getStatus(), "Error at getCompanyIds" );
+            }
+        }
+
+        return ok(selectorsParams);
+    }
+
+    private List<Long> collectCompanyIds(ProjectQuery projectQuery) {
+        List<Long> companyIds = new ArrayList<>();
+        companyIds.addAll(emptyIfNull(projectQuery.getInitiatorCompanyIds()));
+        return companyIds;
     }
 
     private boolean updateCaseObjectPart(AuthToken token, Project project) {

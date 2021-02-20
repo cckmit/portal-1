@@ -22,6 +22,7 @@ import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.casetag.taglist.AbstractCaseTagListActivity;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
+import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentControllerAsync;
@@ -42,6 +43,9 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.util.CaseStateUtil.isTerminalState;
 import static ru.protei.portal.core.model.util.CrmConstants.Jira.NO_EXTENDED_PRIVACY_PROJECT;
+import static ru.protei.portal.ui.common.client.util.AttachmentUtils.getRemoveErrorHandler;
+import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.getCommentAndHistorySelectedTabs;
+import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.saveCommentAndHistorySelectedTabs;
 
 public abstract class IssueEditActivity implements
         AbstractIssueEditActivity,
@@ -102,6 +106,7 @@ public abstract class IssueEditActivity implements
         viewModeIsPreview(false);
         container.clear();
         Window.scrollTo(0, 0);
+
         requestIssue(event.caseNumber, container);
     }
 
@@ -167,7 +172,7 @@ public abstract class IssueEditActivity implements
         if (view.isAttached()) {
             reloadComments();
             if (isTerminalState(event.stateId)) {
-                fireEvent(new CaseCommentEvents.DisableNewComment());
+                fireEvent(new CommentAndHistoryEvents.DisableNewComment());
             }
         }
         fireEvent( new IssueEvents.ChangeIssue(event.issueId) );
@@ -207,7 +212,7 @@ public abstract class IssueEditActivity implements
         }
         if (view.isAttached()) {
             if (isTerminalState(event.meta.getStateId())) {
-                fireEvent(new CaseCommentEvents.DisableNewComment());
+                fireEvent(new CommentAndHistoryEvents.DisableNewComment());
             }
         }
         boolean isCreatingSubtaskAllowed = isCreatingSubtaskAllowed(
@@ -247,22 +252,16 @@ public abstract class IssueEditActivity implements
     }
 
     @Override
+    public void selectedTabsChanged(List<En_CommentOrHistoryType> selectedTabs) {
+        saveCommentAndHistorySelectedTabs(localStorageService, selectedTabs);
+        fireEvent(new CommentAndHistoryEvents.ShowItems(selectedTabs));
+    }
+
+    @Override
     public void removeAttachment(Attachment attachment) {
         if (isReadOnly()) return;
         attachmentController.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, attachment.getId(), new FluentCallback<Long>()
-                .withError((throwable, defaultErrorHandler, status) -> {
-                    if (En_ResultStatus.NOT_FOUND.equals(status)) {
-                        fireEvent(new NotifyEvents.Show(lang.fileNotFoundError(), NotifyEvents.NotifyType.ERROR));
-                        return;
-                    }
-
-                    if (En_ResultStatus.NOT_REMOVED.equals(status)) {
-                        fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR));
-                        return;
-                    }
-
-                    defaultErrorHandler.accept(throwable);
-                })
+                .withError(getRemoveErrorHandler(this, lang))
                 .withSuccess(result -> {
                     issueInfoWidget.attachmentsListContainer().remove(attachment);
                     issue.getAttachments().remove(attachment);
@@ -273,7 +272,7 @@ public abstract class IssueEditActivity implements
 
                     fireIssueChanged(issue.getId());
 
-                    showComments( issue );
+                    showCommentsAndHistories( issue );
                 }));
     }
 
@@ -376,7 +375,7 @@ public abstract class IssueEditActivity implements
     }
 
     private void fireSuccessCopyNotify() {
-        fireEvent(new NotifyEvents.Show(lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS));
+        fireEvent(new NotifyEvents.Show(lang.copiedToClipboardSuccessfully(), NotifyEvents.NotifyType.SUCCESS));
     }
 
     private void fireErrorCopyNotify() {
@@ -404,8 +403,7 @@ public abstract class IssueEditActivity implements
                     showLinks(issue);
                     showTags(issue);
                     showMeta(issue);
-                    showComments(issue);
-                    showPlansHistory(issue);
+                    showCommentsAndHistories(issue);
                     attachToContainer(container);
                 }));
     }
@@ -434,23 +432,18 @@ public abstract class IssueEditActivity implements
                 .withReadOnly(isReadOnly()));
     }
 
-    private void showComments(CaseObject issue) {
-        CaseCommentEvents.Show show = new CaseCommentEvents.Show( issueInfoWidget.getCommentsContainer(),
+    private void showCommentsAndHistories(CaseObject issue) {
+        CommentAndHistoryEvents.Show showCommentsAndHistoriesEvent = new CommentAndHistoryEvents.Show( issueInfoWidget.getCommentAndHistoryListContainer(),
                 issue.getId(), En_CaseType.CRM_SUPPORT, hasAccess() && !isReadOnly(), issue.getCreatorId() );
-        show.isElapsedTimeEnabled = policyService.hasPrivilegeFor( En_Privilege.ISSUE_WORK_TIME_VIEW );
-        show.isPrivateVisible = !issue.isPrivateCase() && policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW );
-        show.isPrivateCase = issue.isPrivateCase();
-        show.isNewCommentEnabled = !isTerminalState(issue.getStateId());
-        show.textMarkup =  CaseTextMarkupUtil.recognizeTextMarkup( issue );
-        show.initiatorCompanyId = issue.getInitiatorCompany().getId();
-        show.isMentionEnabled = policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
-        show.extendedPrivacyType =  selectExtendedPrivacyType( issue );
-        fireEvent( show );
-
-    }
-
-    private void showPlansHistory(CaseObject issue) {
-        fireEvent(new CaseHistoryEvents.Load(issue.getId(), issueInfoWidget.getHistoryContainer()));
+        showCommentsAndHistoriesEvent.isElapsedTimeEnabled = policyService.hasPrivilegeFor( En_Privilege.ISSUE_WORK_TIME_VIEW );
+        showCommentsAndHistoriesEvent.isPrivateVisible = !issue.isPrivateCase() && policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW );
+        showCommentsAndHistoriesEvent.isPrivateCase = issue.isPrivateCase();
+        showCommentsAndHistoriesEvent.isNewCommentEnabled = !isTerminalState(issue.getStateId());
+        showCommentsAndHistoriesEvent.textMarkup =  CaseTextMarkupUtil.recognizeTextMarkup( issue );
+        showCommentsAndHistoriesEvent.initiatorCompanyId = issue.getInitiatorCompany().getId();
+        showCommentsAndHistoriesEvent.isMentionEnabled = policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
+        showCommentsAndHistoriesEvent.extendedPrivacyType =  selectExtendedPrivacyType( issue );
+        fireEvent( showCommentsAndHistoriesEvent );
     }
 
     private boolean selectExtendedPrivacyType(CaseObject issue) {
@@ -459,7 +452,7 @@ public abstract class IssueEditActivity implements
     }
 
     private void reloadComments() {
-        fireEvent(new CaseCommentEvents.Reload());
+        fireEvent(new CommentAndHistoryEvents.Reload());
     }
 
     private void attachToContainer(HasWidgets container) {
@@ -501,6 +494,8 @@ public abstract class IssueEditActivity implements
 
         issueInfoWidget.attachmentsListContainer().clear();
         issueInfoWidget.attachmentsListContainer().add(issue.getAttachments());
+
+        issueInfoWidget.selectTabs(getCommentAndHistorySelectedTabs(localStorageService));
 
         boolean isAttachmentsEmpty = isEmpty(issue.getAttachments());
 
@@ -616,6 +611,8 @@ public abstract class IssueEditActivity implements
     Lang lang;
     @Inject
     PolicyService policyService;
+    @Inject
+    LocalStorageService localStorageService;
 
     @Inject
     IssueNameDescriptionEditWidget issueNameDescriptionEditWidget;

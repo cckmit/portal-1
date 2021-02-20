@@ -46,4 +46,6 @@ public interface ContractService {
 
     @Privileged(En_Privilege.CONTRACT_VIEW)
     Result<List<Contract>> getContractsByApiQuery(AuthToken token, ContractApiQuery apiQuery);
+
+    Result<SelectorsParams> getSelectorsParams(AuthToken token, ContractQuery query);
 }

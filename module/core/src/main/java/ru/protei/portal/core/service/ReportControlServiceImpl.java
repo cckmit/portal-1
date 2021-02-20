@@ -17,15 +17,15 @@ import ru.protei.portal.core.event.MailReportEvent;
 import ru.protei.portal.core.event.ProcessNewReportsEvent;
 import ru.protei.portal.core.model.dao.HistoryDAO;
 import ru.protei.portal.core.model.dao.ReportDAO;
-import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dict.En_ReportScheduledType;
+import ru.protei.portal.core.model.dict.En_ReportStatus;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dto.ReportDto;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.*;
-import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.struct.ReportContent;
-import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.report.absence.ReportAbsence;
 import ru.protei.portal.core.report.caseobjects.ReportCase;
 import ru.protei.portal.core.report.caseresolution.ReportCaseResolutionTime;
@@ -45,13 +45,11 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.function.Consumer;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
 import static ru.protei.portal.config.MainConfiguration.REPORT_TASKS;
-import static ru.protei.portal.core.model.dict.En_ReportStatus.CANCELLED;
 import static ru.protei.portal.core.model.dict.En_ResultStatus.NOT_FOUND;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.size;
@@ -165,8 +163,8 @@ public class ReportControlServiceImpl implements ReportControlService {
             }
 
             En_ReportStatus currentReportStatus = getReportStatus(report.getId());
-            if (currentReportStatus == null || CANCELLED.equals(currentReportStatus)) {
-                log.warn("processReport(): Report {} is canceled", report.getId());
+            if (!En_ReportStatus.PROCESS.equals(currentReportStatus)) {
+                log.warn("processReport(): Report {} is canceled by status = {}", report.getId(), currentReportStatus);
                 return;
             }
 
@@ -260,8 +258,8 @@ public class ReportControlServiceImpl implements ReportControlService {
     private Boolean isCancel(Long reportId) {
         Report report = reportDAO.partialGet(reportId, Report.Columns.STATUS, Report.Columns.REMOVED);
         if (report == null || report.isRemoved()) return true;
-        if (En_ReportStatus.PROCESS.equals(report.getStatus())) return false;
-        return true;
+        if (!En_ReportStatus.PROCESS.equals(report.getStatus())) return true;
+        return false;
     }
 
 
@@ -291,11 +289,7 @@ public class ReportControlServiceImpl implements ReportControlService {
         log.info("processScheduledMailReports(): start");
         final String systemId = config.data().getCommonConfig().getSystemId();
         CompletableFuture<?>[] futures = reportDAO.getScheduledReports(enReportScheduledType, systemId).stream()
-                .map(report -> {
-                    log.info("processScheduledMailReports(): Scheduled Mail Reports = {}", report);
-                    setRange(report, enReportScheduledType);
-                    return createScheduledMailReportsTask(report);
-                })
+                .map(this::createScheduledMailReportsTask)
                 .map(f -> f.thenAccept(mailReportEvent -> publisherService.publishEvent(mailReportEvent)))
                 .toArray(CompletableFuture[]::new);
         CompletableFuture.allOf(futures).join();
@@ -343,6 +337,7 @@ public class ReportControlServiceImpl implements ReportControlService {
     }
 
     private CompletableFuture<MailReportEvent> createScheduledMailReportsTask(Report report) {
+        log.info("processScheduledMailReports(): Scheduled Mail Reports = {}", report);
         return CompletableFuture.supplyAsync(() -> {
             processReport(report);
             Report processedReport = reportDAO.get(report.getId());
@@ -364,51 +359,12 @@ public class ReportControlServiceImpl implements ReportControlService {
             }}, reportExecutorService);
     }
 
-    private void setRange(Report report, En_ReportScheduledType enReportScheduledType) {
-        int days;
-        switch (enReportScheduledType) {
-            case WEEKLY: days = 7; break;
-            case DAILY:
-            default: days = 1;
-        }
-
-        Date now = new Date();
-
-        if (En_ReportType.CASE_TIME_ELAPSED.equals(report.getReportType())) {
-            modifyCaseQuery(report, caseQuery -> {
-                caseQuery.setCreatedRange(makeFixedRange(new Date(now.getTime() - days * CrmConstants.Time.DAY), now));
-            });
-        }
-
-        if (En_ReportType.CASE_OBJECTS.equals(report.getReportType())) {
-            modifyCaseQuery(report, caseQuery -> {
-                caseQuery.setCreatedRange(null);
-                caseQuery.setModifiedRange(makeFixedRange(new Date(now.getTime() - days * CrmConstants.Time.DAY), now));
-            });
-        }
-    }
-
     private <T extends BaseQuery> T getQuery(Report report, Class<T> clazz) {
         try {
             return objectMapper.readValue(report.getQuery(), clazz);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private void modifyCaseQuery(Report report, Consumer<CaseQuery> consumer) {
-        try {
-            CaseQuery caseQuery = getQuery(report, CaseQuery.class);
-            consumer.accept(caseQuery);
-            String query = objectMapper.writeValueAsString(caseQuery);
-            report.setQuery(query);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private DateRange makeFixedRange(Date from, Date to) {
-        return new DateRange(En_DateIntervalType.FIXED, from, to);
     }
 
     private boolean isNotConfiguredSystemId() {

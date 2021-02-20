@@ -24,7 +24,6 @@ import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.renderer.HTMLRenderer;
-import ru.protei.portal.core.utils.DateUtils;
 import ru.protei.portal.core.utils.EnumLangUtil;
 import ru.protei.portal.core.utils.LinkData;
 import ru.protei.portal.core.utils.WorkTimeFormatter;
@@ -35,6 +34,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -434,6 +434,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("reportId", report.getId());
         templateModel.put("name", report.getName());
         templateModel.put("created", report.getCreated());
+        templateModel.put("modified", report.getModified());
         templateModel.put("creator", report.getCreator().getDisplayShortName());
         templateModel.put("type", report.getReportType());
         templateModel.put("status", report.getStatus());
@@ -875,15 +876,13 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getBirthdaysNotificationBody(List<EmployeeShortView> employees, Collection<String> recipients) {
+    public PreparedTemplate getBirthdaysNotificationBody(LinkedHashMap<Date, TreeSet<EmployeeShortView>> dateToEmployeesMap,
+                                                         List<DayOfWeek> dayOfWeeks, Collection<String> recipients, EnumLangUtil enumLangUtil) {
         Map<String, Object> model = new HashMap<>();
-        model.put("employees", employees.stream().collect(Collectors.groupingBy(
-                employee -> DateUtils.resetYear(employee.getBirthday()),
-                LinkedHashMap::new,
-                Collectors.toCollection(() -> new TreeSet<>(
-                        Comparator.comparing(EmployeeShortView::getDisplayName)
-                )))));
+        model.put("employees", dateToEmployeesMap);
+        model.put("daysOfWeek", dayOfWeeks);
         model.put("recipients", recipients);
+        model.put("EnumLangUtil", enumLangUtil);
 
         PreparedTemplate template = new PreparedTemplate("notification/email/birthdays.body.%s.ftl");
         template.setModel(model);
@@ -935,6 +934,68 @@ public class TemplateServiceImpl implements TemplateService {
         template.setModel(model);
         template.setTemplateConfiguration(templateConfiguration);
         return template;
+    }
+
+    @Override
+    public PreparedTemplate getEducationRequestNotificationSubject(EducationEntry educationEntry) {
+        Map<String, Object> model = new HashMap<>();
+        model.put("title", educationEntry.getTitle());
+        PreparedTemplate template = new PreparedTemplate("notification/email/education.request.subject.%s.ftl");
+        template.setModel(model);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getEducationRequestCreateNotificationBody(Collection<String> recipients, EducationEntry educationEntry,
+                                                                      EnumLangUtil enumLangUtil) {
+        Map<String, Object> model = fillEducationRequestModel(recipients, educationEntry, enumLangUtil);
+        PreparedTemplate template = new PreparedTemplate("notification/email/education.request.create.body.%s.ftl");
+        template.setModel(model);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getEducationRequestApproveNotificationBody(Collection<String> recipients, EducationEntry educationEntry,
+                                                                       String approved, EnumLangUtil enumLangUtil) {
+        Map<String, Object> model = fillEducationRequestModel(recipients, educationEntry, enumLangUtil);
+        model.put("approved", approved);
+        PreparedTemplate template = new PreparedTemplate("notification/email/education.request.approve.body.%s.ftl");
+        template.setModel(model);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getEducationRequestDeclineNotificationBody(Collection<String> recipients, EducationEntry educationEntry,
+                                                                       String declined, EnumLangUtil enumLangUtil) {
+        Map<String, Object> model = fillEducationRequestModel(recipients, educationEntry, enumLangUtil);
+        model.put("declined", declined);
+        PreparedTemplate template = new PreparedTemplate("notification/email/education.request.decline.body.%s.ftl");
+        template.setModel(model);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    private Map<String, Object> fillEducationRequestModel(Collection<String> recipients, EducationEntry educationEntry, EnumLangUtil enumLangUtil) {
+        String participants = educationEntry.getAttendanceList().stream()
+                .map(EducationEntryAttendance::getWorkerName)
+                .collect(Collectors.joining(", "));
+
+        Map<String, Object> model = new HashMap<>();
+        model.put("title", educationEntry.getTitle());
+        model.put("type", educationEntry.getType());
+        model.put("coins", educationEntry.getCoins());
+        model.put("link", educationEntry.getLink());
+        model.put("location", educationEntry.getLocation());
+        model.put("dateStart", educationEntry.getDateStart());
+        model.put("dateEnd", educationEntry.getDateEnd());
+        model.put("description", educationEntry.getDescription());
+        model.put("participants", participants);
+        model.put("recipients", recipients);
+        model.put("EnumLangUtil", enumLangUtil);
+        return model;
     }
 
     private <T, R> R getNullOrElse(T value, Function<T, R> orElseFunction) {

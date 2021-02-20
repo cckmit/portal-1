@@ -79,6 +79,9 @@
   <include file="2021-01-22-add-paused-state-for-projects.xml" relativeToChangelogFile="true"/>
   <include file="2021-01-26-remove-contact-info-in-person-and-company.xml" relativeToChangelogFile="true"/>
   <include file="2021-01-26-clean-single-product_id-for-project.xml" relativeToChangelogFile="true"/>
+  <include file="2021-02-01-drop-unique-project-constraint-in-platform-table.xml" relativeToChangelogFile="true"/>
+  <include file="2021-02-04-migrate-scheduled-reports.xml" relativeToChangelogFile="true"/>
   <include file="2021-02-06-add-delivery_number-to-contract-table.xml" relativeToChangelogFile="true"/>
+  <include file="2021-02-09-create-employee_registration_history-table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

@@ -428,6 +428,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contactGeneratePassword();
 
+    String contactHasAccount();
+
     String product();
 
     String products();
@@ -808,7 +810,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String appNavHeader();
 
-    String issueCopiedToClipboard();
+    String copiedToClipboardSuccessfully();
 
     String privacyTypePublic();
 
@@ -958,7 +960,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String projectCreate();
 
-    String projectSiteFolder();
+    String projectSiteFolders();
 
     String productDirectionNotSpecified();
 
@@ -1748,6 +1750,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String siteFolderAppName();
 
+    String siteFolderCopyPreviewLink();
+
     String issueLinkIncorrectCrmNumberFormat();
 
     String issueLinkIncorrectCrmCaseNotFound( long p0 );
@@ -2279,8 +2283,6 @@ public interface Lang extends Messages, ContactItemLang {
     String issueCommentElapsedTimeTypeLabel();
 
     String issueCommentElapsedTimeTypeChange();
-
-    String timeElapsedInfo();
 
     String privateComment();
 
@@ -2872,6 +2874,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String thisWeekAndBeyondInterval();
 
+    String relativeLastDayInterval();
+
+    String relativeLastWeekInterval();
+
     String relativeLastMonthInterval();
 
     String relativeLastThreeMonthsInterval();
@@ -3057,8 +3063,6 @@ public interface Lang extends Messages, ContactItemLang {
     String errDashboardChooseFilter();
 
     String errDashboardTableNameEmpty();
-
-    String errContractOrganizationShouldBeDifferentFromParent();
 
     String topBrass();
 
@@ -3285,4 +3289,12 @@ public interface Lang extends Messages, ContactItemLang {
     String contractTypeAgreement();
 
     String contractDeliveryNumber();
+
+    String commentReply();
+
+    String commentTimeElapsedTypeEdit();
+
+    String commentEdit();
+
+    String commentRemove();
 }

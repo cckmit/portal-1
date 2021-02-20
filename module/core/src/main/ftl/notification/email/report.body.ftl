@@ -5,6 +5,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 <@set name="_reportId" value="${notificationReportId}"/>
 <@set name="_name" value="${notificationReportName}"/>
 <@set name="_created" value="${notificationReportCreated}"/>
+<@set name="_modified" value="${notificationReportModified}"/>
 <@set name="_creator" value="${notificationReportCreator}"/>
 <@set name="_type" value="${notificationReportType}"/>
 <@set name="_status" value="${notificationReportStatus}"/>
@@ -61,6 +62,14 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     </td>
                     <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
                         ${created}
+                    </td>
+                </tr>
+                <tr>
+                    <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
+                        ${_modified}
+                    </td>
+                    <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
+                        ${modified}
                     </td>
                 </tr>
                 <tr>

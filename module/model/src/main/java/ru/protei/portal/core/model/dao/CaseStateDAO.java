@@ -12,4 +12,6 @@ public interface CaseStateDAO extends PortalBaseDAO<CaseState> {
     List<CaseState> getCaseStatesForCompany(Long companyId);
 
     CaseState getCaseStateByCaseId(Long caseId);
+
+    List<CaseState> getCaseStatesByIds(List<Long> ids);
 }

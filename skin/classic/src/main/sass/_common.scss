@@ -642,6 +642,7 @@ label.bordered:after {
             white-space: pre-line;
             overflow: hidden;
             text-overflow: ellipsis;
+            position: relative;
           }
         }
       }
@@ -3810,9 +3811,9 @@ label {
   justify-content: center;
 }
 
-.number-copy-panel {
+.copy-panel {
   display: inline-block;
-  .copy-issue-number {
+  .copy-button {
     opacity: .0;
     position: absolute;
     left: 3px;
@@ -3829,8 +3830,17 @@ label {
   }
 
   &:hover {
-    .copy-issue-number {
+    .copy-button {
+      cursor: pointer;
       opacity: 1;
+    }
+  }
+}
+
+.site-folder {
+  .copy-panel {
+    .copy-button {
+      left: -16px;
     }
   }
 }
@@ -3854,6 +3864,7 @@ label {
 
   &:hover {
     .copy-issue-number-and-name {
+      cursor: pointer;
       opacity: 1;
     }
   }
@@ -4675,8 +4686,43 @@ table {
 .case-history {
   list-style: none;
   padding: 0;
+  font-size: 13px;
+
   .case-history-item-date {
-    color: #999;
+    margin-left: 5px;
+  }
+
+  .case-history-item-container {
+    line-height: 24px;
+    margin-bottom: 10px;
+
+    &.without-initiator {
+      margin-top: 1em;
+
+      .case-history-icon {
+        display: none;
+      }
+
+      .case-history-initiator {
+        display: none;
+      }
+
+      .case-history-item-date {
+        margin-left: 2.8em;
+      }
+    }
+
+    > div {
+      padding-left: 1em;
+    }
+
+    .case-history-initiator {
+      margin-left: 2.8em;
+    }
+
+    .case-history-item .row div {
+      padding-left: 4em;
+    }
   }
 }
 
@@ -4684,24 +4730,36 @@ table {
   .chats {
     padding-left: 0;
     padding-right: 0;
+
+    section {
+      .message {
+        margin-bottom: 0;
+      }
+    }
   }
 
   .nav-tabs ~ .tab-content {
     overflow: unset;
   }
+
+  .nav-tabs {
+    .nav-item {
+      a {
+        color: rgba(98, 98, 98, .7);
+
+        &.active.show {
+          color: #626262;
+        }
+
+        &:focus {
+          color: rgba(98, 98, 98, .7);
+        }
+      }
+    }
+  }
 }
 
-.history-item-history-type {
-  float: left;
-  margin-right: 10px;
-}
-
-.history-item-initiator {
-  float: left;
-  margin-right: 10px;
-}
-
-.history-item-added-value, .history-item-removed-value {
+.case-history-item-added-value, .case-history-item-removed-value {
   white-space: nowrap;
   float: left;
   max-width: 90%;
@@ -4709,17 +4767,32 @@ table {
   overflow: hidden;
 }
 
-.history-item-changed-value {
+.case-history-time-icon {
+  margin-top: 4px;
+}
+
+.case-history-item-removed-value {
+  text-decoration: line-through;
+  .case-tag {
+    text-decoration: line-through;
+  }
+}
+
+.case-history-state-item {
+  color: #5e5e5e;
+}
+
+.case-history-item-changed-value {
   float: left;
-  .history-item-old-value, .history-item-new-value {
+  .case-history-item-old-value, .case-history-item-new-value {
     white-space: nowrap;
     float: left;
-    max-width: 60%;
     text-overflow: ellipsis;
     overflow: hidden;
+    font-weight: bold;
   }
 
-  .history-arrow-icon {
+  .case-history-arrow-icon {
     float: left;
     margin-left: 5px;
     margin-right: 5px;
@@ -4727,6 +4800,18 @@ table {
   }
 }
 
+.case-history-tag-icon, .case-history-importance-icon {
+  display: inline-block;
+  border-radius: 2px;
+  width: 18px;
+  height: 19px;
+  text-align: center;
+  line-height: 22px;
+  font-size: 10px;
+  font-weight: bold;
+  position: relative;
+  bottom: 1px;
+}
 
 .fired {
   opacity: 0.5;
@@ -5162,4 +5247,52 @@ table {
 
 .b-r-0 {
   border-radius: 0 !important;
+}
+
+.chats.case-history {
+  .timeline {
+    padding-top: 0;
+    padding-bottom: 0;
+    &::before {
+      top: 25px;
+      height: calc(100% - 25px);
+      background-color: #ddd;
+    }
+    .timeline-point {
+      top: auto;
+      background-color: white;
+      border-color: #ddd;
+      left: -1px;
+      &.case-history-icon {
+        top: 5px;
+        width: 30px;
+        height: 30px;
+        background-color: white;
+        border-color: #ddd;
+        left: 4px;
+        .fas.fa-history {
+          margin-left: 4px;
+          margin-top: 7px
+        }
+      }
+    }
+  }
+}
+
+.project-platform {
+    margin-right: 7px;
+}
+
+.account-icon {
+  color: #10cfbd;
+  background-color: white;
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+}
+
+.case-history .case-tag {
+  font-size: inherit;
 }

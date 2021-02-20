@@ -72,14 +72,18 @@ public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements Proje
                 .withSort(TypeConverters.createSort(query))
                 .withOffset(query.getOffset());
 
+        String joins = "";
         if (isNotEmpty(query.getDirections())) {
-            parameters.withDistinct(true);
-            parameters.withJoins(LEFT_OUTER_JOIN_PROJECT_TO_PRODUCT);
+            joins += LEFT_OUTER_JOIN_PROJECT_TO_PRODUCT;
         }
         if (query.getCommentCreationRange() != null) {
-            parameters.withDistinct(true);
-            parameters.withJoins(LEFT_JOIN_CASE_COMMENT);
+            joins += LEFT_JOIN_CASE_COMMENT;
         }
+        if (!joins.equals("")) {
+            parameters.withDistinct(true);
+            parameters.withJoins(joins);
+        }
+
         if (query.limit > 0) {
             parameters = parameters.withLimit(query.getLimit());
         }
@@ -229,10 +233,6 @@ public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements Proje
                     condition.append( " and CO.created < ?" );
                     args.add( created.to );
                 }
-            }
-
-            if (query.getPlatformIndependentProject() != null && query.getPlatformIndependentProject()) {
-                condition.append(" and project.id NOT IN (SELECT platform.project_id FROM platform WHERE platform.project_id IS NOT NULL)");
             }
 
             if (isNotEmpty(query.getInitiatorCompanyIds())) {

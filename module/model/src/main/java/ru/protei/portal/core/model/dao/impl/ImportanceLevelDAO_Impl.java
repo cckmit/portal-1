@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.dao.impl;
 
 import ru.protei.portal.core.model.dao.ImportanceLevelDAO;
 import ru.protei.portal.core.model.ent.ImportanceLevel;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.util.sqlcondition.Condition;
 import ru.protei.winter.jdbc.JdbcBaseDAO;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
@@ -22,5 +23,10 @@ public class ImportanceLevelDAO_Impl extends JdbcBaseDAO<Integer, ImportanceLeve
                 .withSort(new JdbcSort(JdbcSort.Direction.ASC, "cii.order_number"));
 
         return getList(jdbcQueryParameters);
+    }
+
+    @Override
+    public List<ImportanceLevel> getImportanceLevelsByIds(List<Long> importanceLevelIds) {
+        return getListByCondition("importance_level.id IN " + HelperFunc.makeInArg(importanceLevelIds));
     }
 }

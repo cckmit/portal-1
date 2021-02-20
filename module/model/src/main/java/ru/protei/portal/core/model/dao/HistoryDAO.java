@@ -15,6 +15,8 @@ public interface HistoryDAO extends PortalBaseDAO<History> {
 
     History getLastHistory(Long caseObjectId, En_HistoryType historyType);
 
+    History getLastHistoryForEmployeeRegistration(Long caseObjectId, Long caseLinkId, En_HistoryType historyType);
+
     void removeByCaseId(Long caseId);
 
     List<CaseResolutionTimeReportDto> reportCaseResolutionTime(Date from, Date to, List<Long> terminatedStates,

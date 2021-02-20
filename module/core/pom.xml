@@ -111,6 +111,10 @@
                         <argument>notification/email/nrpe.ips.body.ftl</argument>
                         <argument>notification/email/expiring.technical.support.validity.subject.ftl</argument>
                         <argument>notification/email/expiring.technical.support.validity.body.ftl</argument>
+                        <argument>notification/email/education.request.subject.ftl</argument>
+                        <argument>notification/email/education.request.create.body.ftl</argument>
+                        <argument>notification/email/education.request.approve.body.ftl</argument>
+                        <argument>notification/email/education.request.decline.body.ftl</argument>
                     </arguments>
                 </configuration>
             </plugin>

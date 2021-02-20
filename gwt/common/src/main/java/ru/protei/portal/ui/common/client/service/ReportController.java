@@ -13,7 +13,7 @@ import java.util.Set;
 @RemoteServiceRelativePath( "springGwtServices/ReportController" )
 public interface ReportController extends RemoteService {
 
-    Long createReport(ReportDto report) throws RequestFailedException;
+    Long saveReport(ReportDto report) throws RequestFailedException;
 
     ReportDto getReport(Long id) throws RequestFailedException;
 

@@ -104,6 +104,12 @@ public class ContractControllerImpl implements ContractController {
         return ServiceUtils.checkResultAndGetData(contractService.removeContractor(token, organization, refKey));
     }
 
+    @Override
+    public SelectorsParams getSelectorsParams(ContractQuery query) throws RequestFailedException {
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
+        return ServiceUtils.checkResultAndGetData(contractService.getSelectorsParams( token, query));
+    }
+
     @Autowired
     ContractService contractService;
 

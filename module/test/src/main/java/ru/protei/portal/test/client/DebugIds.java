@@ -343,6 +343,7 @@ public class DebugIds {
         String DEADLINE_CONTAINER = "issue-deadline-container";
         String WORK_TRIGGER_SELECTOR = "issue-work-trigger-selector";
         String SUBTASK_BUTTON = "issue-subtask-button";
+        String TABS_CONTAINER = "issue-tabs-container";
 
         interface LABEL {
             String NAME = "issue-label-name";
@@ -391,7 +392,8 @@ public class DebugIds {
     public interface CASE_COMMENT {
 
         interface COMMENT_LIST {
-            String COMMENTS_LIST = "issue-preview-comment-list-comments-list";
+            String ITEMS_LIST = "issue-preview-comment-list-items-list";
+            String NEW_MESSAGE = "issue-preview-comment-list-new-message";
             String USER_ICON = "issue-preview-comment-list-user-icon";
             String TEXT_INPUT = "issue-preview-comment-list-text-input";
             String PRIVACY_BUTTON = "issue-preview-comment-list-privacy-button";
@@ -407,7 +409,6 @@ public class DebugIds {
             String EDIT_BUTTON = "issue-preview-comment-item-edit-button";
             String REMOVE_BUTTON = "issue-preview-comment-item-remove-button";
             String OWNER = "issue-preview-comment-item-owner";
-            String STATUS = "issue-preview-comment-item-status";
             String TIME_ELAPSED = "issue-preview-comment-item-elapsed-time";
             String CREATE_DATE = "issue-preview-comment-item-create-date";
             String EDIT_TIME_ELAPSED_TYPE_POPUP = "issue-preview-comment-item-edit-time-elapsed-type-popup";
@@ -431,7 +432,7 @@ public class DebugIds {
         @Deprecated String PLATFORM = DebugIds.SITE_FOLDER.LINK.PLATFORM;
 
         @Deprecated interface COMMENT_LIST {
-            @Deprecated String COMMENTS_LIST = DebugIds.CASE_COMMENT.COMMENT_LIST.COMMENTS_LIST;
+            @Deprecated String COMMENTS_LIST = DebugIds.CASE_COMMENT.COMMENT_LIST.ITEMS_LIST;
             @Deprecated String USER_ICON = DebugIds.CASE_COMMENT.COMMENT_LIST.USER_ICON;
             @Deprecated String TEXT_INPUT = DebugIds.CASE_COMMENT.COMMENT_LIST.TEXT_INPUT;
             @Deprecated String PRIVACY_BUTTON = DebugIds.CASE_COMMENT.COMMENT_LIST.PRIVACY_BUTTON;
@@ -447,7 +448,6 @@ public class DebugIds {
             @Deprecated String EDIT_BUTTON = DebugIds.CASE_COMMENT.COMMENT_ITEM.EDIT_BUTTON;
             @Deprecated String REMOVE_BUTTON = DebugIds.CASE_COMMENT.COMMENT_ITEM.REMOVE_BUTTON;
             @Deprecated String OWNER = DebugIds.CASE_COMMENT.COMMENT_ITEM.OWNER;
-            @Deprecated String STATUS = DebugIds.CASE_COMMENT.COMMENT_ITEM.STATUS;
             @Deprecated String TIME_ELAPSED = DebugIds.CASE_COMMENT.COMMENT_ITEM.TIME_ELAPSED;
             @Deprecated String CREATE_DATE = DebugIds.CASE_COMMENT.COMMENT_ITEM.CREATE_DATE;
             @Deprecated String EDIT_TIME_ELAPSED_TYPE_POPUP = DebugIds.CASE_COMMENT.COMMENT_ITEM.EDIT_TIME_ELAPSED_TYPE_POPUP;
@@ -496,7 +496,7 @@ public class DebugIds {
         String DOCUMENTS_CONTAINER = "project-preview-documents-container";
         String COMMENTS_CONTAINER = "project-preview-comments-container";
         String CONTRACTS_CONTAINER = "project-preview-contracts-container";
-        String PLATFORM_LABEL = "project-preview-platform-label";
+        String PLATFORMS_LABEL = "project-preview-platforms-label";
         String TECHNICAL_SUPPORT_VALIDITY_CONTAINER = "project-preview-technical-support-validity-container";
         String WORK_COMPLETION_DATE = "project-preview-work-completion-date";
         String PURCHASE_DATE = "project-preview-purchase-date";
@@ -968,6 +968,7 @@ public class DebugIds {
         interface PLATFORM {
             String PROJECT = "site-folder-platform-project";
             String COMPANY = "site-folder-platform-company";
+            String COPY_PREVIEW_LINK_BUTTON = "site-folder-platform-copy-preview-link-button";
             String NAME = "site-folder-platform-name";
             String MANAGER = "site-folder-platform-manager";
             String PARAMETERS = "site-folder-platform-parameters";

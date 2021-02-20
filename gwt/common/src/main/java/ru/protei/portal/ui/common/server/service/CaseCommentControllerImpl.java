@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.ent.CommentsAndHistories;
 import ru.protei.portal.core.service.CaseCommentService;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.CaseCommentController;
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
+import static ru.protei.portal.ui.common.server.ServiceUtils.getAuthToken;
 
 @Service("CaseCommentController")
 public class CaseCommentControllerImpl implements CaseCommentController {
@@ -27,7 +29,7 @@ public class CaseCommentControllerImpl implements CaseCommentController {
     public List<CaseComment> getCaseComments(En_CaseType caseType, Long caseId) throws RequestFailedException {
         log.info("getCaseComments(): caseType={}, issueId={}", caseType, caseId);
 
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
         Result<List<CaseComment>> response = caseCommentService.getCaseCommentList(token, caseType, caseId);
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
@@ -37,10 +39,17 @@ public class CaseCommentControllerImpl implements CaseCommentController {
     }
 
     @Override
+    public CommentsAndHistories getCommentsAndHistories(En_CaseType caseType, Long caseId) throws RequestFailedException {
+        log.info("getCommentsAndHistories(): caseType={}, issueId={}", caseType, caseId);
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
+        return checkResultAndGetData(caseCommentService.getCommentsAndHistories(token, caseType, caseId));
+    }
+
+    @Override
     public CaseComment getCaseComment( Long commentId ) throws RequestFailedException {
         log.info("getCaseComment(): commentId={}", commentId);
 
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
         return checkResultAndGetData( caseCommentService.getCaseComment(token, commentId) );
     }
 
@@ -48,7 +57,7 @@ public class CaseCommentControllerImpl implements CaseCommentController {
     public CaseComment saveCaseComment(En_CaseType caseType, CaseComment comment) throws RequestFailedException {
         log.info("saveCaseComment(): caseType={}, comment={}", caseType, comment);
 
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
         Result<CaseComment> response;
         if (comment.getId() == null) {
             response = caseCommentService.addCaseComment(token, caseType, comment);
@@ -66,7 +75,7 @@ public class CaseCommentControllerImpl implements CaseCommentController {
     public Long removeCaseComment(En_CaseType caseType, CaseComment comment) throws RequestFailedException {
         log.info("removeCaseComment(): caseType={}, comment={}", caseType, comment);
 
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
         Result<Long> response = caseCommentService.removeCaseComment(token, caseType, comment);
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
@@ -79,7 +88,7 @@ public class CaseCommentControllerImpl implements CaseCommentController {
     public Boolean updateCaseTimeElapsedType(Long caseCommentId, En_TimeElapsedType type) throws RequestFailedException {
         log.info("removeCaseComment(): caseCommentId={}, type={}", caseCommentId, type);
 
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
         Result<Boolean> response = caseCommentService.updateCaseTimeElapsedType(token, caseCommentId, type);
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());

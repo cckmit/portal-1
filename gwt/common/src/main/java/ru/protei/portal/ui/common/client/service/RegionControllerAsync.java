@@ -2,14 +2,14 @@ package ru.protei.portal.ui.common.client.service;
 
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import ru.protei.portal.core.model.util.UiResult;
-import ru.protei.portal.core.model.query.ProjectQuery;
-import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.dto.RegionInfo;
+import ru.protei.portal.core.model.ent.SelectorsParams;
+import ru.protei.portal.core.model.query.ProjectQuery;
+import ru.protei.portal.core.model.struct.DistrictInfo;
+import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -43,4 +43,6 @@ public interface RegionControllerAsync {
     void removeProject(Long projectId, AsyncCallback<Long> async);
 
     void getProjectLeader(Long projectId, AsyncCallback<PersonShortView> async);
+
+    void getSelectorsParams(ProjectQuery projectQuery, AsyncCallback<SelectorsParams> async);
 }

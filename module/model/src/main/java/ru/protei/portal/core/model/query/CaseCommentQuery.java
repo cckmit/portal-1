@@ -17,8 +17,8 @@ public class CaseCommentQuery extends BaseQuery {
     private List<Long> authorIds;
     private Boolean viewPrivate = null;
     private String remoteId;
-    private List<CommentType> commentTypes;
     private DateRange creationRange;
+    private Boolean isTimeElapsed;
 
     public CaseCommentQuery() {
         this(null, null, En_SortField.creation_date, En_SortDir.ASC);
@@ -114,27 +114,19 @@ public class CaseCommentQuery extends BaseQuery {
         this.remoteId = remoteId;
     }
 
-    public void addCommentType(CommentType commentType) {
-        if (commentTypes == null) {
-            commentTypes = new ArrayList<>();
-        }
-
-        commentTypes.add(commentType);
-    }
-
-    public List<CommentType> getCommentTypes() {
-        return commentTypes;
-    }
-
-    public enum CommentType {
-        CASE_STATE, IMPORTANCE, MANAGER, TIME_ELAPSED, TEXT
-    }
-
     public DateRange getCreationRange() {
         return creationRange;
     }
 
     public void setCreationRange(DateRange creationRange) {
         this.creationRange = creationRange;
+    }
+
+    public Boolean getTimeElapsed() {
+        return isTimeElapsed;
+    }
+
+    public void setTimeElapsed(Boolean timeElapsed) {
+        isTimeElapsed = timeElapsed;
     }
 }

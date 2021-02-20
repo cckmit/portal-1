@@ -10,9 +10,13 @@ import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.UserLogin;
+import ru.protei.portal.core.model.ent.UserLoginShortView;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.ContactQuery;
+import ru.protei.portal.core.model.query.UserLoginShortViewQuery;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -25,8 +29,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.api.struct.Result.ok;
+import static java.util.stream.Collectors.toSet;
 import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 
 /**
  * Реализация сервиса управления контактами
@@ -52,13 +57,26 @@ public class ContactServiceImpl implements ContactService {
     @Autowired
     CompanyGroupHomeDAO companyGroupHomeDAO;
     @Autowired
+    UserLoginShortViewDAO userLoginShortViewDAO;
+    @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
 
     @Override
     public Result<SearchResult<Person>> getContactsSearchResult( AuthToken token, ContactQuery query) {
         SearchResult<Person> sr = personDAO.getContactsSearchResult(query);
-        jdbcManyRelationsHelper.fill(sr.getResults(), Person.Fields.CONTACT_ITEMS);
+        List<Person> persons = sr.getResults();
+
+        UserLoginShortViewQuery userLoginsQuery = new UserLoginShortViewQuery();
+        userLoginsQuery.setPersonIds(persons.stream().map(Person::getId).collect(toSet()));
+        List<UserLoginShortView> userLoginShortViews = userLoginShortViewDAO.listByQuery(userLoginsQuery);
+
+        persons.forEach(person -> person.setLogins(userLoginShortViews.stream()
+               .filter(userLoginShortView -> userLoginShortView.getPersonId().equals(person.getId()))
+               .map(UserLoginShortView::getUlogin)
+               .collect(Collectors.toList())));
+
+        jdbcManyRelationsHelper.fill(persons, Person.Fields.CONTACT_ITEMS);
         return ok(sr);
     }
 
@@ -84,6 +102,12 @@ public class ContactServiceImpl implements ContactService {
 
         if (personIsEmployee( person.getCompanyId() )) {
             return error( En_ResultStatus.NOT_AVAILABLE);
+        }
+
+        List<UserLogin> userLogins = userLoginDAO.findByPersonId(person.getId());
+        if (CollectionUtils.isNotEmpty(userLogins)) {
+            person.setLogins(userLogins.stream().map(UserLogin::getUlogin)
+                  .collect(Collectors.toList()));
         }
 
         jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);

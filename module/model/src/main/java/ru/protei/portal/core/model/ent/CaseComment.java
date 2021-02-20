@@ -36,24 +36,6 @@ public class CaseComment extends AuditableObject {
     @JdbcJoinedColumn(localColumn = "cstate_id", table = "case_state", remoteColumn = "id", mappedColumn = "STATE")
     private String caseStateName;
 
-    @JdbcJoinedColumn(localColumn = "cstate_id", table = "case_state", remoteColumn = "id", mappedColumn = "color")
-    private String caseStateColor;
-
-    @JdbcColumn(name="cimp_level")
-    private Integer caseImpLevel;
-
-    @JdbcJoinedColumn(localColumn = "cimp_level", remoteColumn = "id", table = "importance_level", mappedColumn = "code")
-    private String caseImpCode;
-
-    @JdbcJoinedColumn(localColumn = "cimp_level", remoteColumn = "id", table = "importance_level", mappedColumn = "color")
-    private String caseImpColor;
-
-    @JdbcColumn(name="cmanager_id")
-    private Long caseManagerId;
-
-    @JdbcJoinedColumn(localColumn = "cmanager_id", table = "person", remoteColumn = "ID", mappedColumn = "displayShortName")
-    private String caseManagerShortName;
-
     @JdbcColumn(name="reply_to")
     private Long replyTo;
 
@@ -91,12 +73,6 @@ public class CaseComment extends AuditableObject {
     @JdbcColumn(name = "privacy_type")
     @JdbcEnumerated
     private En_CaseCommentPrivacyType privacyType;
-
-    @JdbcJoinedColumn(mappedColumn = "cname", joinPath = {
-            @JdbcJoinPath(localColumn = "cmanager_id", remoteColumn = "id", table = "person"),
-            @JdbcJoinPath(localColumn = "company_id", remoteColumn = "id", table = "company")
-    })
-    private String managerCompanyName;
 
     // not db column
     private Date updated;
@@ -161,68 +137,22 @@ public class CaseComment extends AuditableObject {
         this.author.setId( authorId );
     }
 
+    /**
+     * This method will be removed soon (PORTAL-1604).
+     * Use {@link History} mechanism instead
+     */
+    @Deprecated
     public Long getCaseStateId() {
         return caseStateId;
     }
 
-    public void setCaseStateId(Long caseStateId) {
-        this.caseStateId = caseStateId;
-    }
-
+    /**
+     * This method will be removed soon (PORTAL-1604).
+     * Use {@link History} mechanism instead
+     */
+    @Deprecated
     public String getCaseStateName() {
         return caseStateName;
-    }
-
-    public void setCaseStateName(String caseStateName) {
-        this.caseStateName = caseStateName;
-    }
-
-    public String getCaseStateColor() {
-        return caseStateColor;
-    }
-
-    public void setCaseStateColor(String caseStateColor) {
-        this.caseStateColor = caseStateColor;
-    }
-
-    public Integer getCaseImpLevel() {
-        return caseImpLevel;
-    }
-
-    public void setCaseImpLevel(Integer caseImpLevel) {
-        this.caseImpLevel = caseImpLevel;
-    }
-
-    public String getCaseImpCode() {
-        return caseImpCode;
-    }
-
-    public void setCaseImpCode(String caseImpCode) {
-        this.caseImpCode = caseImpCode;
-    }
-
-    public String getCaseImpColor() {
-        return caseImpColor;
-    }
-
-    public void setCaseImpColor(String caseImpColor) {
-        this.caseImpColor = caseImpColor;
-    }
-
-    public Long getCaseManagerId() {
-        return caseManagerId;
-    }
-
-    public void setCaseManagerId(Long caseManagerId) {
-        this.caseManagerId = caseManagerId;
-    }
-
-    public String getCaseManagerShortName() {
-        return caseManagerShortName;
-    }
-
-    public void setCaseManagerShortName(String caseManagerShortName) {
-        this.caseManagerShortName = caseManagerShortName;
     }
 
     public Long getReplyTo() {
@@ -345,14 +275,6 @@ public class CaseComment extends AuditableObject {
         this.privacyType = privacyType;
     }
 
-    public String getManagerCompanyName() {
-        return managerCompanyName;
-    }
-
-    public void setManagerCompanyName(String managerCompanyName) {
-        this.managerCompanyName = managerCompanyName;
-    }
-
     @Override
     public String getAuditType() {
         return "CaseComment";
@@ -379,13 +301,7 @@ public class CaseComment extends AuditableObject {
                 ", clientIp='" + clientIp + '\'' +
                 ", caseId=" + caseId +
                 ", author=" + author +
-                ", caseStateId=" + caseStateId +
-                ", caseStateName=" + caseStateName +
-                ", caseImpLevel=" + caseImpLevel +
-                ", caseManagerId=" + caseManagerId +
-                ", caseManagerShortName='" + caseManagerShortName + '\'' +
                 ", replyTo=" + replyTo +
-                ", text='" + text + '\'' +
                 ", oldId=" + oldId +
                 ", caseAttachments=" + caseAttachments +
                 ", timeElapsed=" + timeElapsed +
@@ -396,7 +312,6 @@ public class CaseComment extends AuditableObject {
                 ", originalAuthorName='" + originalAuthorName + '\'' +
                 ", originalAuthorFullName='" + originalAuthorFullName + '\'' +
                 ", privacyType=" + privacyType +
-                ", managerCompanyName='" + managerCompanyName + '\'' +
                 ", updated=" + updated +
                 ", deleted=" + deleted +
                 '}';

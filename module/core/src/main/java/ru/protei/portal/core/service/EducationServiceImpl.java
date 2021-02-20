@@ -6,17 +6,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.Lang;
+import ru.protei.portal.core.event.EducationRequestApproveEvent;
+import ru.protei.portal.core.event.EducationRequestCreateEvent;
+import ru.protei.portal.core.event.EducationRequestDeclineEvent;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.dict.En_Scope;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -42,6 +48,12 @@ public class EducationServiceImpl implements EducationService {
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
     @Autowired
     PolicyService policyService;
+    @Autowired
+    EventPublisherService publisherService;
+    @Autowired
+    PersonDAO personDAO;
+    @Autowired
+    Lang lang;
 
     @Override
     public Result<List<EducationWallet>> getAllWallets(AuthToken token) {
@@ -101,7 +113,72 @@ public class EducationServiceImpl implements EducationService {
                 })
                 .collect(Collectors.toList()));
 
-        return ok(entry);
+        jdbcManyRelationsHelper.fill(entry, "attendanceList");
+
+        return ok(entry).publishEvent(new EducationRequestCreateEvent(this, makeParticipants(entry.getAttendanceList()),
+                makeHeadsOfDepartments(entry.getAttendanceList()), entry));
+    }
+
+    private List<Person> makeParticipants(List<EducationEntryAttendance> attendanceList) {
+        List<Person> participants = new ArrayList<>();
+        if (CollectionUtils.isEmpty(attendanceList)) {
+            return participants;
+        }
+
+        for (EducationEntryAttendance entry : attendanceList) {
+            Long workerId = entry.getWorkerId();
+            WorkerEntry workerEntry = workerEntryDAO.get(workerId);
+            if (workerEntry == null) {
+                continue;
+            }
+            Person person = personDAO.get(workerEntry.getPersonId());
+            if (person != null) {
+                jdbcManyRelationsHelper.fill(person, Company.Fields.CONTACT_ITEMS);
+                participants.add(person);
+            }
+        }
+
+        return participants;
+    }
+
+    private Set<Person> makeHeadsOfDepartments(List<EducationEntryAttendance> attendanceList) {
+        Set<Person> headSet = new HashSet<>();
+        if (CollectionUtils.isEmpty(attendanceList)) {
+            return headSet;
+        }
+
+        for (EducationEntryAttendance entry : attendanceList) {
+            Long workerId = entry.getWorkerId();
+            WorkerEntry workerEntry = workerEntryDAO.get(workerId);
+            if (workerEntry == null) {
+                continue;
+            }
+            CompanyDepartment department = companyDepartmentDAO.get(workerEntry.getDepartmentId());
+            if (department == null) {
+                continue;
+            }
+
+            Person headPerson = null;
+
+            PersonShortView head = department.getHead();
+            if (head != null) {
+                headPerson = personDAO.get(head.getId());
+            }
+
+            if (headPerson == null) {
+                PersonShortView parentHead = department.getParentHead();
+                if (parentHead != null) {
+                    headPerson = personDAO.get(parentHead.getId());
+                }
+            }
+
+            if (headPerson != null) {
+                jdbcManyRelationsHelper.fill(headPerson, Company.Fields.CONTACT_ITEMS);
+                headSet.add(headPerson);
+            }
+        }
+
+        return headSet;
     }
 
     @Override
@@ -209,7 +286,27 @@ public class EducationServiceImpl implements EducationService {
             removeAttendances(entry.getId(), workersDeclined, entry.getCoins());
         }
 
-        return ok(entry);
+        Result<EducationEntry> okResult = ok(entry);
+
+        if (CollectionUtils.isNotEmpty(workersApproved)) {
+            List<EducationEntryAttendance> approvedAttendanceList = stream(entry.getAttendanceList())
+                    .filter(e -> workersApproved.contains(e.getWorkerId()))
+                    .collect(Collectors.toList());
+
+            okResult.publishEvent(new EducationRequestApproveEvent(this, makeParticipants(approvedAttendanceList),
+                    makeHeadsOfDepartments(approvedAttendanceList), entry));
+        }
+
+        if (CollectionUtils.isNotEmpty(workersDeclined)) {
+            List<EducationEntryAttendance> declinedAttendanceList = stream(entry.getAttendanceList())
+                    .filter(e -> workersDeclined.contains(e.getWorkerId()))
+                    .collect(Collectors.toList());
+
+            okResult.publishEvent(new EducationRequestDeclineEvent(this, makeParticipants(declinedAttendanceList),
+                    makeHeadsOfDepartments(declinedAttendanceList), entry));
+        }
+
+        return okResult;
     }
 
     private void reChargeWalletsForCostModification(Long entryId, int oldCoins, int newCoins) throws RollbackTransactionException {

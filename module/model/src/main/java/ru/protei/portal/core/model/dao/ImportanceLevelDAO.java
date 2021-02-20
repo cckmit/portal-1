@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface ImportanceLevelDAO extends JdbcDAO<Integer, ImportanceLevel> {
     List<ImportanceLevel> getImportanceLevelsByCompanyId(Long companyId);
+
+    List<ImportanceLevel> getImportanceLevelsByIds(List<Long> importanceLevelIds);
 }
