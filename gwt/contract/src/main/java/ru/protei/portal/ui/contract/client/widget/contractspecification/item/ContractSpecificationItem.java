@@ -89,11 +89,13 @@ public class ContractSpecificationItem
     @UiHandler( "text" )
     public void onChangeText(ValueChangeEvent<String> event) {
         value.setText(text.getValue());
+        changeTimer.schedule(50);
     }
 
     @UiHandler("quantity")
     public void onQuantityText(ValueChangeEvent<Long> event) {
         value.setQuantity(quantity.getValue());
+        changeTimer.schedule(50);
     }
 
     @UiHandler("costWithCurrency")
@@ -103,6 +105,7 @@ public class ContractSpecificationItem
         En_Currency currency = val != null ? val.getCurrency() : null;
         value.setCost(cost);
         value.setCurrency(currency);
+        changeTimer.schedule(50);
     }
 
     public void setError(boolean isError, String error) {
