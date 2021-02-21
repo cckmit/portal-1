@@ -171,8 +171,36 @@ public class BootstrapServiceImpl implements BootstrapService {
             bootstrapAppDAO.createAction("removeStateImportanceManagerComments");
         }
 
+        if (!bootstrapAppDAO.isActionExists("correctCaseStateNamesInHistory")) {
+            this.correctCaseStateNamesInHistory();
+            bootstrapAppDAO.createAction("correctCaseStateNamesInHistory");
+        }
+
         /**
          *  end Спринт */
+    }
+
+    private void correctCaseStateNamesInHistory() {
+        Map<Long, String> caseStateToName = caseStateDAO.getAll()
+                .stream()
+                .collect(Collectors.toMap(CaseState::getId, CaseState::getState));
+
+        HistoryQuery historyQuery = new HistoryQuery();
+        historyQuery.addValueType(En_HistoryType.CASE_STATE);
+
+        List<History> caseStateHistoryList = historyDAO.getListByQuery(historyQuery);
+
+        caseStateHistoryList.forEach(history -> {
+            if (history.getOldId() != null) {
+                history.setOldValue(caseStateToName.get(history.getOldId()));
+            }
+
+            if (history.getNewId() != null) {
+                history.setNewValue(caseStateToName.get(history.getNewId()));
+            }
+        });
+
+        historyDAO.mergeBatch(caseStateHistoryList);
     }
 
     private void migrateEmployeeRegistrationHistory() {
