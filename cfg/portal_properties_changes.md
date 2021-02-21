@@ -45,4 +45,3 @@ crm.education.request.approved.conference.recipients=
 ## default: ""
 crm.education.request.approved.literature.recipients=
 ```
-

@@ -118,7 +118,9 @@ public class CaseCommentItemView
 
     @Override
     public void setIsDefaultIcon(boolean isDefaultIcon) {
-        iconContainer.setStyleName("image", !isDefaultIcon);
+        if (isDefaultIcon) {
+            icon.addClassName("default-icon");
+        }
     }
 
     @Override
