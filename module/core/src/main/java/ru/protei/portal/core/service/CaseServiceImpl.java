@@ -245,8 +245,7 @@ public class CaseServiceImpl implements CaseService {
         else
             caseObject.setId(caseId);
 
-        Result<Long> resultState = addStateHistory(token, caseId, caseObject.getStateId(),
-                caseObject.getStateName() != null ? caseObject.getStateName() : caseStateDAO.get(caseObject.getStateId()).getState());
+        Result<Long> resultState = addStateHistory(token, caseId, caseObject.getStateId(), caseStateDAO.get(caseObject.getStateId()).getState());
         if (resultState.isError()) {
             log.error("State message for the issue {} not saved!", caseId);
         }
@@ -473,8 +472,8 @@ public class CaseServiceImpl implements CaseService {
 
         if (oldCaseMeta.getStateId() != caseMeta.getStateId()) {
             Result<Long> resultState = changeStateHistory(token, caseMeta.getId(),
-                    oldCaseMeta.getStateId(), oldCaseMeta.getStateName() != null ?  oldCaseMeta.getStateName() : caseStateDAO.get(oldCaseMeta.getStateId()).getState(),
-                    caseMeta.getStateId(), caseMeta.getStateName() != null ? caseMeta.getStateName() : caseStateDAO.get(caseMeta.getStateId()).getState());
+                    oldCaseMeta.getStateId(), caseStateDAO.get(oldCaseMeta.getStateId()).getState(),
+                    caseMeta.getStateId(), caseStateDAO.get(caseMeta.getStateId()).getState());
             if (resultState.isError()) {
                 log.error("State message for the issue {} isn't saved!", caseMeta.getId());
             }
