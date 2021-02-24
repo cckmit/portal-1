@@ -118,6 +118,8 @@ public abstract class CommentAndHistoryListActivity
             view.setMarkupLabel(lang.textJiraWikiMarkupSupport(), configStorage.getConfigData().markupHelpLinkJiraMarkup);
         }
 
+        view.setAddingCommentHelpLabel("http://127.0.0.1:8888/portal.html#addingIssueCommentHelp");
+
         view.setExtendedPrivacyTypeAndResetSelector(event.extendedPrivacyType);
         view.getPrivacyVisibility().setVisible(isPrivateVisible);
 
@@ -276,6 +278,11 @@ public abstract class CommentAndHistoryListActivity
     public void onDisplayPreviewChanged( Boolean isDisplayPreview ) {
         storage.set( IS_PREVIEW_DISPLAYED, String.valueOf( isDisplayPreview ) );
         fireChangedPreview();
+    }
+
+    @Override
+    public void onAddingCommentHelpLinkClicked() {
+        fireEvent(new IssueEvents.ShowAddingIssueCommentHelp());
     }
 
     private void removeAttachment(Long id, Runnable successAction) {

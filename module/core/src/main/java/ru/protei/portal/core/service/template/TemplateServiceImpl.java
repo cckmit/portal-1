@@ -187,6 +187,9 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("workTrigger", newMetaState.getWorkTrigger() == null ? null : newMetaState.getWorkTrigger());
         templateModel.put("oldWorkTrigger", oldMetaState == null || oldMetaState.getWorkTrigger() == null ? null : oldMetaState.getWorkTrigger());
 
+        String link = "http://127.0.0.1:8888/portal.html#addingIssueCommentHelp";
+        templateModel.put("addingIssueCommentHelp", link);
+
         return templateModel;
     }
 

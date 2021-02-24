@@ -47,6 +47,16 @@
                                     </div>
                                 </div>
 
+                            <div class="row">
+                                <div class="col-md-12 p-0 p-b-5">
+                                    <div class="pull-right">
+                                        <g:Anchor ui:field="addingIssueCommentHelpLink"
+                                                  href="#" target="_blank"
+                                                  text="{lang.addingIssueCommentHelp}"/>
+                                    </div>
+                                </div>
+                            </div>
+
                                 <div class="row">
                                     <div class="col-md-3 p-l-0">
                                         <g:Button styleName="btn btn-complete btn-block btn-sm" ui:field="send" text="{lang.commentSendMessage}"/>

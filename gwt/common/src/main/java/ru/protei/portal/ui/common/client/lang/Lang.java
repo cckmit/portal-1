@@ -874,6 +874,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String textJiraWikiMarkupSupport();
 
+    String addingIssueCommentHelp();
+
     String commentSetPrivate();
 
     String regions();

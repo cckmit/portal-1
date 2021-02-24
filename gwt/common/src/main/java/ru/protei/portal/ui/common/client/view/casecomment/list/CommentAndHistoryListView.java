@@ -153,6 +153,12 @@ public class CommentAndHistoryListView
     }
 
     @Override
+    public void setAddingCommentHelpLabel(String link) {
+        addingIssueCommentHelpLink.setHref(link);
+        addingIssueCommentHelpLink.removeStyleName( HIDE );
+    }
+
+    @Override
     public boolean isDisplayPreview() {
         return isDisplayPreview.getValue();
     }
@@ -231,6 +237,13 @@ public class CommentAndHistoryListView
     public void onDisplayPreviewChanged( ClickEvent event ) {
         if (activity != null) {
             activity.onDisplayPreviewChanged( isDisplayPreview.getValue() );
+        }
+    }
+
+    @UiHandler("addingIssueCommentHelpLink")
+    public void onAddingCommentHelpLinkClicked( ClickEvent event ) {
+        if (activity != null) {
+            activity.onAddingCommentHelpLinkClicked();
         }
     }
 
@@ -340,6 +353,8 @@ public class CommentAndHistoryListView
     Element markupLabel;
     @UiField
     Anchor markupLink;
+    @UiField
+    Anchor addingIssueCommentHelpLink;
     @UiField
     ToggleButton isDisplayPreview;
     @UiField

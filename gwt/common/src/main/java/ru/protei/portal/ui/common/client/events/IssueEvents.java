@@ -7,7 +7,6 @@ import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.CaseObjectMeta;
 import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
-import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 
 /**
@@ -217,5 +216,11 @@ public class IssueEvents {
 
         public Long caseNumber;
     }
+
+    /**
+     * Показать страницу добавления комментария к Обращению
+     */
+    @Url(value = "addingIssueCommentHelp", primary = true)
+    public static class ShowAddingIssueCommentHelp {}
 }
 

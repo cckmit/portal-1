@@ -33,6 +33,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 <@set name="_platform" value="${issuePlatform}"/>
 <@set name="_deadline" value="${deadline}"/>
 <@set name="_workTrigger" value="${workTrigger}"/>
+<@set name="_addingIssueCommentHelp" value="${addingIssueCommentHelp}"/>
 
 <#noparse>
 <#macro changeTo old, new>
@@ -399,6 +400,8 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                 </#if>
             </#list>
         </div>
+
+        <a href="${addingIssueCommentHelp}">${_addingIssueCommentHelp}</a>
     </div>
 </div>
 </body>
