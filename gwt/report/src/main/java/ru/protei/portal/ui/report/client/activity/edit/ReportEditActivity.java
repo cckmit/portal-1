@@ -484,8 +484,8 @@ public abstract class ReportEditActivity implements Activity,
                 }
                 break;
             case CASE_OBJECTS:
-                if (query.getCreatedRange() == null && query.getModifiedRange() == null) {
-                    fireEvent(new NotifyEvents.Show(lang.reportPeriodNotSelected(), NotifyEvents.NotifyType.ERROR));
+                if (!checkMandatoryOrParamsCaseQuery(query)) {
+                    fireEvent(new NotifyEvents.Show(lang.reportCaseObjectMandatoryOrParamsError(), NotifyEvents.NotifyType.ERROR));
                     return false;
                 }
                 boolean createdRangeValid = validateCreatedRange(query.getCreatedRange(), rangeTypeMandatory);
@@ -502,6 +502,11 @@ public abstract class ReportEditActivity implements Activity,
             return false;
         }
         return true;
+    }
+    
+    private boolean checkMandatoryOrParamsCaseQuery(CaseQuery query) {
+        return query.getPlanId() != null ||
+                (query.getCreatedRange() != null || query.getModifiedRange() != null);
     }
 
     private boolean validateProjectQuery(ProjectQuery query) {

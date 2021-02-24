@@ -2220,7 +2220,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reportNotValidPeriod();
 
-    String reportPeriodNotSelected();
+    String reportCaseObjectMandatoryOrParamsError();
 
     String reportPeriodMoreMaxError();
 
