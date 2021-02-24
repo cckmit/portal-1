@@ -331,28 +331,28 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                     query.setSearchStringAtComments(searchByComments.getValue());
                     query.setSearchString(isBlank(searchString) ? null : searchString);
                     query.setAlternativeSearchString( makeAlternativeSearchString( searchString));
-                }
-                query.setViewPrivate(searchPrivate.getValue());
-                query.setPersonIdToIsFavorite(searchFavorite.getValue() == null ? null : new Pair<>(policyService.getProfileId(), searchFavorite.getValue()));
-                query.setSortField(sortField.getValue());
-                query.setSortDir(sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
-                query.setCompanyIds(getCompaniesIdList(companies.getValue()));
-                query.setProductIds(getProductsIdList(products.getValue()));
-                query.setManagerIds(getManagersIdList(managers.getValue()));
-                query.setInitiatorIds(getManagersIdList(initiators.getValue()));
-                query.setImportanceLevels(nullIfEmpty(importance.getValue()));
-                query.setStateIds(nullIfEmpty(toList(states().getValue(), CaseState::getId)));
-                query.setCommentAuthorIds(getManagersIdList(commentAuthors.getValue()));
-                query.setCaseTagsIds(nullIfEmpty(toList(tags.getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId())));
-                query.setCreatorIds(nullIfEmpty(toList(creators.getValue(), personShortView -> personShortView == null ? null : personShortView.getId())));
-                query.setManagerCompanyIds(getCompaniesIdList(managerCompanies.getValue()));
-                query.setPlanId(plan.getValue() == null ? null : plan.getValue().getId());
-                query.setWorkTriggersIds(nullIfEmpty(toList(workTriggers.getValue(),
-                        workTrigger -> workTrigger == null ? En_WorkTrigger.NONE.getId() : workTrigger.getId())));
-                query.setOverdueDeadlines(overdueDeadlines.getValue());
+                    query.setViewPrivate(searchPrivate.getValue());
+                    query.setPersonIdToIsFavorite(searchFavorite.getValue() == null ? null : new Pair<>(policyService.getProfileId(), searchFavorite.getValue()));
+                    query.setSortField(sortField.getValue());
+                    query.setSortDir(sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
+                    query.setCompanyIds(getCompaniesIdList(companies.getValue()));
+                    query.setProductIds(getProductsIdList(products.getValue()));
+                    query.setManagerIds(getManagersIdList(managers.getValue()));
+                    query.setInitiatorIds(getManagersIdList(initiators.getValue()));
+                    query.setImportanceLevels(nullIfEmpty(importance.getValue()));
+                    query.setStateIds(nullIfEmpty(toList(states().getValue(), CaseState::getId)));
+                    query.setCommentAuthorIds(getManagersIdList(commentAuthors.getValue()));
+                    query.setCaseTagsIds(nullIfEmpty(toList(tags.getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId())));
+                    query.setCreatorIds(nullIfEmpty(toList(creators.getValue(), personShortView -> personShortView == null ? null : personShortView.getId())));
+                    query.setManagerCompanyIds(getCompaniesIdList(managerCompanies.getValue()));
+                    query.setPlanId(plan.getValue() == null ? null : plan.getValue().getId());
+                    query.setWorkTriggersIds(nullIfEmpty(toList(workTriggers.getValue(),
+                            workTrigger -> workTrigger == null ? En_WorkTrigger.NONE.getId() : workTrigger.getId())));
+                    query.setOverdueDeadlines(overdueDeadlines.getValue());
 
-                query.setCreatedRange(toDateRange(dateCreatedRange.getValue()));
-                query.setModifiedRange(toDateRange(dateModifiedRange.getValue()));
+                    query.setCreatedRange(toDateRange(dateCreatedRange.getValue()));
+                    query.setModifiedRange(toDateRange(dateModifiedRange.getValue()));
+                }
                 break;
             }
             case CASE_TIME_ELAPSED: {
