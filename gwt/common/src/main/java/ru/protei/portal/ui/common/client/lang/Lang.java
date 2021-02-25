@@ -2730,6 +2730,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String roomReservationRemoved();
 
+    String roomReservationRemoveConfirmMessage();
+
     String errRoomReservationFinished();
 
     String errRoomReservationRoomNotAccessible();
