@@ -193,12 +193,7 @@ public class MailNotificationProcessor {
     }
 
     private String getCrmCaseUrl( boolean isProteiRecipient ) {
-        String baseUrl = "";
-        if (isProteiRecipient) {
-            baseUrl = config.data().getMailNotificationConfig().getCrmUrlInternal();
-        } else {
-            baseUrl = config.data().getMailNotificationConfig().getCrmUrlExternal();
-        }
+        String baseUrl = getCrmUrl( isProteiRecipient );
         return baseUrl + config.data().getMailNotificationConfig().getCrmCaseUrl();
     }
 

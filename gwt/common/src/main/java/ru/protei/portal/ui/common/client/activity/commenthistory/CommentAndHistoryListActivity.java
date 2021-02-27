@@ -118,7 +118,7 @@ public abstract class CommentAndHistoryListActivity
             view.setMarkupLabel(lang.textJiraWikiMarkupSupport(), configStorage.getConfigData().markupHelpLinkJiraMarkup);
         }
 
-        view.setAddingCommentHelpLabel("#addingIssueCommentHelp");
+        view.setAddingIssueCommentHelpLink("#addingIssueCommentHelp");
 
         view.setExtendedPrivacyTypeAndResetSelector(event.extendedPrivacyType);
         view.getPrivacyVisibility().setVisible(isPrivateVisible);

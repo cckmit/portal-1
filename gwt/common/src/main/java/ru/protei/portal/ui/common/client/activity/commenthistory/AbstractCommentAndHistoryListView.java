@@ -58,7 +58,7 @@ public interface AbstractCommentAndHistoryListView extends IsWidget {
 
     void setMarkupLabel(String label, String link);
 
-    void setAddingCommentHelpLabel(String link);
+    void setAddingIssueCommentHelpLink(String link);
 
     boolean isDisplayPreview();
 

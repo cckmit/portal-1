@@ -153,7 +153,7 @@ public class CommentAndHistoryListView
     }
 
     @Override
-    public void setAddingCommentHelpLabel(String link) {
+    public void setAddingIssueCommentHelpLink(String link) {
         addingIssueCommentHelpLink.setHref(link);
         addingIssueCommentHelpLink.removeStyleName( HIDE );
     }
