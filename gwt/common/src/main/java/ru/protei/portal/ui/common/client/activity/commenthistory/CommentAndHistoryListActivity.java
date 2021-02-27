@@ -118,7 +118,7 @@ public abstract class CommentAndHistoryListActivity
             view.setMarkupLabel(lang.textJiraWikiMarkupSupport(), configStorage.getConfigData().markupHelpLinkJiraMarkup);
         }
 
-        view.setAddingCommentHelpLabel("http://127.0.0.1:8888/portal.html#addingIssueCommentHelp");
+        view.setAddingCommentHelpLabel("#addingIssueCommentHelp");
 
         view.setExtendedPrivacyTypeAndResetSelector(event.extendedPrivacyType);
         view.getPrivacyVisibility().setVisible(isPrivateVisible);

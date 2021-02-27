@@ -202,6 +202,11 @@ public class MailNotificationProcessor {
         return baseUrl + config.data().getMailNotificationConfig().getCrmCaseUrl();
     }
 
+    public String getCrmUrl( boolean isProteiRecipient ) {
+        return isProteiRecipient ? config.data().getMailNotificationConfig().getCrmUrlInternal()
+                                 : config.data().getMailNotificationConfig().getCrmUrlExternal();
+    }
+
     private String getCrmProjectUrl() {
         String baseUrl = config.data().getMailNotificationConfig().getCrmUrlExternal();
         return baseUrl + config.data().getMailNotificationConfig().getCrmProjectUrl();
@@ -251,7 +256,7 @@ public class MailNotificationProcessor {
         List<CaseComment> mailComments = stream(comments).filter(comment -> comment.getText() != null).collect(Collectors.toList());
 
         PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(event, mailComments, attachments, linksToTasks,
-                crmCaseUrl, recipients, new EnumLangUtil(lang));
+                isProteiRecipients, crmCaseUrl, recipients, new EnumLangUtil(lang));
         if (bodyTemplate == null) {
             log.error("Failed to prepare body template for caseId={}", caseObject.getId());
             return;

@@ -27,6 +27,7 @@ import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.utils.EnumLangUtil;
 import ru.protei.portal.core.utils.LinkData;
 import ru.protei.portal.core.utils.WorkTimeFormatter;
+import ru.protei.portal.tools.notifications.MailNotificationProcessor;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -39,8 +40,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 import static org.slf4j.LoggerFactory.getLogger;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
@@ -61,6 +61,9 @@ public class TemplateServiceImpl implements TemplateService {
     @Autowired
     CaseStateDAO caseStateDAO;
 
+    @Autowired
+    MailNotificationProcessor mailNotificationProcessor;
+
     @PostConstruct
     public void onInit() {
         try {
@@ -77,7 +80,7 @@ public class TemplateServiceImpl implements TemplateService {
     @Override
     public PreparedTemplate getCrmEmailNotificationBody(
             AssembledCaseEvent event, List<CaseComment> caseComments, Collection<Attachment> attachments,
-            DiffCollectionResult<LinkData> mergeLinks, String urlTemplate, Collection<String> recipients, EnumLangUtil enumLangUtil
+            DiffCollectionResult<LinkData> mergeLinks, boolean isProteiRecipients, String urlTemplate, Collection<String> recipients, EnumLangUtil enumLangUtil
     ) {
         CaseObject newState = event.getCaseObject();
         En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(newState);
@@ -120,6 +123,8 @@ public class TemplateServiceImpl implements TemplateService {
         );
 
         templateModel.put( "caseComments",  getCommentsModelKeys(caseComments, event.getAddedCaseComments(), event.getChangedCaseComments(), event.getRemovedCaseComments(), textMarkup));
+
+        templateModel.put("addingIssueCommentHelp", mailNotificationProcessor.getCrmUrl(isProteiRecipients) + "#addingIssueCommentHelp");
 
         PreparedTemplate template = new PreparedTemplate( "notification/email/crm.body.%s.ftl" );
         template.setModel( templateModel );
@@ -186,9 +191,6 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("workTriggerChanged", event.isWorkTriggerChanged());
         templateModel.put("workTrigger", newMetaState.getWorkTrigger() == null ? null : newMetaState.getWorkTrigger());
         templateModel.put("oldWorkTrigger", oldMetaState == null || oldMetaState.getWorkTrigger() == null ? null : oldMetaState.getWorkTrigger());
-
-        String link = "http://127.0.0.1:8888/portal.html#addingIssueCommentHelp";
-        templateModel.put("addingIssueCommentHelp", link);
 
         return templateModel;
     }
