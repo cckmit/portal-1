@@ -43,7 +43,6 @@ import java.util.stream.Collectors;
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.ui.common.client.util.AvatarUtils.getAvatarUrl;
-import static ru.protei.portal.ui.common.client.util.AvatarUtils.isDefaultAvatar;
 
 public abstract class CaseCommentItemListActivity implements Activity, AbstractCaseCommentItemListActivity {
     @Inject
@@ -287,10 +286,6 @@ public abstract class CaseCommentItemListActivity implements Activity, AbstractC
         }
 
         itemView.setIcon(avatarUrl);
-        itemView.setIsDefaultIcon(
-                En_Gender.UNDEFINED.equals(value.getAuthor().getGender()) || isDefaultAvatar(avatarUrl)
-        );
-
         itemView.setDate(DateFormatter.formatDateTime(value.getCreated()));
         itemView.setOwner(getOwnerName(value));
 

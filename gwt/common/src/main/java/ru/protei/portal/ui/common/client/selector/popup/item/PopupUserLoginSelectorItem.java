@@ -57,9 +57,6 @@ public class PopupUserLoginSelectorItem<T> extends Composite implements Selector
     }
 
     public void setImage( String src ) {
-        if (AvatarUtils.isDefaultAvatar(src)) {
-            image.addClassName("default-image");
-        }
         image.setSrc( src );
     }
 

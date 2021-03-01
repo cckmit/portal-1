@@ -22,12 +22,14 @@ public class CaseHistoryTagItemView extends Composite {
     public void setColor(String color) {
         String backgroundColor = makeSafeColor(color);
 
-        name.getStyle().setBackgroundColor(backgroundColor);
-        name.getStyle().setColor(makeContrastColor(backgroundColor));
+        root.getElement().getStyle().setBackgroundColor(backgroundColor);
+        root.getElement().getStyle().setColor(makeContrastColor(backgroundColor));
     }
 
     @UiField
     SpanElement name;
+    @UiField
+    HTMLPanel root;
 
     interface CaseHistoryTagItemViewUiBinder extends UiBinder<HTMLPanel, CaseHistoryTagItemView> {}
     private static CaseHistoryTagItemViewUiBinder ourUiBinder = GWT.create(CaseHistoryTagItemViewUiBinder.class);
