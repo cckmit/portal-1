@@ -1,23 +1,26 @@
 package ru.protei.portal.core.service;
 
+import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.event.EmployeeRegistrationDevelopmentAgendaEvent;
-import ru.protei.portal.core.event.EmployeeRegistrationEmployeeFeedbackEvent;
-import ru.protei.portal.core.event.EmployeeRegistrationProbationCuratorsEvent;
-import ru.protei.portal.core.event.EmployeeRegistrationProbationHeadOfDepartmentEvent;
+import ru.protei.portal.core.event.*;
+import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.EmployeeRegistrationDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
+import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
@@ -36,6 +39,8 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
     CaseCommentService caseCommentService;
     @Autowired
     PersonDAO personDAO;
+    @Autowired
+    CompanyDAO companyDAO;
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
     @Autowired
@@ -96,6 +101,13 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
                 message = join( message, ", ", curator.getDisplayName() );
             }
 
+            List<String> recipients = collectAdditionalRecipients(employeeRegistration);
+            notifyAdditionalRecipients(recipients, employeeFullName, employeeId);
+
+            for (String recipient : recipients) {
+                message = join(message, ", ", recipient);
+            }
+
             addCaseComment( employeeRegistration.getId(), message.toString() );
         }
 
@@ -147,6 +159,23 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
     private void notifyHeadOfDepartment( Person headOfDepartment, String employeeFullName, Long employeeId ) {
         publisherService.publishEvent( new EmployeeRegistrationProbationHeadOfDepartmentEvent( this,
                 headOfDepartment, employeeFullName, employeeId ) );
+    }
+
+    private void notifyAdditionalRecipients(List<String> recipients, String employeeFullName, Long employeeId) {
+        publisherService.publishEvent( new EmployeeRegistrationProbationAdditionalRecipientsEvent( this,
+                recipients, employeeFullName, employeeId ) );
+    }
+
+    private List<String> collectAdditionalRecipients(EmployeeRegistration employeeRegistration) {
+        Long companyId = employeeRegistration.getPerson().getCompanyId();
+        Company company = companyDAO.get(companyId);
+        jdbcManyRelationsHelper.fill(company, Company.Fields.CONTACT_ITEMS);
+
+        return stream(company.getContactInfo().getItems(En_ContactItemType.EMAIL))
+                .filter(ContactItem::isInternalItem)
+                .map(ContactItem::value)
+                .filter(Strings::isNotEmpty)
+                .collect(Collectors.toList());
     }
 
     private Map<Long, Person> collectPersonsForNotification( List<EmployeeRegistration> probationExpires ) {
