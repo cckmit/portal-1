@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.ui.common.client.events.ContactItemEvents;
@@ -20,14 +21,14 @@ public abstract class ContactItemActivity implements Activity, AbstractContactIt
 
     @Event
     public void onShow( ContactItemEvents.ShowList event ) {
-        if(event.parent == null || event.data == null || event.types == null || event.types.isEmpty())
+        if(event.parent == null || event.data == null || event.types == null || event.types.isEmpty() || event.accessType == null)
             return;
 
         AbstractContactItemListView listView = listFactory.get();
         event.parent.clear();
         event.parent.add(listView.asWidget());
 
-        addNewItems(listView.getItemsContainer(), event.types, event.data);
+        addNewItems(listView.getItemsContainer(), event.types, event.data, event.accessType);
     }
 
     @Override
@@ -44,19 +45,20 @@ public abstract class ContactItemActivity implements Activity, AbstractContactIt
         viewToModel.put(item, new ContactItemModel(parent, dataList, allowedTypes, ci));
     }
 
-    private void addNewItems(HasWidgets parent, List<En_ContactItemType> allowedTypes, List<ContactItem> dataList){
+    private void addNewItems(HasWidgets parent, List<En_ContactItemType> allowedTypes,
+                             List<ContactItem> dataList, En_ContactDataAccess accessType){
         for(ContactItem ci: dataList) {
-            if (!allowedTypes.contains(ci.type()))
+            if (!allowedTypes.contains(ci.type()) || !accessType.equals(ci.accessType()))
                 continue;
 
             addNewItem(ci, parent, allowedTypes, dataList);
         }
 
-        addNewEmptyItem(parent, allowedTypes, dataList);
+        addNewEmptyItem(parent, allowedTypes, dataList, accessType);
     }
 
-    private void addNewEmptyItem(HasWidgets parent, List<En_ContactItemType> allowedTypes, List<ContactItem> dataList){
-        addNewItem(new ContactItem("", allowedTypes.get(0)), parent, allowedTypes, dataList);
+    private void addNewEmptyItem(HasWidgets parent, List<En_ContactItemType> allowedTypes, List<ContactItem> dataList, En_ContactDataAccess accessType){
+        addNewItem(new ContactItem("", allowedTypes.get(0), accessType), parent, allowedTypes, dataList);
     }
 
     private void removeItem(AbstractContactItemView item){
@@ -79,7 +81,7 @@ public abstract class ContactItemActivity implements Activity, AbstractContactIt
 
         if (prevValue.isEmpty()) {
             model.data.add(model.contactItem);
-            addNewEmptyItem(model.parent, model.allowedTypes, model.data);
+            addNewEmptyItem(model.parent, model.allowedTypes, model.data, model.contactItem.accessType());
         }
         else if (newValue.isEmpty()) {
             AbstractContactItemView emptyItem = findEmptyItem(model.parent);

@@ -2,14 +2,17 @@ package ru.protei.portal.ui.company.client.activity.edit;
 
 import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
-import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
+import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.struct.ContactInfo;
+import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -23,6 +26,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -122,6 +126,12 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         );
     }
 
+    @Override
+    public void onCategoryChanged() {
+        boolean isHomeCompanyCategory = En_CompanyCategory.HOME.equals(view.companyCategory().getValue());
+        view.probationEmailsContainerVisibility().setVisible(isHomeCompanyCategory);
+    }
+
     private boolean validateCompanyName (String companyName) {
         //isCompanyNameExists не принимает пустые строки!
         if (companyName.isEmpty()) {
@@ -193,8 +203,11 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
         view.webSite().setText(infoFacade.getWebSite());
 
-        fireEvent(new ContactItemEvents.ShowList(view.phonesContainer(), company.getContactInfo().getItems(), ALLOWED_PHONE_TYPES));
-        fireEvent(new ContactItemEvents.ShowList(view.emailsContainer(), company.getContactInfo().getItems(), ALLOWED_EMAIL_TYPES));
+        view.probationEmailsContainerVisibility().setVisible(En_CompanyCategory.HOME.equals(company.getCategory()));
+        List<ContactItem> items = company.getContactInfo().getItems();
+        fireEvent(new ContactItemEvents.ShowList(view.phonesContainer(), items, ALLOWED_PHONE_TYPES, En_ContactDataAccess.PUBLIC));
+        fireEvent(new ContactItemEvents.ShowList(view.emailsContainer(), items, ALLOWED_EMAIL_TYPES, En_ContactDataAccess.PUBLIC));
+        fireEvent(new ContactItemEvents.ShowList(view.probationEmailsContainer(), items, ALLOWED_EMAIL_TYPES, En_ContactDataAccess.INTERNAL));
 
         view.tableContainer().clear();
         if (company.getId() != null && policyService.hasPrivilegeFor(En_Privilege.CONTACT_VIEW)) {
@@ -221,12 +234,23 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         company.setParentCompanyId(view.parentCompany().getValue() == null ? null : view.parentCompany().getValue().getId());
         company.setSubscriptions(new ArrayList<>(view.companySubscriptions().getValue()));
         company.setAutoOpenIssue(view.autoOpenIssues().getValue());
+        company.setContactInfo(makeFilteredContactInfo(company));
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(company.getContactInfo());
 
         infoFacade.setLegalAddress(view.legalAddress().getValue());
         infoFacade.setFactAddress(view.actualAddress().getValue());
         infoFacade.setWebSite(view.webSite().getText());
+    }
+
+    protected ContactInfo makeFilteredContactInfo(Company company) {
+        // перед сохранением компании удаляем ранее добавленные адреса, если поменяли категорию на отличную от "Домашняя компания"
+        ContactInfo contactInfo = company.getContactInfo();
+        if (!En_CompanyCategory.HOME.equals(company.getCategory())) {
+            contactInfo.getItems().removeIf(item -> En_ContactItemType.EMAIL.equals(item.type())
+                            && En_ContactDataAccess.INTERNAL.equals(item.accessType()));
+        }
+        return contactInfo;
     }
 
     private Selector.SelectorFilter<EntityOption> makeCompanyFilter(Long companyId) {
