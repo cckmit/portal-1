@@ -12,16 +12,16 @@ import java.util.List;
  */
 public class ContactItemEvents {
     public static class ShowList {
-        public ShowList(HasWidgets parent, List<ContactItem> data, List<En_ContactItemType> types, List<En_ContactDataAccess> accessList) {
+        public ShowList(HasWidgets parent, List<ContactItem> data, List<En_ContactItemType> types, En_ContactDataAccess accessType) {
             this.parent = parent;
             this.data = data;
             this.types = types;
-            this.accessList = accessList;
+            this.accessType = accessType;
         }
 
         public HasWidgets parent;
         public List<ContactItem> data;
         public List<En_ContactItemType> types;
-        public List<En_ContactDataAccess> accessList;
+        public En_ContactDataAccess accessType;
     }
 }

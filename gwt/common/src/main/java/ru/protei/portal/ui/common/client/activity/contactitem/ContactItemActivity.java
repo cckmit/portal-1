@@ -21,14 +21,14 @@ public abstract class ContactItemActivity implements Activity, AbstractContactIt
 
     @Event
     public void onShow( ContactItemEvents.ShowList event ) {
-        if(event.parent == null || event.data == null || event.types == null || event.types.isEmpty() || event.accessList == null)
+        if(event.parent == null || event.data == null || event.types == null || event.types.isEmpty() || event.accessType == null)
             return;
 
         AbstractContactItemListView listView = listFactory.get();
         event.parent.clear();
         event.parent.add(listView.asWidget());
 
-        addNewItems(listView.getItemsContainer(), event.types, event.data, event.accessList);
+        addNewItems(listView.getItemsContainer(), event.types, event.data, event.accessType);
     }
 
     @Override
@@ -45,22 +45,20 @@ public abstract class ContactItemActivity implements Activity, AbstractContactIt
         viewToModel.put(item, new ContactItemModel(parent, dataList, allowedTypes, ci));
     }
 
-    private void addNewItems(HasWidgets parent, List<En_ContactItemType> allowedTypes, List<ContactItem> dataList,
-                             List<En_ContactDataAccess> accessList){
+    private void addNewItems(HasWidgets parent, List<En_ContactItemType> allowedTypes,
+                             List<ContactItem> dataList, En_ContactDataAccess accessType){
         for(ContactItem ci: dataList) {
-            if (!allowedTypes.contains(ci.type()) || !accessList.contains(ci.accessType()))
+            if (!allowedTypes.contains(ci.type()) || !accessType.equals(ci.accessType()))
                 continue;
 
             addNewItem(ci, parent, allowedTypes, dataList);
         }
 
-        boolean isProbationPeriodEmail = allowedTypes.contains(En_ContactItemType.EMAIL) && accessList.contains(En_ContactDataAccess.INTERNAL);
-        addNewEmptyItem(parent, allowedTypes, dataList, isProbationPeriodEmail ? En_ContactDataAccess.INTERNAL : null);
+        addNewEmptyItem(parent, allowedTypes, dataList, accessType);
     }
 
-    private void addNewEmptyItem(HasWidgets parent, List<En_ContactItemType> allowedTypes, List<ContactItem> dataList,
-                                 En_ContactDataAccess access){
-        addNewItem(new ContactItem("", allowedTypes.get(0), access), parent, allowedTypes, dataList);
+    private void addNewEmptyItem(HasWidgets parent, List<En_ContactItemType> allowedTypes, List<ContactItem> dataList, En_ContactDataAccess accessType){
+        addNewItem(new ContactItem("", allowedTypes.get(0), accessType), parent, allowedTypes, dataList);
     }
 
     private void removeItem(AbstractContactItemView item){

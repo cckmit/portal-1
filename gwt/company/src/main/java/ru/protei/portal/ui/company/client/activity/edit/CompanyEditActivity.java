@@ -45,17 +45,6 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
         ALLOWED_EMAIL_TYPES = new ArrayList<>(1);
         ALLOWED_EMAIL_TYPES.add(En_ContactItemType.EMAIL);
-
-        ALLOWED_PHONE_DATA_ACCESS = new ArrayList<>(Arrays.asList(En_ContactDataAccess.values()));
-        ALLOWED_PHONE_DATA_ACCESS.add(null);
-
-        ALLOWED_EMAIL_DATA_ACCESS = new ArrayList<>(3);
-        ALLOWED_EMAIL_DATA_ACCESS.add(null);
-        ALLOWED_EMAIL_DATA_ACCESS.add(En_ContactDataAccess.PUBLIC);
-        ALLOWED_EMAIL_DATA_ACCESS.add(En_ContactDataAccess.PRIVATE);
-
-        ALLOWED_PROBATION_EMAIL_DATA_ACCESS = new ArrayList<>(1);
-        ALLOWED_PROBATION_EMAIL_DATA_ACCESS.add(En_ContactDataAccess.INTERNAL);
     }
 
     @PostConstruct
@@ -210,9 +199,9 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
         view.probationEmailsContainerVisibility().setVisible(En_CompanyCategory.HOME.equals(company.getCategory()));
         List<ContactItem> items = company.getContactInfo().getItems();
-        fireEvent(new ContactItemEvents.ShowList(view.phonesContainer(), items, ALLOWED_PHONE_TYPES, ALLOWED_PHONE_DATA_ACCESS));
-        fireEvent(new ContactItemEvents.ShowList(view.emailsContainer(), items, ALLOWED_EMAIL_TYPES, ALLOWED_EMAIL_DATA_ACCESS));
-        fireEvent(new ContactItemEvents.ShowList(view.probationEmailsContainer(), items, ALLOWED_EMAIL_TYPES, ALLOWED_PROBATION_EMAIL_DATA_ACCESS));
+        fireEvent(new ContactItemEvents.ShowList(view.phonesContainer(), items, ALLOWED_PHONE_TYPES, En_ContactDataAccess.PUBLIC));
+        fireEvent(new ContactItemEvents.ShowList(view.emailsContainer(), items, ALLOWED_EMAIL_TYPES, En_ContactDataAccess.PUBLIC));
+        fireEvent(new ContactItemEvents.ShowList(view.probationEmailsContainer(), items, ALLOWED_EMAIL_TYPES, En_ContactDataAccess.INTERNAL));
 
         view.tableContainer().clear();
         if (company.getId() != null && policyService.hasPrivilegeFor(En_Privilege.CONTACT_VIEW)) {
@@ -280,8 +269,4 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     private final List<En_ContactItemType> ALLOWED_PHONE_TYPES;
     private final List<En_ContactItemType> ALLOWED_EMAIL_TYPES;
-
-    private final List<En_ContactDataAccess> ALLOWED_PHONE_DATA_ACCESS;
-    private final List<En_ContactDataAccess> ALLOWED_EMAIL_DATA_ACCESS;
-    private final List<En_ContactDataAccess> ALLOWED_PROBATION_EMAIL_DATA_ACCESS;
 }
