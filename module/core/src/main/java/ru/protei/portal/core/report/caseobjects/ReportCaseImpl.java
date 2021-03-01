@@ -17,11 +17,17 @@ import ru.protei.portal.core.utils.TimeFormatter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.DateFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.core.model.helper.CollectionUtils.size;
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 public class ReportCaseImpl implements ReportCase {
 
@@ -41,6 +47,8 @@ public class ReportCaseImpl implements ReportCase {
     CaseTagDAO caseTagDAO;
     @Autowired
     CaseLinkDAO caseLinkDAO;
+    @Autowired
+    PlanToCaseObjectDAO planToCaseObjectDAO;
 
     @Override
     public boolean writeReport(OutputStream buffer,
@@ -60,17 +68,22 @@ public class ReportCaseImpl implements ReportCase {
 
             int sheetNumber = writer.createSheet();
 
-            while (true) {
-                if (isCancel.test(report.getId())) {
-                    log.info( "writeReport(): Cancel processing of report {}", report.getId() );
-                    return true;
-                }
-                query.setOffset( offset );
-                query.setLimit( limit );
-                List<CaseObjectReportRequest> comments = processChunk(query, report);
+            if (isOnlyPlanQuery(query)) {
+                List<CaseObjectReportRequest> comments = processByPlanId(query, report);
                 writer.write( sheetNumber, comments );
-                if (size( comments ) < limit) break;
-                offset += limit;
+            } else {
+                while (true) {
+                    if (isCancel.test(report.getId())) {
+                        log.info( "writeReport(): Cancel processing of report {}", report.getId() );
+                        return true;
+                    }
+                    query.setOffset( offset );
+                    query.setLimit( limit );
+                    List<CaseObjectReportRequest> comments = processChunk(query, report);
+                    writer.write( sheetNumber, comments );
+                    if (size( comments ) < limit) break;
+                    offset += limit;
+                }
             }
 
             writer.collect( buffer );
@@ -82,30 +95,42 @@ public class ReportCaseImpl implements ReportCase {
         }
     }
 
-    public List<CaseObjectReportRequest> processChunk(CaseQuery query, Report report) {
-        List<CaseObjectReportRequest> data = new ArrayList<>();
-        List<CaseObject> cases = caseObjectDAO.getCases( query );
-        for (CaseObject caseObject : emptyIfNull(cases)) {
-            CaseCommentQuery commentQuery = new CaseCommentQuery();
-            commentQuery.addCaseObjectId( caseObject.getId() );
-            commentQuery.setTimeElapsed(true);
-            List<CaseComment> caseComments = caseCommentDAO.getCaseComments( commentQuery );
-
-            HistoryQuery historyQuery = new HistoryQuery();
-            if (Boolean.TRUE.equals(query.isCheckImportanceHistory())) {
-                historyQuery.addValueType(En_HistoryType.CASE_IMPORTANCE);
-            }
-            historyQuery.setCaseObjectId(caseObject.getId());
-            historyQuery.addValueType(En_HistoryType.CASE_STATE);
-            historyQuery.setHistoryActions(Arrays.asList(En_HistoryAction.ADD, En_HistoryAction.CHANGE));
-            List<History> histories = historyDAO.getListByQuery(historyQuery);
-
-            List<CaseTag> caseTags = report.isWithTags() ? caseTagDAO.getListByQuery(new CaseTagQuery(caseObject.getId())) : Collections.emptyList();
-            List<CaseLink> caseLinks = report.isWithLinkedIssues() ? caseLinkDAO.getListByQuery(new CaseLinkQuery(caseObject.getId(), report.isRestricted())) : Collections.emptyList();
-
-            data.add( new CaseObjectReportRequest( caseObject, caseComments, histories, caseTags, caseLinks, query.getCreatedRange(), query.getModifiedRange() ) );
-        }
-        return data;
+    public List<CaseObjectReportRequest> processByPlanId(CaseQuery query, Report report) {
+        return process(() -> planToCaseObjectDAO.getSortedListByPlanId(query.getPlanId()),
+                planToCaseObject -> makeRequest(planToCaseObject.getCaseObject(), query, report));
     }
 
+    public List<CaseObjectReportRequest> processChunk(CaseQuery query, Report report) {
+        return process(() -> caseObjectDAO.getCases(query),
+                caseObject -> makeRequest(caseObject, query, report));
+    }
+
+    public <T> List<CaseObjectReportRequest> process(Supplier<List<T>> get, Function<T, CaseObjectReportRequest> map) {
+        return stream(get.get()).map(map).collect(Collectors.toList());
+    }
+
+    public CaseObjectReportRequest makeRequest(CaseObject caseObject, CaseQuery query, Report report) {
+        CaseCommentQuery commentQuery = new CaseCommentQuery();
+        commentQuery.addCaseObjectId( caseObject.getId() );
+        commentQuery.setTimeElapsed(true);
+        List<CaseComment> caseComments = caseCommentDAO.getCaseComments( commentQuery );
+
+        HistoryQuery historyQuery = new HistoryQuery();
+        if (Boolean.TRUE.equals(query.isCheckImportanceHistory())) {
+            historyQuery.addValueType(En_HistoryType.CASE_IMPORTANCE);
+        }
+        historyQuery.setCaseObjectId(caseObject.getId());
+        historyQuery.addValueType(En_HistoryType.CASE_STATE);
+        historyQuery.setHistoryActions(Arrays.asList(En_HistoryAction.ADD, En_HistoryAction.CHANGE));
+        List<History> histories = historyDAO.getListByQuery(historyQuery);
+
+        List<CaseTag> caseTags = report.isWithTags() ? caseTagDAO.getListByQuery(new CaseTagQuery(caseObject.getId())) : Collections.emptyList();
+        List<CaseLink> caseLinks = report.isWithLinkedIssues() ? caseLinkDAO.getListByQuery(new CaseLinkQuery(caseObject.getId(), report.isRestricted())) : Collections.emptyList();
+
+        return new CaseObjectReportRequest( caseObject, caseComments, histories, caseTags, caseLinks, query.getCreatedRange(), query.getModifiedRange() );
+    }
+
+    private boolean isOnlyPlanQuery(CaseQuery query) {
+        return query.getPlanId() != null;
+    }
 }

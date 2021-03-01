@@ -448,6 +448,11 @@ public abstract class ReportEditActivity implements Activity,
         validateDateRanges(view.reportType().getValue());
     }
 
+    @Override
+    public void onPlanPresent() {
+        fireEvent(new NotifyEvents.Show(lang.reportCaseObjectPlanInfo(), NotifyEvents.NotifyType.INFO));
+    }
+
     // валидация виджетов выбора временных периодов в зависимости от типа отчета
     private void validateDateRanges(En_ReportType reportType) {
         boolean isTimeLimitMandatory = En_ReportType.isTimeLimitMandatory(reportType);

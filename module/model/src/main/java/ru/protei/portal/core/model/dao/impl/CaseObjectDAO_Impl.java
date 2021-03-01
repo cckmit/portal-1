@@ -33,6 +33,8 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
 
     public static final String LEFT_JOIN_CASE_COMMENT = " LEFT JOIN case_comment ON case_object.id = case_comment.CASE_ID";
     public static final String LEFT_JOIN_HISTORY = " LEFT JOIN history ON case_object.id = history.case_object_id";
+    public static final String LEFT_JOIN_PLAN_ORDER =
+            " LEFT JOIN plan_to_case_object plan ON case_object.id = plan.case_object_id";
 
     private static final String COLUMN_EMAIL_LAST_ID = "email_last_id";
 
@@ -191,13 +193,20 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
         parameters.withOffset(query.getOffset());
         parameters.withLimit(query.getLimit());
         parameters.withSort(TypeConverters.createSort( query ));
+
+        String joins = "";
         if (isNeedJoinComments(query)) {
-            parameters.withDistinct(true);
-            parameters.withJoins(LEFT_JOIN_CASE_COMMENT);
+            joins += LEFT_JOIN_CASE_COMMENT;
         }
         if (TRUE.equals(query.isCheckImportanceHistory())) {
+            joins += LEFT_JOIN_HISTORY;
+        }
+        if (query.getPlanId() != null) {
+            joins += LEFT_JOIN_PLAN_ORDER;
+        }
+        if (!joins.equals("")) {
             parameters.withDistinct(true);
-            parameters.withJoins(LEFT_JOIN_HISTORY);
+            parameters.withJoins(joins);
         }
         return parameters;
     }

@@ -476,6 +476,9 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @UiHandler("plan")
     public void onPlanChanged(ValueChangeEvent<PlanOption> event) {
         onFilterChanged();
+        if (event.getValue() != null) {
+            onPlanChanged();
+        }
     }
 
     @UiHandler("workTriggers")
@@ -672,6 +675,12 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     private void onFilterChanged() {
         if (model != null) {
             model.onUserFilterChanged();
+        }
+    }
+
+    private void onPlanChanged() {
+        if (model != null) {
+            model.onPlanPresent();
         }
     }
 

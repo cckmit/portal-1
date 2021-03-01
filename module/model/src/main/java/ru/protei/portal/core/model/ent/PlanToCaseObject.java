@@ -1,9 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.winter.jdbc.annotations.IdInsertMode;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
-import ru.protei.winter.jdbc.annotations.JdbcEntity;
-import ru.protei.winter.jdbc.annotations.JdbcId;
+import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -23,6 +20,8 @@ public class PlanToCaseObject implements Serializable{
     @JdbcColumn(name = "order_number")
     private Integer orderNumber;
 
+    @JdbcJoinedObject(localColumn = "case_object_id", remoteColumn = "id")
+    private CaseObject caseObject;
 
     public PlanToCaseObject() {}
 
@@ -61,6 +60,14 @@ public class PlanToCaseObject implements Serializable{
 
     public void setOrderNumber(Integer orderNumber) {
         this.orderNumber = orderNumber;
+    }
+
+    public CaseObject getCaseObject() {
+        return caseObject;
+    }
+
+    public void setCaseObject(CaseObject caseObject) {
+        this.caseObject = caseObject;
     }
 
     @Override

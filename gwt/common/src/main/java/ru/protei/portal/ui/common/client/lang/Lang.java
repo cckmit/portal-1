@@ -2222,6 +2222,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reportCaseObjectMandatoryOrParamsError();
 
+    String reportCaseObjectPlanInfo();
+
     String reportPeriodMoreMaxError();
 
     String reportMissingState();
