@@ -45,8 +45,12 @@ public class ProjectItem
         this.created.setText(created == null ? "" : created);
     }
 
+    public void setId(String id) {
+        this.id.getElement().setInnerHTML( id == null ? "" : id );
+    }
+
     public void setName( String name ) {
-        this.name.setText( name == null ? "" : name );
+        this.name.getElement().setInnerHTML( name == null ? "" : name );
     }
 
     public void setProducts(String products) {
@@ -89,6 +93,8 @@ public class ProjectItem
     @UiField
     Label created;
     @UiField
+    Label id;
+    @UiField
     Label name;
     @UiField
     Label products;
@@ -100,5 +106,6 @@ public class ProjectItem
     ClickHTMLPanel root;
 
     private static ProjectItemUiBinder ourUiBinder = GWT.create(ProjectItemUiBinder.class);
+
     interface ProjectItemUiBinder extends UiBinder<HTMLPanel, ProjectItem> {}
 }

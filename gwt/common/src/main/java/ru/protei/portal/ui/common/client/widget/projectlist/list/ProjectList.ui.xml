@@ -8,6 +8,7 @@
             <div class="d-table-row">
                 <div class="d-table-cell select"/>
                 <div class="d-table-cell created"><ui:text from="{lang.created}"/></div>
+                <div class="d-table-cell id"><ui:text from="{lang.projectNumber}"/></div>
                 <div class="d-table-cell name"><ui:text from="{lang.name}"/></div>
                 <div class="d-table-cell products"><ui:text from="{lang.projectProducts}"/></div>
                 <div class="d-table-cell customer-type"><ui:text from="{lang.projectCustomerType}"/></div>

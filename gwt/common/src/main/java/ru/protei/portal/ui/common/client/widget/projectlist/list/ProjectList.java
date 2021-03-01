@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.dto.ProjectInfo;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -81,6 +82,7 @@ public class ProjectList
     private void addItem(ProjectInfo value) {
         ProjectItem itemView = itemFactory.get();
         itemView.setCreated(value.getCreated() == null ? "" : DateFormatter.formatDateTime(value.getCreated()));
+        itemView.setId(String.valueOf(value.getId()));
         itemView.setName(value.getName());
         itemView.setProducts(value.getProducts() == null ? "" : value.getProducts().stream().map(product -> product.getName()).collect(Collectors.joining(", ")));
         itemView.setCustomerType(customerTypeLang.getName(value.getCustomerType()));
