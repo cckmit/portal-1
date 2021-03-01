@@ -111,38 +111,41 @@ public abstract class CompanyPreviewActivity
                 .setOnSuccess(subscriptions -> {
                     companyController.getCompany(companyId, new FluentCallback<Company>()
                             .withSuccess(company -> {
-
-                                List<ContactItem> probationContacts = company.getContactInfo().getItems(En_ContactItemType.EMAIL).stream()
-                                        .filter(ContactItem::isInternalItem)
-                                        .collect(Collectors.toList());
-
-                                if (probationContacts.isEmpty() && subscriptions.isEmpty()) {
-                                    view.setSubscriptionEmails(lang.issueCompanySubscriptionNotDefined());
-                                    return;
-                                }
-
-                                String subscriptionsHTML = "";
-
-                                if (!subscriptions.isEmpty()) {
-                                    Map<Pair<String, String>, List<CompanySubscription>> groupsMap = fillGroupMap(subscriptions);
-
-
-                                    for (Map.Entry<Pair<String, String>, List<CompanySubscription>> group : groupsMap.entrySet()) {
-                                        if (group.getKey().equals(Pair.of(null, null))) {
-                                            subscriptionsHTML = generateCommonSubscriptionsGroupHTML(group.getValue());
-                                        } else {
-                                            subscriptionsHTML += generateSubscriptionsGroupHTML(group);
-                                        }
-                                    }
-                                }
-
-                                if (!probationContacts.isEmpty()) {
-                                    subscriptionsHTML += generateProbationEmailsHTML(probationContacts);
-                                }
-
-                                view.setSubscriptionEmails(subscriptionsHTML);
+                                setSubscriptionEmails(subscriptions, company);
                             }));
                 }));
+    }
+
+    private void setSubscriptionEmails(List<CompanySubscription> subscriptions, Company company) {
+        List<ContactItem> probationContacts = company.getContactInfo().getItems(En_ContactItemType.EMAIL).stream()
+                .filter(ContactItem::isInternalItem)
+                .collect(Collectors.toList());
+
+        if (probationContacts.isEmpty() && subscriptions.isEmpty()) {
+            view.setSubscriptionEmails(lang.issueCompanySubscriptionNotDefined());
+            return;
+        }
+
+        String subscriptionsHTML = "";
+
+        if (!subscriptions.isEmpty()) {
+            Map<Pair<String, String>, List<CompanySubscription>> groupsMap = fillGroupMap(subscriptions);
+
+
+            for (Map.Entry<Pair<String, String>, List<CompanySubscription>> group : groupsMap.entrySet()) {
+                if (group.getKey().equals(Pair.of(null, null))) {
+                    subscriptionsHTML = generateCommonSubscriptionsGroupHTML(group.getValue());
+                } else {
+                    subscriptionsHTML += generateSubscriptionsGroupHTML(group);
+                }
+            }
+        }
+
+        if (!probationContacts.isEmpty()) {
+            subscriptionsHTML += generateProbationEmailsHTML(probationContacts);
+        }
+
+        view.setSubscriptionEmails(subscriptionsHTML);
     }
 
     private String generateSubscriptionsGroupHTML(Map.Entry<Pair<String, String>, List<CompanySubscription>> group) {
