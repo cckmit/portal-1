@@ -126,6 +126,11 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         );
     }
 
+    @Override
+    public void onCategoryChanged(boolean isHomeCompanyCategory) {
+        view.probationEmailsContainerVisibility().setVisible(isHomeCompanyCategory);
+    }
+
     private boolean validateCompanyName (String companyName) {
         //isCompanyNameExists не принимает пустые строки!
         if (companyName.isEmpty()) {

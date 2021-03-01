@@ -173,6 +173,22 @@ public class BootstrapServiceImpl implements BootstrapService {
 
         /**
          *  end Спринт */
+
+        /**
+         * begin Спринт 68 */
+        if (!bootstrapAppDAO.isActionExists("updateContactItemsAccessType")) {
+            this.updateContactItemsAccessType();
+            bootstrapAppDAO.createAction("updateContactItemsAccessType");
+        }
+
+        /**
+         *  end Спринт */
+    }
+
+    private void updateContactItemsAccessType() {
+        List<ContactItem> contactItems = contactItemDAO.getListByCondition("access_type is null");
+        contactItems.forEach(item -> item.modify(En_ContactDataAccess.PUBLIC));
+        contactItemDAO.saveOrUpdateBatch(contactItems);
     }
 
     private void migrateEmployeeRegistrationHistory() {

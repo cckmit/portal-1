@@ -7,4 +7,5 @@ public interface AbstractCompanyEditActivity {
     void onSaveClicked();
     void onCancelClicked();
     void onChangeCompanyName();
+    void onCategoryChanged(boolean isHomeCompanyCategory);
 }

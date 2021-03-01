@@ -190,7 +190,9 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
 
     @UiHandler("companyCategory")
     public void onCategoryChanged(ValueChangeEvent<En_CompanyCategory> event) {
-        probationEmailsContainerVisibility().setVisible(En_CompanyCategory.HOME.equals(event.getValue()));
+        if (activity != null) {
+            activity.onCategoryChanged(En_CompanyCategory.HOME.equals(event.getValue()));
+        }
     }
 
     private void ensureDebugIds() {
