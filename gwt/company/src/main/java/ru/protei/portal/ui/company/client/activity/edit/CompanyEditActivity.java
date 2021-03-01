@@ -127,7 +127,8 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     }
 
     @Override
-    public void onCategoryChanged(boolean isHomeCompanyCategory) {
+    public void onCategoryChanged() {
+        boolean isHomeCompanyCategory = En_CompanyCategory.HOME.equals(view.companyCategory().getValue());
         view.probationEmailsContainerVisibility().setVisible(isHomeCompanyCategory);
     }
 
