@@ -24,8 +24,8 @@ public class AddingIssueCommentHelpItemView extends Composite implements Abstrac
     }
 
     @Override
-    public void setText(String text) {
-        this.text.setInnerText(text);
+    public void setHelpText(String helpText) {
+        this.helpText.setInnerHTML(helpText);
     }
 
     @UiField
@@ -35,7 +35,7 @@ public class AddingIssueCommentHelpItemView extends Composite implements Abstrac
     DivElement header;
 
     @UiField
-    DivElement text;
+    DivElement helpText;
 
     interface TopBrassItemViewUiBinder extends UiBinder<HTMLPanel, AddingIssueCommentHelpItemView> {}
     private static TopBrassItemViewUiBinder ourUiBinder = GWT.create(TopBrassItemViewUiBinder.class);

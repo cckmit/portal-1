@@ -7,5 +7,5 @@ public interface AbstractAddingIssueCommentHelpItemView extends IsWidget {
 
     void setHeader(String header);
 
-    void setText(String text);
+    void setHelpText(String text);
 }

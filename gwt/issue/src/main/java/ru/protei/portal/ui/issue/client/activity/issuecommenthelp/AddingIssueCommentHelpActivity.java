@@ -42,6 +42,7 @@ public abstract class AddingIssueCommentHelpActivity implements Activity, Abstra
     private AbstractAddingIssueCommentHelpItemView makeItem() {
         AbstractAddingIssueCommentHelpItemView itemView = provider.get();
         itemView.setHeader(lang.addingIssueCommentHelp());
+        itemView.setHelpText(lang.addingIssueCommentHelpText());
         return itemView;
     }
 

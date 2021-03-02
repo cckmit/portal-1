@@ -876,6 +876,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String addingIssueCommentHelp();
 
+    String addingIssueCommentHelpText();
+
     String commentSetPrivate();
 
     String regions();

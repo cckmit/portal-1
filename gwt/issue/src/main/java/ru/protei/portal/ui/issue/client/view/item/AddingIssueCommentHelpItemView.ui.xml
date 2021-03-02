@@ -5,6 +5,6 @@
             <div ui:field="header"/>
         </h1>
 
-        <div ui:field="text"/>
+        <div ui:field="helpText"/>
     </g:HTMLPanel>
 </ui:UiBinder>
