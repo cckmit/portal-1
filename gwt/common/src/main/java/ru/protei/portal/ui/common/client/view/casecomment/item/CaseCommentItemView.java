@@ -3,7 +3,6 @@ package ru.protei.portal.ui.common.client.view.casecomment.item;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.LIElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -41,6 +40,11 @@ public class CaseCommentItemView
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         setTestAttributes();
+        image.addLoadHandler(loadEvent -> {
+            if (image.getOffsetWidth() == image.getOffsetHeight()) {
+                image.addStyleName("default-icon");
+            }
+        });
     }
 
     @Override
@@ -112,15 +116,8 @@ public class CaseCommentItemView
     }
 
     @Override
-    public void setIcon( String iconSrc ) {
-        this.icon.setSrc( iconSrc );
-    }
-
-    @Override
-    public void setIsDefaultIcon(boolean isDefaultIcon) {
-        if (isDefaultIcon) {
-            icon.addClassName("default-icon");
-        }
+    public void setImage(String url) {
+        this.image.setUrl(url);
     }
 
     @Override
@@ -267,19 +264,17 @@ public class CaseCommentItemView
     LIElement owner;
     @UiField
     LIElement options;
-    @UiField
-    ImageElement icon;
-    @UiField
-    HTMLPanel iconContainer;
     @Inject
     @UiField(provided = true)
     EditTimeElapsedTypePopup timeElapsedTypePopup;
+    @UiField
+    DivElement messageContainer;
+    @UiField
+    Image image;
 
     @Inject
     @UiField
     Lang lang;
-    @UiField
-    DivElement messageContainer;
     Throttler removeUpdatedTimer = ThrottlerFactory.makeDelayedAntiRapidThrottler( 1 * SECOND, ()-> root.getElement().removeClassName( CrmConstants.Style.UPDATED ) );
     Throttler removeAddedTimer = ThrottlerFactory.makeDelayedAntiRapidThrottler( 1 * SECOND,  () -> root.getElement().removeClassName( CrmConstants.Style.ADDED ) );
 

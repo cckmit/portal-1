@@ -36,10 +36,6 @@ public interface AbstractCaseCommentItemView extends IsWidget {
 
     void hideOptions();
 
-    void setIcon( String iconSrc );
-
-    void setIsDefaultIcon(boolean isDefaultIcon);
-
     void setRemoteLinkNumber(String number);
 
     void setRemoteLinkHref(String link);
@@ -59,4 +55,6 @@ public interface AbstractCaseCommentItemView extends IsWidget {
     void setTimeElapsedInfo(String timeElapsedInfo);
 
     void setVisible(boolean isVisible);
+
+    void setImage(String url);
 }
