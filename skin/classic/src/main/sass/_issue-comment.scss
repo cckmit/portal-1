@@ -74,6 +74,10 @@
 
 .chats .image img {
   max-width: 100%;
+  margin-top: -3px;
+  &.default-icon {
+    margin-top: 0;
+  }
 }
 
 .chats .image + .message {

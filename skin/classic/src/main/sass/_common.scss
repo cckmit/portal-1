@@ -124,7 +124,8 @@ $bg_master_lightest: #fafafa;
   margin-top: -1px;
 }
 
-.dropdown-menu ul > li > a {
+.dropdown-menu ul > li > a,
+.dropdown-menu ul > li > .user-login-item {
   display: block;
   padding: 3px 9px;
   clear: both;
@@ -133,7 +134,8 @@ $bg_master_lightest: #fafafa;
   white-space: normal;
 }
 
-.dropdown-menu ul > li > a > img {
+.dropdown-menu ul > li > a > img,
+.dropdown-menu ul > li > .user-login-item > img {
   margin-right: 12px;
   float: left;
   margin-top: 2px;
@@ -141,7 +143,8 @@ $bg_master_lightest: #fafafa;
 }
 
 .not-active,
-.dropdown-menu ul > li > a.not-active {
+.dropdown-menu ul > li > a.not-active,
+.dropdown-menu ul > li > .user-login-item.not-active {
   color: #b6b6b6;
 }
 
@@ -181,14 +184,19 @@ i.ban {
 }
 
 .dropdown-menu ul > li > a:focus,
-.dropdown-menu ul > li > a:hover {
+.dropdown-menu ul > li > a:hover,
+.dropdown-menu ul > li > .user-login-item:focus,
+.dropdown-menu ul > li > .user-login-item:hover {
   color: #262626;
   text-decoration: none;
   background-color: $bg_light_gray;
+  outline-width: 0;
 }
 
 .dropdown-menu ul > li > a.not-active:focus,
-.dropdown-menu ul > li > a.not-active:hover {
+.dropdown-menu ul > li > a.not-active:hover
+.dropdown-menu ul > li > user-login-item.not-active:focus,
+.dropdown-menu ul > li > user-login-item.not-active:hover{
   color: #A2A2A2;
 
   i.ban {
@@ -5163,7 +5171,8 @@ table {
 
       img {
         max-width: 100%;
-        &.default-image {
+        margin-top: -3px;
+        &.default-icon {
           margin-top: 0;
         }
       }

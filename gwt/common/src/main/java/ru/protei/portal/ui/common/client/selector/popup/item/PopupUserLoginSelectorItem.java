@@ -1,26 +1,25 @@
 package ru.protei.portal.ui.common.client.selector.popup.item;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.SpanElement;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
-import ru.protei.portal.ui.common.client.util.AvatarUtils;
 
-import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 
 public class PopupUserLoginSelectorItem<T> extends Composite implements SelectorItem<T> {
+
     public PopupUserLoginSelectorItem() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        image.addLoadHandler(loadEvent -> {
+            if (image.getOffsetWidth() == image.getOffsetHeight()) {
+                image.addStyleName("default-icon");
+            }
+        });
     }
 
     @Override
@@ -29,7 +28,7 @@ public class PopupUserLoginSelectorItem<T> extends Composite implements Selector
     }
 
     @Override
-    public HandlerRegistration addKeyUpHandler( KeyUpHandler keyUpHandler) {
+    public HandlerRegistration addKeyUpHandler(KeyUpHandler keyUpHandler) {
         return addHandler( keyUpHandler, KeyUpEvent.getType() );
     }
 
@@ -56,16 +55,25 @@ public class PopupUserLoginSelectorItem<T> extends Composite implements Selector
         this.userName.setInnerText(userName);
     }
 
-    public void setImage( String src ) {
-        image.setSrc( src );
+    public void setImage(String url) {
+        image.setUrl(url);
     }
 
-    @UiHandler( "anchor" )
-    public void onAnchorClicked(ClickEvent event) {
+    @UiHandler( "panel" )
+    public void onPanelClicked(ClickEvent event) {
         event.preventDefault();
-
         if (selectorItemHandler != null) {
             selectorItemHandler.onSelectorItemClicked(this);
+        }
+    }
+
+    @UiHandler( "panel" )
+    public void onPanelKeyDown(KeyDownEvent event) {
+        event.preventDefault();
+        if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+            if (selectorItemHandler != null) {
+                selectorItemHandler.onSelectorItemClicked(this);
+            }
         }
     }
 
@@ -73,13 +81,13 @@ public class PopupUserLoginSelectorItem<T> extends Composite implements Selector
     HTMLPanel root;
 
     @UiField
-    ImageElement image;
-
-    @UiField
     SpanElement login;
 
     @UiField
     SpanElement userName;
+
+    @UiField
+    Image image;
 
     private SelectorItemHandler<T> selectorItemHandler;
     private T value;
