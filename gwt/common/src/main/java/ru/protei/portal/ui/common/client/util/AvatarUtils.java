@@ -51,24 +51,6 @@ public class AvatarUtils {
         }
     }
 
-    public static boolean isDefaultAvatar(String url) {
-        url = StringUtils.emptyIfNull(url);
-
-        if (url.contains(NOGENDER_AVATAR_URL)) {
-            return true;
-        }
-
-        if (url.contains(MALE_AVATAR_URL)) {
-            return true;
-        }
-
-        if (url.contains(FEMALE_AVATAR_URL)) {
-            return true;
-        }
-
-        return false;
-    }
-
     public static final String NOGENDER_AVATAR_URL = "./images/user-icon.svg";
     public static final String MALE_AVATAR_URL = "./images/user-icon-m.svg";
     public static final String FEMALE_AVATAR_URL = "./images/user-icon-f.svg";
