@@ -106,7 +106,7 @@ public class BaseServiceTest {
     }
 
     public static Company createNewCompany( En_CompanyCategory category ) {
-        return createNewCompany( "Test_Company", category );
+        return createNewCompany( "Test_Company" + new Date().getTime(), category );
     }
 
     public static Company createNewCompany( String companyName, En_CompanyCategory category ) {
