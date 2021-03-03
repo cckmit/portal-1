@@ -21,6 +21,7 @@ public class HtmlToStringConverter {
     public String getHtmlAsString(String fileName) {
         String result = "";
         URL path = ConfigUtils.locateFileOrDirectory(fileName, resolver.resolve(fileName));
+        log.info("File path is " + path);
         try (InputStream in = path.openStream()) {
             result = IOUtils.toString(in, Charset.defaultCharset());
             log.info("{} loaded successful from {}", fileName, path);

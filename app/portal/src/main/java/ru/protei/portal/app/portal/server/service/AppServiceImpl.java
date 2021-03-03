@@ -42,8 +42,8 @@ public class AppServiceImpl extends RemoteServiceServlet implements AppService {
     }
 
     @Override
-    public String getIssueCommentHelpHtml(String fileName) {
-        log.info("getHelpHtml file " + fileName);
+    public String getHtmlFileAsString(String fileName) {
+        log.info("getHtmlFileAsString for file " + fileName);
         return htmlToStringConverter.getHtmlAsString(fileName);
     }
 

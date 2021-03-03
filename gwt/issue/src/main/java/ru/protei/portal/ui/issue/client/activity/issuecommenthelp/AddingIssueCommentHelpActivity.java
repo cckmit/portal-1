@@ -37,7 +37,7 @@ public abstract class AddingIssueCommentHelpActivity implements Activity, Abstra
 
     private void fillView() {
         String fileName = "help_" + LocaleInfo.getCurrentLocale().getLocaleName() + ".html";
-        appService.getIssueCommentHelpHtml(fileName, new FluentCallback<String>()
+        appService.getHtmlFileAsString(fileName, new FluentCallback<String>()
                   .withSuccess(html -> {
                     AbstractAddingIssueCommentHelpItemView itemView = provider.get();
                     itemView.setHelpText(html);
