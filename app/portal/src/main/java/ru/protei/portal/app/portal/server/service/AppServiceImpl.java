@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+import ru.protei.portal.config.HtmlToStringConverter;
 import ru.protei.portal.ui.common.client.service.AppService;
 import ru.protei.portal.config.ExternalLinksHtml;
 import ru.protei.portal.config.PortalConfig;
@@ -40,6 +41,12 @@ public class AppServiceImpl extends RemoteServiceServlet implements AppService {
         return externalLinksHtml.getHtml();
     }
 
+    @Override
+    public String getIssueCommentHelpHtml(String fileName) {
+        log.info("getHelpHtml file " + fileName);
+        return htmlToStringConverter.getHtmlAsString(fileName);
+    }
+
     @Autowired
     Environment properties;
 
@@ -48,6 +55,9 @@ public class AppServiceImpl extends RemoteServiceServlet implements AppService {
 
     @Autowired
     ExternalLinksHtml externalLinksHtml;
+
+    @Autowired
+    HtmlToStringConverter htmlToStringConverter;
 
     private static final Logger log = LoggerFactory.getLogger(AppServiceImpl.class.getName());
 }

@@ -5,7 +5,5 @@ import com.google.gwt.user.client.ui.IsWidget;
 public interface AbstractAddingIssueCommentHelpItemView extends IsWidget {
     void addRootStyle(String style);
 
-    void setHeader(String header);
-
     void setHelpText(String text);
 }

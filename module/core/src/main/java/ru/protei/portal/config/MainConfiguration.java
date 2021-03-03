@@ -1112,6 +1112,10 @@ public class MainConfiguration {
         return new ExternalLinksHtml();
     }
 
+    @Bean HtmlToStringConverter getHtmlToStringConverter() {
+        return new HtmlToStringConverter();
+    }
+
     @Bean
     public NRPEService getNRPEService() {
         return new NRPEServiceImpl();

@@ -19,20 +19,12 @@ public class AddingIssueCommentHelpItemView extends Composite implements Abstrac
     }
 
     @Override
-    public void setHeader(String header) {
-        this.header.setInnerText(header);
-    }
-
-    @Override
     public void setHelpText(String helpText) {
         this.helpText.setInnerHTML(helpText);
     }
 
     @UiField
     HTMLPanel root;
-
-    @UiField
-    DivElement header;
 
     @UiField
     DivElement helpText;
