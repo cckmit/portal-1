@@ -9,3 +9,327 @@
 </ul>
 3) Добавляем комментарий. <br>
 4) Отправляем письмо.
+
+
+<hr>
+<br> <br>
+
+
+
+<h2>Справка по Markdown-разметке PORTAL</h2>
+
+PORTAL следует спецификации, описанной <a href="https://www.markdownguide.org/cheat-sheet/">здесь</a>
+
+<br> <br>
+
+<h3>Базовый синтаксис</h3>
+<h6>Все Markdown-приложения поддерживают эти элементы</h6>
+
+<br>
+
+<div class="markdown_table">
+    <table>
+        <thead>
+        <tr>
+            <th>РАЗМЕТКА</th>
+            <th>ПРЕДПРОСМОТР</th>
+        </tr>
+        </thead>
+
+        <tr class="markdown_table_section">
+            <td>Заголовки</td>
+        </tr>
+
+        <tr>
+            <td># Заголовок 1 уровня</td>
+            <td><h1> Заголовок 1 уровня</h1></td>
+        </tr>
+        <tr>
+            <td>## Заголовок 2 уровня</td>
+            <td><h2> Заголовок 2 уровня</h2></td>
+        </tr>
+        <tr>
+            <td>### Заголовок 3 уровня</td>
+            <td><h3> Заголовок 3 уровня</h3></td>
+        </tr>
+        <tr>
+            <td>#### Заголовок 4 уровня</td>
+            <td><h4> Заголовок 4 уровня</h4></td>
+        </tr>
+        <tr>
+            <td>##### Заголовок 5 уровня</td>
+            <td><h5> Заголовок 5 уровня</h5></td>
+        </tr>
+        <tr>
+            <td>###### Заголовок 6 уровня</td>
+            <td><h6> Заголовок 6 уровня</h6></td>
+        </tr>
+
+
+        <tr class="markdown_table_section">
+            <td>Форматирование символов</td>
+        </tr>
+
+        <tr>
+            <td>**Жирный**</td>
+            <td>Жирный</td>
+        </tr>
+        <tr>
+            <td>*Курсив*</td>
+            <td><i>Курсив</i></td>
+        </tr>
+        <tr>
+            <td>> Цитата</td>
+            <td>> Цитата</td>
+        </tr>
+
+
+        <tr class="markdown_table_section">
+            <td>Списки</td>
+        </tr>
+
+        <tr>
+            <td>Нумерованный список:</td>
+        </tr>
+        <tr>
+            <td>
+                1. Первый пункт <br>
+                2. Второй пункт <br>
+                3. Третий пункт
+            </td>
+            <td>
+                1. Первый пункт <br>
+                2. Второй пункт <br>
+                3. Третий пункт
+            </td>
+        </tr>
+
+        <tr>
+            <td>Ненумерованный список:</td>
+        </tr>
+        <tr>
+            <td>- Первый пункт <br>
+                - Второй пункт <br>
+                - Третий пункт
+            </td>
+            <td>- Первый пункт <br>
+                - Второй пункт <br>
+                - Третий пункт
+            </td>
+        </tr>
+
+
+        <tr class="markdown_table_section">
+            <td>Горизонтальное правило</td>
+        </tr>
+
+        <tr>
+            <td>
+                *** <br>
+                --- <br>
+                ___ <br>
+            </td>
+            <td>
+                *** <br>
+                --- <br>
+                _________________ <br>
+            </td>
+            <td>
+        </tr>
+
+
+        <tr class="markdown_table_section">
+            <td>Прочее</td>
+        </tr>
+
+        <tr>
+            <td>`Код`</td>
+            <td>`Код`</td>
+        </tr>
+
+        <tr>
+            <td>[Ссылка](https://www.example.com)</td>
+            <td><a href="https://www.example.com">Ссылка</a></td>
+        </tr>
+        <tr>
+            <td>![Альтернативный текст](image.jpg)</td>
+            <td><img src="image.jpg" alt="Альтернативный текст"></td>
+        </tr>
+    </table>
+</div>
+
+
+<hr>
+<br> <br>
+
+
+
+<h2>Расширенный синтаксис</h2>
+<h6>Элементы, которые расширяют базовый синтаксис, добавляя дополнительные функции.
+    Не все приложения Markdown поддерживают эти элементы.</h6>
+
+<br>
+
+<div class="markdown_table">
+    <table>
+        <thead>
+        <tr>
+            <th>РАЗМЕТКА</th>
+            <th>ПРЕДПРОСМОТР</th>
+        </tr>
+        </thead>
+
+        <tr class="markdown_table_section">
+            <td>
+                <b>Таблица</b>
+            </td>
+        </tr>
+
+
+        <tr>
+            <td> |     Столбец 1    |     Столбец 2   | <br>
+                | ---------------- | ----------------| <br>
+                |     Значение 1   |     Значение 1  | <br>
+                |     Значение 2   |     Значение 4  |
+            </td>
+            <td>
+                <table class="markdown_table_example">
+                    <thead>
+                    <tr>
+                        <th>Столбец 1</th>
+                        <th>Столбец 2</th>
+                    </tr>
+                    </thead>
+
+                    <tr>
+                        <td>Значение 1</td>
+                        <td>Значение 2</td>
+                    </tr>
+                    <tr>
+                        <td>Значение 3</td>
+                        <td>Значение 4</td>
+                    </tr>
+                </table>
+
+            </td>
+        </tr>
+
+
+        <tr class="markdown_table_section">
+            <td>Кодовые блоки</td>
+        </tr>
+        <tr>
+            <td>```                         <br>
+                {                           <br>
+                <pre>   "firstName": "John",</pre>
+                <pre>   "lastName": "Smith",</pre>
+                <pre>   "age": 25           </pre>
+                }                           <br>
+                ```
+            </td>
+
+            <td>
+                {                           <br>
+                <pre>   "firstName": "John",</pre>
+                <pre>   "lastName": "Smith",</pre>
+                <pre>   "age": 25           </pre>
+                }
+            </td>
+        </tr>
+
+
+        <tr class="markdown_table_section">
+            <td>Сноска</td>
+        </tr>
+        <tr>
+            <td>Предложение со сноской. [^1]
+                <br>
+                [^1]: Это сноска.
+            </td>
+            <td>
+                Предложение со сноской. <sup><a href="#rlink">[1]</a></sup>
+                <br>
+                <div id="rlink">[1]: Это сноска.</div>
+            </td>
+        </tr>
+
+
+        <tr class="markdown_table_section">
+            <td id="custom-id">
+                Пользовательские ID
+
+                <div class="markdown_table_section_description">
+                    Вы можете связать заголовки с пользовательскими идентификаторами в файле, <br>
+                    создав стандартную ссылку со знаком числа ( # ), за которым следует пользовательский идентификатор заголовка.
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                ### Ссылка на заголовок с пользовательским ID {#custom-id}
+            </td>
+            <td>
+                <h3>
+                    <a href="#custom-id">Ссылка на заголовок с пользовательским ID</a>
+                </h3>
+            </td>
+        </tr>
+
+
+        <tr class="markdown_table_section">
+            <td>
+                Списки определений
+
+                <div class="markdown_table_section_description">
+                    Некоторые Markdown-процессоры позволяют создавать списки определений терминов и соответствующих им определений.
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Термин 1 <br>
+                : Определение термина 1 <br>
+
+                <br>
+
+                Термин 2 <br>
+                : Определение термина 2 <br>
+                : Другое определение термина 2
+            </td>
+            <td>
+                <dl>
+                    <dt>Термин 1</dt>
+                    <dd>Определение термина 1</dd>
+                    <dt>Термин 2</dt>
+                    <dd>Определение термина 2</dd>
+                    <dd>Другое определение термина 2</dd>
+                </dl>
+            </td>
+        </tr>
+
+
+        <tr class="markdown_table_section">
+            <td>Зачёркнутый текст</td>
+        </tr>
+        <tr>
+            <td>~~Зачёркнутый текст~~</td>
+            <td><strike>Зачёркнутый текст</strike></td>
+        </tr>
+
+
+        <tr class="markdown_table_section">
+            <td>Списки задач</td>
+        </tr>
+        <tr>
+            <td>- [x] Задача 1 <br>
+                - [ ] Задача 2 <br>
+                - [ ] Задача 3
+            </td>
+            <td>
+                <label><input type="checkbox" checked></label>&nbsp; Задача 1 <br>
+                <label><input type="checkbox"></label>&nbsp; Задача 2 <br>
+                <label><input type="checkbox"></label>&nbsp; Задача 3
+            </td>
+        </tr>
+    </table>
+</div>

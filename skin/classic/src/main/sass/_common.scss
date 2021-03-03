@@ -5300,11 +5300,58 @@ table {
   font-size: inherit;
 }
 
-.issue_comment_help {
+.adding_issue_comment_help {
   font-size: 18px;
+  margin-left: 20px;
 
   ul {
     margin-top: 5px;
     margin-bottom: 5px
+  }
+}
+
+.markdown_table {
+  table {
+    width: 100%;
+    margin-bottom: 20px;
+    border-collapse: collapse;
+  }
+
+  table th {
+    width: 50%;
+    font-weight: bold;
+    padding: 5px;
+    border-bottom: #acacac 1px solid;
+  }
+
+  table td {
+    padding: 5px 0 10px 0;
+  }
+
+  table tr td:first-child, table tr th:first-child {
+    border-left: none;
+  }
+
+  table tr td:last-child, table tr th:last-child {
+    border-right: none;
+  }
+
+  table .markdown_table_section {
+    td {
+      padding: 40px 0 0 0;
+      font-weight: bold;
+    }
+
+    td .markdown_table_section_description {
+      font-weight: normal;
+    }
+  }
+
+  table .markdown_table_example {
+    tr, th, td {
+      width: 100px;
+      border: #acacac 1px solid ;
+      text-align: center;
+    }
   }
 }

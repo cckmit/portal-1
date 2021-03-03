@@ -42,7 +42,7 @@ public abstract class AddingIssueCommentHelpActivity implements Activity, Abstra
                     AbstractAddingIssueCommentHelpItemView itemView = provider.get();
                     itemView.setHelpText(html);
                     view.textContainer().add(itemView.asWidget());
-                    itemView.addRootStyle("col-md-12 issue_comment_help");
+                    itemView.addRootStyle("col-md-12 adding_issue_comment_help");
                 }));
     }
 
