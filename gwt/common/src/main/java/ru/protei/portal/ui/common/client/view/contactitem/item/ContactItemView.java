@@ -15,6 +15,8 @@ import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactIte
 import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactItemView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.contacttype.ContactTypeButtonSelector;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
+import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 
 import java.util.List;
 
@@ -42,6 +44,11 @@ public class ContactItemView extends Composite implements AbstractContactItemVie
     }
 
     @Override
+    public HasValidable valueValidator() {
+        return value;
+    }
+
+    @Override
     public HasValue<En_ContactItemType> type() {
         return type;
     }
@@ -60,6 +67,17 @@ public class ContactItemView extends Composite implements AbstractContactItemVie
     @Override
     public void focused(){
         value.setFocus(true);
+    }
+
+    @Override
+    public void setRegexpValidation(String regexp) {
+        value.setRegexp(regexp);
+        this.regexp = regexp;
+    }
+
+    @Override
+    public String getRegexp() {
+        return regexp;
     }
 
     @UiHandler( "value" )
@@ -85,7 +103,7 @@ public class ContactItemView extends Composite implements AbstractContactItemVie
     HTMLPanel root;
 
     @UiField
-    TextBox value;
+    ValidableTextBox value;
 
     @Inject
     @UiField(provided = true)
@@ -96,6 +114,7 @@ public class ContactItemView extends Composite implements AbstractContactItemVie
     Lang lang;
 
     AbstractContactItemActivity activity;
+    private String regexp;
 
     private static ValueCommentItemViewUiBinder ourUiBinder = GWT.create(ValueCommentItemViewUiBinder.class);
     interface ValueCommentItemViewUiBinder extends UiBinder<HTMLPanel, ContactItemView> {}
