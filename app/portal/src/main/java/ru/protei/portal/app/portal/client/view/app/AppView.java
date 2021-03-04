@@ -51,6 +51,7 @@ public class AppView extends Composite
                 showPopupMenu();
             }
         };
+
         windowScrollHandler = event -> {
             if (menuBarPopup.isShowing()) {
                 showPopupMenu();

@@ -150,9 +150,9 @@
             <div class="row form-group">
                 <div class="col-md-12">
                     <h5>
-                        <ui:text from="{lang.projectSiteFolder}"/>
+                        <ui:text from="{lang.projectSiteFolders}"/>
                     </h5>
-                    <g:Anchor ui:field="platform" href="#" target="_blank"/>
+                    <g:HTMLPanel ui:field="platforms"/>
                 </div>
             </div>
 

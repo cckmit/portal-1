@@ -40,6 +40,9 @@ public interface AbstractCompanyEditView extends IsWidget {
 
     HasWidgets phonesContainer();
     HasWidgets emailsContainer();
+    HasWidgets probationEmailsContainer();
+
+    HasVisibility probationEmailsContainerVisibility();
 
     HasWidgets tableContainer();
     HasWidgets siteFolderContainer();

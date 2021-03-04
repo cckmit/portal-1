@@ -14,7 +14,7 @@ import java.util.function.Consumer;
  */
 public interface AbstractCaseCommentItemView extends IsWidget {
 
-    void setActivity( AbstractCaseCommentItemActivity activity );
+    void setActivity( AbstractCaseCommentItemListActivity activity );
 
     void setTimeElapsedTypeChangeHandler(Consumer<ValueChangeEvent<En_TimeElapsedType>> editTimeElapsedType);
 
@@ -24,29 +24,17 @@ public interface AbstractCaseCommentItemView extends IsWidget {
 
     void setMessage(String value );
 
-    void setMine();
-
-    void setStatus( String value );
-
-    void setImportanceLevel( String importanceCode );
-
-    void setManagerInfo(String managerInfo );
-
     void enabledEdit( boolean isEnabled );
 
     void enableReply(boolean isEnabled);
+
+    HasVisibility timeElapsedVisibility();
 
     void showAttachments(boolean isShow);
 
     HasAttachments attachmentContainer();
 
     void hideOptions();
-
-    void setIcon( String iconSrc );
-
-    void setTimeElapsed( String timeTypeString );
-
-    void clearElapsedTime();
 
     void setRemoteLinkNumber(String number);
 
@@ -61,4 +49,12 @@ public interface AbstractCaseCommentItemView extends IsWidget {
     void displayAddedAnimation();
 
     HasVisibility timeElapsedTypePopupVisibility();
+
+    HasVisibility timeElapsedInfoContainerVisibility();
+
+    void setTimeElapsedInfo(String timeElapsedInfo);
+
+    void setVisible(boolean isVisible);
+
+    void setImage(String url);
 }

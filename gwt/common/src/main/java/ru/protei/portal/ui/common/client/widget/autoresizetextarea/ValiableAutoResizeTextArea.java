@@ -5,6 +5,8 @@ import com.google.gwt.user.client.Timer;
 import ru.protei.portal.ui.common.client.events.InputEvent;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
+import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
+
 public class ValiableAutoResizeTextArea extends AutoResizeTextArea implements HasValidable {
 
     public ValiableAutoResizeTextArea() {
@@ -28,7 +30,10 @@ public class ValiableAutoResizeTextArea extends AutoResizeTextArea implements Ha
 
     @Override
     public boolean isValid() {
-        return regexp.test( getValue() );
+        String valueString = getText();
+        boolean isRegexMatched = regexp.test(valueString);
+
+        return (!isNotNull && isEmpty(valueString)) || isRegexMatched;
     }
 
     public void setRegexp( String regexp ){

@@ -421,6 +421,11 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
+    public EmployeeRegistrationHistoryDAO getEmployeeRegistrationHistoryDAO() {
+        return new EmployeeRegistrationHistoryDAO_Impl();
+    }
+
+    @Bean
     public ContractSpecificationDAO getContractSpecificationDAO() {
         return new ContractSpecificationDAO_Impl();
     }

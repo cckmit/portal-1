@@ -132,7 +132,7 @@ public class CaseStateServiceTest {
     @Test
     public void getCaseStatesByCompanyTest() throws Exception {
         Company company1 = new Company();
-        company1.setCname("company1");
+        company1.setCname("company3");
         List<CaseState> expectedStates = Arrays.asList(makeCaseState(CrmConstants.State.OPENED), makeCaseState(CrmConstants.State.DONE));
         company1.setCaseStates(expectedStates);
 

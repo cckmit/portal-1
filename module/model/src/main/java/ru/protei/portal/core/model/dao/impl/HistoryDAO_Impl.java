@@ -48,14 +48,31 @@ public class HistoryDAO_Impl extends PortalBaseJdbcDAO<History> implements Histo
 
     @Override
     public History getLastHistory(Long caseObjectId, En_HistoryType historyType) {
-        Condition condition = query()
+        List<History> historyResult = getSearchResult(query()
                 .where("history.case_object_id").equal(caseObjectId)
-                .and("history.value_type").equal(historyType.getId());
+                .and("history.value_type").equal(historyType.getId())
+                .asQuery()
+                .sort(En_SortDir.DESC, "history.date")
+                .limit(1).build()
+        ).getResults();
 
-        List<History> historyResult = getSearchResult(new JdbcQueryParameters()
-                .withCondition(condition.getSqlCondition(), condition.getSqlParameters())
-                .withSort(new JdbcSort(JdbcSort.Direction.DESC, "history.date"))
-                .withLimit(1)
+        return getFirst(historyResult);
+    }
+
+    @Override
+    public History getLastHistoryForEmployeeRegistration(Long caseObjectId, Long caseLinkId, En_HistoryType historyType) {
+        List<History> historyResult = getSearchResult(query()
+                .where("history.case_object_id").equal(caseObjectId)
+                .and("history.value_type").equal(historyType.getId())
+                .and("history.id").in(
+                        query()
+                                .select("employee_registration_history.history_id")
+                                .from("employee_registration_history")
+                                .where("employee_registration_history.remote_link_id")
+                                .equal(caseLinkId).asQuery())
+                .asQuery()
+                .sort(En_SortDir.DESC, "history.date")
+                .limit(1).build()
         ).getResults();
 
         return getFirst(historyResult);

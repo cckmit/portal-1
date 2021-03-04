@@ -26,9 +26,11 @@
   clear: both
 }
 
-.chats .name {
+.chats .name,
+.chats .status {
   font-weight: 600;
-  text-decoration: none
+  text-decoration: none;
+  padding-left: 3.8em;
 }
 
 .chats a.name {
@@ -44,9 +46,9 @@
 }
 
 .chats .date-time {
-  display: block;
+  display: inline-block;
   float: right;
-  color: #999;
+  color: unset;
 }
 
 .chats .image {
@@ -56,7 +58,12 @@
   -webkit-border-radius: 50%;
   -moz-border-radius: 50%;
   border-radius: 50%;
-  overflow: hidden
+  overflow: hidden;
+  margin-top: -2px;
+}
+
+.chats .left .options {
+  right: 0 !important;
 }
 
 .chats .time-label {
@@ -68,6 +75,9 @@
 .chats .image img {
   max-width: 100%;
   margin-top: -3px;
+  &.default-icon {
+    margin-top: 0;
+  }
 }
 
 .chats .image + .message {
@@ -154,7 +164,12 @@
 }
 
 .chats .left .date-time {
-  float: right;
+  float: none;
+}
+
+.chats.case-history .options a {
+  margin-right: 0;
+  margin-left: 7px;
 }
 
 .chats .right .date-time {
@@ -334,19 +349,22 @@ blockquote {
   }
 }
 
-.chats .message .message-preview {
-  margin-top: 10px;
+.chats .message {
+  margin-bottom: 10px;
 
-  > .message-preview-label {
-    border-bottom: 1px solid #ccd0d4;
-    margin-bottom: 10px;
-    color: #686868;
-    font-size: 0.9em;
+  .message-preview {
+    margin-top: 10px;
+
+    > .message-preview-label {
+      border-bottom: 1px solid #ccd0d4;
+      margin-bottom: 10px;
+      color: #686868;
+      font-size: 0.9em;
+    }
   }
 }
 
 .chats {
-
   li .message {
     transition: background-color 4s ease-out;
     -webkit-transition: background-color 4s ease-out;

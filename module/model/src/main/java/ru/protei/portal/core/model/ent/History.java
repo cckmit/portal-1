@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_HistoryAction;
 import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.winter.jdbc.annotations.*;
@@ -16,8 +17,11 @@ public class History implements Serializable {
     @JdbcColumn(name = "initiator_id")
     private Long initiatorId;
 
-    @JdbcJoinedColumn( localColumn = "initiator_id", table = "person", remoteColumn = "id", mappedColumn = "displayShortName", sqlTableAlias = "PersonInitiator" )
-    private String initiator;
+    @JdbcJoinedColumn( localColumn = "initiator_id", table = "person", remoteColumn = "id", mappedColumn = "displayShortName", sqlTableAlias = "person_short_name" )
+    private String initiatorShortName;
+
+    @JdbcJoinedColumn( localColumn = "initiator_id", table = "person", remoteColumn = "id", mappedColumn = "displayName", sqlTableAlias = "person_full_name" )
+    private String initiatorFullName;
 
     @JdbcColumn(name = "date")
     private Date date;
@@ -45,7 +49,26 @@ public class History implements Serializable {
     @JdbcColumn(name = "new_value")
     private String newValue;
 
+    private String oldColor;
+
+    private String newColor;
+
+    private EmployeeRegistrationHistory employeeRegistrationHistory;
+
     public History() {
+    }
+
+    public History(Long initiatorId, Date date, Long caseObjectId, En_HistoryAction action,
+                   En_HistoryType type, Long oldId, String oldValue, Long newId, String newValue) {
+        this.initiatorId = initiatorId;
+        this.date = date;
+        this.caseObjectId = caseObjectId;
+        this.action = action;
+        this.type = type;
+        this.oldId = oldId;
+        this.oldValue = oldValue;
+        this.newId = newId;
+        this.newValue = newValue;
     }
 
     public Long getId() {
@@ -60,12 +83,24 @@ public class History implements Serializable {
         return initiatorId;
     }
 
-    public String getInitiator() {
-        return initiator;
+    public String getInitiatorShortName() {
+        return initiatorShortName;
     }
 
-    public void setInitiator(String initiator) {
-        this.initiator = initiator;
+    public String getInitiatorFullName() {
+        return initiatorFullName;
+    }
+
+    public String getInitiatorName() {
+        if (employeeRegistrationHistory == null) {
+            return initiatorFullName;
+        }
+
+        if (employeeRegistrationHistory.getOriginalAuthorName() == null) {
+            return initiatorFullName;
+        }
+
+        return employeeRegistrationHistory.getOriginalAuthorName();
     }
 
     public void setInitiatorId(Long initiatorId) {
@@ -136,12 +171,53 @@ public class History implements Serializable {
         this.newValue = newValue;
     }
 
+    public String getOldColor() {
+        return oldColor;
+    }
+
+    public void setOldColor(String oldColor) {
+        this.oldColor = oldColor;
+    }
+
+    public String getNewColor() {
+        return newColor;
+    }
+
+    public void setNewColor(String newColor) {
+        this.newColor = newColor;
+    }
+
+    public EmployeeRegistrationHistory getEmployeeRegistrationHistory() {
+        return employeeRegistrationHistory;
+    }
+
+    public void setEmployeeRegistrationHistory(EmployeeRegistrationHistory employeeRegistrationHistory) {
+        this.employeeRegistrationHistory = employeeRegistrationHistory;
+    }
+
+    public String getLinkName() {
+        if (employeeRegistrationHistory == null) {
+            return null;
+        }
+
+        return employeeRegistrationHistory.getRemoteId();
+    }
+
+    public En_CaseLink getLinkType() {
+        if (employeeRegistrationHistory == null) {
+            return null;
+        }
+
+        return employeeRegistrationHistory.getType();
+    }
+
     @Override
     public String toString() {
         return "History{" +
                 "id=" + id +
                 ", initiatorId=" + initiatorId +
-                ", initiator=" + initiator +
+                ", initiatorShortName='" + initiatorShortName + '\'' +
+                ", initiatorFullName='" + initiatorFullName + '\'' +
                 ", date=" + date +
                 ", caseObjectId=" + caseObjectId +
                 ", action=" + action +
@@ -150,6 +226,8 @@ public class History implements Serializable {
                 ", oldValue='" + oldValue + '\'' +
                 ", newId=" + newId +
                 ", newValue='" + newValue + '\'' +
+                ", oldColor='" + oldColor + '\'' +
+                ", newColor='" + newColor + '\'' +
                 '}';
     }
 }

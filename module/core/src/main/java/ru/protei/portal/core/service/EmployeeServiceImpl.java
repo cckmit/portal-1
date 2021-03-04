@@ -422,7 +422,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             }
         }
 
-        if (portalConfig.data().legacySysConfig().isImportEmployeesEnabled()) {
+        if (portalConfig.data().legacySysConfig().isExportEnabled()) {
             if (!fireEmployeeInOldPortal(personFromDb)) {
                 log.warn("fireEmployee(): fail to migrate employee to old portal. Person={}", personFromDb);
                 return error(En_ResultStatus.EMPLOYEE_MIGRATION_FAILED);
@@ -478,7 +478,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             }
         }
 
-        if (portalConfig.data().legacySysConfig().isImportEmployeesEnabled()) {
+        if (portalConfig.data().legacySysConfig().isExportEnabled()) {
             if (!updateEmployeeInOldPortal(personId)) {
                 log.warn("updateEmployeeWorkers(): fail to migrate employee to old portal. personId={}", personId);
                 return error(En_ResultStatus.EMPLOYEE_MIGRATION_FAILED);
@@ -529,8 +529,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         query.setFired(false);
         query.setDeleted(false);
         query.setBirthdayInterval(new Interval(from, to));
-        query.setSortField(En_SortField.birthday);
-        query.setSortDir(En_SortDir.ASC);
         List<EmployeeShortView> employees = employeeShortViewDAO.getEmployees(query);
 
         if (CollectionUtils.isEmpty(employees)) {

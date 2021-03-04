@@ -3,7 +3,6 @@ package ru.protei.portal.ui.common.client.view.casecomment.item;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.LIElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -16,12 +15,11 @@ import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemActivity;
+import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemListActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.throttler.Throttler;
 import ru.protei.portal.ui.common.client.throttler.ThrottlerFactory;
-import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
@@ -42,10 +40,15 @@ public class CaseCommentItemView
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         setTestAttributes();
+        image.addLoadHandler(loadEvent -> {
+            if (image.getOffsetWidth() == image.getOffsetHeight()) {
+                image.addStyleName("default-icon");
+            }
+        });
     }
 
     @Override
-    public void setActivity( AbstractCaseCommentItemActivity activity ) {
+    public void setActivity( AbstractCaseCommentItemListActivity activity ) {
         this.activity = activity;
         attachList.setActivity(activity);
     }
@@ -62,13 +65,7 @@ public class CaseCommentItemView
 
     @Override
     public void setOwner( String value ) {
-        if ( root.getStyleName().contains( "right" ) ) {
-            this.status.setInnerText( value );
-            this.status.removeClassName( "status" );
-            this.status.addClassName( "name" );
-        } else {
-            this.owner.setInnerText( value );
-        }
+        this.owner.setInnerText( value );
     }
 
     @Override
@@ -85,63 +82,6 @@ public class CaseCommentItemView
     }
 
     @Override
-    public void setMine() {
-        root.setStyleName( "right" );
-    }
-
-    @Override
-    public void setStatus(String value) {
-        String styleName = CaseStateUtils.makeStyleName(value);
-        if ( root.getStyleName().contains("right")) {
-            owner.removeClassName("name");
-            owner.addClassName("status");
-            owner.addClassName("case-" + styleName);
-            owner.setInnerText(value);
-            info.setInnerText(lang.issueCommentChangeStatusTo());
-            info.removeClassName("hide");
-        } else {
-            this.status.addClassName("case-" + styleName);
-            this.status.setInnerText(value);
-            info.setInnerText(lang.issueCommentChangeStatusTo());
-            info.removeClassName("hide");
-        }
-    }
-
-    @Override
-    public void setImportanceLevel(String importanceCode) {
-        if (root.getStyleName().contains("right")) {
-            owner.removeClassName("name");
-            owner.addClassName("status");
-            owner.addClassName("case-importance-" + importanceCode.toLowerCase());
-            owner.setInnerText(importanceCode);
-            info.setInnerText(lang.issueCommentChangeImportanceTo());
-            info.removeClassName("hide");
-        } else {
-            status.addClassName("case-importance-" + importanceCode.toLowerCase());
-            status.setInnerText(importanceCode);
-            info.setInnerText(lang.issueCommentChangeImportanceTo());
-            info.removeClassName("hide");
-        }
-    }
-
-    @Override
-    public void setManagerInfo(String managerInfo) {
-        if (root.getStyleName().contains("right")) {
-            owner.removeClassName("name");
-            owner.addClassName("status");
-            owner.addClassName("name");
-            owner.setInnerText(managerInfo);
-            info.setInnerText(lang.issueCommentChangeManagerTo());
-            info.removeClassName("hide");
-        } else {
-            status.addClassName("name");
-            status.setInnerText(managerInfo);
-            info.setInnerText(lang.issueCommentChangeManagerTo());
-            info.removeClassName("hide");
-        }
-    }
-
-    @Override
     public void enabledEdit( boolean isEnabled ) {
         remove.setVisible( isEnabled );
         edit.setVisible( isEnabled );
@@ -150,6 +90,11 @@ public class CaseCommentItemView
     @Override
     public void enableReply(boolean isEnabled) {
         reply.setVisible(isEnabled);
+    }
+
+    @Override
+    public HasVisibility timeElapsedVisibility() {
+        return timeElapsed;
     }
 
     @Override
@@ -171,18 +116,8 @@ public class CaseCommentItemView
     }
 
     @Override
-    public void setIcon( String iconSrc ) {
-        this.icon.setSrc( iconSrc );
-    }
-
-    @Override
-    public void setTimeElapsed( String timeTypeString ) {
-        timeElapsed.setText(timeTypeString == null ? "" : timeTypeString);
-    }
-
-    @Override
-    public void clearElapsedTime() {
-        timeElapsed.setText("");
+    public void setImage(String url) {
+        this.image.setUrl(url);
     }
 
     @Override
@@ -240,6 +175,16 @@ public class CaseCommentItemView
         return timeElapsedTypePopup;
     }
 
+    @Override
+    public HasVisibility timeElapsedInfoContainerVisibility() {
+        return timeElapsedInfoContainer;
+    }
+
+    @Override
+    public void setTimeElapsedInfo(String timeElapsedInfo) {
+        this.timeElapsedInfo.getElement().setInnerText(timeElapsedInfo);
+    }
+
     @UiHandler( "remove" )
     public void onRemoveClicked( ClickEvent event ) {
         event.preventDefault();
@@ -282,7 +227,6 @@ public class CaseCommentItemView
         timeElapsed.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CASE_COMMENT.COMMENT_ITEM.TIME_ELAPSED);
         date.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CASE_COMMENT.COMMENT_ITEM.CREATE_DATE);
         owner.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CASE_COMMENT.COMMENT_ITEM.OWNER);
-        status.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CASE_COMMENT.COMMENT_ITEM.STATUS);
         timeElapsedTypePopup.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CASE_COMMENT.COMMENT_ITEM.EDIT_TIME_ELAPSED_TYPE_POPUP);
     }
 
@@ -291,6 +235,10 @@ public class CaseCommentItemView
     Anchor remoteLink;
     @UiField
     HTMLPanel message;
+    @UiField
+    HTMLPanel timeElapsedInfoContainer;
+    @UiField
+    HTMLPanel timeElapsedInfo;
     @UiField
     Element privateType;
     @UiField
@@ -305,7 +253,7 @@ public class CaseCommentItemView
     @UiField(provided = true)
     AttachmentList attachList;
     @UiField
-    Label timeElapsed;
+    Anchor timeElapsed;
     @UiField
     DivElement attachBlock;
     @UiField
@@ -315,26 +263,22 @@ public class CaseCommentItemView
     @UiField
     LIElement owner;
     @UiField
-    LIElement info;
-    @UiField
-    LIElement status;
-    @UiField
     LIElement options;
-    @UiField
-    ImageElement icon;
     @Inject
     @UiField(provided = true)
     EditTimeElapsedTypePopup timeElapsedTypePopup;
+    @UiField
+    DivElement messageContainer;
+    @UiField
+    Image image;
 
     @Inject
     @UiField
     Lang lang;
-    @UiField
-    DivElement messageContainer;
     Throttler removeUpdatedTimer = ThrottlerFactory.makeDelayedAntiRapidThrottler( 1 * SECOND, ()-> root.getElement().removeClassName( CrmConstants.Style.UPDATED ) );
     Throttler removeAddedTimer = ThrottlerFactory.makeDelayedAntiRapidThrottler( 1 * SECOND,  () -> root.getElement().removeClassName( CrmConstants.Style.ADDED ) );
 
-    private AbstractCaseCommentItemActivity activity;
+    private AbstractCaseCommentItemListActivity activity;
 
     private static int SECOND = (int) CrmConstants.Time.SEC;
 

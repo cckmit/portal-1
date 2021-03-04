@@ -88,7 +88,7 @@ public class ReportCaseImpl implements ReportCase {
         for (CaseObject caseObject : emptyIfNull(cases)) {
             CaseCommentQuery commentQuery = new CaseCommentQuery();
             commentQuery.addCaseObjectId( caseObject.getId() );
-            commentQuery.addCommentType(CaseCommentQuery.CommentType.TIME_ELAPSED);
+            commentQuery.setTimeElapsed(true);
             List<CaseComment> caseComments = caseCommentDAO.getCaseComments( commentQuery );
 
             HistoryQuery historyQuery = new HistoryQuery();

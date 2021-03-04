@@ -1,6 +1,7 @@
 package ru.protei.portal.tools.notifications;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.mail.MailMessageFactory;
 import ru.protei.portal.core.mail.MailSendChannel;
+import ru.protei.portal.core.model.dict.EducationEntryType;
 import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dto.ReportCaseQuery;
 import ru.protei.portal.core.model.dto.ReportDto;
@@ -25,6 +27,7 @@ import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.struct.ReplaceLoginWithUsernameInfo;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
+import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.CaseCommentService;
@@ -42,12 +45,15 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.*;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.partitioningBy;
+import static ru.protei.portal.config.PortalConfigData.*;
 import static ru.protei.portal.core.event.ReservedIpReleaseRemainingEvent.*;
 import static ru.protei.portal.core.model.dict.En_CaseLink.CRM;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
@@ -478,6 +484,31 @@ public class MailNotificationProcessor {
         } catch (Exception e) {
             log.warn( "Failed to sent employee probation (for curator) notification: employeeId={}", employeeId, e );
         }
+    }
+
+    @EventListener
+    public void onEmployeeRegistrationProbationAdditionalRecipientsEvent(EmployeeRegistrationProbationAdditionalRecipientsEvent event) {
+        log.info( "onEmployeeRegistrationProbationEvent(): {}", event );
+
+        String employeeFullName = event.getEmployeeFullName();
+        Long employeeId = event.getEmployeeId();
+        List<String> recipients = event.getRecipients();
+
+        recipients.forEach(entry -> {
+            try {
+                String body = templateService.getEmployeeRegistrationProbationHeadOfDepartmentEmailNotificationBody(
+                        employeeId, employeeFullName,
+                        getEmployeeRegistrationUrl(), entry );
+
+                String subject = templateService.getEmployeeRegistrationProbationHeadOfDepartmentEmailNotificationSubject(
+                        employeeFullName );
+
+                sendMail( entry, subject, body, getFromPortalAddress() );
+
+            } catch (Exception e) {
+                log.warn( "Failed to sent employee probation notification: employeeId={}", employeeId, e );
+            }
+        });
     }
 
     // -----------------------
@@ -1044,7 +1075,20 @@ public class MailNotificationProcessor {
 
         List<String> recipients = getNotifiersAddresses(event.getNotifiers());
 
-        PreparedTemplate bodyTemplate = templateService.getBirthdaysNotificationBody( event.getEmployees(), recipients );
+        LinkedHashMap<Date, TreeSet<EmployeeShortView>> dateToEmployeesMap = CollectionUtils.stream(event.getEmployees())
+                .peek(employee -> employee.setBirthday(selectDateThisYear(employee.getBirthday())))
+                .sorted(Comparator.comparing(EmployeeShortView::getBirthday))
+                .collect(groupingBy(
+                        EmployeeShortView::getBirthday,
+                        LinkedHashMap::new,
+                        Collectors.toCollection(() -> new TreeSet<>(
+                                Comparator.comparing(EmployeeShortView::getDisplayName)
+                        ))));
+
+        List<DayOfWeek> dayOfWeeks = makeDaysOfWeek(dateToEmployeesMap);
+
+        PreparedTemplate bodyTemplate = templateService.getBirthdaysNotificationBody( dateToEmployeesMap, dayOfWeeks, recipients,
+                new EnumLangUtil(lang));
         if (bodyTemplate == null) {
             log.error("Failed to prepare body template for release PersonCaseFilter notification");
             return;
@@ -1115,6 +1159,191 @@ public class MailNotificationProcessor {
         } catch (Exception e) {
             log.error("Failed to make MimeMessage mail={}, e={}", notificationEntry.getAddress(), e);
         }
+    }
+
+    // ----------------------
+    // Education notification
+    // ----------------------
+
+    @EventListener
+    public void onEducationRequestCreate(EducationRequestCreateEvent event) {
+        EducationEntry educationEntry = event.getEducationEntry();
+        Set<Person> headsOfDepartments = event.getHeadsOfDepartments();
+        List<Person> participants = event.getParticipants();
+
+        Set<String> recipients = getRecipientsEmails(headsOfDepartments, participants);
+
+        Set<String> recipientsFromConfig = getRecipientsFromConfigOnCreateRequest(educationEntry.getType());
+        if (isNotEmpty(recipientsFromConfig)) {
+            recipients.addAll(recipientsFromConfig);
+        }
+
+        if (isEmpty(recipients)) {
+            log.warn("Failed to send education request notification: empty recipients set");
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.getEducationRequestNotificationSubject(educationEntry);
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for create education request={}", educationEntry);
+            return;
+        }
+
+        PreparedTemplate bodyTemplate = templateService.getEducationRequestCreateNotificationBody(recipients,
+                educationEntry, new EnumLangUtil(lang));
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for create education request={}", educationEntry);
+            return;
+        }
+
+        recipients.forEach(entry -> {
+            try {
+                String body = bodyTemplate.getText(entry, null, false);
+                String subject = subjectTemplate.getText(entry, null, false);
+
+                sendMail(entry, subject, body, getFromPortalAddress());
+            } catch (Exception e) {
+                log.error("Failed to make MimeMessage mail={}, e={}", entry, e);
+            }
+        });
+    }
+
+    @EventListener
+    public void onEducationRequestApprove(EducationRequestApproveEvent event) {
+        EducationEntry educationEntry = event.getEducationEntry();
+        Set<Person> headsOfDepartments = event.getHeadsOfDepartments();
+        List<Person> approvedParticipants = event.getApprovedParticipants();
+
+        Set<String> recipients = getRecipientsEmails(headsOfDepartments, approvedParticipants);
+
+        Set<String> recipientsFromConfig = getRecipientsFromConfigOnApproveParticipants(educationEntry.getType());
+        if (isNotEmpty(recipientsFromConfig)) {
+            recipients.addAll(recipientsFromConfig);
+        }
+
+        if (isEmpty(recipients)) {
+            log.warn("Failed to send education request notification: empty recipients set");
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.getEducationRequestNotificationSubject(educationEntry);
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for approve education request={}", educationEntry);
+            return;
+        }
+
+        String approved = approvedParticipants.stream()
+                .map(Person::getDisplayShortName)
+                .collect(Collectors.joining(", "));
+
+        PreparedTemplate bodyTemplate = templateService.getEducationRequestApproveNotificationBody(recipients,
+                educationEntry, approved, new EnumLangUtil(lang));
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for approve education request={}", educationEntry);
+            return;
+        }
+
+        recipients.forEach(entry -> {
+            try {
+                String body = bodyTemplate.getText(entry, null, false);
+                String subject = subjectTemplate.getText(entry, null, false);
+
+                sendMail(entry, subject, body, getFromPortalAddress());
+            } catch (Exception e) {
+                log.error("Failed to make MimeMessage mail={}, e={}", entry, e);
+            }
+        });
+    }
+
+    @EventListener
+    public void onEducationRequestDecline(EducationRequestDeclineEvent event) {
+        EducationEntry educationEntry = event.getEducationEntry();
+        Set<Person> headsOfDepartments = event.getHeadsOfDepartments();
+        List<Person> declineParticipants = event.getDeclineParticipants();
+
+        Set<String> recipients = getRecipientsEmails(headsOfDepartments, declineParticipants);
+
+        if (isEmpty(recipients)) {
+            log.warn("Failed to send education request notification: empty recipients set");
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.getEducationRequestNotificationSubject(educationEntry);
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for decline education request={}", educationEntry);
+            return;
+        }
+
+        String declined = declineParticipants.stream()
+                .map(Person::getDisplayShortName)
+                .collect(Collectors.joining(", "));
+
+        PreparedTemplate bodyTemplate = templateService.getEducationRequestDeclineNotificationBody(recipients,
+                educationEntry, declined, new EnumLangUtil(lang));
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for decline education request={}", educationEntry);
+            return;
+        }
+
+        recipients.forEach(entry -> {
+            try {
+                String body = bodyTemplate.getText(entry, null, false);
+                String subject = subjectTemplate.getText(entry, null, false);
+
+                sendMail(entry, subject, body, getFromPortalAddress());
+            } catch (Exception e) {
+                log.error("Failed to make MimeMessage mail={}, e={}", entry, e);
+            }
+        });
+    }
+
+    private Set<String> getRecipientsFromConfigOnCreateRequest(EducationEntryType type) {
+        MailNotificationConfig config = this.config.data().getMailNotificationConfig();
+        String[] recipients;
+        switch (type) {
+            case COURSE: recipients = config.getCrmEducationRequestCourseRecipients(); break;
+            case CONFERENCE: recipients = config.getCrmEducationRequestConferenceRecipients(); break;
+            case LITERATURE: recipients = config.getCrmEducationRequestLiteratureRecipients(); break;
+            default: return new HashSet<>();
+        }
+
+        return Arrays.stream(recipients)
+                .filter(Strings::isNotEmpty)
+                .collect(Collectors.toSet());
+    }
+
+    private Set<String> getRecipientsFromConfigOnApproveParticipants(EducationEntryType type) {
+        MailNotificationConfig config = this.config.data().getMailNotificationConfig();
+        String[] recipients;
+        switch (type) {
+            case COURSE: recipients = config.getCrmEducationRequestApprovedCourseRecipients(); break;
+            case CONFERENCE: recipients = config.getCrmEducationRequestApprovedConferenceRecipients(); break;
+            case LITERATURE: recipients = config.getCrmEducationRequestApprovedLiteratureRecipients(); break;
+            default: return new HashSet<>();
+        }
+
+        return Arrays.stream(recipients)
+                .filter(Strings::isNotEmpty)
+                .collect(Collectors.toSet());
+    }
+
+    private Set<String> getRecipientsEmails(Set<Person> headsOfDepartments, List<Person> participants) {
+        Set<String> recipients = new HashSet<>();
+
+        if (isNotEmpty(headsOfDepartments)) {
+            CollectionUtils.stream(headsOfDepartments)
+                    .map(person -> new PlainContactInfoFacade(person.getContactInfo()).getEmail())
+                    .filter(Strings::isNotEmpty)
+                    .forEach(recipients::add);
+        }
+
+        if (isNotEmpty(participants)) {
+            CollectionUtils.stream(participants)
+                    .map(person -> new PlainContactInfoFacade(person.getContactInfo()).getEmail())
+                    .filter(Strings::isNotEmpty)
+                    .forEach(recipients::add);
+        }
+        return recipients;
     }
 
     // -----
@@ -1383,6 +1612,34 @@ public class MailNotificationProcessor {
 
     private List<NotificationEntry> filterNotificationEntries(Collection<NotificationEntry> entries, Predicate<NotificationEntry> notificationEntryPredicate) {
         return stream(entries).filter(notificationEntryPredicate).collect(Collectors.toList());
+    }
+
+    private Date selectDateThisYear(Date date) {
+        // устанавливаем датам рождения текущие годы, чтобы получить день недели
+        // один из частных случаев - если сейчас уже 2021 год, а день рождения был в конце декабря 2020,
+        // тогда устанавливаем год на 1 меньше, чтобы получить правильный день недели
+        Date now = new Date();
+        if (now.getMonth() == Calendar.DECEMBER && date.getMonth() == Calendar.JANUARY) {
+            date.setYear(now.getYear() + 1);
+        } else if (now.getMonth() == Calendar.JANUARY && date.getMonth() == Calendar.DECEMBER) {
+            date.setYear(now.getYear() - 1);
+        } else {
+            date.setYear(now.getYear());
+        }
+        return date;
+    }
+
+    private List<DayOfWeek> makeDaysOfWeek(LinkedHashMap<Date, TreeSet<EmployeeShortView>> dateToEmployeesMap) {
+        List<DayOfWeek> daysOfWeek = new ArrayList<>();
+
+        Set<Date> dates = dateToEmployeesMap.keySet();
+        for (Date date : dates) {
+            Instant instant = date.toInstant();
+            ZonedDateTime zdt = instant.atZone(ZoneId.systemDefault());
+            LocalDate localDate = zdt.toLocalDate();
+            daysOfWeek.add(localDate.getDayOfWeek());
+        }
+        return daysOfWeek;
     }
 
     private class MimeMessageHeadersFacade {
