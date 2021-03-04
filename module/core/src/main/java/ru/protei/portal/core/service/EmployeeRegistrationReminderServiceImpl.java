@@ -88,6 +88,10 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
 
         for (EmployeeRegistration employeeRegistration : emptyIfNull( probationExpires )) {
             Person headOfDepartment = idToPerson.get( employeeRegistration.getHeadOfDepartmentId() );
+            if (headOfDepartment == null) {
+                continue;
+            }
+
             String employeeFullName = employeeRegistration.getEmployeeFullName();
             Long employeeId = employeeRegistration.getId();
 
@@ -101,7 +105,7 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
                 message = join( message, ", ", curator.getDisplayName() );
             }
 
-            List<String> recipients = collectAdditionalRecipients(employeeRegistration);
+            List<String> recipients = collectAdditionalRecipients(headOfDepartment);
             notifyAdditionalRecipients(recipients, employeeFullName, employeeId);
 
             for (String recipient : recipients) {
@@ -166,8 +170,8 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
                 recipients, employeeFullName, employeeId ) );
     }
 
-    private List<String> collectAdditionalRecipients(EmployeeRegistration employeeRegistration) {
-        Long companyId = employeeRegistration.getPerson().getCompanyId();
+    private List<String> collectAdditionalRecipients(Person headOfDepartment) {
+        Long companyId = headOfDepartment.getCompanyId();
         Company company = companyDAO.get(companyId);
         jdbcManyRelationsHelper.fill(company, Company.Fields.CONTACT_ITEMS);
 
@@ -186,7 +190,7 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
             notifyIds.addAll( emptyIfNull( er.getCuratorsIds() ) );
         }
 
-        List<Person> persons = personDAO.partialGetListByKeys( notifyIds, "id", "displayname");
+        List<Person> persons = personDAO.partialGetListByKeys( notifyIds, "id", "displayname", "company_id");
         jdbcManyRelationsHelper.fill(persons, Person.Fields.CONTACT_ITEMS);
         return toMap( persons, Person::getId, person -> person );
     }
