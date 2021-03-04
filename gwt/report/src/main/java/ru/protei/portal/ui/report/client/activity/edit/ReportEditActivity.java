@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.DateRange;
+import ru.protei.portal.core.model.util.CaseStateUtil;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -489,8 +490,8 @@ public abstract class ReportEditActivity implements Activity,
                 }
                 break;
             case CASE_OBJECTS:
-                if (!checkMandatoryOrParamsCaseQuery(query)) {
-                    fireEvent(new NotifyEvents.Show(lang.reportCaseObjectMandatoryOrParamsError(), NotifyEvents.NotifyType.ERROR));
+                if (!isLimitByMandatoryOrParamsCaseQuery(query)) {
+                    fireEvent(new NotifyEvents.Show(lang.reportCaseObjectLimitMandatoryOrParamsError(), NotifyEvents.NotifyType.ERROR));
                     return false;
                 }
                 boolean createdRangeValid = validateCreatedRange(query.getCreatedRange(), rangeTypeMandatory);
@@ -509,9 +510,35 @@ public abstract class ReportEditActivity implements Activity,
         return true;
     }
     
-    private boolean checkMandatoryOrParamsCaseQuery(CaseQuery query) {
-        return query.getPlanId() != null ||
-                (query.getCreatedRange() != null || query.getModifiedRange() != null);
+    private boolean isLimitByMandatoryOrParamsCaseQuery(CaseQuery query) {
+        return (query.getPlanId() != null) ||
+                (isLimitByRange(query)) ||
+                (!isEmpty(query.getManagerIds())) ||
+                (isLimitByCustomerCompany(query)) ||
+                (isLimitByState(query)) ||
+                (isLimitByImportance(query));
+    }
+
+    private boolean isLimitByRange(CaseQuery query) {
+        return query.getCreatedRange() != null || query.getModifiedRange() != null;
+    }
+
+    private boolean isLimitByCustomerCompany(CaseQuery query) {
+        return !isEmpty(query.getManagerCompanyIds()) &&
+                ((query.getManagerCompanyIds().size() > 1
+                        || query.getManagerCompanyIds().get(0) != CrmConstants.Company.HOME_COMPANY_ID)
+                );
+    }
+
+    private boolean isLimitByState(CaseQuery query) {
+        return !isEmpty(query.getStateIds()) &&
+                (query.getStateIds().size() != CrmConstants.State.REPORT_ALL_CASE_STATE_NUM) &&
+                (query.getStateIds().size() == 1 && !CaseStateUtil.isTerminalState(query.getStateIds().get(0)));
+    }
+
+    private boolean isLimitByImportance(CaseQuery query) {
+        return !isEmpty(query.getImportanceIds()) &&
+                query.getImportanceIds().size() != CrmConstants.ImportanceLevel.REPORT_ALL_IMPORTANCE_NUM;
     }
 
     private boolean validateProjectQuery(ProjectQuery query) {
