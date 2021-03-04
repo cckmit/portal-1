@@ -52,7 +52,6 @@ public class CommentAndHistoryListView
         timeElapsedType.fillOptions();
         comment.setOverlayText(lang.dropFilesHere());
         comment.setDropZonePanel(messageBlock);
-        privacyType.getElement().addClassName("privacy-selector");
         ensureDebugIds();
     }
 

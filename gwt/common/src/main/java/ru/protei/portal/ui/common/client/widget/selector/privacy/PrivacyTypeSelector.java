@@ -19,7 +19,6 @@ public class PrivacyTypeSelector extends ButtonPopupSingleSelector<En_CaseCommen
         setSearchEnabled( false );
         addStyleName("privacy-selector");
         setItemRenderer( value -> value == null ? defaultValue : "<i class='" + makeValue(value) + "'></i>");
-        getPopup().getElement().getStyle().setWidth(50, Style.Unit.PX);
     }
 
     private String makeValue(En_CaseCommentPrivacyType value) {
