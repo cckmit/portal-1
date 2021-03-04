@@ -11,11 +11,13 @@ import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactItemView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.*;
@@ -26,8 +28,8 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
@@ -80,6 +82,11 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         }
 
         if (!validateFieldsAndGetResult()) {
+            fireEvent(new NotifyEvents.Show(lang.errCompanyFieldsFill(), NotifyEvents.NotifyType.ERROR));
+            return;
+        }
+
+        if (!validateEmailsFields()) {
             fireEvent(new NotifyEvents.Show(lang.errCompanyFieldsFill(), NotifyEvents.NotifyType.ERROR));
             return;
         }
@@ -161,6 +168,13 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
                 && !view.companyName().getValue().trim().matches(CrmConstants.Masks.COMPANY_NAME_ILLEGAL_CHARS);
     }
 
+    private boolean validateEmailsFields() {
+        return contactItemViews.stream()
+                .filter(view -> view.type().getValue() == null)
+                .filter(view -> StringUtils.isNotEmpty(view.value().getText()))
+                .allMatch(email -> email.valueValidator().isValid());
+    }
+
     private void resetValidationStatus() {
         view.setCompanyNameStatus(NameStatus.NONE);
     }
@@ -204,10 +218,14 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         view.webSite().setText(infoFacade.getWebSite());
 
         view.probationEmailsContainerVisibility().setVisible(En_CompanyCategory.HOME.equals(company.getCategory()));
-        List<ContactItem> items = company.getContactInfo().getItems();
-        fireEvent(new ContactItemEvents.ShowList(view.phonesContainer(), items, ALLOWED_PHONE_TYPES, En_ContactDataAccess.PUBLIC));
-        fireEvent(new ContactItemEvents.ShowList(view.emailsContainer(), items, ALLOWED_EMAIL_TYPES, En_ContactDataAccess.PUBLIC));
-        fireEvent(new ContactItemEvents.ShowList(view.probationEmailsContainer(), items, ALLOWED_EMAIL_TYPES, En_ContactDataAccess.INTERNAL));
+
+        contactItemViews = new ArrayList<>();
+        fireEvent(new ContactItemEvents.ShowList(view.phonesContainer(), company.getContactInfo().getItems(), ALLOWED_PHONE_TYPES,
+                                                 En_ContactDataAccess.PUBLIC, contactItemViews, CrmConstants.Masks.ALL_CHARACTERS));
+        fireEvent(new ContactItemEvents.ShowList(view.emailsContainer(), company.getContactInfo().getItems(), ALLOWED_EMAIL_TYPES,
+                                                 En_ContactDataAccess.PUBLIC, contactItemViews, CrmConstants.Masks.EMAIL));
+        fireEvent(new ContactItemEvents.ShowList(view.probationEmailsContainer(), company.getContactInfo().getItems(), ALLOWED_EMAIL_TYPES,
+                                                 En_ContactDataAccess.INTERNAL, contactItemViews, CrmConstants.Masks.EMAIL));
 
         view.tableContainer().clear();
         if (company.getId() != null && policyService.hasPrivilegeFor(En_Privilege.CONTACT_VIEW)) {
@@ -272,6 +290,8 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     private Company tempCompany;
 
     private AppEvents.InitDetails initDetails;
+
+    private List<AbstractContactItemView> contactItemViews = new ArrayList<>();
 
     private final List<En_ContactItemType> ALLOWED_PHONE_TYPES;
     private final List<En_ContactItemType> ALLOWED_EMAIL_TYPES;
