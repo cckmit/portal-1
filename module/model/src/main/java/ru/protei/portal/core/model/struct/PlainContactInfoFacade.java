@@ -36,6 +36,10 @@ public class PlainContactInfoFacade extends CustomContactInfoFacade {
         return this.contactInfo.getItems(En_ContactItemType.EMAIL).stream().filter(item -> !item.isEmptyValue() && item.accessType().equals(En_ContactDataAccess.PUBLIC));
     }
 
+    public Stream<ContactItem> notInternalEmailsStream () {
+        return this.contactInfo.getItems(En_ContactItemType.EMAIL).stream().filter(item -> !item.isEmptyValue() && !item.accessType().equals(En_ContactDataAccess.INTERNAL));
+    }
+
     public String allPhonesAsString () {
         return allPhonesAsString(false);
     }
@@ -87,6 +91,13 @@ public class PlainContactInfoFacade extends CustomContactInfoFacade {
     public String publicEmailsAsString () {
         return emailsStream()
                 .filter(ci -> En_ContactDataAccess.PUBLIC.equals(ci.accessType()))
+                .map(ContactItem::value)
+                .collect(Collectors.joining(", "));
+    }
+
+    public String allNotInternalEmailsAsString () {
+        return emailsStream()
+                .filter(ci -> !En_ContactDataAccess.INTERNAL.equals(ci.accessType()))
                 .map(ContactItem::value)
                 .collect(Collectors.joining(", "));
     }

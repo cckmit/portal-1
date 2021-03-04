@@ -63,7 +63,7 @@ public abstract class CompanyPreviewActivity
         view.setPhone( infoFacade.allPhonesAsString() );
 
         view.setSite( infoFacade.getWebSite() );
-        view.setEmail( EmailRender.renderToHtmlWidget(infoFacade.emailsStream()) );
+        view.setEmail( EmailRender.renderToHtmlWidget(infoFacade.notInternalEmailsStream()) );
 
         view.setAddressDejure( infoFacade.getLegalAddress() );
         view.setAddressFact( infoFacade.getFactAddress() );
