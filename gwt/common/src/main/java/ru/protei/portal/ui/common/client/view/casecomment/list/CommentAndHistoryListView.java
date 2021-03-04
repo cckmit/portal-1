@@ -28,9 +28,9 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.events.HasAttach
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveHandler;
 import ru.protei.portal.ui.common.client.widget.imagepastetextarea.event.PasteEvent;
-import ru.protei.portal.ui.common.client.widget.privacytype.PrivacyTypeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.mentioningtextarea.MentioningTextArea;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
+import ru.protei.portal.ui.common.client.widget.selector.privacy.PrivacyTypeSelector;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeTextBox;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
@@ -52,6 +52,7 @@ public class CommentAndHistoryListView
         timeElapsedType.fillOptions();
         comment.setOverlayText(lang.dropFilesHere());
         comment.setDropZonePanel(messageBlock);
+        privacyType.getElement().addClassName("privacy-selector");
         ensureDebugIds();
     }
 
@@ -255,7 +256,7 @@ public class CommentAndHistoryListView
 
     @Override
     public void setExtendedPrivacyTypeAndResetSelector(boolean extendedPrivacyType) {
-        privacyType.fillOptions(extendedPrivacyType ? En_CaseCommentPrivacyType.extendPrivacyType() : En_CaseCommentPrivacyType.simplePrivacyType());
+        privacyType.setModel(extendedPrivacyType);
         privacyType.setValue(En_CaseCommentPrivacyType.PUBLIC);
     }
 
@@ -307,7 +308,7 @@ public class CommentAndHistoryListView
     FlowPanel commentsAndHistoriesContainer;
     @Inject
     @UiField(provided = true)
-    PrivacyTypeButtonSelector privacyType;
+    PrivacyTypeSelector privacyType;
     @UiField
     Button send;
     @Inject
