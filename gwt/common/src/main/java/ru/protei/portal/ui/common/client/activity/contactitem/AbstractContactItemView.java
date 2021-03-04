@@ -22,5 +22,4 @@ public interface AbstractContactItemView extends IsWidget {
     void fillTypeOptions(List<En_ContactItemType> options);
     void focused();
     void setRegexpValidation(String regexp);
-    String getRegexp();
 }

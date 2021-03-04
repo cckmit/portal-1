@@ -40,12 +40,13 @@ public abstract class ContactItemActivity implements Activity, AbstractContactIt
                 .contactItem.modify(item.type().getValue());
     }
 
-    private void addNewItem(ContactItem ci, HasWidgets parent, List<En_ContactItemType> allowedTypes, List<ContactItem> dataList, String regexp){
+    private void addNewItem(ContactItem ci, HasWidgets parent, List<En_ContactItemType> allowedTypes,
+                            List<ContactItem> dataList, String regexp){
         AbstractContactItemView item = createItemView(allowedTypes);
         fillItemView(item, ci, regexp);
 
         parent.add(item.asWidget());
-        viewToModel.put(item, new ContactItemModel(parent, dataList, allowedTypes, ci));
+        viewToModel.put(item, new ContactItemModel(parent, dataList, allowedTypes, ci, regexp));
         contactItemViews.add(item);
     }
 
@@ -87,7 +88,7 @@ public abstract class ContactItemActivity implements Activity, AbstractContactIt
 
         if (prevValue.isEmpty()) {
             model.data.add(model.contactItem);
-            addNewEmptyItem(model.parent, model.allowedTypes, model.data, model.contactItem.accessType(), item.getRegexp());
+            addNewEmptyItem(model.parent, model.allowedTypes, model.data, model.contactItem.accessType(), model.regexp);
         }
         else if (newValue.isEmpty()) {
             AbstractContactItemView emptyItem = findEmptyItem(model.parent);

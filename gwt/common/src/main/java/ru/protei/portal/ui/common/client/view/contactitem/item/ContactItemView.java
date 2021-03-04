@@ -72,12 +72,6 @@ public class ContactItemView extends Composite implements AbstractContactItemVie
     @Override
     public void setRegexpValidation(String regexp) {
         value.setRegexp(regexp);
-        this.regexp = regexp;
-    }
-
-    @Override
-    public String getRegexp() {
-        return regexp;
     }
 
     @UiHandler( "value" )
@@ -114,7 +108,6 @@ public class ContactItemView extends Composite implements AbstractContactItemVie
     Lang lang;
 
     AbstractContactItemActivity activity;
-    private String regexp;
 
     private static ValueCommentItemViewUiBinder ourUiBinder = GWT.create(ValueCommentItemViewUiBinder.class);
     interface ValueCommentItemViewUiBinder extends UiBinder<HTMLPanel, ContactItemView> {}
