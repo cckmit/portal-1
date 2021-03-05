@@ -88,9 +88,6 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
 
         for (EmployeeRegistration employeeRegistration : emptyIfNull( probationExpires )) {
             Person headOfDepartment = idToPerson.get( employeeRegistration.getHeadOfDepartmentId() );
-            if (headOfDepartment == null) {
-                continue;
-            }
 
             String employeeFullName = employeeRegistration.getEmployeeFullName();
             Long employeeId = employeeRegistration.getId();
