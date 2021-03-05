@@ -50,7 +50,7 @@
                             <div class="row">
                                 <div class="col-md-12 p-0 p-b-5">
                                     <div class="pull-right">
-                                        <g:Anchor href="#"
+                                        <g:Anchor href="#" target="_blank"
                                                   ui:field="addingIssueCommentHelpLink"
                                                   text="{lang.addingIssueCommentHelp}"/>
                                     </div>

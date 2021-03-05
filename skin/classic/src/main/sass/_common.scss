@@ -5310,6 +5310,10 @@ table {
   }
 }
 
+.adding_issue_comment_help .help_text div, li {
+  padding-bottom: 5px;
+}
+
 .markdown_table {
   table {
     width: 100%;
@@ -5325,7 +5329,7 @@ table {
   }
 
   table td {
-    padding: 5px 0 10px 0;
+    padding-bottom: 10px;
   }
 
   table tr td:first-child, table tr th:first-child {
@@ -5336,15 +5340,9 @@ table {
     border-right: none;
   }
 
-  table .markdown_table_section {
-    td {
-      padding: 40px 0 0 0;
-      font-weight: bold;
-    }
-
-    td .markdown_table_section_description {
-      font-weight: normal;
-    }
+  .markdown_table_section td {
+    padding: 35px 0 10px 0;
+    font-weight: bold;
   }
 
   table .markdown_table_example {

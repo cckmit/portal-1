@@ -1,14 +1,16 @@
 <h2>Инструкция по добавлению комментария</h2>
 
-1) Получаем письмо. <br>
-2) Нажимаем «Ответить на письмо». При этом: <br>
-<ul>
-    <li> в From - подставляется почта сотрудника;</li>
-    <li> в To - CRM crm@protei.ru;</li>
-    <li> в Subject - Re: Обращение CRM-№ обращения [ФИО сотрудника] Статус Критичность Продукт.</li>
-</ul>
-3) Добавляем комментарий. <br>
-4) Отправляем письмо.
+<div class="help_text">
+    <div>1) Получаем письмо.</div>
+    <div>2) Нажимаем «Ответить на письмо». При этом:</div>
+    <ul>
+        <li>в From - подставляется почта сотрудника;</li>
+        <li>в To - CRM crm@protei.ru;</li>
+        <li>в Subject - Re: Обращение CRM-№ обращения [ФИО сотрудника] Статус Критичность Продукт.</li>
+    </ul>
+    <div>3) Добавляем комментарий.</div>
+    <div>4) Отправляем письмо.</div>
+</div>
 
 
 <hr>
@@ -18,14 +20,9 @@
 
 <h2>Справка по Markdown-разметке PORTAL</h2>
 
-PORTAL следует спецификации, описанной <a href="https://www.markdownguide.org/cheat-sheet/">здесь</a>
+<a href="https://www.markdownguide.org/cheat-sheet/">Ссылка на первоисточник</a>
 
 <br> <br>
-
-<h3>Базовый синтаксис</h3>
-<h6>Все Markdown-приложения поддерживают эти элементы</h6>
-
-<br>
 
 <div class="markdown_table">
     <table>
@@ -72,15 +69,19 @@ PORTAL следует спецификации, описанной <a href="http
 
         <tr>
             <td>**Жирный**</td>
-            <td>Жирный</td>
+            <td><strong>Жирный</strong></td>
         </tr>
         <tr>
             <td>*Курсив*</td>
             <td><i>Курсив</i></td>
         </tr>
         <tr>
+            <td>~~Зачёркнутый текст~~</td>
+            <td style="text-decoration: line-through;">Зачёркнутый текст</td>
+        </tr>
+        <tr>
             <td>> Цитата</td>
-            <td>> Цитата</td>
+            <td><blockquote>&nbsp; Цитата</blockquote></td>
         </tr>
 
 
@@ -89,7 +90,9 @@ PORTAL следует спецификации, описанной <a href="http
         </tr>
 
         <tr>
-            <td>Нумерованный список:</td>
+            <td style="text-decoration: underline">
+                Нумерованный список:
+            </td>
         </tr>
         <tr>
             <td>
@@ -98,86 +101,85 @@ PORTAL следует спецификации, описанной <a href="http
                 3. Третий пункт
             </td>
             <td>
-                1. Первый пункт <br>
-                2. Второй пункт <br>
-                3. Третий пункт
+                <ol>
+                    <li>Первый пункт</li>
+                    <li>Второй пункт</li>
+                    <li>Третий пункт</li>
+                </ol>
             </td>
         </tr>
 
         <tr>
-            <td>Ненумерованный список:</td>
+            <td style="text-decoration: underline">
+                Ненумерованный список:
+            </td>
         </tr>
         <tr>
             <td>- Первый пункт <br>
                 - Второй пункт <br>
                 - Третий пункт
             </td>
+            <td>
+                <ul>
+                    <li>Первый пункт</li>
+                    <li>Второй пункт</li>
+                    <li>Третий пункт</li>
+                </ul>
+            </td>
+        </tr>
+
+        <tr>
+            <td>* Первый пункт <br>
+                * Второй пункт <br>
+                * Третий пункт
+            </td>
+            <td>
+                <ul>
+                    <li>Первый пункт</li>
+                    <li>Второй пункт</li>
+                    <li>Третий пункт</li>
+                </ul>
+            </td>
+        </tr>
+
+        <tr>
+            <td>+ Первый пункт <br>
+                + Второй пункт <br>
+                + Третий пункт
+            </td>
+            <td>
+                <ul>
+                    <li>Первый пункт</li>
+                    <li>Второй пункт</li>
+                    <li>Третий пункт</li>
+                </ul>
+            </td>
+        </tr>
+
+        <tr>
             <td>- Первый пункт <br>
                 - Второй пункт <br>
-                - Третий пункт
+                - Третий пункт <br>
+                &nbsp;&nbsp;&nbsp; - Пункт с отступом <br>
+                &nbsp;&nbsp;&nbsp; - Пункт с отступом <br>
+                - Четвёртый пункт
+            </td>
+            <td>
+                <ul>
+                    <li>Первый пункт</li>
+                    <li>Второй пункт</li>
+                    <li>Третий пункт</li>
+
+                    <ul>
+                        <li>Пункт с отступом</li>
+                        <li>Пункт с отступом</li>
+                    </ul>
+
+                    <li>Четвёртый пункт</li>
+                </ul>
             </td>
         </tr>
 
-
-        <tr class="markdown_table_section">
-            <td>Горизонтальное правило</td>
-        </tr>
-
-        <tr>
-            <td>
-                *** <br>
-                --- <br>
-                ___ <br>
-            </td>
-            <td>
-                *** <br>
-                --- <br>
-                _________________ <br>
-            </td>
-            <td>
-        </tr>
-
-
-        <tr class="markdown_table_section">
-            <td>Прочее</td>
-        </tr>
-
-        <tr>
-            <td>`Код`</td>
-            <td>`Код`</td>
-        </tr>
-
-        <tr>
-            <td>[Ссылка](https://www.example.com)</td>
-            <td><a href="https://www.example.com">Ссылка</a></td>
-        </tr>
-        <tr>
-            <td>![Альтернативный текст](image.jpg)</td>
-            <td><img src="image.jpg" alt="Альтернативный текст"></td>
-        </tr>
-    </table>
-</div>
-
-
-<hr>
-<br> <br>
-
-
-
-<h2>Расширенный синтаксис</h2>
-<h6>Элементы, которые расширяют базовый синтаксис, добавляя дополнительные функции.
-    Не все приложения Markdown поддерживают эти элементы.</h6>
-
-<br>
-
-<div class="markdown_table">
-    <table>
-        <thead>
-        <tr>
-            <th>РАЗМЕТКА</th>
-            <th>ПРЕДПРОСМОТР</th>
-        </tr>
-        </thead>
 
         <tr class="markdown_table_section">
             <td>
@@ -237,86 +239,6 @@ PORTAL следует спецификации, описанной <a href="http
             </td>
         </tr>
 
-
-        <tr class="markdown_table_section">
-            <td>Сноска</td>
-        </tr>
-        <tr>
-            <td>Предложение со сноской. [^1]
-                <br>
-                [^1]: Это сноска.
-            </td>
-            <td>
-                Предложение со сноской. <sup><a href="#rlink">[1]</a></sup>
-                <br>
-                <div id="rlink">[1]: Это сноска.</div>
-            </td>
-        </tr>
-
-
-        <tr class="markdown_table_section">
-            <td id="custom-id">
-                Пользовательские ID
-
-                <div class="markdown_table_section_description">
-                    Вы можете связать заголовки с пользовательскими идентификаторами в файле, <br>
-                    создав стандартную ссылку со знаком числа ( # ), за которым следует пользовательский идентификатор заголовка.
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                ### Ссылка на заголовок с пользовательским ID {#custom-id}
-            </td>
-            <td>
-                <h3>
-                    <a href="#custom-id">Ссылка на заголовок с пользовательским ID</a>
-                </h3>
-            </td>
-        </tr>
-
-
-        <tr class="markdown_table_section">
-            <td>
-                Списки определений
-
-                <div class="markdown_table_section_description">
-                    Некоторые Markdown-процессоры позволяют создавать списки определений терминов и соответствующих им определений.
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                Термин 1 <br>
-                : Определение термина 1 <br>
-
-                <br>
-
-                Термин 2 <br>
-                : Определение термина 2 <br>
-                : Другое определение термина 2
-            </td>
-            <td>
-                <dl>
-                    <dt>Термин 1</dt>
-                    <dd>Определение термина 1</dd>
-                    <dt>Термин 2</dt>
-                    <dd>Определение термина 2</dd>
-                    <dd>Другое определение термина 2</dd>
-                </dl>
-            </td>
-        </tr>
-
-
-        <tr class="markdown_table_section">
-            <td>Зачёркнутый текст</td>
-        </tr>
-        <tr>
-            <td>~~Зачёркнутый текст~~</td>
-            <td><strike>Зачёркнутый текст</strike></td>
-        </tr>
-
-
         <tr class="markdown_table_section">
             <td>Списки задач</td>
         </tr>
@@ -330,6 +252,25 @@ PORTAL следует спецификации, описанной <a href="http
                 <label><input type="checkbox"></label>&nbsp; Задача 2 <br>
                 <label><input type="checkbox"></label>&nbsp; Задача 3
             </td>
+        </tr>
+
+
+        <tr class="markdown_table_section">
+            <td>Прочее</td>
+        </tr>
+
+        <tr>
+            <td>`Код`</td>
+            <td><code>Код</code></td>
+        </tr>
+
+        <tr>
+            <td>[Ссылка](https://www.example.com)</td>
+            <td><a href="https://www.example.com">Ссылка</a></td>
+        </tr>
+        <tr>
+            <td>![Альтернативный текст](image.jpg)</td>
+            <td><img src="image.jpg" alt="Альтернативный текст"></td>
         </tr>
     </table>
 </div>

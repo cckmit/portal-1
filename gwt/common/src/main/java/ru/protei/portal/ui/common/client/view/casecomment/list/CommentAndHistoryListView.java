@@ -240,13 +240,6 @@ public class CommentAndHistoryListView
         }
     }
 
-    @UiHandler("addingIssueCommentHelpLink")
-    public void onAddingCommentHelpLinkClicked( ClickEvent event ) {
-        if (activity != null) {
-            activity.onAddingCommentHelpLinkClicked();
-        }
-    }
-
     @Override
     public HandlerRegistration addRemoveHandler(RemoveHandler handler) {
         return addHandler( handler, RemoveEvent.getType() );
