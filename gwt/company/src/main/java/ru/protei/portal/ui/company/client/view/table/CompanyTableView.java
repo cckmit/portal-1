@@ -165,7 +165,7 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
         if(!phones.isEmpty())
             companyInfo.appendChild(buildContactsElement("fa fa-phone", phones));
 
-        if (!infoFacade.allEmailsAsString().isEmpty())
+        if (!infoFacade.allNotInternalEmailsAsString().isEmpty())
             companyInfo.appendChild(EmailRender.renderToElement("fa fa-envelope", infoFacade.emailsStream()
                     .filter(item -> item.accessType() != En_ContactDataAccess.INTERNAL), "contacts", true));
 
