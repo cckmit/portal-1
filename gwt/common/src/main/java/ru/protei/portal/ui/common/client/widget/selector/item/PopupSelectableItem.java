@@ -3,9 +3,7 @@ package ru.protei.portal.ui.common.client.widget.selector.item;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.SpanElement;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -29,6 +27,16 @@ public class PopupSelectableItem<T>
             selectorItemHandler.onSelectorItemClicked(this);
             setSelected(!checkbox.getValue());
         }, ClickEvent.getType());
+
+        root.addDomHandler(event -> {
+            if (event.getNativeKeyCode() != KeyCodes.KEY_SPACE) {
+                return;
+            }
+
+            event.preventDefault();
+            selectorItemHandler.onSelectorItemClicked(this);
+            setSelected(!checkbox.getValue());
+        }, KeyDownEvent.getType());
     }
 
     @Override

@@ -4,6 +4,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -24,7 +26,7 @@ import ru.protei.portal.ui.common.client.selector.SelectorPopup;
 import ru.protei.portal.ui.common.client.selector.pageable.AbstractPageableSelector;
 import ru.protei.portal.ui.common.client.selector.pageable.SelectorItemRenderer;
 import ru.protei.portal.ui.common.client.selector.pageable.SingleValuePageableSelector;
-import ru.protei.portal.ui.common.client.selector.popup.SelectorPopupWithSearch;
+import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorPopupWithSearch;
 import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
@@ -49,6 +51,15 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
         setEmptySearchText( lang.searchNoMatchesFound() );
 
         root.add(popup);
+
+        formContainer.addDomHandler(event -> {
+            if (event.getNativeKeyCode() != KeyCodes.KEY_DOWN) {
+                return;
+            }
+
+            event.preventDefault();
+            popup.focus();
+        }, KeyDownEvent.getType());
     }
 
     public interface SelectedValueRenderer<T> {
@@ -171,6 +182,8 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
         formContainer.addHandler(event -> {
             if (!getPopup().isVisible()) {
                 formContainer.addStyleName(FOCUS_STYLENAME);
+                formContainer.getElement().setAttribute("tabindex", "0");
+                formContainer.getElement().focus();
                 onShowPopupClicked(formContainer);
             }
         }, ClickEvent.getType());
@@ -233,7 +246,7 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
     private static final String REQUIRED_STYLENAME ="required";
     private static final String DISABLE_STYLENAME ="disabled";
     private static final String FOCUS_STYLENAME ="focused";
-    private SelectorPopupWithSearch popup = new SelectorPopupWithSearch();
+    private ArrowSelectableSelectorPopupWithSearch popup = new ArrowSelectableSelectorPopupWithSearch(KeyCodes.KEY_ENTER);
     interface FormPopupSingleSelectorUiBinder extends UiBinder<HTMLPanel, FormPopupSingleSelector> { }
     private static FormPopupSingleSelectorUiBinder ourUiBinder = GWT.create(FormPopupSingleSelectorUiBinder.class);
 

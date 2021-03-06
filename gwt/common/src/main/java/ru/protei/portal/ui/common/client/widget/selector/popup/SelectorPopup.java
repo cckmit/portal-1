@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.selector.popup;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -12,6 +13,8 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -19,6 +22,7 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
@@ -57,17 +61,17 @@ public class SelectorPopup extends PopperComposite implements HasValueChangeHand
 
     public void show(IsWidget nearWidget) {
         super.show(nearWidget.asWidget().getElement());
-        search.setFocus(searchAutoFocus);
+        Scheduler.get().scheduleDeferred((Command) () -> search.setFocus(searchAutoFocus));
     }
 
     public void setSearchVisible( boolean searchVisible ) {
         if ( searchVisible ) {
             search.getElement().setPropertyString("placeholder", lang.search());
-            search.removeStyleName(HIDE);
+            search.setVisible(true);
             return;
         }
 
-        search.addStyleName(HIDE);
+        search.setVisible(false);
     }
 
     public void setAddButton(boolean addVisible) {
@@ -81,18 +85,6 @@ public class SelectorPopup extends PopperComposite implements HasValueChangeHand
     public void setAddButton(boolean addVisible, String text) {
         addButton.setText(text);
         setAddButton(addVisible);
-    }
-
-    @UiHandler( "search" )
-    public void onSearchKeyUpEvent( KeyUpEvent event ) {
-        if(event.getNativeKeyCode() == KeyCodes.KEY_DOWN) {
-            event.preventDefault();
-            if (childContainer.getWidgetCount() == 0) {
-                return;
-            }
-            SelectorItem item = (SelectorItem) childContainer.getWidget(0);
-            item.setFocus(true);
-        }
     }
 
     @UiHandler( "search" )
@@ -114,8 +106,8 @@ public class SelectorPopup extends PopperComposite implements HasValueChangeHand
         searchValueChangeTimer.schedule( 200 );
     }
 
-    public void setSearchAutoFocus(boolean val){
-        searchAutoFocus = val;
+    public void setSearchAutoFocus(boolean searchAutoFocus) {
+        this.searchAutoFocus = searchAutoFocus;
     }
 
     private void ensureDefaultDebugIds() {

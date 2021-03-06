@@ -6,13 +6,13 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.user.client.Timer;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.selector.SelectorPopup;
-import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
-import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.TextAreaHandler;
+import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorPopupWithSearch;
+import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorHandler;
 import ru.protei.portal.ui.common.client.widget.dndautoresizetextarea.DndAutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.selector.login.UserLoginModel;
 import ru.protei.portal.ui.common.client.widget.selector.login.UserLoginSelector;
 
-public class MentioningTextArea extends DndAutoResizeTextArea implements TextAreaHandler {
+public class MentioningTextArea extends DndAutoResizeTextArea implements ArrowSelectableSelectorHandler {
     @Inject
     public MentioningTextArea(UserLoginModel userLoginModel,
                               UserLoginSelector userLoginSelector) {
@@ -21,7 +21,9 @@ public class MentioningTextArea extends DndAutoResizeTextArea implements TextAre
         this.userLoginSelector = userLoginSelector;
         this.changeTimer = initTimer(userLoginModel, userLoginSelector);
 
-        ArrowSelectableSelectorPopup selectorPopup = new ArrowSelectableSelectorPopup(this);
+        ArrowSelectableSelectorPopupWithSearch selectorPopup = new ArrowSelectableSelectorPopupWithSearch(
+                this, KeyCodes.KEY_ENTER, "user-login-selector"
+        );
 
         initUserLoginSelector(userLoginModel, userLoginSelector, selectorPopup);
 
@@ -51,7 +53,7 @@ public class MentioningTextArea extends DndAutoResizeTextArea implements TextAre
         this.isMentionEnabled = isMentionEnabled;
     }
 
-    private void onKeyDown(KeyDownEvent event, ArrowSelectableSelectorPopup selectorPopup,
+    private void onKeyDown(KeyDownEvent event, ArrowSelectableSelectorPopupWithSearch selectorPopup,
                            Timer changeTimer) {
 
         if (!isMentionEnabled) {

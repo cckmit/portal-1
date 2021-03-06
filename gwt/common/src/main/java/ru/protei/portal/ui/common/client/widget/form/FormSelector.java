@@ -15,6 +15,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.ui.common.client.widget.selector.event.SelectorItemSelectEvent;
 import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
@@ -68,9 +69,9 @@ public class FormSelector<T> extends Selector<T> implements HasValidable, HasEna
     }
 
     @Override
-    public void onClick( ClickEvent event ) {
+    public void onSelectorItemSelect(SelectorItemSelectEvent event) {
         formContainer.removeStyleName(FOCUS_STYLENAME);
-        super.onClick(event);
+        super.onSelectorItemSelect(event);
 
         if(isValidable)
             setValid( isValid() );

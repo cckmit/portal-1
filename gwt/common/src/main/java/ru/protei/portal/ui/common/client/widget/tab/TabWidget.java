@@ -94,7 +94,7 @@ public class TabWidget extends Tab {
     private SelectorItem makeSelectorItem(TabWidgetPane pane) {
         SelectorItem selectorItem = new SelectorItem();
         selectorItem.setName(pane.getTabName());
-        selectorItem.addClickHandler(event -> {
+        selectorItem.addSelectorItemSelectHandler(event -> {
             onTabSelected(pane.getTabName());
             popup.hide();
         });

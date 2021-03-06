@@ -177,6 +177,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
     public void setPopup(SelectorPopup popup) {
         this.popup = popup;
         popup.setPopupHandler(this);
+        setSearchEnabled(true);
     }
 
     public void setFixedStrategy(boolean isFixedStrategy) {

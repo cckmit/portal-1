@@ -69,21 +69,21 @@ public class SelectorPopupWithSearch extends PopperComposite
     public void showNear(Element relative) {
         addPagingHandler();
         show(relative);
-        search.setFocus(isSearchAutoFocus);
+        setFocusOnSearchIfNeeded(isSearchAutoFocus);
     }
 
     @Override
     public void showNear(Element relative, Placement placement) {
         addPagingHandler();
         show(relative, placement);
-        search.setFocus(isSearchAutoFocus);
+        setFocusOnSearchIfNeeded(isSearchAutoFocus);
     }
 
     @Override
     public void showNear(Element relative, Placement placement, int skidding, int distance) {
         addPagingHandler();
         show(relative, placement, skidding, distance);
-        search.setFocus(isSearchAutoFocus);
+        setFocusOnSearchIfNeeded(isSearchAutoFocus);
     }
 
     @Override
@@ -168,6 +168,14 @@ public class SelectorPopupWithSearch extends PopperComposite
         this.isSearchAutoFocus = isSearchAutoFocus;
     }
 
+    protected void setFocusOnSearchIfNeeded(boolean isSearchAutoFocus) {
+        if (!search.isVisible()) {
+            return;
+        }
+
+        search.setFocus(isSearchAutoFocus);
+    }
+
     private void addPagingHandler() {
         if (scrollForPagingHandleRegistration != null) {
             return;
@@ -219,17 +227,19 @@ public class SelectorPopupWithSearch extends PopperComposite
     @UiField
     HTMLPanel dropdown;
 
-    private static final SearchHandler ignoreSearch = searchString -> { /*ignore search*/ };
-    private PopupHandler popupHandler;
-    private SearchHandler searchHandler = ignoreSearch;
-    private boolean isSearchAutoFocus = true;
-    private HandlerRegistration scrollForPagingHandleRegistration;
-    private Timer changeSearchTimer = new Timer() {
+    protected Timer changeSearchTimer = new Timer() {
         @Override
         public void run() {
             searchHandler.onSearch( search.getValue() );
         }
     };
+    private static final SearchHandler ignoreSearch = searchString -> {
+        GWT.log("ignore-search");
+    };
+    private PopupHandler popupHandler;
+    private SearchHandler searchHandler = ignoreSearch;
+    private boolean isSearchAutoFocus = true;
+    private HandlerRegistration scrollForPagingHandleRegistration;
 
     interface SelectorPopupViewUiBinder extends UiBinder<HTMLPanel, SelectorPopupWithSearch> {
     }

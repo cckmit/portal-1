@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.issueassignment.client.widget.popupselector;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -9,11 +10,16 @@ import ru.protei.portal.ui.common.client.selector.AbstractPopupSelector;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 import ru.protei.portal.ui.common.client.selector.pageable.AbstractPageableSelector;
 import ru.protei.portal.ui.common.client.selector.pageable.MultiValuePageableSelector;
+import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorPopupWithSearch;
 import ru.protei.portal.ui.common.client.widget.selector.item.PopupSelectableItem;
 
 import java.util.Set;
 
 public abstract class PopupMultiSelector<T> extends AbstractPopupSelector<T> implements HasValue<Set<T>> {
+
+    public PopupMultiSelector() {
+        setPopup(new ArrowSelectableSelectorPopupWithSearch(KeyCodes.KEY_SPACE));
+    }
 
     @Override
     public Set<T> getValue() {

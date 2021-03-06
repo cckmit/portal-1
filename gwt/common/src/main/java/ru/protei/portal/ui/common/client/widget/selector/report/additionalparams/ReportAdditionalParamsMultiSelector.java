@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_ReportAdditionalParamType;
 import ru.protei.portal.ui.common.client.lang.En_ReportAdditionalParamTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.selector.button.ButtonPopupMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.input.InputPopupMultiSelector;
 
 public class ReportAdditionalParamsMultiSelector extends InputPopupMultiSelector<En_ReportAdditionalParamType> {

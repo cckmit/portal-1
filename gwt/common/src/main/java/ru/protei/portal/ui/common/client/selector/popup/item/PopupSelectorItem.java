@@ -25,6 +25,14 @@ public class PopupSelectorItem<T>
 {
     public PopupSelectorItem() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        root.addDomHandler(event -> {
+            if (event.getNativeKeyCode() != KeyCodes.KEY_ENTER) {
+                return;
+            }
+
+            event.preventDefault();
+            selectorItemHandler.onSelectorItemClicked(this);
+        }, KeyDownEvent.getType());
     }
 
     @Override

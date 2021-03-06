@@ -115,7 +115,7 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
     private SelectorItem makeSelectorItem(WizardWidgetPane pane) {
         SelectorItem selectorItem = new SelectorItem();
         selectorItem.setName(pane.getTabName());
-        selectorItem.addClickHandler(event -> {
+        selectorItem.addSelectorItemSelectHandler(event -> {
             if (!isSelectable) return;
             onTabSelected(pane.getTabName());
             popup.hide();

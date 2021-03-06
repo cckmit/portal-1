@@ -5047,6 +5047,11 @@ table {
       width: inherit;
     }
   }
+
+  &:focus {
+    outline: none;
+    background-color: $bg_light_gray;
+  }
 }
 
 .selector-popup {
@@ -5156,7 +5161,7 @@ table {
   }
 }
 
-.arrow-selectable {
+.user-login-selector {
   li {
     height: 40px;
 
@@ -5305,4 +5310,17 @@ table {
 
 .case-history .case-tag {
   font-size: inherit;
+}
+
+.li-focusable:focus {
+  outline: none;
+  background-color: $bg_light_gray;
+}
+
+div.form-group-default.form-group-default-selectFx:focus {
+  outline: none;
+}
+
+.focus-outline-none:focus {
+  outline: none;
 }
