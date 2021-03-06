@@ -7,7 +7,6 @@ import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.Attachment;
@@ -28,7 +27,6 @@ import ru.protei.portal.ui.common.client.lang.TimeElapsedTypeLang;
 import ru.protei.portal.ui.common.client.service.AttachmentControllerAsync;
 import ru.protei.portal.ui.common.client.service.CaseCommentControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
-import ru.protei.portal.ui.common.client.util.AvatarUtils;
 import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemView;
 import ru.protei.portal.ui.common.client.widget.timefield.WorkTimeFormatter;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -43,7 +41,6 @@ import java.util.stream.Collectors;
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.ui.common.client.util.AvatarUtils.getAvatarUrl;
-import static ru.protei.portal.ui.common.client.util.AvatarUtils.isDefaultAvatar;
 
 public abstract class CaseCommentItemListActivity implements Activity, AbstractCaseCommentItemListActivity {
     @Inject
@@ -286,11 +283,7 @@ public abstract class CaseCommentItemListActivity implements Activity, AbstractC
             avatarUrl = getAvatarUrl(value.getAuthor());
         }
 
-        itemView.setIcon(avatarUrl);
-        itemView.setIsDefaultIcon(
-                En_Gender.UNDEFINED.equals(value.getAuthor().getGender()) || isDefaultAvatar(avatarUrl)
-        );
-
+        itemView.setImage(avatarUrl);
         itemView.setDate(DateFormatter.formatDateTime(value.getCreated()));
         itemView.setOwner(getOwnerName(value));
 

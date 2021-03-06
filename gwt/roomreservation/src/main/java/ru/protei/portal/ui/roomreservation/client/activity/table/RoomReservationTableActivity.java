@@ -83,7 +83,7 @@ public abstract class RoomReservationTableActivity implements AbstractRoomReserv
 
     @Override
     public void onRemoveClicked(RoomReservation value) {
-        fireEvent(new ConfirmDialogEvents.Show(lang.absenceRemoveConfirmMessage(), removeAction(value)));
+        fireEvent(new ConfirmDialogEvents.Show(lang.roomReservationRemoveConfirmMessage(), removeAction(value)));
     }
 
     private void requestRoomReservation( int page ) {

@@ -126,14 +126,14 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
         view.setChildContracts(stream(value.getChildContracts())
                 .map(contract -> sanitizeHtml(typeLang.getName(contract.getContractType()) + " " + contract.getNumber()))
                 .collect(Collectors.joining(", ")));
-        view.setProject(StringUtils.emptyIfNull(value.getProjectName()), LinkUtils.makePreviewLink(Project.class, value.getProjectId()));
+        view.setProject(StringUtils.emptyIfNull(value.getProjectName()) + " (#" + value.getProjectId() + ")", LinkUtils.makePreviewLink(Project.class, value.getProjectId()));
         view.setDeliveryNumber(StringUtils.emptyIfNull(value.getDeliveryNumber()));
 
         fireEvent(new CaseTagEvents.ShowList(view.getTagsContainer(), En_CaseType.CONTRACT, contractId, true, a -> {}));
         fireEvent(new CommentAndHistoryEvents.Show(view.getCommentsContainer(), value.getId(), En_CaseType.CONTRACT, true, value.getCreatorId()));
     }
 
-    private List<Widget> getAllDatesAsWidget(List<ContractDate> dates) {
+    private List<Widget> getAllDatesAsWidget(List<ContractDate>  dates) {
         if ( dates == null ) return null;
         return dates.stream()
                 .map(p -> {

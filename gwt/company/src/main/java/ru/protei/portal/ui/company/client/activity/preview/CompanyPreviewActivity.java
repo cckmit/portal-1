@@ -4,11 +4,13 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.Pair;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -18,6 +20,7 @@ import ru.protei.portal.ui.common.client.events.ContactEvents;
 import ru.protei.portal.ui.common.client.events.SiteFolderPlatformEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
 
 import java.util.ArrayList;
@@ -60,7 +63,7 @@ public abstract class CompanyPreviewActivity
         view.setPhone( infoFacade.allPhonesAsString() );
 
         view.setSite( infoFacade.getWebSite() );
-        view.setEmail( EmailRender.renderToHtmlWidget(infoFacade.emailsStream()) );
+        view.setEmail( EmailRender.renderToHtmlWidget(infoFacade.notInternalEmailsStream()) );
 
         view.setAddressDejure( infoFacade.getLegalAddress() );
         view.setAddressFact( infoFacade.getFactAddress() );
@@ -106,27 +109,43 @@ public abstract class CompanyPreviewActivity
     private void requestAndFillSubscriptionEmails(Long companyId) {
         companyController.getCompanySubscription(companyId, new ShortRequestCallback<List<CompanySubscription>>()
                 .setOnSuccess(subscriptions -> {
-
-                    if (subscriptions.isEmpty()) {
-                        view.setSubscriptionEmails(lang.issueCompanySubscriptionNotDefined());
-                        return;
-                    }
-
-                    Map<Pair<String, String>, List<CompanySubscription>> groupsMap = fillGroupMap(subscriptions);
-
-                    String subscriptionsHTML = null;
-
-                    for (Map.Entry<Pair<String, String>, List<CompanySubscription>> group : groupsMap.entrySet()) {
-                        if (group.getKey().equals(Pair.of(null,null))){
-                            subscriptionsHTML = generateCommonSubscriptionsGroupHTML(group.getValue());
-                        }
-                        else {
-                            subscriptionsHTML += generateSubscriptionsGroupHTML(group);
-                        }
-                    }
-
-                    view.setSubscriptionEmails(subscriptionsHTML);
+                    companyController.getCompany(companyId, new FluentCallback<Company>()
+                            .withSuccess(company -> {
+                                setSubscriptionEmails(subscriptions, company);
+                            }));
                 }));
+    }
+
+    private void setSubscriptionEmails(List<CompanySubscription> subscriptions, Company company) {
+        List<ContactItem> probationContacts = company.getContactInfo().getItems(En_ContactItemType.EMAIL).stream()
+                .filter(ContactItem::isInternalItem)
+                .collect(Collectors.toList());
+
+        if (probationContacts.isEmpty() && subscriptions.isEmpty()) {
+            view.setSubscriptionEmails(lang.issueCompanySubscriptionNotDefined());
+            return;
+        }
+
+        String subscriptionsHTML = "";
+
+        if (!subscriptions.isEmpty()) {
+            Map<Pair<String, String>, List<CompanySubscription>> groupsMap = fillGroupMap(subscriptions);
+
+
+            for (Map.Entry<Pair<String, String>, List<CompanySubscription>> group : groupsMap.entrySet()) {
+                if (group.getKey().equals(Pair.of(null, null))) {
+                    subscriptionsHTML = generateCommonSubscriptionsGroupHTML(group.getValue());
+                } else {
+                    subscriptionsHTML += generateSubscriptionsGroupHTML(group);
+                }
+            }
+        }
+
+        if (!probationContacts.isEmpty()) {
+            subscriptionsHTML += generateProbationEmailsHTML(probationContacts);
+        }
+
+        view.setSubscriptionEmails(subscriptionsHTML);
     }
 
     private String generateSubscriptionsGroupHTML(Map.Entry<Pair<String, String>, List<CompanySubscription>> group) {
@@ -183,6 +202,21 @@ public abstract class CompanyPreviewActivity
 
     private void addCommonSubscriptionGroup(Map<Pair<String, String>, List<CompanySubscription>> groupsMap) {
         groupsMap.put(Pair.of(null, null), new ArrayList<>());
+    }
+
+    private String generateProbationEmailsHTML(List<ContactItem> probationContacts) {
+        StringBuilder probationEmailsHTML = new StringBuilder();
+
+        probationEmailsHTML.append("<br/>")
+                .append("<b>")
+                .append(lang.companyProbationPeriodAddresses())
+                .append("</b> ")
+                .append(": ")
+                .append(probationContacts.stream()
+                        .map(ContactItem::value)
+                        .filter(StringUtils::isNotEmpty)
+                        .collect(Collectors.joining(", ")));
+        return probationEmailsHTML.toString();
     }
 
     @Inject

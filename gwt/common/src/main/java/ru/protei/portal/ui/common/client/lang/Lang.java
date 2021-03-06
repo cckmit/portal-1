@@ -242,6 +242,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String companyWebSite();
 
+    String companyProbationPeriodAddresses();
+
     String errWorkerWithThisPositionAlreadyExist();
 
     String errWorkerWithThisDepartmentAlreadyExist();
@@ -2729,6 +2731,8 @@ public interface Lang extends Messages, ContactItemLang {
     String roomReservationUpdated();
 
     String roomReservationRemoved();
+
+    String roomReservationRemoveConfirmMessage();
 
     String errRoomReservationFinished();
 

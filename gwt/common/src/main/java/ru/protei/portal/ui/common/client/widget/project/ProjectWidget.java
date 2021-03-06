@@ -50,7 +50,7 @@ abstract public class ProjectWidget extends Composite implements HasValue<Projec
     @Override
     public void setValue(ProjectInfo value, boolean fireEvents) {
         this.value = value;
-        name.setValue(value != null ? value.getName() : null, fireEvents);
+        name.setValue(value != null ? value.getName() + " (#" + value.getId() + ")": null, fireEvents);
         if (isValidable) {
             setValid(isValid());
         }

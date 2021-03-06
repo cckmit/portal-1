@@ -11,6 +11,7 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
+import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
@@ -164,8 +165,9 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
         if(!phones.isEmpty())
             companyInfo.appendChild(buildContactsElement("fa fa-phone", phones));
 
-        if (!infoFacade.allEmailsAsString().isEmpty())
-            companyInfo.appendChild(EmailRender.renderToElement("fa fa-envelope", infoFacade.emailsStream(), "contacts", true));
+        if (!infoFacade.allNotInternalEmailsAsString().isEmpty())
+            companyInfo.appendChild(EmailRender.renderToElement("fa fa-envelope", infoFacade.emailsStream()
+                    .filter(item -> item.accessType() != En_ContactDataAccess.INTERNAL), "contacts", true));
 
         if(website != null && !website.isEmpty())
             companyInfo.appendChild(buildContactsElement("fa fa-globe", buildAnchorElement(website)));

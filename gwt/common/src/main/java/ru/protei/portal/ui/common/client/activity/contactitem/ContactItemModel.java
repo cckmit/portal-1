@@ -11,17 +11,17 @@ import java.util.List;
  */
 public class ContactItemModel {
 
-    public ContactItemModel(HasWidgets parent, List<ContactItem> data, List<En_ContactItemType> allowedTypes, ContactItem ci){
+    public ContactItemModel(HasWidgets parent, List<ContactItem> data, List<En_ContactItemType> allowedTypes, ContactItem ci, String regexp){
         this.parent = parent;
         this.data = data;
         this.allowedTypes = allowedTypes;
         this.contactItem = ci;
+        this.regexp = regexp;
     }
 
     public HasWidgets parent;
     public ContactItem contactItem;
     public List<ContactItem> data;
     public List<En_ContactItemType> allowedTypes;
-
-
+    public String regexp;
 }
