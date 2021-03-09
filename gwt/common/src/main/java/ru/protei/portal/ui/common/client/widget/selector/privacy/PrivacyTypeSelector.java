@@ -28,6 +28,12 @@ public class PrivacyTypeSelector extends ButtonPopupSingleSelector<En_CaseCommen
         return item;
     }
 
+    @Override
+    protected void showValue(En_CaseCommentPrivacyType value) {
+        super.showValue(value);
+        setTitle(privacyTypeLang.getName(value));
+    }
+
     @Inject
     En_CaseCommentPrivacyTypeLang privacyTypeLang;
 }
