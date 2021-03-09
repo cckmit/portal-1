@@ -131,6 +131,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
+    public HasEnabled sortFieldEnable() {
+        return sortField;
+    }
+
+    @Override
     public HasValue<Boolean> sortDir() {
         return sortDir;
     }
@@ -475,10 +480,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
     @UiHandler("plan")
     public void onPlanChanged(ValueChangeEvent<PlanOption> event) {
+        onPlanChanged(event.getValue() != null);
         onFilterChanged();
-        if (event.getValue() != null) {
-            onPlanChanged();
-        }
     }
 
     @UiHandler("workTriggers")
@@ -678,9 +681,9 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         }
     }
 
-    private void onPlanChanged() {
+    private void onPlanChanged(boolean isPresent) {
         if (model != null) {
-            model.onPlanPresent();
+            model.onPlanPresent(isPresent);
         }
     }
 

@@ -6,6 +6,8 @@ import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.CaseTypeDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -13,9 +15,11 @@ import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.sqlcondition.Query;
 import ru.protei.portal.core.utils.TypeConverters;
+import ru.protei.winter.core.utils.Pair;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcHelper;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
+import ru.protei.winter.jdbc.JdbcSort;
 
 import java.util.*;
 
@@ -192,21 +196,30 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
 
         parameters.withOffset(query.getOffset());
         parameters.withLimit(query.getLimit());
-        parameters.withSort(TypeConverters.createSort( query ));
+        if (query.getSortField() != En_SortField.by_plan) {
+            parameters.withSort(TypeConverters.createSort( query ));
+        } else {
+            parameters.withSort(new JdbcSort(
+                    new Pair<>("plan_id", JdbcSort.Direction.ASC),
+                    new Pair<>("order_number", query.getSortDir() == En_SortDir.ASC ? JdbcSort.Direction.ASC : JdbcSort.Direction.DESC)
+            ));
+        }
 
-        String joins = "";
-        if (isNeedJoinComments(query)) {
-            joins += LEFT_JOIN_CASE_COMMENT;
-        }
-        if (TRUE.equals(query.isCheckImportanceHistory())) {
-            joins += LEFT_JOIN_HISTORY;
-        }
         if (query.getPlanId() != null) {
-            joins += LEFT_JOIN_PLAN_ORDER;
-        }
-        if (!joins.equals("")) {
-            parameters.withDistinct(true);
-            parameters.withJoins(joins);
+            parameters.withDistinct(false);
+            parameters.withJoins(LEFT_JOIN_PLAN_ORDER);
+        } else {
+            String joins = "";
+            if (isNeedJoinComments(query)) {
+                joins += LEFT_JOIN_CASE_COMMENT;
+            }
+            if (TRUE.equals(query.isCheckImportanceHistory())) {
+                joins += LEFT_JOIN_HISTORY;
+            }
+            if (!joins.equals("")) {
+                parameters.withDistinct(true);
+                parameters.withJoins(joins);
+            }
         }
         return parameters;
     }

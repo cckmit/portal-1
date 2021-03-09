@@ -2848,6 +2848,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errPlanNotFound();
 
+    String planSort();
+
     String commentNewDisabled();
 
     String commentNewDisabledReasonTerminal();

@@ -450,8 +450,15 @@ public abstract class ReportEditActivity implements Activity,
     }
 
     @Override
-    public void onPlanPresent() {
-        fireEvent(new NotifyEvents.Show(lang.reportCaseObjectPlanInfo(), NotifyEvents.NotifyType.INFO));
+    public void onPlanPresent(boolean isPresent) {
+        if (isPresent) {
+            issueFilterWidget.getIssueFilterParams().sortFieldEnable().setEnabled(false);
+            issueFilterWidget.getIssueFilterParams().sortField().setValue(En_SortField.by_plan);
+            fireEvent(new NotifyEvents.Show(lang.reportCaseObjectPlanInfo(), NotifyEvents.NotifyType.INFO));
+        } else {
+            issueFilterWidget.getIssueFilterParams().sortFieldEnable().setEnabled(true);
+            issueFilterWidget.getIssueFilterParams().sortField().setValue(En_SortField.issue_number);
+        }
     }
 
     // валидация виджетов выбора временных периодов в зависимости от типа отчета

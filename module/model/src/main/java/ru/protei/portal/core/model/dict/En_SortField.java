@@ -230,6 +230,11 @@ public enum En_SortField {
      * Просто значение
      */
     value("value"),
+
+    /**
+     * Сортировка по плану
+     */
+    by_plan("by_plan"),
     ;
 
     private String fieldName;

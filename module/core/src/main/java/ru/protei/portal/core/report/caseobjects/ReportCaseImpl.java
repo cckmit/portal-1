@@ -21,9 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.size;
@@ -68,11 +66,7 @@ public class ReportCaseImpl implements ReportCase {
 
             int sheetNumber = writer.createSheet();
 
-            if (isOnlyPlanQuery(query)) {
-                List<CaseObjectReportRequest> comments = processByPlanId(query, report);
-                writer.write( sheetNumber, comments );
-            } else {
-                while (true) {
+            while (true) {
                     if (isCancel.test(report.getId())) {
                         log.info( "writeReport(): Cancel processing of report {}", report.getId() );
                         return true;
@@ -84,8 +78,6 @@ public class ReportCaseImpl implements ReportCase {
                     if (size( comments ) < limit) break;
                     offset += limit;
                 }
-            }
-
             writer.collect( buffer );
             return true;
         } catch (Exception ex) {
@@ -95,18 +87,10 @@ public class ReportCaseImpl implements ReportCase {
         }
     }
 
-    public List<CaseObjectReportRequest> processByPlanId(CaseQuery query, Report report) {
-        return process(() -> planToCaseObjectDAO.getSortedListByPlanId(query.getPlanId()),
-                planToCaseObject -> makeRequest(planToCaseObject.getCaseObject(), query, report));
-    }
-
     public List<CaseObjectReportRequest> processChunk(CaseQuery query, Report report) {
-        return process(() -> caseObjectDAO.getCases(query),
-                caseObject -> makeRequest(caseObject, query, report));
-    }
-
-    public <T> List<CaseObjectReportRequest> process(Supplier<List<T>> get, Function<T, CaseObjectReportRequest> map) {
-        return stream(get.get()).map(map).collect(Collectors.toList());
+        return stream(caseObjectDAO.getCases(query))
+                .map(caseObject -> makeRequest(caseObject, query, report))
+                .collect(Collectors.toList());
     }
 
     public CaseObjectReportRequest makeRequest(CaseObject caseObject, CaseQuery query, Report report) {
@@ -128,9 +112,5 @@ public class ReportCaseImpl implements ReportCase {
         List<CaseLink> caseLinks = report.isWithLinkedIssues() ? caseLinkDAO.getListByQuery(new CaseLinkQuery(caseObject.getId(), report.isRestricted())) : Collections.emptyList();
 
         return new CaseObjectReportRequest( caseObject, caseComments, histories, caseTags, caseLinks, query.getCreatedRange(), query.getModifiedRange() );
-    }
-
-    private boolean isOnlyPlanQuery(CaseQuery query) {
-        return query.getPlanId() != null;
     }
 }

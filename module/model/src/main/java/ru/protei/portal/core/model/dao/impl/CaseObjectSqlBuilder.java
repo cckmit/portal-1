@@ -20,6 +20,7 @@ import static ru.protei.portal.core.model.dao.impl.CaseShortViewDAO_Impl.isSearc
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
 import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
+import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.condition;
 
 public class CaseObjectSqlBuilder {
 
@@ -51,7 +52,13 @@ public class CaseObjectSqlBuilder {
             }
 
             if (isFilterByTagNames(query)) {
-                condition.append(" and case_tag.name in" + makeInArg(query.getCaseTagsNames(), true));
+                if (query.getPlanId() == null) {
+                    condition.append(" and case_tag.name in" + makeInArg(query.getCaseTagsNames(), true));
+                } else {
+                    condition.append(" and case_object.id in (")
+                            .append("select case_id from case_object_tag join case_tag on case_tag.id = case_object_tag.tag_id where case_tag.name in ")
+                            .append(makeInArg(query.getCaseTagsNames(), true)).append(")");
+                }
             }
 
             if ( !query.isAllowViewPrivate() ) {
@@ -133,13 +140,23 @@ public class CaseObjectSqlBuilder {
                 if (query.isCheckImportanceHistory() == null || !query.isCheckImportanceHistory()) {
                     condition.append( " and importance in " ).append( importantces );
                 } else {
-                    condition.append( " and (importance in " ).append( importantces )
-                            .append(" or (history.new_id in " ).append( importantces )
-                                .append(" and history.value_type = ").append(En_HistoryType.CASE_IMPORTANCE.getId())
-                                .append(" and history.action_type in ")
+                    if (query.getPlanId() == null) {
+                        condition.append( " and (importance in " ).append( importantces )
+                                .append(" or (history.new_id in " ).append( importantces )
+                                    .append(" and history.value_type = ").append(En_HistoryType.CASE_IMPORTANCE.getId())
+                                    .append(" and history.action_type in ")
                                     .append(makeInArg(Arrays.asList(En_HistoryAction.ADD.getId(), En_HistoryAction.CHANGE.getId()), false))
-                                .append(")")
-                            .append( ")" );
+                                    .append(")")
+                                .append( ")" );
+                    } else {
+                        condition.append( " and (importance in " ).append( importantces )
+                                .append(" or case_object.id in (").append("select case_object_id from history " +
+                                    "where new_id in ").append(makeInArg(query.getImportanceIds(), false))
+                                    .append(" and value_type = ").append(En_HistoryType.CASE_IMPORTANCE.getId())
+                                    .append(" and action_type in ").append(makeInArg(Arrays.asList(En_HistoryAction.ADD.getId(), En_HistoryAction.CHANGE.getId()), false))
+                                    .append(")")
+                                .append( ")" );;
+                    }
                 }
             }
 
@@ -170,15 +187,22 @@ public class CaseObjectSqlBuilder {
             }
 
             if (query.getSearchString() != null && !query.getSearchString().trim().isEmpty()) {
-                Condition searchCondition = SqlQueryBuilder.condition()
+                Condition searchCondition = condition()
                         .or( "case_name" ).like( query.getSearchString() )
                         .or( "case_name" ).like( query.getAlternativeSearchString() )
                         .or( "case_object.info" ).like( query.getSearchString() )
                         .or( "case_object.info" ).like( query.getAlternativeSearchString() );
                 if (isSearchAtComments( query )) {
-                    searchCondition
-                            .or( "case_comment.comment_text" ).like( query.getSearchString() )
-                            .or( "case_comment.comment_text" ).like( query.getAlternativeSearchString() );
+                    if (query.getPlanId() == null) {
+                        searchCondition
+                                .or( "case_comment.comment_text" ).like( query.getSearchString() )
+                                .or( "case_comment.comment_text" ).like( query.getAlternativeSearchString() );
+                    } else {
+                        searchCondition
+                                .or("case_object.id").in(SqlQueryBuilder.query().select("CASE_ID").from("case_comment")
+                                    .where("case_comment.comment_text").like(query.getSearchString())
+                                        .or("case_comment.comment_text").like(query.getAlternativeSearchString()).asQuery());
+                    }
                 }
                 condition.append( " and (" )
                         .append( searchCondition.getSqlCondition() )

@@ -4,14 +4,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.CaseShortViewDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.sqlcondition.Query;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.utils.TypeConverters;
+import ru.protei.winter.core.utils.Pair;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
+import ru.protei.winter.jdbc.JdbcSort;
 
 import java.util.List;
 
@@ -84,21 +88,30 @@ public class CaseShortViewDAO_Impl extends PortalBaseJdbcDAO<CaseShortView> impl
 
         parameters.withOffset(query.getOffset());
         parameters.withLimit(query.getLimit());
-        parameters.withSort(TypeConverters.createSort( query ));
+        if (query.getSortField() != En_SortField.by_plan) {
+            parameters.withSort(TypeConverters.createSort( query ));
+        } else {
+            parameters.withSort(new JdbcSort(
+                    new Pair<>("plan_id", JdbcSort.Direction.ASC),
+                    new Pair<>("order_number", query.getSortDir() == En_SortDir.ASC ? JdbcSort.Direction.ASC : JdbcSort.Direction.DESC)
+            ));
+        }
 
-        String joins = "";
-        if (isSearchAtComments(query)) {
-            joins += LEFT_JOIN_CASE_COMMENT;
-        }
-        if (isFilterByTagNames(query)) {
-            joins += LEFT_JOIN_CASE_TAG;
-        }
         if (query.getPlanId() != null) {
-            joins += LEFT_JOIN_PLAN_ORDER;
-        }
-        if (!joins.equals("")) {
-            parameters.withDistinct(true);
-            parameters.withJoins(joins);
+            parameters.withDistinct(false);
+            parameters.withJoins(LEFT_JOIN_PLAN_ORDER);
+        } else {
+            String joins = "";
+            if (isSearchAtComments(query)) {
+                joins += LEFT_JOIN_CASE_COMMENT;
+            }
+            if (isFilterByTagNames(query)) {
+                joins += LEFT_JOIN_CASE_TAG;
+            }
+            if (!joins.equals("")) {
+                parameters.withDistinct(true);
+                parameters.withJoins(joins);
+            }
         }
 
         return parameters;
