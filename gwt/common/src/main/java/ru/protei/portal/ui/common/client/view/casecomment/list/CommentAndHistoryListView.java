@@ -21,6 +21,7 @@ import ru.protei.portal.ui.common.client.activity.commenthistory.AbstractComment
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.lang.TimeElapsedTypeLang;
+import ru.protei.portal.ui.common.client.selector.pageable.SelectorModel;
 import ru.protei.portal.ui.common.client.view.selector.ElapsedTimeTypeSelector;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
@@ -36,6 +37,9 @@ import ru.protei.portal.ui.common.client.widget.timefield.TimeTextBox;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.PasteInfo;
 
+import java.util.List;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 import static ru.protei.portal.core.model.util.CrmConstants.Style.HIDE;
 
 /**
@@ -254,8 +258,8 @@ public class CommentAndHistoryListView
     }
 
     @Override
-    public void setExtendedPrivacyTypeAndResetSelector(boolean extendedPrivacyType) {
-        privacyType.setModel(extendedPrivacyType);
+    public void setPrivacyTypeSelector(boolean isExtendedPrivacyType) {
+        privacyType.setModel( makeSelectorModel(isExtendedPrivacyType) );
         privacyType.setValue(En_CaseCommentPrivacyType.PUBLIC);
     }
 
@@ -296,6 +300,19 @@ public class CommentAndHistoryListView
         filesUpload.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CASE_COMMENT.COMMENT_LIST.FILES_UPLOAD);
         timeElapsed.ensureDebugId(DebugIds.CASE_COMMENT.COMMENT_LIST.TIME_ELAPSED);
         timeElapsedType.setEnsureDebugId(DebugIds.CASE_COMMENT.COMMENT_LIST.TIME_ELAPSED_TYPE);
+    }
+
+    private SelectorModel<En_CaseCommentPrivacyType> makeSelectorModel(boolean isExtendedPrivacyType) {
+        return elementIndex -> {
+            List<En_CaseCommentPrivacyType> list;
+            if (isExtendedPrivacyType) {
+                list = En_CaseCommentPrivacyType.extendPrivacyType();
+            } else {
+                list = En_CaseCommentPrivacyType.simplePrivacyType();
+            }
+            if (size(list) <= elementIndex) return null;
+            return list.get(elementIndex);
+        };
     }
 
     @UiField

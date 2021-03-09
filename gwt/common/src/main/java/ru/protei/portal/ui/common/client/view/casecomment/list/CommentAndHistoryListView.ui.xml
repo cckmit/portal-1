@@ -60,7 +60,7 @@
                                     </div>
 
                                     <div class="col-md-1 p-l-0">
-                                        <privacyTypeSelector:PrivacyTypeSelector ui:field="privacyType" styleName="btn-group btn-group-justified"/>
+                                        <privacyTypeSelector:PrivacyTypeSelector ui:field="privacyType" styleName="btn-group btn-group-justified privacy-selector"/>
                                     </div>
                                 </div>
 
