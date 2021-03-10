@@ -26,7 +26,7 @@ import ru.protei.portal.ui.common.client.selector.SelectorPopup;
 import ru.protei.portal.ui.common.client.selector.pageable.AbstractPageableSelector;
 import ru.protei.portal.ui.common.client.selector.pageable.SelectorItemRenderer;
 import ru.protei.portal.ui.common.client.selector.pageable.SingleValuePageableSelector;
-import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorPopupWithSearch;
+import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
 import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
@@ -53,12 +53,15 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
         root.add(popup);
 
         formContainer.addDomHandler(event -> {
-            if (event.getNativeKeyCode() != KeyCodes.KEY_DOWN) {
-                return;
+            if (event.getNativeKeyCode() == KeyCodes.KEY_DOWN) {
+                event.preventDefault();
+                popup.focus();
             }
 
-            event.preventDefault();
-            popup.focus();
+            if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE) {
+                event.preventDefault();
+                popup.hide();
+            }
         }, KeyDownEvent.getType());
     }
 
@@ -246,7 +249,7 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
     private static final String REQUIRED_STYLENAME ="required";
     private static final String DISABLE_STYLENAME ="disabled";
     private static final String FOCUS_STYLENAME ="focused";
-    private ArrowSelectableSelectorPopupWithSearch popup = new ArrowSelectableSelectorPopupWithSearch(KeyCodes.KEY_ENTER);
+    private ArrowSelectableSelectorPopup popup = new ArrowSelectableSelectorPopup(KeyCodes.KEY_ENTER);
     interface FormPopupSingleSelectorUiBinder extends UiBinder<HTMLPanel, FormPopupSingleSelector> { }
     private static FormPopupSingleSelectorUiBinder ourUiBinder = GWT.create(FormPopupSingleSelectorUiBinder.class);
 

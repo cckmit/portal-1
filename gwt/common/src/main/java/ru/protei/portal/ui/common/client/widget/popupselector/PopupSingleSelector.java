@@ -13,13 +13,13 @@ import ru.protei.portal.ui.common.client.selector.AbstractPopupSelector;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 import ru.protei.portal.ui.common.client.selector.pageable.AbstractPageableSelector;
 import ru.protei.portal.ui.common.client.selector.pageable.SingleValuePageableSelector;
-import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorPopupWithSearch;
+import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
 import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.composite.popper.PopperComposite;
 
 public class PopupSingleSelector<T> extends AbstractPopupSelector<T> implements HasValue<T> {
     public PopupSingleSelector() {
-        setPopup(new ArrowSelectableSelectorPopupWithSearch(KeyCodes.KEY_ENTER));
+        setPopup(new ArrowSelectableSelectorPopup(KeyCodes.KEY_ENTER));
     }
 
     @Override

@@ -9,31 +9,22 @@ import ru.protei.portal.ui.common.client.selector.popup.SelectorPopupWithSearch;
 
 import static java.util.Optional.of;
 
-public class ArrowSelectableSelectorPopupWithSearch extends SelectorPopupWithSearch {
-    public ArrowSelectableSelectorPopupWithSearch(int valueChangeKeyCode) {
-        childContainer.addDomHandler(event -> {
-            if (search.isVisible()) {
-                search.setFocus(true);
-                currentWidget = null;
-            } else {
-                focusChildContainer();
-            }
-        }, MouseOverEvent.getType());
+public class ArrowSelectableSelectorPopup extends SelectorPopupWithSearch {
+    public ArrowSelectableSelectorPopup() {
+        this(KeyCodes.KEY_ENTER);
+    }
 
-        DefaultArrowSelectableSelectorHandler defaultArrowSelectableSelectorHandler
-                = new DefaultArrowSelectableSelectorHandler();
-
-        childContainer.addDomHandler(event -> onKeyDown(event, childContainer, defaultArrowSelectableSelectorHandler, valueChangeKeyCode), KeyDownEvent.getType());
+    public ArrowSelectableSelectorPopup(int valueChangeKeyCode) {
+        initChildContainerHandlers(new DefaultArrowSelectableSelectorHandler(), valueChangeKeyCode);
 
         search.addDomHandler(event -> {
-            if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE) {
-                event.stopPropagation();
+            if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE || event.getNativeKeyCode() == KeyCodes.KEY_UP) {
+                event.preventDefault();
                 hide();
                 return;
             }
 
-            if (event.getNativeKeyCode() == KeyCodes.KEY_DOWN ||
-                    event.getNativeKeyCode() == KeyCodes.KEY_TAB) {
+            if (event.getNativeKeyCode() == KeyCodes.KEY_DOWN || event.getNativeKeyCode() == KeyCodes.KEY_TAB) {
                 event.preventDefault();
                 focus();
                 return;
@@ -43,10 +34,9 @@ public class ArrowSelectableSelectorPopupWithSearch extends SelectorPopupWithSea
         addCloseHandler(event -> currentWidget = null);
     }
 
-    public ArrowSelectableSelectorPopupWithSearch(ArrowSelectableSelectorHandler arrowSelectableSelectorHandler, int valueChangeKeyCode, String styleName) {
+    public ArrowSelectableSelectorPopup(ArrowSelectableSelectorHandler arrowSelectableSelectorHandler, int valueChangeKeyCode, String styleName) {
         childContainer.addStyleName(styleName);
-        childContainer.addDomHandler(event -> arrowSelectableSelectorHandler.focusTextArea(), MouseOverEvent.getType());
-        childContainer.addDomHandler(event -> onKeyDown(event, childContainer, arrowSelectableSelectorHandler, valueChangeKeyCode), KeyDownEvent.getType());
+        initChildContainerHandlers(arrowSelectableSelectorHandler, valueChangeKeyCode);
     }
 
     public void focus() {
@@ -62,6 +52,11 @@ public class ArrowSelectableSelectorPopupWithSearch extends SelectorPopupWithSea
         super.setFocusOnSearchIfNeeded(isSearchAutoFocus);
     }
 
+    private void initChildContainerHandlers(ArrowSelectableSelectorHandler arrowSelectableSelectorHandler, int valueChangeKeyCode) {
+        childContainer.addDomHandler(event -> arrowSelectableSelectorHandler.onBlurSelector(), MouseOverEvent.getType());
+        childContainer.addDomHandler(event -> onKeyDown(event, childContainer, arrowSelectableSelectorHandler, valueChangeKeyCode), KeyDownEvent.getType());
+    }
+
     private void onKeyDown(KeyDownEvent event, ComplexPanel childContainer, ArrowSelectableSelectorHandler arrowSelectableSelectorHandler, int valueChangeKeyCode) {
         if (KeyCodes.KEY_ESCAPE == event.getNativeKeyCode()) {
             event.preventDefault();
@@ -73,7 +68,7 @@ public class ArrowSelectableSelectorPopupWithSearch extends SelectorPopupWithSea
             event.preventDefault();
 
             if (focusWidget(getPrevious(childContainer, currentWidget)) == null) {
-                arrowSelectableSelectorHandler.focusTextArea();
+                arrowSelectableSelectorHandler.onBlurSelector();
             }
 
             return;
@@ -87,7 +82,8 @@ public class ArrowSelectableSelectorPopupWithSearch extends SelectorPopupWithSea
         }
 
         if (valueChangeKeyCode != event.getNativeKeyCode()) {
-            arrowSelectableSelectorHandler.focusTextArea();
+            blurCurrentWidget();
+            arrowSelectableSelectorHandler.onBlurSelector();
             arrowSelectableSelectorHandler.onValueChanged();
         }
     }
@@ -144,6 +140,15 @@ public class ArrowSelectableSelectorPopupWithSearch extends SelectorPopupWithSea
         childContainer.getElement().focus();
     }
 
+    private void blurCurrentWidget() {
+        if (currentWidget == null) {
+            return;
+        }
+
+        currentWidget.getElement().blur();
+        currentWidget = null;
+    }
+
     private Widget currentWidget;
 
     private class DefaultArrowSelectableSelectorHandler implements ArrowSelectableSelectorHandler {
@@ -157,11 +162,12 @@ public class ArrowSelectableSelectorPopupWithSearch extends SelectorPopupWithSea
         }
 
         @Override
-        public void focusTextArea() {
+        public void onBlurSelector() {
             if (search.isVisible()) {
                 search.setFocus(true);
+                currentWidget = null;
             } else {
-                focus();
+                focusChildContainer();
             }
         }
 

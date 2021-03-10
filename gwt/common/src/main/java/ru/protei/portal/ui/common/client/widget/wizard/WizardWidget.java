@@ -8,8 +8,8 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
+import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
-import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 import ru.protei.portal.ui.common.client.widget.wizard.navitem.WizardWidgetNavItem;
 import ru.protei.portal.ui.common.client.widget.wizard.pane.WizardWidgetPane;
 
@@ -22,7 +22,7 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
 
     public WizardWidget() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        popup.setSearchVisible(false);
+        popup.setSearchHandler(null);
         popup.setAddButton(false);
     }
 
@@ -261,7 +261,7 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
     public void navDropdownTabsSelectedClick(ClickEvent event) {
         event.preventDefault();
         if (!isSelectable) return;
-        popup.show(navDropdownTabsSelected);
+        popup.showNear(navDropdownTabsSelected.getElement());
     }
 
     private Optional<WizardWidgetPane> findFirstPane() {
@@ -300,7 +300,7 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
     private Map<String, WizardWidgetPane> tabNameToPane = new HashMap<>();
     private Set<String> tabNames = new LinkedHashSet<>();
     private String currentTabName = null;
-    private SelectorPopup popup = new SelectorPopup();
+    private ArrowSelectableSelectorPopup popup = new ArrowSelectableSelectorPopup();
     private boolean isSelectable = true;
     private HandlerRegistration btnPreviousHandlerRegistration;
     private HandlerRegistration btnNextHandlerRegistration;

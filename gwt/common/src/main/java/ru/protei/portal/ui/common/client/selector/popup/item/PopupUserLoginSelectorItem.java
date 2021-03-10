@@ -22,10 +22,12 @@ public class PopupUserLoginSelectorItem<T> extends Composite implements Selector
         });
 
         root.addDomHandler(event -> {
-            if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-                event.preventDefault();
-                selectorItemHandler.onSelectorItemClicked(this);
+            if (event.getNativeKeyCode() != KeyCodes.KEY_ENTER) {
+                return;
             }
+
+            event.preventDefault();
+            selectorItemHandler.onSelectorItemClicked(this);
         }, KeyUpEvent.getType());
     }
 

@@ -2,8 +2,8 @@ package ru.protei.portal.ui.common.client.selector.popup.arrowselectable;
 
 public interface ArrowSelectableSelectorHandler {
     default void escapeFromSelector() {
-        focusTextArea();
+        onBlurSelector();
     }
-    void focusTextArea();
+    void onBlurSelector();
     void onValueChanged();
 }

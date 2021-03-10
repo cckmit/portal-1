@@ -91,7 +91,9 @@ public class SelectorPopupWithSearch extends PopperComposite
         super.hide();
 
         removePagingHandler();
-        popupHandler.onPopupHide(this);
+        if (popupHandler != null) {
+            popupHandler.onPopupHide(this);
+        }
     }
 
     @Override
@@ -233,9 +235,7 @@ public class SelectorPopupWithSearch extends PopperComposite
             searchHandler.onSearch( search.getValue() );
         }
     };
-    private static final SearchHandler ignoreSearch = searchString -> {
-        GWT.log("ignore-search");
-    };
+    private static final SearchHandler ignoreSearch = searchString -> { /*ignore search*/ };
     private PopupHandler popupHandler;
     private SearchHandler searchHandler = ignoreSearch;
     private boolean isSearchAutoFocus = true;

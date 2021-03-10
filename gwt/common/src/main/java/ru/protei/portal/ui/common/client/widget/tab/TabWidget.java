@@ -5,20 +5,23 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.*;
-import ru.protei.portal.ui.common.client.widget.tab.base.Tab;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Widget;
+import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
-import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
+import ru.protei.portal.ui.common.client.widget.tab.base.Tab;
 import ru.protei.portal.ui.common.client.widget.tab.navitem.TabWidgetNavItem;
 import ru.protei.portal.ui.common.client.widget.tab.pane.TabWidgetPane;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TabWidget extends Tab {
 
     public TabWidget() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        popup.setSearchVisible(false);
+        popup.setSearchHandler(null);
         popup.setAddButton(false);
     }
 
@@ -79,7 +82,7 @@ public class TabWidget extends Tab {
     @UiHandler("navDropdownTabsSelected")
     public void navDropdownTabsSelectedClick(ClickEvent event) {
         event.preventDefault();
-        popup.show(navDropdownTabsSelected);
+        popup.showNear(navDropdownTabsSelected.getElement());
     }
 
     private TabWidgetNavItem makeNavItem(TabWidgetPane pane) {
@@ -112,7 +115,7 @@ public class TabWidget extends Tab {
     @UiField
     HTMLPanel tabContent;
 
-    private SelectorPopup popup = new SelectorPopup();
+    private ArrowSelectableSelectorPopup popup = new ArrowSelectableSelectorPopup();
     private Map<String, SelectorItem> tabNameToNavSelectorItem = new HashMap<>();
 
     interface TabWidgetUiBinder extends UiBinder<HTMLPanel, TabWidget> {}

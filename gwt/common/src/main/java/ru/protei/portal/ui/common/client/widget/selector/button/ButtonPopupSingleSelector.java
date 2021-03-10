@@ -19,7 +19,7 @@ import ru.protei.portal.ui.common.client.selector.AbstractPopupSelector;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 import ru.protei.portal.ui.common.client.selector.pageable.AbstractPageableSelector;
 import ru.protei.portal.ui.common.client.selector.pageable.SingleValuePageableSelector;
-import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorPopupWithSearch;
+import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
 import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
@@ -35,8 +35,8 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
     public ButtonPopupSingleSelector() {
         initWidget( bsUiBinder.createAndBindUi( this ) );
 
-        ArrowSelectableSelectorPopupWithSearch popup
-                = new ArrowSelectableSelectorPopupWithSearch(KeyCodes.KEY_ENTER);
+        ArrowSelectableSelectorPopup popup
+                = new ArrowSelectableSelectorPopup(KeyCodes.KEY_ENTER);
         setPopup(popup);
 
         setEmptyListText( lang.emptySelectorList() );
@@ -46,12 +46,15 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
         root.add(getPopup());
 
         button.addDomHandler(event -> {
-            if (event.getNativeKeyCode() != KeyCodes.KEY_DOWN) {
-                return;
+            if (event.getNativeKeyCode() == KeyCodes.KEY_DOWN) {
+                event.preventDefault();
+                popup.focus();
             }
 
-            event.preventDefault();
-            popup.focus();
+            if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE) {
+                event.preventDefault();
+                popup.hide();
+            }
         }, KeyDownEvent.getType());
     }
 

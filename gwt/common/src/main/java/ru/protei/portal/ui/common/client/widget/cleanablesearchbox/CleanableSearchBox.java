@@ -63,14 +63,14 @@ public class CleanableSearchBox extends Composite implements HasValue<String>, H
         textBox.setEnabled(enabled);
     }
 
-//    @UiHandler("textBox")
-//    public void onTextBoxKeyUp(KeyUpEvent event) {
-//        if (KeyUpEvent.isArrow(event.getNativeKeyCode())) {
-//            return;
-//        }
-//        toggleSearchAction();
-//        ValueChangeEvent.fire(CleanableSearchBox.this, getValue());
-//    }
+    @UiHandler("textBox")
+    public void onTextBoxKeyUp(KeyUpEvent event) {
+        if (KeyUpEvent.isArrow(event.getNativeKeyCode())) {
+            return;
+        }
+        toggleSearchAction();
+        ValueChangeEvent.fire(CleanableSearchBox.this, getValue());
+    }
 
     @UiHandler("textBoxAction")
     public void onTextBoxActionClick(ClickEvent event) {

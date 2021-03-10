@@ -137,7 +137,6 @@ public class ButtonSelector<T> extends Selector<T> implements HasValidable, HasE
 
     private boolean isValidable;
     private static final String ERROR_STYLENAME ="has-error";
-    private static final String REQUIRED_STYLE_NAME ="required";
     private static final String INACTIVE_STYLE_NAME="inactive";
     private boolean isEnabled;
 

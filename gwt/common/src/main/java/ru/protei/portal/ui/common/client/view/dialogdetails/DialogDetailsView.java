@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.view.dialogdetails;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -166,7 +167,7 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
         if ( event.getTypeInt() == Event.ONKEYDOWN ) {
             boolean isEscapeClicked = event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ESCAPE;
             boolean isEnterClicked = event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER;
-            if (isEscapeClicked) {
+            if (isEscapeClicked && !isAnyPopupOpened(bodyContainer.getElement())) {
                 fireCancelClicked();
             } else if (isEnterClicked && isSaveOnEnterClick) {
                 fireSaveClicked();
@@ -207,6 +208,22 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
             activity.onAdditionalClicked();
         }
     }
+
+    private native boolean isAnyPopupOpened(Element bodyContainerElement) /*-{
+        var selectors = bodyContainerElement.querySelectorAll('.selector-popup');
+
+        if (selectors.length === 0) {
+            return false;
+        }
+
+        for (var i = 0; i < selectors.length; i++) {
+            if (!selectors[i].style.display || selectors[i].style.display !== "none") {
+                return true;
+            }
+        }
+
+        return false;
+    }-*/;
 
     @UiField
     HTMLPanel bodyContainer;

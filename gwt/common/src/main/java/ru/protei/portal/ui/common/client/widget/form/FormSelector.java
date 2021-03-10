@@ -13,10 +13,10 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.inject.Inject;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.selector.popup.SelectorPopupWithSearch;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.event.SelectorItemSelectEvent;
-import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
@@ -149,10 +149,10 @@ public class FormSelector<T> extends Selector<T> implements HasValidable, HasEna
         popup.addCloseHandler(event -> formContainer.removeStyleName(FOCUS_STYLENAME));
     }
 
-    private native void addOnAnchorClickListener(Element element, SelectorPopup popup) /*-{
+    private native void addOnAnchorClickListener(Element element, SelectorPopupWithSearch popup) /*-{
         element.addEventListener("click", function (event) {
             event.stopPropagation();
-            popup.@ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup::hide()();
+            popup.@ru.protei.portal.ui.common.client.selector.popup.SelectorPopupWithSearch::hide()();
         })
     }-*/;
 

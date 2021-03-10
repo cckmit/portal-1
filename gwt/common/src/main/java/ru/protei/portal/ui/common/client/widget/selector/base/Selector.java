@@ -12,9 +12,9 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
 import ru.protei.portal.ui.common.client.widget.selector.event.*;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
-import ru.protei.portal.ui.common.client.widget.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
 
 import javax.annotation.PostConstruct;
 import java.util.Collection;
@@ -264,7 +264,7 @@ public abstract class Selector<T>
     }
 
     protected void showPopup(IsWidget relative) {
-        popup.show(relative);
+        popup.showNear(relative.asWidget().getElement());
         showPopup();
     }
 
@@ -276,14 +276,11 @@ public abstract class Selector<T>
     }
 
     private void showPopup() {
-        popup.setSearchVisible(searchEnabled);
+        popup.setSearchHandler(searchEnabled ? this::onSearchChanged : null);
+
         popup.setSearchAutoFocus(searchAutoFocusEnabled);
         popup.setAddButton(addButtonVisible, addButtonText);
 
-        if (popupValueChangeHandlerRegistration != null) {
-            popupValueChangeHandlerRegistration.removeHandler();
-        }
-        popupValueChangeHandlerRegistration = popup.addValueChangeHandler(this);
         popup.clearSearchField();
         onSearchChanged("");
 
@@ -333,7 +330,6 @@ public abstract class Selector<T>
     private T selectedOption = null;
     private SelectorItem nullItemView;
     protected DisplayOptionCreator<T> displayOptionCreator;
-    private HandlerRegistration popupValueChangeHandlerRegistration;
 
     private SelectorModel<T> selectorModel;
 

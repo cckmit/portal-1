@@ -6,7 +6,7 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.user.client.Timer;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.selector.SelectorPopup;
-import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorPopupWithSearch;
+import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
 import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorHandler;
 import ru.protei.portal.ui.common.client.widget.dndautoresizetextarea.DndAutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.selector.login.UserLoginModel;
@@ -21,7 +21,7 @@ public class MentioningTextArea extends DndAutoResizeTextArea implements ArrowSe
         this.userLoginSelector = userLoginSelector;
         this.changeTimer = initTimer(userLoginModel, userLoginSelector);
 
-        ArrowSelectableSelectorPopupWithSearch selectorPopup = new ArrowSelectableSelectorPopupWithSearch(
+        ArrowSelectableSelectorPopup selectorPopup = new ArrowSelectableSelectorPopup(
                 this, KeyCodes.KEY_ENTER, "user-login-selector"
         );
 
@@ -32,7 +32,7 @@ public class MentioningTextArea extends DndAutoResizeTextArea implements ArrowSe
     }
 
     @Override
-    public void focusTextArea() {
+    public void onBlurSelector() {
         getElement().focus();
     }
 
@@ -53,7 +53,7 @@ public class MentioningTextArea extends DndAutoResizeTextArea implements ArrowSe
         this.isMentionEnabled = isMentionEnabled;
     }
 
-    private void onKeyDown(KeyDownEvent event, ArrowSelectableSelectorPopupWithSearch selectorPopup,
+    private void onKeyDown(KeyDownEvent event, ArrowSelectableSelectorPopup selectorPopup,
                            Timer changeTimer) {
 
         if (!isMentionEnabled) {

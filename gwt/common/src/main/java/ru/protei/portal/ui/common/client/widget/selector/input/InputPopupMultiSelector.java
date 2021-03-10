@@ -20,7 +20,7 @@ import ru.protei.portal.ui.common.client.selector.AbstractPopupSelector;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 import ru.protei.portal.ui.common.client.selector.pageable.AbstractPageableSelector;
 import ru.protei.portal.ui.common.client.selector.pageable.MultiValuePageableSelector;
-import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorPopupWithSearch;
+import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
 import ru.protei.portal.ui.common.client.widget.selector.item.PopupSelectableItem;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectItemView;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -42,8 +42,8 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
     public InputPopupMultiSelector() {
         initWidget( bsUiBinder.createAndBindUi( this ) );
 
-        ArrowSelectableSelectorPopupWithSearch popup =
-                new ArrowSelectableSelectorPopupWithSearch(KeyCodes.KEY_SPACE);
+        ArrowSelectableSelectorPopup popup =
+                new ArrowSelectableSelectorPopup(KeyCodes.KEY_SPACE);
         setPopup(popup);
 
         setSearchAutoFocus( true );
@@ -53,12 +53,15 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         root.add(popup);
 
         caretButton.addDomHandler(event -> {
-            if (event.getNativeKeyCode() != KeyCodes.KEY_DOWN) {
-                return;
+            if (event.getNativeKeyCode() == KeyCodes.KEY_DOWN) {
+                event.preventDefault();
+                popup.focus();
             }
 
-            event.preventDefault();
-            popup.focus();
+            if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE) {
+                event.preventDefault();
+                popup.hide();
+            }
         }, KeyDownEvent.getType());
     }
 
