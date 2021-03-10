@@ -7,15 +7,14 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.DevUnitChildRefDAO;
 import ru.protei.portal.core.model.dao.DevUnitDAO;
+import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.ProductSubscriptionDAO;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
+import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.DevUnit;
-import ru.protei.portal.core.model.ent.DevUnitChildRef;
-import ru.protei.portal.core.model.ent.DevUnitSubscription;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
@@ -51,6 +50,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     ProductSubscriptionDAO productSubscriptionDAO;
+
+    @Autowired
+    PersonDAO personDAO;
 
     @Override
     public Result<SearchResult<DevUnit>> getProducts( AuthToken token, ProductQuery query) {
@@ -138,6 +140,10 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public Result<Long> updateProductFromInfo( AuthToken authToken, DevUnitInfo product ) {
+        if (product.getCommonManagerId() != null && !isCommonManagerIsNotPeople(product.getCommonManagerId())) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         return getProduct( authToken, product.getId() ).map( devUnit ->
                 updateFields( devUnit, product ) ).flatMap( devUnit ->
                 updateProduct( authToken, devUnit ) ).map(
@@ -201,7 +207,15 @@ public class ProductServiceImpl implements ProductService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
+        if (product.getCommonManagerId() != null && !isCommonManagerIsNotPeople(product.getCommonManagerId())) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         return createProduct(token, DevUnitInfo.fromInfo(product)).map(DevUnitInfo::toInfo);
+    }
+
+    private boolean isCommonManagerIsNotPeople(Long commonManagerId) {
+        return personDAO.checkExistsByCondition("person.id = ? and sex = ?", commonManagerId, En_Gender.UNDEFINED.getCode());
     }
 
     @Override
@@ -397,6 +411,7 @@ public class ProductServiceImpl implements ProductService {
         if (product.getDescription() != null) devUnit.setInfo( product.getDescription() );
         if (product.getWikiLink() != null) devUnit.setWikiLink( product.getWikiLink() );
         if (product.getName() != null) devUnit.setName( product.getName() );
+        if (product.getCommonManagerId() != null) devUnit.setCommonManagerId( product.getCommonManagerId() );
         return devUnit;
     }
 
