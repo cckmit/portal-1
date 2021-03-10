@@ -234,7 +234,7 @@ public enum En_SortField {
     /**
      * Сортировка по плану
      */
-    by_plan("by_plan"),
+    by_plan("order_number"),
     ;
 
     private String fieldName;

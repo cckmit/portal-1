@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.common.client.activity.issuefilter;
 
-import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -34,8 +33,6 @@ public interface AbstractIssueFilterParamView extends IsWidget {
     HasValue<String> searchPattern();
 
     HasValue<En_SortField> sortField();
-
-    HasEnabled sortFieldEnable();
 
     HasValue<Boolean> sortDir();
 
@@ -98,4 +95,10 @@ public interface AbstractIssueFilterParamView extends IsWidget {
     HasVisibility initiatorsVisibility();
 
     HasVisibility managersVisibility();
+
+    int statesSize();
+
+    int importanceSize();
+
+    void resetRanges();
 }

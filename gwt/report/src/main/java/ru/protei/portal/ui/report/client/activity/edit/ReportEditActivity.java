@@ -27,7 +27,10 @@ import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectF
 import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectFilterView;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.*;
+import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
+import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
+import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
+import ru.protei.portal.ui.common.client.service.ReportControllerAsync;
 import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidget;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CustomerCompanyModel;
@@ -452,12 +455,13 @@ public abstract class ReportEditActivity implements Activity,
     @Override
     public void onPlanPresent(boolean isPresent) {
         if (isPresent) {
-            issueFilterWidget.getIssueFilterParams().sortFieldEnable().setEnabled(false);
             issueFilterWidget.getIssueFilterParams().sortField().setValue(En_SortField.by_plan);
+            issueFilterWidget.getIssueFilterParams().sortDir().setValue(true);
+            issueFilterWidget.getIssueFilterParams().resetRanges();
             fireEvent(new NotifyEvents.Show(lang.reportCaseObjectPlanInfo(), NotifyEvents.NotifyType.INFO));
         } else {
-            issueFilterWidget.getIssueFilterParams().sortFieldEnable().setEnabled(true);
             issueFilterWidget.getIssueFilterParams().sortField().setValue(En_SortField.issue_number);
+            issueFilterWidget.getIssueFilterParams().sortDir().setValue(false);
         }
     }
 
@@ -497,7 +501,7 @@ public abstract class ReportEditActivity implements Activity,
                 }
                 break;
             case CASE_OBJECTS:
-                if (!isLimitByMandatoryOrParamsCaseQuery(query)) {
+                if (!isLimitCaseQuery(query)) {
                     fireEvent(new NotifyEvents.Show(lang.reportCaseObjectLimitMandatoryOrParamsError(), NotifyEvents.NotifyType.ERROR));
                     return false;
                 }
@@ -517,35 +521,38 @@ public abstract class ReportEditActivity implements Activity,
         return true;
     }
     
-    private boolean isLimitByMandatoryOrParamsCaseQuery(CaseQuery query) {
-        return (query.getPlanId() != null) ||
-                (isLimitByRange(query)) ||
-                (!isEmpty(query.getManagerIds())) ||
+    private boolean isLimitCaseQuery(CaseQuery query) {
+        return query.isUnLimitParamsPresent() ||
                 (isLimitByCustomerCompany(query)) ||
                 (isLimitByState(query)) ||
                 (isLimitByImportance(query));
     }
 
-    private boolean isLimitByRange(CaseQuery query) {
-        return query.getCreatedRange() != null || query.getModifiedRange() != null;
-    }
-
     private boolean isLimitByCustomerCompany(CaseQuery query) {
-        return !isEmpty(query.getManagerCompanyIds()) &&
-                ((query.getManagerCompanyIds().size() > 1
-                        || query.getManagerCompanyIds().get(0) != CrmConstants.Company.HOME_COMPANY_ID)
-                );
+        if (isEmpty(query.getManagerCompanyIds())) {
+            return false;
+        }
+        boolean selectNotOnlyHomeCompany = query.getManagerCompanyIds().size() > 1
+                || query.getManagerCompanyIds().get(0) != CrmConstants.Company.HOME_COMPANY_ID;
+
+        return selectNotOnlyHomeCompany;
     }
 
     private boolean isLimitByState(CaseQuery query) {
-        return !isEmpty(query.getStateIds()) &&
-                (query.getStateIds().size() != CrmConstants.State.REPORT_ALL_CASE_STATE_NUM) &&
-                (query.getStateIds().size() == 1 && !CaseStateUtil.isTerminalState(query.getStateIds().get(0)));
+        if (isEmpty(query.getStateIds())) {
+            return false;
+        }
+        boolean selectNotAllState = query.getStateIds().size() < issueFilterWidget.getIssueFilterParams().statesSize();
+        boolean selectNotOnlyTerminate = !query.getStateIds().stream().allMatch(CaseStateUtil::isTerminalState);
+        return selectNotAllState && selectNotOnlyTerminate;
     }
 
     private boolean isLimitByImportance(CaseQuery query) {
-        return !isEmpty(query.getImportanceIds()) &&
-                query.getImportanceIds().size() != CrmConstants.ImportanceLevel.REPORT_ALL_IMPORTANCE_NUM;
+        if (isEmpty(query.getImportanceIds())) {
+            return false;
+        }
+        boolean selectNotAllImportance = query.getImportanceIds().size() < issueFilterWidget.getIssueFilterParams().importanceSize();
+        return selectNotAllImportance;
     }
 
     private boolean validateProjectQuery(ProjectQuery query) {

@@ -196,12 +196,13 @@ public abstract class IssueTableFilterActivity
     @Override
     public void onPlanPresent(boolean isPresent) {
         if (isPresent) {
-            filterView.getIssueFilterParams().sortFieldEnable().setEnabled(false);
             filterView.getIssueFilterParams().sortField().setValue(En_SortField.by_plan);
+            filterView.getIssueFilterParams().sortDir().setValue(true);
+            filterView.getIssueFilterParams().resetRanges();
             fireEvent(new NotifyEvents.Show(lang.reportCaseObjectPlanInfo(), NotifyEvents.NotifyType.INFO));
         } else {
-            filterView.getIssueFilterParams().sortFieldEnable().setEnabled(true);
             filterView.getIssueFilterParams().sortField().setValue(En_SortField.issue_number);
+            filterView.getIssueFilterParams().sortDir().setValue(false);
         }
     }
 

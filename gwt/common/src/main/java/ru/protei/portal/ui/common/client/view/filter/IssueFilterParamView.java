@@ -131,11 +131,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public HasEnabled sortFieldEnable() {
-        return sortField;
-    }
-
-    @Override
     public HasValue<Boolean> sortDir() {
         return sortDir;
     }
@@ -385,6 +380,22 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @Override
     public void setStateFilter(Selector.SelectorFilter<CaseState> caseStateFilter) {
         state.setFilter(caseStateFilter);
+    }
+
+    @Override
+    public int statesSize() {
+        return state.getValues().size();
+    }
+
+    @Override
+    public int importanceSize() {
+        return importance.getValues().size();
+    }
+
+    @Override
+    public void resetRanges() {
+        dateCreatedRange.setValue(null);
+        dateModifiedRange.setValue(null);
     }
 
     private void fillDateRanges (TypedSelectorRangePicker rangePicker) {

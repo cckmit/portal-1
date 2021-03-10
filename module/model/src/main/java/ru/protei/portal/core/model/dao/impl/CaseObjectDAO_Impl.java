@@ -6,8 +6,6 @@ import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.CaseTypeDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -15,15 +13,14 @@ import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.sqlcondition.Query;
 import ru.protei.portal.core.utils.TypeConverters;
-import ru.protei.winter.core.utils.Pair;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcHelper;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
-import ru.protei.winter.jdbc.JdbcSort;
 
 import java.util.*;
 
 import static java.lang.Boolean.TRUE;
+import static ru.protei.portal.core.model.dao.impl.CaseShortViewDAO_Impl.isFilterByTagNames;
 import static ru.protei.portal.core.model.dict.En_CaseType.CRM_SUPPORT;
 import static ru.protei.portal.core.model.ent.CaseObject.Columns.EXT_APP;
 import static ru.protei.portal.core.model.helper.StringUtils.length;
@@ -36,6 +33,8 @@ import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.quer
 public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements CaseObjectDAO {
 
     public static final String LEFT_JOIN_CASE_COMMENT = " LEFT JOIN case_comment ON case_object.id = case_comment.CASE_ID";
+    public static final String LEFT_JOIN_CASE_TAG =
+            " LEFT JOIN case_object_tag on case_object.ID = case_object_tag.case_id join case_tag on case_tag.id = case_object_tag.tag_id";
     public static final String LEFT_JOIN_HISTORY = " LEFT JOIN history ON case_object.id = history.case_object_id";
     public static final String LEFT_JOIN_PLAN_ORDER =
             " LEFT JOIN plan_to_case_object plan ON case_object.id = plan.case_object_id";
@@ -196,14 +195,7 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
 
         parameters.withOffset(query.getOffset());
         parameters.withLimit(query.getLimit());
-        if (query.getSortField() != En_SortField.by_plan) {
-            parameters.withSort(TypeConverters.createSort( query ));
-        } else {
-            parameters.withSort(new JdbcSort(
-                    new Pair<>("plan_id", JdbcSort.Direction.ASC),
-                    new Pair<>("order_number", query.getSortDir() == En_SortDir.ASC ? JdbcSort.Direction.ASC : JdbcSort.Direction.DESC)
-            ));
-        }
+        parameters.withSort(TypeConverters.createSort( query ));
 
         if (query.getPlanId() != null) {
             parameters.withDistinct(false);
@@ -212,6 +204,9 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
             String joins = "";
             if (isNeedJoinComments(query)) {
                 joins += LEFT_JOIN_CASE_COMMENT;
+            }
+            if (isFilterByTagNames(query)) {
+                joins += LEFT_JOIN_CASE_TAG;
             }
             if (TRUE.equals(query.isCheckImportanceHistory())) {
                 joins += LEFT_JOIN_HISTORY;

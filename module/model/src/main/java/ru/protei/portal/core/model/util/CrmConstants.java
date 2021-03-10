@@ -135,8 +135,6 @@ public class CrmConstants {
         Integer COSMETIC = 4;
 
         List<Integer> commonImportanceLevelIds = Arrays.asList(CRITICAL,IMPORTANT,BASIC,COSMETIC);
-
-        int REPORT_ALL_IMPORTANCE_NUM = 8;
     }
 
     public interface Company {
@@ -207,8 +205,6 @@ public class CrmConstants {
         long UNKNOWN = 22;
         long PRESALE = 24;
         long FINISHED = 32;
-
-        int REPORT_ALL_CASE_STATE_NUM = 17;
     }
 
     public interface Department {
