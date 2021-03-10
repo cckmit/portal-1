@@ -17,5 +17,5 @@ public interface AppService extends RemoteService {
 
     String getExternalLinksHtml();
 
-    String getHtmlFileAsString(String fileName);
+    String getAddingIssueCommentHelpText(String localeName);
 }

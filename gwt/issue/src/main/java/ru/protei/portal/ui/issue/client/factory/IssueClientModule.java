@@ -18,7 +18,6 @@ import ru.protei.portal.ui.issue.client.activity.edit.IssueEditActivity;
 import ru.protei.portal.ui.issue.client.activity.issuecommenthelp.AbstractAddingIssueCommentHelpActivity;
 import ru.protei.portal.ui.issue.client.activity.issuecommenthelp.AbstractAddingIssueCommentHelpView;
 import ru.protei.portal.ui.issue.client.activity.issuecommenthelp.AddingIssueCommentHelpActivity;
-import ru.protei.portal.ui.issue.client.activity.item.AbstractAddingIssueCommentHelpItemView;
 import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaActivity;
 import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaView;
 import ru.protei.portal.ui.issue.client.activity.meta.IssueMetaActivity;
@@ -29,8 +28,7 @@ import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 import ru.protei.portal.ui.issue.client.view.create.IssueCreateView;
 import ru.protei.portal.ui.issue.client.view.create.subtask.SubtaskCreateView;
 import ru.protei.portal.ui.issue.client.view.edit.IssueEditView;
-import ru.protei.portal.ui.issue.client.view.issuecommenthelp.AddingIssueCommentHelpView;
-import ru.protei.portal.ui.issue.client.view.item.AddingIssueCommentHelpItemView;
+import ru.protei.portal.ui.issue.client.view.addingissuecommenthelp.AddingIssueCommentHelpView;
 import ru.protei.portal.ui.issue.client.view.meta.IssueMetaView;
 import ru.protei.portal.ui.issue.client.view.table.IssueTableView;
 
@@ -63,7 +61,6 @@ public class IssueClientModule extends AbstractGinModule {
 
         bind(AbstractAddingIssueCommentHelpView.class).to(AddingIssueCommentHelpView.class).in(Singleton.class);
         bind(AbstractAddingIssueCommentHelpActivity.class).to(AddingIssueCommentHelpActivity.class).asEagerSingleton();
-        bind(AbstractAddingIssueCommentHelpItemView.class).to(AddingIssueCommentHelpItemView.class);
     }
 }
 

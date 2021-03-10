@@ -207,6 +207,10 @@ public class MailNotificationProcessor {
         return baseUrl + config.data().getMailNotificationConfig().getCrmProjectUrl();
     }
 
+    public String getAddingIssueCommentHelpLink(String crmUrl, String locale) {
+        return crmUrl + "portal.html?locale=" + locale + "#addingIssueCommentHelp";
+    }
+
     private boolean isPrivateNotification(AssembledCaseEvent event) {
         return event.getCaseObject().isPrivateCase()
                 || isPrivateSend(event)
@@ -250,13 +254,6 @@ public class MailNotificationProcessor {
 
         List<CaseComment> mailComments = stream(comments).filter(comment -> comment.getText() != null).collect(Collectors.toList());
 
-        PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(event, mailComments, attachments, linksToTasks,
-                isProteiRecipients, crmCaseUrl, recipients, new EnumLangUtil(lang));
-        if (bodyTemplate == null) {
-            log.error("Failed to prepare body template for caseId={}", caseObject.getId());
-            return;
-        }
-
         PreparedTemplate subjectTemplate = templateService.getCrmEmailNotificationSubject(event, event.getInitiator());
         if (subjectTemplate == null) {
             log.error("Failed to prepare subject template for caseId={}", caseObject.getId());
@@ -264,6 +261,14 @@ public class MailNotificationProcessor {
         }
 
         notifiers.forEach((entry) -> {
+            PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(event, mailComments, attachments, linksToTasks,
+                    isProteiRecipients, crmCaseUrl, recipients, new EnumLangUtil(lang),
+                    getAddingIssueCommentHelpLink(getCrmUrl(isProteiRecipients), entry.getLangCode()));
+
+            if (bodyTemplate == null) {
+                log.error("Failed to prepare body template for caseId={}", caseObject.getId());
+                return;
+            }
 
             MimeMessageHeadersFacade headers =  makeHeaders( caseObject.getCaseNumber(), lastMessageId, entry.hashCode() );
 

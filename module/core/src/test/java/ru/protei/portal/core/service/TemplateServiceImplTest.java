@@ -168,8 +168,7 @@ public class TemplateServiceImplTest {
 
         PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(
                 assembledCaseEvent, comments, new ArrayList<>(), null, false, "url",
-                Collections.EMPTY_LIST, new EnumLangUtil(lang)
-        );
+                Collections.EMPTY_LIST, new EnumLangUtil(lang), null);
 
         assertNotNull( bodyTemplate );
 
@@ -217,8 +216,7 @@ public class TemplateServiceImplTest {
 
         PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(
                 assembledCaseEvent, comments, new ArrayList<>(), linkData, false, "url",
-                Collections.EMPTY_LIST, new EnumLangUtil(lang)
-        );
+                Collections.EMPTY_LIST, new EnumLangUtil(lang), null);
 
         assertNotNull( bodyTemplate );
 
@@ -293,8 +291,7 @@ public class TemplateServiceImplTest {
 
         PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(
                 assembled, assembled.getAllComments(), new ArrayList<>(), null, false, "url",
-                Collections.EMPTY_LIST, new EnumLangUtil(lang)
-        );
+                Collections.EMPTY_LIST, new EnumLangUtil(lang), null);
         assertNotNull( bodyTemplate );
         NotificationEntry entry = createNewNotificationEntry();
 

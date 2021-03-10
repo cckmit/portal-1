@@ -112,14 +112,9 @@ public abstract class CommentAndHistoryListActivity
         view.setUserIcon(AvatarUtils.getAvatarUrl(profile));
         view.setNewCommentHidden(!isModifyEnabled);
         view.setNewCommentDisabled(!isNewCommentEnabled);
-        if (textMarkup == En_TextMarkup.MARKDOWN) {
-            view.setMarkupLabel(lang.textMarkdownSupport(), configStorage.getConfigData().markupHelpLinkMarkdown);
-        } else {
-            view.setMarkupLabel(lang.textJiraWikiMarkupSupport(), configStorage.getConfigData().markupHelpLinkJiraMarkup);
-        }
-
-        view.setAddingIssueCommentHelpLink("#addingIssueCommentHelp");
-
+        view.setAddingIssueCommentHelpLink(textMarkup == En_TextMarkup.MARKDOWN ? lang.textMarkdownSupport()
+                                                                                : lang.textJiraWikiMarkupSupport(),
+                                                                                  "#addingIssueCommentHelp");
         view.setExtendedPrivacyTypeAndResetSelector(event.extendedPrivacyType);
         view.getPrivacyVisibility().setVisible(isPrivateVisible);
 

@@ -1112,8 +1112,9 @@ public class MainConfiguration {
         return new ExternalLinksHtml();
     }
 
-    @Bean HtmlToStringConverter getHtmlToStringConverter() {
-        return new HtmlToStringConverter();
+    @Bean
+    AddingIssueCommentHelpTextConverter getHtmlToStringConverter() {
+        return new AddingIssueCommentHelpTextConverter();
     }
 
     @Bean

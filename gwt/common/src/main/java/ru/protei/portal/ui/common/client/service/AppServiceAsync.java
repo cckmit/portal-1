@@ -15,5 +15,5 @@ public interface AppServiceAsync {
 
     void getExternalLinksHtml(AsyncCallback<String> sessionCallback);
 
-    void getHtmlFileAsString(String fileName, AsyncCallback<String> async);
+    void getAddingIssueCommentHelpText(String localeName, AsyncCallback<String> async);
 }

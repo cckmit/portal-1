@@ -27,7 +27,6 @@ import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.utils.EnumLangUtil;
 import ru.protei.portal.core.utils.LinkData;
 import ru.protei.portal.core.utils.WorkTimeFormatter;
-import ru.protei.portal.tools.notifications.MailNotificationProcessor;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -61,9 +60,6 @@ public class TemplateServiceImpl implements TemplateService {
     @Autowired
     CaseStateDAO caseStateDAO;
 
-    @Autowired
-    MailNotificationProcessor mailNotificationProcessor;
-
     @PostConstruct
     public void onInit() {
         try {
@@ -80,8 +76,8 @@ public class TemplateServiceImpl implements TemplateService {
     @Override
     public PreparedTemplate getCrmEmailNotificationBody(
             AssembledCaseEvent event, List<CaseComment> caseComments, Collection<Attachment> attachments,
-            DiffCollectionResult<LinkData> mergeLinks, boolean isProteiRecipients, String urlTemplate, Collection<String> recipients, EnumLangUtil enumLangUtil
-    ) {
+            DiffCollectionResult<LinkData> mergeLinks, boolean isProteiRecipients, String urlTemplate, Collection<String> recipients,
+            EnumLangUtil enumLangUtil, String addingIssueCommentHelp) {
         CaseObject newState = event.getCaseObject();
         En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(newState);
 
@@ -124,7 +120,7 @@ public class TemplateServiceImpl implements TemplateService {
 
         templateModel.put( "caseComments",  getCommentsModelKeys(caseComments, event.getAddedCaseComments(), event.getChangedCaseComments(), event.getRemovedCaseComments(), textMarkup));
 
-        templateModel.put("addingIssueCommentHelp", mailNotificationProcessor.getCrmUrl(isProteiRecipients) + "#addingIssueCommentHelp");
+        templateModel.put("addingIssueCommentHelp", addingIssueCommentHelp);
 
         PreparedTemplate template = new PreparedTemplate( "notification/email/crm.body.%s.ftl" );
         template.setModel( templateModel );

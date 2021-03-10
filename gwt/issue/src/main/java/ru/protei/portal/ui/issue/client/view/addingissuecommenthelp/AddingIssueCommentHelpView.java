@@ -1,11 +1,11 @@
-package ru.protei.portal.ui.issue.client.view.issuecommenthelp;
+package ru.protei.portal.ui.issue.client.view.addingissuecommenthelp;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasWidgets;
 import ru.protei.portal.ui.issue.client.activity.issuecommenthelp.AbstractAddingIssueCommentHelpActivity;
 import ru.protei.portal.ui.issue.client.activity.issuecommenthelp.AbstractAddingIssueCommentHelpView;
 
@@ -20,12 +20,12 @@ public class AddingIssueCommentHelpView extends Composite implements AbstractAdd
     }
 
     @Override
-    public HasWidgets textContainer() {
-        return textContainer;
+    public DivElement helpTextContainer() {
+        return helpTextContainer;
     }
 
     @UiField
-    HTMLPanel textContainer;
+    DivElement helpTextContainer;
 
     private AbstractAddingIssueCommentHelpActivity activity;
 

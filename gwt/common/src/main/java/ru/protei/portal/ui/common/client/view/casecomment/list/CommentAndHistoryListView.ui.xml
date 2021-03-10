@@ -40,22 +40,12 @@
                                             </div>
                                         </fileuploader:AttachmentUploader>
                                         <div class="text-muted pull-right">
-                                            <small ui:field="markupLabel"/>
-                                            <g:Anchor styleName="far fa-question-circle" ui:field="markupLink" target="_blank"/>
+                                            <small ui:field="addingIssueCommentHelpLabel"/>
+                                            <g:Anchor styleName="far fa-question-circle" ui:field="addingIssueCommentHelpLink" target="_blank"/>
                                         </div>
 
                                     </div>
                                 </div>
-
-                            <div class="row">
-                                <div class="col-md-12 p-0 p-b-5">
-                                    <div class="pull-right">
-                                        <g:Anchor href="#" target="_blank"
-                                                  ui:field="addingIssueCommentHelpLink"
-                                                  text="{lang.addingIssueCommentHelp}"/>
-                                    </div>
-                                </div>
-                            </div>
 
                                 <div class="row">
                                     <div class="col-md-3 p-l-0">
