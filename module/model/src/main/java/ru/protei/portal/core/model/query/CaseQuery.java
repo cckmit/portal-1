@@ -429,7 +429,14 @@ public class CaseQuery extends BaseQuery {
                 CollectionUtils.isNotEmpty(workTriggersIds);
     }
 
-    public boolean isUnLimitParamsPresent() {
+    public boolean isAnySelectedParamPresent() {
+        return isUnLimitSelectedParamsPresent() ||
+                CollectionUtils.isNotEmpty(stateIds) ||
+                CollectionUtils.isNotEmpty(importanceIds) ||
+                CollectionUtils.isNotEmpty(managerCompanyIds);
+    }
+
+    public boolean isUnLimitSelectedParamsPresent() {
         return super.isParamsPresent() ||
                 CollectionUtils.isNotEmpty(caseNumbers) ||
                 CollectionUtils.isNotEmpty(caseIds) ||

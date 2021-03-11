@@ -501,8 +501,12 @@ public abstract class ReportEditActivity implements Activity,
                 }
                 break;
             case CASE_OBJECTS:
+                if (!query.isAnySelectedParamPresent()) {
+                    fireEvent(new NotifyEvents.Show(lang.reportCaseObjectIsAnySelectedParamNotPresentError(), NotifyEvents.NotifyType.ERROR));
+                    return false;
+                }
                 if (!isLimitCaseQuery(query)) {
-                    fireEvent(new NotifyEvents.Show(lang.reportCaseObjectLimitMandatoryOrParamsError(), NotifyEvents.NotifyType.ERROR));
+                    fireEvent(new NotifyEvents.Show(lang.reportCaseObjectAdditionalLimitError(), NotifyEvents.NotifyType.ERROR));
                     return false;
                 }
                 boolean createdRangeValid = validateCreatedRange(query.getCreatedRange(), rangeTypeMandatory);
@@ -522,10 +526,10 @@ public abstract class ReportEditActivity implements Activity,
     }
     
     private boolean isLimitCaseQuery(CaseQuery query) {
-        return query.isUnLimitParamsPresent() ||
-                (isLimitByCustomerCompany(query)) ||
-                (isLimitByState(query)) ||
-                (isLimitByImportance(query));
+        return query.isUnLimitSelectedParamsPresent() ||
+                isLimitByCustomerCompany(query) ||
+                isLimitByState(query) ||
+                isLimitByImportance(query);
     }
 
     private boolean isLimitByCustomerCompany(CaseQuery query) {
