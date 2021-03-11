@@ -429,6 +429,36 @@ public class CaseQuery extends BaseQuery {
                 CollectionUtils.isNotEmpty(workTriggersIds);
     }
 
+    public boolean isAnySelectedParamPresent() {
+        return isUnLimitSelectedParamsPresent() ||
+                CollectionUtils.isNotEmpty(stateIds) ||
+                CollectionUtils.isNotEmpty(importanceIds) ||
+                CollectionUtils.isNotEmpty(managerCompanyIds);
+    }
+
+    public boolean isUnLimitSelectedParamsPresent() {
+        return super.isParamsPresent() ||
+                CollectionUtils.isNotEmpty(caseNumbers) ||
+                CollectionUtils.isNotEmpty(caseIds) ||
+                CollectionUtils.isNotEmpty(companyIds) ||
+                CollectionUtils.isNotEmpty(initiatorIds) ||
+                CollectionUtils.isNotEmpty(productIds) ||
+                CollectionUtils.isNotEmpty(locationIds) ||
+                CollectionUtils.isNotEmpty(districtIds) ||
+                CollectionUtils.isNotEmpty(managerIds) ||
+                CollectionUtils.isNotEmpty(creatorIds) ||
+                createdRange != null ||
+                modifiedRange != null ||
+                StringUtils.isNotBlank(searchCasenoString) ||
+                CollectionUtils.isNotEmpty(commentAuthorIds) ||
+                CollectionUtils.isNotEmpty(caseTagsIds) ||
+                CollectionUtils.isNotEmpty(caseTagsNames) ||
+                planId != null ||
+                personIdToIsFavorite != null ||
+                CollectionUtils.isNotEmpty(timeElapsedTypeIds) ||
+                CollectionUtils.isNotEmpty(workTriggersIds);
+    }
+
     @Override
     public String toString() {
         return "CaseQuery{" +

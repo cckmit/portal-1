@@ -2222,7 +2222,11 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reportNotValidPeriod();
 
-    String reportPeriodNotSelected();
+    String reportCaseObjectIsAnySelectedParamNotPresentError();
+
+    String reportCaseObjectAdditionalLimitError();
+
+    String reportCaseObjectPlanInfo();
 
     String reportPeriodMoreMaxError();
 
@@ -2849,6 +2853,8 @@ public interface Lang extends Messages, ContactItemLang {
     String caseHistory();
 
     String errPlanNotFound();
+
+    String planSort();
 
     String commentNewDisabled();
 

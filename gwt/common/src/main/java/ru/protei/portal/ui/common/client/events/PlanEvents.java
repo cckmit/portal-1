@@ -107,4 +107,6 @@ public class PlanEvents {
             this.issue = issue;
         }
     }
+
+    public static class ChangeModel {}
 }

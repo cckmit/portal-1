@@ -2,7 +2,6 @@ package ru.protei.portal.core.model.view;
 
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_WorkTrigger;
-import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.winter.jdbc.annotations.*;

@@ -151,6 +151,7 @@ public abstract class PlanTableActivity implements AbstractPlanTableActivity, Ab
                     .withSuccess(result -> {
                         loadTable();
                         fireEvent(new NotifyEvents.Show(lang.planRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                        fireEvent(new PlanEvents.ChangeModel());
                     }));
         };
     }

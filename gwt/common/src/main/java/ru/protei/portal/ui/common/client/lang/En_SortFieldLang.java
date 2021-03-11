@@ -80,6 +80,8 @@ public class En_SortFieldLang {
                 return lang.dutyLogEmployee();
             case duty_log_type:
                 return lang.dutyLogType();
+            case by_plan:
+                return lang.planSort();
             default:
                 return lang.unknownField();
         }

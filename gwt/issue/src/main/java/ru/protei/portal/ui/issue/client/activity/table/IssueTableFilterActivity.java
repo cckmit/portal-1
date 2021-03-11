@@ -194,6 +194,19 @@ public abstract class IssueTableFilterActivity
     }
 
     @Override
+    public void onPlanPresent(boolean isPresent) {
+        if (isPresent) {
+            filterView.getIssueFilterParams().sortField().setValue(En_SortField.by_plan);
+            filterView.getIssueFilterParams().sortDir().setValue(true);
+            filterView.getIssueFilterParams().resetRanges();
+            fireEvent(new NotifyEvents.Show(lang.reportCaseObjectPlanInfo(), NotifyEvents.NotifyType.INFO));
+        } else {
+            filterView.getIssueFilterParams().sortField().setValue(En_SortField.issue_number);
+            filterView.getIssueFilterParams().sortDir().setValue(false);
+        }
+    }
+
+    @Override
     public void loadData(int offset, int limit, final AsyncCallback<List<CaseShortView>> asyncCallback) {
         boolean isFirstChunk = offset == 0;
         query = getQuery();
