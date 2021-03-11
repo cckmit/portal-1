@@ -1,58 +1,65 @@
 package ru.protei.portal.ui.common.client.selector.popup.arrowselectable;
 
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
+import ru.protei.portal.ui.common.client.selector.SelectorItemChangeHandler;
 import ru.protei.portal.ui.common.client.selector.popup.SelectorPopupWithSearch;
 
 import static java.util.Optional.of;
 
 public class ArrowSelectableSelectorPopup extends SelectorPopupWithSearch {
-    public ArrowSelectableSelectorPopup() {
-        this(KeyCodes.KEY_ENTER);
+    public ArrowSelectableSelectorPopup(int valueChangeKeyCode, boolean isAutoCloseable) {
+        this(valueChangeKeyCode, isAutoCloseable, null);
     }
 
-    public ArrowSelectableSelectorPopup(int valueChangeKeyCode) {
-        initChildContainerHandlers(new DefaultArrowSelectableSelectorHandler(), valueChangeKeyCode);
+    public ArrowSelectableSelectorPopup(int valueChangeKeyCode,
+                                        boolean isAutoCloseable,
+                                        ArrowSelectableSelectorHandler arrowSelectableSelectorHandler) {
 
+        this.arrowSelectableSelectorHandler = arrowSelectableSelectorHandler == null ?
+                new DefaultArrowSelectableSelectorHandler() :
+                arrowSelectableSelectorHandler;
+
+        this.valueChangeKeyCode = valueChangeKeyCode;
+        this.isAutoCloseable = isAutoCloseable;
+        initChildContainerHandlers(this.arrowSelectableSelectorHandler, valueChangeKeyCode);
+    }
+
+    @Override
+    public void focus() {
+        Widget nextWidget = getNext(childContainer, null);
+
+        if (nextWidget == null) {
+            focusChildContainer();
+        } else {
+            focusWidget(nextWidget);
+        }
+    }
+
+    @Override
+    public void addValueChangeHandlers(SelectorItemChangeHandler selectorItem) {
+        addValueChangeHandlers(selectorItem, valueChangeKeyCode, isAutoCloseable, arrowSelectableSelectorHandler);
+    }
+
+    private void initChildContainerHandlers(ArrowSelectableSelectorHandler arrowSelectableSelectorHandler, int valueChangeKeyCode) {
         search.addDomHandler(event -> {
-            if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE || event.getNativeKeyCode() == KeyCodes.KEY_UP) {
+            if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE) {
                 event.preventDefault();
                 hide();
-                return;
             }
 
             if (event.getNativeKeyCode() == KeyCodes.KEY_DOWN || event.getNativeKeyCode() == KeyCodes.KEY_TAB) {
                 event.preventDefault();
                 focus();
-                return;
             }
         }, KeyDownEvent.getType());
 
         addCloseHandler(event -> currentWidget = null);
-    }
-
-    public ArrowSelectableSelectorPopup(ArrowSelectableSelectorHandler arrowSelectableSelectorHandler, int valueChangeKeyCode, String styleName) {
-        childContainer.addStyleName(styleName);
-        initChildContainerHandlers(arrowSelectableSelectorHandler, valueChangeKeyCode);
-    }
-
-    public void focus() {
-        focusWidget(getNext(childContainer, null));
-    }
-
-    @Override
-    protected void setFocusOnSearchIfNeeded(boolean isSearchAutoFocus) {
-        if (currentWidget != null) {
-            return;
-        }
-
-        super.setFocusOnSearchIfNeeded(isSearchAutoFocus);
-    }
-
-    private void initChildContainerHandlers(ArrowSelectableSelectorHandler arrowSelectableSelectorHandler, int valueChangeKeyCode) {
+        
         childContainer.addDomHandler(event -> arrowSelectableSelectorHandler.onBlurSelector(), MouseOverEvent.getType());
         childContainer.addDomHandler(event -> onKeyDown(event, childContainer, arrowSelectableSelectorHandler, valueChangeKeyCode), KeyDownEvent.getType());
     }
@@ -149,7 +156,46 @@ public class ArrowSelectableSelectorPopup extends SelectorPopupWithSearch {
         currentWidget = null;
     }
 
+    private void addValueChangeHandlers(SelectorItemChangeHandler selectorItem,
+                                        int valueChangeKeyCode,
+                                        boolean isAutoCloseable,
+                                        ArrowSelectableSelectorHandler arrowSelectableSelectorHandler) {
+
+        selectorItem.asWidget().addDomHandler(event -> {
+            if (event.getNativeKeyCode() != valueChangeKeyCode) {
+                return;
+            }
+
+            event.preventDefault();
+
+            selectorItem.onItemClicked();
+
+            if (isAutoCloseable) {
+                hide();
+            } else {
+                refreshPopup();
+            }
+        }, KeyDownEvent.getType());
+
+        selectorItem.asWidget().addDomHandler(event -> {
+            event.preventDefault();
+
+            selectorItem.onItemClicked();
+
+            if (isAutoCloseable) {
+                hide();
+            } else {
+                refreshPopup();
+                arrowSelectableSelectorHandler.onBlurSelector();
+            }
+        }, ClickEvent.getType());
+    }
+
     private Widget currentWidget;
+
+    private final int valueChangeKeyCode;
+    private final boolean isAutoCloseable;
+    private final ArrowSelectableSelectorHandler arrowSelectableSelectorHandler;
 
     private class DefaultArrowSelectableSelectorHandler implements ArrowSelectableSelectorHandler {
         @Override
@@ -164,8 +210,8 @@ public class ArrowSelectableSelectorPopup extends SelectorPopupWithSearch {
         @Override
         public void onBlurSelector() {
             if (search.isVisible()) {
+                blurCurrentWidget();
                 search.setFocus(true);
-                currentWidget = null;
             } else {
                 focusChildContainer();
             }

@@ -20,9 +20,9 @@ import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 
 public class PopupSelectorItemWithEdit<T> extends Composite implements HasValue<T>, HasAddHandlers, HasEditHandlers, HasClickHandlers, SelectorItem<T> {
 
-public PopupSelectorItemWithEdit() {
-    initWidget(ourUiBinder.createAndBindUi(this));
-}
+    public PopupSelectorItemWithEdit() {
+        initWidget(ourUiBinder.createAndBindUi(this));
+    }
 
     @Override
     public void setValue(T value) {
@@ -41,6 +41,11 @@ public PopupSelectorItemWithEdit() {
     @Override
     public T getValue() {
         return value;
+    }
+
+    @Override
+    public void onItemClicked() {
+        selectorItemHandler.onSelectorItemClicked(this);
     }
 
     @Override
@@ -90,17 +95,9 @@ public PopupSelectorItemWithEdit() {
        this.id = id;
     }
 
-    @UiHandler({"text"})
-    public void rootClick(ClickEvent event) {
-        event.preventDefault();
-
-        if(selectorItemHandler!=null) {
-            selectorItemHandler.onSelectorItemClicked(this);
-        }
-    }
-
     @UiHandler("editIcon")
     public void editClick(ClickEvent event) {
+        event.stopPropagation();
         EditEvent.fire(this, id, text.getText());
     }
 

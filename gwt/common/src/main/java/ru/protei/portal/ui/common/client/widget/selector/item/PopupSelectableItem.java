@@ -22,21 +22,6 @@ public class PopupSelectableItem<T>
     public PopupSelectableItem() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         checkbox.setFormValue( Boolean.FALSE.toString() );
-        root.addDomHandler(event -> {
-            event.preventDefault();
-            selectorItemHandler.onSelectorItemClicked(this);
-            setSelected(!checkbox.getValue());
-        }, ClickEvent.getType());
-
-        root.addDomHandler(event -> {
-            if (event.getNativeKeyCode() != KeyCodes.KEY_SPACE) {
-                return;
-            }
-
-            event.preventDefault();
-            selectorItemHandler.onSelectorItemClicked(this);
-            setSelected(!checkbox.getValue());
-        }, KeyDownEvent.getType());
     }
 
     @Override
@@ -45,8 +30,8 @@ public class PopupSelectableItem<T>
     }
 
     @Override
-    public void setValue(T t) {
-        value = t;
+    public void setValue(T value) {
+        this.value = value;
     }
 
     public void setTitle( String text ) {
@@ -56,6 +41,12 @@ public class PopupSelectableItem<T>
     @Override
     public void setElementHtml(String html ) {
         label.setInnerHTML(html);
+    }
+
+    @Override
+    public void onItemClicked() {
+        selectorItemHandler.onSelectorItemClicked(this);
+        setSelected(!checkbox.getValue());
     }
 
     public void setIcon(String style) {

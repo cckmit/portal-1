@@ -51,18 +51,6 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
         setEmptySearchText( lang.searchNoMatchesFound() );
 
         root.add(popup);
-
-        formContainer.addDomHandler(event -> {
-            if (event.getNativeKeyCode() == KeyCodes.KEY_DOWN) {
-                event.preventDefault();
-                popup.focus();
-            }
-
-            if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE) {
-                event.preventDefault();
-                popup.hide();
-            }
-        }, KeyDownEvent.getType());
     }
 
     public interface SelectedValueRenderer<T> {
@@ -78,7 +66,6 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
         if(isValidable)
             setValid( isValid() );
 
-        getPopup().hide();
         ValueChangeEvent.fire(this, value);
     }
 
@@ -185,8 +172,6 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
         formContainer.addHandler(event -> {
             if (!getPopup().isVisible()) {
                 formContainer.addStyleName(FOCUS_STYLENAME);
-                formContainer.getElement().setAttribute("tabindex", "0");
-                formContainer.getElement().focus();
                 onShowPopupClicked(formContainer);
             }
         }, ClickEvent.getType());
@@ -249,7 +234,7 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
     private static final String REQUIRED_STYLENAME ="required";
     private static final String DISABLE_STYLENAME ="disabled";
     private static final String FOCUS_STYLENAME ="focused";
-    private ArrowSelectableSelectorPopup popup = new ArrowSelectableSelectorPopup(KeyCodes.KEY_ENTER);
+    private ArrowSelectableSelectorPopup popup = new ArrowSelectableSelectorPopup(KeyCodes.KEY_ENTER, true);
     interface FormPopupSingleSelectorUiBinder extends UiBinder<HTMLPanel, FormPopupSingleSelector> { }
     private static FormPopupSingleSelectorUiBinder ourUiBinder = GWT.create(FormPopupSingleSelectorUiBinder.class);
 

@@ -18,7 +18,7 @@ import java.util.Set;
 public abstract class PopupMultiSelector<T> extends AbstractPopupSelector<T> implements HasValue<Set<T>> {
 
     public PopupMultiSelector() {
-        setPopup(new ArrowSelectableSelectorPopup(KeyCodes.KEY_SPACE));
+        setPopup(new ArrowSelectableSelectorPopup(KeyCodes.KEY_SPACE, false));
     }
 
     @Override
@@ -52,7 +52,6 @@ public abstract class PopupMultiSelector<T> extends AbstractPopupSelector<T> imp
 
     @Override
     protected void onSelectionChanged() {
-        getPopup().showNear(relative);
         ValueChangeEvent.fire(this, getValue());
     }
 

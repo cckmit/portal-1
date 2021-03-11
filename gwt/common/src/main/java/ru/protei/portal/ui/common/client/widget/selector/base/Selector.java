@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.widget.selector.base;
 
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -145,6 +146,7 @@ public abstract class Selector<T>
             itemToDisplayOptionModel.put(value, option);
         }
 
+        popup.addValueChangeHandlers(itemView);
         popup.getChildContainer().add(itemView.asWidget());
     }
 
@@ -170,7 +172,6 @@ public abstract class Selector<T>
         selectedOption = value;
         fillSelectorView(option);
 
-        popup.hide();
         ValueChangeEvent.fire(this, value);
     }
 
@@ -318,7 +319,8 @@ public abstract class Selector<T>
     @Inject
     Provider<SelectorItem> itemFactory;
     protected DisplayOption nullItemOption;
-    protected ArrowSelectableSelectorPopup popup = new ArrowSelectableSelectorPopup();
+    protected ArrowSelectableSelectorPopup popup
+            = new ArrowSelectableSelectorPopup(KeyCodes.KEY_ENTER, true);
 
     protected boolean hasNullValue = true;
     private boolean isHideNullValue = false;

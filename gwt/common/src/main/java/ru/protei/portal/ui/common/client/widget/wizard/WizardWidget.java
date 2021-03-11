@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.widget.wizard;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -118,7 +119,6 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
         selectorItem.addSelectorItemSelectHandler(event -> {
             if (!isSelectable) return;
             onTabSelected(pane.getTabName());
-            popup.hide();
         });
         return selectorItem;
     }
@@ -300,7 +300,8 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
     private Map<String, WizardWidgetPane> tabNameToPane = new HashMap<>();
     private Set<String> tabNames = new LinkedHashSet<>();
     private String currentTabName = null;
-    private ArrowSelectableSelectorPopup popup = new ArrowSelectableSelectorPopup();
+    private final ArrowSelectableSelectorPopup popup
+            = new ArrowSelectableSelectorPopup(KeyCodes.KEY_ENTER, true);
     private boolean isSelectable = true;
     private HandlerRegistration btnPreviousHandlerRegistration;
     private HandlerRegistration btnNextHandlerRegistration;

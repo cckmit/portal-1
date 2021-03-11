@@ -36,7 +36,7 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
         initWidget( bsUiBinder.createAndBindUi( this ) );
 
         ArrowSelectableSelectorPopup popup
-                = new ArrowSelectableSelectorPopup(KeyCodes.KEY_ENTER);
+                = new ArrowSelectableSelectorPopup(KeyCodes.KEY_ENTER, true);
         setPopup(popup);
 
         setEmptyListText( lang.emptySelectorList() );
@@ -44,18 +44,6 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
         setSearchAutoFocus( true );
         setPageSize( CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE );
         root.add(getPopup());
-
-        button.addDomHandler(event -> {
-            if (event.getNativeKeyCode() == KeyCodes.KEY_DOWN) {
-                event.preventDefault();
-                popup.focus();
-            }
-
-            if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE) {
-                event.preventDefault();
-                popup.hide();
-            }
-        }, KeyDownEvent.getType());
     }
 
     @Override
@@ -165,7 +153,6 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
     protected void onSelectionChanged() {
         T value = selector.getValue();
         showValue(value);
-        getPopup().hide();
         ValueChangeEvent.fire(this, value);
 
         if (isValidable) {
@@ -207,7 +194,7 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
 
     protected String defaultValue = null;
 
-    interface BlockSelectorUiBinder extends UiBinder<HTMLPanel, ButtonPopupSingleSelector> {
+    interface BlockSelectorUiBinder extends UiBinder<HTMLPanel, ButtonPopupSingleSelector<?>> {
     }
 
     private static BlockSelectorUiBinder bsUiBinder = GWT.create(BlockSelectorUiBinder.class);

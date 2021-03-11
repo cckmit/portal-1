@@ -25,14 +25,6 @@ public class PopupSelectorItem<T>
 {
     public PopupSelectorItem() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        root.addDomHandler(event -> {
-            if (event.getNativeKeyCode() != KeyCodes.KEY_ENTER) {
-                return;
-            }
-
-            event.preventDefault();
-            selectorItemHandler.onSelectorItemClicked(this);
-        }, KeyDownEvent.getType());
     }
 
     @Override
@@ -41,8 +33,8 @@ public class PopupSelectorItem<T>
     }
 
     @Override
-    public void setValue(T t) {
-        value = t;
+    public void setValue(T value) {
+        this.value = value;
     }
 
     @Override
@@ -60,7 +52,12 @@ public class PopupSelectorItem<T>
         root.getElement().setInnerHTML( elementHtml );
     }
 
-    public void setName( String name ) {
+    @Override
+    public void onItemClicked() {
+        selectorItemHandler.onSelectorItemClicked(this);
+    }
+
+    public void setName(String name ) {
         text.setInnerHTML( name );
     }
 

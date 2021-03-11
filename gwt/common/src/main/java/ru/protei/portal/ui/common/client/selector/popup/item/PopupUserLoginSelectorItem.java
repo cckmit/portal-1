@@ -20,20 +20,16 @@ public class PopupUserLoginSelectorItem<T> extends Composite implements Selector
                 image.addStyleName("default-icon");
             }
         });
-
-        root.addDomHandler(event -> {
-            if (event.getNativeKeyCode() != KeyCodes.KEY_ENTER) {
-                return;
-            }
-
-            event.preventDefault();
-            selectorItemHandler.onSelectorItemClicked(this);
-        }, KeyUpEvent.getType());
     }
 
     @Override
     public void addSelectorHandler(SelectorItemHandler<T> selectorItemHandler) {
         this.selectorItemHandler = selectorItemHandler;
+    }
+
+    @Override
+    public void onItemClicked() {
+        selectorItemHandler.onSelectorItemClicked(this);
     }
 
     @Override
@@ -66,14 +62,6 @@ public class PopupUserLoginSelectorItem<T> extends Composite implements Selector
 
     public void setImage(String url) {
         image.setUrl(url);
-    }
-
-    @UiHandler( "panel" )
-    public void onPanelClicked(ClickEvent event) {
-        event.preventDefault();
-        if (selectorItemHandler != null) {
-            selectorItemHandler.onSelectorItemClicked(this);
-        }
     }
 
     @UiField

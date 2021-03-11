@@ -43,7 +43,7 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         initWidget( bsUiBinder.createAndBindUi( this ) );
 
         ArrowSelectableSelectorPopup popup =
-                new ArrowSelectableSelectorPopup(KeyCodes.KEY_SPACE);
+                new ArrowSelectableSelectorPopup(KeyCodes.KEY_SPACE, false);
         setPopup(popup);
 
         setSearchAutoFocus( true );
@@ -51,18 +51,6 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         setEmptyListText( lang.emptySelectorList() );
         setEmptySearchText( lang.searchNoMatchesFound() );
         root.add(popup);
-
-        caretButton.addDomHandler(event -> {
-            if (event.getNativeKeyCode() == KeyCodes.KEY_DOWN) {
-                event.preventDefault();
-                popup.focus();
-            }
-
-            if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE) {
-                event.preventDefault();
-                popup.hide();
-            }
-        }, KeyDownEvent.getType());
     }
 
     public void setHeader( String label ) {
@@ -170,7 +158,6 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
     protected void onSelectionChanged() {
         Set<T> value = getValue();
         showValue( value );
-        getPopup().showNear( select2.getElement() );
         validateSelector(isValidable);
 
         ValueChangeEvent.fire( this, value );

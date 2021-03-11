@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.widget.tab;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -99,7 +100,6 @@ public class TabWidget extends Tab {
         selectorItem.setName(pane.getTabName());
         selectorItem.addSelectorItemSelectHandler(event -> {
             onTabSelected(pane.getTabName());
-            popup.hide();
         });
         return selectorItem;
     }
@@ -115,7 +115,7 @@ public class TabWidget extends Tab {
     @UiField
     HTMLPanel tabContent;
 
-    private ArrowSelectableSelectorPopup popup = new ArrowSelectableSelectorPopup();
+    private ArrowSelectableSelectorPopup popup = new ArrowSelectableSelectorPopup(KeyCodes.KEY_ENTER, true);
     private Map<String, SelectorItem> tabNameToNavSelectorItem = new HashMap<>();
 
     interface TabWidgetUiBinder extends UiBinder<HTMLPanel, TabWidget> {}

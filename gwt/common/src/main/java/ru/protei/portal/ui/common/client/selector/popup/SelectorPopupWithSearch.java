@@ -17,6 +17,7 @@ import ru.protei.portal.ui.common.client.events.HasAddHandlers;
 import ru.protei.portal.ui.common.client.events.InputEvent;
 import ru.protei.portal.ui.common.client.selector.SearchHandler;
 import ru.protei.portal.ui.common.client.selector.SelectorPopup;
+import ru.protei.portal.ui.common.client.selector.popup.item.SelectorItemHandler;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.composite.popper.PopperComposite;
 
@@ -27,7 +28,7 @@ import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 /**
  * Вид попапа
  */
-public class SelectorPopupWithSearch extends PopperComposite
+public abstract class SelectorPopupWithSearch extends PopperComposite
         implements SelectorPopup, HasAddHandlers {
 
     public SelectorPopupWithSearch() {
@@ -172,6 +173,7 @@ public class SelectorPopupWithSearch extends PopperComposite
 
     protected void setFocusOnSearchIfNeeded(boolean isSearchAutoFocus) {
         if (!search.isVisible()) {
+            focus();
             return;
         }
 

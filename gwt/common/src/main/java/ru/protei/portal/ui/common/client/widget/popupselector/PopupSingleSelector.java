@@ -19,7 +19,7 @@ import ru.protei.portal.ui.common.client.widget.composite.popper.PopperComposite
 
 public class PopupSingleSelector<T> extends AbstractPopupSelector<T> implements HasValue<T> {
     public PopupSingleSelector() {
-        setPopup(new ArrowSelectableSelectorPopup(KeyCodes.KEY_ENTER));
+        setPopup(new ArrowSelectableSelectorPopup(KeyCodes.KEY_ENTER, true));
     }
 
     @Override
@@ -96,7 +96,6 @@ public class PopupSingleSelector<T> extends AbstractPopupSelector<T> implements 
 
     @Override
     protected void onSelectionChanged() {
-        getPopup().showNear(relative);
         ValueChangeEvent.fire(this, getValue());
     }
 

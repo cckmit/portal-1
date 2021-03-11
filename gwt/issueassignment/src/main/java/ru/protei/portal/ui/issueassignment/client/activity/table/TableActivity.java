@@ -180,7 +180,6 @@ public abstract class TableActivity implements Activity, AbstractTableActivity {
         popup.setRelative(relative);
         popup.addValueChangeHandler(event -> {
             onChanged.accept(popup.getValue());
-            popup.hidePopup();
         });
         popup.clearPopup();
         popup.fill();

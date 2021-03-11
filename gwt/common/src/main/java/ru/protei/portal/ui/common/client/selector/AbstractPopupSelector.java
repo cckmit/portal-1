@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.selector;
 
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasEnabled;
@@ -10,6 +11,7 @@ import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.selector.pageable.*;
 import ru.protei.portal.ui.common.client.selector.popup.PopupHandler;
 import ru.protei.portal.ui.common.client.selector.popup.SelectorPopupWithSearch;
+import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
 import ru.protei.portal.ui.common.client.selector.popup.item.SelectorItemHandler;
 
 import java.util.Iterator;
@@ -70,6 +72,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
     public void fill( T element, String elementHtml) {
         SelectorItem<T> itemView = makeItemView(element, elementHtml);
         getPopup().getChildContainer().add(itemView.asWidget());
+        getPopup().addValueChangeHandlers(itemView);
     }
 
     @Override
@@ -168,7 +171,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
 
     public SelectorPopup getPopup() {
         if (popup == null) {
-            setPopup( new SelectorPopupWithSearch() );
+            setPopup( new ArrowSelectableSelectorPopup(KeyCodes.KEY_ENTER, true) );
             setSearchEnabled( true );
         }
         return popup;
