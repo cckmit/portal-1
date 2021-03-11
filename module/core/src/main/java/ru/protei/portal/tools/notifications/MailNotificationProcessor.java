@@ -207,8 +207,8 @@ public class MailNotificationProcessor {
         return baseUrl + config.data().getMailNotificationConfig().getCrmProjectUrl();
     }
 
-    public String getAddingIssueCommentHelpLink(String crmUrl, String locale) {
-        return crmUrl + "portal.html?locale=" + locale + "#addingIssueCommentHelp";
+    public String getAddingIssueCommentHelpUrl(String crmUrl, String locale) {
+        return crmUrl + "?locale=" + locale + "#addingIssueCommentHelp";
     }
 
     private boolean isPrivateNotification(AssembledCaseEvent event) {
@@ -263,7 +263,7 @@ public class MailNotificationProcessor {
         notifiers.forEach((entry) -> {
             PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(event, mailComments, attachments, linksToTasks,
                     isProteiRecipients, crmCaseUrl, recipients, new EnumLangUtil(lang),
-                    getAddingIssueCommentHelpLink(getCrmUrl(isProteiRecipients), entry.getLangCode()));
+                    getAddingIssueCommentHelpUrl(getCrmUrl(isProteiRecipients), entry.getLangCode()));
 
             if (bodyTemplate == null) {
                 log.error("Failed to prepare body template for caseId={}", caseObject.getId());

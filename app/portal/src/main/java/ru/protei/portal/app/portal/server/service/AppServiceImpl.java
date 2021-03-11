@@ -28,8 +28,6 @@ public class AppServiceImpl extends RemoteServiceServlet implements AppService {
         ClientConfigData data = new ClientConfigData();
 
         data.appVersion = properties.getProperty("version", "");
-        data.markupHelpLinkMarkdown = portalConfig.data().getMarkupHelpLink().getMarkdown();
-        data.markupHelpLinkJiraMarkup = portalConfig.data().getMarkupHelpLink().getJiraMarkup();
 
         log.info( "getClientConfig, data = {}", data );
         return data;
