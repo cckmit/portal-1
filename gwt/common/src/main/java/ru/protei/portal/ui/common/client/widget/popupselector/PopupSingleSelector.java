@@ -2,7 +2,6 @@ package ru.protei.portal.ui.common.client.widget.popupselector;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -13,15 +12,10 @@ import ru.protei.portal.ui.common.client.selector.AbstractPopupSelector;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 import ru.protei.portal.ui.common.client.selector.pageable.AbstractPageableSelector;
 import ru.protei.portal.ui.common.client.selector.pageable.SingleValuePageableSelector;
-import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
 import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.composite.popper.PopperComposite;
 
 public class PopupSingleSelector<T> extends AbstractPopupSelector<T> implements HasValue<T> {
-    public PopupSingleSelector() {
-        setPopup(new ArrowSelectableSelectorPopup(KeyCodes.KEY_ENTER, true));
-    }
-
     @Override
     public T getValue() {
         return selector.getValue();

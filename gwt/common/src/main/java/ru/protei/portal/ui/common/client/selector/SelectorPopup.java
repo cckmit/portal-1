@@ -46,4 +46,6 @@ public interface SelectorPopup extends IsWidget {
     void addValueChangeHandlers(SelectorItemChangeHandler selectorItem);
 
     void focus();
+
+    void setPopupAutoFocus(boolean isPopupAutoFocus);
 }

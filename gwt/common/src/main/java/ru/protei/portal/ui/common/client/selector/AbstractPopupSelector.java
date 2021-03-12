@@ -11,7 +11,6 @@ import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.selector.pageable.*;
 import ru.protei.portal.ui.common.client.selector.popup.PopupHandler;
 import ru.protei.portal.ui.common.client.selector.popup.SelectorPopupWithSearch;
-import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
 import ru.protei.portal.ui.common.client.selector.popup.item.SelectorItemHandler;
 
 import java.util.Iterator;
@@ -171,7 +170,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
 
     public SelectorPopup getPopup() {
         if (popup == null) {
-            setPopup( new ArrowSelectableSelectorPopup(KeyCodes.KEY_ENTER, true) );
+            setPopup( new SelectorPopupWithSearch(KeyCodes.KEY_ENTER, true) );
             setSearchEnabled( true );
         }
         return popup;
@@ -180,7 +179,6 @@ public abstract class AbstractPopupSelector<T> extends Composite
     public void setPopup(SelectorPopup popup) {
         this.popup = popup;
         popup.setPopupHandler(this);
-        setSearchEnabled(true);
     }
 
     public void setFixedStrategy(boolean isFixedStrategy) {

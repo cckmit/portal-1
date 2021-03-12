@@ -5,9 +5,10 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.user.client.Timer;
 import com.google.inject.Inject;
+import ru.protei.portal.ui.common.client.events.InputEvent;
 import ru.protei.portal.ui.common.client.selector.SelectorPopup;
+import ru.protei.portal.ui.common.client.selector.popup.SelectorPopupWithSearch;
 import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorHandler;
-import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
 import ru.protei.portal.ui.common.client.widget.dndautoresizetextarea.DndAutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.selector.login.UserLoginModel;
 import ru.protei.portal.ui.common.client.widget.selector.login.UserLoginSelector;
@@ -21,25 +22,22 @@ public class MentioningTextArea extends DndAutoResizeTextArea implements ArrowSe
         this.userLoginSelector = userLoginSelector;
         this.changeTimer = initTimer(userLoginModel, userLoginSelector);
 
-        ArrowSelectableSelectorPopup selectorPopup
-                = new ArrowSelectableSelectorPopup(KeyCodes.KEY_ENTER, true, this);
+        SelectorPopup selectorPopup
+                = new SelectorPopupWithSearch(KeyCodes.KEY_ENTER, true, this);
 
         selectorPopup.addStyleName("user-login-selector");
+        selectorPopup.setPopupAutoFocus(false);
 
         initUserLoginSelector(userLoginModel, userLoginSelector, selectorPopup);
 
-        addKeyDownHandler(event -> onKeyDown(event, selectorPopup, changeTimer));
+        addKeyDownHandler(event -> onKeyDown(event, selectorPopup));
+        addDomHandler(event -> onInput(changeTimer), InputEvent.getType());
         addClickHandler(event -> changeTimer.run());
     }
 
     @Override
     public void onBlurSelector() {
         getElement().focus();
-    }
-
-    @Override
-    public void onValueChanged() {
-        changeTimer.run();
     }
 
     public void setPersonId(Long personId) {
@@ -54,26 +52,24 @@ public class MentioningTextArea extends DndAutoResizeTextArea implements ArrowSe
         this.isMentionEnabled = isMentionEnabled;
     }
 
-    private void onKeyDown(KeyDownEvent event, ArrowSelectableSelectorPopup selectorPopup,
-                           Timer changeTimer) {
+    private void onInput(Timer changeTimer) {
+        if (!isMentionEnabled) {
+            return;
+        }
+
+        changeTimer.schedule(200);
+    }
+
+    private void onKeyDown(KeyDownEvent event, SelectorPopup selectorPopup) {
 
         if (!isMentionEnabled) {
             return;
         }
 
-        if (event.getNativeKeyCode() != KeyCodes.KEY_DOWN) {
-            changeTimer.schedule(200);
-            return;
+        if (event.getNativeKeyCode() == KeyCodes.KEY_DOWN) {
+            event.preventDefault();
+            selectorPopup.focus();
         }
-
-        if (!selectorPopup.isVisible()) {
-            changeTimer.schedule(200);
-            return;
-        }
-
-        event.preventDefault();
-
-        selectorPopup.focus();
     }
 
     private void initUserLoginSelector(final UserLoginModel userLoginModel,

@@ -10,7 +10,7 @@ import ru.protei.portal.ui.common.client.selector.AbstractPopupSelector;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 import ru.protei.portal.ui.common.client.selector.pageable.AbstractPageableSelector;
 import ru.protei.portal.ui.common.client.selector.pageable.MultiValuePageableSelector;
-import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
+import ru.protei.portal.ui.common.client.selector.popup.SelectorPopupWithSearch;
 import ru.protei.portal.ui.common.client.widget.selector.item.PopupSelectableItem;
 
 import java.util.Set;
@@ -18,7 +18,8 @@ import java.util.Set;
 public abstract class PopupMultiSelector<T> extends AbstractPopupSelector<T> implements HasValue<Set<T>> {
 
     public PopupMultiSelector() {
-        setPopup(new ArrowSelectableSelectorPopup(KeyCodes.KEY_SPACE, false));
+        setPopup(new SelectorPopupWithSearch(KeyCodes.KEY_SPACE, false));
+        setSearchEnabled(true);
     }
 
     @Override

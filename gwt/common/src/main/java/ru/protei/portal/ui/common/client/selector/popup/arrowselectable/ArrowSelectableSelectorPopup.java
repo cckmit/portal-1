@@ -4,18 +4,16 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
 import ru.protei.portal.ui.common.client.selector.SelectorItemChangeHandler;
-import ru.protei.portal.ui.common.client.selector.popup.SelectorPopupWithSearch;
+import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
+import ru.protei.portal.ui.common.client.widget.composite.popper.PopperComposite;
 
 import static java.util.Optional.of;
 
-public class ArrowSelectableSelectorPopup extends SelectorPopupWithSearch {
-    public ArrowSelectableSelectorPopup(int valueChangeKeyCode, boolean isAutoCloseable) {
-        this(valueChangeKeyCode, isAutoCloseable, null);
-    }
-
+public class ArrowSelectableSelectorPopup extends PopperComposite {
     public ArrowSelectableSelectorPopup(int valueChangeKeyCode,
                                         boolean isAutoCloseable,
                                         ArrowSelectableSelectorHandler arrowSelectableSelectorHandler) {
@@ -26,10 +24,8 @@ public class ArrowSelectableSelectorPopup extends SelectorPopupWithSearch {
 
         this.valueChangeKeyCode = valueChangeKeyCode;
         this.isAutoCloseable = isAutoCloseable;
-        initChildContainerHandlers(this.arrowSelectableSelectorHandler, valueChangeKeyCode);
     }
 
-    @Override
     public void focus() {
         Widget nextWidget = getNext(childContainer, null);
 
@@ -40,12 +36,17 @@ public class ArrowSelectableSelectorPopup extends SelectorPopupWithSearch {
         }
     }
 
-    @Override
     public void addValueChangeHandlers(SelectorItemChangeHandler selectorItem) {
         addValueChangeHandlers(selectorItem, valueChangeKeyCode, isAutoCloseable, arrowSelectableSelectorHandler);
     }
 
-    private void initChildContainerHandlers(ArrowSelectableSelectorHandler arrowSelectableSelectorHandler, int valueChangeKeyCode) {
+    protected void initArrowSelectablePopupHandlers(CleanableSearchBox search, ComplexPanel childContainer) {
+        this.search = search;
+        this.childContainer = childContainer;
+        initArrowSelectablePopupHandlers(arrowSelectableSelectorHandler, valueChangeKeyCode);
+    }
+
+    private void initArrowSelectablePopupHandlers(ArrowSelectableSelectorHandler arrowSelectableSelectorHandler, int valueChangeKeyCode) {
         search.addDomHandler(event -> {
             if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE) {
                 event.preventDefault();
@@ -91,7 +92,6 @@ public class ArrowSelectableSelectorPopup extends SelectorPopupWithSearch {
         if (valueChangeKeyCode != event.getNativeKeyCode()) {
             blurCurrentWidget();
             arrowSelectableSelectorHandler.onBlurSelector();
-            arrowSelectableSelectorHandler.onValueChanged();
         }
     }
 
@@ -193,6 +193,9 @@ public class ArrowSelectableSelectorPopup extends SelectorPopupWithSearch {
 
     private Widget currentWidget;
 
+    private CleanableSearchBox search;
+    private ComplexPanel childContainer;
+
     private final int valueChangeKeyCode;
     private final boolean isAutoCloseable;
     private final ArrowSelectableSelectorHandler arrowSelectableSelectorHandler;
@@ -216,8 +219,5 @@ public class ArrowSelectableSelectorPopup extends SelectorPopupWithSearch {
                 focusChildContainer();
             }
         }
-
-        @Override
-        public void onValueChanged() {}
     }
 }

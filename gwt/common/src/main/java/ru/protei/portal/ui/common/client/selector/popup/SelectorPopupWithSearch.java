@@ -17,9 +17,9 @@ import ru.protei.portal.ui.common.client.events.HasAddHandlers;
 import ru.protei.portal.ui.common.client.events.InputEvent;
 import ru.protei.portal.ui.common.client.selector.SearchHandler;
 import ru.protei.portal.ui.common.client.selector.SelectorPopup;
-import ru.protei.portal.ui.common.client.selector.popup.item.SelectorItemHandler;
+import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorHandler;
+import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
-import ru.protei.portal.ui.common.client.widget.composite.popper.PopperComposite;
 
 import java.util.logging.Logger;
 
@@ -28,10 +28,19 @@ import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 /**
  * Вид попапа
  */
-public abstract class SelectorPopupWithSearch extends PopperComposite
+public class SelectorPopupWithSearch extends ArrowSelectableSelectorPopup
         implements SelectorPopup, HasAddHandlers {
 
-    public SelectorPopupWithSearch() {
+    public SelectorPopupWithSearch(int valueChangeKeyCode, boolean isAutoCloseable) {
+        this(valueChangeKeyCode, isAutoCloseable, null);
+    }
+
+    public SelectorPopupWithSearch(int valueChangeKeyCode,
+                                   boolean isAutoCloseable,
+                                   ArrowSelectableSelectorHandler arrowSelectableSelectorHandler) {
+
+        super(valueChangeKeyCode, isAutoCloseable, arrowSelectableSelectorHandler);
+
         initWidget(ourUiBinder.createAndBindUi(this));
         setAutoHide(true);
         setAutoResize(true);
@@ -43,6 +52,8 @@ public abstract class SelectorPopupWithSearch extends PopperComposite
                 popupHandler.onPopupHide(this);
             }
         });
+
+        initArrowSelectablePopupHandlers(search, childContainer);
     }
 
     @Override
@@ -70,21 +81,21 @@ public abstract class SelectorPopupWithSearch extends PopperComposite
     public void showNear(Element relative) {
         addPagingHandler();
         show(relative);
-        setFocusOnSearchIfNeeded(isSearchAutoFocus);
+        setFocus(isSearchAutoFocus, isPopupAutoFocus);
     }
 
     @Override
     public void showNear(Element relative, Placement placement) {
         addPagingHandler();
         show(relative, placement);
-        setFocusOnSearchIfNeeded(isSearchAutoFocus);
+        setFocus(isSearchAutoFocus, isPopupAutoFocus);
     }
 
     @Override
     public void showNear(Element relative, Placement placement, int skidding, int distance) {
         addPagingHandler();
         show(relative, placement, skidding, distance);
-        setFocusOnSearchIfNeeded(isSearchAutoFocus);
+        setFocus(isSearchAutoFocus, isPopupAutoFocus);
     }
 
     @Override
@@ -132,6 +143,11 @@ public abstract class SelectorPopupWithSearch extends PopperComposite
         addButton.setVisible( isVisible );
     }
 
+    @Override
+    public void setPopupAutoFocus(boolean isPopupAutoFocus) {
+        this.isPopupAutoFocus = isPopupAutoFocus;
+    }
+
     @UiHandler( "search" )
     public void onSearchInputChanged( InputEvent event ) {
         changeSearchTimer.schedule(200);
@@ -171,13 +187,15 @@ public abstract class SelectorPopupWithSearch extends PopperComposite
         this.isSearchAutoFocus = isSearchAutoFocus;
     }
 
-    protected void setFocusOnSearchIfNeeded(boolean isSearchAutoFocus) {
-        if (!search.isVisible()) {
-            focus();
+    private void setFocus(boolean isSearchAutoFocus, boolean isPopupAutoFocus) {
+        if (search.isVisible()) {
+            search.setFocus(isSearchAutoFocus);
             return;
         }
 
-        search.setFocus(isSearchAutoFocus);
+        if (isPopupAutoFocus) {
+            focus();
+        }
     }
 
     private void addPagingHandler() {
@@ -241,6 +259,7 @@ public abstract class SelectorPopupWithSearch extends PopperComposite
     private PopupHandler popupHandler;
     private SearchHandler searchHandler = ignoreSearch;
     private boolean isSearchAutoFocus = true;
+    private boolean isPopupAutoFocus = true;
     private HandlerRegistration scrollForPagingHandleRegistration;
 
     interface SelectorPopupViewUiBinder extends UiBinder<HTMLPanel, SelectorPopupWithSearch> {

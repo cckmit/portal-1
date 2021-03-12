@@ -9,7 +9,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Widget;
-import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
+import ru.protei.portal.ui.common.client.selector.popup.SelectorPopupWithSearch;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.tab.base.Tab;
 import ru.protei.portal.ui.common.client.widget.tab.navitem.TabWidgetNavItem;
@@ -115,7 +115,7 @@ public class TabWidget extends Tab {
     @UiField
     HTMLPanel tabContent;
 
-    private ArrowSelectableSelectorPopup popup = new ArrowSelectableSelectorPopup(KeyCodes.KEY_ENTER, true);
+    private final SelectorPopupWithSearch popup = new SelectorPopupWithSearch(KeyCodes.KEY_ENTER, true);
     private Map<String, SelectorItem> tabNameToNavSelectorItem = new HashMap<>();
 
     interface TabWidgetUiBinder extends UiBinder<HTMLPanel, TabWidget> {}

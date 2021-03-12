@@ -5,5 +5,4 @@ public interface ArrowSelectableSelectorHandler {
         onBlurSelector();
     }
     void onBlurSelector();
-    void onValueChanged();
 }

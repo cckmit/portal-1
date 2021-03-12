@@ -9,7 +9,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
-import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
+import ru.protei.portal.ui.common.client.selector.popup.SelectorPopupWithSearch;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.wizard.navitem.WizardWidgetNavItem;
 import ru.protei.portal.ui.common.client.widget.wizard.pane.WizardWidgetPane;
@@ -300,8 +300,8 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
     private Map<String, WizardWidgetPane> tabNameToPane = new HashMap<>();
     private Set<String> tabNames = new LinkedHashSet<>();
     private String currentTabName = null;
-    private final ArrowSelectableSelectorPopup popup
-            = new ArrowSelectableSelectorPopup(KeyCodes.KEY_ENTER, true);
+    private final SelectorPopupWithSearch popup
+            = new SelectorPopupWithSearch(KeyCodes.KEY_ENTER, true);
     private boolean isSelectable = true;
     private HandlerRegistration btnPreviousHandlerRegistration;
     private HandlerRegistration btnNextHandlerRegistration;
