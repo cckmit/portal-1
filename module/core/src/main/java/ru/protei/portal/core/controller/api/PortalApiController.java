@@ -145,10 +145,6 @@ public class PortalApiController {
 
             CaseObjectCreateRequest caseObjectCreateRequest = new CaseObjectCreateRequest((CaseObject) auditableObject);
 
-            if (caseObjectCreateRequest.getCaseObject().getCreatorId() == null) {
-                return error(En_ResultStatus.INCORRECT_PARAMS, "Required creator id");
-            }
-
             Result<CaseObject> caseObjectCoreResponse = caseService.createCaseObject(
                     authToken,
                     caseObjectCreateRequest
