@@ -52,6 +52,8 @@ public interface AbstractContactEditView extends IsWidget {
 
     HasText login();
 
+    HasText loginErrorLabel();
+
     HasValue<String> password();
 
     HasValue<String> confirmPassword();

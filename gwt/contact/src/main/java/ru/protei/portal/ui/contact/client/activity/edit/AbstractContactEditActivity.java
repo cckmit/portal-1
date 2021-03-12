@@ -9,7 +9,7 @@ public interface AbstractContactEditActivity {
     void onFireClicked();
     void onChangeContactLoginInfo();
     void onChangeSendWelcomeEmail();
-    void validateLimitedFields();
+    void validateFields();
     void onCompanySelected();
     void onPasswordGenerationClicked();
 }

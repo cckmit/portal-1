@@ -428,6 +428,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String promptFieldLengthExceed(String fieldName, int fieldLength);
 
+    String promptFieldNeedContainAtSign();
+
     String contactGeneratePassword();
 
     String contactHasAccount();
