@@ -472,8 +472,14 @@ public class CompanyServiceImpl implements CompanyService {
                 && company.getCname() != null
                 && !company.getCname().matches(CrmConstants.Masks.COMPANY_NAME_ILLEGAL_CHARS)
                 && !company.getCname().trim().isEmpty()
-                && (company.getParentCompanyId() == null || isEmpty(company.getChildCompanies()) )
-                && !checkCompanyExists(company.getCname(), company.getId());
+                && (company.getParentCompanyId() == null || isEmpty(company.getChildCompanies()))
+                && !checkCompanyExists(company.getCname(), company.getId())
+                && isValidSubscriptionsLangCode(company);
+    }
+
+    private boolean isValidSubscriptionsLangCode(Company company) {
+        return company.getSubscriptions() == null || company.getSubscriptions().stream()
+                .allMatch(sub -> sub.getLangCode() == null || "ru".equals(sub.getLangCode()) || "en".equals(sub.getLangCode()));
     }
 
     private boolean checkCompanyExists (String name, Long excludeId) {
