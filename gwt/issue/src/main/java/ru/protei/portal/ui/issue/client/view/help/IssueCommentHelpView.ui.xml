@@ -2,6 +2,6 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
     <g:HTMLPanel>
-        <div ui:field="helpTextContainer" class="adding_issue_comment_help"/>
+        <div ui:field="helpTextContainer" class="issue_comment_help"/>
     </g:HTMLPanel>
 </ui:UiBinder>

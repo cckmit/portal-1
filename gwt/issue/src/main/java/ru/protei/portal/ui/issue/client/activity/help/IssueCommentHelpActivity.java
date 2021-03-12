@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.issue.client.activity.issuecommenthelp;
+package ru.protei.portal.ui.issue.client.activity.help;
 
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
@@ -10,7 +10,7 @@ import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.service.AppServiceAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
-public abstract class AddingIssueCommentHelpActivity implements Activity, AbstractAddingIssueCommentHelpActivity {
+public abstract class IssueCommentHelpActivity implements Activity, AbstractIssueCommentHelpActivity {
 
     @Inject
     public void init() {
@@ -23,7 +23,7 @@ public abstract class AddingIssueCommentHelpActivity implements Activity, Abstra
     }
 
     @Event
-    public void onAddingCommentShow(IssueEvents.ShowAddingIssueCommentHelp event) {
+    public void onAddingCommentShow(IssueEvents.ShowIssueCommentHelp event) {
         fireEvent(new ActionBarEvents.Clear());
         view.helpTextContainer().setInnerHTML("");
 
@@ -34,13 +34,13 @@ public abstract class AddingIssueCommentHelpActivity implements Activity, Abstra
     }
 
     private void fillView() {
-        appService.getAddingIssueCommentHelpText(
+        appService.getIssueCommentHelpText(
                 LocaleInfo.getCurrentLocale().getLocaleName(),
                 new FluentCallback<String>().withSuccess(text -> view.helpTextContainer().setInnerHTML(text)));
     }
 
     @Inject
-    AbstractAddingIssueCommentHelpView view;
+    AbstractIssueCommentHelpView view;
 
     @Inject
     AppServiceAsync appService;

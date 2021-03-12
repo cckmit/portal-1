@@ -17,10 +17,7 @@ import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.Interval;
-import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
-import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.util.DiffCollectionResult;
-import ru.protei.portal.core.model.util.TransliterationUtils;
+import ru.protei.portal.core.model.util.*;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.renderer.HTMLRenderer;
@@ -77,7 +74,7 @@ public class TemplateServiceImpl implements TemplateService {
     public PreparedTemplate getCrmEmailNotificationBody(
             AssembledCaseEvent event, List<CaseComment> caseComments, Collection<Attachment> attachments,
             DiffCollectionResult<LinkData> mergeLinks, boolean isProteiRecipients, String urlTemplate, Collection<String> recipients,
-            EnumLangUtil enumLangUtil, String addingIssueCommentHelp) {
+            EnumLangUtil enumLangUtil, String issueCommentHelpUrl) {
         CaseObject newState = event.getCaseObject();
         En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(newState);
 
@@ -120,7 +117,7 @@ public class TemplateServiceImpl implements TemplateService {
 
         templateModel.put( "caseComments",  getCommentsModelKeys(caseComments, event.getAddedCaseComments(), event.getChangedCaseComments(), event.getRemovedCaseComments(), textMarkup));
 
-        templateModel.put("addingIssueCommentHelp", addingIssueCommentHelp);
+        templateModel.put("issueCommentHelpUrl", issueCommentHelpUrl);
 
         PreparedTemplate template = new PreparedTemplate( "notification/email/crm.body.%s.ftl" );
         template.setModel( templateModel );
@@ -134,6 +131,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("TimeElapsedFormatter", new WorkTimeFormatter());
         templateModel.put("TranslitUtils", new TransliterationUtils());
         templateModel.put("EnumLangUtil", enumLangUtil);
+        templateModel.put("IssueCommentHelpLangUtil", new IssueCommentHelpLangUtil());
         return templateModel;
     }
 

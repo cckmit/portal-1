@@ -40,8 +40,8 @@
                                             </div>
                                         </fileuploader:AttachmentUploader>
                                         <div class="text-muted pull-right">
-                                            <small ui:field="addingIssueCommentHelpLabel"/>
-                                            <g:Anchor styleName="far fa-question-circle" ui:field="addingIssueCommentHelpLink" target="_blank"/>
+                                            <small ui:field="helpLabel"/>
+                                            <g:Anchor styleName="far fa-question-circle" ui:field="helpLink" target="_blank"/>
                                         </div>
 
                                     </div>

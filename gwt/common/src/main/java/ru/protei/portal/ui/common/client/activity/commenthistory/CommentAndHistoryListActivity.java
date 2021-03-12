@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.ent.CommentsAndHistories.CommentOrHistory;
 import ru.protei.portal.core.model.event.CaseCommentRemovedClientEvent;
 import ru.protei.portal.core.model.event.CaseCommentSavedClientEvent;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.ValidationResult;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.ConfigStorage;
@@ -112,9 +113,9 @@ public abstract class CommentAndHistoryListActivity
         view.setUserIcon(AvatarUtils.getAvatarUrl(profile));
         view.setNewCommentHidden(!isModifyEnabled);
         view.setNewCommentDisabled(!isNewCommentEnabled);
-        view.setAddingIssueCommentHelpLink(textMarkup == En_TextMarkup.MARKDOWN ? lang.textMarkdownSupport()
-                                                                                : lang.textJiraWikiMarkupSupport(),
-                                                                                  "#addingIssueCommentHelp");
+        view.setIssueCommentHelpLink(textMarkup == En_TextMarkup.MARKDOWN ? lang.textMarkdownSupport()
+                                                                          : lang.textJiraWikiMarkupSupport(),
+                                                                            CrmConstants.IssueCommentHelp.LINK);
         view.setExtendedPrivacyTypeAndResetSelector(event.extendedPrivacyType);
         view.getPrivacyVisibility().setVisible(isPrivateVisible);
 
@@ -277,7 +278,7 @@ public abstract class CommentAndHistoryListActivity
 
     @Override
     public void onAddingCommentHelpLinkClicked() {
-        fireEvent(new IssueEvents.ShowAddingIssueCommentHelp());
+        fireEvent(new IssueEvents.ShowIssueCommentHelp());
     }
 
     private void removeAttachment(Long id, Runnable successAction) {

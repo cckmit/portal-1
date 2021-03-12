@@ -8,7 +8,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.config.ExternalLinksHtml;
-import ru.protei.portal.config.AddingIssueCommentHelpTextConverter;
+import ru.protei.portal.config.IssueCommentHelpTextConverter;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.ui.common.client.service.AppService;
 import ru.protei.portal.ui.common.shared.model.ClientConfigData;
@@ -40,9 +40,9 @@ public class AppServiceImpl extends RemoteServiceServlet implements AppService {
     }
 
     @Override
-    public String getAddingIssueCommentHelpText(String localeName) {
-        log.info("getAddingIssueCommentHelpText for locale " + localeName);
-        return addingIssueCommentHelpTextConverter.getText(localeName);
+    public String getIssueCommentHelpText(String localeName) {
+        log.info("getIssueCommentHelpText for locale " + localeName);
+        return issueCommentHelpTextConverter.getText(localeName);
     }
 
     @Autowired
@@ -55,7 +55,7 @@ public class AppServiceImpl extends RemoteServiceServlet implements AppService {
     ExternalLinksHtml externalLinksHtml;
 
     @Autowired
-    AddingIssueCommentHelpTextConverter addingIssueCommentHelpTextConverter;
+    IssueCommentHelpTextConverter issueCommentHelpTextConverter;
 
     private static final Logger log = LoggerFactory.getLogger(AppServiceImpl.class.getName());
 }

@@ -12,9 +12,9 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.Charset;
 
-public class AddingIssueCommentHelpTextConverter implements InitializingBean {
+public class IssueCommentHelpTextConverter implements InitializingBean {
 
-    private static Logger log = LoggerFactory.getLogger(AddingIssueCommentHelpTextConverter.class);
+    private static Logger log = LoggerFactory.getLogger(IssueCommentHelpTextConverter.class);
 
     private final String fileNameRu = "help_ru.html";
     private final String fileNameEn = "help_en.html";

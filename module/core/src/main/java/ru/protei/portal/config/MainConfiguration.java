@@ -1113,8 +1113,8 @@ public class MainConfiguration {
     }
 
     @Bean
-    AddingIssueCommentHelpTextConverter getHtmlToStringConverter() {
-        return new AddingIssueCommentHelpTextConverter();
+    IssueCommentHelpTextConverter getHtmlToStringConverter() {
+        return new IssueCommentHelpTextConverter();
     }
 
     @Bean

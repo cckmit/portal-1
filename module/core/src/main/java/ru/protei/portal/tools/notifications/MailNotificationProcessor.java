@@ -26,6 +26,7 @@ import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.struct.ReplaceLoginWithUsernameInfo;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
@@ -207,8 +208,8 @@ public class MailNotificationProcessor {
         return baseUrl + config.data().getMailNotificationConfig().getCrmProjectUrl();
     }
 
-    public String getAddingIssueCommentHelpUrl(String crmUrl, String locale) {
-        return crmUrl + "?locale=" + locale + "#addingIssueCommentHelp";
+    public String getIssueCommentHelpUrl(String crmUrl) {
+        return crmUrl + "?locale=%" + CrmConstants.IssueCommentHelp.LINK;
     }
 
     private boolean isPrivateNotification(AssembledCaseEvent event) {
@@ -254,6 +255,15 @@ public class MailNotificationProcessor {
 
         List<CaseComment> mailComments = stream(comments).filter(comment -> comment.getText() != null).collect(Collectors.toList());
 
+        PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(event, mailComments, attachments, linksToTasks,
+                isProteiRecipients, crmCaseUrl, recipients, new EnumLangUtil(lang),
+                getIssueCommentHelpUrl(getCrmUrl(isProteiRecipients)));
+
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for caseId={}", caseObject.getId());
+            return;
+        }
+
         PreparedTemplate subjectTemplate = templateService.getCrmEmailNotificationSubject(event, event.getInitiator());
         if (subjectTemplate == null) {
             log.error("Failed to prepare subject template for caseId={}", caseObject.getId());
@@ -261,15 +271,6 @@ public class MailNotificationProcessor {
         }
 
         notifiers.forEach((entry) -> {
-            PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(event, mailComments, attachments, linksToTasks,
-                    isProteiRecipients, crmCaseUrl, recipients, new EnumLangUtil(lang),
-                    getAddingIssueCommentHelpUrl(getCrmUrl(isProteiRecipients), entry.getLangCode()));
-
-            if (bodyTemplate == null) {
-                log.error("Failed to prepare body template for caseId={}", caseObject.getId());
-                return;
-            }
-
             MimeMessageHeadersFacade headers =  makeHeaders( caseObject.getCaseNumber(), lastMessageId, entry.hashCode() );
 
             String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), isProteiRecipients);

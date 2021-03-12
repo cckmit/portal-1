@@ -218,9 +218,10 @@ public class IssueEvents {
     }
 
     /**
-     * Показать страницу добавления комментария к Обращению
+     * Показать страницу с инструкцией по добавлению комментария
+     * к Обращению и справкой по Markdown/Markup-разметке
      */
-    @Url(value = "addingIssueCommentHelp", primary = true)
-    public static class ShowAddingIssueCommentHelp {}
+    @Url(value = "issueCommentHelp", primary = true)
+    public static class ShowIssueCommentHelp {}
 }
 
