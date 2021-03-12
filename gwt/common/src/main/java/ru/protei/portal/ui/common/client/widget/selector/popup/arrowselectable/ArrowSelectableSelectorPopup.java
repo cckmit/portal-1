@@ -1,19 +1,23 @@
-package ru.protei.portal.ui.common.client.selector.popup.arrowselectable;
+package ru.protei.portal.ui.common.client.widget.selector.popup.arrowselectable;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
 import ru.protei.portal.ui.common.client.selector.SelectorItemChangeHandler;
-import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
-import ru.protei.portal.ui.common.client.widget.composite.popper.PopperComposite;
+import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopupWithSearch;
 
 import static java.util.Optional.of;
 
-public class ArrowSelectableSelectorPopup extends PopperComposite {
+public class ArrowSelectableSelectorPopup extends SelectorPopupWithSearch {
+    public ArrowSelectableSelectorPopup(int valueChangeKeyCode,
+                                        boolean isAutoCloseable) {
+
+        this(valueChangeKeyCode, isAutoCloseable, null);
+    }
+
     public ArrowSelectableSelectorPopup(int valueChangeKeyCode,
                                         boolean isAutoCloseable,
                                         ArrowSelectableSelectorHandler arrowSelectableSelectorHandler) {
@@ -24,9 +28,12 @@ public class ArrowSelectableSelectorPopup extends PopperComposite {
 
         this.valueChangeKeyCode = valueChangeKeyCode;
         this.isAutoCloseable = isAutoCloseable;
+
+        initArrowSelectablePopupHandlers(this.arrowSelectableSelectorHandler, valueChangeKeyCode);
     }
 
-    public void focus() {
+    @Override
+    public void focusPopup() {
         Widget nextWidget = getNext(childContainer, null);
 
         if (nextWidget == null) {
@@ -36,14 +43,9 @@ public class ArrowSelectableSelectorPopup extends PopperComposite {
         }
     }
 
+    @Override
     public void addValueChangeHandlers(SelectorItemChangeHandler selectorItem) {
         addValueChangeHandlers(selectorItem, valueChangeKeyCode, isAutoCloseable, arrowSelectableSelectorHandler);
-    }
-
-    protected void initArrowSelectablePopupHandlers(CleanableSearchBox search, ComplexPanel childContainer) {
-        this.search = search;
-        this.childContainer = childContainer;
-        initArrowSelectablePopupHandlers(arrowSelectableSelectorHandler, valueChangeKeyCode);
     }
 
     private void initArrowSelectablePopupHandlers(ArrowSelectableSelectorHandler arrowSelectableSelectorHandler, int valueChangeKeyCode) {
@@ -55,12 +57,12 @@ public class ArrowSelectableSelectorPopup extends PopperComposite {
 
             if (event.getNativeKeyCode() == KeyCodes.KEY_DOWN || event.getNativeKeyCode() == KeyCodes.KEY_TAB) {
                 event.preventDefault();
-                focus();
+                focusPopup();
             }
         }, KeyDownEvent.getType());
 
         addCloseHandler(event -> currentWidget = null);
-        
+
         childContainer.addDomHandler(event -> arrowSelectableSelectorHandler.onBlurSelector(), MouseOverEvent.getType());
         childContainer.addDomHandler(event -> onKeyDown(event, childContainer, arrowSelectableSelectorHandler, valueChangeKeyCode), KeyDownEvent.getType());
     }
@@ -192,9 +194,6 @@ public class ArrowSelectableSelectorPopup extends PopperComposite {
     }
 
     private Widget currentWidget;
-
-    private CleanableSearchBox search;
-    private ComplexPanel childContainer;
 
     private final int valueChangeKeyCode;
     private final boolean isAutoCloseable;

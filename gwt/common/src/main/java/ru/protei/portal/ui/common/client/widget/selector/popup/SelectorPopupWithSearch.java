@@ -1,15 +1,20 @@
-package ru.protei.portal.ui.common.client.selector.popup;
+package ru.protei.portal.ui.common.client.widget.selector.popup;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.event.dom.client.*;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ScrollEvent;
+import com.google.gwt.event.dom.client.ScrollHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.Label;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.events.AddHandler;
@@ -17,9 +22,8 @@ import ru.protei.portal.ui.common.client.events.HasAddHandlers;
 import ru.protei.portal.ui.common.client.events.InputEvent;
 import ru.protei.portal.ui.common.client.selector.SearchHandler;
 import ru.protei.portal.ui.common.client.selector.SelectorPopup;
-import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorHandler;
-import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
+import ru.protei.portal.ui.common.client.widget.composite.popper.PopperComposite;
 
 import java.util.logging.Logger;
 
@@ -28,19 +32,10 @@ import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 /**
  * Вид попапа
  */
-public class SelectorPopupWithSearch extends ArrowSelectableSelectorPopup
+public abstract class SelectorPopupWithSearch extends PopperComposite
         implements SelectorPopup, HasAddHandlers {
 
-    public SelectorPopupWithSearch(int valueChangeKeyCode, boolean isAutoCloseable) {
-        this(valueChangeKeyCode, isAutoCloseable, null);
-    }
-
-    public SelectorPopupWithSearch(int valueChangeKeyCode,
-                                   boolean isAutoCloseable,
-                                   ArrowSelectableSelectorHandler arrowSelectableSelectorHandler) {
-
-        super(valueChangeKeyCode, isAutoCloseable, arrowSelectableSelectorHandler);
-
+    public SelectorPopupWithSearch() {
         initWidget(ourUiBinder.createAndBindUi(this));
         setAutoHide(true);
         setAutoResize(true);
@@ -52,8 +47,6 @@ public class SelectorPopupWithSearch extends ArrowSelectableSelectorPopup
                 popupHandler.onPopupHide(this);
             }
         });
-
-        initArrowSelectablePopupHandlers(search, childContainer);
     }
 
     @Override
@@ -85,14 +78,14 @@ public class SelectorPopupWithSearch extends ArrowSelectableSelectorPopup
     }
 
     @Override
-    public void showNear(Element relative, Placement placement) {
+    public void showNear(Element relative, PopperComposite.Placement placement) {
         addPagingHandler();
         show(relative, placement);
         setFocus(isSearchAutoFocus, isPopupAutoFocus);
     }
 
     @Override
-    public void showNear(Element relative, Placement placement, int skidding, int distance) {
+    public void showNear(Element relative, PopperComposite.Placement placement, int skidding, int distance) {
         addPagingHandler();
         show(relative, placement, skidding, distance);
         setFocus(isSearchAutoFocus, isPopupAutoFocus);
@@ -194,7 +187,7 @@ public class SelectorPopupWithSearch extends ArrowSelectableSelectorPopup
         }
 
         if (isPopupAutoFocus) {
-            focus();
+            focusPopup();
         }
     }
 

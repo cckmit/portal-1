@@ -9,8 +9,9 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Widget;
-import ru.protei.portal.ui.common.client.selector.popup.SelectorPopupWithSearch;
+import ru.protei.portal.ui.common.client.selector.SelectorPopup;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
+import ru.protei.portal.ui.common.client.widget.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
 import ru.protei.portal.ui.common.client.widget.tab.base.Tab;
 import ru.protei.portal.ui.common.client.widget.tab.navitem.TabWidgetNavItem;
 import ru.protei.portal.ui.common.client.widget.tab.pane.TabWidgetPane;
@@ -23,7 +24,7 @@ public class TabWidget extends Tab {
     public TabWidget() {
         initWidget(ourUiBinder.createAndBindUi(this));
         popup.setSearchHandler(null);
-        popup.setAddButton(false);
+        popup.setAddButtonVisibility(false);
     }
 
     public void setTabContentStyleName(String styleName) {
@@ -115,7 +116,7 @@ public class TabWidget extends Tab {
     @UiField
     HTMLPanel tabContent;
 
-    private final SelectorPopupWithSearch popup = new SelectorPopupWithSearch(KeyCodes.KEY_ENTER, true);
+    private final SelectorPopup popup = new ArrowSelectableSelectorPopup(KeyCodes.KEY_ENTER, true);
     private Map<String, SelectorItem> tabNameToNavSelectorItem = new HashMap<>();
 
     interface TabWidgetUiBinder extends UiBinder<HTMLPanel, TabWidget> {}

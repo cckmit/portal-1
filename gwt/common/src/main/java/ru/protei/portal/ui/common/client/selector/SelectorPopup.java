@@ -5,7 +5,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.ui.common.client.events.AddHandler;
-import ru.protei.portal.ui.common.client.selector.popup.PopupHandler;
+import ru.protei.portal.ui.common.client.widget.selector.popup.PopupHandler;
 import ru.protei.portal.ui.common.client.widget.composite.popper.PopperComposite;
 
 public interface SelectorPopup extends IsWidget {
@@ -45,7 +45,7 @@ public interface SelectorPopup extends IsWidget {
 
     void addValueChangeHandlers(SelectorItemChangeHandler selectorItem);
 
-    void focus();
+    void focusPopup();
 
     void setPopupAutoFocus(boolean isPopupAutoFocus);
 }

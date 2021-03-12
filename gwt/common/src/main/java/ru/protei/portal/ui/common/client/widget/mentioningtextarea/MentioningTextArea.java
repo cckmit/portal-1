@@ -7,11 +7,11 @@ import com.google.gwt.user.client.Timer;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.events.InputEvent;
 import ru.protei.portal.ui.common.client.selector.SelectorPopup;
-import ru.protei.portal.ui.common.client.selector.popup.SelectorPopupWithSearch;
-import ru.protei.portal.ui.common.client.selector.popup.arrowselectable.ArrowSelectableSelectorHandler;
 import ru.protei.portal.ui.common.client.widget.dndautoresizetextarea.DndAutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.selector.login.UserLoginModel;
 import ru.protei.portal.ui.common.client.widget.selector.login.UserLoginSelector;
+import ru.protei.portal.ui.common.client.widget.selector.popup.arrowselectable.ArrowSelectableSelectorHandler;
+import ru.protei.portal.ui.common.client.widget.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
 
 public class MentioningTextArea extends DndAutoResizeTextArea implements ArrowSelectableSelectorHandler {
     @Inject
@@ -23,10 +23,9 @@ public class MentioningTextArea extends DndAutoResizeTextArea implements ArrowSe
         this.changeTimer = initTimer(userLoginModel, userLoginSelector);
 
         SelectorPopup selectorPopup
-                = new SelectorPopupWithSearch(KeyCodes.KEY_ENTER, true, this);
+                = new ArrowSelectableSelectorPopup(KeyCodes.KEY_ENTER, true, this);
 
         selectorPopup.addStyleName("user-login-selector");
-        selectorPopup.setPopupAutoFocus(false);
 
         initUserLoginSelector(userLoginModel, userLoginSelector, selectorPopup);
 
@@ -68,7 +67,7 @@ public class MentioningTextArea extends DndAutoResizeTextArea implements ArrowSe
 
         if (event.getNativeKeyCode() == KeyCodes.KEY_DOWN) {
             event.preventDefault();
-            selectorPopup.focus();
+            selectorPopup.focusPopup();
         }
     }
 

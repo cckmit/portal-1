@@ -13,9 +13,9 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.selector.popup.SelectorPopupWithSearch;
 import ru.protei.portal.ui.common.client.widget.selector.event.*;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
+import ru.protei.portal.ui.common.client.widget.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
 
 import javax.annotation.PostConstruct;
 import java.util.Collection;
@@ -295,7 +295,7 @@ public abstract class Selector<T>
     }
 
     protected void selectFirstElement() {
-        popup.focus();
+        popup.focusPopup();
     }
 
     private SelectorItem buildItemView(String name, String styleName) {
@@ -319,8 +319,8 @@ public abstract class Selector<T>
     @Inject
     Provider<SelectorItem> itemFactory;
     protected DisplayOption nullItemOption;
-    protected SelectorPopupWithSearch popup
-            = new SelectorPopupWithSearch(KeyCodes.KEY_ENTER, true);
+    protected ArrowSelectableSelectorPopup popup
+            = new ArrowSelectableSelectorPopup(KeyCodes.KEY_ENTER, true);
 
     protected boolean hasNullValue = true;
     private boolean isHideNullValue = false;

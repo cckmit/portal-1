@@ -20,9 +20,9 @@ import ru.protei.portal.ui.common.client.selector.SelectorItem;
 import ru.protei.portal.ui.common.client.selector.SelectorPopup;
 import ru.protei.portal.ui.common.client.selector.pageable.AbstractPageableSelector;
 import ru.protei.portal.ui.common.client.selector.pageable.MultiValuePageableSelector;
-import ru.protei.portal.ui.common.client.selector.popup.SelectorPopupWithSearch;
 import ru.protei.portal.ui.common.client.widget.selector.item.PopupSelectableItem;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectItemView;
+import ru.protei.portal.ui.common.client.widget.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.ArrayList;
@@ -42,7 +42,7 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
     public InputPopupMultiSelector() {
         initWidget( bsUiBinder.createAndBindUi( this ) );
 
-        SelectorPopup popup = new SelectorPopupWithSearch(KeyCodes.KEY_SPACE, false);
+        SelectorPopup popup = new ArrowSelectableSelectorPopup(KeyCodes.KEY_SPACE, false);
         setPopup(popup);
         setSearchEnabled(true);
 
