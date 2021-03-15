@@ -4,6 +4,7 @@
     <common:ClickHTMLPanel ui:field="root" styleName="d-table-row">
         <div class="d-table-cell select"><g:RadioButton ui:field="radio" name="" styleName="radio"/></div>
         <g:Label ui:field="created" styleName="d-table-cell created"/>
+        <g:Label ui:field="id" styleName="d-table-cell id"/>
         <g:Label ui:field="name" styleName="d-table-cell name"/>
         <g:Label ui:field="products" styleName="d-table-cell products"/>
         <g:Label ui:field="customerType" styleName="d-table-cell customer-type"/>

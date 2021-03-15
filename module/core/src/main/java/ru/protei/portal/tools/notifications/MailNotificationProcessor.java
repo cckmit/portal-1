@@ -492,6 +492,31 @@ public class MailNotificationProcessor {
         }
     }
 
+    @EventListener
+    public void onEmployeeRegistrationProbationAdditionalRecipientsEvent(EmployeeRegistrationProbationAdditionalRecipientsEvent event) {
+        log.info( "onEmployeeRegistrationProbationEvent(): {}", event );
+
+        String employeeFullName = event.getEmployeeFullName();
+        Long employeeId = event.getEmployeeId();
+        List<String> recipients = event.getRecipients();
+
+        recipients.forEach(entry -> {
+            try {
+                String body = templateService.getEmployeeRegistrationProbationHeadOfDepartmentEmailNotificationBody(
+                        employeeId, employeeFullName,
+                        getEmployeeRegistrationUrl(), entry );
+
+                String subject = templateService.getEmployeeRegistrationProbationHeadOfDepartmentEmailNotificationSubject(
+                        employeeFullName );
+
+                sendMail( entry, subject, body, getFromPortalAddress() );
+
+            } catch (Exception e) {
+                log.warn( "Failed to sent employee probation notification: employeeId={}", employeeId, e );
+            }
+        });
+    }
+
     // -----------------------
     // Pause time notifications
     // -----------------------

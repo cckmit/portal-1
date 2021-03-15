@@ -116,7 +116,7 @@ public abstract class CommentAndHistoryListActivity
         view.setIssueCommentHelpLink(textMarkup == En_TextMarkup.MARKDOWN ? lang.textMarkdownSupport()
                                                                           : lang.textJiraWikiMarkupSupport(),
                                                                             CrmConstants.IssueCommentHelp.LINK);
-        view.setExtendedPrivacyTypeAndResetSelector(event.extendedPrivacyType);
+        view.setPrivacyTypeSelector(event.extendedPrivacyType);
         view.getPrivacyVisibility().setVisible(isPrivateVisible);
 
         view.setCaseCreatorId(event.caseCreatorId);

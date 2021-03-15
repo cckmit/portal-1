@@ -64,7 +64,7 @@ public interface AbstractCommentAndHistoryListView extends IsWidget {
 
     boolean isAttached();
 
-    void setExtendedPrivacyTypeAndResetSelector(boolean extendedPrivacyType);
+    void setPrivacyTypeSelector(boolean extendedPrivacyType);
 
     HasValue<En_CaseCommentPrivacyType> privacyType();
 

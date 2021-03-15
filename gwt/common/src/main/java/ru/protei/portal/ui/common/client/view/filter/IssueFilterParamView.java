@@ -327,11 +327,12 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
             case CASE_OBJECTS: {
                 String searchString = search.getValue();
                 query.setCaseNumbers(searchCaseNumber(searchString, searchByComments.getValue()));
-                if (query.getCaseNumbers() == null) {
-                    query.setSearchStringAtComments(searchByComments.getValue());
-                    query.setSearchString(isBlank(searchString) ? null : searchString);
-                    query.setAlternativeSearchString( makeAlternativeSearchString( searchString));
+                if (isSearchOnlyByCaseNumber(query)) {
+                    break;
                 }
+                query.setSearchStringAtComments(searchByComments.getValue());
+                query.setSearchString(isBlank(searchString) ? null : searchString);
+                query.setAlternativeSearchString( makeAlternativeSearchString( searchString));
                 query.setViewPrivate(searchPrivate.getValue());
                 query.setPersonIdToIsFavorite(searchFavorite.getValue() == null ? null : new Pair<>(policyService.getProfileId(), searchFavorite.getValue()));
                 query.setSortField(sortField.getValue());
@@ -382,8 +383,28 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         state.setFilter(caseStateFilter);
     }
 
+    @Override
+    public int statesSize() {
+        return state.getValues().size();
+    }
+
+    @Override
+    public int importanceSize() {
+        return importance.getValues().size();
+    }
+
+    @Override
+    public void resetRanges() {
+        dateCreatedRange.setValue(null);
+        dateModifiedRange.setValue(null);
+    }
+
     private void fillDateRanges (TypedSelectorRangePicker rangePicker) {
         rangePicker.fillSelector(En_DateIntervalType.issueTypes());
+    }
+
+    private boolean isSearchOnlyByCaseNumber(CaseQuery query) {
+        return query.getCaseNumbers() != null;
     }
 
     @UiHandler("search")
@@ -475,6 +496,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
     @UiHandler("plan")
     public void onPlanChanged(ValueChangeEvent<PlanOption> event) {
+        onPlanChanged(event.getValue() != null);
         onFilterChanged();
     }
 
@@ -672,6 +694,12 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     private void onFilterChanged() {
         if (model != null) {
             model.onUserFilterChanged();
+        }
+    }
+
+    private void onPlanChanged(boolean isPresent) {
+        if (model != null) {
+            model.onPlanPresent(isPresent);
         }
     }
 

@@ -5,6 +5,7 @@ import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -127,6 +128,16 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     }
 
     @Override
+    public HasWidgets probationEmailsContainer() {
+        return probationEmailsContainer;
+    }
+
+    @Override
+    public HasVisibility probationEmailsContainerVisibility() {
+        return probationEmailsGeneralContainer;
+    }
+
+    @Override
     public HasWidgets tableContainer() {
         return contactsContainer;
     }
@@ -177,6 +188,13 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         timer.schedule( 300 );
     }
 
+    @UiHandler("companyCategory")
+    public void onCategoryChanged(ValueChangeEvent<En_CompanyCategory> event) {
+        if (activity != null) {
+            activity.onCategoryChanged();
+        }
+    }
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
@@ -190,6 +208,8 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         autoOpenIssues.ensureDebugId(DebugIds.COMPANY.AUTO_OPEN_ISSUES);
         subscriptions.ensureDebugId(DebugIds.COMPANY.SUBSCRIPTIONS);
         webSite.ensureDebugId(DebugIds.COMPANY.WEB_SITE);
+        probationEmailsGeneralContainer.ensureDebugId(DebugIds.COMPANY.PROBATION_GENERAL_EMAILS);
+        probationEmailsContainer.ensureDebugId(DebugIds.COMPANY.PROBATION_EMAILS);
         phonesContainer.ensureDebugId(DebugIds.COMPANY.PHONES);
         emailsContainer.ensureDebugId(DebugIds.COMPANY.EMAILS);
         actualAddress.ensureDebugId(DebugIds.COMPANY.ACTUAL_ADDRESS);
@@ -237,6 +257,12 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
 
     @UiField
     CheckBox autoOpenIssues;
+
+    @UiField
+    HTMLPanel probationEmailsGeneralContainer;
+
+    @UiField
+    HTMLPanel probationEmailsContainer;
 
     @UiField
     HTMLPanel phonesContainer;

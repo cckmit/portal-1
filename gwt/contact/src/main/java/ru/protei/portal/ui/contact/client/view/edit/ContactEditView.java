@@ -61,7 +61,6 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         secondNameErrorLabel.setText(lang.promptFieldLengthExceed(secondNameLabel(), SECOND_NAME_SIZE));
         lastNameErrorLabel.setText(lang.promptFieldLengthExceed(lastNameLabel(), LAST_NAME_SIZE));
         shortNameErrorLabel.setText(lang.promptFieldLengthExceed(shortNameLabel(), SHORT_NAME_SIZE));
-        loginErrorLabel.setText(lang.promptFieldLengthExceed(loginLabel(), LOGIN_SIZE));
 
         passwordGenPopup.addApproveHandler(event -> activity.onPasswordGenerationClicked());
         passwordGenPopup.addRejectHandler(event -> password.setFocus(true));
@@ -291,6 +290,11 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     @Override
     public HasVisibility shortNameErrorLabelVisibility() {
         return shortNameErrorLabel;
+    }
+
+    @Override
+    public HasText loginErrorLabel() {
+        return loginErrorLabel;
     }
 
     @Override
@@ -587,7 +591,7 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         @Override
         public void run() {
             if (activity != null) {
-                activity.validateLimitedFields();
+                activity.validateFields();
             }
         }
     };

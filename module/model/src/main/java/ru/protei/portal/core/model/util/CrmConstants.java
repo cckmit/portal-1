@@ -72,6 +72,7 @@ public class CrmConstants {
     }
 
     public interface Masks {
+        String ALL_CHARACTERS = ".*";
         String EMAIL = "^[-a-zA-Z0-9_\\.]+@[-a-zA-Z0-9_\\.]+\\.\\w{2,4}$";
         String ONLY_DIGITS = "^\\d*$";
         String MONEY = "^(\\d+(\\s*\\d+)*([\\.,]\\d{1,2})?|.{0})$";

@@ -15,6 +15,7 @@ import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.util.List;
 
+import static java.lang.Boolean.TRUE;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.StringUtils.length;
 import static ru.protei.portal.core.model.helper.StringUtils.trim;
@@ -28,6 +29,9 @@ public class CaseShortViewDAO_Impl extends PortalBaseJdbcDAO<CaseShortView> impl
     public static final String LEFT_JOIN_CASE_COMMENT = " LEFT JOIN case_comment ON case_object.id = case_comment.CASE_ID";
     public static final String LEFT_JOIN_CASE_TAG =
             " LEFT JOIN case_object_tag on case_object.ID = case_object_tag.case_id join case_tag on case_tag.id = case_object_tag.tag_id";
+    public static final String LEFT_JOIN_HISTORY = " LEFT JOIN history ON case_object.id = history.case_object_id";
+    public static final String LEFT_JOIN_PLAN_ORDER =
+            " LEFT JOIN plan_to_case_object plan ON case_object.id = plan.case_object_id";
 
     @Autowired
     private CaseObjectSqlBuilder caseObjectSqlBuilder;
@@ -83,14 +87,25 @@ public class CaseShortViewDAO_Impl extends PortalBaseJdbcDAO<CaseShortView> impl
         parameters.withOffset(query.getOffset());
         parameters.withLimit(query.getLimit());
         parameters.withSort(TypeConverters.createSort( query ));
-        if (isSearchAtComments(query)) {
-            parameters.withDistinct(true);
-            parameters.withJoins(LEFT_JOIN_CASE_COMMENT);
-        }
 
-        if (isFilterByTagNames(query)) {
-            parameters.withDistinct(true);
-            parameters.withJoins(LEFT_JOIN_CASE_TAG);
+        if (query.getPlanId() != null) {
+            parameters.withDistinct(false);
+            parameters.withJoins(LEFT_JOIN_PLAN_ORDER);
+        } else {
+            String joins = "";
+            if (isSearchAtComments(query)) {
+                joins += LEFT_JOIN_CASE_COMMENT;
+            }
+            if (isFilterByTagNames(query)) {
+                joins += LEFT_JOIN_CASE_TAG;
+            }
+            if (TRUE.equals(query.isCheckImportanceHistory())) {
+                joins += LEFT_JOIN_HISTORY;
+            }
+            if (!joins.equals("")) {
+                parameters.withDistinct(true);
+                parameters.withJoins(joins);
+            }
         }
 
         return parameters;

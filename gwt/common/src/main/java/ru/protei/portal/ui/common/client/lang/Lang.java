@@ -242,6 +242,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String companyWebSite();
 
+    String companyProbationPeriodAddresses();
+
     String errWorkerWithThisPositionAlreadyExist();
 
     String errWorkerWithThisDepartmentAlreadyExist();
@@ -425,6 +427,8 @@ public interface Lang extends Messages, ContactItemLang {
     String goToContacts();
 
     String promptFieldLengthExceed(String fieldName, int fieldLength);
+
+    String promptFieldNeedContainAtSign();
 
     String contactGeneratePassword();
 
@@ -2222,7 +2226,11 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reportNotValidPeriod();
 
-    String reportPeriodNotSelected();
+    String reportCaseObjectIsAnySelectedParamNotPresentError();
+
+    String reportCaseObjectAdditionalLimitError();
+
+    String reportCaseObjectPlanInfo();
 
     String reportPeriodMoreMaxError();
 
@@ -2732,6 +2740,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String roomReservationRemoved();
 
+    String roomReservationRemoveConfirmMessage();
+
     String errRoomReservationFinished();
 
     String errRoomReservationRoomNotAccessible();
@@ -2847,6 +2857,8 @@ public interface Lang extends Messages, ContactItemLang {
     String caseHistory();
 
     String errPlanNotFound();
+
+    String planSort();
 
     String commentNewDisabled();
 

@@ -194,6 +194,12 @@ public class DebugIds {
         String CREATOR_CLEAR_BUTTON = "filter-creator-clear-button";
         String CREATOR_ITEM_CONTAINER = "filter-creator-item-container";
         String COMPANY_DEPRECATED = "filter-company-deprecated";
+        String PLATFORM_NAME_SEARCH_INPUT = "filter-platform-name-search-input";
+        String PLATFORM_NAME_SEARCH_CLEAR_BUTTON = "filter-platform-name-clear_button";
+        String PLATFORM_PARAMETERS_SEARCH_INPUT = "filter-platform-parameters-search-input";
+        String PLATFORM_PARAMETERS_SEARCH_CLEAR_BUTTON = "filter-platform-parameters-clear-button";
+        String PLATFORM_SERVER_IP_SEARCH_INPUT = "filter-platform-server-ip-search-input";
+        String PLATFORM_SERVER_IP_SEARCH_CLEAR_BUTTON = "filter-platform-server-ip-clear-button";
 
         String CREATE_BUTTON = "filter-create-button";
         String SAVE_BUTTON = "filter-save-button";
@@ -208,6 +214,8 @@ public class DebugIds {
         String OVERDUE_DEADLINES_YES_BUTTON = "filter-overdue-deadlines-yes-button";
         String OVERDUE_DEADLINES_NO_BUTTON = "filter-overdue-deadlines-no-button";
         String OVERDUE_DEADLINES_NOT_DEFINED_BUTTON = "filter-overdue-deadlines-not-defined-button";
+
+        String COMMENT_INPUT = "filter-comment-input";
 
         interface USER_FILTER {
             String FILTERS_BUTTON = "filter-user-filters-button";
@@ -526,6 +534,8 @@ public class DebugIds {
         String COMMENT = "company-comment";
         String AUTO_OPEN_ISSUES = "company-auto-open-issues";
         String SUBSCRIPTIONS = "company-subscriptions";
+        String PROBATION_GENERAL_EMAILS = "company-probation-general-emails";
+        String PROBATION_EMAILS = "company-probation-emails";
         interface GROUP {
             String ADD_BUTTON = "company-subscriptions-add-button";
 
