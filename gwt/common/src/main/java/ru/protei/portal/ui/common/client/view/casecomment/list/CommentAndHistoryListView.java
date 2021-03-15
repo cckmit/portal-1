@@ -144,7 +144,7 @@ public class CommentAndHistoryListView
             helpLabel.addClassName( HIDE );
             helpLink.addStyleName( HIDE );
         } else {
-            helpLabel.setInnerText(label);
+            helpLabel.setInnerHTML(label);
             helpLabel.removeClassName( HIDE );
 
             helpLink.setHref(link);
