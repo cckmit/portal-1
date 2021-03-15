@@ -133,7 +133,7 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         }
 
         if (!getPopup().isVisible()) {
-            getPopup().getChildContainer().clear();
+            getPopup().clear();
             getSelector().fillFromBegin( this );
             getPopup().showNear( select2.getElement() );
         }

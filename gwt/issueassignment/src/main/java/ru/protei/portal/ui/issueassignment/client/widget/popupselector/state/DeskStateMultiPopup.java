@@ -38,7 +38,7 @@ public class DeskStateMultiPopup extends PopupMultiSelector<EntityOption> {
         this.relative = relative;
         setFilter(state -> !exclude.contains(state));
         setPopupUnloadHandler(() -> onDone.accept(getValue()));
-        getPopup().getChildContainer().clear();
+        getPopup().clear();
         getSelector().fillFromBegin(this);
         RootPanel.get().add(getPopup());
         relative.appendChild(getPopup().asWidget().getElement());

@@ -92,7 +92,7 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
         if (getPopup().isVisible()) {
             button.getElement().blur();
         } else {
-            getPopup().getChildContainer().clear();
+            getPopup().clear();
             getSelector().fillFromBegin(this);
             checkNoElements();
             getPopup().showNear(button.getElement());

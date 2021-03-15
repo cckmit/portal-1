@@ -26,6 +26,7 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
         initWidget(ourUiBinder.createAndBindUi(this));
         popup.setSearchHandler(null);
         popup.setAddButtonVisibility(false);
+        navDropdownTabsSelectedContainer.add(popup);
     }
 
     public void setActivity(WizardWidgetActivity activity) {
@@ -95,7 +96,7 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
         WizardWidgetNavItem navItem = makeNavItem(pane);
         SelectorItem selectorItem = makeSelectorItem(pane);
 
-        popup.getChildContainer().add(selectorItem);
+        popup.addItem(selectorItem);
         navTabs.add(navItem);
         tabNameToNavItem.put(pane.getTabName(), navItem);
         tabNameToPane.put(pane.getTabName(), pane);
@@ -128,7 +129,7 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
         navTabs.clear();
         tabNameToNavItem.clear();
         tabNames.clear();
-        popup.getChildContainer().clear();
+        popup.clear();
     }
 
     public void selectFirstTab() {
@@ -271,6 +272,8 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
 
     @UiField
     HTMLPanel navTabs;
+    @UiField
+    HTMLPanel navDropdownTabsSelectedContainer;
     @UiField
     InlineLabel navDropdownTabsSelected;
     @UiField

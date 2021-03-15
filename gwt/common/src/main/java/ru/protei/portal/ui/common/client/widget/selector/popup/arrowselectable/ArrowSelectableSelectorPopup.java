@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.widget.selector.popup.arrowselectable;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
@@ -7,6 +8,7 @@ import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
 import ru.protei.portal.ui.common.client.selector.SelectorItemChangeHandler;
+import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopupWithSearch;
 
 import static java.util.Optional.of;
@@ -44,11 +46,14 @@ public class ArrowSelectableSelectorPopup extends SelectorPopupWithSearch {
     }
 
     @Override
-    public void addValueChangeHandlers(SelectorItemChangeHandler selectorItem) {
+    public void addItem(SelectorItemChangeHandler selectorItem) {
         addValueChangeHandlers(selectorItem, valueChangeKeyCode, isAutoCloseable, arrowSelectableSelectorHandler);
+        childContainer.add(selectorItem);
     }
 
-    private void initArrowSelectablePopupHandlers(ArrowSelectableSelectorHandler arrowSelectableSelectorHandler, int valueChangeKeyCode) {
+    private void initArrowSelectablePopupHandlers(ArrowSelectableSelectorHandler arrowSelectableSelectorHandler,
+                                                  int valueChangeKeyCode) {
+
         search.addDomHandler(event -> {
             if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE) {
                 event.preventDefault();
@@ -64,10 +69,13 @@ public class ArrowSelectableSelectorPopup extends SelectorPopupWithSearch {
         addCloseHandler(event -> currentWidget = null);
 
         childContainer.addDomHandler(event -> arrowSelectableSelectorHandler.onBlurSelector(), MouseOverEvent.getType());
-        childContainer.addDomHandler(event -> onKeyDown(event, childContainer, arrowSelectableSelectorHandler, valueChangeKeyCode), KeyDownEvent.getType());
+        childContainer.addDomHandler(event ->
+                onKeyDown(event, childContainer, arrowSelectableSelectorHandler, valueChangeKeyCode), KeyDownEvent.getType()
+        );
     }
 
-    private void onKeyDown(KeyDownEvent event, ComplexPanel childContainer, ArrowSelectableSelectorHandler arrowSelectableSelectorHandler, int valueChangeKeyCode) {
+    private void onKeyDown(KeyDownEvent event, ComplexPanel childContainer,
+                           ArrowSelectableSelectorHandler arrowSelectableSelectorHandler, int valueChangeKeyCode) {
         if (KeyCodes.KEY_ESCAPE == event.getNativeKeyCode()) {
             event.preventDefault();
             arrowSelectableSelectorHandler.escapeFromSelector();

@@ -149,7 +149,7 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
     }
 
     public void onShowPopupClicked(HTMLPanel button) {
-        getPopup().getChildContainer().clear();
+        getPopup().clear();
         getSelector().fillFromBegin(this);
         getPopup().showNear(button.getElement());
     }

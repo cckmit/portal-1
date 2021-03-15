@@ -11,10 +11,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.events.AddHandler;
@@ -50,12 +47,22 @@ public abstract class SelectorPopupWithSearch extends PopperComposite
     }
 
     @Override
-    public HasWidgets getChildContainer() {
-        return childContainer;
+    public void clear() {
+        childContainer.clear();
     }
 
     @Override
-    public HandlerRegistration addAddHandler( AddHandler handler) {
+    public void remove(Widget widget) {
+        childContainer.remove(widget);
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return childContainer.getWidgetCount() == 0;
+    }
+
+    @Override
+    public HandlerRegistration addAddHandler(AddHandler handler) {
         return addHandler(handler, AddEvent.getType());
     }
 
@@ -74,21 +81,21 @@ public abstract class SelectorPopupWithSearch extends PopperComposite
     public void showNear(Element relative) {
         addPagingHandler();
         show(relative);
-        setFocus(isSearchAutoFocus, isPopupAutoFocus);
+        manageFocus(isSearchAutoFocus, isPopupAutoFocus);
     }
 
     @Override
     public void showNear(Element relative, PopperComposite.Placement placement) {
         addPagingHandler();
         show(relative, placement);
-        setFocus(isSearchAutoFocus, isPopupAutoFocus);
+        manageFocus(isSearchAutoFocus, isPopupAutoFocus);
     }
 
     @Override
     public void showNear(Element relative, PopperComposite.Placement placement, int skidding, int distance) {
         addPagingHandler();
         show(relative, placement, skidding, distance);
-        setFocus(isSearchAutoFocus, isPopupAutoFocus);
+        manageFocus(isSearchAutoFocus, isPopupAutoFocus);
     }
 
     @Override
@@ -180,7 +187,7 @@ public abstract class SelectorPopupWithSearch extends PopperComposite
         this.isSearchAutoFocus = isSearchAutoFocus;
     }
 
-    private void setFocus(boolean isSearchAutoFocus, boolean isPopupAutoFocus) {
+    private void manageFocus(boolean isSearchAutoFocus, boolean isPopupAutoFocus) {
         if (search.isVisible()) {
             search.setFocus(isSearchAutoFocus);
             return;

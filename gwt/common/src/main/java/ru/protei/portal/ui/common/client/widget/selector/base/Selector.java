@@ -146,12 +146,12 @@ public abstract class Selector<T>
             itemToDisplayOptionModel.put(value, option);
         }
 
-        popup.addValueChangeHandlers(itemView);
-        popup.getChildContainer().add(itemView.asWidget());
+        popup.addItem(itemView);
     }
 
     public void clearOptions() {
-        popup.getChildContainer().clear();
+        popup.clear();
+        popup.setNoElements(false, null);
 
         itemToViewModel.clear();
         itemToDisplayOptionModel.clear();
@@ -200,10 +200,10 @@ public abstract class Selector<T>
         boolean isEmptyResult = true;
         boolean exactMatch = false;
 
-        popup.getChildContainer().clear();
+        popup.clear();
 
         if (searchText.isEmpty() && nullItemView != null && !isHideNullValue) {
-            popup.getChildContainer().add(nullItemView);
+            popup.addItem(nullItemView);
         }
 
         for (Map.Entry<T, DisplayOption> entry : itemToDisplayOptionModel.entrySet()) {
@@ -215,7 +215,7 @@ public abstract class Selector<T>
             if (searchText.isEmpty() || entryText.contains(searchText)) {
                 SelectorItem itemView = itemToViewModel.get(entry.getKey());
                 if (itemView != null) {
-                    popup.getChildContainer().add(itemView);
+                    popup.addItem(itemView);
                 }
                 if (entryText.equals(searchText))
                     exactMatch = true;
@@ -307,10 +307,7 @@ public abstract class Selector<T>
     }
 
     private void addEmptyListGhostOption(String name) {
-        SelectorItem itemView = itemFactory.get();
-        itemView.setName(name);
-        itemView.addStyleName( UiConstants.Styles.SEARCH_NO_RESULT );
-        popup.getChildContainer().add(itemView.asWidget());
+        popup.setNoElements(true, name);
     }
 
     @Inject

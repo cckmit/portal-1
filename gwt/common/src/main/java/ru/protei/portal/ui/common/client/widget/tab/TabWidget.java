@@ -25,6 +25,7 @@ public class TabWidget extends Tab {
         initWidget(ourUiBinder.createAndBindUi(this));
         popup.setSearchHandler(null);
         popup.setAddButtonVisibility(false);
+        navDropdownTabsSelectedContainer.add(popup);
     }
 
     public void setTabContentStyleName(String styleName) {
@@ -47,7 +48,7 @@ public class TabWidget extends Tab {
             TabWidgetPane pane = (TabWidgetPane) widget;
             tabNameToPane.remove(pane.getTabName());
             tabNameToNavItem.remove(pane.getTabName());
-            popup.getChildContainer().remove(tabNameToNavSelectorItem.remove(pane.getTabName()));
+            popup.remove(tabNameToNavSelectorItem.remove(pane.getTabName()));
         }
         return tabContent.remove(widget);
     }
@@ -58,7 +59,7 @@ public class TabWidget extends Tab {
         TabWidgetNavItem navItem = makeNavItem(pane);
         SelectorItem selectorItem = makeSelectorItem(pane);
 
-        popup.getChildContainer().add(selectorItem);
+        popup.addItem(selectorItem);
         tabNameToNavSelectorItem.put(pane.getTabName(), selectorItem);
         navTabs.add(navItem);
         tabNameToNavItem.put(pane.getTabName(), navItem);
@@ -72,7 +73,7 @@ public class TabWidget extends Tab {
         tabContent.clear();
         navTabs.clear();
         tabNameToNavSelectorItem.clear();
-        popup.getChildContainer().clear();
+        popup.clear();
     }
 
     @Override
@@ -111,6 +112,8 @@ public class TabWidget extends Tab {
 
     @UiField
     HTMLPanel navTabs;
+    @UiField
+    HTMLPanel navDropdownTabsSelectedContainer;
     @UiField
     InlineLabel navDropdownTabsSelected;
     @UiField

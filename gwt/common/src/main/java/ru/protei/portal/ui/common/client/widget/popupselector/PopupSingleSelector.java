@@ -85,7 +85,7 @@ public class PopupSingleSelector<T> extends AbstractPopupSelector<T> implements 
     }
 
     public void clearPopup() {
-        getPopup().getChildContainer().clear();
+        getPopup().clear();
     }
 
     @Override

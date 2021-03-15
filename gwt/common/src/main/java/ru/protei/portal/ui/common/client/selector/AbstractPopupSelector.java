@@ -71,8 +71,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
     @Override
     public void fill( T element, String elementHtml) {
         SelectorItem<T> itemView = makeItemView(element, elementHtml);
-        getPopup().getChildContainer().add(itemView.asWidget());
-        getPopup().addValueChangeHandlers(itemView);
+        getPopup().addItem(itemView);
     }
 
     @Override
@@ -209,12 +208,11 @@ public abstract class AbstractPopupSelector<T> extends Composite
     protected abstract void onSelectionChanged();
 
     protected void checkNoElements() {
-        Iterator<Widget> it = getPopup().getChildContainer().iterator();
-        getPopup().setNoElements( !it.hasNext(), isEmpty(getSelector().getSearchString()) ? emptyListText : emptySearchText  );
+        getPopup().setNoElements(getPopup().isEmpty(), isEmpty(getSelector().getSearchString()) ? emptyListText : emptySearchText  );
     }
 
     private void clearPopupItems() {
-        getPopup().getChildContainer().clear();
+        getPopup().clear();
     }
 
     private SelectorItem<T> makeItemView(T t, String elementHtml) {

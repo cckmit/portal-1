@@ -26,6 +26,7 @@ public class MentioningTextArea extends DndAutoResizeTextArea implements ArrowSe
                 = new ArrowSelectableSelectorPopup(KeyCodes.KEY_ENTER, true, this);
 
         selectorPopup.addStyleName("user-login-selector");
+        selectorPopup.setPopupAutoFocus(false);
 
         initUserLoginSelector(userLoginModel, userLoginSelector, selectorPopup);
 
