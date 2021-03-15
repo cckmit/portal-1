@@ -1,285 +1,429 @@
-<h2>Help for adding a comment</h2>
+<h3 xmlns="http://www.w3.org/1999/html">Instruction for adding a comment by email</h3>
 
-<div class="help_text">
-    <div>1) Receive an e-mail.</div>
-    <div>2) Click "Reply to email". At this time:</div>
+<ol>
+    <li>Receive an email notification from CRM.</li>
+    <li>Respond to the letter. At the same time, the title:</li>
     <ul>
-        <li>in From - the email of employee is substituted;</li>
-        <li>in To - CRM crm@protei.ru;</li>
-        <li>in Subject - Re: Request CRM Request № [employee full name] Status Importance Product.</li>
+        <li><b>From</b> - must contain the address of the registered user on whose behalf the comment will be posted;</li>
+        <li><b>To</b> - crm@protei.ru;</li>
+        <li><b>Subject</b> - must contain the CRM № of the request</li>
     </ul>
-    <div>3) Add a comment.</div>
-    <div>4) Send the email.</div>
-</div>
+    <li>Add a comment.</li>
+    <li>Send an email.</li>
+</ol>
 
+<br><br>
 
-
-<hr>
-<br> <br>
-
-
-
-<h2>PORTAL markup help</h2>
+<h3>Help for Markdown-PORTAL markup</h3>
 
 <a href="https://www.markdownguide.org/cheat-sheet/">
-    Original source for Markdown markup
+    Link to the original source
 </a>
 
-<br>
+<br><br>
+
+<table class="markdown_table">
+    <thead>
+    <tr>
+        <th>MARKUP</th>
+        <th>PREVIEW</th>
+    </tr>
+    </thead>
+
+    <tr>
+        <td colspan="2" class="markdown_table_section">Characters formatting</td>
+    </tr>
+    <tr>
+        <td>**Bold**</td>
+        <td class="markdown"><p><strong>Bold</strong></p></td>
+    </tr>
+    <tr>
+        <td>*Italics*</td>
+        <td class="markdown"><p><em>Italics</em></p></td>
+    </tr>
+    <tr>
+        <td>~~Strikethrough text~~</td>
+        <td class="markdown"><del>Strikethrough text</del></td>
+    </tr>
+
+    <tr>
+        <td colspan="2" class="markdown_table_section">Headers</td>
+    </tr>
+    <tr>
+        <td># Level 1 header</td>
+        <td class="markdown"><h1>Level 1 header</h1></td>
+    </tr>
+    <tr>
+        <td>## Level 2 header</td>
+        <td class="markdown"><h2>Level 2 header</h2></td>
+    </tr>
+    <tr>
+        <td>### Level 3 header</td>
+        <td class="markdown"><h3>Level 3 header</h3></td>
+    </tr>
+    <tr>
+        <td>#### Level 4 header</td>
+        <td class="markdown"><h4>Level 4 header</h4></td>
+    </tr>
+
+    <tr>
+        <td colspan="2" class="markdown_table_section">Links</td>
+    </tr>
+    <tr>
+        <td>https://www.example.com</td>
+        <td class="markdown"><p><a href="https://www.example.com">https://www.example.com</a></p></td>
+    </tr>
+    <tr>
+        <td>&lt;https://www.example.com&gt;</td>
+        <td class="markdown"><p><a href="https://www.example.com">https://www.example.com</a></p></td>
+    </tr>
+    <tr>
+        <td>&lt;no_reply@example.com&gt;</td>
+        <td class="markdown"><p><a href="mailto:no_reply@example.com">no_reply@example.com</a></p></td>
+    </tr>
+    <tr>
+        <td>[Link](https://www.example.com)</td>
+        <td class="markdown"><p><a href="https://www.example.com">Link</a></p></td>
+    </tr>
+
+    <tr>
+        <td colspan="2" class="markdown_table_section">Block quotes</td>
+    </tr>
+    <tr>
+        <td>
+            > Text to format<br>
+            > as a quote<br><br>
+            Your answer
+        </td>
+        <td class="markdown">
+            <blockquote>
+                <p>Text to format<br>as a quote</p>
+            </blockquote>
+            <p>Your answer</p>
+        </td>
+    </tr>
+
+    <tr>
+        <td colspan="2" class="markdown_table_section">Code and code blocks</td>
+    </tr>
+    <tr>
+        <td>`Code`</td>
+        <td class="markdown"><p><code>Code</code></p></td>
+    </tr>
+    <tr>
+        <td>``Code``</td>
+        <td class="markdown"><p><code>Code</code></p></td>
+    </tr>
+    <tr>
+        <td>
+            ```<br>
+            {<br>
+            "firstName": "John",<br>
+            "lastName": "Smith",<br>
+            "age": 25<br>
+            }<br>
+            ```
+        </td>
+        <td class="markdown">
+            <pre><code>{<br>"firstName": "John",<br>"lastName": "Smith",<br>"age": 25<br>}</code></pre>
+        </td>
+    </tr>
+
+    <tr>
+        <td colspan="2" class="markdown_table_section">Lists</td>
+    </tr>
+    <tr>
+        <td>
+            1. First point<br>
+            2. Second point<br>
+            3. Third point<br>
+        </td>
+        <td class="markdown">
+            <ol>
+                <li>First point</li>
+                <li>Second point</li>
+                <li>Third point</li>
+            </ol>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            - First point<br>
+            - Second point<br>
+            - Third point
+        </td>
+        <td class="markdown">
+            <ul>
+                <li>First point</li>
+                <li>Second point</li>
+                <li>Third point</li>
+            </ul>
+        </td>
+    </tr>
+    <tr>
+        <td class="markdown">
+            - First point<br>
+            - Second point<br>
+            &nbsp;&nbsp;&nbsp;- Second point I<br>
+            &nbsp;&nbsp;&nbsp;- Second point II<br>
+            - Third point
+        </td>
+        <td class="markdown">
+            <ul>
+                <li>First point</li>
+                <li>Second point</li>
+                <ul>
+                    <li>Second point I</li>
+                    <li>Second point II</li>
+                </ul>
+                <li>Third point</li>
+            </ul>
+        </td>
+    </tr>
+
+    <tr>
+        <td colspan="2" class="markdown_table_section">Tables</td>
+    </tr>
+    <tr>
+        <td>
+            |    Column 1    |    Column 2   |<br>
+            | --------------- | ---------------|<br>
+            |    Value 1   |    Value 1  |<br>
+            |    Value 2   |    Value 4  |
+        </td>
+        <td class="markdown">
+            <table>
+                <thead>
+                <tr>
+                    <th>Column 1</th>
+                    <th>Column 2</th>
+                </tr>
+                </thead>
+                <tr>
+                    <td>Value 1</td>
+                    <td>Value 2</td>
+                </tr>
+                <tr>
+                    <td>Value 3</td>
+                    <td>Value 4</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+
+<br><br>
+
+<h3>Help for Markup-PORTAL markup</h3>
 
 <a href="https://jira.atlassian.com/secure/WikiRendererHelpAction.jspa?section=all">
-    Original source for Markup
+    Link to the original source
 </a>
 
-<br> <br>
+<br><br>
 
-<div class="markdown_table">
-    <table>
-        <thead>
-        <tr>
-            <th>MARKUP</th>
-            <th>PREVIEW</th>
-        </tr>
-        </thead>
+<table class="markdown_table">
+    <thead>
+    <tr>
+        <th>MARKUP</th>
+        <th>PREVIEW</th>
+    </tr>
+    </thead>
 
-        <tr class="markdown_table_section">
-            <td>Headers</td>
-        </tr>
+    <tr>
+        <td colspan="2" class="markdown_table_section">Characters formatting</td>
+    </tr>
+    <tr>
+        <td>*Bold*</td>
+        <td class="markdown"><p><strong>Bold</strong></p></td>
+    </tr>
+    <tr>
+        <td>_Italics_</td>
+        <td class="markdown"><p><em>Italics</em></p></td>
+    </tr>
+    <tr>
+        <td>-Strikethrough text-</td>
+        <td class="markdown"><del>Strikethrough text</del></td>
+    </tr>
 
-        <tr>
-            <td># Header 1st level</td>
-            <td><h1> Header 1st level</h1></td>
-        </tr>
-        <tr>
-            <td>## Header 2nd level</td>
-            <td><h2> Header 2nd level</h2></td>
-        </tr>
-        <tr>
-            <td>### Header 3rd level</td>
-            <td><h3> Header 3rd level</h3></td>
-        </tr>
-        <tr>
-            <td>#### Header 4th level</td>
-            <td><h4> Header 4th level</h4></td>
-        </tr>
-        <tr>
-            <td>##### Header 5th level</td>
-            <td><h5> Header 5th level</h5></td>
-        </tr>
-        <tr>
-            <td>###### Header 6th level</td>
-            <td><h6> Header 6th level</h6></td>
-        </tr>
+    <tr>
+        <td colspan="2" class="markdown_table_section">Headers</td>
+    </tr>
+    <tr>
+        <td>h1. Header 1 level</td>
+        <td class="markdown"><h1>Header 1 level</h1></td>
+    </tr>
+    <tr>
+        <td>h2. Header 2 level</td>
+        <td class="markdown"><h2>Header 2 level</h2></td>
+    </tr>
+    <tr>
+        <td>h3. Header 3 level</td>
+        <td class="markdown"><h3>Header 3 level</h3></td>
+    </tr>
+    <tr>
+        <td>h4. Header 4 level</td>
+        <td class="markdown"><h4>Header 4 level</h4></td>
+    </tr>
 
+    <tr>
+        <td colspan="2" class="markdown_table_section">Links</td>
+    </tr>
+    <tr>
+        <td>https://www.example.com</td>
+        <td class="markdown">
+            <p><span class="nobr">
+                <a href="https://www.example.com" class="external-link" rel="nofollow">https://www.example.com
+                    <sup><img class="rendericon" src="./images/link_small.png" height="10" width="10" align="absmiddle" alt="" border="0"></sup>
+                </a>
+            </span></p>
+        </td>
+    </tr>
+    <tr>
+        <td>[https://www.example.com]</td>
+        <td class="markdown">
+            <p><span class="nobr">
+                <a href="https://www.example.com" class="external-link" rel="nofollow">https://www.example.com
+                    <sup><img class="rendericon" src="./images/link_small.png" height="10" width="10" align="absmiddle" alt="" border="0"></sup>
+                </a>
+            </span></p>
+        </td>
+    </tr>
+    <tr>
+        <td>[mailto:no_reply@example.com]</td>
+        <td class="markdown">
+            <p><span class="nobr">
+                <a href="mailto:no_reply@example.com" class="external-link" rel="nofollow">no_reply@example.com
+                <sup><img class="rendericon" src="./images/mail_small.png" height="10" width="10" align="absmiddle" border="0"></sup>
+                </a>
+            </span></p>
+        </td>
+    </tr>
+    <tr>
+        <td>[Link|https://www.example.com]</td>
+        <td class="markdown">
+            <p><span class="nobr">
+                <a href="https://www.example.com" class="external-link" rel="nofollow">Ссылка
+                    <sup><img class="rendericon" src="./images/link_small.png" height="10" width="10" align="absmiddle" alt="" border="0"></sup>
+                </a>
+            </span></p>
+        </td>
+    </tr>
 
-        <tr class="markdown_table_section">
-            <td>Character formatting</td>
-        </tr>
+    <tr>
+        <td colspan="2" class="markdown_table_section">Block quotes</td>
+    </tr>
+    <tr>
+        <td>
+            {quote}Text to format<br>
+            as a quote{quote}<br>
+            Your answer
+        </td>
+        <td class="markdown">
+            <blockquote>Text to format<br>
+                as a quote</blockquote>Your answer
+        </td>
+    </tr>
 
-        <tr>
-            <td>**Bold**</td>
-            <td><strong>Bold</strong></td>
-        </tr>
-        <tr>
-            <td>*Italic*</td>
-            <td><i>Italic</i></td>
-        </tr>
-        <tr>
-            <td>Strikethrough text</td>
-            <td style="text-decoration: line-through;">Strikethrough text</td>
-        </tr>
-        <tr>
-            <td>> Quote</td>
-            <td><blockquote>&nbsp; Quote</blockquote></td>
-        </tr>
+    <tr>
+        <td colspan="2" class="markdown_table_section">Code blocks</td>
+    </tr>
+    <tr>
+        <td>
+            {code:java}<br>
+            public String getFoo()<br>
+            {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;return foo;<br>
+            }<br>
+            {code}
+        </td>
+        <td class="markdown">
+            <div class="code panel" style="border-width: 1px;">
+                <div class="codeContent panelContent">
+                    <pre class="code-java">public String getFoo()<br>{<br>&nbsp;&nbsp;&nbsp;&nbsp;return foo;<br>}<br></pre>
+                </div>
+            </div>
+        </td>
+    </tr>
 
-
-        <tr class="markdown_table_section">
-            <td>Lists</td>
-        </tr>
-
-        <tr>
-            <td style="text-decoration: underline">
-                Ordered list:
-            </td>
-        </tr>
-        <tr>
-            <td>
-                1. First point <br>
-                2. Second point <br>
-                3. Third point
-            </td>
-            <td>
-                <ol>
-                    <li>First point</li>
-                    <li>Second point</li>
-                    <li>Third point</li>
-                </ol>
-            </td>
-        </tr>
-
-        <tr>
-            <td style="text-decoration: underline">
-                Unordered list:
-            </td>
-        </tr>
-        <tr>
-            <td>- First point <br>
-                - Second point <br>
-                - Third point
-            </td>
-            <td>
+    <tr>
+        <td colspan="2" class="markdown_table_section">Lists</td>
+    </tr>
+    <tr>
+        <td>
+            # First point<br>
+            # Second point<br>
+            # Third point<br>
+        </td>
+        <td class="markdown">
+            <ol>
+                <li>First point</li>
+                <li>Second point</li>
+                <li>Third point</li>
+            </ol>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            - First point<br>
+            - Second point<br>
+            - Third point
+        </td>
+        <td class="markdown">
+            <ul>
+                <li>First point</li>
+                <li>Second point</li>
+                <li>Third point</li>
+            </ul>
+        </td>
+    </tr>
+    <tr>
+        <td class="markdown">
+            * First point<br>
+            * Second point<br>
+            &nbsp;&nbsp;&nbsp;** Second point I<br>
+            &nbsp;&nbsp;&nbsp;** Second point II<br>
+            * Third point
+        </td>
+        <td class="markdown">
+            <ul>
+                <li>First point</li>
+                <li>Second point</li>
                 <ul>
-                    <li>First point</li>
-                    <li>Second point</li>
-                    <li>Third point</li>
+                    <li>Second point I</li>
+                    <li>Second point II</li>
                 </ul>
-            </td>
-        </tr>
+                <li>Third point</li>
+            </ul>
+        </td>
+    </tr>
 
-        <tr>
-            <td>* First point <br>
-                * Second point <br>
-                * Third point
-            </td>
-            <td>
-                <ul>
-                    <li>First point</li>
-                    <li>Second point</li>
-                    <li>Third point</li>
-                </ul>
-            </td>
-        </tr>
-
-        <tr>
-            <td>+ First point <br>
-                + Second point <br>
-                + Third point
-            </td>
-            <td>
-                <ul>
-                    <li>First point</li>
-                    <li>Second point</li>
-                    <li>Third point</li>
-                </ul>
-            </td>
-        </tr>
-
-        <tr>
-            <td>- First point <br>
-                - Second point <br>
-                - Third point <br>
-                &nbsp;&nbsp;&nbsp; - intended point <br>
-                &nbsp;&nbsp;&nbsp; - intended point <br>
-                - Fourth point
-            </td>
-            <td>
-                <ul>
-                    <li>First point</li>
-                    <li>Second point</li>
-                    <li>Third point</li>
-
-                    <ul>
-                        <li>intended point</li>
-                        <li>intended point</li>
-                    </ul>
-
-                    <li>Fourth point</li>
-                </ul>
-            </td>
-        </tr>
-
-
-        <tr class="markdown_table_section">
-            <td>
-                <b>Table</b>
-            </td>
-        </tr>
-
-
-        <tr>
-            <td> |     1st row     |     2nd row   | <br>
-                | --------------- | --------------| <br>
-                |     1st value   |     2nd value  | <br>
-                |     3rd value   |     4th value  |
-            </td>
-            <td>
-                <table class="markdown_table_example">
-                    <thead>
-                    <tr>
-                        <th>1st row</th>
-                        <th>2nd row</th>
-                    </tr>
-                    </thead>
-
-                    <tr>
-                        <td>1st value</td>
-                        <td>2nd value</td>
-                    </tr>
-                    <tr>
-                        <td>3rd value</td>
-                        <td>4th value</td>
-                    </tr>
-                </table>
-
-            </td>
-        </tr>
-
-
-        <tr class="markdown_table_section">
-            <td>Code blocks</td>
-        </tr>
-        <tr>
-            <td>```                         <br>
-                {                           <br>
-                <pre>   "firstName": "John",</pre>
-                <pre>   "lastName": "Smith",</pre>
-                <pre>   "age": 25           </pre>
-                }                           <br>
-                ```
-            </td>
-
-            <td>
-                {                           <br>
-                <pre>   "firstName": "John",</pre>
-                <pre>   "lastName": "Smith",</pre>
-                <pre>   "age": 25           </pre>
-                }
-            </td>
-        </tr>
-
-        <tr class="markdown_table_section">
-            <td>Task Lists</td>
-        </tr>
-        <tr>
-            <td>- [x] Task 1 <br>
-                - [ ] Task 2 <br>
-                - [ ] Task 3
-            </td>
-            <td>
-                <label><input type="checkbox" checked></label>&nbsp; Task 1 <br>
-                <label><input type="checkbox"></label>&nbsp; Task 2 <br>
-                <label><input type="checkbox"></label>&nbsp; Task 3
-            </td>
-        </tr>
-
-
-        <tr class="markdown_table_section">
-            <td>Other</td>
-        </tr>
-
-        <tr>
-            <td>`Code`</td>
-            <td><code>Code</code></td>
-        </tr>
-
-        <tr>
-            <td>[Link](https://www.example.com)</td>
-            <td><a href="https://www.example.com">Link</a></td>
-        </tr>
-        <tr>
-            <td>![Alternative text](image.jpg)</td>
-            <td><img src="image.jpg" alt="Alternative text"></td>
-        </tr>
-    </table>
-</div>
+    <tr>
+        <td colspan="2" class="markdown_table_section">Tables</td>
+    </tr>
+    <tr>
+        <td>
+            ||    Column 1    ||    Column 2   ||<br>
+            |    Value 1   |    Value 1  |<br>
+            |    Value 2   |    Value 4  |
+        </td>
+        <td class="markdown">
+            <table>
+                <thead>
+                <tr>
+                    <th>Column 1</th>
+                    <th>Column 2</th>
+                </tr>
+                </thead>
+                <tr>
+                    <td>Value 1</td>
+                    <td>Value 2</td>
+                </tr>
+                <tr>
+                    <td>Value 3</td>
+                    <td>Value 4</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
