@@ -5241,6 +5241,7 @@ table {
 .locale-selector {
   .dropdown-menu {
     width: max-content;
+    padding-bottom: 0;
   }
 }
 
@@ -5307,6 +5308,11 @@ table {
   font-size: inherit;
 }
 
-.privacy-selector > .selector-popup {
-  width: auto !important;
+.privacy-selector {
+  .selector-popup {
+    width: auto !important;
+    .dropdown-menu {
+      padding-bottom: 0;
+    }
+  }
 }

@@ -300,6 +300,7 @@ public class CommentAndHistoryListView
         filesUpload.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CASE_COMMENT.COMMENT_LIST.FILES_UPLOAD);
         timeElapsed.ensureDebugId(DebugIds.CASE_COMMENT.COMMENT_LIST.TIME_ELAPSED);
         timeElapsedType.setEnsureDebugId(DebugIds.CASE_COMMENT.COMMENT_LIST.TIME_ELAPSED_TYPE);
+        privacyType.setEnsureDebugId(DebugIds.CASE_COMMENT.COMMENT_LIST.PRIVACY_BUTTON);
     }
 
     private SelectorModel<En_CaseCommentPrivacyType> makeSelectorModel(boolean isExtendedPrivacyType) {
