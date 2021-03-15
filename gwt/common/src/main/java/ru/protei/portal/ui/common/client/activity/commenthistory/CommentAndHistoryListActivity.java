@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.ent.CommentsAndHistories.CommentOrHistory;
 import ru.protei.portal.core.model.event.CaseCommentRemovedClientEvent;
 import ru.protei.portal.core.model.event.CaseCommentSavedClientEvent;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.ValidationResult;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.ConfigStorage;
@@ -112,12 +113,9 @@ public abstract class CommentAndHistoryListActivity
         view.setUserIcon(AvatarUtils.getAvatarUrl(profile));
         view.setNewCommentHidden(!isModifyEnabled);
         view.setNewCommentDisabled(!isNewCommentEnabled);
-        if (textMarkup == En_TextMarkup.MARKDOWN) {
-            view.setMarkupLabel(lang.textMarkdownSupport(), configStorage.getConfigData().markupHelpLinkMarkdown);
-        } else {
-            view.setMarkupLabel(lang.textJiraWikiMarkupSupport(), configStorage.getConfigData().markupHelpLinkJiraMarkup);
-        }
-
+        view.setIssueCommentHelpLink(textMarkup == En_TextMarkup.MARKDOWN ? lang.textMarkdownSupport()
+                                                                          : lang.textJiraWikiMarkupSupport(),
+                                                                            CrmConstants.IssueCommentHelp.LINK);
         view.setPrivacyTypeSelector(event.extendedPrivacyType);
         view.getPrivacyVisibility().setVisible(isPrivateVisible);
 
@@ -276,6 +274,11 @@ public abstract class CommentAndHistoryListActivity
     public void onDisplayPreviewChanged( Boolean isDisplayPreview ) {
         storage.set( IS_PREVIEW_DISPLAYED, String.valueOf( isDisplayPreview ) );
         fireChangedPreview();
+    }
+
+    @Override
+    public void onAddingCommentHelpLinkClicked() {
+        fireEvent(new IssueEvents.ShowIssueCommentHelp());
     }
 
     private void removeAttachment(Long id, Runnable successAction) {

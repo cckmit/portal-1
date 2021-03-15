@@ -26,6 +26,7 @@ import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.struct.ReplaceLoginWithUsernameInfo;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
@@ -193,18 +194,22 @@ public class MailNotificationProcessor {
     }
 
     private String getCrmCaseUrl( boolean isProteiRecipient ) {
-        String baseUrl = "";
-        if (isProteiRecipient) {
-            baseUrl = config.data().getMailNotificationConfig().getCrmUrlInternal();
-        } else {
-            baseUrl = config.data().getMailNotificationConfig().getCrmUrlExternal();
-        }
+        String baseUrl = getCrmUrl( isProteiRecipient );
         return baseUrl + config.data().getMailNotificationConfig().getCrmCaseUrl();
+    }
+
+    public String getCrmUrl( boolean isProteiRecipient ) {
+        return isProteiRecipient ? config.data().getMailNotificationConfig().getCrmUrlInternal()
+                                 : config.data().getMailNotificationConfig().getCrmUrlExternal();
     }
 
     private String getCrmProjectUrl() {
         String baseUrl = config.data().getMailNotificationConfig().getCrmUrlExternal();
         return baseUrl + config.data().getMailNotificationConfig().getCrmProjectUrl();
+    }
+
+    public String getIssueCommentHelpUrl(String crmUrl) {
+        return crmUrl + "?locale=%" + CrmConstants.IssueCommentHelp.LINK;
     }
 
     private boolean isPrivateNotification(AssembledCaseEvent event) {
@@ -251,7 +256,9 @@ public class MailNotificationProcessor {
         List<CaseComment> mailComments = stream(comments).filter(comment -> comment.getText() != null).collect(Collectors.toList());
 
         PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(event, mailComments, attachments, linksToTasks,
-                crmCaseUrl, recipients, new EnumLangUtil(lang));
+                isProteiRecipients, crmCaseUrl, recipients, new EnumLangUtil(lang),
+                getIssueCommentHelpUrl(getCrmUrl(isProteiRecipients)));
+
         if (bodyTemplate == null) {
             log.error("Failed to prepare body template for caseId={}", caseObject.getId());
             return;
@@ -264,7 +271,6 @@ public class MailNotificationProcessor {
         }
 
         notifiers.forEach((entry) -> {
-
             MimeMessageHeadersFacade headers =  makeHeaders( caseObject.getCaseNumber(), lastMessageId, entry.hashCode() );
 
             String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), isProteiRecipients);

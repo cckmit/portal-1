@@ -127,6 +127,10 @@ public class CrmConstants {
         String NO_EXTENDED_PRIVACY_PROJECT = "CLM";
     }
 
+    public interface IssueCommentHelp {
+        String LINK = "#issueCommentHelp";
+    }
+
     public interface ImportanceLevel {
         String BASIC_NAME = "basic";
 

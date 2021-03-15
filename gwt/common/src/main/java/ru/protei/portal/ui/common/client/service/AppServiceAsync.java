@@ -14,4 +14,6 @@ public interface AppServiceAsync {
     void getClientConfig(AsyncCallback<ClientConfigData> sessionCallback);
 
     void getExternalLinksHtml(AsyncCallback<String> sessionCallback);
+
+    void getIssueCommentHelpText(String localeName, AsyncCallback<String> async);
 }

@@ -16,4 +16,6 @@ public interface AppService extends RemoteService {
     ClientConfigData getClientConfig();
 
     String getExternalLinksHtml();
+
+    String getIssueCommentHelpText(String localeName);
 }

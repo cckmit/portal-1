@@ -1113,6 +1113,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    IssueCommentHelpTextConverter getHtmlToStringConverter() {
+        return new IssueCommentHelpTextConverter();
+    }
+
+    @Bean
     public NRPEService getNRPEService() {
         return new NRPEServiceImpl();
     }
