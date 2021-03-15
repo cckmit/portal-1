@@ -33,6 +33,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 <@set name="_platform" value="${issuePlatform}"/>
 <@set name="_deadline" value="${deadline}"/>
 <@set name="_workTrigger" value="${workTrigger}"/>
+<@set name="_issueCommentHelp" value="${issueCommentHelp}"/>
 
 <#noparse>
 <#macro changeTo old, new>
@@ -397,7 +398,8 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                 <#if recipient??>
                     ${recipient}<#sep>, </#sep>
                 </#if>
-            </#list>
+            </#list><br>
+            <a href="${LangUtil.setLang(issueCommentHelpUrl, lang)}">${_issueCommentHelp}</a>
         </div>
     </div>
 </div>

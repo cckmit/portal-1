@@ -143,16 +143,16 @@ public class CommentAndHistoryListView
     }
 
     @Override
-    public void setMarkupLabel(String label, String link) {
+    public void setIssueCommentHelpLink(String label, String link) {
         if (label == null) {
-            markupLabel.addClassName( HIDE );
-            markupLink.addStyleName( HIDE );
+            helpLabel.addClassName( HIDE );
+            helpLink.addStyleName( HIDE );
         } else {
-            markupLabel.setInnerText(label);
-            markupLabel.removeClassName( HIDE );
+            helpLabel.setInnerHTML(label);
+            helpLabel.removeClassName( HIDE );
 
-            markupLink.setHref(link);
-            markupLink.removeStyleName( HIDE );
+            helpLink.setHref(link);
+            helpLink.removeStyleName( HIDE );
         }
     }
 
@@ -354,9 +354,9 @@ public class CommentAndHistoryListView
     @UiField
     DivElement filesUpload;
     @UiField
-    Element markupLabel;
+    Element helpLabel;
     @UiField
-    Anchor markupLink;
+    Anchor helpLink;
     @UiField
     ToggleButton isDisplayPreview;
     @UiField

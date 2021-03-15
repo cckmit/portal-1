@@ -56,7 +56,7 @@ public interface AbstractCommentAndHistoryListView extends IsWidget {
 
     HasVisibility getPrivacyVisibility();
 
-    void setMarkupLabel(String label, String link);
+    void setIssueCommentHelpLink(String label, String link);
 
     boolean isDisplayPreview();
 

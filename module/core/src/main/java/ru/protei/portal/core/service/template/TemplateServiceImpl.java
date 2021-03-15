@@ -17,14 +17,12 @@ import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.Interval;
-import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
-import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.util.DiffCollectionResult;
-import ru.protei.portal.core.model.util.TransliterationUtils;
+import ru.protei.portal.core.model.util.*;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.utils.EnumLangUtil;
+import ru.protei.portal.core.utils.LangUtil;
 import ru.protei.portal.core.utils.LinkData;
 import ru.protei.portal.core.utils.WorkTimeFormatter;
 
@@ -39,8 +37,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 import static org.slf4j.LoggerFactory.getLogger;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
@@ -77,8 +74,8 @@ public class TemplateServiceImpl implements TemplateService {
     @Override
     public PreparedTemplate getCrmEmailNotificationBody(
             AssembledCaseEvent event, List<CaseComment> caseComments, Collection<Attachment> attachments,
-            DiffCollectionResult<LinkData> mergeLinks, String urlTemplate, Collection<String> recipients, EnumLangUtil enumLangUtil
-    ) {
+            DiffCollectionResult<LinkData> mergeLinks, boolean isProteiRecipients, String urlTemplate, Collection<String> recipients,
+            EnumLangUtil enumLangUtil, String issueCommentHelpUrl) {
         CaseObject newState = event.getCaseObject();
         En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(newState);
 
@@ -121,6 +118,8 @@ public class TemplateServiceImpl implements TemplateService {
 
         templateModel.put( "caseComments",  getCommentsModelKeys(caseComments, event.getAddedCaseComments(), event.getChangedCaseComments(), event.getRemovedCaseComments(), textMarkup));
 
+        templateModel.put("issueCommentHelpUrl", issueCommentHelpUrl);
+
         PreparedTemplate template = new PreparedTemplate( "notification/email/crm.body.%s.ftl" );
         template.setModel( templateModel );
         template.setTemplateConfiguration( templateConfiguration );
@@ -133,6 +132,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("TimeElapsedFormatter", new WorkTimeFormatter());
         templateModel.put("TranslitUtils", new TransliterationUtils());
         templateModel.put("EnumLangUtil", enumLangUtil);
+        templateModel.put("LangUtil", new LangUtil());
         return templateModel;
     }
 

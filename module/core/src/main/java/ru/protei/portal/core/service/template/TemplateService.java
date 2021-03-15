@@ -21,7 +21,7 @@ import java.util.*;
 public interface TemplateService {
     PreparedTemplate getCrmEmailNotificationBody(
             AssembledCaseEvent caseObject, List<CaseComment> caseComments, Collection<Attachment> attachments,
-            DiffCollectionResult<LinkData> mergeLinks, String urlTemplate, Collection<String> recipients, EnumLangUtil enumLangUtil);
+            DiffCollectionResult<LinkData> mergeLinks, boolean isProteiRecipients, String urlTemplate, Collection<String> recipients, EnumLangUtil enumLangUtil, String crmUrl);
 
     PreparedTemplate getCrmEmailNotificationSubject( AssembledCaseEvent event, Person currentPerson );
 

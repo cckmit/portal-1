@@ -7,9 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-import ru.protei.portal.ui.common.client.service.AppService;
 import ru.protei.portal.config.ExternalLinksHtml;
+import ru.protei.portal.config.IssueCommentHelpTextConverter;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.ui.common.client.service.AppService;
 import ru.protei.portal.ui.common.shared.model.ClientConfigData;
 
 
@@ -27,8 +28,6 @@ public class AppServiceImpl extends RemoteServiceServlet implements AppService {
         ClientConfigData data = new ClientConfigData();
 
         data.appVersion = properties.getProperty("version", "");
-        data.markupHelpLinkMarkdown = portalConfig.data().getMarkupHelpLink().getMarkdown();
-        data.markupHelpLinkJiraMarkup = portalConfig.data().getMarkupHelpLink().getJiraMarkup();
 
         log.info( "getClientConfig, data = {}", data );
         return data;
@@ -40,6 +39,12 @@ public class AppServiceImpl extends RemoteServiceServlet implements AppService {
         return externalLinksHtml.getHtml();
     }
 
+    @Override
+    public String getIssueCommentHelpText(String localeName) {
+        log.info("getIssueCommentHelpText for locale " + localeName);
+        return issueCommentHelpTextConverter.getText(localeName);
+    }
+
     @Autowired
     Environment properties;
 
@@ -48,6 +53,9 @@ public class AppServiceImpl extends RemoteServiceServlet implements AppService {
 
     @Autowired
     ExternalLinksHtml externalLinksHtml;
+
+    @Autowired
+    IssueCommentHelpTextConverter issueCommentHelpTextConverter;
 
     private static final Logger log = LoggerFactory.getLogger(AppServiceImpl.class.getName());
 }

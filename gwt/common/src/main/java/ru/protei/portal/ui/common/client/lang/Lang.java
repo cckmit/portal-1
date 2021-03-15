@@ -878,6 +878,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String textJiraWikiMarkupSupport();
 
+    String issueCommentHelp();
+
     String commentSetPrivate();
 
     String regions();

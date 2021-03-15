@@ -167,9 +167,8 @@ public class TemplateServiceImplTest {
 
 
         PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(
-                assembledCaseEvent, comments, new ArrayList<>(), null, "url",
-                Collections.EMPTY_LIST, new EnumLangUtil(lang)
-        );
+                assembledCaseEvent, comments, new ArrayList<>(), null, false, "url",
+                Collections.EMPTY_LIST, new EnumLangUtil(lang), null);
 
         assertNotNull( bodyTemplate );
 
@@ -216,9 +215,8 @@ public class TemplateServiceImplTest {
         linkData.putRemovedEntry( new LinkData( "http://crm/202", "302" ) );
 
         PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(
-                assembledCaseEvent, comments, new ArrayList<>(), linkData, "url",
-                Collections.EMPTY_LIST, new EnumLangUtil(lang)
-        );
+                assembledCaseEvent, comments, new ArrayList<>(), linkData, false, "url",
+                Collections.EMPTY_LIST, new EnumLangUtil(lang), null);
 
         assertNotNull( bodyTemplate );
 
@@ -292,9 +290,8 @@ public class TemplateServiceImplTest {
         when( caseStateDAO.getAllByCaseType( En_CaseType.CRM_SUPPORT ) ).thenReturn( caseStateList );
 
         PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(
-                assembled, assembled.getAllComments(), new ArrayList<>(), null, "url",
-                Collections.EMPTY_LIST, new EnumLangUtil(lang)
-        );
+                assembled, assembled.getAllComments(), new ArrayList<>(), null, false, "url",
+                Collections.EMPTY_LIST, new EnumLangUtil(lang), null);
         assertNotNull( bodyTemplate );
         NotificationEntry entry = createNewNotificationEntry();
 

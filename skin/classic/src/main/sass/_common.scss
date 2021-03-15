@@ -5310,3 +5310,34 @@ table {
 .privacy-selector > .selector-popup {
   width: auto !important;
 }
+
+.issue_comment_help {
+  font-size: 13px;
+  margin: 20px;
+}
+
+.markdown_table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th {
+    width: 50%;
+    font-weight: bold;
+    padding: 5px;
+    border-bottom: #acacac 1px solid;
+  }
+
+  td.markdown {
+    > *:last-child {
+      margin-bottom: 0.5em !important;
+    }
+    > *:first-child {
+      margin-top: 0.5em !important;
+    }
+  }
+
+  td.markdown_table_section {
+    padding: 35px 0 10px 0;
+    font-weight: bold;
+  }
+}
