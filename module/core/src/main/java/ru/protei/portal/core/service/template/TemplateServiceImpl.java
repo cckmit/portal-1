@@ -22,6 +22,7 @@ import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.utils.EnumLangUtil;
+import ru.protei.portal.core.utils.LangUtil;
 import ru.protei.portal.core.utils.LinkData;
 import ru.protei.portal.core.utils.WorkTimeFormatter;
 
@@ -131,7 +132,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("TimeElapsedFormatter", new WorkTimeFormatter());
         templateModel.put("TranslitUtils", new TransliterationUtils());
         templateModel.put("EnumLangUtil", enumLangUtil);
-        templateModel.put("IssueCommentHelpLangUtil", new IssueCommentHelpLangUtil());
+        templateModel.put("LangUtil", new LangUtil());
         return templateModel;
     }
 

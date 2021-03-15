@@ -398,12 +398,9 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                 <#if recipient??>
                     ${recipient}<#sep>, </#sep>
                 </#if>
-            </#list>
+            </#list><br>
+            <a href="${LangUtil.setLang(issueCommentHelpUrl, lang)}">${_issueCommentHelp}</a>
         </div>
-
-        <a href="${IssueCommentHelpLangUtil.setLang(issueCommentHelpUrl, lang)}">
-            ${_issueCommentHelp}
-        </a>
     </div>
 </div>
 </body>
