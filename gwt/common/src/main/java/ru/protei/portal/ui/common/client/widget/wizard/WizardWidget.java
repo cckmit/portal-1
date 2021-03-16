@@ -96,7 +96,7 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
         WizardWidgetNavItem navItem = makeNavItem(pane);
         SelectorItem selectorItem = makeSelectorItem(pane);
 
-        popup.addItem(selectorItem);
+        popup.getContainer().add(selectorItem.asWidget());
         navTabs.add(navItem);
         tabNameToNavItem.put(pane.getTabName(), navItem);
         tabNameToPane.put(pane.getTabName(), pane);
@@ -118,7 +118,11 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
     private SelectorItem makeSelectorItem(WizardWidgetPane pane) {
         SelectorItem selectorItem = new SelectorItem();
         selectorItem.setName(pane.getTabName());
-        selectorItem.addSelectorItemSelectHandler(event -> {
+        selectorItem.addValueChangeMouseClickHandler(() -> {
+            if (!isSelectable) return;
+            onTabSelected(pane.getTabName());
+        });
+        selectorItem.addValueChangeButtonHandler(button -> {
             if (!isSelectable) return;
             onTabSelected(pane.getTabName());
         });
@@ -304,7 +308,7 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
     private Map<String, WizardWidgetPane> tabNameToPane = new HashMap<>();
     private Set<String> tabNames = new LinkedHashSet<>();
     private String currentTabName = null;
-    private final SelectorPopup popup = new ArrowSelectableSelectorPopup(KeyCodes.KEY_ENTER, true);
+    private final SelectorPopup popup = new ArrowSelectableSelectorPopup();
     private boolean isSelectable = true;
     private HandlerRegistration btnPreviousHandlerRegistration;
     private HandlerRegistration btnNextHandlerRegistration;

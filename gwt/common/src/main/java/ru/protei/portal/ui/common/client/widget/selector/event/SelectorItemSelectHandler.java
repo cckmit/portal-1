@@ -1,7 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.selector.event;
 
-import com.google.gwt.event.shared.EventHandler;
+import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 
-public interface SelectorItemSelectHandler extends EventHandler {
-    void onSelectorItemSelect(SelectorItemSelectEvent event);
+public interface SelectorItemSelectHandler {
+    void onSelectorItemSelect(SelectorItem item);
 }

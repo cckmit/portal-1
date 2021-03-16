@@ -11,6 +11,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.selector.AbstractSelectorItem;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
@@ -20,11 +21,12 @@ import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
  * Вид одного элемента из выпадайки селектора
  */
 public class PopupSelectorItem<T>
-        extends Composite
+        extends AbstractSelectorItem
         implements SelectorItem<T>
 {
     public PopupSelectorItem() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        initHandlers();
     }
 
     @Override
@@ -38,11 +40,6 @@ public class PopupSelectorItem<T>
     }
 
     @Override
-    public void addSelectorHandler(SelectorItemHandler<T> selectorItemHandler) {
-        this.selectorItemHandler = selectorItemHandler;
-    }
-
-    @Override
     public HandlerRegistration addKeyUpHandler( KeyUpHandler keyUpHandler) {
         return addHandler( keyUpHandler, KeyUpEvent.getType() );
     }
@@ -50,11 +47,6 @@ public class PopupSelectorItem<T>
     @Override
     public void setElementHtml(String elementHtml ) {
         root.getElement().setInnerHTML( elementHtml );
-    }
-
-    @Override
-    public void onItemClicked() {
-        selectorItemHandler.onSelectorItemClicked(this);
     }
 
     public void setName(String name ) {
@@ -82,15 +74,6 @@ public class PopupSelectorItem<T>
         image.setSrc( src );
     }
 
-    @UiHandler( "anchor" )
-    public void onAnchorClicked( ClickEvent event ) {
-        event.preventDefault();
-
-        if(selectorItemHandler!=null) {
-            selectorItemHandler.onSelectorItemClicked(this);
-        }
-    }
-
     @UiHandler("anchor")
     public void onKeyUpEvent( KeyUpEvent keyUpEvent) {
         keyUpEvent.preventDefault();
@@ -109,7 +92,6 @@ public class PopupSelectorItem<T>
     @UiField
     Element icon;
 
-    private SelectorItemHandler<T> selectorItemHandler;
     private T value;
 
     interface SelectorItemViewUiBinder extends UiBinder<HTMLPanel, PopupSelectorItem> {

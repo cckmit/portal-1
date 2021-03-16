@@ -23,10 +23,9 @@ public class MentioningTextArea extends DndAutoResizeTextArea implements ArrowSe
         this.changeTimer = initTimer(userLoginModel, userLoginSelector);
 
         SelectorPopup selectorPopup
-                = new ArrowSelectableSelectorPopup(KeyCodes.KEY_ENTER, true, this);
+                = new ArrowSelectableSelectorPopup(false, this);
 
         selectorPopup.addStyleName("user-login-selector");
-        selectorPopup.setPopupAutoFocus(false);
 
         initUserLoginSelector(userLoginModel, userLoginSelector, selectorPopup);
 
@@ -68,7 +67,7 @@ public class MentioningTextArea extends DndAutoResizeTextArea implements ArrowSe
 
         if (event.getNativeKeyCode() == KeyCodes.KEY_DOWN) {
             event.preventDefault();
-            selectorPopup.focusPopup();
+            selectorPopup.focusFirst();
         }
     }
 

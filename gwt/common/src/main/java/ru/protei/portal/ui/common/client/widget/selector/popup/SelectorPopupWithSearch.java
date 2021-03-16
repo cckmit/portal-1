@@ -47,6 +47,11 @@ public abstract class SelectorPopupWithSearch extends PopperComposite
     }
 
     @Override
+    public HasWidgets getContainer() {
+        return childContainer;
+    }
+
+    @Override
     public void clear() {
         childContainer.clear();
     }
@@ -81,21 +86,21 @@ public abstract class SelectorPopupWithSearch extends PopperComposite
     public void showNear(Element relative) {
         addPagingHandler();
         show(relative);
-        manageFocus(isSearchAutoFocus, isPopupAutoFocus);
+        focusPopup();
     }
 
     @Override
     public void showNear(Element relative, PopperComposite.Placement placement) {
         addPagingHandler();
         show(relative, placement);
-        manageFocus(isSearchAutoFocus, isPopupAutoFocus);
+        focusPopup();
     }
 
     @Override
     public void showNear(Element relative, PopperComposite.Placement placement, int skidding, int distance) {
         addPagingHandler();
         show(relative, placement, skidding, distance);
-        manageFocus(isSearchAutoFocus, isPopupAutoFocus);
+        focusPopup();
     }
 
     @Override
@@ -143,11 +148,6 @@ public abstract class SelectorPopupWithSearch extends PopperComposite
         addButton.setVisible( isVisible );
     }
 
-    @Override
-    public void setPopupAutoFocus(boolean isPopupAutoFocus) {
-        this.isPopupAutoFocus = isPopupAutoFocus;
-    }
-
     @UiHandler( "search" )
     public void onSearchInputChanged( InputEvent event ) {
         changeSearchTimer.schedule(200);
@@ -185,17 +185,6 @@ public abstract class SelectorPopupWithSearch extends PopperComposite
 
     public void setSearchAutoFocus( boolean isSearchAutoFocus ) {
         this.isSearchAutoFocus = isSearchAutoFocus;
-    }
-
-    private void manageFocus(boolean isSearchAutoFocus, boolean isPopupAutoFocus) {
-        if (search.isVisible()) {
-            search.setFocus(isSearchAutoFocus);
-            return;
-        }
-
-        if (isPopupAutoFocus) {
-            focusPopup();
-        }
     }
 
     private void addPagingHandler() {
@@ -237,7 +226,7 @@ public abstract class SelectorPopupWithSearch extends PopperComposite
     @UiField
     HTMLPanel root;
     @UiField
-    public CleanableSearchBox search;
+    protected CleanableSearchBox search;
     @UiField
     public Button addButton;
     @UiField
@@ -259,7 +248,6 @@ public abstract class SelectorPopupWithSearch extends PopperComposite
     private PopupHandler popupHandler;
     private SearchHandler searchHandler = ignoreSearch;
     private boolean isSearchAutoFocus = true;
-    private boolean isPopupAutoFocus = true;
     private HandlerRegistration scrollForPagingHandleRegistration;
 
     interface SelectorPopupViewUiBinder extends UiBinder<HTMLPanel, SelectorPopupWithSearch> {

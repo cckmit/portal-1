@@ -18,8 +18,9 @@ import java.util.Set;
 public abstract class PopupMultiSelector<T> extends AbstractPopupSelector<T> implements HasValue<Set<T>> {
 
     public PopupMultiSelector() {
-        setPopup(new ArrowSelectableSelectorPopup(KeyCodes.KEY_SPACE, false));
+        setPopup(new ArrowSelectableSelectorPopup());
         setSearchEnabled(true);
+        setAutoCloseable(false);
     }
 
     @Override

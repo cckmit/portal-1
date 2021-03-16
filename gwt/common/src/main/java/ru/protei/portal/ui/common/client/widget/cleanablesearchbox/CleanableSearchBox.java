@@ -25,6 +25,8 @@ public class CleanableSearchBox extends Composite implements HasValue<String>, H
     public CleanableSearchBox() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
+        textBox.addDomHandler(event -> isFocused = false, BlurEvent.getType());
+        textBox.addDomHandler(event -> isFocused = true, FocusEvent.getType());
     }
 
     @Override
@@ -115,6 +117,10 @@ public class CleanableSearchBox extends Composite implements HasValue<String>, H
         textBox.setFocus(focused);
     }
 
+    public boolean isFocused() {
+        return isFocused;
+    }
+
     private void toggleSearchAction() {
         if (HelperFunc.isNotEmpty(getValue())) {
             textBoxAction.addStyleName("clear");
@@ -171,6 +177,7 @@ public class CleanableSearchBox extends Composite implements HasValue<String>, H
 
 
     private boolean enabled = true;
+    private boolean isFocused;
 
     interface CleanableTextBoxViewUiBinder extends UiBinder<HTMLPanel, CleanableSearchBox> {}
     private static CleanableTextBoxViewUiBinder ourUiBinder = GWT.create( CleanableTextBoxViewUiBinder.class );

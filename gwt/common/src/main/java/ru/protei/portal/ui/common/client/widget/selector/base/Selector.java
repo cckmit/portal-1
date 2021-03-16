@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.common.client.widget.selector.base;
 
-import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -9,11 +8,13 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.selector.event.*;
+import ru.protei.portal.ui.common.client.widget.selector.event.HasSelectorChangeValHandlers;
+import ru.protei.portal.ui.common.client.widget.selector.event.SelectorChangeValEvent;
+import ru.protei.portal.ui.common.client.widget.selector.event.SelectorChangeValHandler;
+import ru.protei.portal.ui.common.client.widget.selector.event.SelectorItemSelectHandler;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
 
@@ -146,7 +147,7 @@ public abstract class Selector<T>
             itemToDisplayOptionModel.put(value, option);
         }
 
-        popup.addItem(itemView);
+        popup.getContainer().add(itemView);
     }
 
     public void clearOptions() {
@@ -162,9 +163,9 @@ public abstract class Selector<T>
     }
 
     @Override
-    public void onSelectorItemSelect(SelectorItemSelectEvent event) {
-        T value = itemViewToModel.get(event.getSource());
-        if (value == null && !itemViewToModel.containsKey(event.getSource())) {
+    public void onSelectorItemSelect(SelectorItem item) {
+        T value = itemViewToModel.get(item);
+        if (value == null && !itemViewToModel.containsKey(item)) {
             return;
         }
 
@@ -203,7 +204,7 @@ public abstract class Selector<T>
         popup.clear();
 
         if (searchText.isEmpty() && nullItemView != null && !isHideNullValue) {
-            popup.addItem(nullItemView);
+            popup.getContainer().add(nullItemView);
         }
 
         for (Map.Entry<T, DisplayOption> entry : itemToDisplayOptionModel.entrySet()) {
@@ -215,7 +216,7 @@ public abstract class Selector<T>
             if (searchText.isEmpty() || entryText.contains(searchText)) {
                 SelectorItem itemView = itemToViewModel.get(entry.getKey());
                 if (itemView != null) {
-                    popup.addItem(itemView);
+                    popup.getContainer().add(itemView);
                 }
                 if (entryText.equals(searchText))
                     exactMatch = true;
@@ -276,6 +277,18 @@ public abstract class Selector<T>
         }
     }
 
+    private void addValueChangeHandlers(SelectorItem itemView) {
+        itemView.addValueChangeButtonHandler(valueChangeButton -> {
+            onSelectorItemSelect(itemView);
+            popup.hide();
+        });
+
+        itemView.addValueChangeMouseClickHandler(() -> {
+            onSelectorItemSelect(itemView);
+            popup.hide();
+        });
+    }
+
     private void showPopup() {
         popup.setSearchHandler(searchEnabled ? this::onSearchChanged : null);
 
@@ -302,7 +315,7 @@ public abstract class Selector<T>
         SelectorItem itemView = itemFactory.get();
         itemView.setName(name);
         itemView.setStyle(styleName);
-        itemView.addSelectorItemSelectHandler(this);
+        addValueChangeHandlers(itemView);
         return itemView;
     }
 
@@ -316,8 +329,7 @@ public abstract class Selector<T>
     @Inject
     Provider<SelectorItem> itemFactory;
     protected DisplayOption nullItemOption;
-    protected ArrowSelectableSelectorPopup popup
-            = new ArrowSelectableSelectorPopup(KeyCodes.KEY_ENTER, true);
+    protected ArrowSelectableSelectorPopup popup = new ArrowSelectableSelectorPopup();
 
     protected boolean hasNullValue = true;
     private boolean isHideNullValue = false;

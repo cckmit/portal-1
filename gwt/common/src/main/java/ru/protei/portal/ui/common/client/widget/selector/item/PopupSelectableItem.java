@@ -9,6 +9,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
+import ru.protei.portal.ui.common.client.selector.AbstractSelectorItem;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 import ru.protei.portal.ui.common.client.selector.popup.item.SelectorItemHandler;
 
@@ -16,11 +17,12 @@ import ru.protei.portal.ui.common.client.selector.popup.item.SelectorItemHandler
  * Вид одного элемента из выпадайки селектора
  */
 public class PopupSelectableItem<T>
-        extends Composite
+        extends AbstractSelectorItem
         implements  HasEnabled, SelectorItem<T>
 {
     public PopupSelectableItem() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        initHandlers();
         checkbox.setFormValue( Boolean.FALSE.toString() );
     }
 
@@ -44,8 +46,7 @@ public class PopupSelectableItem<T>
     }
 
     @Override
-    public void onItemClicked() {
-        selectorItemHandler.onSelectorItemClicked(this);
+    public void changeState() {
         setSelected(!checkbox.getValue());
     }
 
@@ -68,11 +69,6 @@ public class PopupSelectableItem<T>
         checkbox.setEnabled( enabled );
     }
 
-    @Override
-    public void addSelectorHandler(SelectorItemHandler<T> selectorItemHandler) {
-        this.selectorItemHandler = selectorItemHandler;
-    }
-
     public void setEnsureDebugId( String debugId ) {
         checkbox.ensureDebugId( debugId );
     }
@@ -89,8 +85,6 @@ public class PopupSelectableItem<T>
         KeyUpEvent.fireNativeEvent(keyUpEvent.getNativeEvent(), this);
     }
 
-
-    private SelectorItemHandler<T> selectorItemHandler;
     private T value;
 
     @UiField

@@ -14,14 +14,16 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.InlineLabel;
 import org.apache.poi.hssf.record.HideObjRecord;
 import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.selector.AbstractSelectorItem;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 
-public class PopupSelectorItemWithEdit<T> extends Composite implements HasValue<T>, HasAddHandlers, HasEditHandlers, HasClickHandlers, SelectorItem<T> {
+public class PopupSelectorItemWithEdit<T> extends AbstractSelectorItem implements HasValue<T>, HasAddHandlers, HasEditHandlers, HasClickHandlers, SelectorItem<T> {
 
     public PopupSelectorItemWithEdit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        initHandlers();
     }
 
     @Override
@@ -44,11 +46,6 @@ public class PopupSelectorItemWithEdit<T> extends Composite implements HasValue<
     }
 
     @Override
-    public void onItemClicked() {
-        selectorItemHandler.onSelectorItemClicked(this);
-    }
-
-    @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<T> handler) {
         return addHandler(handler, ValueChangeEvent.getType());
     }
@@ -66,11 +63,6 @@ public class PopupSelectorItemWithEdit<T> extends Composite implements HasValue<
     @Override
     public HandlerRegistration addClickHandler(ClickHandler handler) {
         return addHandler(handler, ClickEvent.getType());
-    }
-
-    @Override
-    public void addSelectorHandler(SelectorItemHandler<T> selectorItemHandler) {
-        this.selectorItemHandler = selectorItemHandler;
     }
 
     @Override
@@ -109,7 +101,6 @@ public class PopupSelectorItemWithEdit<T> extends Composite implements HasValue<
     InlineLabel editIcon;
 
     private T value = null;
-    private SelectorItemHandler<T> selectorItemHandler;
     private Long id;
 
     interface PopupSelectorItemWithBinder extends UiBinder<HTMLPanel, PopupSelectorItemWithEdit> {}

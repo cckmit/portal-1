@@ -3,7 +3,6 @@ package ru.protei.portal.ui.common.client.widget.selector.input;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -42,9 +41,10 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
     public InputPopupMultiSelector() {
         initWidget( bsUiBinder.createAndBindUi( this ) );
 
-        SelectorPopup popup = new ArrowSelectableSelectorPopup(KeyCodes.KEY_SPACE, false);
+        SelectorPopup popup = new ArrowSelectableSelectorPopup();
         setPopup(popup);
         setSearchEnabled(true);
+        setAutoCloseable(false);
 
         setSearchAutoFocus( true );
         setPageSize( CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE );

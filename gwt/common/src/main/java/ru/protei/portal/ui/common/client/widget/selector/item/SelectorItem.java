@@ -10,6 +10,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import ru.protei.portal.ui.common.client.selector.AbstractSelectorItem;
 import ru.protei.portal.ui.common.client.selector.SelectorItemChangeHandler;
 import ru.protei.portal.ui.common.client.widget.selector.event.*;
 
@@ -17,22 +18,12 @@ import ru.protei.portal.ui.common.client.widget.selector.event.*;
  * Вид одного элемента из выпадайки селектора
  */
 public class SelectorItem
-        extends Composite
-        implements HasSelectorItemSelectHandlers, SelectorItemChangeHandler
+        extends AbstractSelectorItem
 {
 
     public SelectorItem() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-    }
-
-    @Override
-    public HandlerRegistration addSelectorItemSelectHandler(SelectorItemSelectHandler handler) {
-        return addHandler(handler, SelectorItemSelectEvent.getType());
-    }
-
-    @Override
-    public void onItemClicked() {
-        SelectorItemSelectEvent.fire(this);
+        initHandlers();
     }
 
     public void setName(String name ) {

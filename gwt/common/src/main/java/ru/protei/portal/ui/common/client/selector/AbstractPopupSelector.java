@@ -1,20 +1,16 @@
 package ru.protei.portal.ui.common.client.selector;
 
-import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasVisibility;
-import com.google.gwt.user.client.ui.Widget;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.selector.pageable.*;
+import ru.protei.portal.ui.common.client.selector.popup.item.SelectorItemHandler;
 import ru.protei.portal.ui.common.client.widget.selector.popup.PopupHandler;
 import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopupWithSearch;
-import ru.protei.portal.ui.common.client.selector.popup.item.SelectorItemHandler;
 import ru.protei.portal.ui.common.client.widget.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
-
-import java.util.Iterator;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 
@@ -71,7 +67,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
     @Override
     public void fill( T element, String elementHtml) {
         SelectorItem<T> itemView = makeItemView(element, elementHtml);
-        getPopup().addItem(itemView);
+        getPopup().getContainer().add(itemView.asWidget());
     }
 
     @Override
@@ -170,7 +166,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
 
     public SelectorPopup getPopup() {
         if (popup == null) {
-            setPopup( new ArrowSelectableSelectorPopup(KeyCodes.KEY_ENTER, true) );
+            setPopup( new ArrowSelectableSelectorPopup( true) );
             setSearchEnabled( true );
         }
         return popup;
@@ -190,6 +186,10 @@ public abstract class AbstractPopupSelector<T> extends Composite
      */
     public void setPopupUnloadHandler( Runnable popupUnloadHandler ){
         this.popupUnloadHandler = popupUnloadHandler;
+    }
+
+    public void setAutoCloseable(boolean isAutoCloseable) {
+        this.isAutoCloseable = isAutoCloseable;
     }
 
     /**
@@ -218,8 +218,31 @@ public abstract class AbstractPopupSelector<T> extends Composite
     private SelectorItem<T> makeItemView(T t, String elementHtml) {
         SelectorItem<T> itemView = makeSelectorItem(t, elementHtml );
         itemView.setValue(t);
-        itemView.addSelectorHandler(this);
+        addValueChangeHandlers(itemView);
         return itemView;
+    }
+
+    private void addValueChangeHandlers(SelectorItem<T> itemView) {
+        itemView.addValueChangeButtonHandler(valueChangeButton -> {
+            onSelectorItemClicked(itemView);
+
+            if (isAutoCloseable) {
+                popup.hide();
+            } else {
+                popup.refreshPopup();
+            }
+        });
+
+        itemView.addValueChangeMouseClickHandler(() -> {
+            onSelectorItemClicked(itemView);
+
+            if (isAutoCloseable) {
+                popup.hide();
+            } else {
+                popup.refreshPopup();
+                popup.focusPopup();
+            }
+        });
     }
 
     // Переопределяется в AsyncSearchSelectorModel
@@ -237,6 +260,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
 
     private String emptyListText = null;
     private String emptySearchText = emptyListText;
+    private boolean isAutoCloseable = true;
 
     public static final String DISABLED = "disabled";
     private Runnable popupUnloadHandler;

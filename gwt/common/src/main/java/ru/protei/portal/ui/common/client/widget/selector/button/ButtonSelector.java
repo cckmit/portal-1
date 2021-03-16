@@ -15,7 +15,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
-import ru.protei.portal.ui.common.client.widget.selector.event.SelectorItemSelectEvent;
+import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 /**
@@ -43,8 +43,8 @@ public class ButtonSelector<T> extends Selector<T> implements HasValidable, HasE
     }
 
     @Override
-    public void onSelectorItemSelect( SelectorItemSelectEvent event ) {
-        super.onSelectorItemSelect(event);
+    public void onSelectorItemSelect( SelectorItem item ) {
+        super.onSelectorItemSelect(item);
         checkValueIsValid();
     }
 

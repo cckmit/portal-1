@@ -2,7 +2,6 @@ package ru.protei.portal.ui.common.client.widget.tab;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -48,7 +47,7 @@ public class TabWidget extends Tab {
             TabWidgetPane pane = (TabWidgetPane) widget;
             tabNameToPane.remove(pane.getTabName());
             tabNameToNavItem.remove(pane.getTabName());
-            popup.remove(tabNameToNavSelectorItem.remove(pane.getTabName()));
+            popup.getContainer().remove(tabNameToNavSelectorItem.remove(pane.getTabName()));
         }
         return tabContent.remove(widget);
     }
@@ -59,7 +58,7 @@ public class TabWidget extends Tab {
         TabWidgetNavItem navItem = makeNavItem(pane);
         SelectorItem selectorItem = makeSelectorItem(pane);
 
-        popup.addItem(selectorItem);
+        popup.getContainer().add(selectorItem.asWidget());
         tabNameToNavSelectorItem.put(pane.getTabName(), selectorItem);
         navTabs.add(navItem);
         tabNameToNavItem.put(pane.getTabName(), navItem);
@@ -100,9 +99,8 @@ public class TabWidget extends Tab {
     private SelectorItem makeSelectorItem(TabWidgetPane pane) {
         SelectorItem selectorItem = new SelectorItem();
         selectorItem.setName(pane.getTabName());
-        selectorItem.addSelectorItemSelectHandler(event -> {
-            onTabSelected(pane.getTabName());
-        });
+        selectorItem.addValueChangeMouseClickHandler(() -> onTabSelected(pane.getTabName()));
+        selectorItem.addValueChangeButtonHandler(button -> onTabSelected(pane.getTabName()));
         return selectorItem;
     }
 
@@ -119,7 +117,7 @@ public class TabWidget extends Tab {
     @UiField
     HTMLPanel tabContent;
 
-    private final SelectorPopup popup = new ArrowSelectableSelectorPopup(KeyCodes.KEY_ENTER, true);
+    private final SelectorPopup popup = new ArrowSelectableSelectorPopup();
     private Map<String, SelectorItem> tabNameToNavSelectorItem = new HashMap<>();
 
     interface TabWidgetUiBinder extends UiBinder<HTMLPanel, TabWidget> {}

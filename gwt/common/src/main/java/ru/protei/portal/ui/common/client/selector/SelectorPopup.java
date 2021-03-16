@@ -12,11 +12,11 @@ import ru.protei.portal.ui.common.client.widget.composite.popper.PopperComposite
 public interface SelectorPopup extends IsWidget {
     void setPopupHandler( PopupHandler tPopupSelector );
 
+    HasWidgets getContainer();
+
     void clear();
 
     void remove(Widget widget);
-
-    void addItem(SelectorItemChangeHandler selectorItem);
 
     boolean isEmpty();
 
@@ -25,6 +25,8 @@ public interface SelectorPopup extends IsWidget {
     void showNear( Element showNear );
 
     void showNear( Element showNear, PopperComposite.Placement placement );
+
+    void refreshPopup();
 
     void showLoading( boolean isLoading );
 
@@ -52,5 +54,5 @@ public interface SelectorPopup extends IsWidget {
 
     void focusPopup();
 
-    void setPopupAutoFocus(boolean isPopupAutoFocus);
+    void focusFirst();
 }

@@ -8,28 +8,20 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
+import ru.protei.portal.ui.common.client.selector.AbstractSelectorItem;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 
 
-public class PopupUserLoginSelectorItem<T> extends Composite implements SelectorItem<T> {
+public class PopupUserLoginSelectorItem<T> extends AbstractSelectorItem implements SelectorItem<T> {
 
     public PopupUserLoginSelectorItem() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        initHandlers();
         image.addLoadHandler(loadEvent -> {
             if (image.getOffsetWidth() == image.getOffsetHeight()) {
                 image.addStyleName("default-icon");
             }
         });
-    }
-
-    @Override
-    public void addSelectorHandler(SelectorItemHandler<T> selectorItemHandler) {
-        this.selectorItemHandler = selectorItemHandler;
-    }
-
-    @Override
-    public void onItemClicked() {
-        selectorItemHandler.onSelectorItemClicked(this);
     }
 
     @Override
@@ -76,7 +68,6 @@ public class PopupUserLoginSelectorItem<T> extends Composite implements Selector
     @UiField
     Image image;
 
-    private SelectorItemHandler<T> selectorItemHandler;
     private T value;
 
     interface PopupUserLoginSelectorItemUiBinder extends UiBinder<HTMLPanel, PopupUserLoginSelectorItem> {}
