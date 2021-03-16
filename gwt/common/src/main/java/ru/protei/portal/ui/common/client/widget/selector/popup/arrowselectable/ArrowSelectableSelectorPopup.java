@@ -8,7 +8,7 @@ import com.google.gwt.user.client.ui.Widget;
 import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopupWithSearch;
 
 import static java.util.Optional.of;
-import static ru.protei.portal.ui.common.client.selector.util.ValueChangeButtonUtil.isValueChangeButton;
+import static ru.protei.portal.ui.common.client.selector.util.ValueChangeButton.isValueChangeButton;
 
 public class ArrowSelectableSelectorPopup extends SelectorPopupWithSearch {
     public ArrowSelectableSelectorPopup() {
