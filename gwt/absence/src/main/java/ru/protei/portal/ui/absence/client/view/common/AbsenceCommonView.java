@@ -148,8 +148,6 @@ public class AbsenceCommonView extends Composite implements AbstractAbsenceCommo
 
     @Inject
     AbstractAbsenceCreateView createView;
-    @Inject
-    AbstractAbsenceEditView editView;
 
     private static AbsenceCommonViewUiBinder ourUiBinder = GWT.create(AbsenceCommonViewUiBinder.class);
     interface AbsenceCommonViewUiBinder extends UiBinder<HTMLPanel, AbsenceCommonView> {}
