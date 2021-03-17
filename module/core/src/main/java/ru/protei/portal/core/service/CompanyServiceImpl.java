@@ -484,7 +484,7 @@ public class CompanyServiceImpl implements CompanyService {
 
     private boolean checkCompanyExists (String name, Long excludeId) {
 
-        Company company = companyDAO.getCompanyByName(name);
+        Company company = companyDAO.getCompanyByName(name.trim());
 
         if (company == null)
             return false;
