@@ -19,5 +19,11 @@ public enum En_CaseFilterType {
     /**
      * Фильтр проектам
      */
-    PROJECT
+    PROJECT,
+
+
+    /**
+     * Фильтр ночным работам
+     */
+    NIGHT_WORK
 }

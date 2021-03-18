@@ -2246,6 +2246,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reportTypeContract();
 
+    String reportNightWork();
+
     String reportScheduledType();
 
     String reportScheduledTypeNone();
