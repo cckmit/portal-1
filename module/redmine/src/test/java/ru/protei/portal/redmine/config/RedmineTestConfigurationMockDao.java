@@ -6,7 +6,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.support.TransactionTemplate;
 import ru.protei.portal.core.model.converter.MoneyJdbcConverter;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dao.impl.EmployeeRegistrationHistoryDAO_Impl;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import static org.mockito.Mockito.mock;
@@ -323,6 +322,11 @@ public class RedmineTestConfigurationMockDao {
     @Bean
     public CaseCommentTimeElapsedSumDAO getCaseCommentCaseObjectDAO() {
         return mock( CaseCommentTimeElapsedSumDAO.class );
+    }
+
+    @Bean
+    public CaseCommentNightWorkDAO getCaseCommentNightWorkDAO() {
+        return mock(CaseCommentNightWorkDAO.class);
     }
 
     @Bean

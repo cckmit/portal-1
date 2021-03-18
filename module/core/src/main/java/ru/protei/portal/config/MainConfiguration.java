@@ -51,6 +51,8 @@ import ru.protei.portal.core.report.contract.ReportContract;
 import ru.protei.portal.core.report.contract.ReportContractImpl;
 import ru.protei.portal.core.report.dutylog.ReportDutyLog;
 import ru.protei.portal.core.report.dutylog.ReportDutyLogImpl;
+import ru.protei.portal.core.report.nightwork.ReportNightWork;
+import ru.protei.portal.core.report.nightwork.ReportNightWorkImpl;
 import ru.protei.portal.core.report.projects.ReportProject;
 import ru.protei.portal.core.report.projects.ReportProjectImpl;
 import ru.protei.portal.core.service.*;
@@ -576,6 +578,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public CaseCommentNightWorkDAO getCaseCommentNightWorkDAO() {
+        return new CaseCommentNightWorkDAO_Impl();
+    }
+
+    @Bean
     public ContractDAO getContractDAO() {
         return new ContractDAO_Impl();
     }
@@ -1076,6 +1083,11 @@ public class MainConfiguration {
     @Bean
     public ReportCaseTimeElapsed getReportCaseTimeElapsed() {
         return new ReportCaseTimeElapsedImpl();
+    }
+
+    @Bean
+    public ReportNightWork getReportNightWork() {
+        return new ReportNightWorkImpl();
     }
 
     @Bean
