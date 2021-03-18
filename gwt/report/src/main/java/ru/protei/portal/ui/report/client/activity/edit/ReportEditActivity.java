@@ -197,7 +197,8 @@ public abstract class ReportEditActivity implements Activity,
         switch (report.getReportType()) {
             case CASE_OBJECTS:
             case CASE_TIME_ELAPSED:
-            case CASE_RESOLUTION_TIME: {
+            case CASE_RESOLUTION_TIME:
+            case NIGHT_WORK: {
                 CaseQuery caseQuery = (CaseQuery)query;
                 if (caseQuery.isCheckImportanceHistory()) {
                     additionalParams.add(En_ReportAdditionalParamType.IMPORTANCE_HISTORY);

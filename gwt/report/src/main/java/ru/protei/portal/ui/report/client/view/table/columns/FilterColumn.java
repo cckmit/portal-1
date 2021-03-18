@@ -63,6 +63,7 @@ public class FilterColumn extends StaticColumn<ReportDto> {
                 case CASE_OBJECTS:
                 case CASE_TIME_ELAPSED:
                 case CASE_RESOLUTION_TIME:
+                case NIGHT_WORK:
                     appendCaseQueryInfo(divElement, (CaseQuery) value.getQuery());
                     break;
                 case CONTRACT:
