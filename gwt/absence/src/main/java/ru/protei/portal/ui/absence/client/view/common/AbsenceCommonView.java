@@ -85,23 +85,21 @@ public class AbsenceCommonView extends Composite implements AbstractAbsenceCommo
 
     @UiHandler("reason")
     public void onReasonChanged(ValueChangeEvent<En_AbsenceReason> event) {
-        List<DateInterval> newDateRange = new LinkedList<>();
-        createView.dateRange().getValue().forEach(interval -> {
-            Date to = interval.to;
-            if (event.getValue().equals(En_AbsenceReason.NIGHT_WORK)) {
-                to.setHours(13);
-                to.setMinutes(00);
-                to.setSeconds(00);
-            } else {
-                to.setHours(23);
-                to.setMinutes(59);
-                to.setSeconds(59);
-            }
+        if (!event.getValue().equals(En_AbsenceReason.NIGHT_WORK))
+            return;
 
-            newDateRange.add(new DateInterval(interval.from, to));
-        });
+        List<DateInterval> intervals = new ArrayList<>(createView.dateRange().getValue());
+        int lastIntervalId = intervals.size() - 1;
+        DateInterval lastInterval = intervals.get(lastIntervalId);
 
-        createView.dateRange().setValue(newDateRange);
+        Date to = lastInterval.to;
+        to.setHours(13);
+        to.setMinutes(0);
+        to.setSeconds(0);
+
+        intervals.remove(lastIntervalId);
+        intervals.add(new DateInterval(lastInterval.from, to));
+        createView.dateRange().setValue(intervals);
     }
 
     protected void ensureDebugIds() {
