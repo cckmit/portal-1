@@ -132,7 +132,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         if (login.isEmpty()) {
             view.setContactLoginStatus(NameStatus.NONE);
             view.loginErrorLabelVisibility().setVisible(false);
-            validateSaveButton();
+            view.saveEnabled().setEnabled(validateSaveButton());
             return;
         }
 
@@ -235,7 +235,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
             return false;
         }
 
-        if ((view.login().getText() != null) && (!view.login().getText().contains("@"))) {
+        if ((view.login().getText() != null) && (!view.login().getText().trim().isEmpty()) && (!view.login().getText().contains("@"))) {
             return false;
         }
 
@@ -424,7 +424,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
             return false;
         }
 
-        if ((view.login() != null) && (!view.login().getText().contains("@"))) {
+        if ((view.login() != null) && (!view.login().getText().trim().isEmpty()) && (!view.login().getText().contains("@"))) {
             return false;
         }
 
@@ -435,7 +435,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         if (view.login().getText().trim().length() > LOGIN_SIZE) {
             view.loginErrorLabel().setText(lang.promptFieldLengthExceed(view.loginLabel(), LOGIN_SIZE));
             view.loginErrorLabelVisibility().setVisible(true);
-        } else if (!view.login().getText().contains("@")) {
+        } else if (!view.login().getText().trim().isEmpty() && !view.login().getText().contains("@")) {
             view.loginErrorLabel().setText(lang.promptFieldNeedContainAtSign());
             view.loginErrorLabelVisibility().setVisible(true);
         } else {
