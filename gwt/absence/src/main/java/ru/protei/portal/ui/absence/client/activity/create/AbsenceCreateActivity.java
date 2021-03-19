@@ -13,6 +13,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -43,6 +44,20 @@ public abstract class AbsenceCreateActivity extends AbsenceCommonActivity {
         } else {
             createView.setDateRangeValid(true);
         }
+    }
+
+    @Override
+    public void onReasonChangeToNightWork() {
+        List<DateInterval> intervals = createView.dateRange().getValue();
+        int lastIntervalIndex = intervals.size() - 1;
+        DateInterval lastInterval = intervals.get(lastIntervalIndex);
+
+        Date to = lastInterval.to;
+        to.setHours(13);
+        to.setMinutes(0);
+        to.setSeconds(0);
+
+        createView.dateRange().setValue(intervals);
     }
 
     protected void performFillView() {
