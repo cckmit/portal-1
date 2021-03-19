@@ -85,7 +85,7 @@ public class ArrowSelectableSelectorPopup extends SelectorPopupWithSearch {
             return;
         }
 
-        if (KeyCodes.KEY_DOWN == event.getNativeKeyCode() || event.getNativeKeyCode() == KeyCodes.KEY_TAB) {
+        if (KeyCodes.KEY_DOWN == event.getNativeKeyCode()) {
             event.preventDefault();
             focusWidget(getNext(childContainer, currentWidget));
             return;
