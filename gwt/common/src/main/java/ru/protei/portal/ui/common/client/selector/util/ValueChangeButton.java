@@ -19,14 +19,18 @@ public enum ValueChangeButton {
     }
 
     public static boolean isValueChangeButton(int buttonCode) {
-        return stream(values())
-                .anyMatch(valueChangeButton -> valueChangeButton.getButtonCode() == buttonCode);
+        for (ValueChangeButton value : values()) {
+            if(value.getButtonCode() == buttonCode) return true;
+        }
+
+        return false;
     }
 
     public static ValueChangeButton getValueChangeButton(int buttonCode) {
-        return stream(values())
-                .filter(valueChangeButton -> valueChangeButton.getButtonCode() == buttonCode)
-                .findAny()
-                .orElse(null);
+        for (ValueChangeButton value : values()) {
+            if(value.getButtonCode() == buttonCode) return value;
+        }
+
+        return null;
     }
 }

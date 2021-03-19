@@ -10,23 +10,47 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
-import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.selector.AbstractSelectorItem;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 
-import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
+import static ru.protei.portal.ui.common.client.selector.util.ValueChangeButton.getValueChangeButton;
+import static ru.protei.portal.ui.common.client.selector.util.ValueChangeButton.isValueChangeButton;
 
 /**
  * Вид одного элемента из выпадайки селектора
  */
 public class PopupSelectorItem<T>
-        extends AbstractSelectorItem
+        extends Composite
+//         extends AbstractSelectorItem
         implements SelectorItem<T>
 {
     public PopupSelectorItem() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        initHandlers();
+
+            addDomHandler(event -> {
+                event.preventDefault();
+//                changeState();
+//                valueChangeMouseHandler.run();
+                if(selectorItemHandler!=null) {
+                    selectorItemHandler.onMouseClickEvent(this, event);
+                }
+            }, ClickEvent.getType());
+
+            addDomHandler(event -> {
+                if (!isValueChangeButton(event.getNativeKeyCode())) {
+                    return;
+                }
+
+                event.preventDefault();
+//                changeState();
+//                valueChangeButtonHandler.accept(getValueChangeButton(event.getNativeKeyCode()));
+                if(selectorItemHandler!=null) {
+                    selectorItemHandler.onKeyboardButtonDown(this, event);
+                }
+            }, KeyDownEvent.getType());
+
+
     }
 
     @Override
@@ -37,6 +61,11 @@ public class PopupSelectorItem<T>
     @Override
     public void setValue(T value) {
         this.value = value;
+    }
+
+    @Override
+    public void addSelectorHandler(SelectorItemHandler<T> selectorItemHandler) {
+        this.selectorItemHandler = selectorItemHandler;
     }
 
     @Override
@@ -74,6 +103,15 @@ public class PopupSelectorItem<T>
         image.setSrc( src );
     }
 
+    @UiHandler( "anchor" )
+    public void onAnchorClicked( ClickEvent event ) {
+        event.preventDefault();
+
+        if(selectorItemHandler!=null) {
+            selectorItemHandler.onSelectorItemClicked(this);
+        }
+    }
+
     @UiHandler("anchor")
     public void onKeyUpEvent( KeyUpEvent keyUpEvent) {
         keyUpEvent.preventDefault();
@@ -92,6 +130,7 @@ public class PopupSelectorItem<T>
     @UiField
     Element icon;
 
+    private SelectorItemHandler<T> selectorItemHandler;
     private T value;
 
     interface SelectorItemViewUiBinder extends UiBinder<HTMLPanel, PopupSelectorItem> {

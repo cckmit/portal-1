@@ -7,6 +7,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.ui.common.client.selector.popup.item.SelectorItemHandler;
 
 
-public interface SelectorItem<T> extends TakesValue<T>, HasVisibility, HasKeyUpHandlers, HasValueChangeButtonHandlers, IsWidget {
+public interface SelectorItem<T> extends TakesValue<T>, HasVisibility, HasKeyUpHandlers, IsWidget {
+    void addSelectorHandler(SelectorItemHandler<T> selectorItemHandler );
     void setElementHtml( String elementHtml );
 }

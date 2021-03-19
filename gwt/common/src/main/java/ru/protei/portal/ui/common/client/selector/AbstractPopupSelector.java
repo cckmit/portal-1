@@ -1,5 +1,7 @@
 package ru.protei.portal.ui.common.client.selector;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasEnabled;
@@ -8,11 +10,14 @@ import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.selector.pageable.*;
 import ru.protei.portal.ui.common.client.selector.popup.item.SelectorItemHandler;
+import ru.protei.portal.ui.common.client.selector.util.ValueChangeButton;
 import ru.protei.portal.ui.common.client.widget.selector.popup.PopupHandler;
 import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopupWithSearch;
 import ru.protei.portal.ui.common.client.widget.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
+import static ru.protei.portal.ui.common.client.selector.util.ValueChangeButton.getValueChangeButton;
+import static ru.protei.portal.ui.common.client.selector.util.ValueChangeButton.isValueChangeButton;
 
 /**
  * Селектор c выпадающим списком
@@ -41,10 +46,43 @@ public abstract class AbstractPopupSelector<T> extends Composite
 
     @Override
     public void onSelectorItemClicked(SelectorItem<T> selectorItem) {
+        onSelectorItemSelected(selectorItem);
+    }
+
+    private void onSelectorItemSelected(SelectorItem<T> selectorItem) {
         T value = selectorItem.getValue();
         getSelector().getSelection().select(value);
 
         onSelectionChanged();
+    }
+
+    @Override
+    public void onKeyboardButtonDown( SelectorItem<T> selectorItem, KeyDownEvent event ) {
+        if (!isValueChangeButton(event.getNativeKeyCode())) {
+            return;
+        }
+
+        ValueChangeButton notUsed = getValueChangeButton( event.getNativeKeyCode() ); //
+
+        onSelectorItemSelected(selectorItem);
+
+        if (isAutoCloseable) {
+            popup.hide();
+        } else {
+            popup.refreshPopup();
+        }
+    }
+
+    @Override
+    public void onMouseClickEvent( SelectorItem<T> selectorItem, ClickEvent event ) {
+        onSelectorItemSelected(selectorItem);
+
+        if (isAutoCloseable) {
+            popup.hide();
+        } else {
+            popup.refreshPopup();
+            popup.focusPopup();
+        }
     }
 
     @Override
@@ -218,31 +256,8 @@ public abstract class AbstractPopupSelector<T> extends Composite
     private SelectorItem<T> makeItemView(T t, String elementHtml) {
         SelectorItem<T> itemView = makeSelectorItem(t, elementHtml );
         itemView.setValue(t);
-        addValueChangeHandlers(itemView);
+        itemView.addSelectorHandler(this);
         return itemView;
-    }
-
-    private void addValueChangeHandlers(SelectorItem<T> itemView) {
-        itemView.addValueChangeButtonHandler(valueChangeButton -> {
-            onSelectorItemClicked(itemView);
-
-            if (isAutoCloseable) {
-                popup.hide();
-            } else {
-                popup.refreshPopup();
-            }
-        });
-
-        itemView.addValueChangeMouseClickHandler(() -> {
-            onSelectorItemClicked(itemView);
-
-            if (isAutoCloseable) {
-                popup.hide();
-            } else {
-                popup.refreshPopup();
-                popup.focusPopup();
-            }
-        });
     }
 
     // Переопределяется в AsyncSearchSelectorModel
