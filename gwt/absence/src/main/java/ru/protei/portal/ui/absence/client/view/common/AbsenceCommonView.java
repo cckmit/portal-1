@@ -9,13 +9,11 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_AbsenceReason;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.absence.client.activity.common.AbstractAbsenceCommonActivity;
 import ru.protei.portal.ui.absence.client.activity.common.AbstractAbsenceCommonView;
-import ru.protei.portal.ui.absence.client.activity.create.AbstractAbsenceCreateView;
-import ru.protei.portal.ui.absence.client.activity.edit.AbstractAbsenceEditView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.loading.IndeterminateCircleLoading;
@@ -23,14 +21,17 @@ import ru.protei.portal.ui.common.client.widget.selector.absencereason.AbsenceRe
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
-import java.util.*;
-
 public class AbsenceCommonView extends Composite implements AbstractAbsenceCommonView {
 
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
+    }
+
+    @Override
+    public void setActivity(AbstractAbsenceCommonActivity activity) {
+        this.activity = activity;
     }
 
     @Override
@@ -85,21 +86,11 @@ public class AbsenceCommonView extends Composite implements AbstractAbsenceCommo
 
     @UiHandler("reason")
     public void onReasonChanged(ValueChangeEvent<En_AbsenceReason> event) {
-        if (!event.getValue().equals(En_AbsenceReason.NIGHT_WORK))
+        if (!event.getValue().equals(En_AbsenceReason.NIGHT_WORK)) {
             return;
+        }
 
-        List<DateInterval> intervals = new ArrayList<>(createView.dateRange().getValue());
-        int lastIntervalId = intervals.size() - 1;
-        DateInterval lastInterval = intervals.get(lastIntervalId);
-
-        Date to = lastInterval.to;
-        to.setHours(13);
-        to.setMinutes(0);
-        to.setSeconds(0);
-
-        intervals.remove(lastIntervalId);
-        intervals.add(new DateInterval(lastInterval.from, to));
-        createView.dateRange().setValue(intervals);
+        activity.onReasonChangeToNightWork();
     }
 
     protected void ensureDebugIds() {
@@ -144,8 +135,7 @@ public class AbsenceCommonView extends Composite implements AbstractAbsenceCommo
     @UiField
     Lang lang;
 
-    @Inject
-    AbstractAbsenceCreateView createView;
+    protected AbstractAbsenceCommonActivity activity;
 
     private static AbsenceCommonViewUiBinder ourUiBinder = GWT.create(AbsenceCommonViewUiBinder.class);
     interface AbsenceCommonViewUiBinder extends UiBinder<HTMLPanel, AbsenceCommonView> {}

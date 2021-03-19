@@ -36,6 +36,7 @@ public abstract class AbsenceCommonActivity implements AbstractAbsenceCommonActi
         dialogView.removeButtonVisibility().setVisible(false);
         dialogView.setSaveOnEnterClick(false);
         dialogView.getBodyContainer().add(view.asWidget());
+        view.setActivity(this);
     }
 
     protected void onShow() {
