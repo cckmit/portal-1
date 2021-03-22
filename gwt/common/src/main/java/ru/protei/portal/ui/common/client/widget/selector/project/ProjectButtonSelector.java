@@ -17,6 +17,7 @@ public class ProjectButtonSelector
         this.model = model;
         setSelectorModel(model);
         setSearchEnabled(true);
+        setSearchAutoFocus(true);
         setHasNullValue(false);
         setDisplayOptionCreator(val ->
                 new DisplayOption(val == null ? defaultValue : val.getDisplayText())

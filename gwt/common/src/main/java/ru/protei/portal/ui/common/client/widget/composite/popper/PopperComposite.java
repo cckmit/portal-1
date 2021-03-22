@@ -73,21 +73,23 @@ public abstract class PopperComposite extends PopupLikeComposite {
     }
 
     public void show(Element relative, Placement placement, int skidding, int distance) {
-        setVisible(true);
+        this.refresh = () -> {
+            setVisible(true);
 
-        if (popper != null) {
-            destroyPopper(popper);
-        }
+            if (popper != null) {
+                destroyPopper(popper);
+            }
 
-        popper = createPopper(relative, getElement(), placement.getCode(), isFixedStrategy, skidding, distance);
+            popper = createPopper(relative, getElement(), placement.getCode(), isFixedStrategy, skidding, distance);
 
-        resizeWidth(relative, getElement());
+            resizeWidth(relative, getElement());
 
-        if (isAutoResize) {
-            if (resizeHandlerReg == null) {
+            if (isAutoResize && resizeHandlerReg == null) {
                 addResizeHandler(relative, getElement());
             }
-        }
+        };
+
+        this.refresh.run();
     }
 
     public void hide() {
@@ -109,6 +111,10 @@ public abstract class PopperComposite extends PopupLikeComposite {
 
     public void setFixedStrategy(boolean isFixedStrategy) {
         this.isFixedStrategy = isFixedStrategy;
+    }
+
+    public void refreshPopupPosition() {
+        refresh.run();
     }
 
     private void addResizeHandler(Element relative, Element popup) {
@@ -167,4 +173,5 @@ public abstract class PopperComposite extends PopupLikeComposite {
     private boolean isFixedStrategy = true;
 
     private HandlerRegistration resizeHandlerReg;
+    private Runnable refresh = () -> {};
 }

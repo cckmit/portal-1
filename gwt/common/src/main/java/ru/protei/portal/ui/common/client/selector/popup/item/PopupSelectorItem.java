@@ -10,11 +10,10 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
-import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 
-import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
+import static ru.protei.portal.ui.common.client.selector.util.SelectorItemKeyboardKey.isSelectorItemKeyboardKey;
 
 /**
  * Вид одного элемента из выпадайки селектора
@@ -24,7 +23,24 @@ public class PopupSelectorItem<T>
         implements SelectorItem<T>
 {
     public PopupSelectorItem() {
-        initWidget( ourUiBinder.createAndBindUi( this ) );
+        initWidget(ourUiBinder.createAndBindUi(this));
+        addDomHandler(event -> {
+            event.preventDefault();
+            if (selectorItemHandler != null) {
+                selectorItemHandler.onMouseClickEvent(this, event);
+            }
+        }, ClickEvent.getType());
+
+        addDomHandler(event -> {
+            if (!isSelectorItemKeyboardKey(event.getNativeKeyCode())) {
+                return;
+            }
+
+            event.preventDefault();
+            if (selectorItemHandler != null) {
+                selectorItemHandler.onKeyboardButtonDown(this, event);
+            }
+        }, KeyDownEvent.getType());
     }
 
     @Override
@@ -33,8 +49,8 @@ public class PopupSelectorItem<T>
     }
 
     @Override
-    public void setValue(T t) {
-        value = t;
+    public void setValue(T value) {
+        this.value = value;
     }
 
     @Override
@@ -52,7 +68,7 @@ public class PopupSelectorItem<T>
         root.getElement().setInnerHTML( elementHtml );
     }
 
-    public void setName( String name ) {
+    public void setName(String name ) {
         text.setInnerHTML( name );
     }
 
@@ -75,15 +91,6 @@ public class PopupSelectorItem<T>
     public void setImage( String src ) {
         image.removeClassName( HIDE );
         image.setSrc( src );
-    }
-
-    @UiHandler( "anchor" )
-    public void onAnchorClicked( ClickEvent event ) {
-        event.preventDefault();
-
-        if(selectorItemHandler!=null) {
-            selectorItemHandler.onSelectorItemClicked(this);
-        }
     }
 
     @UiHandler("anchor")

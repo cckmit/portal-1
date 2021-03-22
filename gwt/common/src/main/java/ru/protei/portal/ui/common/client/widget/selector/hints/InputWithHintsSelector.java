@@ -2,7 +2,6 @@ package ru.protei.portal.ui.common.client.widget.selector.hints;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.LabelElement;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
@@ -16,6 +15,7 @@ import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.TextBox;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.HashMap;
@@ -40,8 +40,8 @@ public class InputWithHintsSelector<T> extends Selector<T> implements HasValidab
     }
 
     @Override
-    public void onClick( ClickEvent event ) {
-        super.onClick(event);
+    public void onSelectorItemSelect(SelectorItem item) {
+        super.onSelectorItemSelect(item);
         if(isValidable)
             setValid( isValid() );
     }

@@ -1,7 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
-    <g:HTMLPanel ui:field="root" tag="li" styleName="selectable-item selectable-item-text">
+    <g:HTMLPanel ui:field="root" tag="li" styleName="selectable-item selectable-item-text focusable">
         <g:CheckBox ui:field="checkbox" styleName="checkbox no-margin">
             <i ui:field="icon" class="hide"></i>
             <span ui:field="label"/>

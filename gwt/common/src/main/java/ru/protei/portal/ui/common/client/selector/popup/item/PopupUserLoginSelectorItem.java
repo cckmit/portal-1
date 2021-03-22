@@ -8,11 +8,13 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
+import ru.protei.portal.ui.common.client.selector.AbstractSelectorItem;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
+
+import static ru.protei.portal.ui.common.client.selector.util.SelectorItemKeyboardKey.isSelectorItemKeyboardKey;
 
 
 public class PopupUserLoginSelectorItem<T> extends Composite implements SelectorItem<T> {
-
     public PopupUserLoginSelectorItem() {
         initWidget(ourUiBinder.createAndBindUi(this));
         image.addLoadHandler(loadEvent -> {
@@ -20,16 +22,34 @@ public class PopupUserLoginSelectorItem<T> extends Composite implements Selector
                 image.addStyleName("default-icon");
             }
         });
-    }
 
-    @Override
-    public void addSelectorHandler(SelectorItemHandler<T> selectorItemHandler) {
-        this.selectorItemHandler = selectorItemHandler;
+        addDomHandler(event -> {
+            event.preventDefault();
+            if (selectorItemHandler != null) {
+                selectorItemHandler.onMouseClickEvent(this, event);
+            }
+        }, ClickEvent.getType());
+
+        addDomHandler(event -> {
+            if (!isSelectorItemKeyboardKey(event.getNativeKeyCode())) {
+                return;
+            }
+
+            event.preventDefault();
+            if (selectorItemHandler != null) {
+                selectorItemHandler.onKeyboardButtonDown(this, event);
+            }
+        }, KeyDownEvent.getType());
     }
 
     @Override
     public HandlerRegistration addKeyUpHandler(KeyUpHandler keyUpHandler) {
         return addHandler( keyUpHandler, KeyUpEvent.getType() );
+    }
+
+    @Override
+    public void addSelectorHandler(SelectorItemHandler<T> selectorItemHandler) {
+        this.selectorItemHandler = selectorItemHandler;
     }
 
     @Override
@@ -59,24 +79,6 @@ public class PopupUserLoginSelectorItem<T> extends Composite implements Selector
         image.setUrl(url);
     }
 
-    @UiHandler( "panel" )
-    public void onPanelClicked(ClickEvent event) {
-        event.preventDefault();
-        if (selectorItemHandler != null) {
-            selectorItemHandler.onSelectorItemClicked(this);
-        }
-    }
-
-    @UiHandler( "panel" )
-    public void onPanelKeyDown(KeyDownEvent event) {
-        event.preventDefault();
-        if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-            if (selectorItemHandler != null) {
-                selectorItemHandler.onSelectorItemClicked(this);
-            }
-        }
-    }
-
     @UiField
     HTMLPanel root;
 
@@ -89,8 +91,9 @@ public class PopupUserLoginSelectorItem<T> extends Composite implements Selector
     @UiField
     Image image;
 
-    private SelectorItemHandler<T> selectorItemHandler;
     private T value;
+
+    private SelectorItemHandler<T> selectorItemHandler;
 
     interface PopupUserLoginSelectorItemUiBinder extends UiBinder<HTMLPanel, PopupUserLoginSelectorItem> {}
     private static PopupUserLoginSelectorItemUiBinder ourUiBinder = GWT.create(PopupUserLoginSelectorItemUiBinder.class);

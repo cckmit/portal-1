@@ -1,7 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
-    <g:HTMLPanel ui:field="panel" tag="li" styleName="item-with-edit" >
+    <g:HTMLPanel ui:field="panel" tag="li" styleName="item-with-edit focusable" >
         <g:InlineLabel ui:field="text" styleName="item-with-edit-text"/>
         <g:InlineLabel ui:field="editIcon" styleName="item-with-edit-icon fas fa-pen"/>
     </g:HTMLPanel>

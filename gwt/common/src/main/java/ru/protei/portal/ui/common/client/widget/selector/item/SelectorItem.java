@@ -4,41 +4,44 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.SpanElement;
-import com.google.gwt.event.dom.client.*;
-import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import ru.protei.portal.test.client.DebugIds;
 
-import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
+import static ru.protei.portal.ui.common.client.selector.util.SelectorItemKeyboardKey.isSelectorItemKeyboardKey;
 
 /**
  * Вид одного элемента из выпадайки селектора
  */
 public class SelectorItem
-        extends Composite
-        implements HasClickHandlers, HasKeyUpHandlers
-{
+        extends Composite {
 
     public SelectorItem() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        addDomHandler(event -> {
+            event.preventDefault();
+            if (itemSelectedHandler != null) {
+                itemSelectedHandler.run();
+            }
+        }, ClickEvent.getType());
+
+        addDomHandler(event -> {
+            if (!isSelectorItemKeyboardKey(event.getNativeKeyCode())) {
+                return;
+            }
+
+            event.preventDefault();
+            if (itemSelectedHandler != null) {
+                itemSelectedHandler.run();
+            }
+        }, KeyDownEvent.getType());
     }
 
-    @Override
-    public HandlerRegistration addClickHandler( ClickHandler handler ) {
-        return addHandler( handler, ClickEvent.getType() );
-    }
-
-    @Override
-    public HandlerRegistration addKeyUpHandler(KeyUpHandler keyUpHandler) {
-        return addHandler( keyUpHandler, KeyUpEvent.getType() );
-    }
-
-    public void setName( String name ) {
+    public void setName(String name ) {
         text.setInnerText( name );
         setTitle(name);
     }
@@ -51,14 +54,6 @@ public class SelectorItem
         icon.setClassName( className );
     }
 
-    public void setIconColor(String color ) {
-        icon.getStyle().setColor(color);
-    }
-
-    public void setIconBackgroundColor(String color ) {
-        icon.getStyle().setBackgroundColor(color);
-    }
-
     public void setImage( String src ) {
         image.removeClassName( "hide" );
         image.setSrc( src );
@@ -68,22 +63,8 @@ public class SelectorItem
         root.setTitle(title);
     }
 
-    @UiHandler( "anchor" )
-    public void onAnchorClicked( ClickEvent event ) {
-        event.preventDefault();
-
-        ClickEvent.fireNativeEvent( event.getNativeEvent(), this );
-    }
-
-    @UiHandler("anchor")
-    public void onKeyUpEvent( KeyUpEvent event) {
-        event.preventDefault();
-
-        KeyUpEvent.fireNativeEvent(event.getNativeEvent(), this);
-    }
-
-    public void setFocus(boolean isFocused) {
-        anchor.setFocus(isFocused);
+    public void addItemSelectedHandler(Runnable itemSelectedHandler) {
+        this.itemSelectedHandler = itemSelectedHandler;
     }
 
     @UiField
@@ -101,6 +82,7 @@ public class SelectorItem
     @UiField
     ImageElement image;
 
+    private Runnable itemSelectedHandler;
 
     interface SelectorItemViewUiBinder extends UiBinder<HTMLPanel, SelectorItem > {}
     private static SelectorItemViewUiBinder ourUiBinder = GWT.create( SelectorItemViewUiBinder.class );

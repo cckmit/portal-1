@@ -11,7 +11,7 @@
         </div>
         <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="dropdown-searchbox"/>
         <g:HTMLPanel ui:field="dropdown" styleName="dropdown-menu full-width show">
-            <g:HTMLPanel ui:field="childContainer" tag="ul" styleName="full-width"/>
+            <g:HTMLPanel ui:field="childContainer" tag="ul" styleName="full-width focus-outline-none"/>
             <g:Label ui:field="message" visible="false" styleName="text-center"/>
             <g:HTMLPanel ui:field="loading" visible="false">
                 <i class='fa fa-spinner fa-pulse'></i>

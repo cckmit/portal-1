@@ -1,20 +1,21 @@
 package ru.protei.portal.ui.common.client.selector;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasVisibility;
-import com.google.gwt.user.client.ui.Widget;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.selector.pageable.*;
-import ru.protei.portal.ui.common.client.selector.popup.PopupHandler;
-import ru.protei.portal.ui.common.client.selector.popup.SelectorPopupWithSearch;
 import ru.protei.portal.ui.common.client.selector.popup.item.SelectorItemHandler;
-
-import java.util.Iterator;
+import ru.protei.portal.ui.common.client.widget.selector.popup.PopupHandler;
+import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopupWithSearch;
+import ru.protei.portal.ui.common.client.widget.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
+import static ru.protei.portal.ui.common.client.selector.util.SelectorItemKeyboardKey.isSelectorItemKeyboardKey;
 
 /**
  * Селектор c выпадающим списком
@@ -42,11 +43,30 @@ public abstract class AbstractPopupSelector<T> extends Composite
     }
 
     @Override
-    public void onSelectorItemClicked(SelectorItem<T> selectorItem) {
-        T value = selectorItem.getValue();
-        getSelector().getSelection().select(value);
+    public void onKeyboardButtonDown( SelectorItem<T> selectorItem, KeyDownEvent event ) {
+        if (!isSelectorItemKeyboardKey(event.getNativeKeyCode())) {
+            return;
+        }
 
-        onSelectionChanged();
+        onSelectorItemSelected(selectorItem);
+
+        if (isAutoCloseable) {
+            popup.hide();
+        } else {
+            popup.refreshPopupPosition();
+        }
+    }
+
+    @Override
+    public void onMouseClickEvent( SelectorItem<T> selectorItem, ClickEvent event ) {
+        onSelectorItemSelected(selectorItem);
+
+        if (isAutoCloseable) {
+            popup.hide();
+        } else {
+            popup.refreshPopupPosition();
+            popup.focusPopup();
+        }
     }
 
     @Override
@@ -69,7 +89,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
     @Override
     public void fill( T element, String elementHtml) {
         SelectorItem<T> itemView = makeItemView(element, elementHtml);
-        getPopup().getChildContainer().add(itemView.asWidget());
+        getPopup().getContainer().add(itemView.asWidget());
     }
 
     @Override
@@ -115,10 +135,6 @@ public abstract class AbstractPopupSelector<T> extends Composite
 
     public boolean isSelected(T element){
         return getSelector().getSelection().isSelected( element );
-    }
-
-    public void setSearchAutoFocus(boolean isSearchAutoFocus){
-        if(getPopup() instanceof SelectorPopupWithSearch) ((SelectorPopupWithSearch) getPopup()).setSearchAutoFocus(isSearchAutoFocus);
     }
 
     public void setHasNullValue(boolean hasNullValue) {
@@ -168,7 +184,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
 
     public SelectorPopup getPopup() {
         if (popup == null) {
-            setPopup( new SelectorPopupWithSearch() );
+            setPopup( new ArrowSelectableSelectorPopup( true) );
             setSearchEnabled( true );
         }
         return popup;
@@ -190,6 +206,10 @@ public abstract class AbstractPopupSelector<T> extends Composite
         this.popupUnloadHandler = popupUnloadHandler;
     }
 
+    public void setAutoCloseable(boolean isAutoCloseable) {
+        this.isAutoCloseable = isAutoCloseable;
+    }
+
     /**
      * Основной метод рендеринга элемента
      */
@@ -206,12 +226,18 @@ public abstract class AbstractPopupSelector<T> extends Composite
     protected abstract void onSelectionChanged();
 
     protected void checkNoElements() {
-        Iterator<Widget> it = getPopup().getChildContainer().iterator();
-        getPopup().setNoElements( !it.hasNext(), isEmpty(getSelector().getSearchString()) ? emptyListText : emptySearchText  );
+        getPopup().setNoElements(getPopup().isEmpty(), isEmpty(getSelector().getSearchString()) ? emptyListText : emptySearchText  );
+    }
+
+    private void onSelectorItemSelected(SelectorItem<T> selectorItem) {
+        T value = selectorItem.getValue();
+        getSelector().getSelection().select(value);
+
+        onSelectionChanged();
     }
 
     private void clearPopupItems() {
-        getPopup().getChildContainer().clear();
+        getPopup().getContainer().clear();
     }
 
     private SelectorItem<T> makeItemView(T t, String elementHtml) {
@@ -236,6 +262,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
 
     private String emptyListText = null;
     private String emptySearchText = emptyListText;
+    private boolean isAutoCloseable = true;
 
     public static final String DISABLED = "disabled";
     private Runnable popupUnloadHandler;

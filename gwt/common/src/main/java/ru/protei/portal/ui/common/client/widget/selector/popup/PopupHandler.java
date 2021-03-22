@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.selector.popup;
+package ru.protei.portal.ui.common.client.widget.selector.popup;
 
 import ru.protei.portal.ui.common.client.selector.SelectorPopup;
 

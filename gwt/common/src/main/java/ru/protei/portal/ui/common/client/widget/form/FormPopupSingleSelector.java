@@ -24,7 +24,6 @@ import ru.protei.portal.ui.common.client.selector.SelectorPopup;
 import ru.protei.portal.ui.common.client.selector.pageable.AbstractPageableSelector;
 import ru.protei.portal.ui.common.client.selector.pageable.SelectorItemRenderer;
 import ru.protei.portal.ui.common.client.selector.pageable.SingleValuePageableSelector;
-import ru.protei.portal.ui.common.client.selector.popup.SelectorPopupWithSearch;
 import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
@@ -41,14 +40,12 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
         initWidget(ourUiBinder.createAndBindUi(this));
         initHandler();
 
-        setPopup( popup );
         setSearchEnabled( true );
-        setSearchAutoFocus( true );
         setPageSize( CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE );
         setEmptyListText( lang.emptySelectorList() );
         setEmptySearchText( lang.searchNoMatchesFound() );
 
-        root.add(popup);
+        root.add(getPopup());
     }
 
     public interface SelectedValueRenderer<T> {
@@ -64,7 +61,6 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
         if(isValidable)
             setValid( isValid() );
 
-        getPopup().hide();
         ValueChangeEvent.fire(this, value);
     }
 
@@ -96,7 +92,7 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
     }
 
     public void setAddButtonText(String addButtonText){
-        popup.setAddButton( true, addButtonText );
+        getPopup().setAddButton( true, addButtonText );
     }
 
     public void setAddButtonVisible( boolean isVisible ) {
@@ -152,7 +148,7 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
     }
 
     public void onShowPopupClicked(HTMLPanel button) {
-        getPopup().getChildContainer().clear();
+        getPopup().getContainer().clear();
         getSelector().fillFromBegin(this);
         getPopup().showNear(button.getElement());
     }
@@ -233,7 +229,6 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
     private static final String REQUIRED_STYLENAME ="required";
     private static final String DISABLE_STYLENAME ="disabled";
     private static final String FOCUS_STYLENAME ="focused";
-    private SelectorPopupWithSearch popup = new SelectorPopupWithSearch();
     interface FormPopupSingleSelectorUiBinder extends UiBinder<HTMLPanel, FormPopupSingleSelector> { }
     private static FormPopupSingleSelectorUiBinder ourUiBinder = GWT.create(FormPopupSingleSelectorUiBinder.class);
 

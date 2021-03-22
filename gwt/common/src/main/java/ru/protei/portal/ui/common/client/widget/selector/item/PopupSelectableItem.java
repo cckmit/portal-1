@@ -3,32 +3,51 @@ package ru.protei.portal.ui.common.client.widget.selector.item;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.SpanElement;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
+import ru.protei.portal.ui.common.client.selector.AbstractSelectorItem;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 import ru.protei.portal.ui.common.client.selector.popup.item.SelectorItemHandler;
+
+import static ru.protei.portal.ui.common.client.selector.util.SelectorItemKeyboardKey.isSelectorItemKeyboardKey;
 
 /**
  * Вид одного элемента из выпадайки селектора
  */
-public class PopupSelectableItem<T>
-        extends Composite
+public class PopupSelectableItem<T> extends Composite
         implements  HasEnabled, SelectorItem<T>
 {
     public PopupSelectableItem() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         checkbox.setFormValue( Boolean.FALSE.toString() );
-        root.addDomHandler(event -> {
+
+        addDomHandler(event -> {
             event.preventDefault();
-            selectorItemHandler.onSelectorItemClicked(this);
+
             setSelected(!checkbox.getValue());
+
+            if (selectorItemHandler != null) {
+                selectorItemHandler.onMouseClickEvent(this, event);
+            }
         }, ClickEvent.getType());
+
+        addDomHandler(event -> {
+            if (!isSelectorItemKeyboardKey(event.getNativeKeyCode())) {
+                return;
+            }
+
+            event.preventDefault();
+
+            setSelected(!checkbox.getValue());
+
+            if (selectorItemHandler != null) {
+                selectorItemHandler.onKeyboardButtonDown(this, event);
+            }
+        }, KeyDownEvent.getType());
     }
 
     @Override
@@ -37,12 +56,17 @@ public class PopupSelectableItem<T>
     }
 
     @Override
-    public void setValue(T t) {
-        value = t;
+    public void setValue(T value) {
+        this.value = value;
     }
 
     public void setTitle( String text ) {
         checkbox.setTitle(text);
+    }
+
+    @Override
+    public void addSelectorHandler(SelectorItemHandler<T> selectorItemHandler) {
+        this.selectorItemHandler = selectorItemHandler;
     }
 
     @Override
@@ -69,11 +93,6 @@ public class PopupSelectableItem<T>
         checkbox.setEnabled( enabled );
     }
 
-    @Override
-    public void addSelectorHandler(SelectorItemHandler<T> selectorItemHandler) {
-        this.selectorItemHandler = selectorItemHandler;
-    }
-
     public void setEnsureDebugId( String debugId ) {
         checkbox.ensureDebugId( debugId );
     }
@@ -90,8 +109,6 @@ public class PopupSelectableItem<T>
         KeyUpEvent.fireNativeEvent(keyUpEvent.getNativeEvent(), this);
     }
 
-
-    private SelectorItemHandler<T> selectorItemHandler;
     private T value;
 
     @UiField
@@ -105,6 +122,8 @@ public class PopupSelectableItem<T>
 
     @UiField
     SpanElement label;
+
+    private SelectorItemHandler<T> selectorItemHandler;
 
     interface SelectorItemViewUiBinder extends UiBinder<HTMLPanel, PopupSelectableItem> {}
     private static SelectorItemViewUiBinder ourUiBinder = GWT.create( SelectorItemViewUiBinder.class );

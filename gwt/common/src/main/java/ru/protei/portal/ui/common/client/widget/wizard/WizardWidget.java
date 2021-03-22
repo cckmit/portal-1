@@ -8,8 +8,9 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
+import ru.protei.portal.ui.common.client.selector.SelectorPopup;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
-import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
+import ru.protei.portal.ui.common.client.widget.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
 import ru.protei.portal.ui.common.client.widget.wizard.navitem.WizardWidgetNavItem;
 import ru.protei.portal.ui.common.client.widget.wizard.pane.WizardWidgetPane;
 
@@ -22,8 +23,9 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
 
     public WizardWidget() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        popup.setSearchVisible(false);
-        popup.setAddButton(false);
+        popup.setSearchHandler(null);
+        popup.setAddButtonVisibility(false);
+        navDropdownTabsSelectedContainer.add(popup);
     }
 
     public void setActivity(WizardWidgetActivity activity) {
@@ -93,7 +95,7 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
         WizardWidgetNavItem navItem = makeNavItem(pane);
         SelectorItem selectorItem = makeSelectorItem(pane);
 
-        popup.getChildContainer().add(selectorItem);
+        popup.getContainer().add(selectorItem.asWidget());
         navTabs.add(navItem);
         tabNameToNavItem.put(pane.getTabName(), navItem);
         tabNameToPane.put(pane.getTabName(), pane);
@@ -115,7 +117,7 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
     private SelectorItem makeSelectorItem(WizardWidgetPane pane) {
         SelectorItem selectorItem = new SelectorItem();
         selectorItem.setName(pane.getTabName());
-        selectorItem.addClickHandler(event -> {
+        selectorItem.addItemSelectedHandler(() -> {
             if (!isSelectable) return;
             onTabSelected(pane.getTabName());
             popup.hide();
@@ -127,7 +129,7 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
         navTabs.clear();
         tabNameToNavItem.clear();
         tabNames.clear();
-        popup.getChildContainer().clear();
+        popup.getContainer().clear();
     }
 
     public void selectFirstTab() {
@@ -261,7 +263,7 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
     public void navDropdownTabsSelectedClick(ClickEvent event) {
         event.preventDefault();
         if (!isSelectable) return;
-        popup.show(navDropdownTabsSelected);
+        popup.showNear(navDropdownTabsSelected.getElement());
     }
 
     private Optional<WizardWidgetPane> findFirstPane() {
@@ -270,6 +272,8 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
 
     @UiField
     HTMLPanel navTabs;
+    @UiField
+    HTMLPanel navDropdownTabsSelectedContainer;
     @UiField
     InlineLabel navDropdownTabsSelected;
     @UiField
@@ -300,7 +304,7 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
     private Map<String, WizardWidgetPane> tabNameToPane = new HashMap<>();
     private Set<String> tabNames = new LinkedHashSet<>();
     private String currentTabName = null;
-    private SelectorPopup popup = new SelectorPopup();
+    private final SelectorPopup popup = new ArrowSelectableSelectorPopup();
     private boolean isSelectable = true;
     private HandlerRegistration btnPreviousHandlerRegistration;
     private HandlerRegistration btnNextHandlerRegistration;
