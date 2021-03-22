@@ -19,7 +19,7 @@ public class UserLoginSelector extends PopupSingleSelector<UserLoginShortView> i
     }
 
     public void clearAndFill() {
-        getPopup().clear();
+        getPopup().getContainer().clear();
         fill();
     }
 

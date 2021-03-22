@@ -113,7 +113,7 @@ public abstract class PopperComposite extends PopupLikeComposite {
         this.isFixedStrategy = isFixedStrategy;
     }
 
-    public void refreshPopup() {
+    public void refreshPopupPosition() {
         refresh.run();
     }
 

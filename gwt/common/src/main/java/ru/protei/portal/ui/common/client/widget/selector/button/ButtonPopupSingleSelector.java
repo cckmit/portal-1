@@ -37,7 +37,6 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
 
         setEmptyListText( lang.emptySelectorList() );
         setEmptySearchText( lang.searchNoMatchesFound() );
-        setSearchAutoFocus( true );
         setPageSize( CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE );
         root.add(getPopup());
     }
@@ -92,7 +91,7 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
         if (getPopup().isVisible()) {
             button.getElement().blur();
         } else {
-            getPopup().clear();
+            getPopup().getContainer().clear();
             getSelector().fillFromBegin(this);
             checkNoElements();
             getPopup().showNear(button.getElement());

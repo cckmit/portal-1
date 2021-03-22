@@ -11,22 +11,45 @@ import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.ui.common.client.selector.AbstractSelectorItem;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 
+import static ru.protei.portal.ui.common.client.selector.util.SelectorItemKeyboardKey.isSelectorItemKeyboardKey;
 
-public class PopupUserLoginSelectorItem<T> extends AbstractSelectorItem implements SelectorItem<T> {
 
+public class PopupUserLoginSelectorItem<T> extends Composite implements SelectorItem<T> {
     public PopupUserLoginSelectorItem() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        initHandlers();
         image.addLoadHandler(loadEvent -> {
             if (image.getOffsetWidth() == image.getOffsetHeight()) {
                 image.addStyleName("default-icon");
             }
         });
+
+        addDomHandler(event -> {
+            event.preventDefault();
+            if (selectorItemHandler != null) {
+                selectorItemHandler.onMouseClickEvent(this, event);
+            }
+        }, ClickEvent.getType());
+
+        addDomHandler(event -> {
+            if (!isSelectorItemKeyboardKey(event.getNativeKeyCode())) {
+                return;
+            }
+
+            event.preventDefault();
+            if (selectorItemHandler != null) {
+                selectorItemHandler.onKeyboardButtonDown(this, event);
+            }
+        }, KeyDownEvent.getType());
     }
 
     @Override
     public HandlerRegistration addKeyUpHandler(KeyUpHandler keyUpHandler) {
         return addHandler( keyUpHandler, KeyUpEvent.getType() );
+    }
+
+    @Override
+    public void addSelectorHandler(SelectorItemHandler<T> selectorItemHandler) {
+        this.selectorItemHandler = selectorItemHandler;
     }
 
     @Override
@@ -69,6 +92,8 @@ public class PopupUserLoginSelectorItem<T> extends AbstractSelectorItem implemen
     Image image;
 
     private T value;
+
+    private SelectorItemHandler<T> selectorItemHandler;
 
     interface PopupUserLoginSelectorItemUiBinder extends UiBinder<HTMLPanel, PopupUserLoginSelectorItem> {}
     private static PopupUserLoginSelectorItemUiBinder ourUiBinder = GWT.create(PopupUserLoginSelectorItemUiBinder.class);

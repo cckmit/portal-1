@@ -18,12 +18,29 @@ import ru.protei.portal.ui.common.client.selector.AbstractSelectorItem;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
+import static ru.protei.portal.ui.common.client.selector.util.SelectorItemKeyboardKey.isSelectorItemKeyboardKey;
 
-public class PopupSelectorItemWithEdit<T> extends AbstractSelectorItem implements HasValue<T>, HasAddHandlers, HasEditHandlers, HasClickHandlers, SelectorItem<T> {
-
+public class PopupSelectorItemWithEdit<T> extends Composite implements HasValue<T>, HasEditHandlers, SelectorItem<T> {
     public PopupSelectorItemWithEdit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        initHandlers();
+
+        addDomHandler(event -> {
+            event.preventDefault();
+            if (selectorItemHandler != null) {
+                selectorItemHandler.onMouseClickEvent(this, event);
+            }
+        }, ClickEvent.getType());
+
+        addDomHandler(event -> {
+            if (!isSelectorItemKeyboardKey(event.getNativeKeyCode())) {
+                return;
+            }
+
+            event.preventDefault();
+            if (selectorItemHandler != null) {
+                selectorItemHandler.onKeyboardButtonDown(this, event);
+            }
+        }, KeyDownEvent.getType());
     }
 
     @Override
@@ -51,18 +68,8 @@ public class PopupSelectorItemWithEdit<T> extends AbstractSelectorItem implement
     }
 
     @Override
-    public HandlerRegistration addAddHandler(AddHandler handler) {
-        return addHandler(handler, AddEvent.getType());
-    }
-
-    @Override
     public HandlerRegistration addEditHandler(EditHandler handler) {
         return addHandler(handler, EditEvent.getType());
-    }
-
-    @Override
-    public HandlerRegistration addClickHandler(ClickHandler handler) {
-        return addHandler(handler, ClickEvent.getType());
     }
 
     @Override
@@ -73,6 +80,11 @@ public class PopupSelectorItemWithEdit<T> extends AbstractSelectorItem implement
     @Override
     public HandlerRegistration addKeyUpHandler(KeyUpHandler handler) {
         return addHandler( handler, KeyUpEvent.getType() );
+    }
+
+    @Override
+    public void addSelectorHandler(SelectorItemHandler<T> selectorItemHandler) {
+        this.selectorItemHandler = selectorItemHandler;
     }
 
     public void setEditable(boolean isEditable) {
@@ -102,6 +114,8 @@ public class PopupSelectorItemWithEdit<T> extends AbstractSelectorItem implement
 
     private T value = null;
     private Long id;
+
+    private SelectorItemHandler<T> selectorItemHandler;
 
     interface PopupSelectorItemWithBinder extends UiBinder<HTMLPanel, PopupSelectorItemWithEdit> {}
     private static PopupSelectorItemWithBinder ourUiBinder = GWT.create(PopupSelectorItemWithBinder.class);

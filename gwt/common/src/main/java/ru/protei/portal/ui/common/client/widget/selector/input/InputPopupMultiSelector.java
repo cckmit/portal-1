@@ -46,7 +46,6 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         setSearchEnabled(true);
         setAutoCloseable(false);
 
-        setSearchAutoFocus( true );
         setPageSize( CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE );
         setEmptyListText( lang.emptySelectorList() );
         setEmptySearchText( lang.searchNoMatchesFound() );
@@ -133,7 +132,7 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         }
 
         if (!getPopup().isVisible()) {
-            getPopup().clear();
+            getPopup().getContainer().clear();
             getSelector().fillFromBegin( this );
             getPopup().showNear( select2.getElement() );
         }

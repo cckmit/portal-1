@@ -4,26 +4,41 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.SpanElement;
-import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import ru.protei.portal.ui.common.client.selector.AbstractSelectorItem;
-import ru.protei.portal.ui.common.client.selector.SelectorItemChangeHandler;
-import ru.protei.portal.ui.common.client.widget.selector.event.*;
+
+import static ru.protei.portal.ui.common.client.selector.util.SelectorItemKeyboardKey.isSelectorItemKeyboardKey;
 
 /**
  * Вид одного элемента из выпадайки селектора
  */
 public class SelectorItem
-        extends AbstractSelectorItem
-{
+        extends Composite {
 
     public SelectorItem() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        initHandlers();
+        addDomHandler(event -> {
+            event.preventDefault();
+            if (itemSelectedHandler != null) {
+                itemSelectedHandler.run();
+            }
+        }, ClickEvent.getType());
+
+        addDomHandler(event -> {
+            if (!isSelectorItemKeyboardKey(event.getNativeKeyCode())) {
+                return;
+            }
+
+            event.preventDefault();
+            if (itemSelectedHandler != null) {
+                itemSelectedHandler.run();
+            }
+        }, KeyDownEvent.getType());
     }
 
     public void setName(String name ) {
@@ -48,6 +63,10 @@ public class SelectorItem
         root.setTitle(title);
     }
 
+    public void addItemSelectedHandler(Runnable itemSelectedHandler) {
+        this.itemSelectedHandler = itemSelectedHandler;
+    }
+
     @UiField
     HTMLPanel root;
 
@@ -62,6 +81,8 @@ public class SelectorItem
 
     @UiField
     ImageElement image;
+
+    private Runnable itemSelectedHandler;
 
     interface SelectorItemViewUiBinder extends UiBinder<HTMLPanel, SelectorItem > {}
     private static SelectorItemViewUiBinder ourUiBinder = GWT.create( SelectorItemViewUiBinder.class );

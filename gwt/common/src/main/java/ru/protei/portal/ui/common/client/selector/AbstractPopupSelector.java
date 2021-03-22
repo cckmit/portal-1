@@ -10,14 +10,12 @@ import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.selector.pageable.*;
 import ru.protei.portal.ui.common.client.selector.popup.item.SelectorItemHandler;
-import ru.protei.portal.ui.common.client.selector.util.ValueChangeButton;
 import ru.protei.portal.ui.common.client.widget.selector.popup.PopupHandler;
 import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopupWithSearch;
 import ru.protei.portal.ui.common.client.widget.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
-import static ru.protei.portal.ui.common.client.selector.util.ValueChangeButton.getValueChangeButton;
-import static ru.protei.portal.ui.common.client.selector.util.ValueChangeButton.isValueChangeButton;
+import static ru.protei.portal.ui.common.client.selector.util.SelectorItemKeyboardKey.isSelectorItemKeyboardKey;
 
 /**
  * Селектор c выпадающим списком
@@ -45,31 +43,17 @@ public abstract class AbstractPopupSelector<T> extends Composite
     }
 
     @Override
-    public void onSelectorItemClicked(SelectorItem<T> selectorItem) {
-        onSelectorItemSelected(selectorItem);
-    }
-
-    private void onSelectorItemSelected(SelectorItem<T> selectorItem) {
-        T value = selectorItem.getValue();
-        getSelector().getSelection().select(value);
-
-        onSelectionChanged();
-    }
-
-    @Override
     public void onKeyboardButtonDown( SelectorItem<T> selectorItem, KeyDownEvent event ) {
-        if (!isValueChangeButton(event.getNativeKeyCode())) {
+        if (!isSelectorItemKeyboardKey(event.getNativeKeyCode())) {
             return;
         }
-
-        ValueChangeButton notUsed = getValueChangeButton( event.getNativeKeyCode() ); //
 
         onSelectorItemSelected(selectorItem);
 
         if (isAutoCloseable) {
             popup.hide();
         } else {
-            popup.refreshPopup();
+            popup.refreshPopupPosition();
         }
     }
 
@@ -80,7 +64,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
         if (isAutoCloseable) {
             popup.hide();
         } else {
-            popup.refreshPopup();
+            popup.refreshPopupPosition();
             popup.focusPopup();
         }
     }
@@ -151,10 +135,6 @@ public abstract class AbstractPopupSelector<T> extends Composite
 
     public boolean isSelected(T element){
         return getSelector().getSelection().isSelected( element );
-    }
-
-    public void setSearchAutoFocus(boolean isSearchAutoFocus){
-        if(getPopup() instanceof SelectorPopupWithSearch) ((SelectorPopupWithSearch) getPopup()).setSearchAutoFocus(isSearchAutoFocus);
     }
 
     public void setHasNullValue(boolean hasNullValue) {
@@ -249,8 +229,15 @@ public abstract class AbstractPopupSelector<T> extends Composite
         getPopup().setNoElements(getPopup().isEmpty(), isEmpty(getSelector().getSearchString()) ? emptyListText : emptySearchText  );
     }
 
+    private void onSelectorItemSelected(SelectorItem<T> selectorItem) {
+        T value = selectorItem.getValue();
+        getSelector().getSelection().select(value);
+
+        onSelectionChanged();
+    }
+
     private void clearPopupItems() {
-        getPopup().clear();
+        getPopup().getContainer().clear();
     }
 
     private SelectorItem<T> makeItemView(T t, String elementHtml) {

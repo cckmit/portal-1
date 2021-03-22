@@ -41,7 +41,6 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
         initHandler();
 
         setSearchEnabled( true );
-        setSearchAutoFocus( true );
         setPageSize( CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE );
         setEmptyListText( lang.emptySelectorList() );
         setEmptySearchText( lang.searchNoMatchesFound() );
@@ -149,7 +148,7 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
     }
 
     public void onShowPopupClicked(HTMLPanel button) {
-        getPopup().clear();
+        getPopup().getContainer().clear();
         getSelector().fillFromBegin(this);
         getPopup().showNear(button.getElement());
     }

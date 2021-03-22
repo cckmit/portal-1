@@ -1,5 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.selector.base;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -25,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
+import static ru.protei.portal.ui.common.client.selector.util.SelectorItemKeyboardKey.isSelectorItemKeyboardKey;
 
 /**
  * Базовая логика селектора
@@ -151,7 +154,7 @@ public abstract class Selector<T>
     }
 
     public void clearOptions() {
-        popup.clear();
+        popup.getContainer().clear();
         popup.setNoElements(false, null);
 
         itemToViewModel.clear();
@@ -201,7 +204,7 @@ public abstract class Selector<T>
         boolean isEmptyResult = true;
         boolean exactMatch = false;
 
-        popup.clear();
+        popup.getContainer().clear();
 
         if (searchText.isEmpty() && nullItemView != null && !isHideNullValue) {
             popup.getContainer().add(nullItemView);
@@ -277,22 +280,9 @@ public abstract class Selector<T>
         }
     }
 
-    private void addValueChangeHandlers(SelectorItem itemView) {
-        itemView.addValueChangeButtonHandler(valueChangeButton -> {
-            onSelectorItemSelect(itemView);
-            popup.hide();
-        });
-
-        itemView.addValueChangeMouseClickHandler(() -> {
-            onSelectorItemSelect(itemView);
-            popup.hide();
-        });
-    }
-
     private void showPopup() {
         popup.setSearchHandler(searchEnabled ? this::onSearchChanged : null);
 
-        popup.setSearchAutoFocus(searchAutoFocusEnabled);
         popup.setAddButton(addButtonVisible, addButtonText);
 
         popup.clearSearchField();
@@ -315,7 +305,10 @@ public abstract class Selector<T>
         SelectorItem itemView = itemFactory.get();
         itemView.setName(name);
         itemView.setStyle(styleName);
-        addValueChangeHandlers(itemView);
+        itemView.addItemSelectedHandler(() -> {
+            onSelectorItemSelect(itemView);
+            popup.hide();
+        });
         return itemView;
     }
 

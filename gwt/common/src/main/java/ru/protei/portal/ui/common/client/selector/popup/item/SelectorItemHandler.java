@@ -5,7 +5,6 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 
 public interface SelectorItemHandler<T> {
-    void onSelectorItemClicked( SelectorItem<T> selectorItem );
-    void onKeyboardButtonDown( SelectorItem<T> selectorItem, KeyDownEvent selectorItem );
+    void onKeyboardButtonDown( SelectorItem<T> selectorItem, KeyDownEvent event );
     void onMouseClickEvent( SelectorItem<T> selectorItem, ClickEvent event );
 }

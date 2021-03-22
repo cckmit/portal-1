@@ -52,16 +52,6 @@ public abstract class SelectorPopupWithSearch extends PopperComposite
     }
 
     @Override
-    public void clear() {
-        childContainer.clear();
-    }
-
-    @Override
-    public void remove(Widget widget) {
-        childContainer.remove(widget);
-    }
-
-    @Override
     public boolean isEmpty() {
         return childContainer.getWidgetCount() == 0;
     }
@@ -148,6 +138,9 @@ public abstract class SelectorPopupWithSearch extends PopperComposite
         addButton.setVisible( isVisible );
     }
 
+    @Override
+    public abstract void focusPopup();
+
     @UiHandler( "search" )
     public void onSearchInputChanged( InputEvent event ) {
         changeSearchTimer.schedule(200);
@@ -181,10 +174,6 @@ public abstract class SelectorPopupWithSearch extends PopperComposite
 
     public void setDebugAttributeListContainer(String debugId) {
         childContainer.getElement().setAttribute(DebugIds.DEBUG_ID_ATTRIBUTE, debugId);
-    }
-
-    public void setSearchAutoFocus( boolean isSearchAutoFocus ) {
-        this.isSearchAutoFocus = isSearchAutoFocus;
     }
 
     private void addPagingHandler() {
@@ -247,7 +236,6 @@ public abstract class SelectorPopupWithSearch extends PopperComposite
     private static final SearchHandler ignoreSearch = searchString -> { /*ignore search*/ };
     private PopupHandler popupHandler;
     private SearchHandler searchHandler = ignoreSearch;
-    private boolean isSearchAutoFocus = true;
     private HandlerRegistration scrollForPagingHandleRegistration;
 
     interface SelectorPopupViewUiBinder extends UiBinder<HTMLPanel, SelectorPopupWithSearch> {

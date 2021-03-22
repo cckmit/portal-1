@@ -14,10 +14,6 @@ public interface SelectorPopup extends IsWidget {
 
     HasWidgets getContainer();
 
-    void clear();
-
-    void remove(Widget widget);
-
     boolean isEmpty();
 
     void setSearchHandler( SearchHandler searchHandler );
@@ -26,7 +22,7 @@ public interface SelectorPopup extends IsWidget {
 
     void showNear( Element showNear, PopperComposite.Placement placement );
 
-    void refreshPopup();
+    void refreshPopupPosition();
 
     void showLoading( boolean isLoading );
 

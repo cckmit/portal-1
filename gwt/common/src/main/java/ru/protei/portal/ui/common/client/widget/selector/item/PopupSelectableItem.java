@@ -13,17 +13,41 @@ import ru.protei.portal.ui.common.client.selector.AbstractSelectorItem;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 import ru.protei.portal.ui.common.client.selector.popup.item.SelectorItemHandler;
 
+import static ru.protei.portal.ui.common.client.selector.util.SelectorItemKeyboardKey.isSelectorItemKeyboardKey;
+
 /**
  * Вид одного элемента из выпадайки селектора
  */
-public class PopupSelectableItem<T>
-        extends AbstractSelectorItem
+public class PopupSelectableItem<T> extends Composite
         implements  HasEnabled, SelectorItem<T>
 {
     public PopupSelectableItem() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        initHandlers();
         checkbox.setFormValue( Boolean.FALSE.toString() );
+
+        addDomHandler(event -> {
+            event.preventDefault();
+
+            setSelected(!checkbox.getValue());
+
+            if (selectorItemHandler != null) {
+                selectorItemHandler.onMouseClickEvent(this, event);
+            }
+        }, ClickEvent.getType());
+
+        addDomHandler(event -> {
+            if (!isSelectorItemKeyboardKey(event.getNativeKeyCode())) {
+                return;
+            }
+
+            event.preventDefault();
+
+            setSelected(!checkbox.getValue());
+
+            if (selectorItemHandler != null) {
+                selectorItemHandler.onKeyboardButtonDown(this, event);
+            }
+        }, KeyDownEvent.getType());
     }
 
     @Override
@@ -41,13 +65,13 @@ public class PopupSelectableItem<T>
     }
 
     @Override
-    public void setElementHtml(String html ) {
-        label.setInnerHTML(html);
+    public void addSelectorHandler(SelectorItemHandler<T> selectorItemHandler) {
+        this.selectorItemHandler = selectorItemHandler;
     }
 
     @Override
-    public void changeState() {
-        setSelected(!checkbox.getValue());
+    public void setElementHtml(String html ) {
+        label.setInnerHTML(html);
     }
 
     public void setIcon(String style) {
@@ -98,6 +122,8 @@ public class PopupSelectableItem<T>
 
     @UiField
     SpanElement label;
+
+    private SelectorItemHandler<T> selectorItemHandler;
 
     interface SelectorItemViewUiBinder extends UiBinder<HTMLPanel, PopupSelectableItem> {}
     private static SelectorItemViewUiBinder ourUiBinder = GWT.create( SelectorItemViewUiBinder.class );

@@ -49,7 +49,7 @@ public class PersonMultiSelector extends InputPopupMultiSelector<PersonShortView
         if (personModel.isCompaniesPresent()) {
             super.onShowPopupClicked(event);
         } else {
-            getPopup().clear();
+            getPopup().getContainer().clear();
             getPopup().setNoElements(true, selectCompanyMessage);
             getPopup().showNear( select2.getElement() );
         }

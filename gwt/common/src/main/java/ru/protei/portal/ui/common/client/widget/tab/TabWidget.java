@@ -72,7 +72,7 @@ public class TabWidget extends Tab {
         tabContent.clear();
         navTabs.clear();
         tabNameToNavSelectorItem.clear();
-        popup.clear();
+        popup.getContainer().clear();
     }
 
     @Override
@@ -99,8 +99,10 @@ public class TabWidget extends Tab {
     private SelectorItem makeSelectorItem(TabWidgetPane pane) {
         SelectorItem selectorItem = new SelectorItem();
         selectorItem.setName(pane.getTabName());
-        selectorItem.addValueChangeMouseClickHandler(() -> onTabSelected(pane.getTabName()));
-        selectorItem.addValueChangeButtonHandler(button -> onTabSelected(pane.getTabName()));
+        selectorItem.addItemSelectedHandler(() -> {
+            onTabSelected(pane.getTabName());
+            popup.hide();
+        });
         return selectorItem;
     }
 

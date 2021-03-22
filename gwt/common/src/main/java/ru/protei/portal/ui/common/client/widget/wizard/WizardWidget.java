@@ -3,7 +3,6 @@ package ru.protei.portal.ui.common.client.widget.wizard;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -118,13 +117,10 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
     private SelectorItem makeSelectorItem(WizardWidgetPane pane) {
         SelectorItem selectorItem = new SelectorItem();
         selectorItem.setName(pane.getTabName());
-        selectorItem.addValueChangeMouseClickHandler(() -> {
+        selectorItem.addItemSelectedHandler(() -> {
             if (!isSelectable) return;
             onTabSelected(pane.getTabName());
-        });
-        selectorItem.addValueChangeButtonHandler(button -> {
-            if (!isSelectable) return;
-            onTabSelected(pane.getTabName());
+            popup.hide();
         });
         return selectorItem;
     }
@@ -133,7 +129,7 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
         navTabs.clear();
         tabNameToNavItem.clear();
         tabNames.clear();
-        popup.clear();
+        popup.getContainer().clear();
     }
 
     public void selectFirstTab() {

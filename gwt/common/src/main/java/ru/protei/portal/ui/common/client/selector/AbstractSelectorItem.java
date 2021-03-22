@@ -3,16 +3,12 @@ package ru.protei.portal.ui.common.client.selector;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.user.client.ui.Composite;
-import ru.protei.portal.ui.common.client.selector.util.ValueChangeButton;
 
-import java.util.function.Consumer;
-
-import static ru.protei.portal.ui.common.client.selector.util.ValueChangeButton.getValueChangeButton;
-import static ru.protei.portal.ui.common.client.selector.util.ValueChangeButton.isValueChangeButton;
+import static ru.protei.portal.ui.common.client.selector.util.SelectorItemKeyboardKey.isSelectorItemKeyboardKey;
 
 public abstract class AbstractSelectorItem extends Composite implements HasValueChangeButtonHandlers {
     @Override
-    public void addValueChangeButtonHandler(Consumer<ValueChangeButton> valueChangeButtonHandler) {
+    public void addValueChangeButtonHandler(Runnable valueChangeButtonHandler) {
         this.valueChangeButtonHandler = valueChangeButtonHandler;
     }
 
@@ -29,18 +25,18 @@ public abstract class AbstractSelectorItem extends Composite implements HasValue
         }, ClickEvent.getType());
 
         addDomHandler(event -> {
-            if (!isValueChangeButton(event.getNativeKeyCode())) {
+            if (!isSelectorItemKeyboardKey(event.getNativeKeyCode())) {
                 return;
             }
 
             event.preventDefault();
             changeState();
-            valueChangeButtonHandler.accept(getValueChangeButton(event.getNativeKeyCode()));
+            valueChangeButtonHandler.run();
         }, KeyDownEvent.getType());
     }
 
     protected void changeState() {}
 
-    private Consumer<ValueChangeButton> valueChangeButtonHandler = valueChangeButton -> {};
+    private Runnable valueChangeButtonHandler = () -> {};
     private Runnable valueChangeMouseHandler = () -> {};
 }

@@ -70,13 +70,13 @@ public class PopupSingleSelector<T> extends AbstractPopupSelector<T> implements 
     }
 
     public void showPopup() {
-        getPopup().showNear(relative);
         RootPanel.get().add(getPopup());
+        getPopup().showNear(relative);
     }
 
     public void showPopup(PopperComposite.Placement placement, int skidding, int distance) {
-        getPopup().showNear(relative, placement, skidding, distance);
         RootPanel.get().add(getPopup());
+        getPopup().showNear(relative, placement, skidding, distance);
     }
 
     public void hidePopup() {
@@ -85,7 +85,7 @@ public class PopupSingleSelector<T> extends AbstractPopupSelector<T> implements 
     }
 
     public void clearPopup() {
-        getPopup().clear();
+        getPopup().getContainer().clear();
     }
 
     @Override
