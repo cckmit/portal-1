@@ -3,11 +3,13 @@ package ru.protei.portal.ui.common.client.widget.selector.plan.model;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.query.PlanQuery;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.PlanEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.selector.AsyncSearchSelectorModel;
 import ru.protei.portal.ui.common.client.selector.LoadingHandler;
@@ -26,6 +28,11 @@ public abstract class PlanModel implements Activity, AsyncSearchSelectorModel<Pl
 
     @Event
     public void onInit(AuthEvents.Success event) {
+        cache.clearCache();
+    }
+
+    @Event
+    public void onPlanChanged(PlanEvents.ChangeModel event) {
         cache.clearCache();
     }
 
@@ -49,6 +56,8 @@ public abstract class PlanModel implements Activity, AsyncSearchSelectorModel<Pl
         return (offset, limit, asyncCallback) -> {
             query.setOffset(offset);
             query.setLimit(limit);
+            query.setSortField(En_SortField.start_date);
+            query.setSortDir(En_SortDir.DESC);
 
             planService.getPlanOptionList(query, new RequestCallback<List<PlanOption>>() {
                 @Override

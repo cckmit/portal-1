@@ -383,6 +383,22 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         state.setFilter(caseStateFilter);
     }
 
+    @Override
+    public int statesSize() {
+        return state.getValues().size();
+    }
+
+    @Override
+    public int importanceSize() {
+        return importance.getValues().size();
+    }
+
+    @Override
+    public void resetRanges() {
+        dateCreatedRange.setValue(null);
+        dateModifiedRange.setValue(null);
+    }
+
     private void fillDateRanges (TypedSelectorRangePicker rangePicker) {
         rangePicker.fillSelector(En_DateIntervalType.issueTypes());
     }
@@ -480,6 +496,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
     @UiHandler("plan")
     public void onPlanChanged(ValueChangeEvent<PlanOption> event) {
+        onPlanChanged(event.getValue() != null);
         onFilterChanged();
     }
 
@@ -677,6 +694,12 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     private void onFilterChanged() {
         if (model != null) {
             model.onUserFilterChanged();
+        }
+    }
+
+    private void onPlanChanged(boolean isPresent) {
+        if (model != null) {
+            model.onPlanPresent(isPresent);
         }
     }
 

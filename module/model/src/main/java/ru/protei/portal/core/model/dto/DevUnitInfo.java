@@ -24,6 +24,8 @@ public class DevUnitInfo extends AuditableObject {
 
     private String historyVersion;
 
+    private Long commonManagerId;
+
     @Override
     public String getAuditType() {
         return DEV_UNIT_INFO;
@@ -107,6 +109,14 @@ public class DevUnitInfo extends AuditableObject {
         this.wikiLink = wikiLink;
     }
 
+    public Long getCommonManagerId() {
+        return commonManagerId;
+    }
+
+    public void setCommonManagerId(Long commonManagerId) {
+        this.commonManagerId = commonManagerId;
+    }
+
     public static DevUnitInfo toInfo( DevUnit devUnit ) {
         if (devUnit == null) {
             return null;
@@ -121,6 +131,7 @@ public class DevUnitInfo extends AuditableObject {
         info.setName( devUnit.getName() );
         info.setType( devUnit.getType() );
         info.setWikiLink( devUnit.getWikiLink() );
+        info.setCommonManagerId( devUnit.getCommonManagerId() );
         return info;
     }
 
@@ -138,6 +149,7 @@ public class DevUnitInfo extends AuditableObject {
         devUnit.setConfiguration(info.getConfiguration());
         devUnit.setHistoryVersion(info.getHistoryVersion());
         devUnit.setWikiLink(info.getWikiLink());
+        devUnit.setCommonManagerId(info.getCommonManagerId());
 
         return devUnit;
     }

@@ -39,7 +39,6 @@ public class PortalConfigData {
     private final JiraConfig jiraConfig;
     private final EmployeeConfig employeeConfig;
     private final LdapConfig ldapConfig;
-    private final MarkupHelpLink markupHelpLink;
     private final UiConfig uiConfig;
     private final MailCommentConfig mailCommentConfig;
     private final NRPEConfig nrpeConfig;
@@ -67,7 +66,6 @@ public class PortalConfigData {
         jiraConfig = new JiraConfig(wrapper);
         employeeConfig = new EmployeeConfig(wrapper);
         ldapConfig = new LdapConfig(wrapper);
-        markupHelpLink = new MarkupHelpLink(wrapper);
         uiConfig = new UiConfig(wrapper);
         mailCommentConfig = new MailCommentConfig(wrapper);
         nrpeConfig = new NRPEConfig(wrapper);
@@ -144,10 +142,6 @@ public class PortalConfigData {
 
     public LdapConfig getLdapConfig() {
         return ldapConfig;
-    }
-
-    public MarkupHelpLink getMarkupHelpLink() {
-        return markupHelpLink;
     }
 
     public UiConfig getUiConfig() {
@@ -854,24 +848,6 @@ public class PortalConfigData {
 
         public String getUrl() {
             return url;
-        }
-    }
-
-    public static class MarkupHelpLink {
-        private final String markdown;
-        private final String jiraMarkup;
-
-        public MarkupHelpLink(PropertiesWrapper properties) {
-            markdown = properties.getProperty("markup.markdown");
-            jiraMarkup = properties.getProperty("markup.jira_markup");
-        }
-
-        public String getMarkdown() {
-            return markdown;
-        }
-
-        public String getJiraMarkup() {
-            return jiraMarkup;
         }
     }
 

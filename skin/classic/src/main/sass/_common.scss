@@ -5241,6 +5241,7 @@ table {
 .locale-selector {
   .dropdown-menu {
     width: max-content;
+    padding-bottom: 0;
   }
 }
 
@@ -5305,4 +5306,44 @@ table {
 
 .case-history .case-tag {
   font-size: inherit;
+}
+
+.privacy-selector {
+  .selector-popup {
+    width: auto !important;
+    .dropdown-menu {
+      padding-bottom: 0;
+    }
+  }
+}
+
+.issue_comment_help {
+  font-size: 13px;
+  margin: 20px;
+}
+
+.markdown_table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th {
+    width: 50%;
+    font-weight: bold;
+    padding: 5px;
+    border-bottom: #acacac 1px solid;
+  }
+
+  td.markdown {
+    > *:last-child {
+      margin-bottom: 0.5em !important;
+    }
+    > *:first-child {
+      margin-top: 0.5em !important;
+    }
+  }
+
+  td.markdown_table_section {
+    padding: 35px 0 10px 0;
+    font-weight: bold;
+  }
 }

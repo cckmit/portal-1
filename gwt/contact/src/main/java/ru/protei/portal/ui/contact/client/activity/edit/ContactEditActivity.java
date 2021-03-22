@@ -132,13 +132,18 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         if (login.isEmpty()) {
             view.setContactLoginStatus(NameStatus.NONE);
             view.loginErrorLabelVisibility().setVisible(false);
-            validateSaveButton();
+            view.saveEnabled().setEnabled(validateSaveButton());
             return;
         }
 
-        validateLimitedFields();
+        validateFields();
 
         if (login.length() > LOGIN_SIZE) {
+            view.setContactLoginStatus(NameStatus.NONE);
+            return;
+        }
+
+        if (!login.contains("@")) {
             view.setContactLoginStatus(NameStatus.NONE);
             return;
         }
@@ -170,7 +175,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     }
 
     @Override
-    public void validateLimitedFields() {
+    public void validateFields() {
         if (view.firstName().getValue() != null) {
             view.firstNameErrorLabelVisibility().setVisible(view.firstName().getValue().length() > FIRST_NAME_SIZE);
         }
@@ -188,7 +193,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         }
 
         if (view.login().getText() != null) {
-            view.loginErrorLabelVisibility().setVisible(view.login().getText().trim().length() > LOGIN_SIZE);
+            validateLogin();
         }
 
         view.saveEnabled().setEnabled(validateSaveButton());
@@ -227,6 +232,10 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         }
 
         if ((view.login().getText() != null) && (view.login().getText().trim().length() > LOGIN_SIZE)) {
+            return false;
+        }
+
+        if ((view.login().getText() != null) && (!view.login().getText().trim().isEmpty()) && (!view.login().getText().contains("@"))) {
             return false;
         }
 
@@ -415,7 +424,23 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
             return false;
         }
 
+        if ((view.login() != null) && (!view.login().getText().trim().isEmpty()) && (!view.login().getText().contains("@"))) {
+            return false;
+        }
+
         return true;
+    }
+
+    private void validateLogin() {
+        if (view.login().getText().trim().length() > LOGIN_SIZE) {
+            view.loginErrorLabel().setText(lang.promptFieldLengthExceed(view.loginLabel(), LOGIN_SIZE));
+            view.loginErrorLabelVisibility().setVisible(true);
+        } else if (!view.login().getText().trim().isEmpty() && !view.login().getText().contains("@")) {
+            view.loginErrorLabel().setText(lang.promptFieldNeedContainAtSign());
+            view.loginErrorLabelVisibility().setVisible(true);
+        } else {
+            view.loginErrorLabelVisibility().setVisible(false);
+        }
     }
 
     private boolean hasPrivileges(Long personId) {

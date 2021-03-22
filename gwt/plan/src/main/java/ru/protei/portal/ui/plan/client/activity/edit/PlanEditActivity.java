@@ -99,6 +99,7 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
                 })
                 .withSuccess(result -> {
                     fireEvent(new NotifyEvents.Show(lang.planSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new PlanEvents.ChangeModel());
                     fireEvent(new Back());
                 })
         );

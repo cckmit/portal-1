@@ -1148,6 +1148,10 @@ public class CaseServiceImpl implements CaseService {
             log.warn("Type must be specified. caseId={}", caseObject.getId());
             return false;
         }
+        if (caseObject.getCreatorId() == null) {
+            log.warn("Required creator id. caseId={}", caseObject.getId());
+            return false;
+        }
         return true;
     }
 

@@ -5,7 +5,10 @@ import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.ent.CaseState;
+import ru.protei.portal.core.model.ent.CaseTag;
+import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -16,7 +19,6 @@ import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.person.AsyncPersonModel;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 
-import java.util.List;
 import java.util.Set;
 
 public interface AbstractIssueFilterParamView extends IsWidget {
@@ -93,4 +95,10 @@ public interface AbstractIssueFilterParamView extends IsWidget {
     HasVisibility initiatorsVisibility();
 
     HasVisibility managersVisibility();
+
+    int statesSize();
+
+    int importanceSize();
+
+    void resetRanges();
 }

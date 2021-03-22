@@ -8,15 +8,11 @@ import java.io.Serializable;
 public class ClientConfigData implements Serializable {
 
     public String appVersion;
-    public String markupHelpLinkMarkdown;
-    public String markupHelpLinkJiraMarkup;
 
     @Override
     public String toString() {
         return "ClientConfigData{" +
                 "appVersion='" + appVersion + '\'' +
-                ", markupHelpLinkMarkdown='" + markupHelpLinkMarkdown + '\'' +
-                ", markupHelpLinkJiraMarkup='" + markupHelpLinkJiraMarkup + '\'' +
                 '}';
     }
 }

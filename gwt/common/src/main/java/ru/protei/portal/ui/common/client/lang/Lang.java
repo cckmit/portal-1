@@ -428,6 +428,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String promptFieldLengthExceed(String fieldName, int fieldLength);
 
+    String promptFieldNeedContainAtSign();
+
     String contactGeneratePassword();
 
     String contactHasAccount();
@@ -875,6 +877,8 @@ public interface Lang extends Messages, ContactItemLang {
     String textMarkdownSupport();
 
     String textJiraWikiMarkupSupport();
+
+    String issueCommentHelp();
 
     String commentSetPrivate();
 
@@ -2222,7 +2226,11 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reportNotValidPeriod();
 
-    String reportPeriodNotSelected();
+    String reportCaseObjectIsAnySelectedParamNotPresentError();
+
+    String reportCaseObjectAdditionalLimitError();
+
+    String reportCaseObjectPlanInfo();
 
     String reportPeriodMoreMaxError();
 
@@ -2849,6 +2857,8 @@ public interface Lang extends Messages, ContactItemLang {
     String caseHistory();
 
     String errPlanNotFound();
+
+    String planSort();
 
     String commentNewDisabled();
 

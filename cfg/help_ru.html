@@ -1,0 +1,430 @@
+<h3 xmlns="http://www.w3.org/1999/html">Инструкция по добавлению комментария email письмом</h3>
+
+<ol>
+    <li>Получаем email уведомление от CRM.</li>
+    <li>Отвечаем на письмо. При этом заголовок:</li>
+    <ul>
+        <li><b>From</b> - должен содержать адрес зарегистрированного пользователя, от лица которого будет размещён комментарий;</li>
+        <li><b>To</b> - crm@protei.ru;</li>
+        <li><b>Subject</b> - должен содержать CRM-№ обращения</li>
+    </ul>
+    <li>Добавляем комментарий.</li>
+    <li>Отправляем письмо.</li>
+</ol>
+
+<br><br>
+
+<h3>Справка по Markdown-разметке PORTAL</h3>
+
+<a href="https://www.markdownguide.org/cheat-sheet/">
+    Ссылка на официальный источник
+</a>
+
+<br><br>
+
+<table class="markdown_table">
+    <thead>
+    <tr>
+        <th>РАЗМЕТКА</th>
+        <th>ПРЕДПРОСМОТР</th>
+    </tr>
+    </thead>
+
+    <tr>
+        <td colspan="2" class="markdown_table_section">Форматирование символов</td>
+    </tr>
+    <tr>
+        <td>**Жирный**</td>
+        <td class="markdown"><p><strong>Жирный</strong></p></td>
+    </tr>
+    <tr>
+        <td>*Курсив*</td>
+        <td class="markdown"><p><em>Курсив</em></p></td>
+    </tr>
+    <tr>
+        <td>~~Зачёркнутый текст~~</td>
+        <td class="markdown"><del>Зачёркнутый текст</del></td>
+    </tr>
+
+    <tr>
+        <td colspan="2" class="markdown_table_section">Заголовки</td>
+    </tr>
+    <tr>
+        <td># Заголовок 1 уровня</td>
+        <td class="markdown"><h1>Заголовок 1 уровня</h1></td>
+    </tr>
+    <tr>
+        <td>## Заголовок 2 уровня</td>
+        <td class="markdown"><h2>Заголовок 2 уровня</h2></td>
+    </tr>
+    <tr>
+        <td>### Заголовок 3 уровня</td>
+        <td class="markdown"><h3>Заголовок 3 уровня</h3></td>
+    </tr>
+    <tr>
+        <td>#### Заголовок 4 уровня</td>
+        <td class="markdown"><h4>Заголовок 4 уровня</h4></td>
+    </tr>
+
+    <tr>
+        <td colspan="2" class="markdown_table_section">Ссылки</td>
+    </tr>
+    <tr>
+        <td>https://www.example.com</td>
+        <td class="markdown"><p><a href="https://www.example.com">https://www.example.com</a></p></td>
+    </tr>
+    <tr>
+        <td>&lt;https://www.example.com&gt;</td>
+        <td class="markdown"><p><a href="https://www.example.com">https://www.example.com</a></p></td>
+    </tr>
+    <tr>
+        <td>&lt;no_reply@example.com&gt;</td>
+        <td class="markdown"><p><a href="mailto:no_reply@example.com">no_reply@example.com</a></p></td>
+    </tr>
+    <tr>
+        <td>[Ссылка](https://www.example.com)</td>
+        <td class="markdown"><p><a href="https://www.example.com">Ссылка</a></p></td>
+    </tr>
+
+    <tr>
+        <td colspan="2" class="markdown_table_section">Блочные цитаты</td>
+    </tr>
+    <tr>
+        <td>
+            > Текст, который необходимо отформатировать<br>
+            > как цитату<br><br>
+            Ваш ответ
+        </td>
+        <td class="markdown">
+            <blockquote>
+                <p>Текст, который необходимо отформатировать<br>как цитату</p>
+            </blockquote>
+            <p>Ваш ответ</p>
+        </td>
+    </tr>
+
+    <tr>
+        <td colspan="2" class="markdown_table_section">Код и блоки кода</td>
+    </tr>
+    <tr>
+        <td>`Код`</td>
+        <td class="markdown"><p><code>Код</code></p></td>
+    </tr>
+    <tr>
+        <td>``Код``</td>
+        <td class="markdown"><p><code>Код</code></p></td>
+    </tr>
+    <tr>
+        <td>
+            ```<br>
+            {<br>
+            "firstName": "John",<br>
+            "lastName": "Smith",<br>
+            "age": 25<br>
+            }<br>
+            ```
+        </td>
+        <td class="markdown">
+            <pre><code>{<br>"firstName": "John",<br>"lastName": "Smith",<br>"age": 25<br>}</code></pre>
+        </td>
+    </tr>
+
+    <tr>
+        <td colspan="2" class="markdown_table_section">Списки</td>
+    </tr>
+    <tr>
+        <td>
+            1. Первый пункт<br>
+            2. Второй пункт<br>
+            3. Третий пункт<br>
+        </td>
+        <td class="markdown">
+            <ol>
+                <li>Первый пункт</li>
+                <li>Второй пункт</li>
+                <li>Третий пункт</li>
+            </ol>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            - Первый пункт<br>
+            - Второй пункт<br>
+            - Третий пункт
+        </td>
+        <td class="markdown">
+            <ul>
+                <li>Первый пункт</li>
+                <li>Второй пункт</li>
+                <li>Третий пункт</li>
+            </ul>
+        </td>
+    </tr>
+    <tr>
+        <td class="markdown">
+            - Первый пункт<br>
+            - Второй пункт<br>
+            &nbsp;&nbsp;&nbsp;- Второй пункт I<br>
+            &nbsp;&nbsp;&nbsp;- Второй пункт II<br>
+            - Третий пункт
+        </td>
+        <td class="markdown">
+            <ul>
+                <li>Первый пункт</li>
+                <li>Второй пункт</li>
+                <ul>
+                    <li>Второй пункт I</li>
+                    <li>Второй пункт II</li>
+                </ul>
+                <li>Третий пункт</li>
+            </ul>
+        </td>
+    </tr>
+
+    <tr>
+        <td colspan="2" class="markdown_table_section">Таблицы</td>
+    </tr>
+    <tr>
+        <td>
+            |    Столбец 1    |    Столбец 2   |<br>
+            | --------------- | ---------------|<br>
+            |    Значение 1   |    Значение 1  |<br>
+            |    Значение 2   |    Значение 4  |
+        </td>
+        <td class="markdown">
+            <table>
+                <thead>
+                <tr>
+                    <th>Столбец 1</th>
+                    <th>Столбец 2</th>
+                </tr>
+                </thead>
+                <tr>
+                    <td>Значение 1</td>
+                    <td>Значение 2</td>
+                </tr>
+                <tr>
+                    <td>Значение 3</td>
+                    <td>Значение 4</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+
+<br><br>
+
+<h3>Справка по Markup-разметке PORTAL</h3>
+
+<a href="https://jira.atlassian.com/secure/WikiRendererHelpAction.jspa?section=all">
+    Ссылка на официальный источник
+</a>
+
+<br><br>
+
+<table class="markdown_table">
+    <thead>
+    <tr>
+        <th>РАЗМЕТКА</th>
+        <th>ПРЕДПРОСМОТР</th>
+    </tr>
+    </thead>
+
+    <tr>
+        <td colspan="2" class="markdown_table_section">Форматирование символов</td>
+    </tr>
+    <tr>
+        <td>*Жирный*</td>
+        <td class="markdown"><p><strong>Жирный</strong></p></td>
+    </tr>
+    <tr>
+        <td>_Курсив_</td>
+        <td class="markdown"><p><em>Курсив</em></p></td>
+    </tr>
+    <tr>
+        <td>-Зачёркнутый текст-</td>
+        <td class="markdown"><del>Зачёркнутый текст</del></td>
+    </tr>
+
+    <tr>
+        <td colspan="2" class="markdown_table_section">Заголовки</td>
+    </tr>
+    <tr>
+        <td>h1. Заголовок 1 уровня</td>
+        <td class="markdown"><h1>Заголовок 1 уровня</h1></td>
+    </tr>
+    <tr>
+        <td>h2. Заголовок 2 уровня</td>
+        <td class="markdown"><h2>Заголовок 2 уровня</h2></td>
+    </tr>
+    <tr>
+        <td>h3. Заголовок 3 уровня</td>
+        <td class="markdown"><h3>Заголовок 3 уровня</h3></td>
+    </tr>
+    <tr>
+        <td>h4. Заголовок 4 уровня</td>
+        <td class="markdown"><h4>Заголовок 4 уровня</h4></td>
+    </tr>
+
+    <tr>
+        <td colspan="2" class="markdown_table_section">Ссылки</td>
+    </tr>
+    <tr>
+        <td>https://www.example.com</td>
+        <td class="markdown">
+            <p><span class="nobr">
+                <a href="https://www.example.com" class="external-link" rel="nofollow">https://www.example.com
+                    <sup><img class="rendericon" src="./images/link_small.png" height="10" width="10" align="absmiddle" alt="" border="0"></sup>
+                </a>
+            </span></p>
+        </td>
+    </tr>
+    <tr>
+        <td>[https://www.example.com]</td>
+        <td class="markdown">
+            <p><span class="nobr">
+                <a href="https://www.example.com" class="external-link" rel="nofollow">https://www.example.com
+                    <sup><img class="rendericon" src="./images/link_small.png" height="10" width="10" align="absmiddle" alt="" border="0"></sup>
+                </a>
+            </span></p>
+        </td>
+    </tr>
+    <tr>
+        <td>[mailto:no_reply@example.com]</td>
+        <td class="markdown">
+            <p><span class="nobr">
+                <a href="mailto:no_reply@example.com" class="external-link" rel="nofollow">no_reply@example.com
+                <sup><img class="rendericon" src="./images/mail_small.png" height="10" width="10" align="absmiddle" border="0"></sup>
+                </a>
+            </span></p>
+        </td>
+    </tr>
+    <tr>
+        <td>[Ссылка|https://www.example.com]</td>
+        <td class="markdown">
+            <p><span class="nobr">
+                <a href="https://www.example.com" class="external-link" rel="nofollow">Ссылка
+                    <sup><img class="rendericon" src="./images/link_small.png" height="10" width="10" align="absmiddle" alt="" border="0"></sup>
+                </a>
+            </span></p>
+        </td>
+    </tr>
+
+    <tr>
+        <td colspan="2" class="markdown_table_section">Блочные цитаты</td>
+    </tr>
+    <tr>
+        <td>
+            {quote}Текст, который необходимо отформатировать<br>
+            как цитату{quote}<br>
+            Ваш ответ
+        </td>
+        <td class="markdown">
+            <blockquote>Текст, который необходимо отформатировать<br>
+                как цитату</blockquote>Ваш ответ
+        </td>
+    </tr>
+
+    <tr>
+        <td colspan="2" class="markdown_table_section">Блоки кода</td>
+    </tr>
+    <tr>
+        <td>
+            {code:java}<br>
+            public String getFoo()<br>
+            {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;return foo;<br>
+            }<br>
+            {code}
+        </td>
+        <td class="markdown">
+            <div class="code panel" style="border-width: 1px;">
+                <div class="codeContent panelContent">
+                    <pre class="code-java">public String getFoo()<br>{<br>&nbsp;&nbsp;&nbsp;&nbsp;return foo;<br>}<br></pre>
+                </div>
+            </div>
+        </td>
+    </tr>
+
+    <tr>
+        <td colspan="2" class="markdown_table_section">Списки</td>
+    </tr>
+    <tr>
+        <td>
+            # Первый пункт<br>
+            # Второй пункт<br>
+            # Третий пункт<br>
+        </td>
+        <td class="markdown">
+            <ol>
+                <li>Первый пункт</li>
+                <li>Второй пункт</li>
+                <li>Третий пункт</li>
+            </ol>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            - Первый пункт<br>
+            - Второй пункт<br>
+            - Третий пункт
+        </td>
+        <td class="markdown">
+            <ul>
+                <li>Первый пункт</li>
+                <li>Второй пункт</li>
+                <li>Третий пункт</li>
+            </ul>
+        </td>
+    </tr>
+    <tr>
+        <td class="markdown">
+            * Первый пункт<br>
+            * Второй пункт<br>
+            &nbsp;&nbsp;&nbsp;** Второй пункт I<br>
+            &nbsp;&nbsp;&nbsp;** Второй пункт II<br>
+            * Третий пункт
+        </td>
+        <td class="markdown">
+            <ul>
+                <li>Первый пункт</li>
+                <li>Второй пункт</li>
+                <ul>
+                    <li>Второй пункт I</li>
+                    <li>Второй пункт II</li>
+                </ul>
+                <li>Третий пункт</li>
+            </ul>
+        </td>
+    </tr>
+
+    <tr>
+        <td colspan="2" class="markdown_table_section">Таблицы</td>
+    </tr>
+    <tr>
+        <td>
+            ||    Столбец 1    ||    Столбец 2   ||<br>
+            |    Значение 1   |    Значение 1  |<br>
+            |    Значение 2   |    Значение 4  |
+        </td>
+        <td class="markdown">
+            <table>
+                <thead>
+                <tr>
+                    <th>Столбец 1</th>
+                    <th>Столбец 2</th>
+                </tr>
+                </thead>
+                <tr>
+                    <td>Значение 1</td>
+                    <td>Значение 2</td>
+                </tr>
+                <tr>
+                    <td>Значение 3</td>
+                    <td>Значение 4</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+<br><br>

@@ -13,6 +13,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
@@ -29,6 +30,7 @@ public class PlatformFilterView extends Composite implements AbstractPlatformFil
     @Inject
     public void onInit() {
         initWidget(outUiBinder.createAndBindUi(this));
+        ensureDebugIds();
     }
 
     @Override
@@ -139,6 +141,27 @@ public class PlatformFilterView extends Composite implements AbstractPlatformFil
     private void fireChangeTimer() {
         timer.cancel();
         timer.schedule(200);
+    }
+
+    private void ensureDebugIds() {
+        name.setDebugIdTextBox(DebugIds.FILTER.PLATFORM_NAME_SEARCH_INPUT);
+        name.setDebugIdAction(DebugIds.FILTER.PLATFORM_NAME_SEARCH_CLEAR_BUTTON);
+        parameters.setDebugIdTextBox(DebugIds.FILTER.PLATFORM_PARAMETERS_SEARCH_INPUT);
+        parameters.setDebugIdAction(DebugIds.FILTER.PLATFORM_PARAMETERS_SEARCH_CLEAR_BUTTON);
+        serverIp.setDebugIdTextBox(DebugIds.FILTER.PLATFORM_SERVER_IP_SEARCH_INPUT);
+        serverIp.setDebugIdAction(DebugIds.FILTER.PLATFORM_SERVER_IP_SEARCH_CLEAR_BUTTON);
+        sortField.setEnsureDebugId(DebugIds.FILTER.SORT_FIELD_SELECTOR);
+        sortDir.ensureDebugId(DebugIds.FILTER.SORT_DIR_BUTTON);
+        resetBtn.ensureDebugId(DebugIds.FILTER.RESET_BUTTON);
+        companies.setAddEnsureDebugId(DebugIds.FILTER.COMPANY_SELECTOR_ADD_BUTTON);
+        companies.setClearEnsureDebugId(DebugIds.FILTER.COMPANY_SELECTOR_CLEAR_BUTTON);
+        companies.setItemContainerEnsureDebugId(DebugIds.FILTER.COMPANY_SELECTOR_ITEM_CONTAINER);
+        companies.setLabelEnsureDebugId(DebugIds.FILTER.COMPANY_SELECTOR_LABEL);
+        managers.setAddEnsureDebugId(DebugIds.FILTER.MANAGER_SELECTOR_ADD_BUTTON);
+        managers.setClearEnsureDebugId(DebugIds.FILTER.MANAGER_SELECTOR_CLEAR_BUTTON);
+        managers.setItemContainerEnsureDebugId(DebugIds.FILTER.MANAGER_SELECTOR_ITEM_CONTAINER);
+        managers.setLabelEnsureDebugId(DebugIds.FILTER.MANAGER_SELECTOR_LABEL);
+        comment.ensureDebugId(DebugIds.FILTER.COMMENT_INPUT);
     }
 
     private final Timer timer = new Timer() {
