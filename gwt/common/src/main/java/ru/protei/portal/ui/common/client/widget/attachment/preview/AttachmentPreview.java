@@ -12,6 +12,8 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.inject.Inject;
 import ru.protei.portal.test.client.DebugIds;
 
+import static com.google.gwt.event.dom.client.KeyCodes.KEY_ESCAPE;
+
 /**
  * Created by bondarenko on 29.06.17.
  */
@@ -24,6 +26,15 @@ public class AttachmentPreview extends PopupPanel implements ClickHandler{
         root.sinkEvents(Event.ONCLICK);
         root.addHandler(this, ClickEvent.getType());
         addStyleName("max-z-index");
+    }
+
+    @Override
+    protected void onPreviewNativeEvent( Event.NativePreviewEvent event ) {
+        super.onPreviewNativeEvent( event );
+
+        if ( event.getTypeInt() == Event.ONKEYDOWN && event.getNativeEvent().getKeyCode() == KEY_ESCAPE ) {
+            hide();
+        }
     }
 
     public void show(Image attachment){
