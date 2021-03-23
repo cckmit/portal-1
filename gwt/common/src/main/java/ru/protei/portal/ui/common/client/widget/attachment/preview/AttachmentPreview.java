@@ -1,20 +1,19 @@
 package ru.protei.portal.ui.common.client.widget.attachment.preview;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.inject.Inject;
 import ru.protei.portal.test.client.DebugIds;
+
+import static com.google.gwt.event.dom.client.KeyCodes.KEY_ESCAPE;
 
 /**
  * Created by bondarenko on 29.06.17.
@@ -31,15 +30,15 @@ public class AttachmentPreview extends PopupPanel implements ClickHandler{
     }
 
     @Override
-    protected void onLoad() {
-        super.onLoad();
-        attachEscapePressListener();
-    }
+    protected void onPreviewNativeEvent( Event.NativePreviewEvent event ) {
+        super.onPreviewNativeEvent( event );
 
-    @Override
-    protected void onUnload() {
-        super.onUnload();
-        detachEscapePressListener();
+        if ( event.getTypeInt() == Event.ONKEYDOWN ) {
+            boolean isEscapeClicked = event.getNativeEvent().getKeyCode() == KEY_ESCAPE;
+            if (isEscapeClicked && !isAnyPopupOpened(root.getElement())) {
+                hide();
+            }
+        }
     }
 
     public void show(Image attachment){
@@ -53,20 +52,21 @@ public class AttachmentPreview extends PopupPanel implements ClickHandler{
         hide();
     }
 
-    private void attachEscapePressListener() {
-        Element bodyElement = Document.get().getBody();
-        Event.sinkEvents( bodyElement, Event.ONKEYDOWN );
-        Event.setEventListener( bodyElement, event -> {
-            if ( event.getKeyCode() == KeyCodes.KEY_ESCAPE ) {
-                hide();
-            }
-        });
-    }
+    private native boolean isAnyPopupOpened(Element bodyContainerElement) /*-{
+        var selectors = bodyContainerElement.querySelectorAll('.selector-popup');
 
-    private void detachEscapePressListener() {
-        Element domElement = Document.get().getBody();
-        DOM.sinkEvents( domElement, DOM.getEventsSunk( domElement ) & ( ~Event.ONKEYDOWN ) );
-    }
+        if (selectors.length === 0) {
+            return false;
+        }
+
+        for (var i = 0; i < selectors.length; i++) {
+            if (!selectors[i].style.display || selectors[i].style.display !== "none") {
+                return true;
+            }
+        }
+
+        return false;
+    }-*/;
 
     @UiField
     HTMLPanel root;
