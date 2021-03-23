@@ -30,6 +30,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.enterabletextbox.EnterableTextBox;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
+import static ru.protei.portal.core.model.helper.StringUtils.trim;
 
 public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHandlers<CaseLink> {
 
@@ -93,7 +94,7 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
 
     @UiHandler( "remoteIdInput" )
     public void onRemoteIdInputChanged( ValueChangeEvent<String> event ) {
-        String remoteId = event.getValue();
+        String remoteId = trim(event.getValue());
         if (HelperFunc.isEmpty(remoteId)) {
             return;
         }
@@ -207,7 +208,7 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
     private Timer keyTapTimer = new Timer() {
         @Override
         public void run() {
-            MatchResult youTrackMatcher = youTrackPattern.exec(remoteIdInput.getValue());
+            MatchResult youTrackMatcher = youTrackPattern.exec(trim(remoteIdInput.getValue()));
 
             if (youTrackMatcher != null) {
                 setValueToTypeSelector(En_CaseLink.YT);
