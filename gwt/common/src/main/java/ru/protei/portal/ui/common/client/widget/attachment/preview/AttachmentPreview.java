@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.common.client.widget.attachment.preview;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -33,11 +32,8 @@ public class AttachmentPreview extends PopupPanel implements ClickHandler{
     protected void onPreviewNativeEvent( Event.NativePreviewEvent event ) {
         super.onPreviewNativeEvent( event );
 
-        if ( event.getTypeInt() == Event.ONKEYDOWN ) {
-            boolean isEscapeClicked = event.getNativeEvent().getKeyCode() == KEY_ESCAPE;
-            if (isEscapeClicked && !isAnyPopupOpened(root.getElement())) {
-                hide();
-            }
+        if ( event.getTypeInt() == Event.ONKEYDOWN && event.getNativeEvent().getKeyCode() == KEY_ESCAPE ) {
+            hide();
         }
     }
 
@@ -51,22 +47,6 @@ public class AttachmentPreview extends PopupPanel implements ClickHandler{
     public void onClick(ClickEvent event){
         hide();
     }
-
-    private native boolean isAnyPopupOpened(Element bodyContainerElement) /*-{
-        var selectors = bodyContainerElement.querySelectorAll('.selector-popup');
-
-        if (selectors.length === 0) {
-            return false;
-        }
-
-        for (var i = 0; i < selectors.length; i++) {
-            if (!selectors[i].style.display || selectors[i].style.display !== "none") {
-                return true;
-            }
-        }
-
-        return false;
-    }-*/;
 
     @UiField
     HTMLPanel root;
