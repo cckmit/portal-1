@@ -43,6 +43,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         parentCompany.setDefaultValue(lang.selectIssueCompany());
         companyModel.showOnlyParentCompanies(true);
         parentCompany.setAsyncModel(companyModel);
+        companyName.setMaxLength(512);
 
         ensureDebugIds();
     }
