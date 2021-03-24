@@ -10,7 +10,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.ent.CaseFilter;
+import ru.protei.portal.core.model.dto.CaseFilterDto;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
@@ -108,7 +108,7 @@ public abstract class TableActivity implements Activity, AbstractTableActivity {
         Long filterId = filter.getId();
         saveTableFilterId(filterId);
         view.showLoader(true);
-        issueFilterController.getIssueFilter(filterId, new FluentCallback<CaseFilter>()
+        issueFilterController.getIssueFilter(filterId, new FluentCallback<CaseFilterDto<CaseQuery>>()
                 .withError(throwable -> {
                     view.showLoader(false);
                     defaultErrorHandler.accept(throwable);
@@ -116,7 +116,7 @@ public abstract class TableActivity implements Activity, AbstractTableActivity {
                 })
                 .withSuccess(caseFilter -> {
                     view.showLoader(false);
-                    CaseQuery query = caseFilter.getParams();
+                    CaseQuery query = caseFilter.getQuery();
                     loadTable(query);
                 }));
     }

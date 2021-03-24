@@ -9,6 +9,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dto.CaseFilterDto;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.Company;
@@ -115,10 +116,10 @@ public abstract class IssueTableFilterActivity
 
         this.preScroll = event.preScroll;
 
-        if (event.filter == null) {
+        if (event.caseFilterDto == null || event.caseFilterDto.getQuery() == null) {
             loadTable();
         } else {
-            fillFilterFieldsByCaseQuery(event.filter);
+            fillFilterFieldsByCaseQuery(event.caseFilterDto);
         }
 
         validateSearchField(filterView.getIssueFilterParams().isSearchFieldCorrect());
@@ -333,11 +334,11 @@ public abstract class IssueTableFilterActivity
         scrollTo = 0;
     }
 
-    private void fillFilterFieldsByCaseQuery(CaseFilter filter) {
+    private void fillFilterFieldsByCaseQuery(CaseFilterDto<CaseQuery> caseFilterDto) {
         filterView.resetFilter(DEFAULT_MODIFIED_RANGE);
-        filterView.userFilter().setValue(filter.toShortView());
+        filterView.userFilter().setValue(caseFilterDto.getCaseFilter().toShortView());
 
-        final CaseQuery caseQuery = filter.getParams();
+        final CaseQuery caseQuery = caseFilterDto.getQuery();
 
         filterService.getSelectorsParams(caseQuery, new RequestCallback<SelectorsParams>() {
             @Override

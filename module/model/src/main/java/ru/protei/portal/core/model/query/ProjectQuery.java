@@ -1,6 +1,8 @@
 package ru.protei.portal.core.model.query;
 
-import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dict.En_CustomerType;
+import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -11,24 +13,24 @@ import ru.protei.portal.core.model.view.PersonShortView;
 
 import java.util.*;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
+import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
+
 /**
  * Запрос по проектам
  */
-public class ProjectQuery extends BaseQuery {
-
-    private En_CaseType type = En_CaseType.PROJECT;
-
+public class ProjectQuery extends BaseQuery implements HasFilterEntityIds {
     private List<Long> caseIds;
 
     private Set<CaseState> states;
-
-    private Set<EntityOption> regions;
 
     private Set<PersonShortView> headManagers;
 
     private Set<PersonShortView> caseMembers;
 
     private Set<ProductDirectionInfo> directions;
+
+    private Set<EntityOption> regions;
 
     private Set<Long> districtIds;
 
@@ -84,10 +86,6 @@ public class ProjectQuery extends BaseQuery {
     public void setCaseId( Long caseId ) {
         this.caseIds = new ArrayList<>();
         this.caseIds.add(caseId);
-    }
-
-    public En_CaseType getType() {
-        return type;
     }
 
     public void setCaseIds(List<Long> caseIds) {
@@ -198,10 +196,6 @@ public class ProjectQuery extends BaseQuery {
         this.commentCreationRange = commentCreationRange;
     }
 
-    public void setType(En_CaseType type) {
-        this.type = type;
-    }
-
     public Long getPauseDateGreaterThan() {
         return pauseDateGreaterThan;
     }
@@ -243,6 +237,53 @@ public class ProjectQuery extends BaseQuery {
     }
 
     @Override
+    public List<Long> getAllCompanyIds() {
+        List<Long> companyIds = new ArrayList<>();
+        companyIds.addAll(emptyIfNull(initiatorCompanyIds));
+        companyIds.addAll(emptyIfNull(subcontractorIds));
+
+        return companyIds;
+    }
+
+    @Override
+    public List<Long> getAllPersonIds() {
+        List<Long> personIds = new ArrayList<>();
+        personIds.addAll(toList(caseMembers, personShortView -> personShortView == null ? null : personShortView.getId()));
+        personIds.addAll(toList(headManagers, personShortView -> personShortView == null ? null : personShortView.getId()));
+
+        if (memberId != null) {
+            personIds.add(memberId);
+        }
+
+        return personIds;
+    }
+
+    @Override
+    public List<Long> getAllProductIds() {
+        return new ArrayList<>(emptyIfNull(productIds));
+    }
+
+    @Override
+    public List<Long> getAllDirectionIds() {
+        return new ArrayList<>(
+                toList(
+                        directions,
+                        productDirectionInfo -> productDirectionInfo == null ? null : productDirectionInfo.getId()
+                )
+        );
+    }
+
+    @Override
+    public List<Long> getAllTagIds() {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public Long getPlanId() {
+        return null;
+    }
+
+    @Override
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
                 CollectionUtils.isNotEmpty(caseIds) ||
@@ -267,7 +308,6 @@ public class ProjectQuery extends BaseQuery {
     @Override
     public String toString() {
         return "ProjectQuery{" +
-                "type=" + type +
                 ", caseIds=" + caseIds +
                 ", states=" + states +
                 ", regions=" + regions +

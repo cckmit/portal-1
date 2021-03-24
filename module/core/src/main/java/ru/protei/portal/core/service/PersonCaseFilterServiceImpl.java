@@ -1,5 +1,8 @@
 package ru.protei.portal.core.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,14 +12,18 @@ import ru.protei.portal.core.model.dao.CaseFilterDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.PersonCaseFilterDAO;
+import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
+import ru.protei.portal.core.service.bootstrap.BootstrapServiceImpl;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,6 +32,8 @@ import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
 
 public class PersonCaseFilterServiceImpl implements PersonCaseFilterService {
+    private static Logger log = LoggerFactory.getLogger( PersonCaseFilterServiceImpl.class );
+
     @Autowired
     PersonDAO personDAO;
     @Autowired
@@ -37,6 +46,8 @@ public class PersonCaseFilterServiceImpl implements PersonCaseFilterService {
     EventPublisherService publisherService;
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
+    @Autowired
+    ObjectMapper objectMapper;
 
     @Async(BACKGROUND_TASKS)
     @Override
@@ -47,9 +58,17 @@ public class PersonCaseFilterServiceImpl implements PersonCaseFilterService {
         List<Person> persons = personDAO.getPersons(personWithCaseFilters);
         jdbcManyRelationsHelper.fill(persons, Person.Fields.CONTACT_ITEMS);
         for (Person person : persons) {
-            List<CaseFilter> personToCaseFilter = caseFilterDAO.getByPersonId(person.getId());
+            List<CaseFilter> personToCaseFilter = caseFilterDAO.getByPersonIdAndTypes(person.getId(), En_CaseFilterType.getTypesByClass(CaseQuery.class));
             for (CaseFilter caseFilter : personToCaseFilter) {
-                SearchResult<CaseObject> result = caseObjectDAO.getSearchResult(caseFilter.getParams());
+                CaseQuery caseQuery;
+                try {
+                    caseQuery = objectMapper.readValue(caseFilter.getParams(), CaseQuery.class);
+                } catch (IOException e) {
+                    log.warn("processMailNotification: cannot read filter params: caseFilter={}", caseFilter);
+                    e.printStackTrace();
+                    return error(En_ResultStatus.INCORRECT_PARAMS);
+                }
+                SearchResult<CaseObject> result = caseObjectDAO.getSearchResult(caseQuery);
                 publisherService.publishEvent(new PersonCaseFilterEvent(this, result.getResults(), person));
             }
         }

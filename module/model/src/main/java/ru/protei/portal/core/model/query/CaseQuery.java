@@ -13,12 +13,13 @@ import ru.protei.portal.core.model.struct.Pair;
 
 import java.util.*;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
 
 /**
  * Created by Mike on 02.11.2016.
  */
-public class CaseQuery extends BaseQuery {
+public class CaseQuery extends BaseQuery implements HasFilterEntityIds {
 
     @JsonIgnore
     private Long id;
@@ -360,6 +361,42 @@ public class CaseQuery extends BaseQuery {
         this.managerCompanyIds = managerCompanyIds;
     }
 
+    @Override
+    public List<Long> getAllCompanyIds() {
+        List<Long> companyIds = new ArrayList<>();
+        companyIds.addAll(emptyIfNull(getCompanyIds()));
+        companyIds.addAll(emptyIfNull(getManagerCompanyIds()));
+
+        return companyIds;
+    }
+
+    @Override
+    public List<Long> getAllPersonIds() {
+        List<Long> personsIds = new ArrayList<>();
+        personsIds.addAll(emptyIfNull(getManagerIds()));
+        personsIds.addAll(emptyIfNull(getInitiatorIds()));
+        personsIds.addAll(emptyIfNull(getCommentAuthorIds()));
+        personsIds.addAll(emptyIfNull(getCreatorIds()));
+
+        return personsIds;
+    }
+
+    @Override
+    public List<Long> getAllProductIds() {
+        return new ArrayList<>(emptyIfNull(getProductIds()));
+    }
+
+    @Override
+    public List<Long> getAllDirectionIds() {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public List<Long> getAllTagIds() {
+        return new ArrayList<>(emptyIfNull(getCaseTagsIds()));
+    }
+
+    @Override
     public Long getPlanId() {
         return planId;
     }

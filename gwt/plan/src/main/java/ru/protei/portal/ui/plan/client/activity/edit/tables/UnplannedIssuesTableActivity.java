@@ -8,7 +8,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.ent.CaseFilter;
+import ru.protei.portal.core.model.dto.CaseFilterDto;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -71,13 +71,13 @@ public abstract class UnplannedIssuesTableActivity implements AbstractUnplannedI
         }
         Long filterId = filter.getId();
         saveTableFilterId(filterId);
-        issueFilterController.getIssueFilter(filterId, new FluentCallback<CaseFilter>()
+        issueFilterController.getIssueFilter(filterId, new FluentCallback<CaseFilterDto<CaseQuery>>()
                 .withError(throwable -> {
                     defaultErrorHandler.accept(throwable);
                     view.filter().setValue(null, true);
                 })
-                .withSuccess(caseFilter -> {
-                    CaseQuery query = caseFilter.getParams();
+                .withSuccess(caseFilterDto -> {
+                    CaseQuery query = caseFilterDto.getQuery();
                     loadTable(query);
                 }));
     }

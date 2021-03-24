@@ -1,5 +1,7 @@
 package ru.protei.portal.core.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dto.CaseFilterDto;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -20,6 +23,7 @@ import ru.protei.portal.core.model.view.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -52,6 +56,8 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     CaseTagService caseTagService;
     @Autowired
     PlanDAO planDAO;
+    @Autowired
+    ObjectMapper objectMapper;
 
     @Override
     public Result< List< CaseFilterShortView > > getIssueFilterShortViewList( Long loginId, En_CaseFilterType filterType ) {
@@ -69,7 +75,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     }
 
     @Override
-    public Result<CaseFilter> getIssueFilter( AuthToken token, Long id ) {
+    public Result<CaseFilterDto<CaseQuery>> getIssueFilter(AuthToken token, Long id) {
         log.debug( "getIssueFilter(): id={} ", id );
 
         CaseFilter filter = caseFilterDAO.get( id );
@@ -78,7 +84,20 @@ public class IssueFilterServiceImpl implements IssueFilterService {
             return error( En_ResultStatus.NOT_FOUND );
         }
 
-        Result<SelectorsParams> selectorsParams = getSelectorsParams(token, filter.getParams());
+        if (!filter.getType().getQueryClass().equals(CaseQuery.class)) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        CaseQuery caseQuery;
+        try {
+            caseQuery = objectMapper.readValue(filter.getParams(), CaseQuery.class);
+        } catch (IOException e) {
+            log.warn("processMailNotification: cannot read filter params: caseFilter={}", filter);
+            e.printStackTrace();
+            return error(En_ResultStatus.INTERNAL_ERROR);
+        }
+
+        Result<SelectorsParams> selectorsParams = getSelectorsParams(token, caseQuery);
 
         if (selectorsParams.isError()) {
             return error( selectorsParams.getStatus() );
@@ -86,7 +105,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
 
         filter.setSelectorsParams(selectorsParams.getData());
 
-        return  ok( filter );
+        return ok( new CaseFilterDto<>(filter, caseQuery) );
     }
 
     @Override
@@ -147,27 +166,41 @@ public class IssueFilterServiceImpl implements IssueFilterService {
 
     @Override
     @Transactional
-    public Result<CaseFilter> saveIssueFilter(AuthToken token, CaseFilter filter) {
+    public Result<CaseFilterDto<CaseQuery>> saveIssueFilter(AuthToken token, CaseFilterDto<CaseQuery> caseFilterDto) {
+        log.debug("saveIssueFilter(): filter={} ", caseFilterDto);
 
-        log.debug("saveIssueFilter(): filter={} ", filter);
+        CaseFilter caseFilter = caseFilterDto.getCaseFilter();
 
-        if (isNotValid(filter)) {
+        if (isNotValid(caseFilterDto)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        if (filter.getLoginId() == null) {
-            filter.setLoginId(token.getUserLoginId());
+        if (caseFilter.getLoginId() == null) {
+            caseFilter.setLoginId(token.getUserLoginId());
         }
 
-        filter.setParams(applyFilterByScope(token, filter.getParams()));
-        filter.setName(filter.getName().trim());
+        CaseQuery caseQuery = applyFilterByScope(token, caseFilterDto.getQuery());
 
-        if (!isUniqueFilter(filter.getName(), filter.getLoginId(), filter.getType(), filter.getId())) {
+        String params;
+
+        try {
+            params = objectMapper.writeValueAsString(caseQuery);
+        } catch (JsonProcessingException e) {
+            log.warn("saveIssueFilter(): cannot write filter params: caseFilter={}", caseFilter);
+            e.printStackTrace();
+            return error(En_ResultStatus.INTERNAL_ERROR);
+        }
+
+        caseFilter.setParams(params);
+        caseFilter.setName(caseFilter.getName().trim());
+
+        if (!isUniqueFilter(caseFilter.getName(), caseFilter.getLoginId(), caseFilter.getType(), caseFilter.getId())) {
             return error(En_ResultStatus.ALREADY_EXIST);
         }
 
-        if (caseFilterDAO.saveOrUpdate(filter)) {
-            return ok(filter);
+        if (caseFilterDAO.saveOrUpdate(caseFilter)) {
+            caseFilterDto.setCaseFilter(caseFilter);
+            return ok(caseFilterDto);
         }
 
         return error(En_ResultStatus.INTERNAL_ERROR);
@@ -189,11 +222,11 @@ public class IssueFilterServiceImpl implements IssueFilterService {
         return ok(id);
     }
 
-    private boolean isNotValid( CaseFilter filter ) {
-        return filter == null ||
-                filter.getType() == null ||
-                HelperFunc.isEmpty(filter.getName()) ||
-                filter.getParams() == null;
+    private boolean isNotValid( CaseFilterDto<CaseQuery> caseFilterDto ) {
+        return caseFilterDto == null ||
+                caseFilterDto.getCaseFilter().getType() == null ||
+                HelperFunc.isEmpty(caseFilterDto.getCaseFilter().getName()) ||
+                caseFilterDto.getQuery() == null;
     }
 
     private CaseQuery applyFilterByScope(AuthToken token, CaseQuery caseQuery) {

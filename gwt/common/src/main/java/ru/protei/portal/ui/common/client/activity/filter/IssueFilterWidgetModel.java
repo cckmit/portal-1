@@ -2,7 +2,9 @@ package ru.protei.portal.ui.common.client.activity.filter;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
+import ru.protei.portal.core.model.dto.CaseFilterDto;
 import ru.protei.portal.core.model.ent.CaseFilter;
+import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -22,14 +24,14 @@ public abstract class IssueFilterWidgetModel implements Activity, AbstractIssueF
     }
 
     @Override
-    public void onOkSavingFilterClicked(String filterName, CaseFilter filledUserFilter,
-                                        Consumer<CaseFilter> afterSave) {
+    public void onOkSavingFilterClicked(String filterName, CaseFilterDto<CaseQuery> filledUserFilter,
+                                        Consumer<CaseFilterDto<CaseQuery>> afterSave) {
         if (isEmpty(filterName)) {
             fireEvent(new NotifyEvents.Show(lang.errFilterNameRequired(), NotifyEvents.NotifyType.ERROR));
             return;
         }
 
-        filterService.saveIssueFilter(filledUserFilter, new FluentCallback<CaseFilter>()
+        filterService.saveIssueFilter(filledUserFilter, new FluentCallback<CaseFilterDto<CaseQuery>>()
                 .withError((throwable, defaultErrorHandler, status) -> {
                     fireEvent(new NotifyEvents.Show(lang.errSaveIssueFilter(), NotifyEvents.NotifyType.ERROR));
                     defaultErrorHandler.accept(throwable);
@@ -44,8 +46,8 @@ public abstract class IssueFilterWidgetModel implements Activity, AbstractIssueF
     }
 
     @Override
-    public void onUserFilterChanged(Long id, Consumer<CaseFilter> afterChange) {
-        filterService.getIssueFilter(id, new FluentCallback<CaseFilter>()
+    public void onUserFilterChanged(Long id, Consumer<CaseFilterDto<CaseQuery>> afterChange) {
+        filterService.getIssueFilter(id, new FluentCallback<CaseFilterDto<CaseQuery>>()
                 .withErrorMessage(lang.errNotFound())
                 .withSuccess(afterChange)
         );

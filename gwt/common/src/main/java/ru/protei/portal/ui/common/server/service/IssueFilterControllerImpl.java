@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dto.CaseFilterDto;
 import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
@@ -43,12 +43,12 @@ public class IssueFilterControllerImpl implements IssueFilterController {
     }
 
     @Override
-    public CaseFilter getIssueFilter(Long id ) throws RequestFailedException {
+    public CaseFilterDto<CaseQuery> getIssueFilter(Long id ) throws RequestFailedException {
         log.info("getIssueFilter, id: {}", id);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<CaseFilter> response = issueFilterService.getIssueFilter( token, id );
+        Result<CaseFilterDto<CaseQuery>> response = issueFilterService.getIssueFilter(token, id);
 
         log.info("getIssueFilter, id: {}, response: {} ", id, response.isError() ? "error" : response.getData());
 
@@ -75,7 +75,7 @@ public class IssueFilterControllerImpl implements IssueFilterController {
     }
 
     @Override
-    public CaseFilter saveIssueFilter(CaseFilter filter) throws RequestFailedException {
+    public CaseFilterDto<CaseQuery> saveIssueFilter(CaseFilterDto<CaseQuery> filter) throws RequestFailedException {
 
         log.info("saveIssueFilter, filter: {}", filter);
 
@@ -86,7 +86,7 @@ public class IssueFilterControllerImpl implements IssueFilterController {
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<CaseFilter> response = issueFilterService.saveIssueFilter(token, filter);
+        Result<CaseFilterDto<CaseQuery>> response = issueFilterService.saveIssueFilter(token, filter);
 
         log.info("saveIssueFilter, result: {}", response.getStatus());
 

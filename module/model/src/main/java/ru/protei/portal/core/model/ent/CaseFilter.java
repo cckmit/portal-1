@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
+import ru.protei.portal.core.model.query.BaseQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.winter.jdbc.annotations.*;
@@ -16,8 +17,8 @@ public class CaseFilter implements Serializable {
     @JdbcColumn( name = "name" )
     private String name;
 
-    @JdbcColumn( name = "params", converterType = ConverterType.JSON )
-    private CaseQuery params;
+    @JdbcColumn( name = "params" )
+    private String params;
 
     @JdbcColumn( name = "login_id" )
     private Long loginId;
@@ -44,11 +45,11 @@ public class CaseFilter implements Serializable {
         this.name = name;
     }
 
-    public CaseQuery getParams() {
+    public String getParams() {
         return params;
     }
 
-    public void setParams( CaseQuery params ) {
+    public void setParams( String params ) {
         this.params = params;
     }
 

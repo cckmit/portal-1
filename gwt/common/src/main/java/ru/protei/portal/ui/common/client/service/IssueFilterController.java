@@ -3,7 +3,7 @@ package ru.protei.portal.ui.common.client.service;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
-import ru.protei.portal.core.model.ent.CaseFilter;
+import ru.protei.portal.core.model.dto.CaseFilterDto;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
@@ -22,11 +22,11 @@ public interface IssueFilterController extends RemoteService {
      */
     List< CaseFilterShortView > getIssueFilterShortViewList( En_CaseFilterType filterType ) throws RequestFailedException;
 
-    CaseFilter getIssueFilter(Long id ) throws RequestFailedException;
+    CaseFilterDto<CaseQuery> getIssueFilter(Long id ) throws RequestFailedException;
 
     SelectorsParams getSelectorsParams( CaseQuery caseQuery ) throws RequestFailedException;
 
-    CaseFilter saveIssueFilter( CaseFilter filter ) throws RequestFailedException;
+    CaseFilterDto<CaseQuery> saveIssueFilter( CaseFilterDto<CaseQuery> filter ) throws RequestFailedException;
 
     Long removeIssueFilter(Long id ) throws RequestFailedException;
 }

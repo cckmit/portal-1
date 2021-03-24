@@ -12,6 +12,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
+import ru.protei.portal.core.model.dto.CaseFilterDto;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
@@ -118,17 +119,17 @@ public class IssueFilterWidget extends Composite {
             setFilterNameContainerErrorStyle( true );
         }
 
-        CaseFilter filledUserFilter = fillUserFilter();
+        CaseFilterDto<CaseQuery> filledUserFilter = fillUserFilter();
         if (!isCreateFilterAction) {
-            filledUserFilter.setId(userFilter.getValue().getId());
+            filledUserFilter.getCaseFilter().setId(userFilter.getValue().getId());
         }
-        filledUserFilter.getParams().setCheckImportanceHistory( null );//don`t save CheckImportanceHistory
+        filledUserFilter.getQuery().setCheckImportanceHistory( null );//don`t save CheckImportanceHistory
 
         model.onOkSavingFilterClicked(filterName.getValue(), filledUserFilter,
-                filter -> {
+                caseFilterDto -> {
                     editBtnVisibility().setVisible(true);
                     removeFilterBtnVisibility().setVisible(true);
-                    userFilter.setValue(filter.toShortView());
+                    userFilter.setValue(caseFilterDto.getCaseFilter().toShortView());
 
                     showUserFilterControls();
                 });
@@ -172,9 +173,9 @@ public class IssueFilterWidget extends Composite {
             return;
         }
 
-        model.onUserFilterChanged(filter.getId(), caseFilter -> {
-            issueFilterParamView.fillFilterFields(caseFilter.getParams(), caseFilter.getSelectorsParams());
-            filterName.setValue( caseFilter.getName() );
+        model.onUserFilterChanged(filter.getId(), caseFilterDto -> {
+            issueFilterParamView.fillFilterFields(caseFilterDto.getQuery(), caseFilterDto.getCaseFilter().getSelectorsParams());
+            filterName.setValue( caseFilterDto.getCaseFilter().getName() );
             removeFilterBtnVisibility().setVisible( true );
             editBtnVisibility().setVisible( true );
         });
@@ -191,14 +192,13 @@ public class IssueFilterWidget extends Composite {
     }
 
 
-    private CaseFilter fillUserFilter() {
+    private CaseFilterDto<CaseQuery> fillUserFilter() {
         CaseFilter filter = new CaseFilter();
         filter.setName(filterName.getValue());
         filter.setType(filterType);
         CaseQuery query = issueFilterParamView.getFilterFields(filterType);
-        filter.setParams(query);
         query.setSearchString(issueFilterParamView.searchPattern().getValue());
-        return filter;
+        return new CaseFilterDto<>(filter, query);
     }
 
     private void ensureDebugIds() {
