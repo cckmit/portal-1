@@ -9,6 +9,7 @@ import ru.protei.portal.ui.common.client.widget.togglebtn.group.ToggleBtnGroupMu
 import java.util.List;
 
 import static ru.protei.portal.ui.common.client.util.ColorUtils.makeContrastColor;
+import static ru.protei.portal.core.model.helper.StringUtils.firstUppercaseChar;
 
 /**
  * Селектор критичности обращения
@@ -27,7 +28,7 @@ public class ImportanceBtnGroupMulti extends ToggleBtnGroupMulti<ImportanceLevel
                     "case-importance",
                     "btn btn-default no-border",
                     level.getCode(),
-                    level.getCode().substring(0, 1).toUpperCase(),
+                    firstUppercaseChar(level.getCode()),
                     level,
                     level.getColor(),
                     makeContrastColor(level.getColor())

@@ -46,6 +46,7 @@ import static ru.protei.portal.core.model.util.CrmConstants.Jira.NO_EXTENDED_PRI
 import static ru.protei.portal.ui.common.client.util.AttachmentUtils.getRemoveErrorHandler;
 import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.getCommentAndHistorySelectedTabs;
 import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.saveCommentAndHistorySelectedTabs;
+import static ru.protei.portal.core.model.helper.StringUtils.firstUppercaseChar;
 
 public abstract class IssueEditActivity implements
         AbstractIssueEditActivity,
@@ -589,7 +590,7 @@ public abstract class IssueEditActivity implements
         if (isBlank(name)) {
             return null;
         }
-        return name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
+        return firstUppercaseChar(name) + name.substring(1).toLowerCase();
     }
 
     private boolean isCreatingSubtaskAllowed(Long stateId, boolean isAutoOpenIssue, String extAppType) {

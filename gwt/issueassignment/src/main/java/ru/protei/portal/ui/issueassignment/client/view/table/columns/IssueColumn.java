@@ -13,6 +13,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 import static ru.protei.portal.ui.common.client.util.ColorUtils.makeContrastColor;
+import static ru.protei.portal.core.model.helper.StringUtils.firstUppercaseChar;
 
 public class IssueColumn extends ClickColumn<CaseShortView> {
 
@@ -42,7 +43,7 @@ public class IssueColumn extends ClickColumn<CaseShortView> {
         String name = value.getName();
 
         DivElement div = Document.get().createDivElement();
-        div.appendChild(makeSpan("case-importance", value.getImportanceCode().substring(0, 1).toUpperCase(),
+        div.appendChild(makeSpan("case-importance", firstUppercaseChar(value.getImportanceCode()),
                 value.getImportanceColor(), makeContrastColor(value.getImportanceColor())));
         div.appendChild(makeSpan("label", value.getStateName(), value.getStateColor()));
         if (isPrivate) div.appendChild(makeSpan("fa fa-fw fa-lock text-danger", ""));

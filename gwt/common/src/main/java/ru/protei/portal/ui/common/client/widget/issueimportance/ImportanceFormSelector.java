@@ -7,6 +7,7 @@ import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.form.FormPopupSingleSelector;
 
 import static ru.protei.portal.ui.common.client.util.ColorUtils.makeContrastColor;
+import static ru.protei.portal.core.model.helper.StringUtils.firstUppercaseChar;
 
 /**
  * Селектор критичности кейсов
@@ -20,7 +21,7 @@ public class ImportanceFormSelector extends FormPopupSingleSelector<ImportanceLe
         setValueRenderer(value -> value == null ? defaultValue :
                 "<i class='case-importance m-r-5' " +
                         "style='background-color:" + value.getColor() + ";color:" + makeContrastColor(value.getColor()) + "'>" +
-                        value.getCode().substring(0, 1).toUpperCase() +
+                        firstUppercaseChar(value.getCode()) +
                         "</i>" + value.getCode());
     }
 
@@ -29,7 +30,7 @@ public class ImportanceFormSelector extends FormPopupSingleSelector<ImportanceLe
         PopupSelectorItem<ImportanceLevel> item = new PopupSelectorItem();
         item.setName(element.getCode());
         item.setTitle(element.getCode());
-        item.setIcon("case-importance m-r-5", element.getCode().substring(0, 1).toUpperCase());
+        item.setIcon("case-importance m-r-5", firstUppercaseChar(element.getCode()));
         item.setIconColor(makeContrastColor(element.getColor()), element.getColor());
         return item;
     }

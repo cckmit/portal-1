@@ -142,4 +142,7 @@ public class StringUtils {
         return null == string ? 0 : string.length();
     }
 
+    public static String firstUppercaseChar(String string) {
+        return null == string ? null : string.substring(0, 1).toUpperCase();
+    }
 }
