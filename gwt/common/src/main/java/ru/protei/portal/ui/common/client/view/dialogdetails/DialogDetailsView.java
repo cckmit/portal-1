@@ -167,7 +167,7 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
         if ( event.getTypeInt() == Event.ONKEYDOWN ) {
             boolean isEscapeClicked = event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ESCAPE;
             boolean isEnterClicked = event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER;
-            if (isEscapeClicked && !isAnyPopupOpened(bodyContainer.getElement())) {
+            if (isEscapeClicked && !isAnySelectorPopupOpened(bodyContainer.getElement())) {
                 fireCancelClicked();
             } else if (isEnterClicked && isSaveOnEnterClick) {
                 fireSaveClicked();
@@ -209,7 +209,7 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
         }
     }
 
-    private native boolean isAnyPopupOpened(Element bodyContainerElement) /*-{
+    private native boolean isAnySelectorPopupOpened(Element bodyContainerElement) /*-{
         var selectors = bodyContainerElement.querySelectorAll('.selector-popup');
 
         if (selectors.length === 0) {
