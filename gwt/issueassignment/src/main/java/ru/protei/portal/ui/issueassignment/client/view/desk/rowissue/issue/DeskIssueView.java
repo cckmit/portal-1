@@ -12,13 +12,15 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.stringselectpopup.StringSelectPopup;
 import ru.protei.portal.ui.issueassignment.client.activity.desk.rowissue.issue.AbstractDeskIssueView;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static ru.protei.portal.ui.common.client.util.ColorUtils.makeContrastColor;
+import static ru.protei.portal.core.model.helper.StringUtils.firstUppercaseChar;
 
 public class DeskIssueView extends Composite implements AbstractDeskIssueView {
 
@@ -49,11 +51,13 @@ public class DeskIssueView extends Composite implements AbstractDeskIssueView {
     }
 
     @Override
-    public void setImportance(String importanceCode) {
+    public void setImportance(String importanceCode, String importanceColor) {
         if (importanceCode == null) {
             this.importance.setClassName("hide");
         } else {
-            this.importance.setClassName(ImportanceStyleProvider.getImportanceIcon(importanceCode));
+            this.importance.setInnerText(firstUppercaseChar(importanceCode));
+            this.importance.getStyle().setBackgroundColor(importanceColor);
+            this.importance.getStyle().setColor(makeContrastColor(importanceColor));
         }
     }
 

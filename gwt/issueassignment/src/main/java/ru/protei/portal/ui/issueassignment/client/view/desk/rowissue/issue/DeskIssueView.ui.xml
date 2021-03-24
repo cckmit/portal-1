@@ -6,7 +6,7 @@
     <g:HTMLPanel styleName="desk-issue-card" ui:field="root">
         <div class="desk-issue-header">
             <div class="desk-issue-content">
-                <span ui:field="importance"/>
+                <span ui:field="importance" class="case-importance"/>
                 <span ui:field="state" class="label"/>
                 <span class="fa fa-fw fa-lock text-danger" ui:field="privacy"/>
             </div>

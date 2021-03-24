@@ -13,9 +13,8 @@ import ru.protei.portal.ui.common.client.widget.form.FormPopupSingleSelector;
 public class IssueStateFormSelector extends FormPopupSingleSelector<CaseState> {
 
     @Inject
-    public void init( StateModel model ) {
+    public void init() {
         setSearchEnabled( false );
-        setStateModel( model );
         setItemRenderer( value -> value == null ? defaultValue : value.getInfo() );
         setValueRenderer( value -> value == null ? defaultValue :
                 "<i class='fas" + (En_CaseStateWorkflow.NO_WORKFLOW.equals(stateModel.getWorkflow()) ? " fa-circle" : " fa-dot-circle") +
