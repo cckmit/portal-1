@@ -1292,33 +1292,6 @@ td.info {
   margin-bottom: 10px;
 }
 
-/**** IMPORTANCE LEVEL ****/
-.critical {
-  color: #ef5350 !important;
-}
-
-.important {
-  color: #ffa726 !important;
-}
-
-.medium {
-  color: #c9d600 !important;
-}
-
-.basic {
-  color: $info_color !important;
-}
-
-.cosmetic {
-  color: #607D8B !important;
-}
-
-.emergency {
-  color: #ee1414 !important;
-}
-
-/****************/
-
 /**** COMPANY CATEGORY  ****/
 
 .category {
@@ -1776,132 +1749,6 @@ a {
   }
 }
 
-/**** Importance level icons ****/
-.importance-btn {
-  padding: 5px 10px 5px 5px !important;
-}
-
-.importance-item:not(.selector-val) {
-  padding-top: 4px !important;
-  padding-bottom: 4px !important;
-  > span {
-    position: relative;
-    line-height: 18px;
-    &:after {
-      content: "";
-      display: block;
-      clear: both;
-    }
-  }
-  &:after {
-    content: "";
-    display: block;
-    clear: both;
-  }
-}
-
-.importance-level {
-  display: inline-block;
-  width: 18px;
-  height: 18px;
-  border-radius: 2px;
-  background-color: #e6e6e6;
-
-  &:before {
-    content: "?";
-    display: block;
-    width: 18px;
-    height: 18px;
-    text-align: center;
-    line-height: 22px;
-    font-size: 10px;
-    font-weight: bold;
-    text-decoration: none;
-    font-style: normal;
-    position: relative;
-    bottom: 1px;
-    color: #333333;
-  }
-
-  &.cosmetic {
-    &:before {
-      content: "C";
-      color: #333333;
-    }
-  }
-
-  &.basic {
-    &:before {
-      content: "B";
-      color: #333333;
-    }
-  }
-
-  &.important {
-    &:before {
-      content: "I";
-      color: #333333;
-    }
-  }
-
-  &.critical {
-    &:before {
-      content: "C";
-      color: #ffffff;
-    }
-  }
-
-  &.medium {
-    &:before {
-      content: "M";
-      color: #333333;
-    }
-  }
-
-  &.emergency {
-    &:before {
-      content: "E";
-      color: #ffffff;
-    }
-  }
-
-  &.high {
-    &:before {
-      content: "H";
-      color: #333333;
-    }
-  }
-
-  &.low {
-    &:before {
-      content: "L";
-      color: #333333;
-    }
-  }
-
-  &.center {
-    display: block;
-    margin: 0 auto;
-  }
-
-  &.selector {
-    position: relative;
-    float: left;
-    margin: 0 6px 0 0;
-  }
-
-  &.lg {
-    width: 22px;
-    height: 22px;
-    &:before {
-      width: 22px;
-      height: 22px;
-      line-height: 22px;
-      font-size: 12px;
-    }
-  }
-}
-
 .privacy-level {
   font-size: 13px;
 }
@@ -1910,46 +1757,6 @@ a {
   .btn {
     padding: .375rem .75rem;
   }
-}
-
-.case-importance-cometic {
-  color: #7b7b7b;
-  font-weight: bold;
-}
-
-.case-importance-basic {
-  color: #7cc71d;
-  font-weight: bold;
-}
-
-.case-importance-important {
-  color: #eaba0c;
-  font-weight: bold;
-}
-
-.case-importance-critical {
-  color: #e30000;
-  font-weight: bold;
-}
-
-.case-importance-medium {
-  color: #c9d600;
-  font-weight: bold;
-}
-
-.case-importance-emergency {
-  color: #960000;
-  font-weight: bold;
-}
-
-.case-importance-high {
-  color: #e9b90c;
-  font-weight: bold;
-}
-
-.case-importance-low {
-  color: #686868;
-  font-weight: bold;
 }
 
 /**** SITE FOLDER ****/
@@ -4808,17 +4615,18 @@ table {
   }
 }
 
-.case-history-tag-icon, .case-history-importance-icon {
+.case-importance {
   display: inline-block;
   border-radius: 2px;
   width: 18px;
-  height: 19px;
+  height: 18px;
   text-align: center;
-  line-height: 22px;
   font-size: 10px;
   font-weight: bold;
   position: relative;
-  bottom: 1px;
+  font-style: normal;
+  vertical-align: text-bottom;
+  line-height: 19px !important;
 }
 
 .fired {

@@ -24,7 +24,7 @@ public class PrivacyTypeButtonSelector extends ToggleBtnGroup<En_CaseCommentPriv
                 PrivacyTypeStyleProvider.getIcon(value),
                 "btn btn-default",
                 privacyTypeLang.getName(value),
-                value, null, null);
+                null, value, null, null);
     }
 
     @Inject

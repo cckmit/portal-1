@@ -220,7 +220,6 @@ public class CrmConstants {
         String ADDED = "added";
         String UPDATED = "updated";
         String HIDE = "hide";
-        String IMPORTANCE_LEVEL = "importance-level";
     }
 
     public interface Platform {

@@ -12,6 +12,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.*;
+import ru.protei.portal.core.model.helper.StringUtils;
 
 /**
  * Вид кнопки-переключателя
@@ -50,16 +51,20 @@ public class ToggleButton
         this.button.setTitle( value );
     }
 
-    public void setIcon(String iconStyle, String color, String bgColor, boolean isBeforeText) {
+    public void setIcon(String iconStyle, String iconText, String bgColor, String color, boolean isBeforeText) {
         Element icon = DOM.createElement("i").cast();
-        icon.setClassName( iconStyle );
+        icon.setClassName(iconStyle);
 
-        if (color != null) {
-            icon.getStyle().setColor(color);
+        if (StringUtils.isNotBlank(iconText)) {
+            icon.setInnerText(iconText);
         }
 
-        if (bgColor != null) {
+        if (StringUtils.isNotBlank(bgColor)) {
             icon.getStyle().setBackgroundColor(bgColor);
+        }
+
+        if (StringUtils.isNotBlank(color)) {
+            icon.getStyle().setColor(color);
         }
 
         if(isBeforeText) {

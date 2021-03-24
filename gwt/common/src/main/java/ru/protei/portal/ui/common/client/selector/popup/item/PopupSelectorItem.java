@@ -64,12 +64,18 @@ public class PopupSelectorItem<T>
         icon.setClassName( className );
     }
 
+    public void setIcon( String className, String innerText ) {
+        icon.setClassName( className );
+        icon.setInnerText( innerText );
+    }
+
     public void setIconColor( String color ) {
         icon.getStyle().setColor( color );
     }
 
-    public void setIconBackgroundColor( String color ) {
-        icon.getStyle().setBackgroundColor( color );
+    public void setIconColor( String color,  String backgroundColor ) {
+        icon.getStyle().setColor( color );
+        icon.getStyle().setBackgroundColor( backgroundColor );
     }
 
     public void setImage( String src ) {

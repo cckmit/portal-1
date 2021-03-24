@@ -8,10 +8,10 @@ import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
-import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
+import static ru.protei.portal.ui.common.client.util.ColorUtils.makeContrastColor;
 
 public class IssueColumn extends ClickColumn<CaseShortView> {
 
@@ -49,7 +49,8 @@ public class IssueColumn extends ClickColumn<CaseShortView> {
         String name = value.getName();
 
         DivElement div = Document.get().createDivElement();
-        div.appendChild(makeSpan(ImportanceStyleProvider.getImportanceIcon(value.getImportanceCode()), "", value.getImportanceColor()));
+        div.appendChild(makeSpan("case-importance", value.getImportanceCode().substring(0, 1).toUpperCase(),
+                value.getImportanceColor(), makeContrastColor(value.getImportanceColor())));
         div.appendChild(makeSpan("label", value.getStateName(), value.getStateColor()));
         if (isPrivate) div.appendChild(makeSpan("fa fa-fw fa-lock text-danger", ""));
         div.appendChild(makeSpan("font-weight-bold", String.valueOf(number)));
@@ -82,6 +83,13 @@ public class IssueColumn extends ClickColumn<CaseShortView> {
     private SpanElement makeSpan(String className, String text, String bgColor) {
         SpanElement span = makeSpan(className, text);
         span.getStyle().setBackgroundColor(bgColor);
+        return span;
+    }
+
+    private SpanElement makeSpan(String className, String text, String bgColor, String color) {
+        SpanElement span = makeSpan(className, text);
+        span.getStyle().setBackgroundColor(bgColor);
+        span.getStyle().setColor(color);
         return span;
     }
 
