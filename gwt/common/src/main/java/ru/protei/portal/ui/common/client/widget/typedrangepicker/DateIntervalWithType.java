@@ -35,6 +35,10 @@ public class DateIntervalWithType implements Serializable {
     }
 
     public static DateRange toDateRange(DateIntervalWithType dateInterval) {
+        return toDateRange(dateInterval, null);
+    }
+
+    public static DateRange toDateRange(DateIntervalWithType dateInterval, Integer hourOffset) {
         En_DateIntervalType intervalType = dateInterval.getIntervalType();
 
         if (intervalType != null) {
@@ -44,7 +48,7 @@ public class DateIntervalWithType implements Serializable {
                 return new DateRange(intervalType, interval.from, interval.to);
             }
 
-            return new DateRange(intervalType, null, null);
+            return new DateRange(intervalType, hourOffset);
         }
 
         return null;

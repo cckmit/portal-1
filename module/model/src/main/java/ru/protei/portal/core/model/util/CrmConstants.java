@@ -233,4 +233,9 @@ public class CrmConstants {
         long DELAY_RUNTIME = 180;
         int DELAY_RANDOM = 120;
     }
+
+    public interface NightWork {
+        Integer HOUR_OFFSET = -3;
+        Integer NIGHT_START = 21;
+    }
 }

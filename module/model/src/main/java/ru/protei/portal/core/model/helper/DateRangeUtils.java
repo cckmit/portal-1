@@ -171,9 +171,23 @@ public class DateRangeUtils {
         return interval;
     }
 
-    public static Interval makeInterval(DateRange dateRange ) {
-        if ( dateRange == null )
+    public static Interval makeInterval(DateRange dateRange) {
+        Interval interval = makeIntervalWithoutOffset(dateRange);
+        if (interval != null && dateRange.getHourOffset() != null) {
+            if (interval.from != null) {
+                interval.from.setHours(interval.from.getHours() + dateRange.getHourOffset());
+            }
+            if (interval.to != null) {
+                interval.to.setHours(interval.to.getHours() + dateRange.getHourOffset());
+            }
+        }
+        return interval;
+    }
+
+    public static Interval makeIntervalWithoutOffset(DateRange dateRange) {
+        if ( dateRange == null ) {
             return null;
+        }
 
         switch (dateRange.getIntervalType()) {
             case FIXED      : return new Interval(dateRange.getFrom(), dateRange.getTo());

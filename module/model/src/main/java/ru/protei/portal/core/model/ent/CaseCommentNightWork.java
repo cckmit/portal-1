@@ -9,7 +9,7 @@ import java.util.Date;
 
 @JdbcEntity(selectSql = "" +
         "(CASE " +
-        "            WHEN HOUR(cc.CREATED) < 23 " +
+        "            WHEN HOUR(cc.CREATED) < 21 " +
         "                THEN date(cc.CREATED) " +
         "            ELSE ADDDATE(date(cc.CREATED), 1) " +
         "    END) day, sum(cc.time_elapsed) nightWorkTimeElapsedSum, count(cc.time_elapsed) nightWorkTimeElapsedCount, " +
@@ -18,9 +18,9 @@ import java.util.Date;
         "FROM case_object co " +
         "         join case_comment cc on cc.CASE_ID = co.ID " +
         "         join person p on cc.AUTHOR_ID = p.id " +
-        "         join person cust on co.INITIATOR = cust.id " +
+        "         left join person cust on co.INITIATOR = cust.id " +
         "         join company c on co.initiator_company = c.id " +
-        "         join dev_unit du on co.product_id = du.ID"
+        "         left join dev_unit du on co.product_id = du.ID"
 )
 public class CaseCommentNightWork implements Serializable {
     @JdbcColumn(name = "day", permType = PermType.READ_ONLY)
