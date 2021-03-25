@@ -28,11 +28,7 @@ public class ColorPicker extends Composite implements HasEnabled, HasValue<Strin
 
     @Override
     public String getValue() {
-        String value = colorBox.getValue();
-        if (!validateHexColor(value)) {
-            return null;
-        }
-        return value;
+        return colorBox.getValue();
     }
 
     @Override
@@ -42,7 +38,7 @@ public class ColorPicker extends Composite implements HasEnabled, HasValue<Strin
 
     @Override
     public void setValue(String value, boolean fireEvents) {
-        if (validateHexColor(value)) {
+        if (isValidHexColor(value)) {
             colorBox.setValue(value, fireEvents);
         }
         if (fireEvents) {
@@ -92,7 +88,7 @@ public class ColorPicker extends Composite implements HasEnabled, HasValue<Strin
         popup.showNear(relative);
     }
 
-    private boolean validateHexColor(String hexColor) {
+    public static boolean isValidHexColor(String hexColor) {
         return StringUtils.isBlank(hexColor) || HEX_REGEX.exec(hexColor) != null;
     }
 

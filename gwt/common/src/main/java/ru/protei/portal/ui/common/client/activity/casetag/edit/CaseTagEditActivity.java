@@ -16,6 +16,7 @@ import ru.protei.portal.ui.common.client.events.CaseTagEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseTagControllerAsync;
+import ru.protei.portal.ui.common.client.widget.colorpicker.ColorPicker;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.Objects;
@@ -117,8 +118,13 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
     }
 
     private boolean validate() {
-        if (StringUtils.isBlank(view.color().getValue())) {
-            fireEvent(new NotifyEvents.Show(lang.errTagColorEmpty(), NotifyEvents.NotifyType.ERROR));
+        String color = view.color().getValue();
+        if (StringUtils.isBlank(color)) {
+            showErrorMessage(lang.errTagColorEmpty());
+            return false;
+        }
+        if (!ColorPicker.isValidHexColor(color)) {
+            showErrorMessage(lang.errTagColorIncorrectFormat());
             return false;
         }
         if (caseTag.getCaseType() == null) {
@@ -128,6 +134,10 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
             return false;
         }
         return true;
+    }
+
+    private void showErrorMessage(String message) {
+        fireEvent(new NotifyEvents.Show(message, NotifyEvents.NotifyType.ERROR));
     }
 
     private boolean isNew( CaseTag caseTag ) {

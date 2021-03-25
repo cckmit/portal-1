@@ -3212,6 +3212,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errTagColorEmpty();
 
+    String errTagColorIncorrectFormat();
+
     String workTriggerNone();
 
     String workTriggerPSGO();
