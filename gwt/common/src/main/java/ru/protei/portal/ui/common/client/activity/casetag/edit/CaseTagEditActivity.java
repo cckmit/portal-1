@@ -117,13 +117,14 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
     }
 
     private boolean validate() {
+        if (StringUtils.isBlank(view.color().getValue())) {
+            fireEvent(new NotifyEvents.Show(lang.errTagColorEmpty(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
         if (caseTag.getCaseType() == null) {
             return false;
         }
         if (StringUtils.isBlank(view.name().getValue())) {
-            return false;
-        }
-        if (StringUtils.isBlank(view.color().getValue())) {
             return false;
         }
         return true;

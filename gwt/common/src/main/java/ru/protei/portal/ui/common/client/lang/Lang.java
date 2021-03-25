@@ -3210,6 +3210,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errAccessParametersLengthExceeded(int maxLength);
 
+    String errTagColorEmpty();
+
     String workTriggerNone();
 
     String workTriggerPSGO();

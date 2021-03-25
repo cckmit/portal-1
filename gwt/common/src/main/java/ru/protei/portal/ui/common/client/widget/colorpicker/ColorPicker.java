@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.colorpicker.popup.ColorPickerPopup;
+import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 
 public class ColorPicker extends Composite implements HasEnabled, HasValue<String>, ValueChangeHandler<String> {
 
@@ -103,7 +104,7 @@ public class ColorPicker extends Composite implements HasEnabled, HasValue<Strin
     @UiField
     HTMLPanel root;
     @UiField
-    TextBox colorBox;
+    ValidableTextBox colorBox;
     @UiField
     Button colorPickerButton;
 
