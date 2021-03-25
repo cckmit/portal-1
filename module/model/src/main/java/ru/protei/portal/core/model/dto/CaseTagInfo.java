@@ -47,6 +47,7 @@ public class CaseTagInfo implements Serializable {
 
         caseTag.setId(info.getId());
         caseTag.setName(info.getName());
+        caseTag.setColor("#e9edef");
         caseTag.setCompanyId(info.getCompanyId());
         caseTag.setCaseType(En_CaseType.CRM_SUPPORT);
 
