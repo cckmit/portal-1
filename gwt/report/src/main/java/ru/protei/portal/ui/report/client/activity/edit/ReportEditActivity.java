@@ -42,6 +42,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
@@ -232,23 +233,6 @@ public abstract class ReportEditActivity implements Activity,
     }
 
     private void fillFilter(ProjectQuery query) {
-        if (query.getCaseIds() != null) {
-            projectFilterView.searchPattern().setValue(makeSearchStringFromCaseNumber(query.getCaseIds()));
-        } else {
-            projectFilterView.searchPattern().setValue(query.getSearchString());
-        }
-        projectFilterView.states().setValue(query.getStates());
-        projectFilterView.regions().setValue(query.getRegions());
-        projectFilterView.headManagers().setValue(query.getHeadManagers());
-        projectFilterView.caseMembers().setValue(query.getCaseMembers());
-        projectFilterView.direction().setValue(query.getDirections());
-        projectFilterView.sortField().setValue(query.getSortField());
-        projectFilterView.sortDir().setValue(query.getSortDir() == En_SortDir.ASC);
-        projectFilterView.onlyMineProjects().setValue(query.getMemberId() != null);
-        projectFilterView.commentCreationRange().setValue(fromDateRange(query.getCommentCreationRange()));
-        projectFilterView.initiatorCompanies().setValue(
-                stream(query.getInitiatorCompanyIds()).map(EntityOption::new).collect(Collectors.toSet()));
-
         regionController.getSelectorsParams(query, new RequestCallback<SelectorsParams>() {
             @Override
             public void onError(Throwable throwable) {
@@ -257,7 +241,36 @@ public abstract class ReportEditActivity implements Activity,
 
             @Override
             public void onSuccess(SelectorsParams selectorsParams) {
-                Set<EntityOption> initiatorsCompanies = applyCompanies(selectorsParams.getCompanyEntityOptions(), query.getInitiatorCompanyIds());
+                if (query.getCaseIds() != null) {
+                    projectFilterView.searchPattern().setValue(makeSearchStringFromCaseNumber(query.getCaseIds()));
+                } else {
+                    projectFilterView.searchPattern().setValue(query.getSearchString());
+                }
+
+                if (isNotEmpty(query.getStateIds())) {
+                    projectFilterView.states().setValue(toSet(query.getStateIds(), (Function<Long, CaseState>) CaseState::new));
+                }
+
+                Set<EntityOption> regions = collectRegions(selectorsParams.getRegions(), query.getRegionIds());
+                projectFilterView.regions().setValue(regions);
+
+                Set<PersonShortView> headManagers = collectPersons(selectorsParams.getPersonShortViews(), query.getHeadManagerIds());
+                projectFilterView.headManagers().setValue(headManagers);
+
+                Set<PersonShortView> caseMembers = collectPersons(selectorsParams.getPersonShortViews(), query.getCaseMemberIds());
+                projectFilterView.caseMembers().setValue(caseMembers);
+
+                Set<ProductDirectionInfo> directions = collectDirections(selectorsParams.getProductDirectionInfos(), query.getDirectionIds());
+                projectFilterView.direction().setValue(directions);
+
+                projectFilterView.sortField().setValue(query.getSortField());
+                projectFilterView.sortDir().setValue(query.getSortDir() == En_SortDir.ASC);
+                projectFilterView.onlyMineProjects().setValue(query.getMemberId() != null);
+                projectFilterView.commentCreationRange().setValue(fromDateRange(query.getCommentCreationRange()));
+                projectFilterView.initiatorCompanies().setValue(
+                        stream(query.getInitiatorCompanyIds()).map(EntityOption::new).collect(Collectors.toSet()));
+
+                Set<EntityOption> initiatorsCompanies = collectCompanies(selectorsParams.getCompanyEntityOptions(), query.getInitiatorCompanyIds());
                 projectFilterView.initiatorCompanies().setValue(initiatorsCompanies);
             }
         });
@@ -302,13 +315,13 @@ public abstract class ReportEditActivity implements Activity,
 
             @Override
             public void onSuccess(SelectorsParams selectorsParams) {
-                Set<Contractor> contractors = applyContractors(selectorsParams.getContractors(), query.getContractorIds());
+                Set<Contractor> contractors = collectContractors(selectorsParams.getContractors(), query.getContractorIds());
                 contractFilterView.contractors().setValue(contractors);
-                Set<PersonShortView> curators = applyPersons(selectorsParams.getPersonShortViews(), query.getCuratorIds());
+                Set<PersonShortView> curators = collectPersons(selectorsParams.getPersonShortViews(), query.getCuratorIds());
                 contractFilterView.curators().setValue(curators);
-                Set<EntityOption> organisations = applyCompanies(selectorsParams.getCompanyEntityOptions(), query.getOrganizationIds());
+                Set<EntityOption> organisations = collectCompanies(selectorsParams.getCompanyEntityOptions(), query.getOrganizationIds());
                 contractFilterView.organizations().setValue(organisations);
-                Set<PersonShortView> managers = applyPersons(selectorsParams.getPersonShortViews(), query.getManagerIds());
+                Set<PersonShortView> managers = collectPersons(selectorsParams.getPersonShortViews(), query.getManagerIds());
                 contractFilterView.managers().setValue(managers);
                 if (query.getDirectionId() != null) {
                     contractFilterView.direction().setValue(selectorsParams.getProductDirectionInfos().get(0));
@@ -317,27 +330,41 @@ public abstract class ReportEditActivity implements Activity,
         });
     }
 
-    private Set<EntityOption> applyCompanies(Collection<EntityOption> companies, Collection<Long> companyIds) {
+    private Set<EntityOption> collectCompanies(Collection<EntityOption> companies, Collection<Long> companyIds) {
         return stream(companies)
                 .filter(company ->
                         stream(companyIds).anyMatch(ids -> ids.equals(company.getId())))
                 .collect(Collectors.toSet());
     }
 
-    private Set<PersonShortView> applyPersons(List<PersonShortView> personShortViews, List<Long> personIds) {
+    private Set<PersonShortView> collectPersons(List<PersonShortView> personShortViews, Collection<Long> personIds) {
         return stream(personShortViews)
                 .filter(personShortView ->
                         stream(personIds).anyMatch(ids -> ids.equals(personShortView.getId())))
                 .collect(Collectors.toSet());
     }
 
-    private Set<Contractor> applyContractors(Collection<Contractor> contractors, Collection<Long> ids) {
+    private Set<Contractor> collectContractors(Collection<Contractor> contractors, Collection<Long> ids) {
         return stream(contractors)
                 .filter(contractor ->
                         stream(ids).anyMatch(id -> id.equals(contractor.getId())))
                 .collect(Collectors.toSet());
     }
 
+    private Set<EntityOption> collectRegions(Collection<EntityOption> regions, Collection<Long> regionIds) {
+        return stream(regions)
+                .filter(region ->
+                        stream(regionIds).anyMatch(id -> id.equals(region.getId())))
+                .collect(Collectors.toSet());
+    }
+
+    private Set<ProductDirectionInfo> collectDirections(Collection<ProductDirectionInfo> directions,
+                                                        Collection<Long> directionIds) {
+        return stream(directions)
+                .filter(direction ->
+                        stream(directionIds).anyMatch(id -> id.equals(direction.getId())))
+                .collect(Collectors.toSet());
+    }
 
     private Report makeReport(Report report) {
         report.setReportType(view.reportType().getValue());
@@ -662,11 +689,11 @@ public abstract class ReportEditActivity implements Activity,
             query.setSearchString(isBlank(searchString) ? null : searchString);
         }
 
-        query.setStates(projectFilterView.states().getValue());
-        query.setRegions(projectFilterView.regions().getValue());
-        query.setHeadManagers(projectFilterView.headManagers().getValue());
-        query.setCaseMembers(projectFilterView.caseMembers().getValue());
-        query.setDirections(projectFilterView.direction().getValue());
+        query.setStateIds(toSet(projectFilterView.states().getValue(), CaseState::getId));
+        query.setRegionIds(toSet(projectFilterView.regions().getValue(), EntityOption::getId));
+        query.setHeadManagerIds(toSet(projectFilterView.headManagers().getValue(), PersonShortView::getId));
+        query.setCaseMemberIds(toSet(projectFilterView.caseMembers().getValue(), PersonShortView::getId));
+        query.setDirectionIds(toSet(projectFilterView.direction().getValue(), ProductDirectionInfo::getId));
         query.setSortField(projectFilterView.sortField().getValue());
         query.setSortDir(projectFilterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
         if(projectFilterView.onlyMineProjects().getValue() != null && projectFilterView.onlyMineProjects().getValue()) {

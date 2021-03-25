@@ -8,5 +8,6 @@ public interface HasFilterEntityIds {
     List<Long> getAllProductIds();
     List<Long> getAllDirectionIds();
     List<Long> getAllTagIds();
+    List<Long> getAllRegionIds();
     Long getPlanId();
 }

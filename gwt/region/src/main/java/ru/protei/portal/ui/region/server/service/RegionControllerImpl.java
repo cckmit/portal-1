@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.service.IssueFilterService;
 import ru.protei.portal.core.service.LocationService;
 import ru.protei.portal.core.service.ProjectService;
 import ru.protei.portal.core.service.session.SessionService;
@@ -38,7 +39,7 @@ public class RegionControllerImpl implements RegionController {
     @Override
     public List< RegionInfo > getRegionList( ProjectQuery query ) throws RequestFailedException {
         log.info( "getRegionList(): search={} | showDeprecated={} | sortField={} | order={}",
-                query.getSearchString(), query.getStates(), query.getSortField(), query.getSortDir() );
+                query.getSearchString(), query.getStateIds(), query.getSortField(), query.getSortDir() );
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
@@ -76,7 +77,7 @@ public class RegionControllerImpl implements RegionController {
     @Override
     public Map< String, List<Project> > getProjectsByRegions(ProjectQuery query ) throws RequestFailedException {
         log.info( "getProjectsByRegions(): search={} | states={} | sortField={} | order={}",
-                query.getSearchString(), query.getStates(), query.getSortField(), query.getSortDir() );
+                query.getSearchString(), query.getStateIds(), query.getSortField(), query.getSortDir() );
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
@@ -196,7 +197,7 @@ public class RegionControllerImpl implements RegionController {
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<SelectorsParams> response = projectService.getSelectorsParams( token, query );
+        Result<SelectorsParams> response = issueFilterService.getSelectorsParams( token, query );
 
         log.info("getSelectorsParams, id: {}, response: {} ", query, response.isError() ? "error" : response.getData());
 
@@ -214,6 +215,9 @@ public class RegionControllerImpl implements RegionController {
 
     @Autowired
     SessionService sessionService;
+
+    @Autowired
+    IssueFilterService issueFilterService;
 
     @Autowired
     HttpServletRequest httpServletRequest;

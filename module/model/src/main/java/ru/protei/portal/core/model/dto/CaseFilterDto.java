@@ -1,11 +1,20 @@
 package ru.protei.portal.core.model.dto;
 
 import ru.protei.portal.core.model.ent.CaseFilter;
+import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.BaseQuery;
+import ru.protei.portal.core.model.query.HasFilterEntityIds;
+import ru.protei.portal.core.model.view.FilterShortView;
+import ru.protei.portal.core.model.view.filterwidget.AbstractFilterShortView;
+import ru.protei.portal.core.model.view.filterwidget.DtoFilterQuery;
+import ru.protei.portal.core.model.view.filterwidget.Filter;
+import ru.protei.portal.core.model.view.filterwidget.FilterQuery;
 
 import java.io.Serializable;
 
-public class CaseFilterDto<T extends BaseQuery> implements Serializable {
+public class CaseFilterDto<T extends DtoFilterQuery>
+        implements Serializable, Filter<AbstractFilterShortView, FilterQuery> {
+
     private CaseFilter caseFilter;
     private T query;
 
@@ -24,8 +33,34 @@ public class CaseFilterDto<T extends BaseQuery> implements Serializable {
         this.caseFilter = caseFilter;
     }
 
+    @Override
+    public Long getId() {
+        return caseFilter.getId();
+    }
+
+    @Override
+    public void setId(Long id) {
+        caseFilter.setId(id);
+    }
+
+    @Override
+    public String getName() {
+        return caseFilter.getName();
+    }
+
+    @Override
+    public AbstractFilterShortView toShortView() {
+        return new FilterShortView(getId(), getName());
+    }
+
+    @Override
     public T getQuery() {
         return query;
+    }
+
+    @Override
+    public SelectorsParams getSelectorsParams() {
+        return caseFilter.getSelectorsParams();
     }
 
     public void setQuery(T query) {

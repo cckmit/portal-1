@@ -100,6 +100,4 @@ public interface ProjectService {
     Result<PersonShortView> getProjectLeader(AuthToken authToken, Long projectId);
 
     Result<Boolean> notifyExpiringProjectTechnicalSupportValidity(LocalDate now);
-
-    Result<SelectorsParams> getSelectorsParams(AuthToken token, ProjectQuery query);
 }

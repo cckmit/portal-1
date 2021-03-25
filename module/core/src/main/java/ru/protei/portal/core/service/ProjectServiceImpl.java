@@ -522,24 +522,6 @@ public class ProjectServiceImpl implements ProjectService {
         return ok(true);
     }
 
-    @Override
-    public Result<SelectorsParams> getSelectorsParams(AuthToken token, ProjectQuery query) {
-        log.debug( "getSelectorsParams(): projectQuery={} ", query );
-        SelectorsParams selectorsParams = new SelectorsParams();
-
-        List<Long> companyIds = collectCompanyIds(query);
-        if (!isEmpty(companyIds)) {
-            Result<List<EntityOption>> result = companyService.companyOptionListByIds( token, filterToList(companyIds, Objects::nonNull ));
-            if (result.isOk()) {
-                selectorsParams.setCompanyEntityOptions(result.getData());
-            } else {
-                return error(result.getStatus(), "Error at getCompanyIds" );
-            }
-        }
-
-        return ok(selectorsParams);
-    }
-
     private List<Long> collectCompanyIds(ProjectQuery projectQuery) {
         List<Long> companyIds = new ArrayList<>();
         companyIds.addAll(emptyIfNull(projectQuery.getInitiatorCompanyIds()));

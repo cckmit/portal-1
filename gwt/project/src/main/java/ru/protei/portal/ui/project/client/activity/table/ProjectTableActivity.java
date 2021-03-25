@@ -10,9 +10,13 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ProjectAccessType;
 import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.dto.Project;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.ProjectQuery;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -31,6 +35,7 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.toSet;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.searchCaseNumber;
 import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.toDateRange;
@@ -222,11 +227,11 @@ public abstract class ProjectTableActivity
             query.setSearchString(isBlank(searchString) ? null : searchString);
         }
 
-        query.setStates(filterView.states().getValue());
-        query.setRegions(filterView.regions().getValue());
-        query.setHeadManagers(filterView.headManagers().getValue());
-        query.setCaseMembers(filterView.caseMembers().getValue());
-        query.setDirections(filterView.direction().getValue());
+        query.setStateIds(toSet(filterView.states().getValue(), CaseState::getId));
+        query.setRegionIds(toSet(filterView.regions().getValue(), EntityOption::getId));
+        query.setHeadManagerIds(toSet(filterView.headManagers().getValue(), PersonShortView::getId));
+        query.setCaseMemberIds(toSet(filterView.caseMembers().getValue(), PersonShortView::getId));
+        query.setDirectionIds(toSet(filterView.direction().getValue(), ProductDirectionInfo::getId));
         query.setSortField(filterView.sortField().getValue());
         query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
         if(filterView.onlyMineProjects().getValue() != null && filterView.onlyMineProjects().getValue()) {

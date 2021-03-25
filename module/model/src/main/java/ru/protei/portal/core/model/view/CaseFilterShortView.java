@@ -1,11 +1,13 @@
 package ru.protei.portal.core.model.view;
 
+import ru.protei.portal.core.model.view.filterwidget.AbstractFilterShortView;
+
 import java.io.Serializable;
 
 /**
  * Сокращенное представление фильтра обращений
  */
-public class CaseFilterShortView implements Serializable {
+public class CaseFilterShortView implements AbstractFilterShortView, Serializable {
 
     private Long id;
     private String name;
@@ -18,6 +20,7 @@ public class CaseFilterShortView implements Serializable {
         this.name = name;
     }
 
+    @Override
     public Long getId() {
         return id;
     }
@@ -26,6 +29,7 @@ public class CaseFilterShortView implements Serializable {
         this.id = id;
     }
 
+    @Override
     public String getName() {
         return name;
     }

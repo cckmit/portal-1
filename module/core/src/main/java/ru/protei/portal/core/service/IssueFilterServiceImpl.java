@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.CaseFilterDAO;
+import ru.protei.portal.core.model.dao.LocationDAO;
 import ru.protei.portal.core.model.dao.PersonCaseFilterDAO;
 import ru.protei.portal.core.model.dao.PlanDAO;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
@@ -15,11 +16,16 @@ import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dto.CaseFilterDto;
+import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.CaseTagQuery;
+import ru.protei.portal.core.model.query.HasFilterEntityIds;
 import ru.protei.portal.core.model.view.*;
+import ru.protei.portal.core.model.view.filterwidget.AbstractFilterShortView;
+import ru.protei.portal.core.model.view.filterwidget.DtoFilterQuery;
+import ru.protei.portal.core.model.view.filterwidget.FilterQuery;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
 
@@ -58,9 +64,11 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     PlanDAO planDAO;
     @Autowired
     ObjectMapper objectMapper;
+    @Autowired
+    LocationDAO locationDAO;
 
     @Override
-    public Result< List< CaseFilterShortView > > getIssueFilterShortViewList( Long loginId, En_CaseFilterType filterType ) {
+    public Result< List<AbstractFilterShortView> > getIssueFilterShortViewList(Long loginId, En_CaseFilterType filterType ) {
 
         log.debug( "getIssueFilterShortViewList(): accountId={}, filterType={} ", loginId, filterType );
 
@@ -69,13 +77,13 @@ public class IssueFilterServiceImpl implements IssueFilterService {
         if ( list == null )
             return error(En_ResultStatus.GET_DATA_ERROR );
 
-        List< CaseFilterShortView > result = list.stream().map( CaseFilter::toShortView ).collect( Collectors.toList() );
+        List< AbstractFilterShortView > result = list.stream().map( CaseFilter::toShortView ).collect( Collectors.toList() );
 
-        return ok(result );
+        return ok(result);
     }
 
     @Override
-    public Result<CaseFilterDto<CaseQuery>> getIssueFilter(AuthToken token, Long id) {
+    public <T extends DtoFilterQuery> Result<CaseFilterDto<T>> getIssueFilter(AuthToken token, Long id) {
         log.debug( "getIssueFilter(): id={} ", id );
 
         CaseFilter filter = caseFilterDAO.get( id );
@@ -84,20 +92,16 @@ public class IssueFilterServiceImpl implements IssueFilterService {
             return error( En_ResultStatus.NOT_FOUND );
         }
 
-        if (!filter.getType().getQueryClass().equals(CaseQuery.class)) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
-        }
-
-        CaseQuery caseQuery;
+        T query;
         try {
-            caseQuery = objectMapper.readValue(filter.getParams(), CaseQuery.class);
+            query = (T) objectMapper.readValue(filter.getParams(), filter.getType().getQueryClass());
         } catch (IOException e) {
             log.warn("processMailNotification: cannot read filter params: caseFilter={}", filter);
             e.printStackTrace();
             return error(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        Result<SelectorsParams> selectorsParams = getSelectorsParams(token, caseQuery);
+        Result<SelectorsParams> selectorsParams = getSelectorsParams(token, query);
 
         if (selectorsParams.isError()) {
             return error( selectorsParams.getStatus() );
@@ -105,15 +109,15 @@ public class IssueFilterServiceImpl implements IssueFilterService {
 
         filter.setSelectorsParams(selectorsParams.getData());
 
-        return ok( new CaseFilterDto<>(filter, caseQuery) );
+        return ok( new CaseFilterDto<>(filter, query) );
     }
 
     @Override
-    public Result<SelectorsParams> getSelectorsParams( AuthToken token, CaseQuery caseQuery ) {
-        log.debug( "getSelectorsParams(): caseQuery={} ", caseQuery );
+    public Result<SelectorsParams> getSelectorsParams( AuthToken token, HasFilterEntityIds filterEntityIds ) {
+        log.debug( "getSelectorsParams(): filterEntityIds={} ", filterEntityIds );
         SelectorsParams selectorsParams = new SelectorsParams();
 
-        List<Long> companyIds = collectCompanyIds(caseQuery);
+        List<Long> companyIds = filterEntityIds.getAllCompanyIds();
         if (!isEmpty(companyIds)) {
             Result<List<EntityOption>> result = companyService.companyOptionListByIds( token, filterToList(companyIds, Objects::nonNull ));
             if (result.isOk()) {
@@ -123,7 +127,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
             }
         }
 
-        List<Long> personIds = collectPersonIds( caseQuery );
+        List<Long> personIds = filterEntityIds.getAllPersonIds();
         if (!isEmpty( personIds )) {
             Result<List<PersonShortView>> result = personService.shortViewListByIds( personIds );
             if (result.isOk()) {
@@ -133,9 +137,8 @@ public class IssueFilterServiceImpl implements IssueFilterService {
             }
         }
 
-
-        if (!isEmpty( caseQuery.getProductIds() )) {
-            Result<List<ProductShortView>> result = productService.shortViewListByIds( token, filterToList( caseQuery.getProductIds(), Objects::nonNull ) );
+        if (!isEmpty( filterEntityIds.getAllProductIds() )) {
+            Result<List<ProductShortView>> result = productService.shortViewListByIds( token, filterToList( filterEntityIds.getAllProductIds(), Objects::nonNull ) );
             if (result.isOk()) {
                 selectorsParams.setProductShortViews(result.getData());
             } else {
@@ -143,7 +146,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
             }
         }
 
-        List<Long> tagIds = filterToList( caseQuery.getCaseTagsIds(), Objects::nonNull );
+        List<Long> tagIds = filterToList( filterEntityIds.getAllTagIds(), Objects::nonNull );
         if (!isEmpty( tagIds )) {
             CaseTagQuery caseTagQuery = new CaseTagQuery();
             caseTagQuery.setIds( tagIds );
@@ -156,8 +159,23 @@ public class IssueFilterServiceImpl implements IssueFilterService {
             }
         }
 
-        if (caseQuery.getPlanId() != null) {
-            Plan plan = planDAO.get(caseQuery.getPlanId());
+        List<Long> regionIds = filterToList( filterEntityIds.getAllRegionIds(), Objects::nonNull );
+        if (!isEmpty( regionIds )) {
+            selectorsParams.setRegions(toList(locationDAO.getListByKeys(regionIds), Location::toEntityOption));
+        }
+
+        List<Long> directionIds = filterToList(filterEntityIds.getAllDirectionIds(), Objects::nonNull);
+        if (isNotEmpty(directionIds)) {
+            Result<List<ProductDirectionInfo>> result = productService.productDirectionList( token, directionIds );
+            if (result.isOk()) {
+                selectorsParams.setProductDirectionInfos(result.getData());
+            } else {
+                return error(result.getStatus(), "Can't get directions by directionIds" );
+            }
+        }
+
+        if (filterEntityIds.getPlanId() != null) {
+            Plan plan = planDAO.get(filterEntityIds.getPlanId());
             selectorsParams.setPlanOption(new PlanOption(plan.getId(), plan.getName(), plan.getCreatorId()));
         }
 
@@ -166,25 +184,29 @@ public class IssueFilterServiceImpl implements IssueFilterService {
 
     @Override
     @Transactional
-    public Result<CaseFilterDto<CaseQuery>> saveIssueFilter(AuthToken token, CaseFilterDto<CaseQuery> caseFilterDto) {
+    public <T extends DtoFilterQuery> Result<CaseFilterDto<T>> saveIssueFilter(AuthToken token, CaseFilterDto<T> caseFilterDto) {
         log.debug("saveIssueFilter(): filter={} ", caseFilterDto);
-
-        CaseFilter caseFilter = caseFilterDto.getCaseFilter();
 
         if (isNotValid(caseFilterDto)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
+        CaseFilter caseFilter = caseFilterDto.getCaseFilter();
+
         if (caseFilter.getLoginId() == null) {
             caseFilter.setLoginId(token.getUserLoginId());
         }
 
-        CaseQuery caseQuery = applyFilterByScope(token, caseFilterDto.getQuery());
+        if (CaseQuery.class.equals(caseFilter.getType().getQueryClass())) {
+            caseFilterDto.setQuery(applyFilterByScope(token, caseFilterDto.getQuery()));
+        }
+
+        T query = caseFilterDto.getQuery();
 
         String params;
 
         try {
-            params = objectMapper.writeValueAsString(caseQuery);
+            params = objectMapper.writeValueAsString(query);
         } catch (JsonProcessingException e) {
             log.warn("saveIssueFilter(): cannot write filter params: caseFilter={}", caseFilter);
             e.printStackTrace();
@@ -222,17 +244,22 @@ public class IssueFilterServiceImpl implements IssueFilterService {
         return ok(id);
     }
 
-    private boolean isNotValid( CaseFilterDto<CaseQuery> caseFilterDto ) {
+    private boolean isNotValid( CaseFilterDto<?> caseFilterDto ) {
         return caseFilterDto == null ||
+                caseFilterDto.getCaseFilter() == null ||
                 caseFilterDto.getCaseFilter().getType() == null ||
                 HelperFunc.isEmpty(caseFilterDto.getCaseFilter().getName()) ||
                 caseFilterDto.getQuery() == null;
     }
 
-    private CaseQuery applyFilterByScope(AuthToken token, CaseQuery caseQuery) {
+    private <T extends FilterQuery> T applyFilterByScope(AuthToken token, T typedCaseQuery) {
+        CaseQuery caseQuery = (CaseQuery) typedCaseQuery;
+
+        caseQuery.setCompanyIds(Arrays.asList(111L,222L,333L));
+
         Set<UserRole> roles = token.getRoles();
         if (policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
-            return caseQuery;
+            return typedCaseQuery;
         }
 
         Company company = companyService.getCompanyOmitPrivileges(token, token.getCompanyId()).getData();
@@ -246,7 +273,8 @@ public class IssueFilterServiceImpl implements IssueFilterService {
         caseQuery.setAllowViewPrivate(false);
 
         log.info("applyFilterByScope(): CaseQuery modified: {}", caseQuery);
-        return caseQuery;
+
+        return typedCaseQuery;
     }
 
     private List<Long> acceptAllowedCompanies( List<Long> companyIds, Collection<Long> allowedCompaniesIds ) {
@@ -259,22 +287,5 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     private boolean isUniqueFilter( String name, Long loginId, En_CaseFilterType type, Long excludeId ) {
         CaseFilter caseFilter = caseFilterDAO.checkExistsByParams( name, loginId, type );
         return caseFilter == null || caseFilter.getId().equals( excludeId );
-    }
-
-    private List<Long> collectPersonIds(CaseQuery caseQuery){
-        ArrayList<Long> personsIds = new ArrayList<>();
-        personsIds.addAll(emptyIfNull(caseQuery.getManagerIds()));
-        personsIds.addAll(emptyIfNull(caseQuery.getInitiatorIds()));
-        personsIds.addAll(emptyIfNull(caseQuery.getCommentAuthorIds()));
-        personsIds.addAll(emptyIfNull(caseQuery.getCreatorIds()));
-        return personsIds;
-    }
-
-    private List<Long> collectCompanyIds(CaseQuery caseQuery) {
-        List<Long> companyIds = new ArrayList<>();
-        companyIds.addAll(emptyIfNull(caseQuery.getCompanyIds()));
-        companyIds.addAll(emptyIfNull(caseQuery.getManagerCompanyIds()));
-
-        return companyIds;
     }
 }

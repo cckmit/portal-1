@@ -12,6 +12,8 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
+import ru.protei.portal.core.model.view.filterwidget.AbstractFilterShortView;
+import ru.protei.portal.core.model.view.filterwidget.DtoFilterQuery;
 import ru.protei.portal.core.service.IssueFilterService;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.IssueFilterController;
@@ -28,13 +30,13 @@ import java.util.List;
 public class IssueFilterControllerImpl implements IssueFilterController {
 
     @Override
-    public List< CaseFilterShortView > getIssueFilterShortViewList( En_CaseFilterType filterType ) throws RequestFailedException {
+    public List<AbstractFilterShortView> getIssueFilterShortViewList(En_CaseFilterType filterType ) throws RequestFailedException {
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
         log.info( "getIssueFilterShortViewList(): accountId={}, filterType={} ", token.getUserLoginId(), filterType );
 
-        Result< List< CaseFilterShortView > > response = issueFilterService.getIssueFilterShortViewList( token.getUserLoginId(), filterType );
+        Result< List< AbstractFilterShortView > > response = issueFilterService.getIssueFilterShortViewList( token.getUserLoginId(), filterType );
 
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
@@ -43,12 +45,12 @@ public class IssueFilterControllerImpl implements IssueFilterController {
     }
 
     @Override
-    public CaseFilterDto<CaseQuery> getIssueFilter(Long id ) throws RequestFailedException {
+    public <T extends DtoFilterQuery> CaseFilterDto<T> getIssueFilter(Long id ) throws RequestFailedException {
         log.info("getIssueFilter, id: {}", id);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<CaseFilterDto<CaseQuery>> response = issueFilterService.getIssueFilter(token, id);
+        Result<CaseFilterDto<T>> response = issueFilterService.getIssueFilter(token, id);
 
         log.info("getIssueFilter, id: {}, response: {} ", id, response.isError() ? "error" : response.getData());
 
@@ -75,7 +77,7 @@ public class IssueFilterControllerImpl implements IssueFilterController {
     }
 
     @Override
-    public CaseFilterDto<CaseQuery> saveIssueFilter(CaseFilterDto<CaseQuery> filter) throws RequestFailedException {
+    public <T extends DtoFilterQuery> CaseFilterDto<T> saveIssueFilter(CaseFilterDto<T> filter) throws RequestFailedException {
 
         log.info("saveIssueFilter, filter: {}", filter);
 
@@ -86,7 +88,7 @@ public class IssueFilterControllerImpl implements IssueFilterController {
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<CaseFilterDto<CaseQuery>> response = issueFilterService.saveIssueFilter(token, filter);
+        Result<CaseFilterDto<T>> response = issueFilterService.saveIssueFilter(token, filter);
 
         log.info("saveIssueFilter, result: {}", response.getStatus());
 
