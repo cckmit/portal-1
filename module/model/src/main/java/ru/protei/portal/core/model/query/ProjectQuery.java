@@ -6,8 +6,6 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.struct.Interval;
-import ru.protei.portal.core.model.view.filterwidget.DtoFilterQuery;
-import ru.protei.portal.core.model.view.filterwidget.FilterQuery;
 
 import java.util.*;
 
@@ -17,7 +15,7 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
 /**
  * Запрос по проектам
  */
-public class ProjectQuery extends BaseQuery implements DtoFilterQuery {
+public class ProjectQuery extends BaseQuery implements HasFilterQueryIds {
     private List<Long> caseIds;
 
     private Set<Long> stateIds;
@@ -295,11 +293,11 @@ public class ProjectQuery extends BaseQuery implements DtoFilterQuery {
     public String toString() {
         return "ProjectQuery{" +
                 ", caseIds=" + caseIds +
-                ", states=" + stateIds +
-                ", regions=" + regionIds +
-                ", headManagers=" + headManagerIds +
-                ", caseMembers=" + caseMemberIds +
-                ", directions=" + directionIds +
+                ", stateIds=" + stateIds +
+                ", regionIds=" + regionIds +
+                ", headManagerIds=" + headManagerIds +
+                ", caseMemberIds=" + caseMemberIds +
+                ", directionIds=" + directionIds +
                 ", districtIds=" + districtIds +
                 ", memberId=" + memberId +
                 ", productIds=" + productIds +

@@ -4,6 +4,9 @@ import ru.protei.portal.core.model.view.filterwidget.AbstractFilterShortView;
 
 import java.io.Serializable;
 
+/**
+ * Сокращенное представление фильтра
+ */
 public class FilterShortView implements AbstractFilterShortView, Serializable {
 
     private Long id;
@@ -17,6 +20,7 @@ public class FilterShortView implements AbstractFilterShortView, Serializable {
         this.name = name;
     }
 
+    @Override
     public Long getId() {
         return id;
     }
@@ -25,6 +29,7 @@ public class FilterShortView implements AbstractFilterShortView, Serializable {
         this.id = id;
     }
 
+    @Override
     public String getName() {
         return name;
     }

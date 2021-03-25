@@ -382,7 +382,7 @@ public class BootstrapServiceImpl implements BootstrapService {
                 try {
                     caseQuery = objectMapper.readValue(filter.getParams(), CaseQuery.class);
                 } catch (IOException e) {
-                    log.debug("updateIssueFiltersManager(): cannot read filter params");
+                    log.debug("updateIssueFiltersManager(): cannot read filter params. params={}", filter.getParams());
                     e.printStackTrace();
                     return;
                 }
@@ -704,24 +704,25 @@ public class BootstrapServiceImpl implements BootstrapService {
     }
 
     private void updateManagerFiltersWithoutManagerCompany() {
+
         List<CaseFilter> allFilters = caseFilterDAO.getListByFilterTypes(En_CaseFilterType.getTypesByClass(CaseQuery.class));
 
         for (CaseFilter nextFilter : emptyIfNull(allFilters)) {
-            CaseQuery params;
+            CaseQuery query;
 
             try {
-                params = objectMapper.readValue(nextFilter.getParams(), CaseQuery.class);
+                query = objectMapper.readValue(nextFilter.getParams(), CaseQuery.class);
             } catch (IOException e) {
-                log.info("updateManagerFiltersWithoutManagerCompany: cannot read filter params");
+                log.info("updateManagerFiltersWithoutManagerCompany: cannot read filter params. params={}", nextFilter.getParams());
                 e.printStackTrace();
                 return;
             }
 
-            if (CollectionUtils.isEmpty(params.getManagerIds()) || isNotEmpty(params.getManagerCompanyIds())) {
+            if (CollectionUtils.isEmpty(query.getManagerIds()) || isNotEmpty(query.getManagerCompanyIds())) {
                 continue;
             }
 
-            params.setManagerCompanyIds(Collections.singletonList(CrmConstants.Company.HOME_COMPANY_ID));
+            query.setManagerCompanyIds(Collections.singletonList(CrmConstants.Company.HOME_COMPANY_ID));
             caseFilterDAO.partialMerge(nextFilter, "params");
         }
     }
@@ -754,25 +755,25 @@ public class BootstrapServiceImpl implements BootstrapService {
         List<CaseFilter> allFilters = caseFilterDAO.getListByFilterTypes(En_CaseFilterType.getTypesByClass(CaseQuery.class));
 
         for (CaseFilter filter : emptyIfNull(allFilters)) {
-            CaseQuery params;
+            CaseQuery query;
 
             try {
-                params = objectMapper.readValue(filter.getParams(), CaseQuery.class);
+                query = objectMapper.readValue(filter.getParams(), CaseQuery.class);
             } catch (IOException e) {
-                log.warn("updateIssueFiltersDateRanges: cannot read filter params");
+                log.warn("updateIssueFiltersDateRanges: cannot read filter params. params={}", filter.getParams());
                 e.printStackTrace();
                 return;
             }
 
-            boolean isCreatedRangeNeedToUpdate = checkDateRangeExists(params.getCreatedRange(), params.getCreatedFrom(), params.getCreatedTo());
-            boolean isModifiedRangeNeedToUpdate = checkDateRangeExists(params.getModifiedRange(), params.getModifiedFrom(), params.getModifiedTo());
+            boolean isCreatedRangeNeedToUpdate = checkDateRangeExists(query.getCreatedRange(), query.getCreatedFrom(), query.getCreatedTo());
+            boolean isModifiedRangeNeedToUpdate = checkDateRangeExists(query.getModifiedRange(), query.getModifiedFrom(), query.getModifiedTo());
 
             if(isCreatedRangeNeedToUpdate) {
-                params.setCreatedRange(createDateRange(params.getCreatedFrom(), params.getCreatedTo()));
+                query.setCreatedRange(createDateRange(query.getCreatedFrom(), query.getCreatedTo()));
             }
 
             if(isModifiedRangeNeedToUpdate) {
-                params.setModifiedRange(createDateRange(params.getCreatedFrom(), params.getCreatedTo()));
+                query.setModifiedRange(createDateRange(query.getCreatedFrom(), query.getCreatedTo()));
             }
 
             if (isCreatedRangeNeedToUpdate || isModifiedRangeNeedToUpdate) {

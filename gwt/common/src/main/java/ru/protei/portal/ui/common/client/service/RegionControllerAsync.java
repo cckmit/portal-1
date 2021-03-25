@@ -24,8 +24,6 @@ public interface RegionControllerAsync {
 
     void getDistrictList(AsyncCallback<List<DistrictInfo>> callback);
 
-    void getProjectsByRegions(ProjectQuery query, AsyncCallback<Map<String,List<Project>>> callback);
-
     void getProjects(ProjectQuery query, AsyncCallback<SearchResult<Project>> callback);
 
     void getProjectOptionList(ProjectQuery query, AsyncCallback<List<EntityOption>> async);
@@ -43,6 +41,4 @@ public interface RegionControllerAsync {
     void removeProject(Long projectId, AsyncCallback<Long> async);
 
     void getProjectLeader(Long projectId, AsyncCallback<PersonShortView> async);
-
-    void getSelectorsParams(ProjectQuery projectQuery, AsyncCallback<SelectorsParams> async);
 }

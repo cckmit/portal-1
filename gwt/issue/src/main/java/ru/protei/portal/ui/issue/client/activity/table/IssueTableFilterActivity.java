@@ -11,7 +11,6 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.CaseFilterDto;
 import ru.protei.portal.core.model.ent.Attachment;
-import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -434,7 +433,7 @@ public abstract class IssueTableFilterActivity
     AttachmentControllerAsync attachmentService;
 
     @Inject
-    IssueFilterControllerAsync filterService;
+    CaseFilterControllerAsync filterService;
 
     @Inject
     CompanyControllerAsync companyService;

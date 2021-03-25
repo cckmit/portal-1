@@ -1,9 +1,8 @@
 package ru.protei.portal.core.model.dict;
 
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.query.HasFilterQueryIds;
 import ru.protei.portal.core.model.query.ProjectQuery;
-import ru.protei.portal.core.model.view.filterwidget.DtoFilterQuery;
-import ru.protei.portal.core.model.view.filterwidget.FilterQuery;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,15 +28,15 @@ public enum En_CaseFilterType {
      */
     PROJECT(ProjectQuery.class);
 
-    En_CaseFilterType(Class<? extends DtoFilterQuery> queryClass) {
+    En_CaseFilterType(Class<? extends HasFilterQueryIds> queryClass) {
         this.queryClass = queryClass;
     }
 
-    public Class<? extends DtoFilterQuery> getQueryClass() {
+    public Class<? extends HasFilterQueryIds> getQueryClass() {
         return queryClass;
     }
 
-    public static List<En_CaseFilterType> getTypesByClass(Class<? extends DtoFilterQuery> queryClass) {
+    public static List<En_CaseFilterType> getTypesByClass(Class<? extends HasFilterQueryIds> queryClass) {
         List<En_CaseFilterType> result = new ArrayList<>();
 
         for (En_CaseFilterType nextType : values()) {
@@ -49,5 +48,5 @@ public enum En_CaseFilterType {
         return result;
     }
 
-    private final Class<? extends DtoFilterQuery> queryClass;
+    private final Class<? extends HasFilterQueryIds> queryClass;
 }

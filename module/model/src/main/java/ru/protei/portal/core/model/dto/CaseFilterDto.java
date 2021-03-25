@@ -2,18 +2,14 @@ package ru.protei.portal.core.model.dto;
 
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.SelectorsParams;
-import ru.protei.portal.core.model.query.BaseQuery;
-import ru.protei.portal.core.model.query.HasFilterEntityIds;
+import ru.protei.portal.core.model.query.HasFilterQueryIds;
 import ru.protei.portal.core.model.view.FilterShortView;
-import ru.protei.portal.core.model.view.filterwidget.AbstractFilterShortView;
-import ru.protei.portal.core.model.view.filterwidget.DtoFilterQuery;
 import ru.protei.portal.core.model.view.filterwidget.Filter;
-import ru.protei.portal.core.model.view.filterwidget.FilterQuery;
 
 import java.io.Serializable;
 
-public class CaseFilterDto<T extends DtoFilterQuery>
-        implements Serializable, Filter<AbstractFilterShortView, T> {
+public class CaseFilterDto<T extends HasFilterQueryIds>
+        implements Serializable, Filter<FilterShortView, T> {
 
     private CaseFilter caseFilter;
     private T query;
@@ -49,7 +45,7 @@ public class CaseFilterDto<T extends DtoFilterQuery>
     }
 
     @Override
-    public AbstractFilterShortView toShortView() {
+    public FilterShortView toShortView() {
         return new FilterShortView(getId(), getName());
     }
 

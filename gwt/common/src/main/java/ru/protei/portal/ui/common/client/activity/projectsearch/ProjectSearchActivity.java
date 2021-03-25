@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.ProjectEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
@@ -78,7 +79,7 @@ public abstract class ProjectSearchActivity implements Activity, AbstractProject
         }
         query.setCustomerType(view.customerType().getValue());
         query.setProductIds(view.products().getValue().stream().map(product -> product.getId()).collect(Collectors.toSet()));
-        query.setHeadManagerIds(toSet(view.managers().getValue(), manager -> manager == null ? null : manager.getId()));
+        query.setHeadManagerIds(toSet(view.managers().getValue(), PersonShortView::getId));
         query.setLimit(100);
         return query;
     }

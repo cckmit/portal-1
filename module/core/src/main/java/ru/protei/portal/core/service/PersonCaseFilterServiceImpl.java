@@ -17,8 +17,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
-import ru.protei.portal.core.model.view.CaseFilterShortView;
-import ru.protei.portal.core.service.bootstrap.BootstrapServiceImpl;
+import ru.protei.portal.core.model.view.FilterShortView;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -64,9 +63,9 @@ public class PersonCaseFilterServiceImpl implements PersonCaseFilterService {
                 try {
                     caseQuery = objectMapper.readValue(caseFilter.getParams(), CaseQuery.class);
                 } catch (IOException e) {
-                    log.warn("processMailNotification: cannot read filter params: caseFilter={}", caseFilter);
+                    log.warn("processMailNotification: cannot read filter params. caseFilter={}", caseFilter);
                     e.printStackTrace();
-                    return error(En_ResultStatus.INCORRECT_PARAMS);
+                    continue;
                 }
                 SearchResult<CaseObject> result = caseObjectDAO.getSearchResult(caseQuery);
                 publisherService.publishEvent(new PersonCaseFilterEvent(this, result.getResults(), person));
@@ -77,13 +76,13 @@ public class PersonCaseFilterServiceImpl implements PersonCaseFilterService {
     }
 
     @Override
-    public Result<List<CaseFilterShortView>> getCaseFilterByPersonId(AuthToken authToken, Long personId) {
+    public Result<List<FilterShortView>> getCaseFilterByPersonId(AuthToken authToken, Long personId) {
         if (personId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         List<CaseFilter> list = caseFilterDAO.getByPersonId(personId);
-        List<CaseFilterShortView> result = list.stream().map(CaseFilter::toShortView).collect(Collectors.toList());
+        List<FilterShortView> result = list.stream().map(CaseFilter::toShortView).collect(Collectors.toList());
 
         return ok(result);
     }

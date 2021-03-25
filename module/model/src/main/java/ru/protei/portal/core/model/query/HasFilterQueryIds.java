@@ -1,9 +1,11 @@
 package ru.protei.portal.core.model.query;
 
+import ru.protei.portal.core.model.view.filterwidget.FilterQuery;
+
 import java.io.Serializable;
 import java.util.List;
 
-public interface HasFilterEntityIds extends Serializable {
+public interface HasFilterQueryIds extends FilterQuery, Serializable {
     List<Long> getAllCompanyIds();
     List<Long> getAllPersonIds();
     List<Long> getAllProductIds();

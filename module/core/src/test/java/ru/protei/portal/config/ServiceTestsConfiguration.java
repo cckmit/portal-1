@@ -255,8 +255,8 @@ public class ServiceTestsConfiguration {
     }
 
     @Bean
-    public IssueFilterService getIssueFilterService () {
-        return new IssueFilterServiceImpl();
+    public CaseFilterService getIssueFilterService () {
+        return new CaseFilterServiceImpl();
     }
 
     @Bean

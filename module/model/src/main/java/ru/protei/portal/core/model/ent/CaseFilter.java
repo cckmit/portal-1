@@ -1,9 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
-import ru.protei.portal.core.model.query.BaseQuery;
-import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.view.CaseFilterShortView;
+import ru.protei.portal.core.model.view.FilterShortView;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -69,8 +67,8 @@ public class CaseFilter implements Serializable {
         this.type = type;
     }
 
-    public CaseFilterShortView toShortView() {
-        return new CaseFilterShortView( this.id, this.name );
+    public FilterShortView toShortView() {
+        return new FilterShortView( this.id, this.name );
     }
 
     public SelectorsParams getSelectorsParams() {

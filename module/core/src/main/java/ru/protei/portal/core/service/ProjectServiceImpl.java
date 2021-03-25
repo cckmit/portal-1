@@ -81,8 +81,6 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     DevUnitDAO devUnitDAO;
     @Autowired
-    AuthService authService;
-    @Autowired
     ContractDAO contractDAO;
     @Autowired
     PersonDAO personDAO;
@@ -108,8 +106,6 @@ public class ProjectServiceImpl implements ProjectService {
     HistoryDAO historyDAO;
     @Autowired
     CaseStateDAO caseStateDAO;
-    @Autowired
-    CompanyService companyService;
 
     @EventListener
     @Async(BACKGROUND_TASKS)
@@ -203,21 +199,6 @@ public class ProjectServiceImpl implements ProjectService {
     public Result< List< RegionInfo > > listRegions( AuthToken token, ProjectQuery query ) {
         List< Location > regions = locationDAO.listByQuery( makeLocationQuery(query, true ));
         return ok(regions.stream().map(Location::toRegionInfo).collect(toList()));
-    }
-
-    @Override
-    public Result< Map< String, List<Project> > > listProjectsByRegions(AuthToken token, ProjectQuery query ) {
-
-        Map< String, List<Project> > regionToProjectMap = new HashMap<>();
-
-        List< Project > projects = projectDAO.listByQuery( query );
-        projects.forEach( ( project ) -> {
-            iterateAllLocations( project, ( location ) -> {
-                applyCaseToProjectInfo( project, location, regionToProjectMap );
-            } );
-        } );
-
-        return ok(regionToProjectMap );
     }
 
     @Override

@@ -4,11 +4,11 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
-import ru.protei.portal.core.model.view.CaseFilterShortView;
+import ru.protei.portal.core.model.view.FilterShortView;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
+import ru.protei.portal.ui.common.client.service.CaseFilterControllerAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -20,25 +20,25 @@ public abstract class IssueFilterModel implements Activity {
 
     @Event
     public void onChangeUserFilterModel( IssueEvents.ChangeUserFilterModel event ) {
-        for ( SelectorWithModel< CaseFilterShortView > subscriber : selectorToType.keySet() ) {
+        for ( SelectorWithModel<FilterShortView> subscriber : selectorToType.keySet() ) {
             requestFilters( subscriber, selectorToType.get( subscriber ) );
         }
     }
 
-    public void updateFilterType( SelectorWithModel< CaseFilterShortView > selector, En_CaseFilterType filterType ) {
+    public void updateFilterType( SelectorWithModel< FilterShortView > selector, En_CaseFilterType filterType ) {
         selectorToType.put( selector, filterType );
         requestFilters( selector, filterType );
     }
 
-    private void requestFilters( SelectorWithModel< CaseFilterShortView > selector, En_CaseFilterType filterType ) {
-        filterService.getIssueFilterShortViewList( filterType, new RequestCallback< List< CaseFilterShortView > >() {
+    private void requestFilters( SelectorWithModel< FilterShortView > selector, En_CaseFilterType filterType ) {
+        filterService.getCaseFilterShortViewList( filterType, new RequestCallback< List< FilterShortView > >() {
             @Override
             public void onError( Throwable throwable ) {
                 fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
             }
 
             @Override
-            public void onSuccess( List< CaseFilterShortView > options ) {
+            public void onSuccess( List< FilterShortView > options ) {
                 selector.fillOptions( options );
                 selector.refreshValue();
             }
@@ -46,10 +46,10 @@ public abstract class IssueFilterModel implements Activity {
     }
 
     @Inject
-    IssueFilterControllerAsync filterService;
+    CaseFilterControllerAsync filterService;
 
     @Inject
     Lang lang;
 
-    private Map< SelectorWithModel< CaseFilterShortView >, En_CaseFilterType > selectorToType = new HashMap<>();
+    private Map< SelectorWithModel< FilterShortView >, En_CaseFilterType > selectorToType = new HashMap<>();
 }

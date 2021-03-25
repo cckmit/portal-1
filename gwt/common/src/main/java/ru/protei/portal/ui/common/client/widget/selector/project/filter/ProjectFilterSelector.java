@@ -1,12 +1,12 @@
 package ru.protei.portal.ui.common.client.widget.selector.project.filter;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.view.filterwidget.AbstractFilterShortView;
+import ru.protei.portal.core.model.view.FilterShortView;
 import ru.protei.portal.ui.common.client.widget.filterwidget.FilterSelector;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonPopupSingleSelector;
 
-public class ProjectFilterSelector extends ButtonPopupSingleSelector<AbstractFilterShortView>
-        implements FilterSelector<AbstractFilterShortView> {
+public class ProjectFilterSelector extends ButtonPopupSingleSelector<FilterShortView>
+        implements FilterSelector<FilterShortView> {
 
     @Inject
     public void init( ProjectFilterModel model ) {

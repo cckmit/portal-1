@@ -15,7 +15,7 @@ import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dto.CaseFilterDto;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.view.CaseFilterShortView;
+import ru.protei.portal.core.model.view.FilterShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterWidgetModel;
 import ru.protei.portal.ui.common.client.activity.filter.IssueFilterWidgetModel;
@@ -91,7 +91,7 @@ public class IssueFilterWidget extends Composite {
         footer.removeClassName("card-footer");
     }
 
-    public HasValue<CaseFilterShortView> userFilter() {
+    public HasValue<FilterShortView> userFilter() {
         return userFilter;
     }
 
@@ -147,7 +147,7 @@ public class IssueFilterWidget extends Composite {
 
     @UiHandler( "removeBtn" )
     public void onRemoveClicked ( ClickEvent event ) {
-        CaseFilterShortView value = userFilter.getValue();
+        FilterShortView value = userFilter.getValue();
         if (value == null || value.getId() == null) {
             return;
         }
@@ -161,11 +161,11 @@ public class IssueFilterWidget extends Composite {
     }
 
     @UiHandler("userFilter")
-    public void onKeyUpSearch(ValueChangeEvent<CaseFilterShortView> event) {
+    public void onKeyUpSearch(ValueChangeEvent<FilterShortView> event) {
         onUserFilterChanged(event.getValue());
     }
 
-    private void onUserFilterChanged(CaseFilterShortView filter) {
+    private void onUserFilterChanged(FilterShortView filter) {
         if (filter == null){
             resetFilter(null);
             showUserFilterControls();

@@ -10,8 +10,6 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.struct.Pair;
-import ru.protei.portal.core.model.view.filterwidget.DtoFilterQuery;
-import ru.protei.portal.core.model.view.filterwidget.FilterQuery;
 
 import java.util.*;
 
@@ -21,7 +19,7 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
 /**
  * Created by Mike on 02.11.2016.
  */
-public class CaseQuery extends BaseQuery implements DtoFilterQuery {
+public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
 
     @JsonIgnore
     private Long id;

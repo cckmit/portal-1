@@ -21,11 +21,12 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.CaseTagQuery;
-import ru.protei.portal.core.model.query.HasFilterEntityIds;
-import ru.protei.portal.core.model.view.*;
+import ru.protei.portal.core.model.query.HasFilterQueryIds;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.PlanOption;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.model.view.filterwidget.AbstractFilterShortView;
-import ru.protei.portal.core.model.view.filterwidget.DtoFilterQuery;
-import ru.protei.portal.core.model.view.filterwidget.FilterQuery;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
 
@@ -40,9 +41,9 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 /**
  * Реализация сервиса управления фильтрами обращений на DAO слое
  */
-public class IssueFilterServiceImpl implements IssueFilterService {
+public class CaseFilterServiceImpl implements CaseFilterService {
 
-    private static Logger log = LoggerFactory.getLogger( IssueFilterServiceImpl.class );
+    private static Logger log = LoggerFactory.getLogger( CaseFilterServiceImpl.class );
 
     @Autowired
     CaseFilterDAO caseFilterDAO;
@@ -68,7 +69,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     LocationDAO locationDAO;
 
     @Override
-    public Result< List<AbstractFilterShortView> > getIssueFilterShortViewList(Long loginId, En_CaseFilterType filterType ) {
+    public Result< List<AbstractFilterShortView> > getCaseFilterShortViewList(Long loginId, En_CaseFilterType filterType ) {
 
         log.debug( "getIssueFilterShortViewList(): accountId={}, filterType={} ", loginId, filterType );
 
@@ -83,7 +84,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     }
 
     @Override
-    public <T extends DtoFilterQuery> Result<CaseFilterDto<T>> getIssueFilter(AuthToken token, Long id) {
+    public <T extends HasFilterQueryIds> Result<CaseFilterDto<T>> getCaseFilterDto(AuthToken token, Long id) {
         log.debug( "getIssueFilter(): id={} ", id );
 
         CaseFilter filter = caseFilterDAO.get( id );
@@ -93,10 +94,11 @@ public class IssueFilterServiceImpl implements IssueFilterService {
         }
 
         T query;
+
         try {
             query = (T) objectMapper.readValue(filter.getParams(), filter.getType().getQueryClass());
         } catch (IOException e) {
-            log.warn("processMailNotification: cannot read filter params: caseFilter={}", filter);
+            log.warn("getCaseFilter: cannot read filter params: caseFilter={}", filter);
             e.printStackTrace();
             return error(En_ResultStatus.INTERNAL_ERROR);
         }
@@ -113,7 +115,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     }
 
     @Override
-    public Result<SelectorsParams> getSelectorsParams( AuthToken token, HasFilterEntityIds filterEntityIds ) {
+    public Result<SelectorsParams> getSelectorsParams( AuthToken token, HasFilterQueryIds filterEntityIds ) {
         log.debug( "getSelectorsParams(): filterEntityIds={} ", filterEntityIds );
         SelectorsParams selectorsParams = new SelectorsParams();
 
@@ -184,7 +186,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
 
     @Override
     @Transactional
-    public <T extends DtoFilterQuery> Result<CaseFilterDto<T>> saveIssueFilter(AuthToken token, CaseFilterDto<T> caseFilterDto) {
+    public <T extends HasFilterQueryIds> Result<CaseFilterDto<T>> saveCaseFilter(AuthToken token, CaseFilterDto<T> caseFilterDto) {
         log.debug("saveIssueFilter(): filter={} ", caseFilterDto);
 
         if (isNotValid(caseFilterDto)) {
@@ -198,7 +200,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
         }
 
         if (CaseQuery.class.equals(caseFilter.getType().getQueryClass())) {
-            caseFilterDto.setQuery(applyFilterByScope(token, caseFilterDto.getQuery()));
+            caseFilterDto.setQuery((T) applyFilterByScope(token, (CaseQuery) caseFilterDto.getQuery()));
         }
 
         T query = caseFilterDto.getQuery();
@@ -230,7 +232,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
 
     @Override
     @Transactional
-    public Result<Long> removeIssueFilter(AuthToken token, Long id ) {
+    public Result<Long> removeCaseFilter(AuthToken token, Long id ) {
         log.debug( "removeIssueFilter(): id={} ", id );
 
         if (personCaseFilterDAO.isUsed(id)) {
@@ -252,14 +254,10 @@ public class IssueFilterServiceImpl implements IssueFilterService {
                 caseFilterDto.getQuery() == null;
     }
 
-    private <T extends FilterQuery> T applyFilterByScope(AuthToken token, T typedCaseQuery) {
-        CaseQuery caseQuery = (CaseQuery) typedCaseQuery;
-
-        caseQuery.setCompanyIds(Arrays.asList(111L,222L,333L));
-
+    private CaseQuery applyFilterByScope(AuthToken token, CaseQuery caseQuery) {
         Set<UserRole> roles = token.getRoles();
         if (policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
-            return typedCaseQuery;
+            return caseQuery;
         }
 
         Company company = companyService.getCompanyOmitPrivileges(token, token.getCompanyId()).getData();
@@ -274,7 +272,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
 
         log.info("applyFilterByScope(): CaseQuery modified: {}", caseQuery);
 
-        return typedCaseQuery;
+        return caseQuery;
     }
 
     private List<Long> acceptAllowedCompanies( List<Long> companyIds, Collection<Long> allowedCompaniesIds ) {

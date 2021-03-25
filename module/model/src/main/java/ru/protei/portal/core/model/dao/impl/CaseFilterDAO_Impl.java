@@ -48,6 +48,6 @@ public class CaseFilterDAO_Impl extends PortalBaseJdbcDAO< CaseFilter > implemen
                 .and("type").in(filterTypes)
                 .asQuery();
 
-        return getListByCondition(query.buildSql());
+        return getListByCondition(query.buildSql(), query.args());
     }
 }

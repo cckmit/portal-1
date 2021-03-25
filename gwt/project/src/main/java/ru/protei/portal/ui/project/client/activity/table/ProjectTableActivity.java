@@ -68,6 +68,8 @@ public abstract class ProjectTableActivity
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
         view.getPagerContainer().add( pagerView.asWidget() );
+
+        view.getFilterContainer().clear();
         view.getFilterContainer().add( filterWidget.asWidget() );
 
         En_ProjectAccessType createAccessType = getAccessType(policyService, En_Privilege.PROJECT_CREATE);

@@ -13,8 +13,8 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.dto.CaseFilterDto;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.model.view.FilterShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
@@ -22,7 +22,7 @@ import ru.protei.portal.ui.common.client.events.IssueAssignmentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
-import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
+import ru.protei.portal.ui.common.client.service.CaseFilterControllerAsync;
 import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.common.client.widget.popupselector.RemovablePopupSingleSelector;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
@@ -61,10 +61,10 @@ public abstract class TableActivity implements Activity, AbstractTableActivity {
     }
 
     private void initFilter() {
-        CaseFilterShortView filter = null;
+        FilterShortView filter = null;
         Long filterId = getTableFilterId();
         if (filterId != null) {
-            filter = new CaseFilterShortView(filterId, null);
+            filter = new FilterShortView(filterId, null);
         }
         view.filter().setValue(filter, true);
         view.updateFilterSelector();
@@ -98,7 +98,7 @@ public abstract class TableActivity implements Activity, AbstractTableActivity {
     }
 
     @Override
-    public void onFilterChanged(CaseFilterShortView filter) {
+    public void onFilterChanged(FilterShortView filter) {
         if (filter == null) {
             saveTableFilterId(null);
             CaseQuery query = makeDefaultQuery();
@@ -108,7 +108,7 @@ public abstract class TableActivity implements Activity, AbstractTableActivity {
         Long filterId = filter.getId();
         saveTableFilterId(filterId);
         view.showLoader(true);
-        issueFilterController.getIssueFilter(filterId, new FluentCallback<CaseFilterDto<CaseQuery>>()
+        issueFilterController.getCaseFilter(filterId, new FluentCallback<CaseFilterDto<CaseQuery>>()
                 .withError(throwable -> {
                     view.showLoader(false);
                     defaultErrorHandler.accept(throwable);
@@ -194,7 +194,7 @@ public abstract class TableActivity implements Activity, AbstractTableActivity {
     @Inject
     IssueControllerAsync issueController;
     @Inject
-    IssueFilterControllerAsync issueFilterController;
+    CaseFilterControllerAsync issueFilterController;
     @Inject
     DefaultErrorHandler defaultErrorHandler;
     @Inject

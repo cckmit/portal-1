@@ -24,15 +24,11 @@ import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterMode
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectFilterActivity;
-import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectFilterView;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
-import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
-import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
+import ru.protei.portal.ui.common.client.service.CaseFilterControllerAsync;
 import ru.protei.portal.ui.common.client.service.ReportControllerAsync;
-import ru.protei.portal.ui.common.client.view.projectfilter.ProjectFilterWidget;
-import ru.protei.portal.ui.common.client.view.projectfilter.ProjectFilterWidgetModel;
 import ru.protei.portal.ui.common.client.view.projectfilter.paramview.ProjectFilterParamWidget;
 import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidget;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
@@ -45,14 +41,10 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
-import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
-import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.makeSearchStringFromCaseNumber;
-import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.searchCaseNumber;
 import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.fromDateRange;
 import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.toDateRange;
 import static ru.protei.portal.ui.report.client.util.AccessUtil.availableReportTypes;
@@ -320,21 +312,6 @@ public abstract class ReportEditActivity implements Activity,
         return stream(contractors)
                 .filter(contractor ->
                         stream(ids).anyMatch(id -> id.equals(contractor.getId())))
-                .collect(Collectors.toSet());
-    }
-
-    private Set<EntityOption> collectRegions(Collection<EntityOption> regions, Collection<Long> regionIds) {
-        return stream(regions)
-                .filter(region ->
-                        stream(regionIds).anyMatch(id -> id.equals(region.getId())))
-                .collect(Collectors.toSet());
-    }
-
-    private Set<ProductDirectionInfo> collectDirections(Collection<ProductDirectionInfo> directions,
-                                                        Collection<Long> directionIds) {
-        return stream(directions)
-                .filter(direction ->
-                        stream(directionIds).anyMatch(id -> id.equals(direction.getId())))
                 .collect(Collectors.toSet());
     }
 
@@ -716,7 +693,7 @@ public abstract class ReportEditActivity implements Activity,
     @Inject
     SubcontractorCompanyModel subcontractorCompanyModel;
     @Inject
-    IssueFilterControllerAsync filterController;
+    CaseFilterControllerAsync filterController;
     @Inject
     ContractControllerAsync contractController;
 

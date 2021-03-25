@@ -143,7 +143,7 @@ public class UserDashboardServiceImpl implements UserDashboardService {
                 .sorted(Comparator.comparingLong(UserDashboard::getOrderNumber))
                 .collect(toList());
 
-        return ok(fillDashboardsWithCaseFilterDto(dashboardList));
+        return fillDashboardsWithCaseFilterDto(dashboardList);
     }
 
     @Override
@@ -171,9 +171,9 @@ public class UserDashboardServiceImpl implements UserDashboardService {
         return getUserDashboards(token);
     }
 
-    private List<UserDashboard> fillDashboardsWithCaseFilterDto(List<UserDashboard> userDashboards) {
+    private Result<List<UserDashboard>> fillDashboardsWithCaseFilterDto(List<UserDashboard> userDashboards) {
         if (userDashboards.isEmpty()) {
-            return userDashboards;
+            return ok(userDashboards);
         }
 
         Map<Long, CaseFilter> idToCaseFilter = caseFilterDAO
@@ -187,12 +187,13 @@ public class UserDashboardServiceImpl implements UserDashboardService {
                 CaseQuery caseQuery = objectMapper.readValue(caseFilter.getParams(), CaseQuery.class);
                 userDashboard.setCaseFilterDto(new CaseFilterDto<>(caseFilter, caseQuery));
             } catch (IOException e) {
-                log.warn("fromCaseFilter(): cannot read filter params. caseFilter={}", userDashboard.getCaseFilter());
+                log.warn("fillDashboardsWithCaseFilterDto(): cannot read filter params. caseFilter={}", userDashboard.getCaseFilter());
                 e.printStackTrace();
+                return error(En_ResultStatus.GET_DATA_ERROR);
             }
         }
 
-        return userDashboards;
+        return ok(userDashboards);
     }
 
     private List<UserDashboard> updateOrders(List<UserDashboard> userDashboards) {

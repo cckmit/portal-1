@@ -1,8 +1,6 @@
 package ru.protei.portal.core.model.view.filterwidget;
 
-import java.io.Serializable;
-
-public interface AbstractFilterShortView extends Serializable {
+public interface AbstractFilterShortView {
     Long getId();
 
     String getName();

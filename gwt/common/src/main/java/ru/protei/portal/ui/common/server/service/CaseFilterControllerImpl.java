@@ -10,14 +10,11 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dto.CaseFilterDto;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.SelectorsParams;
-import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.query.HasFilterEntityIds;
-import ru.protei.portal.core.model.view.CaseFilterShortView;
+import ru.protei.portal.core.model.query.HasFilterQueryIds;
 import ru.protei.portal.core.model.view.filterwidget.AbstractFilterShortView;
-import ru.protei.portal.core.model.view.filterwidget.DtoFilterQuery;
-import ru.protei.portal.core.service.IssueFilterService;
+import ru.protei.portal.core.service.CaseFilterService;
 import ru.protei.portal.core.service.session.SessionService;
-import ru.protei.portal.ui.common.client.service.IssueFilterController;
+import ru.protei.portal.ui.common.client.service.CaseFilterController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
@@ -27,17 +24,17 @@ import java.util.List;
 /**
  * Реализация сервиса по работе с фильтрами обращений
  */
-@Service( "IssueFilterController" )
-public class IssueFilterControllerImpl implements IssueFilterController {
+@Service( "CaseFilterController" )
+public class CaseFilterControllerImpl implements CaseFilterController {
 
     @Override
-    public List<AbstractFilterShortView> getIssueFilterShortViewList(En_CaseFilterType filterType ) throws RequestFailedException {
+    public List<AbstractFilterShortView> getCaseFilterShortViewList(En_CaseFilterType filterType) throws RequestFailedException {
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        log.info( "getIssueFilterShortViewList(): accountId={}, filterType={} ", token.getUserLoginId(), filterType );
+        log.info( "getCaseFilterShortViewList(): accountId={}, filterType={} ", token.getUserLoginId(), filterType );
 
-        Result< List< AbstractFilterShortView > > response = issueFilterService.getIssueFilterShortViewList( token.getUserLoginId(), filterType );
+        Result< List< AbstractFilterShortView > > response = caseFilterService.getCaseFilterShortViewList( token.getUserLoginId(), filterType );
 
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
@@ -46,14 +43,14 @@ public class IssueFilterControllerImpl implements IssueFilterController {
     }
 
     @Override
-    public <T extends DtoFilterQuery> CaseFilterDto<T> getIssueFilter(Long id ) throws RequestFailedException {
-        log.info("getIssueFilter, id: {}", id);
+    public <T extends HasFilterQueryIds> CaseFilterDto<T> getCaseFilter(Long id) throws RequestFailedException {
+        log.info("getCaseFilter, id: {}", id);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<CaseFilterDto<T>> response = issueFilterService.getIssueFilter(token, id);
+        Result<CaseFilterDto<T>> response = caseFilterService.getCaseFilterDto(token, id);
 
-        log.info("getIssueFilter, id: {}, response: {} ", id, response.isError() ? "error" : response.getData());
+        log.info("getCaseFilter, id: {}, response: {} ", id, response.isError() ? "error" : response.getData());
 
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
@@ -62,12 +59,12 @@ public class IssueFilterControllerImpl implements IssueFilterController {
     }
 
     @Override
-    public SelectorsParams getSelectorsParams( HasFilterEntityIds filterEntityIds ) throws RequestFailedException {
+    public SelectorsParams getSelectorsParams( HasFilterQueryIds filterEntityIds ) throws RequestFailedException {
         log.info("getSelectorsParams, caseQuery: {}", filterEntityIds );
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<SelectorsParams> response = issueFilterService.getSelectorsParams( token, filterEntityIds );
+        Result<SelectorsParams> response = caseFilterService.getSelectorsParams( token, filterEntityIds );
 
         log.info("getSelectorsParams, id: {}, response: {} ", filterEntityIds, response.isError() ? "error" : response.getData());
 
@@ -78,20 +75,20 @@ public class IssueFilterControllerImpl implements IssueFilterController {
     }
 
     @Override
-    public <T extends DtoFilterQuery> CaseFilterDto<T> saveIssueFilter(CaseFilterDto<T> filter) throws RequestFailedException {
+    public <T extends HasFilterQueryIds> CaseFilterDto<T> saveCaseFilter(CaseFilterDto<T> filter) throws RequestFailedException {
 
-        log.info("saveIssueFilter, filter: {}", filter);
+        log.info("saveCaseFilter, caseFilter: {}", filter);
 
         if (filter == null) {
-            log.warn("Not null issueFilter is required");
+            log.warn("Not null caseFilter is required");
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<CaseFilterDto<T>> response = issueFilterService.saveIssueFilter(token, filter);
+        Result<CaseFilterDto<T>> response = caseFilterService.saveCaseFilter(token, filter);
 
-        log.info("saveIssueFilter, result: {}", response.getStatus());
+        log.info("saveCaseFilter, result: {}", response.getStatus());
 
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
@@ -101,13 +98,13 @@ public class IssueFilterControllerImpl implements IssueFilterController {
     }
 
     @Override
-    public Long removeIssueFilter(Long id ) throws RequestFailedException {
-        log.info( "removeIssueFilter(): id={}", id );
+    public Long removeCaseFilter(Long id) throws RequestFailedException {
+        log.info( "removeCaseFilter(): id={}", id );
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result< Long > response = issueFilterService.removeIssueFilter( token, id );
-        log.info( "removeIssueFilter(): result={}", response.getStatus() );
+        Result< Long > response = caseFilterService.removeCaseFilter( token, id );
+        log.info( "removeCaseFilter(): result={}", response.getStatus() );
 
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
@@ -117,7 +114,7 @@ public class IssueFilterControllerImpl implements IssueFilterController {
     }
 
     @Autowired
-    IssueFilterService issueFilterService;
+    CaseFilterService caseFilterService;
 
     @Autowired
     HttpServletRequest httpServletRequest;
@@ -125,5 +122,5 @@ public class IssueFilterControllerImpl implements IssueFilterController {
     @Autowired
     SessionService sessionService;
 
-    private static final Logger log = LoggerFactory.getLogger(IssueFilterControllerImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(CaseFilterControllerImpl.class);
 }

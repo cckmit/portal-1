@@ -15,14 +15,14 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.view.CaseFilterShortView;
+import ru.protei.portal.core.model.view.FilterShortView;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.DashboardEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
+import ru.protei.portal.ui.common.client.service.CaseFilterControllerAsync;
 import ru.protei.portal.ui.common.client.service.UserLoginControllerAsync;
 import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -86,7 +86,7 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
     }
 
     @Override
-    public void onFilterChanged(CaseFilterShortView filterShortView) {
+    public void onFilterChanged(FilterShortView filterShortView) {
         String currentDashboardName = view.name().getValue();
         String oldFilterName = lastFilterName == null ? "" : lastFilterName;
         String newFilterName = filterShortView == null ? "" : filterShortView.getName();
@@ -110,9 +110,9 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
         createNewFilter(caseFilterDto);
     }
 
-    private void autoHideExistingFiltersFromCreation(List<CaseFilterShortView> filters) {
+    private void autoHideExistingFiltersFromCreation(List<FilterShortView> filters) {
         List<String> filterNames = CollectionUtils.stream(filters)
-                .map(CaseFilterShortView::getName)
+                .map(FilterShortView::getName)
                 .collect(Collectors.toList());
         boolean shouldHideNewIssues = filterNames.contains(makeFilterNewIssues().getCaseFilter().getName());
         boolean shouldHideActiveIssues = filterNames.contains(makeFilterActiveIssues().getCaseFilter().getName());
@@ -122,14 +122,14 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
         view.filterCreateContainer().setVisible(!shouldHideCreation);
     }
 
-    private void loadFilters(Consumer<List<CaseFilterShortView>> onLoaded) {
-        filterController.getIssueFilterShortViewList(En_CaseFilterType.CASE_OBJECTS, new FluentCallback<List<CaseFilterShortView>>()
+    private void loadFilters(Consumer<List<FilterShortView>> onLoaded) {
+        filterController.getCaseFilterShortViewList(En_CaseFilterType.CASE_OBJECTS, new FluentCallback<List<FilterShortView>>()
                 .withError(throwable -> {})
                 .withSuccess(onLoaded));
     }
 
     private void createNewFilter(CaseFilterDto<CaseQuery> caseFilterDto) {
-        filterController.saveIssueFilter(caseFilterDto, new FluentCallback<CaseFilterDto<CaseQuery>>()
+        filterController.saveCaseFilter(caseFilterDto, new FluentCallback<CaseFilterDto<CaseQuery>>()
                 .withSuccess(result -> {
                     view.updateFilterSelector();
                     view.filter().setValue(result.getCaseFilter().toShortView(), true);
@@ -198,7 +198,7 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
     @Inject
     UserLoginControllerAsync userLoginController;
     @Inject
-    IssueFilterControllerAsync filterController;
+    CaseFilterControllerAsync filterController;
     @Inject
     PolicyService policyService;
 
