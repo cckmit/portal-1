@@ -117,8 +117,12 @@ public class BaseServiceTest {
     }
 
     protected static CaseComment createNewComment( Person person, Long caseObjectId, String text ) {
+        return createNewComment(null, person, caseObjectId, text);
+    }
+
+    protected static CaseComment createNewComment( Date created, Person person, Long caseObjectId, String text ) {
         CaseComment comment = new CaseComment( text );
-        comment.setCreated( new Date() );
+        comment.setCreated( created == null? new Date() : created );
         comment.setCaseId( caseObjectId );
         comment.setAuthorId( person.getId() );
         comment.setText( text );

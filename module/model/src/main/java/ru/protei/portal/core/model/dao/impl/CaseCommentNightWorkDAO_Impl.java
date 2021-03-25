@@ -39,7 +39,7 @@ public class CaseCommentNightWorkDAO_Impl extends PortalBaseJdbcDAO<CaseCommentN
                 .asQuery()
                 .offset( query.getOffset() )
                 .limit( query.getLimit() )
-                .sort( query.sortDir, query.getSortField().getFieldName() )
+                .sort( query.getSortDir(), query.getSortField().getFieldName() )
                 .groupBy( "day", "co.id", "author_display_name" );
 
         log.info( "makeJdbcQueryParameters(): where: {}", sqlQuery.toString() );
