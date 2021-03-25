@@ -46,7 +46,6 @@ public abstract class ProjectTableActivity
 
         filterWidget.onInit(filterWidgetModel);
         filterWidget.setOnFilterChangeCallback(this::loadTable);
-        view.getFilterContainer().add( filterWidget.asWidget() );
 
         pagerView.setActivity( this );
     }
@@ -69,6 +68,7 @@ public abstract class ProjectTableActivity
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
         view.getPagerContainer().add( pagerView.asWidget() );
+        view.getFilterContainer().add( filterWidget.asWidget() );
 
         En_ProjectAccessType createAccessType = getAccessType(policyService, En_Privilege.PROJECT_CREATE);
         fireEvent( createAccessType != En_ProjectAccessType.NONE ?

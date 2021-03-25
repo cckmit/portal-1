@@ -59,6 +59,18 @@ public class En_PersonRoleTypeLang {
                 return lang.personQualityControlSmk();
             case CUSTOMER_INTEGRATION:
                 return lang.personCustomerIntegration();
+            case PRESALE_MANAGER:
+                return lang.personPresaleManager();
+            case BUSINESS_ANALYTICS_ARCHITECTURE:
+                return lang.personBusinessAnalyticsArchitecture();
+            case PROJECT_DOCUMENTATION:
+                return lang.personProjectDocumentation();
+            case DEVELOPMENT:
+                return lang.personDevelopment();
+            case PRESALE_HEAD_MANAGER:
+                return lang.personPresaleHeadManager();
+            case DEPLOY_HEAD_MANAGER:
+                return lang.personDeployHeadManager();
         }
         return null;
     }

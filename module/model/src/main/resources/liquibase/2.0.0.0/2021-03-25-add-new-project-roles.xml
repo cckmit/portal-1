@@ -1,0 +1,30 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-new-project-roles" author="fomin">
+        <insert tableName="dev_unit_mrole">
+            <column name="UROLE_CODE" value="presale_manager"/>
+        </insert>
+        <insert tableName="dev_unit_mrole">
+            <column name="UROLE_CODE" value="business_analytics_architecture"/>
+        </insert>
+        <insert tableName="dev_unit_mrole">
+            <column name="UROLE_CODE" value="project_documentation"/>
+        </insert>
+        <insert tableName="dev_unit_mrole">
+            <column name="UROLE_CODE" value="product_manager"/>
+        </insert>
+        <insert tableName="dev_unit_mrole">
+            <column name="UROLE_CODE" value="development"/>
+        </insert>
+        <insert tableName="dev_unit_mrole">
+            <column name="UROLE_CODE" value="presale_head_manager"/>
+        </insert>
+        <insert tableName="dev_unit_mrole">
+            <column name="UROLE_CODE" value="deploy_head_manager"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

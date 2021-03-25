@@ -70,6 +70,18 @@ public class EnumLangUtil {
                 return localizedLang.get("personQualityControlSmk");
             case CUSTOMER_INTEGRATION:
                 return localizedLang.get("personCustomerIntegration");
+            case PRESALE_MANAGER:
+                return localizedLang.get("personPresaleManager");
+            case BUSINESS_ANALYTICS_ARCHITECTURE:
+                return localizedLang.get("personBusinessAnalyticsArchitecture");
+            case PROJECT_DOCUMENTATION:
+                return localizedLang.get("personProjectDocumentation");
+            case DEVELOPMENT:
+                return localizedLang.get("personDevelopment");
+            case PRESALE_HEAD_MANAGER:
+                return localizedLang.get("personPresaleHeadManager");
+            case DEPLOY_HEAD_MANAGER:
+                return localizedLang.get("personDeployHeadManager");
         }
 
         return localizedLang.get("personRoleUnknown");

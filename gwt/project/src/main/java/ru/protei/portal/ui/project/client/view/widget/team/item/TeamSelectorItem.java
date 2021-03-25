@@ -97,9 +97,6 @@ public class TeamSelectorItem extends Composite implements AbstractTeamSelectorI
     @UiHandler("members")
     public void onMembersChanged(ValueChangeEvent<Set<PersonShortView>> event) {
         model.members = event.getValue() == null ? new HashSet<>() : event.getValue();
-        if (model.members.size() == 0 || (En_DevUnitPersonRoleType.HEAD_MANAGER.equals(model.role) && model.members.size() == 1)) {
-//            members.hidePopup();
-        }
         fireModelChanged();
     }
 
