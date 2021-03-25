@@ -16,13 +16,13 @@ public interface IssueFilterControllerAsync {
     /**
      * Получение списка сокращенного представления CaseFilter
      */
-    void getIssueFilterShortViewList( En_CaseFilterType filterType, AsyncCallback< List<AbstractFilterShortView> > async );
+    <T extends AbstractFilterShortView> void getIssueFilterShortViewList( En_CaseFilterType filterType, AsyncCallback< List<T> > async );
 
-    <T extends DtoFilterQuery> void getIssueFilter(Long id, AsyncCallback<CaseFilterDto<T>> async );
+    <Q extends DtoFilterQuery> void getIssueFilter(Long id, AsyncCallback<CaseFilterDto<Q>> async );
 
     void getSelectorsParams( CaseQuery caseQuery, AsyncCallback<SelectorsParams> async );
 
-    <T extends DtoFilterQuery> void saveIssueFilter( CaseFilterDto<T> filter, AsyncCallback< CaseFilterDto<T> > async );
+    <Q extends DtoFilterQuery> void saveIssueFilter( CaseFilterDto<Q> filter, AsyncCallback< CaseFilterDto<Q> > async );
 
     void removeIssueFilter( Long id, AsyncCallback< Long > async );
 }

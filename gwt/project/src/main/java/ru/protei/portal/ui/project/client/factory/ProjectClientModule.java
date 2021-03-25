@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.project.client.factory;
 
 import com.google.gwt.inject.client.AbstractGinModule;
+import com.google.inject.Singleton;
 import ru.protei.portal.ui.project.client.activity.quickcreate.AbstractProjectCreateView;
 import ru.protei.portal.ui.project.client.activity.quickcreate.ProjectCreateActivity;
 import ru.protei.portal.ui.project.client.activity.edit.AbstractProjectEditView;
@@ -25,6 +26,8 @@ import ru.protei.portal.ui.project.client.view.widget.team.AbstractTeamSelector;
 import ru.protei.portal.ui.project.client.view.widget.team.TeamSelector;
 import ru.protei.portal.ui.project.client.view.widget.team.item.AbstractTeamSelectorItem;
 import ru.protei.portal.ui.project.client.view.widget.team.item.TeamSelectorItem;
+import ru.protei.portal.ui.project.client.widget.filter.ProjectFilterWidget;
+import ru.protei.portal.ui.project.client.widget.filter.paramview.ProjectFilterParamWidget;
 
 
 /**
@@ -38,6 +41,8 @@ public class ProjectClientModule extends AbstractGinModule {
         bind( ProjectTableActivity.class ).asEagerSingleton();
         bind( AbstractProjectTableView.class ).to(ProjectTableView.class );
         bind( AbstractProjectFilterView.class ).to(ProjectFilterView.class );
+
+        bind(ProjectFilterParamWidget.class).in(Singleton.class);
 
         bind( ProjectPreviewActivity.class ).asEagerSingleton();
         bind( AbstractProjectPreviewView.class ).to( ProjectPreviewView.class );

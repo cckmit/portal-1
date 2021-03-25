@@ -17,6 +17,6 @@ public class ProductDirectionMultiSelector extends InputPopupMultiSelector<Produ
         setHasNullValue(true);
         setItemRenderer(option -> option.name);
 
-        setNullItem(() -> new ProductDirectionInfo(CrmConstants.Product.UNDEFINED, lang.productWithout()));
+        setNullItem(() -> new ProductDirectionInfo(CrmConstants.Product.UNDEFINED, lang.productDirectionNotSpecified()));
     }
 }

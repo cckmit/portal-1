@@ -1131,7 +1131,7 @@ label.bordered:after {
 
 /**** Collapsable filter ****/
 
-.filter-collapsable, .absence-filter, .room-reservation-filter {
+.filter-collapsable, .filter-widget, .room-reservation-filter {
 
   .filter-header {
     border-bottom: 2px solid #ddd;
@@ -2765,7 +2765,7 @@ div.select2-container {
   }
 }
 
-.issue-filter, .absence-filter, .room-reservation-filter {
+.issue-filter, .filter-widget, .room-reservation-filter {
   padding-top: 0px !important;
 
   .user-filter {
@@ -4911,7 +4911,7 @@ table {
   }
 }
 
-.absence-filter {
+.filter-widget {
   .filter-content {
     border: none;
     padding-top: 0 !important;

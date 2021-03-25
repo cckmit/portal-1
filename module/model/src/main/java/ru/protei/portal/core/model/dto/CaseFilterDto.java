@@ -13,7 +13,7 @@ import ru.protei.portal.core.model.view.filterwidget.FilterQuery;
 import java.io.Serializable;
 
 public class CaseFilterDto<T extends DtoFilterQuery>
-        implements Serializable, Filter<AbstractFilterShortView, FilterQuery> {
+        implements Serializable, Filter<AbstractFilterShortView, T> {
 
     private CaseFilter caseFilter;
     private T query;
